@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Profile - Brand</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/fonts/fontawesome5-overrides.min.css">
+    <link rel="stylesheet" href="assets/css/Codeblock.css">
+    <link rel="stylesheet" href="assets/css/stationsheet.css">
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <nav class="navbar navbar-dark navbar-expand-sm align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
+            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon rotate-n-15"></div>
+                    <div class="sidebar-brand-text mx-3"><span>VE View</span></div>
+                </a>
+                <hr class="sidebar-divider my-0">
+                <ul class="navbar-nav text-light" id="accordionSidebar">
+                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link active" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a></li>
+                </ul>
+                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
+            </div>
+        </nav>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" aria-labelledby="searchDropdown">
+                                    <form class="form-inline mr-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <li class="nav-item dropdown no-arrow">
+                                <div class="nav-item dropdown no-arrow" id="userDropDownMenu"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small" id="userName">Jaroslav Cimrman</span><img class="border rounded-circle img-profile" src="assets/img/cimrman.jpg"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" id="btnLogin" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Login</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" id="btnLogOut" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col d-xl-flex justify-content-xl-center">
+                                            <h5>Nodes</h5>
+                                        </div>
+                                        <div class="col d-xl-flex justify-content-xl-end">
+                                            <div class="row">
+                                                <div class="col"><button class="btn btn-primary" id="btnAddNewNode" type="button">Add Node</button></div>
+                                            </div>
+                                        </div>
+                                        <div class="col d-xl-flex justify-content-xl-end" style="max-width: 250px;">
+                                            <div class="row">
+                                                <div class="col d-xl-flex align-items-xl-center"><input type="text" id="nodesTableFilterInput" placeholder="Filter Nodes" style="width: 200px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive table-bordered">
+                                        <table class="table table-striped table-bordered table-hover" id="nodesTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Node Name</th>
+                                                    <th>Account Name</th>
+                                                    <th>Status</th>
+                                                    <th>Type</th>
+                                                    <th>Trigger</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="palletsList">
+                                                <tr>
+                                                    <td>Loading...</td>
+                                                    <td>Loading...</td>
+                                                    <td>Loading...</td>
+                                                    <td>Loading...</td>
+                                                    <td>Loading...</td>
+                                                    <td><button class="btn btn-primary" type="button" style="margin: 5px;">Details</button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span>Copyright © VEFramework 2021</span></div>
+                </div>
+            </footer>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="nodeDetailsModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Node Details</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Id</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="nodeDetailsId">Loading...</span></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Name</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeDetailsName" style="width: 400px;" placeholder="Fill Name"></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Type</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="dropdown" id="nodeType"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeType" type="button" style="width: 400px;">None</button>
+                                <div class="dropdown-menu" id="nodeTypesDropDown"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Trigger Type</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="dropdown" id="nodeTriggerType"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeTriggerType" type="button" style="width: 400px;">None</button>
+                                <div class="dropdown-menu" id="nodeTriggerTypesDropDown"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Is Activated</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="dropdown" id="nodeActivation"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeActivation" type="button" style="width: 400px;">None</button>
+                                <div class="dropdown-menu" id="nodeActivationDropDown"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Account</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="dropdown" id="nodeType-3"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeAccountAddress" type="button" style="width: 400px;font-size: 12px;">None</button>
+                                <div class="dropdown-menu" id="nodeAccountAddressesDropDown"><a class="dropdown-item" href="#" onclick="setWalletType(&quot;Neblio&quot;)">Neblio</a><a class="dropdown-item" href="#" onclick="setWalletType(&quot;ReddCoin&quot;)">Reddcoin</a><a class="dropdown-item" href="#" onclick="setWalletType(&quot;Bitcoin&quot;)">Bitcoin</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col d-xl-flex justify-content-xl-center">
+                                    <h4>Full Node Data</h4>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center"><input class="d-xl-flex" type="file" id="file-input"></div>
+                                <div class="col d-xl-flex justify-content-xl-center"><button class="btn btn-primary" id="btnLoadNodeDataFromFile" type="button">Load Data From File</button></div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-xl-flex justify-content-xl-center" style="margin-top: 20px;"><textarea class="d-xl-flex flex-fill" id="nodeFullData" style="min-height: 200px;min-width: 300px;"></textarea></div>
+                            </div>
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center"><button class="btn btn-primary" id="btnSaveNodeData" type="button">Save Data To File</button></div>
+                                <div class="col d-xl-flex justify-content-xl-center"><button class="btn btn-primary" id="btnOpenNodeParametersDetails" type="button">Open Parameters In Details</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row d-xl-flex flex-fill justify-content-xl-end">
+                        <div class="col d-xl-flex align-self-start justify-content-xl-start"><button class="btn btn-light d-xl-flex rights-admin" id="btnRemoveNode" type="button" data-dismiss="modal">Remove Node</button></div>
+                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" id="btnSaveChangedNodeData" type="button" style="min-width: 200px;">Save changes to Core</button></div>
+                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" type="button" data-dismiss="modal" style="min-width: 100px;">Close</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="nodeParametersDetailsModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Node Parameters Details</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Command</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsCommand" style="width: 400px;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Parameters</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnOpenNodeSpecificParametersModal" type="button">Open Node Specific Parameters Setting</button></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Script</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><textarea id="nodeParametersDetailsScript" style="width: 400px;min-height: 100px;"></textarea></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Is Script Activated</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="checkbox" id="nodeParametersDetailsIsScriptActive"></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>TimeDelay</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsTimeDelay" style="width: 400px;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Login</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsCommand-3" style="width: 400px;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Password</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsCommand-2" style="width: 400px;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Trigger Type</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="dropdown" id="nodeTriggerType-1"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeParamTriggerType" type="button" style="width: 400px;">None</button>
+                                <div class="dropdown-menu" id="nodeParamTriggerTypesDropDown"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row d-xl-flex flex-fill justify-content-xl-end">
+                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" id="btnSaveChangedNodeParameters" type="button" style="min-width: 200px;">Save changes</button></div>
+                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" type="button" data-dismiss="modal" style="min-width: 100px;">Close</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="nodeSpecificParametersDetailsModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Node Specific Parameters Details</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table" id="nodeSpecificParametersTable">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row d-xl-flex flex-fill justify-content-xl-end">
+                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" id="btnSaveNodeSpecificParameters" type="button" style="min-width: 200px;">Save changes</button></div>
+                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" type="button" data-dismiss="modal" style="min-width: 100px;">Close</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="addNodeModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add new Node</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row" style="margin-bottom: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                                    <h5>Type</h5>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                                    <div class="dropdown" id="addNodeModalNodeType"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnAddNodeModalNodeType" type="button" style="width: 400px;">None</button>
+                                        <div class="dropdown-menu" id="addNodeModalNodeTypeDropDown"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                                    <h5>Name</h5>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="addNodeModalNodeName"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnAddNodeModalConfirm" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="confirmModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Are you sure?</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmModalContent">Do you realy want to save?</p>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="confirmButtonOk" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="loginModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Login</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseLogin"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <p class="d-xl-flex justify-content-xl-center" id="confirmModalContent-1">If you need to make view details please Log In</p>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center"><span>User name</span></div>
+                                <div class="col"><input type="text" id="loginName" style="width: 200px;"></div>
+                            </div>
+                            <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center"><span>User password</span></div>
+                                <div class="col"><input type="password" id="loginPass" style="width: 200px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center"><span class="text-danger" id="loginError"></span></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" id="btnCancelLogin" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmLogin" type="button"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="newTokensReceivedModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Tokens Received/Send - Confirmed</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 700px;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 700px;">
+                                <div class="card-body" style="min-width: 800px;max-width: 800px;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Token Symbol and Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTokenModalSymbolName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>WalletName</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTokensModalWalletName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTokensModalAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Amount</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTokensModalAmount" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="newTransactionModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">New Transaction - Unconfirmed</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 700px;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 700px;">
+                                <div class="card-body" style="min-width: 800px;max-width: 800px;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTxModalAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Wallet Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTxModalAccountName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Transactions Id</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTxModalTxId" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/bs-init.js"></script>
+    <script src="assets/js/_Constants.js"></script>
+    <script src="assets/js/accounts.js"></script>
+    <script src="assets/js/Common.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+    <script src="assets/js/chart.min.js"></script>
+    <script src="assets/js/login.js"></script>
+    <script src="assets/js/nodes.js"></script>
+    <script src="assets/js/paho-mqtt.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/tokens.js"></script>
+    <script src="assets/js/users.js"></script>
+    <script src="assets/js/wallets.js"></script>
+    <script src="assets/js/z_mqtt-common.js"></script>
+</body>
+
+</html>
