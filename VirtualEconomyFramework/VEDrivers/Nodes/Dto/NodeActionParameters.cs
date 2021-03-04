@@ -32,7 +32,7 @@ namespace VEDrivers.Nodes.Dto
         /// example: 
         /// function nodeJSfunction(payload, params){ return (customFunction(payload, params) => { return payload.ActualBalance > parseInt(params[0])}}
         /// </summary>
-        public string Script { get; set; } = "function nodeJSfunction(payload, params) { return true; }";
+        public string Script { get; set; } = "function nodeJSfunction(payload, params) { return JSON.stringify({ 'done' : true, payload : JSON.stringify({ 'payload' : payload, 'params': params }) }); }";
         /// <summary>
         /// If this is set, Custom JS Script will be executed
         /// </summary>

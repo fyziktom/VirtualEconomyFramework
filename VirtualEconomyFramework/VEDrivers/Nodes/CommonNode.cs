@@ -23,6 +23,7 @@ namespace VEDrivers.Nodes
         public bool? Deleted { get; set; } = false;
         public DateTime ModifiedOn { get; set; }
         public DateTime CreatedOn { get; set; }
+        public abstract event EventHandler<NodeActionRequestArgs> ActionRequest;
         public abstract event EventHandler<NodeActionFinishedArgs> ActionFinished;
         public abstract void Activate();
         public abstract void DeActivate();

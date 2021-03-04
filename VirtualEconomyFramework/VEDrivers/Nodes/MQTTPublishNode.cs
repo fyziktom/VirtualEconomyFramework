@@ -33,6 +33,7 @@ namespace VEDrivers.Nodes
             mqttClient = new MQTTClient("node-" + id.ToString());
         }
 
+        public override event EventHandler<NodeActionRequestArgs> ActionRequest;
         public override event EventHandler<NodeActionFinishedArgs> ActionFinished;
 
         public override void Activate()
@@ -64,20 +65,21 @@ namespace VEDrivers.Nodes
         public override async Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData)
         {
             if (!(bool)IsActivated)
-                return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_ACTIVATED", data = "MQTT Publish Node - Node is not activated. You cannot invoke action!" });
+                return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_ACTIVATED", data = $"MQTT Publish Node - {Name} - Node is not activated. You cannot invoke action!" });
 
             if (actionType != ActualTriggerType)
-                return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_INVOKED", data = $"MQTT Publish Node - Node is not set to this {Enum.GetName(actionType)} of trigger. It is set to {Enum.GetName(ActualTriggerType)}!" });
+                return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_INVOKED", data = $"MQTT Publish Node - {Name} - Node is not set to this {Enum.GetName(actionType)} of trigger. It is set to {Enum.GetName(ActualTriggerType)}!" });
 
+            JSResultDto jsRes = new JSResultDto();
             // Node Custom JavaScript call
             if (ParsedParams.IsScriptActive)
             {
                 if (!string.IsNullOrEmpty(ParsedParams.Script) && (otherData.Length > 0))
                 {
-                    var res = JSScriptHelper.RunNodeJsScript(ParsedParams.Script, ParsedParams.ScriptParametersList, otherData);
+                    jsRes = JSScriptHelper.RunNodeJsScript(ParsedParams.Script, ParsedParams.ScriptParametersList, otherData);
 
-                    if (!res.done)
-                        return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_INVOKED", data = $"MQTT Publish Node - Custom JS script runned with error {res.payload}!" });
+                    if (!jsRes.done)
+                        return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_INVOKED", data = $"MQTT Publish Node - {Name} - Custom JS script runned with error {jsRes.payload}!" });
                 }
             }
 
@@ -87,6 +89,9 @@ namespace VEDrivers.Nodes
 
                 if (p != null)
                 {
+                    if (string.IsNullOrEmpty(p.Topic))
+                        return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_INVOKED", data = $"MQTT Publish Node - {Name} - Topic is not set!" });
+
                     if (ParsedParams.TimeDelay > 0)
                         await Task.Delay(ParsedParams.TimeDelay);
 
@@ -94,13 +99,29 @@ namespace VEDrivers.Nodes
 
                     if (ParsedParams.Command != null) 
                     {
-                        ////////////////////////////////////////////////
-                        // TODO publish ParsedParams.Command as topic //
-                        ////////////////////////////////////////////////
+                        var payload = string.Empty;
+
+                        if (ParsedParams.IsScriptActive && !string.IsNullOrEmpty(jsRes.payload))
+                            payload = jsRes.payload;
+                        else
+                            payload = p.Data;
+
+                        NodeActionRequestTypes type = NodeActionRequestTypes.MQTTPublishNotRetain;
+
+                        if (p.Retain)
+                            type = NodeActionRequestTypes.MQTTPublishRetain;
+
+                        ActionRequest?.Invoke(this, new NodeActionRequestArgs()
+                        {
+                            Type = type,
+                            Topic = p.Topic,
+                            Payload = payload
+                        });
+
                     }
                     else
                     {
-                        res = "MQTT Publish Node - Command cannot be null. Please fill full Topic name!";
+                        res = $"MQTT Publish Node - {Name} - Command cannot be null. Please fill full Topic name!";
                         log.Warn($"Node {Name} MQTT Publish Node - Command cannot be null. Please fill full Topic name!!");
                     }
 
@@ -111,7 +132,7 @@ namespace VEDrivers.Nodes
                 else
                 {
                     log.Warn($"Node {Name} cannot send MQTT Publish. Cannot parse the parameters!");
-                    return await Task.FromResult(new NodeActionFinishedArgs() { result = "ERROR", data = "MQTT Publish Node - Cannot parse the parameters!" });
+                    return await Task.FromResult(new NodeActionFinishedArgs() { result = "ERROR", data = $"MQTT Publish Node - {Name} - Cannot parse the parameters!" });
                 }
             }
             catch (Exception ex)

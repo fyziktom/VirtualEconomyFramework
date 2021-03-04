@@ -72,6 +72,8 @@ namespace VEconomy
 
                     if (node != null)
                     {
+                        node.ActionRequest += Node_ActionRequest;
+
                         MainDataContext.Nodes.TryAdd(node.Id.ToString(), node);
 
                         if (MainDataContext.WorkWithDb)
@@ -91,6 +93,7 @@ namespace VEconomy
                 return "Cannot create node!";
             }
         }
+
 
         public static async Task<string> SeNodeActivation(string nodeId, bool isActivated)
         {
@@ -172,6 +175,7 @@ namespace VEconomy
                     MainDataContext.Nodes.Clear();
                     foreach (var n in nodes)
                     {
+                        n.ActionRequest += Node_ActionRequest;
                         MainDataContext.Nodes.TryAdd(n.Id.ToString(), n);
                     }
                 }
@@ -203,6 +207,28 @@ namespace VEconomy
             }
 
             return result;
+        }
+
+        private static void Node_ActionRequest(object sender, NodeActionRequestArgs e)
+        {
+            var node = sender as INode;
+
+            if (e != null)
+            {
+                switch (e.Type)
+                {
+                    case NodeActionRequestTypes.MQTTPublishNotRetain:
+                        MainDataContext.MQTTClient.PostObjectAsJSONString(e.Topic, e.Payload, false).GetAwaiter().GetResult();
+                        break;
+                    case NodeActionRequestTypes.MQTTPublishRetain:
+                        MainDataContext.MQTTClient.PostObjectAsJSONString(e.Topic, e.Payload, true).GetAwaiter().GetResult();
+                        break;
+                }
+            }
+            else
+            {
+                log.Error($"Node {node.Id} Action Request Event Handler did not recveived Action Request Arguments!");
+            }
         }
 
     }

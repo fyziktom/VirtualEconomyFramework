@@ -22,6 +22,20 @@ namespace VEDrivers.Nodes
         public string data { get; set; }
     }
 
+    public enum NodeActionRequestTypes
+    {
+        MQTTPublishRetain,
+        MQTTPublishNotRetain,
+        PriceRequest
+    }
+
+    public class NodeActionRequestArgs
+    {
+        public NodeActionRequestTypes Type { get; set; }
+        public string Topic { get; set; }
+        public string Payload { get; set; }
+    }
+
     public interface INode : ICommonDbObjectBase
     {
         Guid Id { get; set; }
@@ -32,6 +46,7 @@ namespace VEDrivers.Nodes
         string Parameters { get; set; }
         NodeActionParameters ParsedParams { get; set; }
         NodeActionTriggerTypes ActualTriggerType { get; set; }
+        event EventHandler<NodeActionRequestArgs> ActionRequest;
         event EventHandler<NodeActionFinishedArgs> ActionFinished;
         void Activate();
         void DeActivate();

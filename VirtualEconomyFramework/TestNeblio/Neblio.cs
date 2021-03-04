@@ -21,6 +21,7 @@ using VEDrivers.Economy.Tokens;
 using VEDrivers.Common;
 using System.Runtime.InteropServices;
 using Jint;
+using Jint.Native;
 
 namespace TestNeblio
 {
@@ -33,6 +34,38 @@ namespace TestNeblio
         public static void _(DbConnection conn, string param)
         {
             Console.WriteLine($"Connection: {conn.ConnectionString}, Param: {param}");
+        }
+
+        [TestEntry]
+        public static string RunJavaScriptFnc(DbConnection conn, string p)
+        {
+            var function = "function nodeJSfunction(payload, params) { return JSON.stringify({ 'done' : true, 	payload : { 'payload' : payload, 'params': params } }); }";
+            var functionName = "nodeJSfunction";
+            string[] param = new string[2];
+            param[0] = "{ 'data':'neco'}";
+            param[1] = "{ 'data':'neco1'}";
+
+            JsValue[] parameters = new JsValue[param.Length];
+
+            // remove spaces before and after
+            for (int i = 0; i < param.Length; i++)
+            {
+                param[i] = param[i].TrimStart().TrimEnd();
+                parameters[i] = new JsValue(param[i]);
+            }
+
+            functionName = functionName.TrimStart().TrimEnd();
+
+            var engine = new Engine()
+                .SetValue("log", new Action<object>(Console.WriteLine))
+                .Execute(function)
+                .GetValue(functionName);
+
+            var res = engine.Invoke(parameters);
+
+            Console.WriteLine($"Result of JS script is: {res}");
+
+            return res.ToString();
         }
 
         [TestEntry]

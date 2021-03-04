@@ -17,9 +17,17 @@ namespace VEDrivers.Nodes.Dto
         /// </summary>
         public string Port { get; set; } = string.Empty;
         /// <summary>
+        /// Topic where publish
+        /// </summary>
+        public string Topic { get; set; } = string.Empty;
+        /// <summary>
         /// Any data for publish - when JS script is active, the payload from script is loaded to Data automatically
         /// </summary>
         public string Data { get; set; } = string.Empty;
+        /// <summary>
+        /// Should be this post retain, default false
+        /// </summary>
+        public bool Retain { get; set; } = false;
         /// <summary>
         /// if service uses login you can pass it here
         /// </summary>

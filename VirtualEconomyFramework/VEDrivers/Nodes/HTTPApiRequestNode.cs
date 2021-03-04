@@ -30,6 +30,7 @@ namespace VEDrivers.Nodes
             ActualTriggerType = NodeActionTriggerTypes.None;
         }
 
+        public override event EventHandler<NodeActionRequestArgs> ActionRequest;
         public override event EventHandler<NodeActionFinishedArgs> ActionFinished;
 
         public override void Activate()
