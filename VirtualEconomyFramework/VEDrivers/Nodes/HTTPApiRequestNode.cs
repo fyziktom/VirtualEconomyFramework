@@ -59,7 +59,7 @@ namespace VEDrivers.Nodes
             Parameters = JsonConvert.SerializeObject(ParsedParams);
         }
 
-        public override async Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData)
+        public override async Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData, string altFunction = "")
         {
             if (!(bool)IsActivated)
                 return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_ACTIVATED", data = "HTTP API Node - Node is not activated. You cannot invoke action!" });
@@ -67,15 +67,19 @@ namespace VEDrivers.Nodes
             if (actionType != ActualTriggerType)
                 return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_INVOKED", data = $"HTTP API Node - Node is not set to this {Enum.GetName(actionType)} of trigger. It is set to {Enum.GetName(ActualTriggerType)}!" });
 
+            JSResultDto jsRes = new JSResultDto();
             // Node Custom JavaScript call
             if (ParsedParams.IsScriptActive)
             {
                 if (!string.IsNullOrEmpty(ParsedParams.Script) && (otherData.Length > 0))
                 {
-                    var res = JSScriptHelper.RunNodeJsScript(ParsedParams.Script, ParsedParams.ScriptParametersList, otherData);
+                    if (!string.IsNullOrEmpty(altFunction))
+                        jsRes = JSScriptHelper.RunNodeJsScript(altFunction, ParsedParams.ScriptParametersList, otherData);
 
-                    if (!res.done)
-                        return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_INVOKED", data = $"HTTP API Node - Custom JS script runned with error {res.payload}!" });
+                    jsRes = JSScriptHelper.RunNodeJsScript(ParsedParams.Script, ParsedParams.ScriptParametersList, otherData);
+
+                    if (!jsRes.done)
+                        return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_INVOKED", data = $"HTTP API Node - Custom JS script runned with error {jsRes.payload}!" });
                 }
             }
 
@@ -106,6 +110,15 @@ namespace VEDrivers.Nodes
                     if (ParsedParams.TimeDelay > 0)
                         await Task.Delay(ParsedParams.TimeDelay);
 
+                    var payload = string.Empty;
+                    if (ParsedParams.IsScriptActive && !string.IsNullOrEmpty(jsRes.payload))
+                        payload = jsRes.payload;
+                    else
+                        payload = p.Data;
+
+                    LastPayload = payload;
+                    LastOtherData = otherData;
+
                     var res = string.Empty;
 
                     if (ParsedParams.Command != null) {
@@ -113,7 +126,10 @@ namespace VEDrivers.Nodes
                         switch (ParsedParams.Command)
                         {
                             case "GET":
-                                res = await SendGETRequest(url, p.Data);
+                                res = await SendGETRequest(url, payload);
+                                break;
+                            case "PUT":
+                                res = await SendPURequest(url, payload);
                                 break;
                             case "":
                                 res = "HTTP API Node - Command cannot be empty. Please fill GET, POST or PUT!";
@@ -145,7 +161,7 @@ namespace VEDrivers.Nodes
             return await Task.FromResult(new NodeActionFinishedArgs() { result = "ERROR", data = "Unexpected error!" });
         }
 
-        private async Task<string> SendGETRequest(string url, string content)
+        private async Task<string> SendGETRequest(string url, string payload)
         {
             string html = string.Empty;
 
@@ -169,8 +185,54 @@ namespace VEDrivers.Nodes
                 log.Error($"Node {Name} cannot send HTTP Request to the: {url} ", ex);
                 return $"ERROR when sending HTTP Request to: {url}";
             }
+        }
 
-            return html;
+        private async Task<string> SendPURequest(string url, string payload)
+        {
+            string output = string.Empty;
+            string Error = string.Empty;
+            WebRequest req = WebRequest.Create(url);
+
+            try
+            {
+                
+                req.Method = "PUT";
+                req.Timeout = 100000;
+                req.ContentType = "application/json";
+                byte[] sentData = Encoding.UTF8.GetBytes(payload);
+                req.ContentLength = sentData.Length;
+
+                using (System.IO.Stream sendStream = req.GetRequestStream())
+                {
+                    sendStream.Write(sentData, 0, sentData.Length);
+                    sendStream.Close();
+
+                }
+
+                WebResponse res = req.GetResponse();
+                Stream ReceiveStream = res.GetResponseStream();
+                using (StreamReader sr = new
+                StreamReader(ReceiveStream, Encoding.UTF8))
+                {
+                    char[] read = new char[256];
+                    int count = sr.Read(read, 0, 256);
+
+                    while (count > 0)
+                    {
+                        string str = new string(read, 0, count);
+                        output += str;
+                        count = sr.Read(read, 0, 256);
+                    }
+                }
+
+                Console.WriteLine(output);
+                return output;
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Node {Name} cannot send HTTP Request to the: {url} ", ex);
+                return $"ERROR when sending HTTP Request to: {url}";
+            }
         }
 
         public override object GetNodeParametersCarrier()

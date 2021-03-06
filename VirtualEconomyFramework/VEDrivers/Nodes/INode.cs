@@ -45,6 +45,8 @@ namespace VEDrivers.Nodes
         bool? IsActivated { get; set; }
         string Parameters { get; set; }
         NodeActionParameters ParsedParams { get; set; }
+        string LastPayload { get; set; }
+        string[] LastOtherData { get; set; }
         NodeActionTriggerTypes ActualTriggerType { get; set; }
         event EventHandler<NodeActionRequestArgs> ActionRequest;
         event EventHandler<NodeActionFinishedArgs> ActionFinished;
@@ -52,7 +54,7 @@ namespace VEDrivers.Nodes
         void DeActivate();
         void LoadParameters(NodeActionParameters parameters);
         void SetNodeTriggerType(NodeActionTriggerTypes type);
-        Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData);
+        Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData, string altFunction = "");
 
         object GetNodeParametersCarrier();
     }

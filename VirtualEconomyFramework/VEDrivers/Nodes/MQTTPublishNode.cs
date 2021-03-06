@@ -62,7 +62,7 @@ namespace VEDrivers.Nodes
             Parameters = JsonConvert.SerializeObject(ParsedParams);
         }
 
-        public override async Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData)
+        public override async Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData, string altFunction = "")
         {
             if (!(bool)IsActivated)
                 return await Task.FromResult(new NodeActionFinishedArgs() { result = "NOT_ACTIVATED", data = $"MQTT Publish Node - {Name} - Node is not activated. You cannot invoke action!" });
@@ -76,6 +76,9 @@ namespace VEDrivers.Nodes
             {
                 if (!string.IsNullOrEmpty(ParsedParams.Script) && (otherData.Length > 0))
                 {
+                    if (!string.IsNullOrEmpty(altFunction))
+                        jsRes = JSScriptHelper.RunNodeJsScript(altFunction, ParsedParams.ScriptParametersList, otherData);
+
                     jsRes = JSScriptHelper.RunNodeJsScript(ParsedParams.Script, ParsedParams.ScriptParametersList, otherData);
 
                     if (!jsRes.done)
@@ -105,6 +108,9 @@ namespace VEDrivers.Nodes
                             payload = jsRes.payload;
                         else
                             payload = p.Data;
+
+                        LastPayload = payload;
+                        LastOtherData = otherData;
 
                         NodeActionRequestTypes type = NodeActionRequestTypes.MQTTPublishNotRetain;
 

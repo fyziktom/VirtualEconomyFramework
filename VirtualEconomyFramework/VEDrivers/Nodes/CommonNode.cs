@@ -17,6 +17,8 @@ namespace VEDrivers.Nodes
         public string Parameters { get; set; }
         public NodeActionParameters ParsedParams { get; set; }
         public NodeActionTriggerTypes ActualTriggerType { get; set; }
+        public string LastPayload { get; set; }
+        public string[] LastOtherData { get; set; }
         public string CreatedBy { get; set; }
         public string ModifiedBy { get; set; }
         public string Version { get; set; }
@@ -29,7 +31,7 @@ namespace VEDrivers.Nodes
         public abstract void DeActivate();
         public abstract void LoadParameters(NodeActionParameters parameters);
         public abstract void SetNodeTriggerType(NodeActionTriggerTypes type);
-        public abstract Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData);
+        public abstract Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData, string altFunction = "");
         public abstract object GetNodeParametersCarrier();
     }
 }

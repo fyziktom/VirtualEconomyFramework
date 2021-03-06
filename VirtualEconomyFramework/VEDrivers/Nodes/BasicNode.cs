@@ -37,7 +37,7 @@ namespace VEDrivers.Nodes
             IsActivated = false;
         }
 
-        public override Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData)
+        public override Task<NodeActionFinishedArgs> InvokeNodeFunction(NodeActionTriggerTypes actionType, string[] otherData, string altFunction = "")
         {
             return Task.FromResult(new NodeActionFinishedArgs() { result = "ERROR", data = "Not Implemented!" });
         }
