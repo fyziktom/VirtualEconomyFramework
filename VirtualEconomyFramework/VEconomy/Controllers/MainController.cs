@@ -682,6 +682,64 @@ namespace VEconomy.Controllers
             }
         }
 
+        public class InvokeNodeData
+        {
+            public NodeActionTriggerTypes triggerType { get; set; } = NodeActionTriggerTypes.UnconfirmedTokenTxArrived;
+            public string nodeId { get; set; } = string.Empty;
+            public string[] data { get; set; }
+            public int NumberOfCalls { get; set; } = 1;
+            public bool UseLastTokenTxData { get; set; } = false;
+            public string altScript { get; set; } = string.Empty;
+            public bool useAltScript { get; set; } = false;
+        }
+        [HttpPut]
+        [Route("InvokeNodeAction")]
+        //[Authorize(Rights.Administration)]
+        public async Task<List<NodeActionFinishedArgs>> InvokeNodeAction([FromBody] InvokeNodeData nodeData)
+        {
+            var res = new List<NodeActionFinishedArgs>();
+            try
+            {
+                if (MainDataContext.Nodes.TryGetValue(nodeData.nodeId, out var node))
+                {
+                    if (nodeData.UseLastTokenTxData)
+                    {
+                        if (node.LastOtherData == null)
+                            nodeData.data = VEDrivers.Nodes.TestData.NodeTestData.GetTestData();
+                        else
+                            nodeData.data = node.LastOtherData;
+                    }
+
+                    if (nodeData.data == null)
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot invoke Node {nodeData.nodeId} action, data cannot be empty!");
+
+                    NodeActionFinishedArgs r;
+
+                    for (int j = 0; j < nodeData.NumberOfCalls; j++)
+                    {
+                        if (nodeData.useAltScript && !string.IsNullOrEmpty(nodeData.altScript))
+                            r = await node.InvokeNodeFunction(nodeData.triggerType, nodeData.data, nodeData.altScript);
+                        else
+                            r = await node.InvokeNodeFunction(nodeData.triggerType, nodeData.data);
+
+                        if (r != null)
+                            res.Add(r);
+                    }
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot invoke Node {nodeData.nodeId} action, Node Not Found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Cannot invoke Node {nodeData.nodeId}!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot invoke Node {nodeData.nodeId} action!");
+            }
+
+            return res;
+        }
+
         #endregion
 
         #region Transactions
