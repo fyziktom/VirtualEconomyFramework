@@ -30,10 +30,12 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	Neblio API .NET Core wrapper (ReddCoin and Bitcoin to be soon).
 -	Connection to Binance Exchange data.
 -	Testing application for integration tests.
--	Basic UI in HTML/CSS/JavaScript dependent just on Bootstrap and JQuery!
+-	Basic UI in HTML/CSS/JavaScript dependent just on Bootstrap and JQuery (and few small libs)!
 -	Project for Bootstrap Studio which simplify building web-based UI of applications.
 -	Functional “Nodes” which can perform some action such as HTTP API Request or MQTT Publish based on trigger from blockchain transaction (incoming and outgoing).
--	Nodes can run custom JavaScript with payload data from transaction and provide the result as payload for main function of Node.
+-	Nodes can run custom JavaScript with payload data from transaction and provide the tx result as payload for main function of Node.
+-	Web UI has integrated JavaScript editor.
+-	JS Script can be tested with simulated tx data or last tx real data. No need to send tx during debbuging of JS Scripts.
 -	Connection to PostgreSQL where local data about digital twins and settings are stored.
 -	Db is connected via Entity Framework Core so it can be connected to another Db.
 -	Security controller for creating users, rights, roles which limit access to API
@@ -47,7 +49,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	DocFx documentation of project
 -	Raspberry PI pre-installed image
 -	Integrated MQTT Broker
--	ReddCoin and Bitcoin drivers
+-	ReddCoin and Bitcoin drivers (maybe Polkadot and Chainlink)
 -	Lock and unlock desktop wallet and other RPC commands for wallets
 -	Transactions details in UI
 -	HTTPS support
@@ -190,6 +192,8 @@ This project uses some other opensource libraries or other tools. Many thanks to
 -	Aedes Node-Red node – MQTT Broker - https://github.com/moscajs/aedes 
 -	Paho MQTT – JavaScript library for MQTT client - https://github.com/eclipse/paho.mqtt.javascript 
 -	Chart JS - JavaScript library for charts - https://github.com/chartjs 
+-	CodeJar - Simple JavaScript editor - https://github.com/antonmedv/codejar
+-	Prism - Code Syntax Highlight library - https://prismjs.com/
 -	Bootstrap Studio – tool for simplify web-based UI - https://bootstrapstudio.io/ 
 
 # License 
