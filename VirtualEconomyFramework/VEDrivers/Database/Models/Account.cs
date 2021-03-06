@@ -45,11 +45,20 @@ namespace VEDrivers.Database.Models
             else
                 Version = "0.1";
             ModifiedOn = DateTime.UtcNow;
-            if (!string.IsNullOrEmpty(acc.ModifiedBy))
-                ModifiedBy = acc.ModifiedBy;
+
             if (acc.Deleted != null)
                 Deleted = (bool)acc.Deleted;
-            CreatedBy = acc.CreatedBy;
+
+            if (string.IsNullOrEmpty(ModifiedBy) && !string.IsNullOrEmpty(acc.CreatedBy))
+                ModifiedBy = acc.ModifiedBy;
+            else if (string.IsNullOrEmpty(ModifiedBy) && string.IsNullOrEmpty(acc.ModifiedBy))
+                ModifiedBy = "admin";
+
+            if (string.IsNullOrEmpty(CreatedBy) && !string.IsNullOrEmpty(acc.CreatedBy))
+                CreatedBy = acc.CreatedBy;
+            else if (string.IsNullOrEmpty(CreatedBy) && string.IsNullOrEmpty(acc.CreatedBy))
+                CreatedBy = "admin";
+
             CreatedOn = acc.CreatedOn;
 
             WalletId = acc.WalletId.ToString();

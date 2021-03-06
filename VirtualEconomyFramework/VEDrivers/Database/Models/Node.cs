@@ -46,11 +46,20 @@ namespace VEDrivers.Database.Models
             else
                 Version = "0.1";
             ModifiedOn = DateTime.UtcNow;
-            if (!string.IsNullOrEmpty(node.ModifiedBy))
-                ModifiedBy = node.ModifiedBy;
+
             if (node.Deleted != null)
                 Deleted = (bool)node.Deleted;
-            CreatedBy = node.CreatedBy;
+
+            if (string.IsNullOrEmpty(ModifiedBy) && !string.IsNullOrEmpty(node.CreatedBy))
+                ModifiedBy = node.ModifiedBy;
+            else if (string.IsNullOrEmpty(ModifiedBy) && string.IsNullOrEmpty(node.ModifiedBy))
+                ModifiedBy = "admin";
+
+            if (string.IsNullOrEmpty(CreatedBy) && !string.IsNullOrEmpty(node.CreatedBy))
+                CreatedBy = node.CreatedBy;
+            else if (string.IsNullOrEmpty(CreatedBy) && string.IsNullOrEmpty(node.CreatedBy))
+                CreatedBy = "admin";
+
             CreatedOn = node.CreatedOn;
 
             AccountId = node.AccountId.ToString();

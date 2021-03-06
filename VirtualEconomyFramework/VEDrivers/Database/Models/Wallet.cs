@@ -47,11 +47,20 @@ namespace VEDrivers.Database.Models
                 Version = "0.1";
 
             ModifiedOn = DateTime.UtcNow;
-            if (!string.IsNullOrEmpty(wallet.ModifiedBy))
-                ModifiedBy = wallet.ModifiedBy;
+
             if (wallet.Deleted != null)
                 Deleted = (bool)wallet.Deleted;
-            CreatedBy = wallet.CreatedBy;
+
+            if (string.IsNullOrEmpty(ModifiedBy) && !string.IsNullOrEmpty(wallet.CreatedBy))
+                ModifiedBy = wallet.ModifiedBy;
+            else if (string.IsNullOrEmpty(wallet.ModifiedBy) && string.IsNullOrEmpty(wallet.ModifiedBy))
+                ModifiedBy = "admin";
+
+            if (string.IsNullOrEmpty(wallet.CreatedBy) && !string.IsNullOrEmpty(wallet.CreatedBy))
+                CreatedBy = wallet.CreatedBy;
+            else if (string.IsNullOrEmpty(CreatedBy) && string.IsNullOrEmpty(wallet.CreatedBy))
+                CreatedBy = "admin";
+
             CreatedOn = wallet.CreatedOn;
         }
 
