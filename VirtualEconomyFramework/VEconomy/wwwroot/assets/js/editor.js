@@ -1,0 +1,1 @@
+let jar = CodeJar(document.querySelector('.editor'), Prism.highlightElement);

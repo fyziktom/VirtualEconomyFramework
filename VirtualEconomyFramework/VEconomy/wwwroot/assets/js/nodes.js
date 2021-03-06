@@ -37,6 +37,11 @@ $(document).ready(function () {
         saveChangedNodeParameters();
     });
 
+    $("#btnTestScript").off();
+    $("#btnTestScript").click(function() {
+        testScript();
+    });
+
     registerNodesFilter();
 
     try {
@@ -81,6 +86,9 @@ function getNodeComponent(node) {
 
 function refreshNodesStatus(nodes) {
     Nodes = nodes;
+
+    ////////////////////////////
+    // todo reload ActualNode
 
     var list = $('#nodesTable tbody');
     list.children().remove();
@@ -195,6 +203,9 @@ function UpdateNode() {
     if (ActualNode != null) {
         var params = ActualNode.ParsedParams;
         params.TriggerType = selectedNodeTriggerType;
+        selectedNodeActivationState = ActualNode.IsActivated;
+
+        selectedNodeAccountAddress = getAccountByID(ActualNode.AccountId).Address;
 
         var node = {
             "nodeId": ActualNode.Id,
@@ -239,6 +250,7 @@ function fillNodeDetails(node) {
 
         if (node["IsActivated"]){ 
             state = 'Active';
+            selectedNodeActivationState = true;
         }
 
         $('#nodeDetailsId').text(node["Id"]);
@@ -257,6 +269,8 @@ function fillNodeDetails(node) {
         selectedNodeTriggerType = node.ActualTriggerType;
 
         $('#nodeFullData').text(JSON.stringify(node, null, 2));
+
+        ActualNode = node;
     }
 }
 
@@ -290,7 +304,8 @@ function showNodeDetailsByNodeObj(node) {
 function fillNodeParametersDetails(node) {
     if (node != null) {
         $('#nodeParametersDetailsCommand').val(node.ParsedParams.Command);
-        $('#nodeParametersDetailsScript').val(node.ParsedParams.Script);
+        jar.updateCode(node.ParsedParams.Script);
+
         $('#nodeParametersDetailsIsScriptActive').prop('checked', node.ParsedParams.IsScriptActive);
         $('#nodeParametersDetailsTimeDelay').val(node.ParsedParams.TimeDelay.toString());
         $('#nodeParametersDetailsLogin').val(node.ParsedParams.Login);
@@ -315,8 +330,9 @@ function saveChangedNodeParameters() {
 
     $("#confirmButtonOk").off();
     $("#confirmButtonOk").click(function() {
+        var code = jar.toString();
         ActualNode.ParsedParams.Command = $('#nodeParametersDetailsCommand').val();
-        ActualNode.ParsedParams.Script = $('#nodeParametersDetailsScript').val();
+        ActualNode.ParsedParams.Script = code;
         ActualNode.ParsedParams.TimeDelay = parseInt($('#nodeParametersDetailsTimeDelay').val());
         ActualNode.ParsedParams.Login = $('#nodeParametersDetailsLogin').val();
         ActualNode.ParsedParams.Password = $('#nodeParametersDetailsPassword').val();
@@ -673,4 +689,72 @@ function filterNodesTable(value) {
     $("#nodesTable > tbody > tr").filter(function() {      
         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
+}
+
+/////////////////////////////////////
+// Testing script and node
+
+function testScript(){
+    
+    if(!$("#chbxTestWithNodeFunction").is(':checked')) {
+        testScriptWithNode();
+    }
+    else {
+        testScriptWithNode();
+    }
+}
+
+function testScriptWithoutNode() {
+ // just in the browser - could not be same as JS core in core
+}
+
+function testScriptWithNode() {
+    if (ActualNode != null) {
+
+        var script = jar.toString();
+        if (script == '') {
+            alert('Script cannot be empty!');
+            return;
+        }
+
+        var node = {
+            "nodeId": ActualNode.Id,
+            "triggerType": 5,
+            "NumberOfCalls": 1,
+            "UseLastTokenTxData": true,
+            "altScript": jar.toString(),
+            "useAltScript": true
+        };
+    
+        $("#confirmButtonOk").off();
+        $("#confirmButtonOk").click(function() {
+            InvokeNodeCommandAPI(node);
+        });
+        
+        ShowConfirmModal('', 'Do you realy want to test this node: '+ ActualNode.Name +'?');  
+    }
+}
+
+function InvokeNodeCommandAPI(node){
+
+    var url = ApiUrl + "/InvokeNodeAction";
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    $.ajax(url,
+        {
+            contentType: 'application/json;charset=utf-8',
+            data: JSON.stringify(node),
+            method: 'PUT',
+            dataType: 'json',   // type of response data
+            timeout: 10000,     // timeout milliseconds
+            success: function (data, status, xhr) {   // success callback function
+                alert(`Status: ${status}, Data:${JSON.stringify(data)}`);
+            },
+            error: function (jqXhr, textStatus, errorMessage) { // error callback 
+                alert('Error: "' + errorMessage + '"');
+            }
+        });
 }

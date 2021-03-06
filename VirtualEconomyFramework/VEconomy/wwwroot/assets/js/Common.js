@@ -121,7 +121,7 @@ function loadConfig(loaded) {
                 }, 1000);
             },
             error: function (jqXhr, textStatus, errorMessage) { // error callback 
-                alert("Cannot load configuration");
+                console.log("Cannot load configuration");
             }
         });
 }

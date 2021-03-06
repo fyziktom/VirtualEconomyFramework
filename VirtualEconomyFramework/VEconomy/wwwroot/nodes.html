@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome5-overrides.min.css">
     <link rel="stylesheet" href="assets/css/Codeblock.css">
+    <link rel="stylesheet" href="assets/css/prism.css">
     <link rel="stylesheet" href="assets/css/stationsheet.css">
 </head>
 
@@ -207,7 +208,17 @@
                     </div>
                     <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Script</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><textarea id="nodeParametersDetailsScript" style="width: 400px;min-height: 100px;"></textarea></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><div>
+    <div class="editor language-js" style="min-width:500px;min-height:200px;border-style: solid;">
+    </div>
+</div></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Test Script</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxTestWithNodeFunction" checked=""><label class="form-check-label" for="formCheck-1">With Node Function</label></div>
+                        </div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnTestScript" type="button">Test</button></div>
                     </div>
                     <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Is Script Activated</span></div>
@@ -441,9 +452,12 @@
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
+    <script src="assets/js/_codejar.js"></script>
     <script src="assets/js/_Constants.js"></script>
+    <script src="assets/js/_prism.js"></script>
     <script src="assets/js/accounts.js"></script>
     <script src="assets/js/Common.js"></script>
+    <script src="assets/js/editor.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
     <script src="assets/js/chart.min.js"></script>
     <script src="assets/js/login.js"></script>

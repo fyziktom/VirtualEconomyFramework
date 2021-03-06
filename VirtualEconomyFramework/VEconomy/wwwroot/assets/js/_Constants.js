@@ -30,7 +30,7 @@ const Pages = Object.freeze({
 
 var ActualPage = Pages.dashboard;
 
-var bootstrapstudio = true;
+var bootstrapstudio = false;
 
 var ApiUrl = 'http://localhost:8080/api'; //placeholder
 var UserRights = 0;  //placeholder to be filled by login
