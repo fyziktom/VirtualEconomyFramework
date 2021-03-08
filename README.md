@@ -194,6 +194,7 @@ This project uses some other opensource libraries or other tools. Many thanks to
 -	Chart JS - JavaScript library for charts - https://github.com/chartjs 
 -	CodeJar - Simple JavaScript editor - https://github.com/antonmedv/codejar
 -	Prism - Code Syntax Highlight library - https://prismjs.com/
+-	Crypto JS - JS library of crypto standards - https://github.com/brix/crypto-js
 -	Bootstrap Studio – tool for simplify web-based UI - https://bootstrapstudio.io/ 
 
 # License 
