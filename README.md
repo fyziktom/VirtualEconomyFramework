@@ -36,6 +36,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	Nodes can run custom JavaScript with payload data from transaction and provide the tx result as payload for main function of Node.
 -	Web UI has integrated JavaScript editor.
 -	JS Script can be tested with simulated tx data or last tx real data. No need to send tx during debbuging of JS Scripts.
+-	Web UI contains hash library for creating hash of any file on the client side and use it as metadata in NFT token transactions
 -	Connection to PostgreSQL where local data about digital twins and settings are stored.
 -	Db is connected via Entity Framework Core so it can be connected to another Db.
 -	Security controller for creating users, rights, roles which limit access to API
