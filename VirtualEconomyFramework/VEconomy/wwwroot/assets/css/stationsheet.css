@@ -3,3 +3,13 @@
   max-height: 100%;
 }
 
+#holder {
+  border: 5px dashed #ccc;
+  width: auto;
+  height: 150px;
+}
+
+#holder:hover {
+  border: 5px dashed #333;
+}
+

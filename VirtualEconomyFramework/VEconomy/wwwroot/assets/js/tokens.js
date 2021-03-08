@@ -63,17 +63,31 @@ function fillSendTokenModal() {
     }
 }
 
+function createMetadataFromFileAndFillToLine(line) {
+    $('#calcHashOfFileModal').modal('show');
+
+    $("#btnUseHashAsMetadata").off();
+    $("#btnUseHashAsMetadata").click(function() {
+        var parent = $(line).parent().parent();
+        parent.find('td.metadataName').find('textarea.metadataName').val('SHA256 Hash of file: ' + fileHashName);
+        parent.find('td.metadataContent').find('textarea.metadataContent').val(finalHash);
+    });
+}
+
 function getNewMetadataLine() {
 
     var line = '<tr>'+
         '    <td class="d-xl-flex justify-content-xl-end metadataName">'+
-        '       <input type="text" class="metadataName" style="width: 200px;" />'+
+        '       <textarea type="text" class="metadataName" style="width: 200px;"></textarea>'+
         '    </td>'+
         '    <td class="metadataContent">'+
-        '       <input type="text" class="metadataContent" style="width: 200px;margin-left: 20px;" />'+
+        '       <textarea class="metadataContent" style="width: 200px;margin-left: 20px;"></textarea>'+
         '    </td>'+
         '    <td>'+
-        '       <button class="btn btn-secondary" id="btnSendTokenModalAddMetadataField-1" type="button" style="padding-top: 2px;padding-bottom: 2px;padding-right: 10px;padding-left: 10px;" onclick="removeMetadataLine(this)">-</button>'+
+        '       <button class="btn btn-secondary" type="button" style="padding-top: 2px;padding-bottom: 2px;padding-right: 10px;padding-left: 10px;" onclick="createMetadataFromFileAndFillToLine(this)">Hash</button>'+
+        '    </td>'+
+        '    <td>'+
+        '       <button class="btn btn-secondary" type="button" style="padding-top: 2px;padding-bottom: 2px;padding-right: 10px;padding-left: 10px;" onclick="removeMetadataLine(this)">-</button>'+
         '    </td>'+
         '</tr>';
         
@@ -83,8 +97,8 @@ function getNewMetadataLine() {
 function getMetadataToSend() {
     var metadata = {};
     var lines = $('#sendTokenMetadataTable > tbody > tr').each(function(index, tr) {
-        var name = $(tr).find('td.metadataName').find('input.metadataName').val();
-        var content = $(tr).find('td.metadataContent').find('input.metadataContent').val();
+        var name = $(tr).find('td.metadataName').find('textarea.metadataName').val();
+        var content = $(tr).find('td.metadataContent').find('textarea.metadataContent').val();
         metadata[name] = content;
     });
 
