@@ -183,44 +183,59 @@ namespace VEDrivers.Economy.Wallets
 
                                             TotalBalance += a.TotalBalance;
 
-                                            if (addrinfo.Transactions.Count > a.NumberOfTransaction)
+                                            if (addrinfo.Transactions?.Count > a.NumberOfTransaction)
                                             {
-                                                var dto = new NewTransactionDTO();
-                                                dto.AccountAddress = a.Address;
-                                                dto.WalletName = Name;
-                                                dto.Type = TransactionTypes.Neblio;
-                                                dto.TxId = addrinfo.Transactions?.ToList()?.Last();
-                                                dto.OwnerId = Owner;
-
-                                                var txdetailsrcvd = false;
-                                                try
+                                                for (int k = (int)(a.NumberOfTransaction); k < addrinfo.Transactions.Count; k++)
                                                 {
-                                                    dto.TransactionDetails = NeblioTransactionHelpers.TransactionInfo(dto.Type, dto.TxId, null);
+                                                    var dto = new NewTransactionDTO();
+                                                    dto.AccountAddress = a.Address;
+                                                    dto.WalletName = Name;
+                                                    dto.Type = TransactionTypes.Neblio;
+                                                    dto.TxId = addrinfo.Transactions.ToArray()[k];
+                                                    dto.OwnerId = Owner;
+
+                                                    var txdetailsrcvd = false;
+                                                    try
+                                                    {
+                                                        dto.TransactionDetails = NeblioTransactionHelpers.TransactionInfo(dto.Type, dto.TxId, null);
+
+                                                        if (dto.TransactionDetails != null)
+                                                            if (dto.TransactionDetails.Confirmations > 0)
+                                                                txdetailsrcvd = true;
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        log.Error("Neblio Wallet cannot load tx details: ", ex);
+                                                    }
 
                                                     if (dto.TransactionDetails != null)
-                                                        if (dto.TransactionDetails.Confirmations > 0)
-                                                            txdetailsrcvd = true;
+                                                        NewTransaction?.Invoke(this, dto);
+
+                                                    //send after message about new tx
+                                                    if (txdetailsrcvd)
+                                                    {
+                                                        if (Accounts.TryGetValue(dto.AccountAddress, out var acc))
+                                                        {
+                                                            acc.Transactions.TryRemove(dto.TxId, out var to);
+                                                            acc.Transactions.TryAdd(dto.TxId, dto.TransactionDetails);
+                                                        }
+                                                        Transactions.TryRemove(dto.TxId, out var t);
+                                                        Transactions.TryAdd(dto.TxId, dto.TransactionDetails);
+
+                                                        NewTransactionDetailsReceived?.Invoke(this, dto);
+                                                    }
+                                                    else
+                                                    {
+                                                        NewWaitingTxForDetails.TryAdd(dto.TxId, (false, a.Address));
+                                                    }
+
+                                                    a.NumberOfTransaction++;// = addrinfo.Transactions.Count;
                                                 }
-                                                catch (Exception ex)
-                                                {
-                                                    log.Error("Neblio Wallet cannot load tx details: ", ex);
-                                                }
-
-                                                if (dto.TransactionDetails != null)
-                                                    NewTransaction?.Invoke(this, dto);
-
-                                                //send after message about new tx
-                                                if (txdetailsrcvd)
-                                                    NewTransactionDetailsReceived?.Invoke(this, dto);
-                                                else
-                                                    NewWaitingTxForDetails.TryAdd(dto.TxId, (false, a.Address));
-
-                                                a.NumberOfTransaction = addrinfo.Transactions.Count;
                                             }
                                             a.Tokens.Clear();
                                             foreach (var t in nad.tokenAccounts)
                                             {
-                                                var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, t.TokenId);
+                                                var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, t.TokenId, string.Empty);
                                                 tdetails.ActualBalance = t.Balance;
                                                 a.Tokens.Add(t.TokenId, tdetails);
                                             }
@@ -307,12 +322,30 @@ namespace VEDrivers.Economy.Wallets
                         {
                             NewTransactionDetailsReceived?.Invoke(this, dto);
                             NewWaitingTxForDetails.TryRemove(tx);
+
+                            // add to tx dictionaries
+                            if (Accounts.TryGetValue(dto.AccountAddress, out var acc))
+                            {
+                                acc.Transactions.TryRemove(dto.TxId, out var to);
+                                acc.Transactions.TryAdd(tx.Key, txd);
+                            }
+                            Transactions.TryRemove(dto.TxId, out var t);
+                            Transactions.TryAdd(tx.Key, txd);
                         }
                         else if (txd.Confirmations == 0 && !tx.Value.Item1)
                         {
                             NewTransaction?.Invoke(this, dto);
                             NewWaitingTxForDetails.TryRemove(tx);
                             NewWaitingTxForDetails.TryAdd(tx.Key, (true, tx.Value.Item2));
+
+                            // add to tx dictionaries
+                            if (Accounts.TryGetValue(dto.AccountAddress, out var acc))
+                            {
+                                acc.Transactions.TryRemove(dto.TxId, out var to);
+                                acc.Transactions.TryAdd(tx.Key, txd);
+                            }
+                            Transactions.TryRemove(dto.TxId, out var t);
+                            Transactions.TryAdd(tx.Key, txd);
                         }
                     }
                 }

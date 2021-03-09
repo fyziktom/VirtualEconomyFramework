@@ -20,7 +20,7 @@ namespace VEDrivers.Economy.Tokens
         public double? ActualBTCPrice { get; set; } = 0;
         public double? ActualBalance { get; set; } = 0.0;
 
-        Dictionary<string, string> Metadata = new Dictionary<string, string>();
+        public Dictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
 
         public abstract Task<string> GetDetails();
 

@@ -6,20 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.DTO;
 using VEDrivers.Nodes;
 using VEDrivers.Nodes.Dto;
 
-namespace VEconomy
+namespace VEDrivers.Nodes.Handlers
 {
-    public static class NodeHandler
+    public class BasicNodeHandler : CommonNodeHandler
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private static IDictionary<string, Func<NodeActionTriggerTypes, string[], Task<NodeActionFinishedArgs>>> NodeActions { get; set; } =
-                    new ConcurrentDictionary<string, Func<NodeActionTriggerTypes, string[], Task<NodeActionFinishedArgs>>>();
 
-        public static string UpdateNode(string accountAddress, string nodeId, Guid ownerid, string nodeName, NodeTypes type, bool isActivated, NodeActionParameters parameters)
+        public override string UpdateNode(string accountAddress, string nodeId, Guid ownerid, string nodeName, NodeTypes type, bool isActivated, NodeActionParameters parameters)
         {
             IDbConnectorService dbservice = new DbConnectorService();
 
@@ -27,7 +26,7 @@ namespace VEconomy
             {
                 var accountId = Guid.Empty;
 
-                if (MainDataContext.Accounts.TryGetValue(accountAddress, out var account))
+                if (EconomyMainContext.Accounts.TryGetValue(accountAddress, out var account))
                 {
                     accountId = account.Id;
                 }
@@ -36,19 +35,19 @@ namespace VEconomy
                     Console.WriteLine("Cannot create node - account not found");
                 }
 
-                if (MainDataContext.Nodes.TryGetValue(nodeId, out var foundnode))
+                if (EconomyMainContext.Nodes.TryGetValue(nodeId, out var foundnode))
                 {
                     foundnode.AccountId = accountId;
                     if (isActivated)
                         foundnode.Activate();
                     else
                         foundnode.DeActivate();
-                    
+
                     foundnode.LoadParameters(parameters);
                     foundnode.SetNodeTriggerType(parameters.TriggerType);
                     foundnode.Name = nodeName;
 
-                    if (MainDataContext.WorkWithDb)
+                    if (EconomyMainContext.WorkWithDb)
                     {
                         if (!dbservice.SaveNode(foundnode))
                             return "Cannot save Node to the db!";
@@ -74,9 +73,9 @@ namespace VEconomy
                     {
                         node.ActionRequest += Node_ActionRequest;
 
-                        MainDataContext.Nodes.TryAdd(node.Id.ToString(), node);
+                        EconomyMainContext.Nodes.TryAdd(node.Id.ToString(), node);
 
-                        if (MainDataContext.WorkWithDb)
+                        if (EconomyMainContext.WorkWithDb)
                         {
                             if (!dbservice.SaveNode(node))
                                 return "Cannot save Node to the db!";
@@ -95,20 +94,20 @@ namespace VEconomy
         }
 
 
-        public static async Task<string> SeNodeActivation(string nodeId, bool isActivated)
+        public override async Task<string> SeNodeActivation(string nodeId, bool isActivated)
         {
             IDbConnectorService dbservice = new DbConnectorService();
 
             try
             {
-                if (MainDataContext.Nodes.TryGetValue(nodeId, out var node))
+                if (EconomyMainContext.Nodes.TryGetValue(nodeId, out var node))
                 {
                     if (isActivated)
                         node.Activate();
                     else
                         node.DeActivate();
 
-                    if (MainDataContext.WorkWithDb)
+                    if (EconomyMainContext.WorkWithDb)
                     {
                         if (!dbservice.SaveNode(node))
                             return "Cannot save Node to the db!";
@@ -129,17 +128,17 @@ namespace VEconomy
             }
         }
 
-        public static async Task<string> SetNodeTrigger(string nodeId, NodeActionTriggerTypes type)
+        public override async Task<string> SetNodeTrigger(string nodeId, NodeActionTriggerTypes type)
         {
             IDbConnectorService dbservice = new DbConnectorService();
 
             try
             {
-                if (MainDataContext.Nodes.TryGetValue(nodeId, out var node))
+                if (EconomyMainContext.Nodes.TryGetValue(nodeId, out var node))
                 {
                     node.SetNodeTriggerType(type);
 
-                    if (MainDataContext.WorkWithDb)
+                    if (EconomyMainContext.WorkWithDb)
                     {
                         if (!dbservice.SaveNode(node))
                             return "Cannot save Node to the db!";
@@ -161,7 +160,7 @@ namespace VEconomy
         }
 
 
-        public static bool LoadNodesFromDb()
+        public override bool LoadNodesFromDb()
         {
             IDbConnectorService dbservice = new DbConnectorService();
 
@@ -172,11 +171,11 @@ namespace VEconomy
                 if (nodes != null)
                 {
                     //refresh main wallet dictionary
-                    MainDataContext.Nodes.Clear();
+                    EconomyMainContext.Nodes.Clear();
                     foreach (var n in nodes)
                     {
                         n.ActionRequest += Node_ActionRequest;
-                        MainDataContext.Nodes.TryAdd(n.Id.ToString(), n);
+                        EconomyMainContext.Nodes.TryAdd(n.Id.ToString(), n);
                     }
                 }
 
@@ -189,15 +188,15 @@ namespace VEconomy
             }
         }
 
-        public static async Task<string> TriggerNodesActions(NodeActionTriggerTypes type, NewTransactionDTO txdata, object payload)
+        public override async Task<string> TriggerNodesActions(NodeActionTriggerTypes type, NewTransactionDTO txdata, object payload)
         {
             var result = "ERROR";
-            if (MainDataContext.Accounts.TryGetValue(txdata.AccountAddress, out var account))
+            if (EconomyMainContext.Accounts.TryGetValue(txdata.AccountAddress, out var account))
             {
                 var pld = JsonConvert.SerializeObject(payload);
                 var acc = JsonConvert.SerializeObject(account);
 
-                foreach (var node in MainDataContext.Nodes)
+                foreach (var node in EconomyMainContext.Nodes)
                 {
                     if (node.Value.AccountId == account.Id)
                     {
@@ -209,7 +208,7 @@ namespace VEconomy
             return result;
         }
 
-        private static void Node_ActionRequest(object sender, NodeActionRequestArgs e)
+        private void Node_ActionRequest(object sender, NodeActionRequestArgs e)
         {
             var node = sender as INode;
 
@@ -218,10 +217,10 @@ namespace VEconomy
                 switch (e.Type)
                 {
                     case NodeActionRequestTypes.MQTTPublishNotRetain:
-                        MainDataContext.MQTTClient.PostObjectAsJSONString(e.Topic, e.Payload, false).GetAwaiter().GetResult();
+                        EconomyMainContext.MQTTClient.PostObjectAsJSONString(e.Topic, e.Payload, false).GetAwaiter().GetResult();
                         break;
                     case NodeActionRequestTypes.MQTTPublishRetain:
-                        MainDataContext.MQTTClient.PostObjectAsJSONString(e.Topic, e.Payload, true).GetAwaiter().GetResult();
+                        EconomyMainContext.MQTTClient.PostObjectAsJSONString(e.Topic, e.Payload, true).GetAwaiter().GetResult();
                         break;
                 }
             }
@@ -230,6 +229,5 @@ namespace VEconomy
                 log.Error($"Node {node.Id} Action Request Event Handler did not recveived Action Request Arguments!");
             }
         }
-
     }
 }

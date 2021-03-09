@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using VEconomy.Common;
+using VEDrivers.Common;
 
 namespace VEconomy
 {   
@@ -35,12 +36,12 @@ namespace VEconomy
             await Task.Delay(1);
             try
             {
-                MainDataContext.CommonBinanceSocketClient = new Binance.Net.BinanceSocketClient();
-                MainDataContext.ExchangeDataProvider = new VEDrivers.Economy.Exchanges.BinanceDataProvider(
-                    MainDataContext.CommonBinanceSocketClient, 
+                EconomyMainContext.CommonBinanceSocketClient = new Binance.Net.BinanceSocketClient();
+                EconomyMainContext.ExchangeDataProvider = new VEDrivers.Economy.Exchanges.BinanceDataProvider(
+                    EconomyMainContext.CommonBinanceSocketClient, 
                     "NEBLBTC", KlineInterval.OneMinute);
 
-                await MainDataContext.ExchangeDataProvider.Start();
+                await EconomyMainContext.ExchangeDataProvider.Start();
             }
             catch (Exception ex)
             {

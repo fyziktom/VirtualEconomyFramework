@@ -4,28 +4,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using VEDrivers.Common;
 using VEDrivers.Database;
-using VEDrivers.Economy.Wallets;
+using VEDrivers.Economy.Tokens;
 
-namespace VEconomy
+namespace VEDrivers.Economy.Wallets.Handlers
 {
-    public static class AccountHandler
+    public class BasicAccountHandler : CommonAccountHandler
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static async Task<string> UpdateAccount(string accountAddress, Guid walletId, AccountTypes type, string name, bool justInDb = true)
+        public override async Task<string> UpdateAccount(string accountAddress, Guid walletId, AccountTypes type, string name, bool justInDb = true)
         {
             IDbConnectorService dbservice = new DbConnectorService();
 
-            if (MainDataContext.Wallets.TryGetValue(walletId.ToString(), out var wallet))
+            if (EconomyMainContext.Wallets.TryGetValue(walletId.ToString(), out var wallet))
             {
                 if (wallet.Accounts.TryGetValue(accountAddress, out var accnt))
                 {
                     accnt.Name = name;
 
-                    if (MainDataContext.WorkWithDb)
+                    if (EconomyMainContext.WorkWithDb)
                     {
                         if (!dbservice.SaveAccount(accnt))
                             return "Cannot save account to the Db!";
@@ -39,7 +40,7 @@ namespace VEconomy
                     // cannot be the same account name in one wallet
                     if (wallet.Accounts.Values.FirstOrDefault(a => a.Name == name) == null)
                     {
-                        if (MainDataContext.QTRPCClient.IsConnected)
+                        if (EconomyMainContext.QTRPCClient.IsConnected)
                         {
                             // creating wallet in desktop QT Wallet
 
@@ -47,7 +48,7 @@ namespace VEconomy
 
                             if (!justInDb)
                             {
-                                var acc = await MainDataContext.QTRPCClient.RPCLocalCommandSplitedAsync("getnewaddress", new string[] { name });
+                                var acc = await EconomyMainContext.QTRPCClient.RPCLocalCommandSplitedAsync("getnewaddress", new string[] { name });
                                 accresp = JsonConvert.DeserializeObject<QTWalletResponseDto>(acc);
                             }
                             else
@@ -65,7 +66,7 @@ namespace VEconomy
 
                                 wallet.Accounts.TryAdd(account.Address, account);
 
-                                if (MainDataContext.WorkWithDb && account != null)
+                                if (EconomyMainContext.WorkWithDb && account != null)
                                 {
                                     if (!dbservice.SaveAccount(account))
                                         return "Cannot save new account to the Db!";
@@ -99,5 +100,50 @@ namespace VEconomy
                 return "Cannot create account - wallet not found";
             }
         }
+        public override IDictionary<string, IToken> FindTokenByMetadata(string account, string key, string value = "")
+        {
+            var result = new Dictionary<string, IToken>();
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(account, out var acc))
+                {
+                    foreach(var t in acc.Transactions)
+                    {
+                        var tx = t.Value;
+                        if(tx.VinTokens != null)
+                        {
+                            var found = false;
+
+                            foreach (var tok in tx.VinTokens)
+                            {
+                                if (tok.Metadata.TryGetValue(key, out var v))
+                                {
+                                    result.Add(t.Key, tok);
+                                    found = true;
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                foreach (var tok in tx.VoutTokens)
+                                {
+                                    if (tok.Metadata.TryGetValue(key, out var v))
+                                    {
+                                        result.Add(t.Key, tok);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                log.Error("Cannot find token by metadata", ex);
+            }
+
+            return result;
+        }
+        
     }
 }

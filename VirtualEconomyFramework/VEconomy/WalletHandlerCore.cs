@@ -34,24 +34,24 @@ namespace VEconomy
             this.settings = settings; //startup configuration in appsettings.json
             this.lifetime = lifetime;
 
-            MainDataContext.DbService = new DbConnectorService();
+            EconomyMainContext.DbService = new DbConnectorService();
 
-            MainDataContext.QTRPConfig = new QTRPCConfig();
-            settings.GetSection("QTRPC").Bind(MainDataContext.QTRPConfig);
-            MainDataContext.QTRPCClient = new QTWalletRPCClient(MainDataContext.QTRPConfig);
-            NeblioTransactionHelpers.qtRPCClient = new QTWalletRPCClient(MainDataContext.QTRPConfig);
+            EconomyMainContext.QTRPConfig = new QTRPCConfig();
+            settings.GetSection("QTRPC").Bind(EconomyMainContext.QTRPConfig);
+            EconomyMainContext.QTRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
+            NeblioTransactionHelpers.qtRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
 
-            MainDataContext.Wallets = new ConcurrentDictionary<string, IWallet>();
-            MainDataContext.Accounts = new ConcurrentDictionary<string, IAccount>();
-            MainDataContext.Nodes = new ConcurrentDictionary<string, INode>();
-            MainDataContext.Cryptocurrencies = new ConcurrentDictionary<string, ICryptocurrency>();
-            MainDataContext.Owners = new ConcurrentDictionary<string, IOwner>();
+            EconomyMainContext.Wallets = new ConcurrentDictionary<string, IWallet>();
+            EconomyMainContext.Accounts = new ConcurrentDictionary<string, IAccount>();
+            EconomyMainContext.Nodes = new ConcurrentDictionary<string, INode>();
+            EconomyMainContext.Cryptocurrencies = new ConcurrentDictionary<string, ICryptocurrency>();
+            EconomyMainContext.Owners = new ConcurrentDictionary<string, IOwner>();
 
             // fill default Cryptocurrency, Owner and Wallet
 
             try { 
                 var neblio = new NeblioCryptocurrency();
-                MainDataContext.Cryptocurrencies.TryAdd("Neblio", new NeblioCryptocurrency());
+                EconomyMainContext.Cryptocurrencies.TryAdd("Neblio", new NeblioCryptocurrency());
             }
             catch(Exception ex)
             {
@@ -59,18 +59,18 @@ namespace VEconomy
             }
 
             var owner = new Owner() { Id = Guid.NewGuid(), Name = "John", SurName = "Doe" };
-            MainDataContext.Owners.TryAdd("Default", owner);
+            EconomyMainContext.Owners.TryAdd("Default", owner);
 
             // load data from database
             DbEconomyContext.ConnectString = settings["ConnectionStrings:VEFrameworkDb"];  //we are not using DI for DbContext
             // load or create default wallet if db is not avaiable
-            if (!WalletHandler.LoadWalletsFromDb())
-                WalletHandler.UpdateWallet(Guid.NewGuid(), owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326);
+            if (!MainDataContext.WalletHandler.LoadWalletsFromDb())
+                MainDataContext.WalletHandler.UpdateWallet(Guid.NewGuid(), owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326);
 
-            if (!NodeHandler.LoadNodesFromDb())
+            if (!MainDataContext.NodeHandler.LoadNodesFromDb())
                 Console.WriteLine("No nodes in Db, continue with empty list of nodes");
 
-            if (!WalletHandler.ReloadAccounts())
+            if (!MainDataContext.WalletHandler.ReloadAccounts())
                 Console.WriteLine("Cannot reload accounts");
         }
 
@@ -78,7 +78,7 @@ namespace VEconomy
         {
             try
             {
-                MainDataContext.QTRPCClient.InitClients();
+                EconomyMainContext.QTRPCClient.InitClients();
                 NeblioTransactionHelpers.qtRPCClient.InitClients();
             }
             catch(Exception ex)
@@ -98,36 +98,36 @@ namespace VEconomy
                         try
                         {
                             // first wait until MQTT client exists and it is connected to the broker
-                            if (MainDataContext.MQTTClient != null)
+                            if (EconomyMainContext.MQTTClient != null)
                             {
-                                if (start && MainDataContext.MQTTClient.IsConnected)
+                                if (start && EconomyMainContext.MQTTClient.IsConnected)
                                 {
-                                    await MainDataContext.MQTTClient.PostObjectAsJSONString("VEF/Start", "Virtual Economy Framework started");
+                                    await EconomyMainContext.MQTTClient.PostObjectAsJSONString("VEF/Start", "Virtual Economy Framework started");
                                     start = false;
                                 }
-                                else if (!start && MainDataContext.MQTTClient.IsConnected)
+                                else if (!start && EconomyMainContext.MQTTClient.IsConnected)
                                 {
                                     // wait for specified time - time interval you can set i appsetting.json
-                                    await Task.Delay(MainDataContext.WalletRefreshInterval);
+                                    await Task.Delay(EconomyMainContext.WalletRefreshInterval);
 
                                     // this will refresh all wallets data without loading transaction details
-                                    await WalletHandler.RefreshWallets();
+                                    await MainDataContext.WalletHandler.RefreshWallets();
 
-                                    if (!WalletHandler.ReloadAccounts())
+                                    if (!MainDataContext.WalletHandler.ReloadAccounts())
                                         Console.WriteLine("Cannot reload accounts");
 
                                     //these commands publish main dictionaries to MQTT each interval
-                                    await MainDataContext.MQTTClient.PostObjectAsJSON<IDictionary<string, IWallet>>(
-                                                                        "VEF/Wallets", MainDataContext.Wallets);
+                                    await EconomyMainContext.MQTTClient.PostObjectAsJSON<IDictionary<string, IWallet>>(
+                                                                        "VEF/Wallets", EconomyMainContext.Wallets);
 
-                                    await MainDataContext.MQTTClient.PostObjectAsJSON<IDictionary<string, IAccount>>(
-                                                                        "VEF/Accounts", MainDataContext.Accounts);
+                                    await EconomyMainContext.MQTTClient.PostObjectAsJSON<IDictionary<string, IAccount>>(
+                                                                        "VEF/Accounts", EconomyMainContext.Accounts);
 
-                                    await MainDataContext.MQTTClient.PostObjectAsJSON<IDictionary<string, INode>>(
-                                                                       "VEF/Nodes", MainDataContext.Nodes);
+                                    await EconomyMainContext.MQTTClient.PostObjectAsJSON<IDictionary<string, INode>>(
+                                                                       "VEF/Nodes", EconomyMainContext.Nodes);
 
-                                    await MainDataContext.MQTTClient.PostObjectAsJSON<IDictionary<string, ICryptocurrency>>(
-                                                                        "VEF/Cryptocurrencies", MainDataContext.Cryptocurrencies);
+                                    await EconomyMainContext.MQTTClient.PostObjectAsJSON<IDictionary<string, ICryptocurrency>>(
+                                                                        "VEF/Cryptocurrencies", EconomyMainContext.Cryptocurrencies);
 
                                     //await MainDataContext.MQTTClient.PostObjectAsJSON<IDictionary<string, IOwner>>(
                                     //                                    "VEF/Owners", MainDataContext.Owners);

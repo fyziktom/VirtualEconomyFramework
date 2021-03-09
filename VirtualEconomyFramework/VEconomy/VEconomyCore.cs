@@ -29,10 +29,10 @@ namespace VEconomy
             this.settings = settings; //startup configuration in appsettings.json
             this.lifetime = lifetime;
 
-            MainDataContext.CommonConfig = settings;
+            EconomyMainContext.CommonConfig = settings;
 
-            MainDataContext.MQTT = new MQTTConfig();
-            settings.GetSection("MQTT").Bind(MainDataContext.MQTT);
+            EconomyMainContext.MQTT = new MQTTConfig();
+            settings.GetSection("MQTT").Bind(EconomyMainContext.MQTT);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stopToken)
@@ -42,7 +42,7 @@ namespace VEconomy
 
             try
             {
-                MainDataContext.MQTTClient = new MQTTClient("VEconomy");
+                EconomyMainContext.MQTTClient = new MQTTClient("VEconomy");
                 
                 _ = Task.Run(async () =>
                 {
@@ -53,9 +53,9 @@ namespace VEconomy
                             try
                             {
                                 // first wait until MQTT client exists and it is connected to the broker
-                                if (MainDataContext.MQTTClient != null && !MainDataContext.MQTTClient.IsConnected)
+                                if (EconomyMainContext.MQTTClient != null && !EconomyMainContext.MQTTClient.IsConnected)
                                 {
-                                    await MainDataContext.MQTTClient.RunClient(stopToken, settings, new string[] { });
+                                    await EconomyMainContext.MQTTClient.RunClient(stopToken, settings, new string[] { });
                                 }
                             }
                             catch (Exception ex)
@@ -67,7 +67,7 @@ namespace VEconomy
                         }
 
                         await Task.Delay(5000); // wait before checking connection
-                        if (!MainDataContext.MQTTClient.IsConnected)
+                        if (!EconomyMainContext.MQTTClient.IsConnected)
                             reconnect = true;
                     }
 

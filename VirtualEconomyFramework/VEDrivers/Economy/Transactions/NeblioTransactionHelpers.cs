@@ -35,57 +35,61 @@ namespace VEDrivers.Economy.Transactions
 
             transaction.From.Add(info.Vin.First().PreviousOutput.Addresses.FirstOrDefault());
             var tokenin = info.Vin?.First().Tokens?.ToList()?.FirstOrDefault();
-
-            var tokeninfo = await TokenMetadataAsync(client, TokenTypes.NTP1, tokenin.TokenId);
-
             transaction.Confirmations = Convert.ToInt32((double)info.Confirmations);
 
             if (tokenin != null)
             {
-                transaction.VinTokens.Add(new NeblioNTP1Token()
-                {
-                    ActualBalance = tokenin.Amount,
-                    Id = tokenin.TokenId,
-                    MaxSupply = tokeninfo.MaxSupply,
-                    Symbol = tokeninfo.Symbol,
-                    Name = tokeninfo.Name,
-                    IssuerName = tokeninfo.IssuerName
-                });
-            }
+                var tokeninfo = await TokenMetadataAsync(client, TokenTypes.NTP1, tokenin.TokenId, txid);
 
-            var addr = "";
-            var tokenout = info.Vout?.ToList()[0]?.Tokens?.ToList()?.FirstOrDefault();
-            if (tokenout == null)
-            {
-                tokenout = info.Vout?.ToList()[1]?.Tokens?.ToList()?.FirstOrDefault();
-                if (tokenout != null)
-                    addr = info.Vout?.ToList()[1]?.ScriptPubKey?.Addresses?.ToList().FirstOrDefault();
+                if (tokenin != null)
+                {
+                    transaction.VinTokens.Add(new NeblioNTP1Token()
+                    {
+                        ActualBalance = tokenin.Amount,
+                        Id = tokenin.TokenId,
+                        MaxSupply = tokeninfo.MaxSupply,
+                        Symbol = tokeninfo.Symbol,
+                        Name = tokeninfo.Name,
+                        IssuerName = tokeninfo.IssuerName,
+                        Metadata = tokeninfo.Metadata
+                    });
+                }
+
+                var addr = "";
+                var tokenout = info.Vout?.ToList()[0]?.Tokens?.ToList()?.FirstOrDefault();
+                if (tokenout == null)
+                {
+                    tokenout = info.Vout?.ToList()[1]?.Tokens?.ToList()?.FirstOrDefault();
+                    if (tokenout != null)
+                        addr = info.Vout?.ToList()[1]?.ScriptPubKey?.Addresses?.ToList().FirstOrDefault();
+                    else
+                        return null;
+
+                    transaction.Direction = TransactionDirection.Outcoming;
+                }
                 else
+                {
+                    transaction.Direction = TransactionDirection.Incoming;
+                    addr = info.Vout?.ToList()[0]?.ScriptPubKey?.Addresses?.ToList().FirstOrDefault();
+                }
+
+                if (string.IsNullOrEmpty(addr))
                     return null;
 
-                transaction.Direction = TransactionDirection.Outcoming;
-            }
-            else
-            {
-                transaction.Direction = TransactionDirection.Incoming;
-                addr = info.Vout?.ToList()[0]?.ScriptPubKey?.Addresses?.ToList().FirstOrDefault();
-            }
-
-            if (string.IsNullOrEmpty(addr))
-                return null;
-
-            transaction.To.Add(addr);
-            if (tokenout != null)
-            {
-                transaction.VoutTokens.Add(new NeblioNTP1Token()
+                transaction.To.Add(addr);
+                if (tokenout != null)
                 {
-                    ActualBalance = tokenout.Amount,
-                    Id = tokenout.TokenId,
-                    MaxSupply = tokeninfo.MaxSupply,
-                    Symbol = tokeninfo.Symbol,
-                    Name = tokeninfo.Name,
-                    IssuerName = tokeninfo.IssuerName
-                });
+                    transaction.VoutTokens.Add(new NeblioNTP1Token()
+                    {
+                        ActualBalance = tokenout.Amount,
+                        Id = tokenout.TokenId,
+                        MaxSupply = tokeninfo.MaxSupply,
+                        Symbol = tokeninfo.Symbol,
+                        Name = tokeninfo.Name,
+                        IssuerName = tokeninfo.IssuerName,
+                        Metadata = tokeninfo.Metadata
+                    });
+                }
             }
             /*
             Console.WriteLine($"Hex                         = {info.Hex                  }   ");
@@ -168,10 +172,10 @@ namespace VEDrivers.Economy.Transactions
             return transaction;
         }
 
-        public static IToken TokenMetadata(TokenTypes type, string tokenid, object obj)
+        public static IToken TokenMetadata(TokenTypes type, string tokenid, string txid, object obj)
         {
             client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
-            var transaction = TokenMetadataAsync(client, type, tokenid);
+            var transaction = TokenMetadataAsync(client, type, tokenid, txid);
             return transaction.GetAwaiter().GetResult();
         }
 
@@ -182,17 +186,48 @@ namespace VEDrivers.Economy.Transactions
             public string mimeType { get; set; } = string.Empty;
         }
 
-        public static async Task<IToken> TokenMetadataAsync(IClient client, TokenTypes type, string tokenid)
+        public static async Task<IToken> TokenMetadataAsync(IClient client, TokenTypes type, string tokenid, string txid)
         {
             IToken token = new NeblioNTP1Token();
 
-            var info = await client.GetTokenMetadataAsync(tokenid, 0);
+            GetTokenMetadataResponse info = new GetTokenMetadataResponse();
+            if (string.IsNullOrEmpty(txid))
+            {
+                info = await client.GetTokenMetadataAsync(tokenid, 0);
+            }
+            else
+            {
+                info = await client.GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
+            }
+
             token.MaxSupply = info.InitialIssuanceAmount;
             token.Symbol = info.MetadataOfIssuance.Data.TokenName;
             token.Name = info.MetadataOfIssuance.Data.Description;
             token.IssuerName = info.MetadataOfIssuance.Data.Issuer;
             token.Id = tokenid;
             var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance.Data.Urls));
+
+            if (info.MetadataOfUtxo != null)
+            {
+                if (info.MetadataOfUtxo.UserData.Meta.Count > 0)
+                {
+                    foreach (var o in info.MetadataOfUtxo.UserData.Meta)
+                    {
+                        var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
+                       
+                        if (od != null)
+                        {
+                            if (od.Count > 0)
+                            {
+                                var of = od.First();
+                                token.Metadata.Add(of.Key, of.Value);
+                                //Console.WriteLine("metadataName: " + of.Key.ToString());
+                                //Console.WriteLine("metadataContent: " + of.Value.ToString());
+                            }
+                        }
+                    }
+                }
+            }
 
             var tu = tus.FirstOrDefault();
             if (tu != null)

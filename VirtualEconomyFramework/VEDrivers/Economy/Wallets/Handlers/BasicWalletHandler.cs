@@ -1,35 +1,36 @@
 ﻿using log4net;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
+using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.DTO;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
-using VEDrivers.Economy.Wallets;
 using VEDrivers.Nodes.Dto;
+using VEDrivers.Nodes.Handlers;
 
-namespace VEconomy
+namespace VEDrivers.Economy.Wallets.Handlers
 {
-    public static class WalletHandler
+    public class BasicWalletHandler : CommonWalletHandler
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private static BasicNodeHandler NodeHandler = new BasicNodeHandler();
         /// <summary>
         /// After start all tx are new in accounts. Thats why it is ignored after start until first load of accounts of all wallets is done
         /// TODO: not good, need to be changed because of Tx which came during the system down, etc.
         /// </summary>
-        private static bool firstLoadAfterStart = true;
+        private bool firstLoadAfterStart = true;
 
-        public static async Task<string> UpdateWallet(Guid id, Guid ownerid, string walletName, WalletTypes type, string urlBase, int port)
+        public override async Task<string> UpdateWallet(Guid id, Guid ownerid, string walletName, WalletTypes type, string urlBase, int port)
         {
             IDbConnectorService dbservice = new DbConnectorService();
 
-            if (MainDataContext.Wallets.TryGetValue(id.ToString(), out var wallet))
+            if (EconomyMainContext.Wallets.TryGetValue(id.ToString(), out var wallet))
             {
                 wallet.Name = walletName;
                 if (ownerid != Guid.Empty)
@@ -39,7 +40,7 @@ namespace VEconomy
                 wallet.ConnectionPort = port;
                 Console.WriteLine($"New wallet connection address: {wallet.ConnectionAddress}");
 
-                if (MainDataContext.WorkWithDb)
+                if (EconomyMainContext.WorkWithDb)
                 {
                     if (!dbservice.SaveWallet(wallet))
                     {
@@ -69,9 +70,9 @@ namespace VEconomy
                     wall.NewTransaction += Wall_NewTransaction;
                     wall.NewTransactionDetailsReceived += WalletHandler_NewTransactionDetailsReceived;
 
-                    MainDataContext.Wallets.Add(wall.Id.ToString(), wall);
+                    EconomyMainContext.Wallets.Add(wall.Id.ToString(), wall);
 
-                    if (MainDataContext.WorkWithDb)
+                    if (EconomyMainContext.WorkWithDb)
                     {
                         if (!dbservice.SaveWallet(wall))
                         {
@@ -85,7 +86,7 @@ namespace VEconomy
             }
         }
 
-        private static void WalletHandler_NewTransactionDetailsReceived(object sender, NewTransactionDTO data)
+        private void WalletHandler_NewTransactionDetailsReceived(object sender, NewTransactionDTO data)
         {
             if (firstLoadAfterStart)
                 return;
@@ -104,9 +105,9 @@ namespace VEconomy
 
                 try
                 {
-                    if (MainDataContext.MQTTClient.IsConnected)
+                    if (EconomyMainContext.MQTTClient.IsConnected)
                     {
-                        MainDataContext.MQTTClient.PostObjectAsJSON<NewTransactionDTO>(
+                        EconomyMainContext.MQTTClient.PostObjectAsJSON<NewTransactionDTO>(
                             $"VEF/NewTransactionWithDetails",
                             data, false).GetAwaiter().GetResult();
 
@@ -123,7 +124,7 @@ namespace VEconomy
                                 data
                             };
 
-                            MainDataContext.MQTTClient.PostObjectAsJSON<object>(
+                            EconomyMainContext.MQTTClient.PostObjectAsJSON<object>(
                                 $"VEF/TokensReceived",
                                 o, false).GetAwaiter().GetResult();
 
@@ -162,7 +163,7 @@ namespace VEconomy
             }
         }
 
-        public static bool LoadWalletsFromDb()
+        public override bool LoadWalletsFromDb()
         {
             IDbConnectorService dbservice = new DbConnectorService();
 
@@ -192,23 +193,23 @@ namespace VEconomy
                 if (wallets != null)
                 {
                     //refresh main wallet dictionary
-                    MainDataContext.Wallets.Clear();
+                    EconomyMainContext.Wallets.Clear();
                     foreach (var w in wallets)
                     {
-                        MainDataContext.Wallets.TryAdd(w.Id.ToString(), w);
+                        EconomyMainContext.Wallets.TryAdd(w.Id.ToString(), w);
                     }
                 }
 
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error("Cannot Load and pair wallets and accounts.", ex);
                 return false;
             }
         }
 
-        private static void Wall_NewTransaction(object sender, NewTransactionDTO data)
+        private void Wall_NewTransaction(object sender, NewTransactionDTO data)
         {
             if (firstLoadAfterStart)
                 return;
@@ -220,9 +221,9 @@ namespace VEconomy
             {
                 if (data.TransactionDetails != null)
                 {
-                    if (MainDataContext.MQTTClient.IsConnected)
+                    if (EconomyMainContext.MQTTClient.IsConnected)
                     {
-                        MainDataContext.MQTTClient.PostObjectAsJSON<NewTransactionDTO>(
+                        EconomyMainContext.MQTTClient.PostObjectAsJSON<NewTransactionDTO>(
                             $"VEF/NewTransaction",
                             data, false).GetAwaiter().GetResult();
                     }
@@ -233,7 +234,7 @@ namespace VEconomy
                         if (token != null)
                             tokenReceived = true;
                     }
-                
+
                     if (tokenReceived && token != null)
                     {
                         var o = new
@@ -279,26 +280,26 @@ namespace VEconomy
             }
         }
 
-        public static async Task RefreshWallets()
+        public override async Task RefreshWallets()
         {
-            foreach(var w in MainDataContext.Wallets)
+            foreach (var w in EconomyMainContext.Wallets)
             {
                 await w.Value.ListAccounts();
             }
 
-            if (MainDataContext.Wallets.Count > 0 && firstLoadAfterStart)
+            if (EconomyMainContext.Wallets.Count > 0 && firstLoadAfterStart)
                 firstLoadAfterStart = false;
         }
 
-        public static bool ReloadAccounts()
+        public override bool ReloadAccounts()
         {
-            MainDataContext.Accounts.Clear();
+            EconomyMainContext.Accounts.Clear();
 
-            foreach (var w in MainDataContext.Wallets)
+            foreach (var w in EconomyMainContext.Wallets)
             {
-                foreach(var a in w.Value.Accounts)
+                foreach (var a in w.Value.Accounts)
                 {
-                    MainDataContext.Accounts.TryAdd(a.Value.Address, a.Value);
+                    EconomyMainContext.Accounts.TryAdd(a.Value.Address, a.Value);
                 }
             }
 

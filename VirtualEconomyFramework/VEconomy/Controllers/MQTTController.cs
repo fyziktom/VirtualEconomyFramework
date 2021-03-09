@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VEDrivers.Common;
 
 namespace VEconomy.Controllers
 {
@@ -9,7 +10,7 @@ namespace VEconomy.Controllers
     {
         public static void RegisterTopics()
         {
-            MainDataContext.MQTTTopics.Add("+/Started");
+            EconomyMainContext.MQTTTopics.Add("+/Started");
         }
 
         //Main mapping for API commands - MQTT Topics and functions

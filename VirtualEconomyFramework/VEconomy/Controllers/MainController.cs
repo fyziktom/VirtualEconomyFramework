@@ -13,8 +13,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Newtonsoft.Json;
 using VEconomy.Common;
+using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.DTO;
+using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Economy.Wallets;
 using VEDrivers.Nodes;
@@ -41,7 +43,7 @@ namespace VEconomy.Controllers
         {
             return new
             {
-                MainDataContext.MQTT
+                EconomyMainContext.MQTT
             };
         }
 
@@ -101,7 +103,7 @@ namespace VEconomy.Controllers
                     }
                 }
 
-                return await WalletHandler.UpdateWallet(id, ownid, wallData.walletName, wallData.walletType, wallData.walletBaseHost, wallData.walletPort);
+                return await MainDataContext.WalletHandler.UpdateWallet(id, ownid, wallData.walletName, wallData.walletType, wallData.walletBaseHost, wallData.walletPort);
             }
             catch (Exception ex)
             {
@@ -132,7 +134,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                if (!MainDataContext.Wallets.TryGetValue(walletName, out var wallet))
+                if (!EconomyMainContext.Wallets.TryGetValue(walletName, out var wallet))
                 {
                     return new { info = null as string, ReadingError = "READER_NOT_FOUND" };
                 }
@@ -182,7 +184,7 @@ namespace VEconomy.Controllers
             try
             {
                 // todo - remove all address from real QT wallet
-                if (MainDataContext.Wallets.Remove(walletData.walletId, out var wallet))
+                if (EconomyMainContext.Wallets.Remove(walletData.walletId, out var wallet))
                 {
                     if (dbService.DeleteWallet(walletData.walletId, walletData.withAccounts))
                     {
@@ -213,7 +215,7 @@ namespace VEconomy.Controllers
             try
             {
                 // todo - remove all address from real QT wallet
-                if (MainDataContext.Wallets.Remove(walletData.walletId, out var wallet))
+                if (EconomyMainContext.Wallets.Remove(walletData.walletId, out var wallet))
                 {
                     if (dbService.RemoveWallet(walletData.walletId, walletData.withAccounts))
                     {
@@ -291,7 +293,7 @@ namespace VEconomy.Controllers
                 if (string.IsNullOrEmpty(accountData.accountAddress))
                     accountData.accountAddress = "";
 
-                return await AccountHandler.UpdateAccount(accountData.accountAddress, walletId, accountData.accountType, accountData.accountName, accountData.saveJustToDb);
+                return await MainDataContext.AccountHandler.UpdateAccount(accountData.accountAddress, walletId, accountData.accountType, accountData.accountName, accountData.saveJustToDb);
             }
             catch (Exception ex)
             {
@@ -332,7 +334,7 @@ namespace VEconomy.Controllers
 
             try
             {
-                if (MainDataContext.Wallets.TryGetValue(accountData.walletId, out var wallet))
+                if (EconomyMainContext.Wallets.TryGetValue(accountData.walletId, out var wallet))
                 {
                     // todo - remove address from real QT wallet
                     if (wallet.Accounts.Remove(accountData.accountAddress, out var account))
@@ -371,7 +373,7 @@ namespace VEconomy.Controllers
 
             try
             {
-                if (MainDataContext.Wallets.TryGetValue(accountData.walletId, out var wallet))
+                if (EconomyMainContext.Wallets.TryGetValue(accountData.walletId, out var wallet))
                 {
                     // todo - remove address from real QT wallet
                     if (wallet.Accounts.Remove(accountData.accountAddress, out var account))
@@ -407,7 +409,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                if (!MainDataContext.Wallets.TryGetValue(walletName, out var wallet))
+                if (!EconomyMainContext.Wallets.TryGetValue(walletName, out var wallet))
                 {
                     return new { info = null as string, ReadingError = "READER_NOT_FOUND" };
                 }
@@ -431,7 +433,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                if (!MainDataContext.Wallets.TryGetValue(walletName, out var wallet))
+                if (!EconomyMainContext.Wallets.TryGetValue(walletName, out var wallet))
                 {
                     return new { info = null as string, ReadingError = "READER_NOT_FOUND" };
                 }
@@ -445,6 +447,48 @@ namespace VEconomy.Controllers
             {
                 log.Error("Cannot get Neblio Bitcoin price", ex);
                 throw new HttpResponseException((HttpStatusCode)501, "Cannot get wallet info!");
+            }
+        }
+
+        public class GetTokenByMetadataData
+        {
+            public string walletId { get; set; }
+            public string accountAddress { get; set; }
+            public string metadataName { get; set; }
+            public string metadataValue { get; set; }
+        }
+        [HttpPut]
+        [Route("GetTokenByMetadata")]
+        //[Authorize(Rights.Administration)]
+        public async Task<IDictionary<string, IToken>> GetTokenByMetadata([FromBody] GetTokenByMetadataData metadataData)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(metadataData.walletId, out var wallet))
+                {
+                    if (string.IsNullOrEmpty(metadataData.accountAddress))
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot find metadata of token, account address cannot be empty!");
+
+                    // todo - remove address from real QT wallet
+                    if (!string.IsNullOrEmpty(metadataData.metadataName))
+                    {
+                        var resp = MainDataContext.AccountHandler.FindTokenByMetadata(metadataData.accountAddress, metadataData.metadataName, metadataData.metadataValue);
+                        return resp;
+                    }
+                    else
+                    {
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot find metadata of token, you must fill Name of metadata and optional is Value!");
+                    }
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot find metadata of token, Wallet Not Found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot find metadata of token!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot find metadata of token!");
             }
         }
 
@@ -499,7 +543,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                return NodeHandler.UpdateNode(nodeData.accountAddress, 
+                return MainDataContext.NodeHandler.UpdateNode(nodeData.accountAddress, 
                                 nodeData.nodeId, Guid.Empty, 
                                 nodeData.nodeName, 
                                 nodeData.nodeType,
@@ -543,7 +587,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                return await NodeHandler.SeNodeActivation(nodeData.nodeId, nodeData.isActivated);
+                return await MainDataContext.NodeHandler.SeNodeActivation(nodeData.nodeId, nodeData.isActivated);
             }
             catch (Exception ex)
             {
@@ -565,7 +609,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                return await NodeHandler.SetNodeTrigger(nodeData.nodeId, nodeData.type);
+                return await MainDataContext.NodeHandler.SetNodeTrigger(nodeData.nodeId, nodeData.type);
             }
             catch (Exception ex)
             {
@@ -588,7 +632,7 @@ namespace VEconomy.Controllers
             try
             {
 
-                if (MainDataContext.Nodes.Remove(nodeData.nodeId, out var node))
+                if (EconomyMainContext.Nodes.Remove(nodeData.nodeId, out var node))
                 {
                     if (dbService.DeleteNode(nodeData.nodeId))
                     {
@@ -619,7 +663,7 @@ namespace VEconomy.Controllers
 
             try
             {
-                if (MainDataContext.Nodes.Remove(nodeData.nodeId, out var node))
+                if (EconomyMainContext.Nodes.Remove(nodeData.nodeId, out var node))
                 {
                     if (dbService.RemoveNode(nodeData.nodeId))
                     {
@@ -700,7 +744,7 @@ namespace VEconomy.Controllers
             var res = new List<NodeActionFinishedArgs>();
             try
             {
-                if (MainDataContext.Nodes.TryGetValue(nodeData.nodeId, out var node))
+                if (EconomyMainContext.Nodes.TryGetValue(nodeData.nodeId, out var node))
                 {
                     if (nodeData.UseLastTokenTxData)
                     {
@@ -792,7 +836,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                var price = MainDataContext.ExchangeDataProvider.LastKline;
+                var price = EconomyMainContext.ExchangeDataProvider.LastKline;
 
                 if (price == null)
                 {
