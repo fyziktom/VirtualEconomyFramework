@@ -103,6 +103,14 @@ This application needs few steps of installation to run with all features:
 -	Move “neblio-qt.exe” to some folder and set the path in “appsettings.json” of “VEQTWalletExecutor.exe”
 -	If you do not want to use VEQTWalletExecutor you do not need to setup this.
 -	Run QT Wallet and lets it synchronize with the network.
+-	In QT Wallet click to "Help" -> "Debug Window" -> "Show Data Directory". In the data directory folder create new file "neblio.conf" with this content (username and pass you can change, but remeber to change it in appsetting.json of the apps):
+
+```
+server=1
+rpcuser=user
+rpcpassword=password
+rpcport=6326
+```
 
 5.	Install MQTT Broker – recommended now Node.js and Node-RED with Aedes MQTT Broker
 -	If you want to use another MQTT Broker it is no problem, just VEconomy needs WS sockets too!
