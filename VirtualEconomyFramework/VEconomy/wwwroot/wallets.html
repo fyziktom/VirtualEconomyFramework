@@ -270,6 +270,7 @@
                                             <div class="row" style="margin-top: 20px;">
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Number of Transactions</span></div>
                                                 <div class="col"><span id="accountDetailsNumOfTx" style="margin-left: 5px;font-size: 24px;font-weight: bold;">0</span></div>
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnAccountTransactionsDetails" type="button">Details</button></div>
                                             </div>
                                             <div class="row" style="margin-top: 20px;">
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Tokens</span></div>
@@ -595,6 +596,103 @@
                     </div>
                 </div>
                 <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="accountTransactionsListModal">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Account Transactions</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="table-responsive">
+                                <table class="table" id="accountTransactionsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>TxId</th>
+                                            <th>Direction</th>
+                                            <th>Amount</th>
+                                            <th>With Tokens</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Not Loaded</td>
+                                            <td>Not Loaded</td>
+                                            <td>Not Loaded</td>
+                                            <td class="d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" type="button">Details</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="transactionDetailsModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Transaction Details</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 700px;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 700px;">
+                                <div class="card-body" style="min-width: 800px;max-width: 800px;">
+                                    <div class="row" style="margin-top: 20px;">
+                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Wallet Name</span></div>
+                                    </div>
+                                    <div class="row" style="margin-top: 20px;">
+                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="txDetailsWalletName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="txDetailsAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Recipient Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="txDetailsRecipientAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Amount</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="txDetailsAmount" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Transactions Id</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="txDetailsTxId" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><a id="txDetailsLinkToExplorer" href="#" target="_blank">Show in explorer</a></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnDownloadTxDetails" type="button">Download Receipt</button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
             </div>
         </div>
     </div>

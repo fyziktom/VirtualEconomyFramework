@@ -138,7 +138,7 @@ function WalletsRefresh(wallets){
         w['Name'] + ', ' +
         GetWalletType(w['Type']) + ', ' +
         w['ConnectionUrlBaseAddress'] + '&nbsp;</td><td>' +
-        '<button class="btn btn-success rights-admin" onclick=\'showWalletDetails(\"' + w['Id'] + '\")\'>Load Details</button>' +
+        '<button class="btn btn-success" onclick=\'showWalletDetails(\"' + w['Id'] + '\")\'>Load Details</button>' +
         '</td></tr>';
     }
 

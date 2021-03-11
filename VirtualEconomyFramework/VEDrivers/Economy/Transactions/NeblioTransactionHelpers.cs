@@ -29,14 +29,19 @@ namespace VEDrivers.Economy.Transactions
 
         public static async Task<ITransaction> TransactionInfoAsync(IClient client, TransactionTypes type, string txid)
         {
+            if (client == null)
+            {
+                client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            }
+
             var info = await client.GetTransactionInfoAsync(txid);
             
             ITransaction transaction = TransactionFactory.GetTranaction(type, txid);
 
-            transaction.From.Add(info.Vin.First().PreviousOutput.Addresses.FirstOrDefault());
-            var tokenin = info.Vin?.First().Tokens?.ToList()?.FirstOrDefault();
+            transaction.From.Add(info.Vin?.FirstOrDefault().PreviousOutput.Addresses.FirstOrDefault());
+            var tokenin = info.Vin?.FirstOrDefault().Tokens?.ToList()?.FirstOrDefault();
             transaction.Confirmations = Convert.ToInt32((double)info.Confirmations);
-
+            
             if (tokenin != null)
             {
                 var tokeninfo = await TokenMetadataAsync(client, TokenTypes.NTP1, tokenin.TokenId, txid);
@@ -56,6 +61,10 @@ namespace VEDrivers.Economy.Transactions
                 }
 
                 var addr = "";
+                var txinfodetails = info.Vout?.FirstOrDefault();
+                if (txinfodetails != null)
+                    transaction.Amount = (double)txinfodetails.Value / NeblioCrypto.FromSatToMainRatio;
+
                 var tokenout = info.Vout?.ToList()[0]?.Tokens?.ToList()?.FirstOrDefault();
                 if (tokenout == null)
                 {
@@ -65,7 +74,7 @@ namespace VEDrivers.Economy.Transactions
                     else
                         return null;
 
-                    transaction.Direction = TransactionDirection.Outcoming;
+                    transaction.Direction = TransactionDirection.Outgoing;
                 }
                 else
                 {

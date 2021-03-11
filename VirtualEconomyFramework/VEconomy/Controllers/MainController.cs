@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Binance.Net.Interfaces;
 using log4net;
@@ -16,6 +17,7 @@ using VEconomy.Common;
 using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.DTO;
+using VEDrivers.Economy.Receipt;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Economy.Wallets;
@@ -794,15 +796,15 @@ namespace VEconomy.Controllers
         {
             try
             {
-                var res = NeblioTransactionHelpers.TransactionInfo(TransactionTypes.Neblio, txid, null);
+                var res = await NeblioTransactionHelpers.TransactionInfoAsync(null, TransactionTypes.Neblio, txid);
 
                 return new { info = res, ReadingError = "OK" }; ;
 
             }
             catch (Exception ex)
             {
-                log.Error("Cannot get Neblio Bitcoin price", ex);
-                throw new HttpResponseException((HttpStatusCode)501, "Cannot get wallet info!");
+                log.Error("Cannot get tx info", ex);
+                throw new HttpResponseException((HttpStatusCode)501, "Cannot get tx info!");
             }
         }
 
@@ -822,6 +824,50 @@ namespace VEconomy.Controllers
             {
                 log.Error("Cannot get Neblio Bitcoin price", ex);
                 throw new HttpResponseException((HttpStatusCode)501, "Cannot get wallet info!");
+            }
+        }
+
+        public class TxReceiptData
+        {
+            public string walletId { get; set; }
+            public string accountAddress { get; set; }
+            public string txId { get; set; }
+        }
+        public class TxReceiptResponse
+        {
+            public IReceipt receipt { get; set; }
+            public string htmlReceipt { get; set; }
+        }
+        [HttpPut]
+        [Route("GetTxReceipt")]
+        //[Authorize(Rights.Administration)]
+        public async Task<TxReceiptResponse> GetNeblioTxReceipt([FromBody] TxReceiptData data)
+        {
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(data.accountAddress, out var account))
+                {
+                    var receipt = ReceiptFactory.GetReceipt(ReceiptTypes.Neblio, account.WalletId, account.Id, data.accountAddress, data.txId, true, true);
+                    var str = await receipt.GetReceiptOutput();
+
+                    var response = new TxReceiptResponse()
+                    {
+                        receipt = receipt,
+                        htmlReceipt = str
+                    };
+
+                    return response;
+                }
+                else
+                {
+                    log.Error("Cannot get receipt, cannot find account!");
+                    throw new HttpResponseException((HttpStatusCode)501, "Cannot get receipt, cannot find account!!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get receiopt", ex);
+                throw new HttpResponseException((HttpStatusCode)501, "Cannot get receipt!");
             }
         }
 

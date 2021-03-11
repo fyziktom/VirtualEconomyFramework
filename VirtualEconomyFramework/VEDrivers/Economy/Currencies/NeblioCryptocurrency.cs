@@ -20,7 +20,7 @@ namespace VEDrivers.Economy
             ProjectWebsite = "https://nebl.io/";
             TokensAvailable = true;
             OpenAPIAddress = "https://raw.githubusercontent.com/NeblioTeam/neblio-api-swagger-docs/master/swagger.json";
-
+            FromSatToMainRatio = 100000000;
             Tokens = new List<NeblioNTP1Token>();
             KlineDataHistory = new List<IBinanceStreamKlineData>();
 

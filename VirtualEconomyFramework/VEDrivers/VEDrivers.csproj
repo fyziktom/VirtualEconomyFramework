@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Binance.Net" Version="6.9.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.31" />
     <PackageReference Include="Jint" Version="2.11.58" />
     <PackageReference Include="log4net" Version="2.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
@@ -23,6 +24,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NeblioRestApi\NeblioRestApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Economy\Receipt\ReceiptTemplate\NeblioReceipt.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

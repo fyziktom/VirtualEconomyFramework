@@ -16,7 +16,12 @@ $(document).ready(function () {
     $("#btnDeleteAccount").click(function() {
         deleteAccount();
     });
-    
+
+    $("#btnAccountTransactionsDetails").off();
+    $("#btnAccountTransactionsDetails").click(function() {
+        showAccountTransactions();
+    });
+
     try {
         getAccountTypes();
     }
@@ -166,7 +171,7 @@ function loadAccounts(wallet){
                 '<td>' +
                     '<div class="row">' + 
                         '<div class="col">' + 
-                            '<button class="btn btn-primary rights-admin" style="margin: 2px; width: 80px;" onclick=\'showAccountDetails("' + acc.Address + '")\'>Details</button>' +
+                            '<button class="btn btn-primary" style="margin: 2px; width: 80px;" onclick=\'showAccountDetails("' + acc.Address + '")\'>Details</button>' +
                         '</div>' +
                     '</div>' +
                 '</td>' +
@@ -219,7 +224,7 @@ function loadTokens(account){
                 '<td>' +
                     '<div class="row">' + 
                         '<div class="col">' + 
-                            '<button class="btn btn-primary rights-admin" style="margin: 2px; width: 80px;" onclick=\'showTokenDetails("' + tok.Id + '")\'>Details</button>' +
+                            '<button class="btn btn-primary" style="margin: 2px; width: 80px;" onclick=\'showTokenDetails("' + tok.Id + '")\'>Details</button>' +
                         '</div>' +
                     '</div>' +
                 '</td>' +
@@ -291,4 +296,115 @@ function reloaNewAccountTypesDropDown() {
             document.getElementById('newAccountTypesDropDown').innerHTML += '<button style=\"width: 400px;font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setNewAccountType(\'' + act + '\')\">' + a + '</button>';
         }
     }
+}
+
+///////////////////////////////////////////////////////////
+// account transactions
+
+function loadAccountTransactions(account) {
+
+    var list = $('#accountTransactionsTable tbody');
+    list.children().remove();
+   
+    if (account != null) {
+        for (var tr in account.Transactions) {
+            var trx = account.Transactions[tr];
+
+            var withTokens = "No";
+            if (trx.VinTokens != null && trx.VoutTokens != null) {
+                withTokens = "Yes";
+            }
+
+            var direction = "In";
+            if (trx.Direction == 1) {
+                direction = "Out";
+            }
+
+            list.append(
+                '<tr>' +
+                '<td>' + trx.TxId + '</td>' +
+                '<td>' + direction + '</td>' +
+                '<td>' + trx.Amount.toString() + '</td>' +
+                '<td>' + withTokens + '</td>' +
+                '<td>' +
+                    '<div class="row">' + 
+                        '<div class="col">' + 
+                            '<button class="btn btn-primary" style="margin: 2px; width: 80px;" onclick=\'showTxDetails("' + trx.TxId + '")\'>Details</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</td>' +
+                '</tr>');
+        }
+    }
+}
+
+function showAccountTransactions() {
+    loadAccountTransactions(ActualAccount);
+    $('#accountTransactionsListModal').modal('show');
+}
+
+function showTxDetails(txId) {
+    for (var tr in ActualAccount.Transactions) {
+        var trx = ActualAccount.Transactions[tr];
+        if (trx.TxId == txId) {
+            $('#txDetailsWalletName').text(ActualWallet.Name);
+            $('#txDetailsAccountAddress').text(ActualAccount.Name);
+            $('#txDetailsAccountAddress').text(trx.AccountAddress);
+            if (trx.To != null) {
+                if (trx.To[0] != null) {
+                    $('#txDetailsRecipientAccountAddress').text(trx.To[0]);
+                }
+            }
+            
+            $('#txDetailsAmount').text(trx.Amount.toString());
+            $('#txDetailsTxId').text(trx.TxId);
+            $('#txDetailsLinkToExplorer').attr('href', 'https://explorer.nebl.io/tx/' + txId);
+            
+            $("#btnDownloadTxDetails").off();
+            $("#btnDownloadTxDetails").click(function() {
+                getTxReceipt(ActualWallet.Name, trx.AccountAddress, txId);
+            });
+            
+            $('#transactionDetailsModal').modal('show');
+        }
+    }
+}
+
+function getTxReceipt(walletId, accountAddr, txid) {
+    var url = ApiUrl + "/GetTxReceipt";
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    walletId = "41ea1423-199f-432c-af3d-9b6181f77f3b";
+    accountAddr = "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA";
+    txid = "afbd2731720260c0cccfacd5123cbb3af112306b2995735bb40550f9003f64ab";
+
+    var data = {
+        "walletId": walletId,
+        "accountAddress": accountAddr,
+        "txId": txid
+    };
+
+    $.ajax(url,
+        {
+            contentType: 'application/json;charset=utf-8',
+            data: JSON.stringify(data),
+            method: 'PUT',
+            dataType: 'json',   // type of response data
+            timeout: 10000,     // timeout milliseconds
+            success: function (data, status, xhr) {   // success callback function
+                //console.log(`Status: ${status}, Data:${data}`);
+                downloadReceiptPageAsFile(data.htmlReceipt);
+            },
+            error: function (jqXhr, textStatus, errorMessage) { // error callback 
+                console.log('Error: "' + errorMessage + '"');
+            }
+        });
+}
+
+function downloadReceiptPageAsFile(data) {
+    var fn = 'TxReceipt-' + Date.now().toString() + '.html';
+    downloadDataAsTextFile(data, fn);
 }

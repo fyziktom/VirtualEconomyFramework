@@ -16,7 +16,7 @@ namespace VEDrivers.Economy.Transactions
     public enum TransactionDirection
     {
         Incoming,
-        Outcoming
+        Outgoing
     }
     public interface ITransaction
     {
@@ -26,7 +26,7 @@ namespace VEDrivers.Economy.Transactions
         List<string> From { get; set; }
         List<string> To { get; set; }
         
-        double Ammount { get; set; }
+        double Amount { get; set; }
         int Confirmations { get; set; }
         DateTime TimeStamp { get; set; }
         //ICryptocurrency Currency { get; set; }

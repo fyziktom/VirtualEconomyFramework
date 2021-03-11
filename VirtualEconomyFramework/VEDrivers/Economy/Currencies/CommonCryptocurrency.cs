@@ -20,6 +20,7 @@ namespace VEDrivers.Economy
         public string Creator { get; set; } = string.Empty;
         public string RepositoryURL { get; set; } = string.Empty;
         public string ProjectWebsite { get; set; } = string.Empty;
+        public double FromSatToMainRatio { get; set; } = 100000000;
         public List<IBinanceStreamKlineData> KlineDataHistory { get; set; }
 
         public abstract Task<string> GetDetails();

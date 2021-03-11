@@ -29,7 +29,7 @@ namespace VEDrivers.Economy.Transactions
             TxId = txid;
             //Currency = currency;
             Metadata = metadata;
-            Ammount = ammount;
+            Amount = ammount;
             Type = TransactionTypes.Neblio;
             VinTokens = new List<IToken>();
             VoutTokens = new List<IToken>();
