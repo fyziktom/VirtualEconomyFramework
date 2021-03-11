@@ -555,6 +555,68 @@
         }
       }
     },
+    "/api/GetTokenByMetadata": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetTokenByMetadataData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetTokenByMetadataData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetTokenByMetadataData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetTokenByMetadataData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/IToken"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/IToken"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/IToken"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/GetNodesTypes": {
       "get": {
         "tags": [
@@ -967,6 +1029,68 @@
         }
       }
     },
+    "/api/InvokeNodeAction": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvokeNodeData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvokeNodeData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvokeNodeData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvokeNodeData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NodeActionFinishedArgs"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NodeActionFinishedArgs"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NodeActionFinishedArgs"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/GetNeblioTransactionInfo": {
       "get": {
         "tags": [
@@ -1020,6 +1144,59 @@
         "responses": {
           "200": {
             "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GetTxReceipt": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TxReceiptData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TxReceiptData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TxReceiptData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TxReceiptData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TxReceiptResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TxReceiptResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TxReceiptResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1427,6 +1604,15 @@
         },
         "additionalProperties": false
       },
+      "CryptocurrencyTypes": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "DeleteAccountData": {
         "type": "object",
         "properties": {
@@ -1448,6 +1634,28 @@
         "type": "object",
         "properties": {
           "nodeId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetTokenByMetadataData": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadataName": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadataValue": {
             "type": "string",
             "nullable": true
           }
@@ -1554,6 +1762,177 @@
         },
         "additionalProperties": false
       },
+      "IBinanceStreamKline": {
+        "type": "object",
+        "properties": {
+          "interval": {
+            "$ref": "#/components/schemas/KlineInterval"
+          },
+          "final": {
+            "type": "boolean"
+          },
+          "firstTrade": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lastTrade": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "openTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "open": {
+            "type": "number",
+            "format": "double"
+          },
+          "high": {
+            "type": "number",
+            "format": "double"
+          },
+          "low": {
+            "type": "number",
+            "format": "double"
+          },
+          "close": {
+            "type": "number",
+            "format": "double"
+          },
+          "baseVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "closeTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "quoteVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "tradeCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "takerBuyBaseVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "takerBuyQuoteVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "commonHigh": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "commonLow": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "commonOpen": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "commonClose": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "commonOpenTime": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "commonVolume": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IBinanceStreamKlineData": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/IBinanceStreamKline"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ICryptocurrency": {
+        "type": "object",
+        "properties": {
+          "klineDataHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IBinanceStreamKlineData"
+            },
+            "nullable": true
+          },
+          "tokensAvailable": {
+            "type": "boolean"
+          },
+          "fromSatToMainRatio": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxSupply": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "circulatingSuply": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "transferFee": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "actualBTCPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "baseURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "creator": {
+            "type": "string",
+            "nullable": true
+          },
+          "repositoryURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "projectWebsite": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "INode": {
         "type": "object",
         "properties": {
@@ -1582,6 +1961,17 @@
           },
           "parsedParams": {
             "$ref": "#/components/schemas/NodeActionParameters"
+          },
+          "lastPayload": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastOtherData": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
           },
           "actualTriggerType": {
             "$ref": "#/components/schemas/NodeActionTriggerTypes"
@@ -1613,6 +2003,83 @@
         },
         "additionalProperties": false
       },
+      "InvokeNodeData": {
+        "type": "object",
+        "properties": {
+          "triggerType": {
+            "$ref": "#/components/schemas/NodeActionTriggerTypes"
+          },
+          "nodeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "numberOfCalls": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "useLastTokenTxData": {
+            "type": "boolean"
+          },
+          "altScript": {
+            "type": "string",
+            "nullable": true
+          },
+          "useAltScript": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IReceipt": {
+        "type": "object",
+        "properties": {
+          "txId": {
+            "type": "string",
+            "nullable": true
+          },
+          "walletId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "walletName": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountName": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currencyType": {
+            "$ref": "#/components/schemas/CryptocurrencyTypes"
+          },
+          "txDetails": {
+            "$ref": "#/components/schemas/ITransaction"
+          },
+          "currencyDetails": {
+            "$ref": "#/components/schemas/ICryptocurrency"
+          }
+        },
+        "additionalProperties": false
+      },
       "IToken": {
         "type": "object",
         "properties": {
@@ -1634,6 +2101,13 @@
           "actualBalance": {
             "type": "number",
             "format": "double",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
             "nullable": true
           },
           "maxSupply": {
@@ -1698,7 +2172,7 @@
             },
             "nullable": true
           },
-          "ammount": {
+          "amount": {
             "type": "number",
             "format": "double"
           },
@@ -1840,6 +2314,27 @@
         },
         "additionalProperties": false
       },
+      "KlineInterval": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "LoggedUser": {
         "type": "object",
         "properties": {
@@ -1853,6 +2348,20 @@
           },
           "rights": {
             "$ref": "#/components/schemas/Rights"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NodeActionFinishedArgs": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2026,6 +2535,37 @@
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "TxReceiptData": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "txId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TxReceiptResponse": {
+        "type": "object",
+        "properties": {
+          "receipt": {
+            "$ref": "#/components/schemas/IReceipt"
+          },
+          "htmlReceipt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "UpdateAccountData": {
         "type": "object",
