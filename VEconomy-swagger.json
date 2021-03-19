@@ -10,6 +10,283 @@
     }
   ],
   "paths": {
+    "/api/GetChessHistory/{account}": {
+      "get": {
+        "tags": [
+          "Chess"
+        ],
+        "parameters": [
+          {
+            "name": "account",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GetChessGamesIds/{account}": {
+      "get": {
+        "tags": [
+          "Chess"
+        ],
+        "parameters": [
+          {
+            "name": "account",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GetActualChessState/{gameId}": {
+      "get": {
+        "tags": [
+          "Chess"
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameState"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameState"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameState"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/LoadChessHistory": {
+      "put": {
+        "tags": [
+          "Chess"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessLoadHistoryData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessLoadHistoryData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessLoadHistoryData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessLoadHistoryData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChessGameDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChessGameDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChessGameDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StartNewChessGame": {
+      "put": {
+        "tags": [
+          "Chess"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessStartData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessStartData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessStartData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessStartData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ConfirmChessMove": {
+      "put": {
+        "tags": [
+          "Chess"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessMoveData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessMoveData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessMoveData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChessMoveData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/GetServerParams": {
       "get": {
         "tags": [
@@ -1640,6 +1917,43 @@
         },
         "additionalProperties": false
       },
+      "FigureTypes": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "GameDtoTypes": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "GameState": {
+        "type": "object",
+        "properties": {
+          "boardStringData": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastMovePlayer": {
+            "type": "string",
+            "nullable": true
+          },
+          "boardState": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "GetTokenByMetadataData": {
         "type": "object",
         "properties": {
@@ -1670,6 +1984,130 @@
             "nullable": true
           },
           "pass": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChessGameDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/GameDtoTypes"
+          },
+          "gameId": {
+            "type": "string",
+            "nullable": true
+          },
+          "txId": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastGameRecordTxId": {
+            "type": "string",
+            "nullable": true
+          },
+          "timeStamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "players": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ChessPlayer"
+            },
+            "nullable": true
+          },
+          "gameState": {
+            "type": "string",
+            "nullable": true
+          },
+          "newGameRequest": {
+            "type": "boolean"
+          },
+          "capitulationRequest": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChessLoadHistoryData": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "string",
+            "nullable": true
+          },
+          "player1Address": {
+            "type": "string",
+            "nullable": true
+          },
+          "player2Address": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChessMoveData": {
+        "type": "object",
+        "properties": {
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "gameId": {
+            "type": "string",
+            "nullable": true
+          },
+          "chessboardState": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChessPlayer": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/PlayerTypes"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "nickName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "score": {
+            "type": "number",
+            "format": "double"
+          },
+          "figureType": {
+            "$ref": "#/components/schemas/FigureTypes"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChessStartData": {
+        "type": "object",
+        "properties": {
+          "player1Address": {
+            "type": "string",
+            "nullable": true
+          },
+          "player2Address": {
             "type": "string",
             "nullable": true
           }
@@ -2037,6 +2475,35 @@
         },
         "additionalProperties": false
       },
+      "IPlayer": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/PlayerTypes"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "nickName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "score": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
       "IReceipt": {
         "type": "object",
         "properties": {
@@ -2087,6 +2554,10 @@
             "type": "string",
             "nullable": true
           },
+          "txId": {
+            "type": "string",
+            "nullable": true
+          },
           "issuerName": {
             "type": "string",
             "nullable": true
@@ -2102,6 +2573,10 @@
             "type": "number",
             "format": "double",
             "nullable": true
+          },
+          "timeStamp": {
+            "type": "string",
+            "format": "date-time"
           },
           "metadata": {
             "type": "object",
@@ -2434,6 +2909,14 @@
         "type": "integer",
         "format": "int32"
       },
+      "PlayerTypes": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "RemoveWalletData": {
         "type": "object",
         "properties": {
@@ -2467,6 +2950,10 @@
       "SendTokenTxData": {
         "type": "object",
         "properties": {
+          "senderAddress": {
+            "type": "string",
+            "nullable": true
+          },
           "receiverAddress": {
             "type": "string",
             "nullable": true
