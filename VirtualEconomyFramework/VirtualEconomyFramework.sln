@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEconomy", "VEconomy\VEcono
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEUsersUtility", "VEUsersUtility\VEUsersUtility.csproj", "{FB1CA371-CF04-47D9-BAA2-E9D100BF3EB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEQTWalletExecutor", "VEQTWalletExecutor\VEQTWalletExecutor.csproj", "{75A7AA99-4075-4FB9-899B-A824F74FAF16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEQTWalletExecutor", "VEQTWalletExecutor\VEQTWalletExecutor.csproj", "{75A7AA99-4075-4FB9-899B-A824F74FAF16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEGameDrivers", "VEGameDrivers\VEGameDrivers.csproj", "{D389CE3D-BA81-4A95-9CA1-1973B6754432}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{75A7AA99-4075-4FB9-899B-A824F74FAF16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75A7AA99-4075-4FB9-899B-A824F74FAF16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75A7AA99-4075-4FB9-899B-A824F74FAF16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -25,11 +25,14 @@ const Pages = Object.freeze({
     "wallets": 2, 
     "accounts": 3,
     "nodes": 4,
-    "users": 5
+    "users": 5,
+    "games": 6
 });
 
 var ActualPage = Pages.dashboard;
 
+// this must be false during export from bootstrap studio
+// bootstrap studio preview runs on different port
 var bootstrapstudio = false;
 
 var ApiUrl = 'http://localhost:8080/api'; //placeholder
