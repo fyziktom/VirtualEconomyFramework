@@ -171,6 +171,10 @@ function checkLocation() {
     else if (currentLocation.includes('users')) {
         ActualPage = Pages.users;
     }
+    else if (currentLocation.includes('chess')) {
+        ActualPage = Pages.games;
+        loadChessPageStartUp();
+    }
     else {
         ActualPage = Pages.none;
     }

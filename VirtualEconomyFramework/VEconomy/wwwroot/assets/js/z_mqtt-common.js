@@ -66,13 +66,17 @@ function onMessageArrived(message) {
     else if (message.topic == `VEF/NewTransaction`) {
       try {
         //NewTransactionArrived(JSON.parse(message.payloadString));
-        showNewTxDetails(JSON.parse(message.payloadString));
+        if (ActualPage != Pages.games) {
+          showNewTxDetails(JSON.parse(message.payloadString));
+        }
       }
       catch{}
     }
     else if (message.topic == `VEF/TokensReceived`) {
       try {
-        showNewTokensDetails(JSON.parse(message.payloadString));
+        if (ActualPage != Pages.games) {
+          showNewTokensDetails(JSON.parse(message.payloadString));
+        }
       }
       catch{}
     }

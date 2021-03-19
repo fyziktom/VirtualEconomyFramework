@@ -131,7 +131,7 @@ namespace TestNeblio
 
         private static async Task RPCLocalCommandAsync(DbConnection conn, string param, object obj)
         {
-            var res = rpcClient.RPCLocalCommandAsync(param, null);
+            var res = await rpcClient.RPCLocalCommandAsync(param, null);
 
             Console.WriteLine($"result of request: {res}");
         }

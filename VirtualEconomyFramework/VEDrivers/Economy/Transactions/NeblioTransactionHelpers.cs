@@ -1,10 +1,12 @@
-﻿using Neblio.RestApi;
+﻿using log4net;
+using Neblio.RestApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VEDrivers.Common;
@@ -15,6 +17,8 @@ namespace VEDrivers.Economy.Transactions
 {
     public static class NeblioTransactionHelpers
     {
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private static HttpClient httpClient = new HttpClient();
         private static IClient client;
         private static NeblioCryptocurrency NeblioCrypto = new NeblioCryptocurrency(false);
@@ -35,13 +39,29 @@ namespace VEDrivers.Economy.Transactions
             }
 
             var info = await client.GetTransactionInfoAsync(txid);
-            
+
             ITransaction transaction = TransactionFactory.GetTranaction(type, txid);
 
-            transaction.From.Add(info.Vin?.FirstOrDefault().PreviousOutput.Addresses.FirstOrDefault());
-            var tokenin = info.Vin?.FirstOrDefault().Tokens?.ToList()?.FirstOrDefault();
-            transaction.Confirmations = Convert.ToInt32((double)info.Confirmations);
-            
+            DateTime time;
+
+            if (info.Time != null)
+            {
+                time = TimeHelpers.UnixTimestampToDateTime((double)info.Time);
+                transaction.TimeStamp = time;
+            }
+
+            var tokenin = new Tokens2();
+            try
+            {
+                transaction.From.Add(info.Vin?.FirstOrDefault().PreviousOutput.Addresses.FirstOrDefault());
+                tokenin = info.Vin?.FirstOrDefault().Tokens?.ToList()?.FirstOrDefault();
+                transaction.Confirmations = Convert.ToInt32((double)info.Confirmations);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
             if (tokenin != null)
             {
                 var tokeninfo = await TokenMetadataAsync(client, TokenTypes.NTP1, tokenin.TokenId, txid);
@@ -56,7 +76,8 @@ namespace VEDrivers.Economy.Transactions
                         Symbol = tokeninfo.Symbol,
                         Name = tokeninfo.Name,
                         IssuerName = tokeninfo.IssuerName,
-                        Metadata = tokeninfo.Metadata
+                        Metadata = tokeninfo.Metadata,
+                        TimeStamp = transaction.TimeStamp
                     });
                 }
 
@@ -96,7 +117,8 @@ namespace VEDrivers.Economy.Transactions
                         Symbol = tokeninfo.Symbol,
                         Name = tokeninfo.Name,
                         IssuerName = tokeninfo.IssuerName,
-                        Metadata = tokeninfo.Metadata
+                        Metadata = tokeninfo.Metadata,
+                        TimeStamp = transaction.TimeStamp
                     });
                 }
             }
@@ -214,6 +236,7 @@ namespace VEDrivers.Economy.Transactions
             token.Name = info.MetadataOfIssuance.Data.Description;
             token.IssuerName = info.MetadataOfIssuance.Data.Issuer;
             token.Id = tokenid;
+            token.TxId = txid;
             var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance.Data.Urls));
 
             if (info.MetadataOfUtxo != null)
@@ -229,7 +252,8 @@ namespace VEDrivers.Economy.Transactions
                             if (od.Count > 0)
                             {
                                 var of = od.First();
-                                token.Metadata.Add(of.Key, of.Value);
+                                if (!token.Metadata.ContainsKey(of.Key))
+                                    token.Metadata.Add(of.Key, of.Value);
                                 //Console.WriteLine("metadataName: " + of.Key.ToString());
                                 //Console.WriteLine("metadataContent: " + of.Value.ToString());
                             }
@@ -296,6 +320,124 @@ namespace VEDrivers.Economy.Transactions
             }
 
             return res;
+        }
+
+
+        private class TokenTxRPCControlerResponse
+        {
+            public SignResultDto result { get; set; }
+            public string id { get; set; }
+
+        }
+        private class SignResultDto
+        {
+            public string hex { get; set; }
+            public bool complete { get; set; }
+        }
+        public static async Task<string> SendNTP1TokenAPI(SendTokenTxData data, double fee = 20000)
+        {
+            var res = "ERROR";
+            var dto = new SendTokenRequest();
+
+            dto.Metadata = new Metadata2();
+            dto.Metadata.UserData = new UserData3();
+            dto.Metadata.UserData.Meta = new List<JObject>();
+
+            if (!qtRPCClient.IsConnected)
+                qtRPCClient.InitClients();
+
+            if (qtRPCClient.IsConnected)
+            {
+                if (data.Metadata != null)
+                {
+                    foreach (var d in data.Metadata)
+                    {
+                        var obj = new JObject();
+                        obj[d.Key] = d.Value;
+
+                        dto.Metadata.UserData.Meta.Add(obj);
+                    }
+                }
+
+                dto.Fee = fee;
+                dto.Flags = new Flags2() { SplitChange = true };
+                dto.From = new List<string>() { data.SenderAddress };
+                dto.To = new List<To>()
+                {
+                    new To()
+                    {
+                        Address = data.ReceiverAddress,
+                         Amount = data.Amount,
+                          TokenId = data.Id
+                    }
+                };
+
+                try
+                {
+                    // create raw tx
+                    var hexToSign = await SendRawNTP1TxAsync(TransactionTypes.Neblio, dto);
+                    // sign tx
+                    res = await qtRPCClient.RPCLocalCommandSplitedAsync("signrawtransaction", new string[] { hexToSign });
+                    // send tx
+
+                    var parsedRes = JsonConvert.DeserializeObject<TokenTxRPCControlerResponse>(res);
+
+                    if (parsedRes != null)
+                    {
+                        if (parsedRes.result.complete)
+                        {
+                            var bdto = new BroadcastTxRequest()
+                            {
+                                TxHex = parsedRes.result.hex
+                            };
+
+                            var txid = await BroadcastNTP1TxAsync(TransactionTypes.Neblio, bdto);
+
+                            res = txid;
+                        }
+                    
+                    }
+
+                }
+                catch(Exception ex)
+                {
+                    log.Error("Cannot send token transaction!", ex);
+                    Console.WriteLine("Cannot send token transaction!");
+                }
+
+            }
+
+            return res;
+        }
+
+        public static async Task<string> SendRawNTP1TxAsync(TransactionTypes type, SendTokenRequest data)
+        {
+            if (type != TransactionTypes.Neblio)
+                return string.Empty;
+
+            if (client == null)
+            {
+                client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            }
+
+            var info = await client.SendTokenAsync(data);
+
+            return info.TxHex;
+        }
+
+        public static async Task<string> BroadcastNTP1TxAsync(TransactionTypes type, BroadcastTxRequest data)
+        {
+            if (type != TransactionTypes.Neblio)
+                return string.Empty;
+
+            if (client == null)
+            {
+                client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            }
+
+            var info = await client.BroadcastTxAsync(data);
+
+            return info.Txid;
         }
     }
 }

@@ -129,6 +129,7 @@ function sendToken() {
 
         var token = {
             "ReceiverAddress": add,
+            "SenderAddress": ActualAccount.Address,
             "Symbol": selectedToken.Symbol,
             "Id": selectedToken.Id,
             "Amount": amount,

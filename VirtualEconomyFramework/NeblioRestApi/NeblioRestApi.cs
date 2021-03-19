@@ -13,6 +13,7 @@
 
 namespace Neblio.RestApi
 {
+    using Newtonsoft.Json.Linq;
     using System = global::System;
     
     
@@ -6571,7 +6572,7 @@ namespace Neblio.RestApi
     public partial class UserData3 
     {
         [Newtonsoft.Json.JsonProperty("meta", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Meta2> Meta { get; set; }
+        public System.Collections.Generic.ICollection<JObject> Meta { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     

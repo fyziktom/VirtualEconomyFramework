@@ -8,6 +8,7 @@ namespace VEDrivers.Economy.Tokens
     public abstract class CommonToken : IToken
     {
         public string Id { get; set; } = string.Empty;
+        public string TxId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Symbol { get; set; } = string.Empty;
         public string BaseURL { get; set; } = string.Empty;
@@ -19,6 +20,7 @@ namespace VEDrivers.Economy.Tokens
         public double? TransferFee { get; set; } = 0;
         public double? ActualBTCPrice { get; set; } = 0;
         public double? ActualBalance { get; set; } = 0.0;
+        public DateTime TimeStamp { get; set; }
 
         public Dictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
 

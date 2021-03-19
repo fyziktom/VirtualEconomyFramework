@@ -25,7 +25,7 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link" id="users" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a></li>
+                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link active" id="users" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -56,16 +56,100 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4"></div>
-                    <h2 class="text-center text-dark mb-0">Main Dashboard</h2>
+                    <div class="d-sm-flex justify-content-between align-items-center justify-content-xl-center mb-4">
+                        <h3 class="text-dark mb-0">Chess Game</h3>
+                    </div>
                     <div class="row">
-                        <div class="col">
-                            <div class="row"></div>
-                            <div class="row"></div>
+                        <div class="col" style="margin-top: 20px;">
+                            <div class="card shadow" style="width: 750px;">
+                                <div class="card-header d-xl-flex justify-content-xl-center align-items-xl-center py-3">
+                                    <h4 id="chessBoardHeading">Board 1</h4>
+                                </div>
+                                <div class="card-body d-xl-flex">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row" style="margin-bottom: 30px;">
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Your Address</span></div>
+                                                        <div class="col">
+                                                            <div class="dropdown d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn dropdown-toggle d-xl-flex justify-content-xl-center align-items-xl-center" aria-expanded="false" data-toggle="dropdown" id="btnChessAccount" type="button" onclick="reloadChessAccounts();" style="width: 300px;">Select Address</button>
+                                                                <div class="dropdown-menu" id="chessAccountsDropDown" style="width: 500px;"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Player 2 Address</span></div>
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="chessPlayer2Address" style="width: 300px;margin-top: 10px;margin-bottom: 10px;font-size: 12px;" value="NTUqno5PP8feqZTGSaoGQBEpS4BJRRrFkC"></div>
+                                                    </div>
+                                                    <div class="row d-xl-flex">
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                                                            <div class="row">
+                                                                <div class="col-auto d-xl-flex align-items-xl-center"><span style="margin-left: 65px;">Account Games</span></div>
+                                                                <div class="col"><button class="btn btn-secondary" id="btnLoadAllChessGames" type="button" style="width: 40px;"><i class="fa fa-refresh"></i></button></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="dropdown d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnAccountChessGames" type="button" style="width: 350px;">Select Game Id</button>
+                                                                <div class="dropdown-menu" id="chessAccountGamesDropDown" style="width: 350px;"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                                                            <div class="row">
+                                                                <div class="col-auto"><span>Game History</span></div>
+                                                                <div class="col-auto">
+                                                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="chessAutoRefreshCheckBox"><label class="form-check-label" for="formCheck-1">Auto Refresh</label></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="dropdown d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnChessHistory" type="button">Select History Step</button>
+                                                                <div class="dropdown-menu" id="chessHistoryDropDown"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                                                            <div class="row">
+                                                                <div class="col-auto"><span>On Move</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                                                            <div class="row">
+                                                                <div class="col-auto"><span id="chessOnMove">Please load game</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div id="board1" style="width:400px;"></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnLoadChessGame" type="button" style="margin-top: 10px;width: 170px;">Load Game</button></div>
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnLoadLastChessGameState" type="button" style="margin-top: 10px;width: 170px;">Load Last State</button></div>
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnRequestNewChessGame" type="button" style="margin-top: 10px;width: 170px;">Request New Game</button></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-secondary" id="btnConfirmChessGameMove" type="button" style="margin-top: 10px;width: 170px;">Confirm Move</button></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnCapitulationChessGame" type="button" style="margin-top: 10px;width: 170px;">Capitulation</button></div>
+                                                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnReplayChessGame" type="button" style="margin-top: 10px;width: 170px;">Replay Game</button></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
@@ -205,21 +289,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="calcHashOfFileModal">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Drop file to calculate Hash of the file</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                </div>
-                <div class="modal-body text-center" id="holder">
-                    <p id="hashModalFileName">No file selected</p>
-                    <p>Hash of the file:</p>
-                    <p id="hashOfFile">Please drop here the file to create hash</p>
-                </div>
-                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnUseHashAsMetadata" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
-            </div>
-        </div>
-    </div>
+
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
