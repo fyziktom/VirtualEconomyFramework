@@ -14,10 +14,12 @@ namespace VEDrivers.Economy.Tokens
     public interface IToken : IUnitBase
     {
         string Id { get; set; }
+        string TxId { get; set; }
         string IssuerName { get; set; }
         string ImageUrl { get; set; }
         bool MetadataAvailable { get; set; }
         double? ActualBalance { get; set; }
+        DateTime TimeStamp { get; set; }
         Dictionary<string, string> Metadata { get; set; }
         Task<string> GetDetails();
     }

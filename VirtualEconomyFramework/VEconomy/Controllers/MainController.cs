@@ -815,7 +815,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                var res = await NeblioTransactionHelpers.SendNTP1Token(data);
+                var res = await NeblioTransactionHelpers.SendNTP1TokenAPI(data);
 
                 return new { info = res, ReadingError = "OK" }; ;
 

@@ -8,6 +8,14 @@ namespace VEDrivers.Economy.DTO
 {
     public class SendTokenTxData
     {
+        public SendTokenTxData()
+        {
+            Metadata = new Dictionary<string, string>();
+        }
+        /// <summary>
+        /// Address from where token will be send
+        /// </summary>
+        public string SenderAddress { get; set; }
         /// <summary>
         /// Address where token will be send
         /// </summary>
