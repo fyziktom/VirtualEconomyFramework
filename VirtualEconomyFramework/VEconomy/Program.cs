@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MQTTnet.AspNetCore.Extensions;
 using VEconomy.Controllers;
 
 namespace VEconomy
@@ -33,6 +34,18 @@ namespace VEconomy
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel(
+                    (bcont, o) =>
+                    {
+                        var config = new VEDrivers.Common.MQTTConfig();
+                        bcont.Configuration.GetSection("MQTT").Bind(config);
+                        var mainport = bcont.Configuration.GetValue<int>("MainPort");
+                        if (mainport == 0)
+                            mainport = 8080;
+                        o.ListenAnyIP(config.Port, l => l.UseMqtt()); // MQTT pipeline
+                        o.ListenAnyIP(config.WSPort); // Default HTTP pipeline
+                        o.ListenAnyIP(mainport); // Default HTTP pipeline
+                    });
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

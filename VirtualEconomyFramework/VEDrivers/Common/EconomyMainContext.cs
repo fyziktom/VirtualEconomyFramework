@@ -23,6 +23,8 @@ namespace VEDrivers.Common
         public static int MQTTPort { get; set; }
         public static MQTTConfig MQTT { get; set; }
         public static MQTTClient MQTTClient { get; set; }
+        public static MQTTServer MQTTServer { get; set; }
+        public static bool MQTTServerIsStarted { get; set; }
         public static List<string> MQTTTopics { get; set; }
         public static QTRPCConfig QTRPConfig { get; set; } = new QTRPCConfig();
         public static QTWalletRPCClient QTRPCClient { get; set; }

@@ -1,5 +1,6 @@
 using log4net;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
@@ -17,14 +18,14 @@ using VEDrivers.Economy.Wallets;
 
 namespace VEconomy
 {   
-    public class VEconomyCore : BackgroundService
+    public class VEconomyMQTTBroker : BackgroundService
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private IConfiguration settings;
         private IHostApplicationLifetime lifetime;
 
-        public VEconomyCore(IConfiguration settings, IHostApplicationLifetime lifetime)
+        public VEconomyMQTTBroker(IConfiguration settings, IHostApplicationLifetime lifetime)
         {
             this.settings = settings; //startup configuration in appsettings.json
             this.lifetime = lifetime;
@@ -42,48 +43,42 @@ namespace VEconomy
 
             try
             {
-                EconomyMainContext.MQTTClient = new MQTTClient("VEconomy");
+                EconomyMainContext.MQTTServer = new MQTTServer("VEconomyBroker");
                 
                 _ = Task.Run(async () =>
                 {
                     while (!stopToken.IsCancellationRequested)
                     {
-                        while(!EconomyMainContext.MQTTServerIsStarted && !stopToken.IsCancellationRequested)
-                        {
-                            // wait until broker is started
-                            await Task.Delay(500);
-                        }
-
                         if (reconnect)
                         {
                             try
                             {
                                 // first wait until MQTT client exists and it is connected to the broker
-                                if (EconomyMainContext.MQTTClient != null && !EconomyMainContext.MQTTClient.IsConnected)
+                                if (EconomyMainContext.MQTTServer != null && !EconomyMainContext.MQTTServer.IsConnected)
                                 {
-                                    await EconomyMainContext.MQTTClient.RunClient(stopToken, settings, new string[] { });
+                                    await EconomyMainContext.MQTTServer.RunServer(stopToken, settings);
                                 }
                             }
                             catch (Exception ex)
                             {
-                                log.Info("Cannot create first connection to MQTT, please check the MQTT Broker!");
+                                log.Info("Cannot create MQTT Broker, please check the MQTT configuration!");
                                 reconnect = true;
                             }
 
                         }
 
                         await Task.Delay(5000); // wait before checking connection
-                        if (!EconomyMainContext.MQTTClient.IsConnected)
+                        if (!EconomyMainContext.MQTTServer.IsConnected)
                             reconnect = true;
                     }
 
-                    log.Info($"Virtual Economy Framework wallet handler task stopped");
+                    log.Info($"Virtual Economy Framework MQTT Broker handler task stopped");
                 });
                 
             }
             catch (Exception ex)
             {
-                log.Fatal("Cannot start Virtual Economy server", ex);
+                log.Fatal("Cannot start Virtual Economy MQTT Broker", ex);
                 lifetime.StopApplication();
             }
 

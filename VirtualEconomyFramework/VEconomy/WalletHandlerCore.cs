@@ -133,6 +133,12 @@ namespace VEconomy
                             // first wait until MQTT client exists and it is connected to the broker
                             if (EconomyMainContext.MQTTClient != null)
                             {
+                                while (!EconomyMainContext.MQTTClient.IsConnected && !stopToken.IsCancellationRequested)
+                                {
+                                    // wait until client is started and connected to broker
+                                    await Task.Delay(500);
+                                }
+
                                 if (start && EconomyMainContext.MQTTClient.IsConnected)
                                 {
                                     await EconomyMainContext.MQTTClient.PostObjectAsJSONString("VEF/Start", "Virtual Economy Framework started");

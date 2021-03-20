@@ -20,6 +20,11 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VEDrivers.Economy.Exchanges;
 using VEconomy.Common;
+using MQTTnet.Server;
+using MQTTnet.AspNetCore;
+using MQTTnet.AspNetCore.Extensions;
+using VEDrivers.Common;
+using MQTTnet.Protocol;
 
 namespace VEconomy
 {
@@ -46,6 +51,18 @@ namespace VEconomy
                     o.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;  //easier javascript work with ".Include"
                     if (Environment.IsDevelopment()) o.SerializerSettings.Formatting = Formatting.Indented;
                 });
+
+
+            var config = new MQTTConfig();
+            Configuration.GetSection("MQTT").Bind(config);
+
+            services
+                .AddHostedMqttServer(mqttServer =>
+                mqttServer
+                        .WithConnectionValidator(c => { if (c.Username != config.User) return; if (c.Password != config.Pass) return; c.ReasonCode = MqttConnectReasonCode.Success; })
+                        .WithoutDefaultEndpoint())
+                .AddMqttConnectionHandler()
+                .AddConnections();
 
             services.AddSwaggerGen();
 
@@ -96,6 +113,7 @@ namespace VEconomy
             });
             //}
             app.UseRouting();
+
             app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseAuthentication();
@@ -104,9 +122,16 @@ namespace VEconomy
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapMqtt("/mqtt");
+
+                
             });
 
-
+            EconomyMainContext.MQTTServerIsStarted = true;
+            app.UseMqttServer(server =>
+            {
+                //nothing to do
+            });
         }
     }
 }
