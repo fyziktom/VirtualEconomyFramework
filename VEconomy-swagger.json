@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080"
+      "url": "http://192.168.0.146:8080"
     }
   ],
   "paths": {
@@ -585,6 +585,54 @@
                   "type": "array",
                   "items": {
                     "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GetAccountTokens/{address}": {
+      "get": {
+        "tags": [
+          "Main"
+        ],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/IToken"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/IToken"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/IToken"
                   }
                 }
               }
@@ -1867,115 +1915,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "Credentials": {
-        "type": "object",
-        "properties": {
-          "login": {
-            "type": "string",
-            "nullable": true
-          },
-          "pass": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "CryptocurrencyTypes": {
-        "enum": [
-          0,
-          1,
-          2
-        ],
-        "type": "integer",
-        "format": "int32"
-      },
-      "DeleteAccountData": {
-        "type": "object",
-        "properties": {
-          "walletId": {
-            "type": "string",
-            "nullable": true
-          },
-          "accountAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "withNodes": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "DeleteNodeData": {
-        "type": "object",
-        "properties": {
-          "nodeId": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "FigureTypes": {
-        "enum": [
-          0,
-          1
-        ],
-        "type": "integer",
-        "format": "int32"
-      },
-      "GameDtoTypes": {
-        "enum": [
-          0,
-          1
-        ],
-        "type": "integer",
-        "format": "int32"
-      },
-      "GameState": {
-        "type": "object",
-        "properties": {
-          "boardStringData": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastMovePlayer": {
-            "type": "string",
-            "nullable": true
-          },
-          "boardState": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "GetTokenByMetadataData": {
-        "type": "object",
-        "properties": {
-          "walletId": {
-            "type": "string",
-            "nullable": true
-          },
-          "accountAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "metadataName": {
-            "type": "string",
-            "nullable": true
-          },
-          "metadataValue": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "ChangePass": {
         "type": "object",
         "properties": {
@@ -2108,6 +2047,115 @@
             "nullable": true
           },
           "player2Address": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Credentials": {
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string",
+            "nullable": true
+          },
+          "pass": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CryptocurrencyTypes": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "DeleteAccountData": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "withNodes": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DeleteNodeData": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FigureTypes": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "GameDtoTypes": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "GameState": {
+        "type": "object",
+        "properties": {
+          "boardStringData": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastMovePlayer": {
+            "type": "string",
+            "nullable": true
+          },
+          "boardState": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetTokenByMetadataData": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadataName": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadataValue": {
             "type": "string",
             "nullable": true
           }
@@ -2574,6 +2622,9 @@
             "format": "double",
             "nullable": true
           },
+          "direction": {
+            "$ref": "#/components/schemas/TransactionDirection"
+          },
           "timeStamp": {
             "type": "string",
             "format": "date-time"
@@ -2713,6 +2764,9 @@
           "numberOfActiveAccounts": {
             "type": "integer",
             "format": "int32"
+          },
+          "useRPC": {
+            "type": "boolean"
           },
           "accounts": {
             "type": "object",
