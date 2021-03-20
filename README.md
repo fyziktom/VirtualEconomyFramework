@@ -15,6 +15,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	TestNeblio – testing utility for integration tests.
 -	VEconomy – ASP.NET application to be shaped to your app or used as it is.
 -	VEDrivers – digital twins and other drivers for economy-based applications.
+-	VEGameDrivers - drivers for connecting games and blockchain
 -	VENodeExecutor – runs node-red as a service.
 -	VEQTWalletExecutor – runs QT Wallet as a service.
 -	VEUsersUtility – utility to create first admin user in Db
@@ -25,9 +26,13 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	ASP.NET Core base application, VEconomy, which can be shaped for your app needs.
 -	Digital Twins of objects related to blockchain such as Wallet, Account, Transaction, Token, etc. and publishing these data to MQTT.
 -	Set of drivers/helpers for economy-based applications.
+-	Set of drivers/helpers for using blockchain in games
+-	Simple Chess Game which store game data to blockchain as example
 -	REST API with OpenAPI description in Swagger.
 -	QT Wallet RPC client and controller for communication with desktop wallet or core of blockchain based on Bitcoin QT Wallet.
+-	QT Wallet is optional. App can run without it, but you cannot sign transaction without it.
 -	Neblio API .NET Core wrapper (ReddCoin and Bitcoin to be soon).
+-	Integrated MQTT Broker with TCP/IP and WebSocket support
 -	Connection to Binance Exchange data.
 -	Testing application for integration tests.
 -	Basic UI in HTML/CSS/JavaScript dependent just on Bootstrap and JQuery (and few small libs)!
@@ -39,6 +44,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	Web UI contains hash library for creating hash of any file on the client side and use it as metadata in NFT token transactions
 -	Connection to PostgreSQL where local data about digital twins and settings are stored.
 -	Db is connected via Entity Framework Core so it can be connected to another Db.
+-	Db connection is optional and app can run without it
 -	Security controller for creating users, rights, roles which limit access to API
 -	Node-Red executor application – can run node.js and node-red as a service.
 -	QT Wallet executor application – can run QT Wallet as a service.
@@ -48,8 +54,8 @@ IMPORTANT! This repository is now under huge development so please wait until it
 # Main Planned Features
 
 -	DocFx documentation of project
--	Raspberry PI pre-installed image
--	Integrated MQTT Broker
+-	Raspberry PI pre-installed image - in progress, almost done
+-	Integrated MQTT Broker - almost done, just testing now
 -	ReddCoin and Bitcoin drivers (maybe Polkadot and Chainlink)
 -	Lock and unlock desktop wallet and other RPC commands for wallets
 -	Transactions details in UI
@@ -57,7 +63,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	Analytics drivers
 -	Nuget Package of VEDrivers
 -	Connection to AI ML.NET Neural Network library
--	Examples of customized applications based on VEFramework
+-	Examples of customized applications based on VEFramework - chess game example ready.
 -	Connector to MS SQL
 -	Unit tests
 -	Docker support
@@ -78,8 +84,12 @@ And other platforms which .NET Core 5.0 supports.
 
 # Installation and setting
 
-This application needs few steps of installation to run with all features:
-1.	Database
+This application needs few steps of installation to run with all features.
+
+If you do not want to use Database or QT wallet just skip these steps. In appsetings.json you can disable working with Db and QT.
+
+
+1.	Database - Optional
 -	Download build of PostgreSQL for your platform: https://www.postgresql.org/download/
 -	Install it based on instructions.
 -	After installation open pgAdmin and create new database named “veframework” (you can change the name, but it must be changed in “appsettings.json” in the ConnectionStrings).
@@ -89,16 +99,16 @@ This application needs few steps of installation to run with all features:
 -	That should be all about preparing the Database.
 
 2.	ASP.NET Core 5.0
--	If you do not have installed ASP.NET Core 5.0 runtime libraries you have to install it before you run VEFramework.
+-	If you do not have installed ASP.NET Core 5.0 runtime and .NET Core 5.0 runtime libraries you have to install it before you run VEFramework.
 -	Go to the https://dotnet.microsoft.com/download/dotnet/5.0 and download latest release and follow common installation instruction for your platform.
 
-3.	Creating first admin user
+3.	Creating first admin user - Optional - Just with Db
 -	Run “VEUserUtility.exe” Follow the instructions in console. 
 -	Type “1” for add new user. At first fill login - “admin” and then full username “John Doe” (just example). All confirm with “enter” after input.
 -	Type “2” to create password. At first fill login and then password. All confirm with “enter” after input.
 -	That is all. Now you can use this account to login in VEconomy UI and create other users in UI.
 
-4.	Download and synchronize Neblio desktop wallet
+4.	Download and synchronize Neblio desktop wallet - Optional
 -	Go to the https://nebl.io/wallets/ and download wallet for your platform. 
 -	Move “neblio-qt.exe” to some folder and set the path in “appsettings.json” of “VEQTWalletExecutor.exe”
 -	If you do not want to use VEQTWalletExecutor you do not need to setup this.
@@ -112,10 +122,13 @@ rpcpassword=password
 rpcport=6326
 ```
 
-5.	Install MQTT Broker – recommended now Node.js and Node-RED with Aedes MQTT Broker
+This step is now optional. VEFramework now contains own MQTT Broker. If you need Node-RED for another use please install it but it is not necessary for VEFramework now. 
+Please remember. If you will install MQTT Broker in Node-RED you have to set different port than in VEconomy. It cannot run on same ports!
+
+5.	Install MQTT Broker – Optional
 -	If you want to use another MQTT Broker it is no problem, just VEconomy needs WS sockets too!
 -	Go to the https://nodejs.org/en/ and download and install version of “node.js”.
--	Go to the https://nodered.org/ and download and install version of node-red for your platform. Here for Linux: https://nodered.org/docs/getting-started/local, Here for Windows: https://nodered.org/docs/getting-started/windows 
+-	Go to the https://nodered.org/ and download and install version of node-red for your platform. [Here for Linux](https://nodered.org/docs/getting-started/local), [Here for Windows](https://nodered.org/docs/getting-started/windows)
 -	If you want to run node-RED as service, you can use “VENodeExecutor.exe”. Just setup in “appsettings.json” path to node.exe (node.js main app) and node-red path (common path for windows is in file, just change the username”.
 -	If you do not want to use “VENodeExecutor.exe” please run node-red with type “node-red” into command line.
 -	Open node-red interface http://localhost:1880/ 
@@ -129,7 +142,7 @@ rpcport=6326
 
 You can use VE Economy as background service which communicates just with API. The description of API is in OpenAPI form, swagger: 
 
-https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VEconomy-swagger.json
+[VEconomy Open API Description](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VEconomy-swagger.json)
 
 - When you run VEconomy, you can access swagger UI on http://localhost:8080/swagger/index.html 
 - Data about digital twins are available on MQTT under topics:
@@ -159,7 +172,7 @@ You can add another service which handle your tasks. Please follow structure as 
 
 Main HTTP controller are placed in folder “Controllers”. You can add your own commands. In the controller there is examples for GET and PUT commands.
 
-If you want to secure some command please add the rights before the function (example: https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEconomy/Controllers/MainController.cs#L62).
+If you want to secure some command please add the rights before the function ([example](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEconomy/Controllers/MainController.cs#L62)).
 
 UI files are in folder “wwwroot”. Project of web UI is in Bootstrap Studio “VEView.bsdesign”.
 
@@ -177,6 +190,17 @@ You can also find there ExchangeDataProvider to get info about prices from Binan
 
 More detailed explanation of structure of code will be added soon (especially for VEDrivers).
 
+# Pre-Beta Pre-Build :)
+
+There you can download first pre-beta pre-build. It is preset to work without Db and QT wallet. It can just display data or set anything to RAM (will be lost after reset of app). You can edit addresses in appsetting.json in section "Accounts". Accounts in this list will be loaded after start of the app and all tx data will be downloaded and prepared from blockchain. Then you can browse tokens, check moves in chess, or test nodes.
+
+If you need to acces UI via your network you have to change IP in "MQTT" section in the appsetting.json.
+
+Here you can download the app:
+
+[VEFramework Release Folder](https://technicinsider-my.sharepoint.com/:f:/p/tomas_svoboda/EgLTmYjsqDRHvQyGvkKkO6EBl44-fFopmkSZUQH_gF__Xg?e=HKcLCg)
+
+In the folder you can find .NET Core 5.0 and ASP.NET 5.0 installers too.
 
 # Thanks
 
@@ -204,6 +228,7 @@ This project uses some other opensource libraries or other tools. Many thanks to
 -	CodeJar - Simple JavaScript editor - https://github.com/antonmedv/codejar
 -	Prism - Code Syntax Highlight library - https://prismjs.com/
 -	Crypto JS - JS library of crypto standards - https://github.com/brix/crypto-js
+-	Chessboard JS - JS library for chess game - https://chessboardjs.com/
 -	Bootstrap Studio – tool for simplify web-based UI - https://bootstrapstudio.io/ 
 
 # License 
