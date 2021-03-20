@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using HtmlAgilityPack;
+using log4net;
 using Microsoft.Extensions.Configuration;
 using Neblio.RestApi;
 using Newtonsoft.Json;
@@ -22,15 +23,20 @@ namespace VEDrivers.Economy.Wallets
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public NeblioWallet(Guid id, Guid owner, string name, string urlbase = "127.0.0.1", int port = 6326)
+        public NeblioWallet(Guid id, Guid owner, string name, bool useRPC = false, string urlbase = "127.0.0.1", int port = 6326)
         {
             Owner = owner;
             Name = name;
             ConnectionUrlBaseAddress = urlbase;
             ConnectionPort = port;
             Id = id;
-            rpcClient = new QTWalletRPCClient(ConnectionUrlBaseAddress, ConnectionPort);
-            rpcClient.InitClients();
+
+            if (useRPC)
+            {
+                rpcClient = new QTWalletRPCClient(ConnectionUrlBaseAddress, ConnectionPort);
+                rpcClient.InitClients();
+            }
+
             Type = WalletTypes.Neblio;
 
             Accounts = new ConcurrentDictionary<string, IAccount>();
@@ -106,7 +112,189 @@ namespace VEDrivers.Economy.Wallets
             return list;
         }
 
-        public override async Task<IDictionary<string, IAccount>> ListAccounts(bool withTx = false)
+        private async Task LoadAccountObject(string address, string name, double balance, List<NeblioQTWalletTokenAccountDetails> tokacc, bool withTx = false)
+        {
+            if (!string.IsNullOrEmpty(address))
+            {
+                if (!string.IsNullOrEmpty(name) || (balance != 0))
+                {
+                    if (Accounts.TryGetValue(address, out var a))
+                    {
+                        if (a != null)
+                        {
+                            var addrinfo = await WalletInfoAsync(client, address);
+
+                            a.TotalBalance = addrinfo.Balance;
+                            a.TotalUnconfirmedBalance = addrinfo.UnconfirmedBalance;
+
+                            TotalBalance += a.TotalBalance;
+
+                            if (addrinfo.Transactions?.Count > a.NumberOfTransaction)
+                            {
+                                for (int k = (int)(a.NumberOfTransaction); k < addrinfo.Transactions.Count; k++)
+                                {
+                                    var dto = new NewTransactionDTO();
+                                    dto.AccountAddress = a.Address;
+                                    dto.WalletName = Name;
+                                    dto.Type = TransactionTypes.Neblio;
+                                    dto.TxId = addrinfo.Transactions.ToArray()[k];
+                                    dto.OwnerId = Owner;
+
+                                    var txdetailsrcvd = false;
+                                    try
+                                    {
+                                        dto.TransactionDetails = NeblioTransactionHelpers.TransactionInfo(dto.Type, dto.TxId, null);
+
+                                        if (dto.TransactionDetails != null)
+                                            if (dto.TransactionDetails.Confirmations > 0)
+                                                txdetailsrcvd = true;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        log.Error("Neblio Wallet cannot load tx details: ", ex);
+                                    }
+
+                                    if (dto.TransactionDetails != null)
+                                        NewTransaction?.Invoke(this, dto);
+
+                                    //send after message about new tx
+                                    if (txdetailsrcvd)
+                                    {
+                                        if (Accounts.TryGetValue(dto.AccountAddress, out var acc))
+                                        {
+                                            acc.Transactions.TryRemove(dto.TxId, out var to);
+                                            acc.Transactions.TryAdd(dto.TxId, dto.TransactionDetails);
+                                        }
+                                        Transactions.TryRemove(dto.TxId, out var t);
+                                        Transactions.TryAdd(dto.TxId, dto.TransactionDetails);
+
+                                        NewTransactionDetailsReceived?.Invoke(this, dto);
+                                    }
+                                    else
+                                    {
+                                        NewWaitingTxForDetails.TryAdd(dto.TxId, (false, a.Address));
+                                    }
+
+                                    a.NumberOfTransaction++;// = addrinfo.Transactions.Count;
+                                }
+                            }
+
+
+                            if (tokacc != null)
+                            {
+                                a.Tokens.Clear();
+                                foreach (var t in tokacc)
+                                {
+                                    var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, t.TokenId, string.Empty);
+                                    tdetails.ActualBalance = t.Balance;
+                                    a.Tokens.Add(t.TokenId, tdetails);
+                                }
+                            }
+                            else
+                            {
+                                var tokens = new Dictionary<string, IToken>();
+
+                                string url = "https://explorer.nebl.io/address/" + a.Address; //loading actual state of tokens from explorer
+                                var webGet = new HtmlWeb();
+                                var document = webGet.Load(url);
+
+                                HtmlNodeCollection tl = document.DocumentNode.SelectNodes("//a");
+                                foreach (HtmlAgilityPack.HtmlNode node in tl)
+                                {
+                                    //Console.WriteLine(node.InnerText.Trim());
+                                    var href = node.Attributes["href"].Value;
+
+                                    if (!string.IsNullOrEmpty(href))
+                                    {
+                                        if (href.Contains("/token/"))
+                                        {
+                                            var tabletr = node.ParentNode.ParentNode.ParentNode;
+                                            if (tabletr != null)
+                                            {
+                                                var symbol = node.InnerText;
+                                                var tokid = href.Remove(0, 7);
+                                                var balanceLine = tabletr.LastChild;
+
+                                                if (balanceLine != null)
+                                                {
+                                                    var bal = Convert.ToInt32(balanceLine.InnerText);
+
+                                                    var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, tokid, string.Empty);
+                                                    tdetails.ActualBalance = bal;
+                                                    tokens.Add(tokid, tdetails);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                /*
+                                 * This part calculate available tokens from address tx. But does not work. It does not count if tokens are send to another addres after tx
+                                if (a.NumberOfTransaction == addrinfo.Transactions.Count)
+                                {
+                                    // calculate how many tokens are on the account from all account transactions
+                                    var tokens = new Dictionary<string, IToken>();
+
+                                    foreach (var tx in a.Transactions.Values)
+                                    {
+                                        if (tx.Direction == TransactionDirection.Incoming)
+                                        {
+                                            if (tx.VoutTokens?.Count > 0)
+                                            {
+                                                var intoken = tx.VoutTokens.First();
+                                                if (tokens.TryGetValue(intoken.Symbol, out var tok))
+                                                {
+                                                    tok.ActualBalance += intoken.ActualBalance;
+                                                }
+                                                else
+                                                {
+                                                    //var tk = TokenFactory.GetToken(TokenTypes.NTP1, intoken.Name, intoken.Symbol, (double)intoken.ActualBalance);
+                                                    var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, intoken.Id, string.Empty);
+                                                    tdetails.ActualBalance = intoken.ActualBalance;
+                                                    tokens.Add(intoken.Symbol, tdetails);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (tx.VoutTokens?.Count > 0)
+                                            {
+                                                var outtoken = tx.VoutTokens.First();
+                                                if (tokens.TryGetValue(outtoken.Symbol, out var tok))
+                                                {
+                                                    tok.ActualBalance = outtoken.ActualBalance;
+                                                }
+                                                else
+                                                {
+                                                    //var tk = TokenFactory.GetToken(TokenTypes.NTP1, outtoken.Name, outtoken.Symbol, -(double)outtoken.ActualBalance);
+                                                    var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, outtoken.Id, string.Empty);
+                                                    tdetails.ActualBalance = outtoken.ActualBalance;
+                                                    tokens.Add(outtoken.Symbol, tdetails);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    */
+                                    a.Tokens.Clear();
+                                    foreach (var t in tokens)
+                                    {
+                                        a.Tokens.Add(t.Key, t.Value);
+                                    }
+                            }
+                            
+                            /*
+                            if (withTx)
+                            {
+                                a.Transactions.Clear();
+                                a = await GetTransactionsDetails(address, addrinfo, a);
+                            }*/
+                        }
+                    }
+                    ////////////////////////////////////////////////////
+                }
+            }
+        }
+
+        private async Task ListAccountWithRPC(bool withTx = false)
         {
             var res = "ERROR";
             var accounts = new List<NeblioQTWalletAccountDetails>();
@@ -168,115 +356,9 @@ namespace VEDrivers.Economy.Wallets
                                 i++;
                             }
 
-                            if (!string.IsNullOrEmpty(nad.Address))
-                            {
-                                if (!string.IsNullOrEmpty(nad.Name) || (nad.Balance != 0))
-                                {
-                                    if (Accounts.TryGetValue(nad.Address, out var a))
-                                    {
-                                        if (a != null)
-                                        {
-                                            var addrinfo = await WalletInfoAsync(client, nad.Address);
-
-                                            a.TotalBalance = addrinfo.Balance;
-                                            a.TotalUnconfirmedBalance = addrinfo.UnconfirmedBalance;
-
-                                            TotalBalance += a.TotalBalance;
-
-                                            if (addrinfo.Transactions?.Count > a.NumberOfTransaction)
-                                            {
-                                                for (int k = (int)(a.NumberOfTransaction); k < addrinfo.Transactions.Count; k++)
-                                                {
-                                                    var dto = new NewTransactionDTO();
-                                                    dto.AccountAddress = a.Address;
-                                                    dto.WalletName = Name;
-                                                    dto.Type = TransactionTypes.Neblio;
-                                                    dto.TxId = addrinfo.Transactions.ToArray()[k];
-                                                    dto.OwnerId = Owner;
-
-                                                    var txdetailsrcvd = false;
-                                                    try
-                                                    {
-                                                        dto.TransactionDetails = NeblioTransactionHelpers.TransactionInfo(dto.Type, dto.TxId, null);
-
-                                                        if (dto.TransactionDetails != null)
-                                                            if (dto.TransactionDetails.Confirmations > 0)
-                                                                txdetailsrcvd = true;
-                                                    }
-                                                    catch (Exception ex)
-                                                    {
-                                                        log.Error("Neblio Wallet cannot load tx details: ", ex);
-                                                    }
-
-                                                    if (dto.TransactionDetails != null)
-                                                        NewTransaction?.Invoke(this, dto);
-
-                                                    //send after message about new tx
-                                                    if (txdetailsrcvd)
-                                                    {
-                                                        if (Accounts.TryGetValue(dto.AccountAddress, out var acc))
-                                                        {
-                                                            acc.Transactions.TryRemove(dto.TxId, out var to);
-                                                            acc.Transactions.TryAdd(dto.TxId, dto.TransactionDetails);
-                                                        }
-                                                        Transactions.TryRemove(dto.TxId, out var t);
-                                                        Transactions.TryAdd(dto.TxId, dto.TransactionDetails);
-
-                                                        NewTransactionDetailsReceived?.Invoke(this, dto);
-                                                    }
-                                                    else
-                                                    {
-                                                        NewWaitingTxForDetails.TryAdd(dto.TxId, (false, a.Address));
-                                                    }
-
-                                                    a.NumberOfTransaction++;// = addrinfo.Transactions.Count;
-                                                }
-                                            }
-                                            a.Tokens.Clear();
-                                            foreach (var t in nad.tokenAccounts)
-                                            {
-                                                var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, t.TokenId, string.Empty);
-                                                tdetails.ActualBalance = t.Balance;
-                                                a.Tokens.Add(t.TokenId, tdetails);
-                                            }
-
-                                            if (withTx)
-                                            {
-                                                a.Transactions.Clear();
-                                                a = await GetTransactionsDetails(nad.Address, addrinfo, a);
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        /*
-                                        var acc = AccountFactory.GetAccount(Guid.Empty, AccountTypes.Neblio, Owner, Id, nad.Name, nad.Address, nad.Balance);
-
-                                        foreach (var t in nad.tokenAccounts)
-                                        {
-                                            acc.Tokens.Add(t.Address, TokenFactory.GetToken(TokenTypes.NTP1, string.Empty, t.Symbol, t.Balance));
-                                        }
-
-                                        var addrinfo = await WalletInfoAsync(client, nad.Address);
-
-                                        acc.TotalBalance = addrinfo.Balance;
-                                        acc.TotalUnconfirmedBalance = addrinfo.UnconfirmedBalance;
-
-                                        //a.NumberOfTransaction = addrinfo.Transactions.Count();
-
-                                        if (withTx)
-                                        {
-                                            acc = await GetTransactionsDetails(nad.Address, addrinfo, acc);
-                                        }
-
-                                        Accounts.TryAdd(nad.Address, acc);
-                                        */
-                                    }
-
-                                }
-                            }
+                            await LoadAccountObject(nad.Address, nad.Name, nad.Balance, nad.tokenAccounts);
                         }
-                        catch (Exception ex) 
+                        catch (Exception ex)
                         {
                             log.Error("Exeption in List Accounts details", ex);
                         }
@@ -284,6 +366,37 @@ namespace VEDrivers.Economy.Wallets
                 }
 
                 await CheckNewTxWaitingForDetails();
+            }
+            catch (Exception ex)
+            {
+                log.Error("Exeption in ListAccounts", ex);
+            }
+        }
+
+        private async Task LoadAccountsFromAPI(bool withTx = false)
+        {
+            foreach(var a in Accounts)
+            {
+                await LoadAccountObject(a.Value.Address, a.Value.Name, (double)a.Value.TotalBalance, null);
+            }
+        }
+
+        public override async Task<IDictionary<string, IAccount>> ListAccounts(bool useRPC = true, bool withTx = false)
+        {
+            if (withTx)
+                Transactions.Clear();
+
+            TotalBalance = 0;
+
+            try
+            {
+                if (useRPC)
+                    await ListAccountWithRPC(withTx);
+                else
+                    await LoadAccountsFromAPI(withTx);
+
+                //await CheckNewTxWaitingForDetails();
+            
             }
             catch (Exception ex)
             {

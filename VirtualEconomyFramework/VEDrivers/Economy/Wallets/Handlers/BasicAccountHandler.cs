@@ -40,50 +40,68 @@ namespace VEDrivers.Economy.Wallets.Handlers
                     // cannot be the same account name in one wallet
                     if (wallet.Accounts.Values.FirstOrDefault(a => a.Name == name) == null)
                     {
-                        if (EconomyMainContext.QTRPCClient.IsConnected)
+                        if (EconomyMainContext.WorkWithQTRPC)
                         {
-                            // creating wallet in desktop QT Wallet
-
-                            var accresp = new QTWalletResponseDto();
-
-                            if (!justInDb)
+                            if (EconomyMainContext.QTRPCClient.IsConnected)
                             {
-                                var acc = await EconomyMainContext.QTRPCClient.RPCLocalCommandSplitedAsync("getnewaddress", new string[] { name });
-                                accresp = JsonConvert.DeserializeObject<QTWalletResponseDto>(acc);
-                            }
-                            else
-                            {
-                                if (!string.IsNullOrEmpty(accountAddress))
-                                    accresp = new QTWalletResponseDto() { result = accountAddress };
-                                else
-                                    accresp = new QTWalletResponseDto() { result = "No Address Filled" };
-                            }
+                                // creating wallet in desktop QT Wallet
 
-                            // if success add to list of Accounts of specified wallet
-                            if (accresp != null)
-                            {
-                                var account = AccountFactory.GetAccount(Guid.Empty, type, wallet.Owner, walletId, name, accresp.result, 0);
+                                var accresp = new QTWalletResponseDto();
 
-                                wallet.Accounts.TryAdd(account.Address, account);
-
-                                if (EconomyMainContext.WorkWithDb && account != null)
+                                if (!justInDb)
                                 {
-                                    if (!dbservice.SaveAccount(account))
-                                        return "Cannot save new account to the Db!";
+                                    var acc = await EconomyMainContext.QTRPCClient.RPCLocalCommandSplitedAsync("getnewaddress", new string[] { name });
+                                    accresp = JsonConvert.DeserializeObject<QTWalletResponseDto>(acc);
+                                }
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(accountAddress))
+                                        accresp = new QTWalletResponseDto() { result = accountAddress };
+                                    else
+                                        accresp = new QTWalletResponseDto() { result = "No Address Filled" };
                                 }
 
-                                return "OK";
+                                // if success add to list of Accounts of specified wallet
+                                if (accresp != null)
+                                {
+                                    var account = AccountFactory.GetAccount(Guid.Empty, type, wallet.Owner, walletId, name, accresp.result, 0);
+
+                                    wallet.Accounts.TryAdd(account.Address, account);
+
+                                    if (EconomyMainContext.WorkWithDb && account != null)
+                                    {
+                                        if (!dbservice.SaveAccount(account))
+                                            return "Cannot save new account to the Db!";
+                                    }
+
+                                    return "OK";
+                                }
+                                else
+                                {
+                                    log.Error("Cannot create account - cannot get correct response from QTWalletRPC!");
+                                    return "Cannot create account - cannot get correct response from QTWalletRPC!";
+                                }
                             }
                             else
                             {
-                                log.Error("Cannot create account - cannot get correct response from QTWalletRPC!");
-                                return "Cannot create account - cannot get correct response from QTWalletRPC!";
+                                log.Error("Cannot create account - RPC is not connected, probably not configured!");
+                                return "Cannot create account - RPC is not connected, probably not configured!";
                             }
                         }
                         else
                         {
-                            log.Error("Cannot create account - RPC is not connected, probably not configured!");
-                            return "Cannot create account - RPC is not connected, probably not configured!";
+                            // if not work with RPC you must fill address
+                            if (!string.IsNullOrEmpty(accountAddress))
+                            {
+                                var account = AccountFactory.GetAccount(Guid.Empty, type, wallet.Owner, walletId, name, accountAddress, 0);
+                                wallet.Accounts.TryAdd(account.Address, account);
+                                return "OK";
+                            }
+                            else
+                            {
+                                log.Error("Cannot create account - RPC is disabled and accountAddress is empty!");
+                                return "Cannot create account - RPC is disabled and accountAddress is empty!";
+                            }
                         }
                     }
                     else

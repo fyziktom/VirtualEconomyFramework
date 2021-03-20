@@ -26,6 +26,7 @@ namespace VEDrivers.Economy.Wallets
         string ConnectionUrlBaseAddress { get; set; }
         int ConnectionPort { get; set; }
         int NumberOfActiveAccounts { get; set; }
+        bool UseRPC { get; set; }
         ConcurrentDictionary<string, IAccount> Accounts { get; set; }
 
         ConcurrentDictionary<string, ITransaction> Transactions { get; set; }
@@ -38,6 +39,6 @@ namespace VEDrivers.Economy.Wallets
         event EventHandler<NewTransactionDTO> NewTransactionDetailsReceived;
         Task<IWallet> GetDetails();
         Task<ITransaction> GetTxDetails(string txid);
-        Task<IDictionary<string, IAccount>> ListAccounts(bool withTx = false);
+        Task<IDictionary<string, IAccount>> ListAccounts(bool useRPC = true, bool withTx = false);
     }
 }

@@ -63,7 +63,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                     ownerid = Guid.NewGuid();
                 }
 
-                var wall = WalletFactory.GetWallet(id, ownerid, type, walletName, urlBase, port);
+                var wall = WalletFactory.GetWallet(id, ownerid, type, walletName, EconomyMainContext.WorkWithQTRPC, urlBase, port);
 
                 if (wall != null)
                 {
@@ -284,7 +284,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
         {
             foreach (var w in EconomyMainContext.Wallets)
             {
-                await w.Value.ListAccounts();
+                await w.Value.ListAccounts(EconomyMainContext.WorkWithQTRPC);
             }
 
             if (EconomyMainContext.Wallets.Count > 0 && firstLoadAfterStart)

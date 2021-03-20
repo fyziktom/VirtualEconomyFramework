@@ -34,23 +34,34 @@ namespace VEconomy
             this.settings = settings; //startup configuration in appsettings.json
             this.lifetime = lifetime;
 
-            EconomyMainContext.DbService = new DbConnectorService();
+            EconomyMainContext.WorkWithQTRPC = Convert.ToBoolean(settings.GetValue<bool>("UseRPC"));
 
-            EconomyMainContext.QTRPConfig = new QTRPCConfig();
+            EconomyMainContext.WorkWithDb = Convert.ToBoolean(settings.GetValue<bool>("UseDatabase"));
+            if (EconomyMainContext.WorkWithDb)
+            {
+                var constr = settings["ConnectionStrings:VEFrameworkDb"];  //we are not using DI for DbContext
+                if (!string.IsNullOrEmpty(constr))
+                {
+                    DbEconomyContext.ConnectString = constr;
+                    EconomyMainContext.DbService = new DbConnectorService();
+                }
+                else
+                {
+                    log.Error("Cannot connect to Db without connection string!");
+                    Console.WriteLine("Cannot connect to Db without connection string!");
+                    EconomyMainContext.WorkWithDb = false;
+                }
+            }
+
             settings.GetSection("QTRPC").Bind(EconomyMainContext.QTRPConfig);
-            EconomyMainContext.QTRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
-            NeblioTransactionHelpers.qtRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
-
-            EconomyMainContext.Wallets = new ConcurrentDictionary<string, IWallet>();
-            EconomyMainContext.Accounts = new ConcurrentDictionary<string, IAccount>();
-            EconomyMainContext.Nodes = new ConcurrentDictionary<string, INode>();
-            EconomyMainContext.Cryptocurrencies = new ConcurrentDictionary<string, ICryptocurrency>();
-            EconomyMainContext.Owners = new ConcurrentDictionary<string, IOwner>();
+            if (EconomyMainContext.QTRPConfig != null)
+            {
+                EconomyMainContext.QTRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
+                NeblioTransactionHelpers.qtRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
+            }
 
             // fill default Cryptocurrency, Owner and Wallet
-
             try { 
-                var neblio = new NeblioCryptocurrency();
                 EconomyMainContext.Cryptocurrencies.TryAdd("Neblio", new NeblioCryptocurrency());
             }
             catch(Exception ex)
@@ -62,13 +73,32 @@ namespace VEconomy
             EconomyMainContext.Owners.TryAdd("Default", owner);
 
             // load data from database
-            DbEconomyContext.ConnectString = settings["ConnectionStrings:VEFrameworkDb"];  //we are not using DI for DbContext
             // load or create default wallet if db is not avaiable
-            if (!MainDataContext.WalletHandler.LoadWalletsFromDb())
-                MainDataContext.WalletHandler.UpdateWallet(Guid.NewGuid(), owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326);
+            if (EconomyMainContext.WorkWithDb)
+            {
+                if (!MainDataContext.WalletHandler.LoadWalletsFromDb())
+                    MainDataContext.WalletHandler.UpdateWallet(Guid.NewGuid(), owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326).GetAwaiter().GetResult();
 
-            if (!MainDataContext.NodeHandler.LoadNodesFromDb())
-                Console.WriteLine("No nodes in Db, continue with empty list of nodes");
+                if (!MainDataContext.NodeHandler.LoadNodesFromDb())
+                    Console.WriteLine("No nodes in Db, continue with empty list of nodes");
+            }
+            else
+            {
+                var acc = new List<string>();
+                settings.GetSection("Accounts").Bind(acc);
+                if (acc != null)
+                    EconomyMainContext.AccountsFromConfig = acc;
+
+                var uid = Guid.NewGuid();
+                MainDataContext.WalletHandler.UpdateWallet(uid, owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326).GetAwaiter().GetResult();
+                if (EconomyMainContext.Wallets.TryGetValue(uid.ToString(), out var wallet))
+                {
+                    foreach(var a in EconomyMainContext.AccountsFromConfig)
+                    {
+                        MainDataContext.AccountHandler.UpdateAccount(a, uid, AccountTypes.Neblio, a).GetAwaiter().GetResult();
+                    }
+                }
+            }
 
             if (!MainDataContext.WalletHandler.ReloadAccounts())
                 Console.WriteLine("Cannot reload accounts");
@@ -78,8 +108,11 @@ namespace VEconomy
         {
             try
             {
-                EconomyMainContext.QTRPCClient.InitClients();
-                NeblioTransactionHelpers.qtRPCClient.InitClients();
+                if (EconomyMainContext.WorkWithQTRPC)
+                {
+                    EconomyMainContext.QTRPCClient.InitClients();
+                    NeblioTransactionHelpers.qtRPCClient.InitClients();
+                }
             }
             catch(Exception ex)
             {

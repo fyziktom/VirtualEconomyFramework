@@ -22,8 +22,7 @@ namespace VEDrivers.Common
             ConnectionUrlBaseAddress = baseurl;
             ConnectionPort = port;
 
-            Console.WriteLine("Connection Wallet Address:" + ConnectionAddress);
-
+            Console.WriteLine("Connection Wallet Address setted to:" + ConnectionAddress);
         }
 
         public QTWalletRPCClient(QTRPCConfig cfg)
@@ -33,8 +32,7 @@ namespace VEDrivers.Common
             User = cfg.User;
             Pass = cfg.Pass;
 
-            Console.WriteLine("Connection Wallet Address:" + ConnectionAddress);
-
+            Console.WriteLine("Connection Wallet Address setted to:" + ConnectionAddress);
         }
 
         public string ConnectionUrlBaseAddress { get; set; } = "127.0.0.1";

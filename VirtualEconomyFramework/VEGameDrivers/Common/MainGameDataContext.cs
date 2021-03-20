@@ -10,6 +10,6 @@ namespace VEGameDrivers.Common
 {
     public static class MainGameDataContext
     {
-        public static ConcurrentDictionary<string, IGame> Games { get; set; }
+        public static ConcurrentDictionary<string, IGame> Games { get; set; } = new ConcurrentDictionary<string, IGame>();
     }
 }

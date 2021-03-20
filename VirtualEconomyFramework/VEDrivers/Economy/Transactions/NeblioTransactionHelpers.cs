@@ -122,84 +122,7 @@ namespace VEDrivers.Economy.Transactions
                     });
                 }
             }
-            /*
-            Console.WriteLine($"Hex                         = {info.Hex                  }   ");
-            Console.WriteLine($"Txid                        = {info.Txid                 }   ");
-            Console.WriteLine($"Version                     = {info.Version              }   ");
-            Console.WriteLine($"Locktime                    = {info.Locktime             }   ");
-            Console.WriteLine($"Vin count                   = {info.Vin.Count            }   ");
-            foreach (var vin in info.Vin)
-            {
-                Console.WriteLine($"    Txid                = {vin.Txid              }   ");
-                Console.WriteLine($"    Vout                = {vin.Vout              }   ");
-                Console.WriteLine($"    ScriptSig.Asm       = {vin.ScriptSig.Asm     }   ");
-                Console.WriteLine($"    ScriptSig.Hex       = {vin.ScriptSig.Hex     }   ");
-                foreach (var item in vin.ScriptSig.AdditionalProperties)
-                {
-                    Console.WriteLine($"    ScriptSig Property: Key = {item.Key}, Value = {item.Value}");
-                }
-                Console.WriteLine($"    sequence            = {vin.Sequence          }   ");
-                Console.WriteLine($"    PreviousOutput      = {vin.PreviousOutput    }   ");
-                Console.WriteLine($"    vin Tokens count    = {vin.Tokens.Count     }    ");
-                foreach (var token in vin.Tokens) 
-                {
-                    Console.WriteLine($"    Id               = {token.TokenId             }  ");
-                    Console.WriteLine($"    Amount           = {token.Amount              }  ");
-                    Console.WriteLine($"    Props            = {token.AdditionalProperties } ");
-                    Console.WriteLine($"    Div           = {token.Divisibility } ");
-                }
-                Console.WriteLine($"    Value               = {vin.Value             }   ");
-                Console.WriteLine($"    sequence            = {vin.Sequence          }   ");
-                foreach (var item in vin.AdditionalProperties)
-                {
-                    Console.WriteLine($"    Vin Property: Key = {item.Key}, Value = {item.Value}");
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine($"Vout count                  = {info.Vout.Count           }   ");
-            foreach (var vout in info.Vout)
-            {
-                Console.WriteLine($"    value                  = {vout.Value                 }   ");
-                Console.WriteLine($"    N                      = {vout.N                     }   ");
-                Console.WriteLine($"    ScriptPubKey.Asm       = {vout.ScriptPubKey.Asm      }   ");
-                Console.WriteLine($"    ScriptPubKey.Hex       = {vout.ScriptPubKey.Hex      }   ");
-                Console.WriteLine($"    ScriptPubKey.ReqSigs   = {vout.ScriptPubKey.ReqSigs  }   ");
-                Console.WriteLine($"    ScriptPubKey.Type      = {vout.ScriptPubKey.Type     }   ");
 
-                if (vout.ScriptPubKey.Addresses != null)
-                {
-                    foreach (var item in vout.ScriptPubKey.Addresses) Console.WriteLine($"    ScriptPubKey address:     {vout.ScriptPubKey.Type     }   ");
-                    Console.WriteLine($"    vout Tokens count      = {vout.Tokens.Count     }   ");
-                }
-
-                foreach (var token in vout.Tokens) 
-                {
-                    Console.WriteLine($"    Id               = {token.TokenId             }  ");
-                    Console.WriteLine($"    Amount           = {token.Amount              }  ");
-                    Console.WriteLine($"    Props            = {token.AdditionalProperties } ");
-                    Console.WriteLine($"    Div           = {token.Divisibility } ");
-                }
-                Console.WriteLine($"    Used                   = {vout.Used             }   ");
-                Console.WriteLine($"    Blockheight            = {vout.Blockheight      }   ");
-                Console.WriteLine($"    UsedBlockheight        = {vout.UsedBlockheight  }   ");
-                Console.WriteLine($"    UsedTxid               = {vout.UsedTxid         }   ");
-                foreach (var item in vout.AdditionalProperties)
-                {
-                    Console.WriteLine($"   Vout Property: Key = {item.Key}, Value = {item.Value}");
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine($"Blocktime                   = {info.Blocktime            }   ");
-            Console.WriteLine($"TotalSent                   = {info.Totalsent            }   ");
-            Console.WriteLine($"Fee                         = {info.Fee                  }   ");
-            Console.WriteLine($"Time                        = {info.Time                 }   ");
-            Console.WriteLine($"Confirmations               = {info.Confirmations        }   ");
-            foreach (var item in info.AdditionalProperties)
-            {
-                Console.WriteLine($"Property: Key = {item.Key}, Value = {item.Value}");
-            }
-            Console.WriteLine();
-            */
             return transaction;
         }
 
@@ -243,6 +166,8 @@ namespace VEDrivers.Economy.Transactions
             {
                 if (info.MetadataOfUtxo.UserData.Meta.Count > 0)
                 {
+                    token.MetadataAvailable = true;
+
                     foreach (var o in info.MetadataOfUtxo.UserData.Meta)
                     {
                         var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
@@ -259,6 +184,10 @@ namespace VEDrivers.Economy.Transactions
                             }
                         }
                     }
+                }
+                else
+                {
+                    token.MetadataAvailable = false;
                 }
             }
 

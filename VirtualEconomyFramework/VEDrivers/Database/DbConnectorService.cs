@@ -30,7 +30,8 @@ namespace VEDrivers.Database
 
                 foreach (var w in context.Wallets.Where(w => !w.Deleted))
                 {
-                    walllets.Add(w.Fill(WalletFactory.GetWallet(new Guid(), new Guid(), (WalletTypes)w.Type, w.Name, w.Host, w.Port)));
+                    // todo: add RPC save!!!!!!
+                    walllets.Add(w.Fill(WalletFactory.GetWallet(new Guid(), new Guid(), (WalletTypes)w.Type, w.Name, true, w.Host, w.Port)));
                 }
 
                 return walllets;
@@ -127,7 +128,7 @@ namespace VEDrivers.Database
                     .Where(w => w.Id == id.ToString())
                     .FirstOrDefault();
 
-                return wallet.Fill(WalletFactory.GetWallet(new Guid(), new Guid(), (WalletTypes)wallet.Type, string.Empty, string.Empty, 0));
+                return wallet.Fill(WalletFactory.GetWallet(new Guid(), new Guid(), (WalletTypes)wallet.Type, string.Empty, false, string.Empty, 0));
             }
             catch (Exception ex)
             {

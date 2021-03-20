@@ -27,6 +27,7 @@ namespace VEDrivers.Economy.Wallets
             }
         }
         public int NumberOfActiveAccounts { get; set; } = 0;
+        public bool UseRPC { get; set; } = true;
         public ConcurrentDictionary<string, IAccount> Accounts { get; set; }
         public ConcurrentDictionary<string, ITransaction> Transactions { get; set; }
         public ConcurrentDictionary<string, (bool, string)> NewWaitingTxForDetails { get; set; }
@@ -52,6 +53,6 @@ namespace VEDrivers.Economy.Wallets
         public abstract event EventHandler<NewTransactionDTO> NewTransactionDetailsReceived;
         public abstract Task<IWallet> GetDetails();
         public abstract Task<ITransaction> GetTxDetails(string txid);
-        public abstract Task<IDictionary<string, IAccount>> ListAccounts(bool withTx = false);
+        public abstract Task<IDictionary<string, IAccount>> ListAccounts(bool useRPC = true, bool withTx = false);
     }
 }

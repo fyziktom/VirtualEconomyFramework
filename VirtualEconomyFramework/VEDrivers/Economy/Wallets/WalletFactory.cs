@@ -8,7 +8,7 @@ namespace VEDrivers.Economy.Wallets
 {
     public static class WalletFactory
     {
-        public static IWallet GetWallet(Guid id, Guid owner, WalletTypes type, string name, string baseURL, int port)
+        public static IWallet GetWallet(Guid id, Guid owner, WalletTypes type, string name, bool useRPC, string baseURL, int port)
         {
             switch (type)
             {
@@ -16,7 +16,7 @@ namespace VEDrivers.Economy.Wallets
                     return null;
                     break;
                 case WalletTypes.Neblio:
-                    return new NeblioWallet(id, owner, name, baseURL, port);
+                    return new NeblioWallet(id, owner, name, useRPC, baseURL, port);
                     break;
             }
 
