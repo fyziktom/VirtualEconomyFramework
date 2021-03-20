@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using VEDrivers.Economy;
+using VEDrivers.Economy.Transactions;
 
 namespace VEDrivers.Economy.Tokens
 {
@@ -19,6 +20,7 @@ namespace VEDrivers.Economy.Tokens
         string ImageUrl { get; set; }
         bool MetadataAvailable { get; set; }
         double? ActualBalance { get; set; }
+        TransactionDirection Direction { get; set; }
         DateTime TimeStamp { get; set; }
         Dictionary<string, string> Metadata { get; set; }
         Task<string> GetDetails();

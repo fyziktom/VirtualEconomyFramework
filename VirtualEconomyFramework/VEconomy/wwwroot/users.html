@@ -25,7 +25,7 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link active" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link" id="users" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a></li>
+                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link active" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link" id="tokens" href="tokens.html"><i class="fas fa-user-alt"></i><span>Tokens</span></a><a class="nav-link" id="Games" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -233,23 +233,18 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="loginModal">
+    <div class="modal fade" role="dialog" tabindex="-1" id="tokenMetadataModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Login</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseLogin"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Token Metadata</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseLogin"><span aria-hidden="true">×</span></button>
                 </div>
                 <div class="modal-body">
-                    <p class="d-xl-flex justify-content-xl-center" id="confirmModalContent-1">If you need to make view details please Log In</p>
+                    <p class="d-xl-flex justify-content-xl-center" id="confirmModalContent-1">This metadata is contained in the token</p>
                     <div class="row">
                         <div class="col">
                             <div class="row" style="margin-top: 20px;">
-                                <div class="col d-xl-flex justify-content-xl-center"><span>User name</span></div>
-                                <div class="col"><input type="text" id="loginName" style="width: 200px;"></div>
-                            </div>
-                            <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
-                                <div class="col d-xl-flex justify-content-xl-center"><span>User password</span></div>
-                                <div class="col"><input type="password" id="loginPass" style="width: 200px;"></div>
+                                <div class="col d-xl-flex justify-content-xl-center"><textarea id="tokenMetadataModalTextarea" style="width: 400px;min-height: 200px;"></textarea></div>
                             </div>
                         </div>
                     </div>
@@ -257,7 +252,7 @@
                         <div class="col d-xl-flex justify-content-xl-center"><span class="text-danger" id="loginError"></span></div>
                     </div>
                 </div>
-                <div class="modal-footer"><button class="btn btn-dark" id="btnCancelLogin" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmLogin" type="button"><i class="fa fa-check"></i></button></div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
             </div>
         </div>
     </div>

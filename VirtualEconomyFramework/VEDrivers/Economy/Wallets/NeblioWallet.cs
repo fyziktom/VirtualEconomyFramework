@@ -199,29 +199,32 @@ namespace VEDrivers.Economy.Wallets
                                 var document = webGet.Load(url);
 
                                 HtmlNodeCollection tl = document.DocumentNode.SelectNodes("//a");
-                                foreach (HtmlAgilityPack.HtmlNode node in tl)
+                                if (tl != null)
                                 {
-                                    //Console.WriteLine(node.InnerText.Trim());
-                                    var href = node.Attributes["href"].Value;
-
-                                    if (!string.IsNullOrEmpty(href))
+                                    foreach (HtmlAgilityPack.HtmlNode node in tl)
                                     {
-                                        if (href.Contains("/token/"))
+                                        //Console.WriteLine(node.InnerText.Trim());
+                                        var href = node.Attributes["href"].Value;
+
+                                        if (!string.IsNullOrEmpty(href))
                                         {
-                                            var tabletr = node.ParentNode.ParentNode.ParentNode;
-                                            if (tabletr != null)
+                                            if (href.Contains("/token/"))
                                             {
-                                                var symbol = node.InnerText;
-                                                var tokid = href.Remove(0, 7);
-                                                var balanceLine = tabletr.LastChild;
-
-                                                if (balanceLine != null)
+                                                var tabletr = node.ParentNode.ParentNode.ParentNode;
+                                                if (tabletr != null)
                                                 {
-                                                    var bal = Convert.ToInt32(balanceLine.InnerText);
+                                                    var symbol = node.InnerText;
+                                                    var tokid = href.Remove(0, 7);
+                                                    var balanceLine = tabletr.LastChild;
 
-                                                    var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, tokid, string.Empty);
-                                                    tdetails.ActualBalance = bal;
-                                                    tokens.Add(tokid, tdetails);
+                                                    if (balanceLine != null)
+                                                    {
+                                                        var bal = Convert.ToInt32(balanceLine.InnerText);
+
+                                                        var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, tokid, string.Empty);
+                                                        tdetails.ActualBalance = bal;
+                                                        tokens.Add(tokid, tdetails);
+                                                    }
                                                 }
                                             }
                                         }

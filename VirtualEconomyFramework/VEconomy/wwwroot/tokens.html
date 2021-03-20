@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -25,7 +25,7 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link" id="tokens" href="tokens.html"><i class="fas fa-user-alt"></i><span>Tokens</span></a><a class="nav-link" id="Games" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a></li>
+                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link active" id="tokens" href="tokens.html"><i class="fas fa-user-alt"></i><span>Tokens</span></a><a class="nav-link" id="Games" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -56,16 +56,36 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4"></div>
-                    <h2 class="text-center text-dark mb-0">Main Dashboard</h2>
+                    <div class="d-sm-flex justify-content-between align-items-center justify-content-xl-center mb-4">
+                        <h3 class="text-dark mb-0">Tokens</h3>
+                    </div>
+                    <div class="d-sm-flex justify-content-between align-items-center justify-content-xl-center mb-4">
+                        <div class="row">
+                            <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Address</span></div>
+                            <div class="col-auto">
+                                <div class="dropdown"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnAcountAddressToLoadTokens" type="button" onclick="reloadTokenLIstAccountsAddressesDropDown()" style="width: 400px;">Please Select Account Address</button>
+                                    <div class="dropdown-menu" style="width: 400px;" id="tokenListAccountAddressesDropDown"></div>
+                                </div>
+                            </div>
+                            <div class="col-auto"><button class="btn btn-primary" id="btnLoadAccountTokens" type="button">Load Tokens</button></div>
+                            <div class="col-auto">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxTokenListIncoming" checked="" onclick="refreshTokens()"><label class="form-check-label" for="formCheck-1">Incoming</label></div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxTokenListOutgoing" onclick="refreshTokens()" checked=""><label class="form-check-label" for="formCheck-1">Outgoing</label></div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxTokenListWithMetadata" onclick="refreshTokens()"><label class="form-check-label" for="formCheck-1">Just With Metadata</label></div>
+                            </div>
+                            <div class="col-auto"><input type="text" id="tokenListSearchByNameSymbol" placeholder="Name or Symbol" onkeyup="refreshTokens()"></div>
+                        </div>
+                    </div>
                     <div class="row">
-                        <div class="col">
-                            <div class="row"></div>
-                            <div class="row"></div>
+                        <div class="col" style="margin-top: 20px;">
+                            <div id="tokensCards"></div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
@@ -84,6 +104,29 @@
                     <p id="confirmModalContent">Do you realy want to save the setting?</p>
                 </div>
                 <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="confirmButtonOk" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="tokenMetadataModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Token Metadata</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseLogin"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <p class="d-xl-flex justify-content-xl-center" id="confirmModalContent-1">This metadata is contained in the token</p>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center"><textarea id="tokenMetadataModalTextarea" style="width: 400px;min-height: 200px;"></textarea></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center"><span class="text-danger" id="loginError"></span></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
             </div>
         </div>
     </div>
@@ -200,21 +243,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="calcHashOfFileModal">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Drop file to calculate Hash of the file</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                </div>
-                <div class="modal-body text-center" id="holder">
-                    <p id="hashModalFileName">No file selected</p>
-                    <p>Hash of the file:</p>
-                    <p id="hashOfFile">Please drop here the file to create hash</p>
-                </div>
-                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnUseHashAsMetadata" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
-            </div>
-        </div>
-    </div>
+
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>

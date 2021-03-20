@@ -11,5 +11,6 @@ namespace VEDrivers.Economy.Wallets.Handlers
     {
         Task<string> UpdateAccount(string accountAddress, Guid walletId, AccountTypes type, string name, bool justInDb = true);
         IDictionary<string, IToken> FindTokenByMetadata(string account, string key, string value = "");
+        IDictionary<string, IToken> FindAllTokens(string account);
     }
 }

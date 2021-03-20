@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using VEDrivers.Economy.Transactions;
 
 namespace VEDrivers.Economy.Tokens
 {
@@ -20,6 +21,7 @@ namespace VEDrivers.Economy.Tokens
         public double? TransferFee { get; set; } = 0;
         public double? ActualBTCPrice { get; set; } = 0;
         public double? ActualBalance { get; set; } = 0.0;
+        public TransactionDirection Direction { get; set; }
         public DateTime TimeStamp { get; set; }
 
         public Dictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();

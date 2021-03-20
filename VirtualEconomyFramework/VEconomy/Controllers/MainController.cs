@@ -257,6 +257,30 @@ namespace VEconomy.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetAccountTokens/{address}")]
+        public async Task<IDictionary<string,IToken>> GetAccountTokens(string address)
+        {
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(address, out var account))
+                { 
+                    var tokens = MainDataContext.AccountHandler.FindAllTokens(address);
+
+                    return tokens;
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, "Cannot get Account Tokens, Account address not found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get Account Types", ex);
+                throw new HttpResponseException((HttpStatusCode)501, "Cannot get Account types!");
+            }
+        }
+
         public class UpdateAccountData
         {
             public string walletId { get; set; }

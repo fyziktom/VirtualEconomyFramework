@@ -77,6 +77,8 @@ namespace VEDrivers.Economy.Transactions
                         Name = tokeninfo.Name,
                         IssuerName = tokeninfo.IssuerName,
                         Metadata = tokeninfo.Metadata,
+                        ImageUrl = tokeninfo.ImageUrl,
+                        MetadataAvailable = tokeninfo.MetadataAvailable,
                         TimeStamp = transaction.TimeStamp
                     });
                 }
@@ -117,7 +119,9 @@ namespace VEDrivers.Economy.Transactions
                         Symbol = tokeninfo.Symbol,
                         Name = tokeninfo.Name,
                         IssuerName = tokeninfo.IssuerName,
+                        ImageUrl = tokeninfo.ImageUrl,
                         Metadata = tokeninfo.Metadata,
+                        MetadataAvailable = tokeninfo.MetadataAvailable,
                         TimeStamp = transaction.TimeStamp
                     });
                 }

@@ -162,6 +162,39 @@ namespace VEDrivers.Economy.Wallets.Handlers
 
             return result;
         }
-        
+
+        public override IDictionary<string, IToken> FindAllTokens(string account)
+        {
+            var result = new Dictionary<string, IToken>();
+
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(account, out var acc))
+                {
+                    foreach (var t in acc.Transactions)
+                    {
+                        var tx = t.Value;
+                        if (tx.VoutTokens != null)
+                        {
+                            var tok = tx.VoutTokens.FirstOrDefault();
+                            if (tok != null)
+                            {
+                                tok.Direction = tx.Direction;
+                                tok.TxId = tx.TxId;
+                                tok.TimeStamp = tx.TimeStamp;
+                                result.Add(tx.TxId, tok);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot find token by metadata", ex);
+            }
+
+            return result;
+        }
+
     }
 }
