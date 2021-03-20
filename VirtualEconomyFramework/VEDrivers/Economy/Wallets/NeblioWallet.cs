@@ -219,7 +219,7 @@ namespace VEDrivers.Economy.Wallets
 
                                                     if (balanceLine != null)
                                                     {
-                                                        var bal = Convert.ToInt32(balanceLine.InnerText);
+                                                        var bal = Convert.ToDouble(balanceLine.InnerText);
 
                                                         var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, tokid, string.Empty);
                                                         tdetails.ActualBalance = bal;
