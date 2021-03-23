@@ -68,7 +68,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                 if (wall != null)
                 {
                     wall.NewTransaction += Wall_NewTransaction;
-                    wall.NewTransactionDetailsReceived += WalletHandler_NewTransactionDetailsReceived;
+                    wall.NewConfirmedTransactionDetailsReceived += WalletHandler_NewTransactionDetailsReceived;
 
                     EconomyMainContext.Wallets.Add(wall.Id.ToString(), wall);
 
@@ -178,7 +178,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                     foreach (var w in wallets)
                     {
                         w.NewTransaction += Wall_NewTransaction;
-                        w.NewTransactionDetailsReceived += WalletHandler_NewTransactionDetailsReceived;
+                        w.NewConfirmedTransactionDetailsReceived += WalletHandler_NewTransactionDetailsReceived;
                         if (w != null)
                         {
                             foreach (var a in accounts)

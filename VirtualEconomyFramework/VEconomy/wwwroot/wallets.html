@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -80,12 +80,7 @@
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody id="walletList">
-                                                        <tr>
-                                                            <td>TestWallet</td>
-                                                            <td><button class="btn btn-primary" type="button">Open Details</button></td>
-                                                        </tr>
-                                                    </tbody>
+                                                    <tbody id="walletList"></tbody>
                                                 </table>
                                             </div>
                                         </div>
@@ -347,7 +342,7 @@
                                         <div class="col">
                                             <div class="row">
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
-                                                <div class="col"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="newAccountAddress" style="width: 350px;" name="" placeholder="" title="" required="" maxlength="150" minlength="2"></div>
+                                                <div class="col"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="newAccountAddress" style="width: 350px;" name="" placeholder="" title="" required="" minlength="2"></div>
                                             </div>
                                             <div class="row" style="margin-top: 20px;">
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Name</span></div>
@@ -657,13 +652,19 @@
                                     <div class="row">
                                         <div class="col">
                                             <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Direction</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="txDetailsDirection" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>From Account Address</span></div>
                                             </div>
                                             <div class="row" style="margin-top: 20px;">
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="txDetailsAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
                                             </div>
                                             <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Recipient Address</span></div>
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>To Recipient Address</span></div>
                                             </div>
                                             <div class="row" style="margin-top: 20px;">
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="txDetailsRecipientAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>

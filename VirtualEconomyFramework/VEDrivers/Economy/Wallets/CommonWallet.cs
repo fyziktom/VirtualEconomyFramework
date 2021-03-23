@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
@@ -29,8 +30,6 @@ namespace VEDrivers.Economy.Wallets
         public int NumberOfActiveAccounts { get; set; } = 0;
         public bool UseRPC { get; set; } = true;
         public ConcurrentDictionary<string, IAccount> Accounts { get; set; }
-        public ConcurrentDictionary<string, ITransaction> Transactions { get; set; }
-        public ConcurrentDictionary<string, (bool, string)> NewWaitingTxForDetails { get; set; }
 
         public string Name { get; set; } = string.Empty;
         public string Symbol { get; set; } = string.Empty;
@@ -50,7 +49,9 @@ namespace VEDrivers.Economy.Wallets
         public DateTime CreatedOn { get; set; }
 
         public abstract event EventHandler<NewTransactionDTO> NewTransaction;
-        public abstract event EventHandler<NewTransactionDTO> NewTransactionDetailsReceived;
+        public abstract event EventHandler<NewTransactionDTO> NewConfirmedTransactionDetailsReceived;
+
+        public abstract void RegisterAccountEvents(string address);
         public abstract Task<IWallet> GetDetails();
         public abstract Task<ITransaction> GetTxDetails(string txid);
         public abstract Task<IDictionary<string, IAccount>> ListAccounts(bool useRPC = true, bool withTx = false);

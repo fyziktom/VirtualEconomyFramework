@@ -37,10 +37,22 @@ namespace VEDrivers.Economy.Transactions
             {
                 client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
             }
+            GetTransactionInfoResponse info = null;
 
-            var info = await client.GetTransactionInfoAsync(txid);
+            try
+            {
+            info = await client.GetTransactionInfoAsync(txid);
 
-            ITransaction transaction = TransactionFactory.GetTranaction(type, txid);
+            }
+            catch(Exception ex)
+            {
+                //todo, usually wrong parsing of json
+            }
+
+            if (info == null)
+                return null;
+
+            ITransaction transaction = TransactionFactory.GetTranaction(type, txid, string.Empty, string.Empty, true);
 
             DateTime time;
 

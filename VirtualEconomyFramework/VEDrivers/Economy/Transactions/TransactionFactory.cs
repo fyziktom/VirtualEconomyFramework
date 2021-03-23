@@ -9,12 +9,12 @@ namespace VEDrivers.Economy.Transactions
 {
     public static class TransactionFactory
     {
-        public static ITransaction GetTranaction(TransactionTypes type, string txid)
+        public static ITransaction GetTranaction(TransactionTypes type, string txid, string address, string walletName, bool justDto = true)
         {
             switch (type)
             {
                 case TransactionTypes.Neblio:
-                    return new NeblioTransaction(txid);
+                    return new NeblioTransaction(txid, address, walletName, justDto);
                     break;
             }
 

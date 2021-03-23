@@ -65,8 +65,10 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 if (accresp != null)
                                 {
                                     var account = AccountFactory.GetAccount(Guid.Empty, type, wallet.Owner, walletId, name, accresp.result, 0);
-
+                                    account.WalletName = wallet.Name;
+                                    account.StartRefreshingData(EconomyMainContext.WalletRefreshInterval);
                                     wallet.Accounts.TryAdd(account.Address, account);
+                                    wallet.RegisterAccountEvents(account.Address);
 
                                     if (EconomyMainContext.WorkWithDb && account != null)
                                     {
@@ -94,7 +96,10 @@ namespace VEDrivers.Economy.Wallets.Handlers
                             if (!string.IsNullOrEmpty(accountAddress))
                             {
                                 var account = AccountFactory.GetAccount(Guid.Empty, type, wallet.Owner, walletId, name, accountAddress, 0);
+                                account.WalletName = wallet.Name;
+                                account.StartRefreshingData(EconomyMainContext.WalletRefreshInterval);
                                 wallet.Accounts.TryAdd(account.Address, account);
+                                wallet.RegisterAccountEvents(account.Address);
                                 return "OK";
                             }
                             else

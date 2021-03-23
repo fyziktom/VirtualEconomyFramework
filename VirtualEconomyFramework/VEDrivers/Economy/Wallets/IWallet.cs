@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
@@ -29,14 +30,10 @@ namespace VEDrivers.Economy.Wallets
         bool UseRPC { get; set; }
         ConcurrentDictionary<string, IAccount> Accounts { get; set; }
 
-        ConcurrentDictionary<string, ITransaction> Transactions { get; set; }
-        /// <summary>
-        /// dictionary of new transaction in wallet. value keeps information about sending unconfirmed tx event
-        /// </summary>
-        ConcurrentDictionary<string, (bool,string)> NewWaitingTxForDetails { get; set; }
-
         event EventHandler<NewTransactionDTO> NewTransaction;
-        event EventHandler<NewTransactionDTO> NewTransactionDetailsReceived;
+        event EventHandler<NewTransactionDTO> NewConfirmedTransactionDetailsReceived;
+
+        void RegisterAccountEvents(string address);
         Task<IWallet> GetDetails();
         Task<ITransaction> GetTxDetails(string txid);
         Task<IDictionary<string, IAccount>> ListAccounts(bool useRPC = true, bool withTx = false);

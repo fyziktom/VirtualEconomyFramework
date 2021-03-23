@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using VEDrivers.Common;
 using VEDrivers.Economy.Coins;
+using VEDrivers.Economy.DTO;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Nodes;
@@ -23,16 +25,25 @@ namespace VEDrivers.Economy.Wallets
         Guid Id { get; set; }
         string Name { get; set; }
         string Address { get; set; }
+        string WalletName { get; set; }
         Guid WalletId { get; set; }
         AccountTypes Type { get; set; }
         Guid OwnerId { get; set; }
         double NumberOfTransaction { get; set; }
+        bool LoadingData { get; set; }
+        string LastProcessedTxId { get; set; }
+        string LastConfirmedTxId { get; set; }
 
         IDictionary<string, IToken> Tokens { get; set; }
 
+        [JsonIgnore]
         ConcurrentDictionary<string, ITransaction> Transactions { get; set; }
 
-        Task<string> GetDetails();
-        
+        event EventHandler<IAccount> DetailsLoaded;
+        event EventHandler<NewTransactionDTO> TxDetailsLoaded;
+        event EventHandler<NewTransactionDTO> ConfirmedTransaction;
+
+        Task<string> StartRefreshingData(int interval = 1000);
+
     }
 }

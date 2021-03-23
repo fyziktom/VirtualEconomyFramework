@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using VEDrivers.Economy.Coins;
+using VEDrivers.Economy.DTO;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Nodes;
@@ -15,6 +17,7 @@ namespace VEDrivers.Economy.Wallets
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Address { get; set; } = string.Empty;
+        public string WalletName { get; set; }
         public Guid WalletId { get; set; }
         public AccountTypes Type { get; set; }
         public Guid OwnerId { get; set; }
@@ -22,6 +25,9 @@ namespace VEDrivers.Economy.Wallets
         public double? TotalBalance { get; set; } = 0.0;
         public double? TotalSpendableBalance { get; set; } = 0.0;
         public double? TotalUnconfirmedBalance { get; set; } = 0.0;
+        public bool LoadingData { get; set; } = false;
+        public string LastProcessedTxId { get; set; }
+        public string LastConfirmedTxId { get; set; }
 
         //Db interface interface
         public string CreatedBy { get; set; }
@@ -32,8 +38,12 @@ namespace VEDrivers.Economy.Wallets
         public DateTime CreatedOn { get; set; }
 
         public IDictionary<string, IToken> Tokens { get; set; }
+        [JsonIgnore]
         public ConcurrentDictionary<string, ITransaction> Transactions { get; set; }
 
-        public abstract Task<string> GetDetails();
+        public abstract event EventHandler<IAccount> DetailsLoaded;
+        public abstract event EventHandler<NewTransactionDTO> TxDetailsLoaded;
+        public abstract event EventHandler<NewTransactionDTO> ConfirmedTransaction;
+        public abstract Task<string> StartRefreshingData(int interval = 1000);
     }
 }

@@ -252,7 +252,7 @@ function getAccountTypes() {
                 AccountTypes = data;
             },
             error: function (jqXhr, textStatus, errorMessage) { // error callback 
-                alert("Cannot load configuration");
+                console.log("Cannot load configuration");
             }
         });
 }
@@ -300,6 +300,7 @@ function reloaNewAccountTypesDropDown() {
 
 ///////////////////////////////////////////////////////////
 // account transactions
+var transactions = {};
 
 function loadAccountTransactions(account) {
 
@@ -307,34 +308,63 @@ function loadAccountTransactions(account) {
     list.children().remove();
    
     if (account != null) {
-        for (var tr in account.Transactions) {
-            var trx = account.Transactions[tr];
 
-            var withTokens = "No";
-            if (trx.VinTokens != null && trx.VoutTokens != null) {
-                withTokens = "Yes";
-            }
+        var data = {
+            "walletId": ActualWallet.Id,
+            "accountAddress": account.Address,
+            "maxItems": 1000
+        };
 
-            var direction = "In";
-            if (trx.Direction == 1) {
-                direction = "Out";
-            }
+        var url = ApiUrl + "/GetAccountTransactions";
 
-            list.append(
-                '<tr>' +
-                '<td>' + trx.TxId + '</td>' +
-                '<td>' + direction + '</td>' +
-                '<td>' + trx.Amount.toString() + '</td>' +
-                '<td>' + withTokens + '</td>' +
-                '<td>' +
-                    '<div class="row">' + 
-                        '<div class="col">' + 
-                            '<button class="btn btn-primary" style="margin: 2px; width: 80px;" onclick=\'showTxDetails("' + trx.TxId + '")\'>Details</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</td>' +
-                '</tr>');
+        if (bootstrapstudio) {
+            url = url.replace('8000','8080');
         }
+    
+        $.ajax(url,
+            {
+                contentType: 'application/json;charset=utf-8',
+                data: JSON.stringify(data),
+                method: 'PUT',
+                dataType: 'json',   // type of response data
+                timeout: 10000,     // timeout milliseconds
+                success: function (data, status, xhr) {   // success callback function
+                    transactions = data;
+                    if (transactions != null) {                    
+                        for (var tr in transactions) {
+                            var trx = transactions[tr];
+                
+                            var withTokens = "No";
+                            if (trx.VinTokens != null && trx.VoutTokens != null) {
+                                withTokens = "Yes";
+                            }
+                
+                            var direction = "In";
+                            if (trx.Direction == 1) {
+                                direction = "Out";
+                            }
+                
+                            list.append(
+                                '<tr>' +
+                                '<td>' + trx.TxId + '</td>' +
+                                '<td>' + direction + '</td>' +
+                                '<td>' + trx.Amount.toString() + '</td>' +
+                                '<td>' + withTokens + '</td>' +
+                                '<td>' +
+                                    '<div class="row">' + 
+                                        '<div class="col">' + 
+                                            '<button class="btn btn-primary" style="margin: 2px; width: 80px;" onclick=\'showTxDetails("' + trx.TxId + '")\'>Details</button>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</td>' +
+                                '</tr>');
+                        }  
+                    }             
+                },
+                error: function (jqXhr, textStatus, errorMessage) { // error callback 
+                    console.log('Loading Transactions Error: "' + errorMessage + '"');
+                }
+            });
     }
 }
 
@@ -344,12 +374,24 @@ function showAccountTransactions() {
 }
 
 function showTxDetails(txId) {
-    for (var tr in ActualAccount.Transactions) {
-        var trx = ActualAccount.Transactions[tr];
+    for (var tr in transactions) {
+        var trx = transactions[tr];
         if (trx.TxId == txId) {
             $('#txDetailsWalletName').text(ActualWallet.Name);
-            $('#txDetailsAccountAddress').text(ActualAccount.Name);
-            $('#txDetailsAccountAddress').text(trx.AccountAddress);
+
+            if (trx.Direction == 0) {
+                $('#txDetailsDirection').text('Incoming');
+            }
+            else {
+                $('#txDetailsDirection').text('Outgoing');
+            }
+
+            if (trx.From != null) {
+                if (trx.From[0] != null) {
+                    $('#txDetailsAccountAddress').text(trx.From[0]);
+                }
+            }
+
             if (trx.To != null) {
                 if (trx.To[0] != null) {
                     $('#txDetailsRecipientAccountAddress').text(trx.To[0]);

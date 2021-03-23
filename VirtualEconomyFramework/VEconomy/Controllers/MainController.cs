@@ -345,6 +345,45 @@ namespace VEconomy.Controllers
             }
         }
 
+        public class GetAccountTransactionsData
+        {
+            public string walletId { get; set; }
+            public string accountAddress { get; set; }
+            public int maxItems { get; set; }
+        }
+        [HttpPut]
+        [Route("GetAccountTransactions")]
+        //[Authorize(Rights.Administration)]
+        public async Task<IDictionary<string,ITransaction>> GetAccountTransactions([FromBody] GetAccountTransactionsData accountData)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(accountData.walletId, out var wallet))
+                {
+                    // todo - remove address from real QT wallet
+                    if (wallet.Accounts.TryGetValue(accountData.accountAddress, out var account))
+                    {
+                        return account.Transactions;
+                    }
+                    else
+                    {
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {accountData.accountAddress} transactions, Account Not Found!");
+                    }
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {accountData.accountAddress} transactions, Wallet Not Found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get Account Transactions!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {accountData.accountAddress} Transactions!");
+            }
+
+            return null;
+        }
+
         public class DeleteAccountData
         {
             public string walletId { get; set; }
