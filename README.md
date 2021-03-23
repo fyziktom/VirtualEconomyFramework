@@ -53,6 +53,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 
 # Main Planned Features
 
+- Async loading of Tx - Now very long time of loading for address with lots of transactions
 -	DocFx documentation of project
 -	Raspberry PI pre-installed image - in progress, almost done
 -	Integrated MQTT Broker - almost done, just testing now
@@ -201,6 +202,8 @@ Here you can download the app:
 [VEFramework Release Folder](https://technicinsider-my.sharepoint.com/:f:/p/tomas_svoboda/EgLTmYjsqDRHvQyGvkKkO6EBl44-fFopmkSZUQH_gF__Xg?e=HKcLCg)
 
 In the folder you can find .NET Core 5.0 and ASP.NET 5.0 installers too.
+
+Please do not load addresses with many transactions. It will load for long time without some progressbar. This will be solved in next pre-beta ;)
 
 # Thanks
 
