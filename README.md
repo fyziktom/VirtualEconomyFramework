@@ -53,7 +53,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 
 # Main Planned Features
 
-- Async loading of Tx - Now very long time of loading for address with lots of transactions
+- Async loading of Tx - almost done, testing, cancel and progressbar/state
 -	DocFx documentation of project
 -	Raspberry PI pre-installed image - in progress, almost done
 -	Integrated MQTT Broker - almost done, just testing now
@@ -203,7 +203,8 @@ Here you can download the app:
 
 In the folder you can find .NET Core 5.0 and ASP.NET 5.0 installers too.
 
-Please do not load addresses with many transactions. It will load for long time without some progressbar. This will be solved in next pre-beta ;)
+Please do not load addresses with many transactions. It will load for long time without some progressbar. This will be solved in next pre-beta :)
+Now it is loading at background, but you will not see how many still remains.
 
 # Thanks
 
