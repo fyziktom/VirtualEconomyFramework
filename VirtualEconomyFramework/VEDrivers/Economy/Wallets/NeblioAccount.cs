@@ -61,11 +61,15 @@ namespace VEDrivers.Economy.Wallets
 
                     var txs = transactions.ToArray();
 
+                    var delay = 0;
+                    var dl = 0;
+                    var cpus = Environment.ProcessorCount;
+
                     for (int k = (int)(NumberOfTransaction); k < transactions.Count; k++)
                     {
                         if (!Transactions.TryGetValue(txs[k], out var tx))
                         {
-                            tx = TransactionFactory.GetTranaction(TransactionTypes.Neblio, txs[k], Address, WalletName, false);
+                            tx = TransactionFactory.GetTransaction(TransactionTypes.Neblio, txs[k], Address, WalletName, false);
                             if (tx != null)
                             {
                                 if (txs[k] == LastProcessedTxId)
@@ -82,7 +86,29 @@ namespace VEDrivers.Economy.Wallets
 
                                 Transactions.TryAdd(txs[k], tx);
                                 NumberOfTransaction++;
-                                
+
+                            }
+
+                            // delay/shift each 9th loading
+                            
+                            if (delay > cpus)
+                            {
+                                await Task.Delay(1);
+                                delay = 0;
+                            }
+                            else
+                            {
+                                delay++;
+                            }
+
+                            if (dl > 1000)
+                            {
+                                await Task.Delay(1000);
+                                dl = 0;
+                            }
+                            else
+                            {
+                                dl++;
                             }
                         }
                     }

@@ -20,39 +20,43 @@ namespace VEDrivers.Economy.Transactions
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static HttpClient httpClient = new HttpClient();
-        private static IClient client;
+        private static IClient _client;
         private static NeblioCryptocurrency NeblioCrypto = new NeblioCryptocurrency(false);
         public static QTWalletRPCClient qtRPCClient { get; set; }
 
         public static ITransaction TransactionInfo(TransactionTypes type, string txid, object obj)
         {
-            client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
-            var transaction = TransactionInfoAsync(client, type, txid);
+            _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            var transaction = TransactionInfoAsync(_client, type, txid);
             return transaction.GetAwaiter().GetResult();
         }
 
         public static async Task<ITransaction> TransactionInfoAsync(IClient client, TransactionTypes type, string txid)
         {
-            if (client == null)
+            if (_client == null)
             {
-                client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+                _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
             }
+
             GetTransactionInfoResponse info = null;
 
             try
             {
-            info = await client.GetTransactionInfoAsync(txid);
-
+                if (client != null)
+                    info = await client.GetTransactionInfoAsync(txid);
+                else
+                    info = await _client.GetTransactionInfoAsync(txid);
             }
             catch(Exception ex)
             {
                 //todo, usually wrong parsing of json
+                return null;
             }
 
             if (info == null)
                 return null;
 
-            ITransaction transaction = TransactionFactory.GetTranaction(type, txid, string.Empty, string.Empty, true);
+            ITransaction transaction = TransactionFactory.GetTransaction(type, txid, string.Empty, string.Empty, true);
 
             DateTime time;
 
@@ -76,7 +80,12 @@ namespace VEDrivers.Economy.Transactions
 
             if (tokenin != null)
             {
-                var tokeninfo = await TokenMetadataAsync(client, TokenTypes.NTP1, tokenin.TokenId, txid);
+                IToken tokeninfo = null;
+
+                if (client != null)
+                    tokeninfo = await TokenMetadataAsync(client, TokenTypes.NTP1, tokenin.TokenId, txid);
+                else
+                    tokeninfo = await TokenMetadataAsync(_client, TokenTypes.NTP1, tokenin.TokenId, txid);
 
                 if (tokenin != null)
                 {
@@ -144,8 +153,8 @@ namespace VEDrivers.Economy.Transactions
 
         public static IToken TokenMetadata(TokenTypes type, string tokenid, string txid, object obj)
         {
-            client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
-            var transaction = TokenMetadataAsync(client, type, tokenid, txid);
+            _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            var transaction = TokenMetadataAsync(_client, type, tokenid, txid);
             return transaction.GetAwaiter().GetResult();
         }
 
@@ -163,11 +172,11 @@ namespace VEDrivers.Economy.Transactions
             GetTokenMetadataResponse info = new GetTokenMetadataResponse();
             if (string.IsNullOrEmpty(txid))
             {
-                info = await client.GetTokenMetadataAsync(tokenid, 0);
+                info = await _client.GetTokenMetadataAsync(tokenid, 0);
             }
             else
             {
-                info = await client.GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
+                info = await _client.GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
             }
 
             token.MaxSupply = info.InitialIssuanceAmount;
@@ -360,12 +369,12 @@ namespace VEDrivers.Economy.Transactions
             if (type != TransactionTypes.Neblio)
                 return string.Empty;
 
-            if (client == null)
+            if (_client == null)
             {
-                client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+                _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
             }
 
-            var info = await client.SendTokenAsync(data);
+            var info = await _client.SendTokenAsync(data);
 
             return info.TxHex;
         }
@@ -375,12 +384,12 @@ namespace VEDrivers.Economy.Transactions
             if (type != TransactionTypes.Neblio)
                 return string.Empty;
 
-            if (client == null)
+            if (_client == null)
             {
-                client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+                _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
             }
 
-            var info = await client.BroadcastTxAsync(data);
+            var info = await _client.BroadcastTxAsync(data);
 
             return info.Txid;
         }

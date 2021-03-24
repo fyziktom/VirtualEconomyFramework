@@ -9,7 +9,7 @@ namespace VEDrivers.Economy.Transactions
 {
     public static class TransactionFactory
     {
-        public static ITransaction GetTranaction(TransactionTypes type, string txid, string address, string walletName, bool justDto = true)
+        public static ITransaction GetTransaction(TransactionTypes type, string txid, string address, string walletName, bool justDto = true)
         {
             switch (type)
             {

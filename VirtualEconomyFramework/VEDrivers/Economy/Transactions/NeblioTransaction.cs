@@ -12,7 +12,7 @@ using VEDrivers.Economy.Tokens;
 
 namespace VEDrivers.Economy.Transactions
 {
-    public class NeblioTransaction : CommonTransaction
+    public class NeblioTransaction : CommonTransaction, IDisposable
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -33,7 +33,6 @@ namespace VEDrivers.Economy.Transactions
             Address = address;
             WalletName = walletName;
 
-            client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
         }
 
         public NeblioTransaction(string txid, List<string> from, List<string> to, ConcurrentDictionary<string,string> metadata, double ammount)
@@ -53,14 +52,14 @@ namespace VEDrivers.Economy.Transactions
             VoutTokens = new List<IToken>();
         }
 
+        private bool _disposed = false;
+        ~NeblioTransaction() => Dispose(false);
+
         public override event EventHandler<NewTransactionDTO> DetailsLoaded;
         public override event EventHandler<NewTransactionDTO> ConfirmedTransaction;
 
-        private static HttpClient httpClient = new HttpClient();
-        private static IClient client;
-        private static NeblioCryptocurrency NeblioCrypto = new NeblioCryptocurrency(false);
-
         private bool loading = false;
+        private int attempts = 5;
 
         public bool Loading
         {
@@ -76,18 +75,31 @@ namespace VEDrivers.Economy.Transactions
             loading = true;
             var dto = await LoadInfoFromAPI();
 
-            if (Confirmations < 2)
+            if (dto != null)
             {
-                return false;
-            }
-            else
-            {
-                loading = false;
-                if (conf < 2)
+                if (Confirmations < 2)
                 {
-                    ConfirmedTransaction?.Invoke(this, dto);
-                    return true;
+                    (dto.TransactionDetails as NeblioTransaction).Dispose();
+                    return false;
                 }
+                else
+                {
+                    loading = false;
+                    if (conf < 2)
+                    {
+                        ConfirmedTransaction?.Invoke(this, dto);
+                        (dto.TransactionDetails as NeblioTransaction).Dispose();
+
+                        return true;
+                    }
+                    else
+                    {
+                        (dto.TransactionDetails as NeblioTransaction).Dispose();
+                        return true;
+                    }
+                }
+
+                (dto.TransactionDetails as NeblioTransaction).Dispose();
             }
 
             return false;
@@ -95,6 +107,10 @@ namespace VEDrivers.Economy.Transactions
 
         public override async Task GetInfo()
         {
+            attempts = 3;
+
+            await Task.Delay(1);
+
             _ = Task.Run(async () =>
             {
                 loading = true;
@@ -109,6 +125,7 @@ namespace VEDrivers.Economy.Transactions
                     catch (Exception ex)
                     {
                         // todo
+                        attempts--;
                     }
 
                     if (res)
@@ -118,10 +135,17 @@ namespace VEDrivers.Economy.Transactions
                     }
                     else
                     {
-                        await Task.Delay(2000);
+                        await Task.Delay(50);
+                    }
+
+                    if (attempts <= 0)
+                    {
+                        loaded = true;
+                        break;
                     }
                 }
 
+                //client = null;
                 loading = false;
             });        
         }
@@ -136,19 +160,20 @@ namespace VEDrivers.Economy.Transactions
             if (string.IsNullOrEmpty(TxId))
                 return null;
 
-            var dto = new NewTransactionDTO();
-            dto.AccountAddress = Address;
-            dto.WalletName = WalletName;
-            dto.Type = TransactionTypes.Neblio;
-            dto.TxId = TxId;
-
             try
             {
-                ITransaction txd = await NeblioTransactionHelpers.TransactionInfoAsync(client, TransactionTypes.Neblio, TxId);
+                var txd = await NeblioTransactionHelpers.TransactionInfoAsync(null, TransactionTypes.Neblio, TxId);
 
                 if (txd != null)
                 {
+                    var dto = new NewTransactionDTO();
+                    dto.AccountAddress = Address;
+                    dto.WalletName = WalletName;
+                    dto.Type = TransactionTypes.Neblio;
+                    dto.TxId = TxId;
+
                     dto.TransactionDetails = txd;
+                    
                     VinTokens = dto.TransactionDetails.VinTokens;
                     VoutTokens = dto.TransactionDetails.VoutTokens;
                     Amount = dto.TransactionDetails.Amount;
@@ -158,20 +183,50 @@ namespace VEDrivers.Economy.Transactions
                     To = dto.TransactionDetails.To;
                     TimeStamp = dto.TransactionDetails.TimeStamp;
                     Metadata = dto.TransactionDetails.Metadata;
+
+                    if (dto.TransactionDetails != null)
+                    {
+                        DetailsLoaded?.Invoke(this, dto);
+                    }
+
+                    return dto;
                 }
             }
             catch (Exception ex)
             {
+                attempts--;
                 //log.Error("Cannot load tx details: ", ex);
             }
 
-            if (dto.TransactionDetails != null)
-            {
-                DetailsLoaded?.Invoke(this, dto);
-            }
-
-            return dto;
+            return null;
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        // Protected implementation of Dispose pattern.
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                From = null;
+                To = null;
+                VinTokens = null;
+                VoutTokens = null;
+                // TODO: dispose managed state (managed objects).
+            }
+
+            // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+            // TODO: set large fields to null.
+
+            _disposed = true;
+        }
     }
 }

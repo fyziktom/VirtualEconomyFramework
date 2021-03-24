@@ -41,21 +41,35 @@ namespace VEDrivers.Common
 
         public async Task PostObjectAsJSON<T>(string topic, T payload, bool retain = true) where T : class
         {
-            var content = JsonConvert.SerializeObject(payload);
-
-            if (mqttClient != null)
+            try
             {
-                if (mqttClient.IsConnected)
-                    await mqttClient.PublishAsync($"{topic}", content, retain);
+                var content = JsonConvert.SerializeObject(payload);
+
+                if (mqttClient != null)
+                {
+                    if (mqttClient.IsConnected)
+                        await mqttClient.PublishAsync($"{topic}", content, retain);
+                }
+            }
+            catch(Exception ex)
+            {
+                // todo
             }
         }
 
         public async Task PostObjectAsJSONString(string topic, string payload, bool retain = true)
         {
-            if (mqttClient != null)
+            try
             {
-                if (mqttClient.IsConnected)
-                    await mqttClient.PublishAsync($"{topic}", payload, retain);
+                if (mqttClient != null)
+                {
+                    if (mqttClient.IsConnected)
+                        await mqttClient.PublishAsync($"{topic}", payload, retain);
+                }
+            }
+            catch(Exception ex)
+            {
+                // todo
             }
         }
         
@@ -174,6 +188,15 @@ namespace VEDrivers.Common
             catch
             {
                 log.Warn($"{name} reconnecting failed");
+            }
+        }
+
+        public void Dispose()
+        {
+            if (mqttClient != null)
+            {
+                mqttClient.DisconnectAsync().GetAwaiter().GetResult();
+                mqttClient.Dispose();
             }
         }
     }

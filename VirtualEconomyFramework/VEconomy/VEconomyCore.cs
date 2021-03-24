@@ -48,11 +48,12 @@ namespace VEconomy
                 {
                     while (!stopToken.IsCancellationRequested)
                     {
+                        /*
                         while(!EconomyMainContext.MQTTServerIsStarted && !stopToken.IsCancellationRequested)
                         {
                             // wait until broker is started
                             await Task.Delay(500);
-                        }
+                        }*/
 
                         if (reconnect)
                         {
@@ -61,12 +62,14 @@ namespace VEconomy
                                 // first wait until MQTT client exists and it is connected to the broker
                                 if (EconomyMainContext.MQTTClient != null && !EconomyMainContext.MQTTClient.IsConnected)
                                 {
+                                    EconomyMainContext.MQTTClient.Dispose();
                                     await EconomyMainContext.MQTTClient.RunClient(stopToken, settings, new string[] { });
                                 }
                             }
                             catch (Exception ex)
                             {
-                                log.Info("Cannot create first connection to MQTT, please check the MQTT Broker!");
+                                await Task.Delay(1000);
+                                log.Info($"Cannot create first connection to MQTT, please check the MQTT Broker!: {ex}");
                                 reconnect = true;
                             }
 
