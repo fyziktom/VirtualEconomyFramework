@@ -25,6 +25,7 @@ using MQTTnet.AspNetCore;
 using MQTTnet.AspNetCore.Extensions;
 using VEDrivers.Common;
 using MQTTnet.Protocol;
+using System.Threading;
 
 namespace VEconomy
 {
@@ -124,12 +125,16 @@ namespace VEconomy
                 endpoints.MapControllers();
                 endpoints.MapMqtt("/mqtt");
 
-                
+
             });
 
             EconomyMainContext.MQTTServerIsStarted = true;
             app.UseMqttServer(server =>
             {
+                server.StoppedHandler = new MqttServerStoppedHandlerDelegate((srv) =>
+                {
+                    server.StartAsync(server.Options);
+                });
                 //nothing to do
             });
         }

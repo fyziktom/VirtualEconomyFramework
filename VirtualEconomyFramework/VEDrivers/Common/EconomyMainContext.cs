@@ -17,6 +17,10 @@ namespace VEDrivers.Common
 {
     public static class EconomyMainContext
     {
+        public static string CurrentLocation { get; set; } = string.Empty;
+        public static int NumberOfConfirmationsToAccept { get; set; } = 1;
+        public static int MainPort { get; set; } = 8080;
+        public static bool StartBrowserAtStart { get; set; } = false;
         public static bool WorkWithDb { get; set; } = true;
         public static bool WorkWithQTRPC {get; set; } = true;
         public static string MQTTIP { get; set; }

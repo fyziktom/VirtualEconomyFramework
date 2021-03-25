@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.Tokens;
+using VEDrivers.Economy.Transactions;
 
 namespace VEDrivers.Economy.Wallets.Handlers
 {
@@ -40,7 +42,9 @@ namespace VEDrivers.Economy.Wallets.Handlers
                     // cannot be the same account name in one wallet
                     if (wallet.Accounts.Values.FirstOrDefault(a => a.Name == name) == null)
                     {
-                        if (EconomyMainContext.WorkWithQTRPC)
+                        // QT RPC support requires Db too. It creates new addresses in QT and it must be saved somewhere
+                        // todo: saving to file or something like that when Db is not on
+                        if (EconomyMainContext.WorkWithQTRPC && EconomyMainContext.WorkWithDb)
                         {
                             if (EconomyMainContext.QTRPCClient.IsConnected)
                             {
@@ -65,6 +69,15 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 if (accresp != null)
                                 {
                                     var account = AccountFactory.GetAccount(Guid.Empty, type, wallet.Owner, walletId, name, accresp.result, 0);
+
+                                    // check if some files with last state already exists
+                                    var ltxParsed = GetLastAccountProcessedTxs(account.Address);
+                                    if (ltxParsed != null)
+                                    {
+                                        account.LastConfirmedTxId = ltxParsed.LastConfirmedTxId;
+                                        account.LastProcessedTxId = ltxParsed.LastProcessedTxId;
+                                    }
+
                                     account.WalletName = wallet.Name;
                                     account.StartRefreshingData(EconomyMainContext.WalletRefreshInterval);
                                     wallet.Accounts.TryAdd(account.Address, account);
@@ -96,6 +109,15 @@ namespace VEDrivers.Economy.Wallets.Handlers
                             if (!string.IsNullOrEmpty(accountAddress))
                             {
                                 var account = AccountFactory.GetAccount(Guid.Empty, type, wallet.Owner, walletId, name, accountAddress, 0);
+
+                                // check if some files with last state already exists
+                                var ltxParsed = GetLastAccountProcessedTxs(account.Address);
+                                if (ltxParsed != null)
+                                {
+                                    account.LastConfirmedTxId = ltxParsed.LastConfirmedTxId;
+                                    account.LastProcessedTxId = ltxParsed.LastProcessedTxId;
+                                }
+
                                 account.WalletName = wallet.Name;
                                 account.StartRefreshingData(EconomyMainContext.WalletRefreshInterval);
                                 wallet.Accounts.TryAdd(account.Address, account);
@@ -201,5 +223,20 @@ namespace VEDrivers.Economy.Wallets.Handlers
             return result;
         }
 
+        public override LastTxSaveDto GetLastAccountProcessedTxs(string address)
+        {
+            try
+            {
+                var ltx = FileHelpers.ReadTextFromFile(Path.Join(EconomyMainContext.CurrentLocation,$"Accounts/{address}.txt"));
+                var ltxParsed = JsonConvert.DeserializeObject<LastTxSaveDto>(ltx);
+                return ltxParsed;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Wrong format of Last Tx saved Account data!", ex);
+            }
+
+            return null;
+        }
     }
 }

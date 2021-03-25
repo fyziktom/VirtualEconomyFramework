@@ -13,19 +13,26 @@ using VEDrivers.Economy.Transactions;
 using VEDrivers.Nodes;
 using VEDrivers.Economy.DTO;
 using HtmlAgilityPack;
+using log4net;
+using System.Reflection;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace VEDrivers.Economy.Wallets
 {
     public class NeblioAccount : CommonAccount
     {
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public NeblioAccount()
         {
             Tokens = new ConcurrentDictionary<string, IToken>();
             Transactions = new ConcurrentDictionary<string, ITransaction>();
             NumberOfTransaction = 0;
             Type = AccountTypes.Neblio;
-
             client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+
+            lastTxSaveDto = new LastTxSaveDto();
         }
 
         private QTWalletRPCClient rpcClient;
@@ -37,90 +44,109 @@ namespace VEDrivers.Economy.Wallets
         public override event EventHandler<NewTransactionDTO> TxDetailsLoaded;
         public override event EventHandler<NewTransactionDTO> ConfirmedTransaction;
 
-        private bool firstInit = true;
-        private bool firstLoading = false;
+        private LastTxSaveDto lastTxSaveDto;
+
+        public double NumberOfLoadedTransaction 
+        { 
+            get
+            {
+                return Transactions.Count;
+            }
+        }
+
+        private double initNumberOfTx = 0;
+
+        private ConcurrentQueue<string> transactionsToLoad = new ConcurrentQueue<string>();
+        private ConcurrentDictionary<string, string> transactionsInLoading = new ConcurrentDictionary<string, string>();
+
         public void AddToken(string address, IToken token)
         {
             Tokens.Add(address, token);
         }
 
+        private async Task LoadOneTx(string txId, bool initLoad = false)
+        {
+            var tx = TransactionFactory.GetTransaction(TransactionTypes.Neblio, txId, Address, WalletName, false);
+            if (tx != null)
+            {
+                tx.DetailsLoaded += Tx_DetailsLoaded;
+                tx.ConfirmedTransaction += Tx_ConfirmedTransaction;
+
+                tx.InvokeLoadFinish = !initLoad; // for init load (after start, old tx which has been processed in last run] dont call all events
+                // todo cancelation token
+                tx.GetInfo();
+
+                transactionsInLoading.TryAdd(txId, txId);
+                Transactions.TryAdd(txId, tx);
+            }
+        }
+
+        private async Task AutoTxReload()
+        {
+            
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var firstInit = false;
+                    var cpus = Environment.ProcessorCount;
+                    var optimalLoad = cpus * 10; // this must be tested! just guess. Maybe it should be as exponential function
+
+                    while (true) // todo cancelation token
+                    {
+                        while(transactionsInLoading.Count < optimalLoad) // run just as much loading as possible due to cpu count
+                        {
+                            // if all init tx is already loade, turn off firstInit flag
+                            if (NumberOfLoadedTransaction >= initNumberOfTx)
+                                firstInit = false;
+                            else
+                                firstInit = true;
+
+                            if (transactionsToLoad.TryDequeue(out var txId))
+                            {
+                                if (!string.IsNullOrEmpty(txId))
+                                    await LoadOneTx(txId, firstInit);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        await Task.Delay(100);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    log.Error("Neblio Auto Tx reload end with exception - ", ex);
+                    Console.WriteLine($"Neblio Auto Tx reload end with exception - {ex}");
+                }
+            });
+        }
+
         private async Task ReloadTransactions(ICollection<string> transactions)
         {
-            if (firstLoading && firstInit)
-                return;
-
             if (transactions == null)
                 return;
 
-            // todo cancelation token
             await Task.Run(async () =>
             {
-                if (transactions.Count > NumberOfTransaction)
+                if ((NumberOfLoadedTransaction + transactionsToLoad.Count) < NumberOfTransaction)
                 {
-                    firstLoading = true;
-
-                    var txs = transactions.ToArray();
-
-                    var delay = 0;
-                    var dl = 0;
-                    var cpus = Environment.ProcessorCount;
-
-                    for (int k = (int)(NumberOfTransaction); k < transactions.Count; k++)
+                    foreach (var t in transactions)
                     {
-                        if (!Transactions.TryGetValue(txs[k], out var tx))
+                        if (!Transactions.ContainsKey(t))
                         {
-                            tx = TransactionFactory.GetTransaction(TransactionTypes.Neblio, txs[k], Address, WalletName, false);
-                            if (tx != null)
-                            {
-                                if (txs[k] == LastProcessedTxId)
-                                    firstInit = false;
-
-                                if (!firstInit)
-                                {
-                                    tx.DetailsLoaded += Tx_DetailsLoaded;
-                                    tx.ConfirmedTransaction += Tx_ConfirmedTransaction;
-                                }
-
-                                // todo cancelation token
-                                tx.GetInfo();
-
-                                Transactions.TryAdd(txs[k], tx);
-                                NumberOfTransaction++;
-
-                            }
-
-                            // delay/shift each 9th loading
-                            
-                            if (delay > cpus)
-                            {
-                                await Task.Delay(1);
-                                delay = 0;
-                            }
-                            else
-                            {
-                                delay++;
-                            }
-
-                            if (dl > 1000)
-                            {
-                                await Task.Delay(1000);
-                                dl = 0;
-                            }
-                            else
-                            {
-                                dl++;
-                            }
+                            if (!transactionsToLoad.Contains(t))
+                                transactionsToLoad.Enqueue(t);
                         }
                     }
                 }
-
-                //NumberOfTransaction = transactions.Count;
             });
         }
 
         private void Tx_ConfirmedTransaction(object sender, NewTransactionDTO dto)
         {
-
             var tx = sender as NeblioTransaction;
             if (Transactions.TryGetValue(tx.TxId, out var t))
             {
@@ -133,11 +159,17 @@ namespace VEDrivers.Economy.Wallets
         private void Tx_DetailsLoaded(object sender, NewTransactionDTO dto)
         {
             var tx = sender as NeblioTransaction;
-            if (Transactions.TryGetValue(tx.TxId, out var t))
-            {
-                t.DetailsLoaded -= Tx_DetailsLoaded;
-                LastProcessedTxId = t.TxId;
-                TxDetailsLoaded?.Invoke(this, dto);
+
+            transactionsInLoading.TryRemove(tx.TxId, out var txid);
+
+            if (tx.InvokeLoadFinish)
+            { 
+                if (Transactions.TryGetValue(tx.TxId, out var t))
+                {
+                    t.DetailsLoaded -= Tx_DetailsLoaded;
+                    LastProcessedTxId = t.TxId;
+                    TxDetailsLoaded?.Invoke(this, dto);
+                }
             }
         }
 
@@ -227,6 +259,9 @@ namespace VEDrivers.Economy.Wallets
 
         public override async Task<string> StartRefreshingData(int interval = 1000)
         {
+
+            AutoTxReload(); // start autoTxreload task, not awaited. It runs at background. It should be placed in main loop with recovery
+
             // todo cancelation token
             _ = Task.Run(async () =>
             {
@@ -248,16 +283,57 @@ namespace VEDrivers.Economy.Wallets
                         TotalBalance = addrinfo.Balance;
                         TotalUnconfirmedBalance = addrinfo.UnconfirmedBalance;
 
-                        try
+                        if (addrinfo.Transactions != null)
                         {
-                            await ReloadTransactions(addrinfo?.Transactions);
-                        }
-                        catch (Exception ex)
-                        {
-                            // todo
+                            // this will run just in first turn after init of account
+                            // if there is some stored LastProcessedTxId it will load all tx until this one without invoke event
+                            // if there is no last tx stored it will count until end and set all as already handled in some previous run of the app
+                            if (NumberOfTransaction == 0)
+                            {
+                                var txs = addrinfo.Transactions.ToArray();
+
+                                for (int t = 0; t < txs.Length; t++)
+                                {
+                                    if (txs[t] == LastProcessedTxId)
+                                    {
+                                        initNumberOfTx = t;
+                                    }
+                                }
+
+                                if (initNumberOfTx == 0)
+                                    initNumberOfTx = addrinfo.Transactions.Count;
+                            }
+
+                            NumberOfTransaction = addrinfo.Transactions.Count;
+
+                            try
+                            {
+                                await ReloadTransactions(addrinfo.Transactions);
+                            }
+                            catch (Exception ex)
+                            {
+                                // todo
+                            }
                         }
 
                         DetailsLoaded?.Invoke(null, this);
+
+                        // check if some new tx was processed or confirmed and save them for recovery as last processed
+                        if (lastTxSaveDto.LastConfirmedTxId != LastConfirmedTxId || lastTxSaveDto.LastProcessedTxId != LastProcessedTxId)
+                        {
+                            try
+                            {
+                                lastTxSaveDto.LastConfirmedTxId = LastConfirmedTxId;
+                                lastTxSaveDto.LastProcessedTxId = LastProcessedTxId;
+
+                                var output = JsonConvert.SerializeObject(lastTxSaveDto);
+                                FileHelpers.WriteTextToFile(Path.Join(EconomyMainContext.CurrentLocation, $"Accounts/{Address}.txt"), output);
+                            }
+                            catch (Exception ex)
+                            {
+                                log.Error("Cannot write file with last processed confirmed Tx!", ex);
+                            }
+                        }
                     }
 
                     await Task.Delay(interval);
@@ -283,9 +359,7 @@ namespace VEDrivers.Economy.Wallets
             Console.WriteLine($"UnconfirmedBalanceSat       = {address.UnconfirmedBalanceSat   }   ");
             Console.WriteLine($"UnconfirmedTxAppearances    = {address.UnconfirmedTxAppearances}   ");
             Console.WriteLine($"TxAppearances               = {address.TxAppearances           }   ");
-            */
 
-            /*
             foreach (var item in address.AdditionalProperties)
             {
                 Console.WriteLine($"Property: Key = {item.Key}, Value = {item.Value}");

@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VEDrivers.Common;
 using VEDrivers.Economy.DTO;
 using VEDrivers.Economy.Tokens;
 
@@ -69,6 +70,26 @@ namespace VEDrivers.Economy.Transactions
             }
         }
 
+        private bool _loaded = false;
+
+        public bool Loaded
+        {
+            get
+            {
+                return _loaded;
+            }
+        }
+
+        private bool _cantLoad = false;
+
+        public bool CantLoad
+        {
+            get
+            {
+                return _cantLoad;
+            }
+        }
+
         private async Task<bool> LoadRoutine()
         {
             var conf = Confirmations;
@@ -77,7 +98,7 @@ namespace VEDrivers.Economy.Transactions
 
             if (dto != null)
             {
-                if (Confirmations < 2)
+                if (Confirmations < EconomyMainContext.NumberOfConfirmationsToAccept)
                 {
                     (dto.TransactionDetails as NeblioTransaction).Dispose();
                     return false;
@@ -85,11 +106,13 @@ namespace VEDrivers.Economy.Transactions
                 else
                 {
                     loading = false;
-                    if (conf < 2)
+                    if (conf < EconomyMainContext.NumberOfConfirmationsToAccept)
                     {
-                        ConfirmedTransaction?.Invoke(this, dto);
+                        if (InvokeLoadFinish)
+                            ConfirmedTransaction?.Invoke(this, dto);
+                        
                         (dto.TransactionDetails as NeblioTransaction).Dispose();
-
+                        
                         return true;
                     }
                     else
@@ -107,15 +130,14 @@ namespace VEDrivers.Economy.Transactions
 
         public override async Task GetInfo()
         {
-            attempts = 3;
+            attempts = 5;
 
             await Task.Delay(1);
 
             _ = Task.Run(async () =>
             {
                 loading = true;
-                var loaded = false;
-                while (!loaded)
+                while (!_loaded)
                 {
                     var res = false;
 
@@ -130,17 +152,17 @@ namespace VEDrivers.Economy.Transactions
 
                     if (res)
                     {
-                        loaded = true;
+                        _loaded = true;
                         break;
                     }
                     else
                     {
-                        await Task.Delay(50);
+                        await Task.Delay(100);
                     }
 
                     if (attempts <= 0)
                     {
-                        loaded = true;
+                        _cantLoad = true;
                         break;
                     }
                 }

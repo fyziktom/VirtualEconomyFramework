@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MQTTnet.AspNetCore.Extensions;
 using VEconomy.Controllers;
+using VEDrivers.Common;
 
 namespace VEconomy
 {
@@ -25,7 +26,14 @@ namespace VEconomy
         static void Main(string[] args)
         {
             log.Info($"Virtual Economy Server start");
-            CreateHostBuilder(args).Build().Run();
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch(Exception ex)
+            { 
+                log.Error("Fatal Error, cannot create main service. Please check the the settings, especially ports setting. Check the log for the details!", ex);
+            }
             log.Info("Virtual Economy Server stop");
         }
 
@@ -39,8 +47,8 @@ namespace VEconomy
                     {
                         var config = new VEDrivers.Common.MQTTConfig();
                         bcont.Configuration.GetSection("MQTT").Bind(config);
-                        var mainport = bcont.Configuration.GetValue<int>("MainPort");
-                        if (mainport == 0)
+                        var mainport = bcont.Configuration.GetValue<int>("MainPort", 8080);
+                        if (mainport == 0) // there should be check for reserved ports
                             mainport = 8080;
                         o.ListenAnyIP(config.Port, l => l.UseMqtt()); // MQTT pipeline
                         o.ListenAnyIP(config.WSPort); // Default HTTP pipeline

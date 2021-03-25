@@ -15,6 +15,9 @@ namespace VEDrivers.Economy.Transactions
         public string TxId { get; set; } = string.Empty;
         public string Address { get; set; }
         public string WalletName { get; set; }
+        public bool Loaded { get; }
+        public bool CantLoad { get; }
+        public bool InvokeLoadFinish { get; set; }
         public List<string> From { get; set; }
         public List<string> To { get; set; }
         public double Amount { get; set; } = 0.0;

@@ -1,4 +1,5 @@
 ﻿using log4net;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static BasicNodeHandler NodeHandler = new BasicNodeHandler();
+        private static BasicAccountHandler accountHandler = new BasicAccountHandler();
         /// <summary>
         /// After start all tx are new in accounts. Thats why it is ignored after start until first load of accounts of all wallets is done
         /// TODO: not good, need to be changed because of Tx which came during the system down, etc.
@@ -183,6 +185,16 @@ namespace VEDrivers.Economy.Wallets.Handlers
                         {
                             foreach (var a in accounts)
                             {
+
+                                var ltxParsed = accountHandler.GetLastAccountProcessedTxs(a.Address);
+                                if (ltxParsed != null)
+                                {
+                                    a.LastConfirmedTxId = ltxParsed.LastConfirmedTxId;
+                                    a.LastProcessedTxId = ltxParsed.LastProcessedTxId;
+                                }
+
+                                a.WalletName = w.Name;
+                                a.StartRefreshingData(EconomyMainContext.WalletRefreshInterval);
                                 if (a.WalletId == w.Id)
                                     w.Accounts.TryAdd(a.Address, a);
                             }

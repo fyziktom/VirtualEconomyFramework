@@ -211,7 +211,9 @@ function showNewTxDetails(NewTx) {
     $('#newTransactionModal').modal("show"); 
 
     setTimeout(function(){
-        $('#newTransactionModal').modal("toggle"); 
+        if($('#newTransactionModal').hasClass('in')) {
+            $('#newTransactionModal').modal("toggle"); 
+        }
     },5000);
 }
 
@@ -228,7 +230,9 @@ function showNewTxConfDetails(NewTx) {
     $('#newTransactionConfirmedModal').modal("show"); 
 
     setTimeout(function(){
-        $('#newTransactionConfirmedModal').modal("toggle"); 
+        if($('#newTransactionConfirmedModal').hasClass('in')) {
+            $('#newTransactionConfirmedModal').modal("toggle"); 
+        }
     },5000);
 }
 
@@ -246,7 +250,9 @@ function showNewTokensDetails(NewTx) {
     $('#newTokensReceivedModal').modal("show"); 
 
     setTimeout(function(){
-        $('#newTokensReceivedModal').modal("toggle"); 
+        if($('#newTokensReceivedModal').hasClass('in')) {
+            $('#newTokensReceivedModal').modal("toggle"); 
+        }
     },5000);
 }
 

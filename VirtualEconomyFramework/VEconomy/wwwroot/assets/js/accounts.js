@@ -196,9 +196,9 @@ function fillAccountDetails(account,refresh) {
     if (!refresh) {
         $('#accountDetailsName').val(account["Name"]);
     }
+    var ntxs = 'Loaded: ' + account["NumberOfLoadedTransaction"].toString() + ' of ' + account["NumberOfTransaction"].toString();
+    $('#accountDetailsNumOfTx').text(ntxs);
 
-    $('#accountDetailsNumOfTx').text(account["NumberOfTransaction"].toString());
-    
     $('#accountDetailsTotalNEBL').text(account["TotalBalance"].toString());
     $('#accountDetailsWalletId').val(account["WalletId"]);
 }

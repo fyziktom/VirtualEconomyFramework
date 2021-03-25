@@ -36,6 +36,14 @@ namespace VEconomy
 
             EconomyMainContext.WorkWithQTRPC = Convert.ToBoolean(settings.GetValue<bool>("UseRPC"));
 
+            // create folder for Accounts LastTx data
+            var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            EconomyMainContext.CurrentLocation = loc;
+            FileHelpers.CheckOrCreateTheFolder(Path.Join(loc,"Accounts"));
+
+            // this tells how many confirmations are needed for transaction to invoke confirmed event
+            EconomyMainContext.NumberOfConfirmationsToAccept = settings.GetValue<int>("NumberOfConfirmationsToAccept", 1);
+
             EconomyMainContext.WorkWithDb = Convert.ToBoolean(settings.GetValue<bool>("UseDatabase"));
             if (EconomyMainContext.WorkWithDb)
             {
@@ -71,6 +79,13 @@ namespace VEconomy
 
             var owner = new Owner() { Id = Guid.NewGuid(), Name = "John", SurName = "Doe" };
             EconomyMainContext.Owners.TryAdd("Default", owner);
+
+            EconomyMainContext.StartBrowserAtStart = settings.GetValue<bool>("StartBrowserAtStart");
+            var mainport = settings.GetValue<int>("MainPort", 0);
+            if (mainport != 0)
+            {
+                EconomyMainContext.MainPort = mainport;
+            }
 
             // load data from database
             // load or create default wallet if db is not avaiable
@@ -122,6 +137,10 @@ namespace VEconomy
             bool start = true;
 
             await Task.Delay(1);
+
+            if (EconomyMainContext.StartBrowserAtStart)
+                BrowserHelpers.OpenBrowser($"http://localhost:{EconomyMainContext.MainPort}/");
+
             try
             {
                 _ = Task.Run(async () =>

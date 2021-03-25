@@ -50,7 +50,7 @@ namespace VEDrivers.Economy.Transactions
             catch(Exception ex)
             {
                 //todo, usually wrong parsing of json
-                return null;
+                throw new Exception("Cannot load transaction info from Neblio API", ex);
             }
 
             if (info == null)
@@ -82,10 +82,18 @@ namespace VEDrivers.Economy.Transactions
             {
                 IToken tokeninfo = null;
 
-                if (client != null)
-                    tokeninfo = await TokenMetadataAsync(client, TokenTypes.NTP1, tokenin.TokenId, txid);
-                else
-                    tokeninfo = await TokenMetadataAsync(_client, TokenTypes.NTP1, tokenin.TokenId, txid);
+                try
+                {
+                    if (client != null)
+                        tokeninfo = await TokenMetadataAsync(client, TokenTypes.NTP1, tokenin.TokenId, txid);
+                    else
+                        tokeninfo = await TokenMetadataAsync(_client, TokenTypes.NTP1, tokenin.TokenId, txid);
+                }
+                catch (Exception ex)
+                {
+                    //todo, usually wrong parsing of json
+                    throw new Exception("Cannot load token info from Neblio API", ex);
+                }
 
                 if (tokenin != null)
                 {
@@ -167,16 +175,29 @@ namespace VEDrivers.Economy.Transactions
 
         public static async Task<IToken> TokenMetadataAsync(IClient client, TokenTypes type, string tokenid, string txid)
         {
+            if (client == null)
+            {
+                client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            }
+
             IToken token = new NeblioNTP1Token();
 
             GetTokenMetadataResponse info = new GetTokenMetadataResponse();
-            if (string.IsNullOrEmpty(txid))
+            try
             {
-                info = await _client.GetTokenMetadataAsync(tokenid, 0);
+
+                if (string.IsNullOrEmpty(txid))
+                {
+                    info = await client.GetTokenMetadataAsync(tokenid, 0);
+                }
+                else
+                {
+                    info = await client.GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                info = await _client.GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
+                throw new Exception("Cannot load token info from Neblio API", ex);
             }
 
             token.MaxSupply = info.InitialIssuanceAmount;

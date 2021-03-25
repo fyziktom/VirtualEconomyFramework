@@ -195,8 +195,18 @@ namespace VEDrivers.Common
         {
             if (mqttClient != null)
             {
-                mqttClient.DisconnectAsync().GetAwaiter().GetResult();
-                mqttClient.Dispose();
+                try
+                {
+                    if (mqttClient.IsConnected)
+                        mqttClient.DisconnectAsync().GetAwaiter().GetResult();
+                }
+                catch(Exception ex)
+                {
+                    //todo, but probably not connected
+                }
+
+                mqttClient?.Dispose();
+                mqttClient = null;
             }
         }
     }

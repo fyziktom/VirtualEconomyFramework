@@ -15,19 +15,20 @@ namespace VEDrivers.Economy.Wallets
     public abstract class CommonAccount : IAccount
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
-        public string WalletName { get; set; }
+        public string WalletName { get; set; } = string.Empty;
         public Guid WalletId { get; set; }
         public AccountTypes Type { get; set; }
         public Guid OwnerId { get; set; }
         public double NumberOfTransaction { get; set; } = 0;
+        public double NumberOfLoadedTransaction { get; } = 0;
         public double? TotalBalance { get; set; } = 0.0;
         public double? TotalSpendableBalance { get; set; } = 0.0;
         public double? TotalUnconfirmedBalance { get; set; } = 0.0;
         public bool LoadingData { get; set; } = false;
-        public string LastProcessedTxId { get; set; }
-        public string LastConfirmedTxId { get; set; }
+        public string LastProcessedTxId { get; set; } = string.Empty;
+        public string LastConfirmedTxId { get; set; } = string.Empty;
 
         //Db interface interface
         public string CreatedBy { get; set; }
