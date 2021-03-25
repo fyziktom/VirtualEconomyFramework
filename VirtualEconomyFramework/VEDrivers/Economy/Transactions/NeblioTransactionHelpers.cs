@@ -24,14 +24,14 @@ namespace VEDrivers.Economy.Transactions
         private static NeblioCryptocurrency NeblioCrypto = new NeblioCryptocurrency(false);
         public static QTWalletRPCClient qtRPCClient { get; set; }
 
-        public static ITransaction TransactionInfo(TransactionTypes type, string txid, object obj)
+        public static ITransaction TransactionInfo(TransactionTypes type, string txid, string sourceAddress, object obj)
         {
             _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
-            var transaction = TransactionInfoAsync(_client, type, txid);
+            var transaction = TransactionInfoAsync(_client, type, txid, sourceAddress);
             return transaction.GetAwaiter().GetResult();
         }
 
-        public static async Task<ITransaction> TransactionInfoAsync(IClient client, TransactionTypes type, string txid)
+        public static async Task<ITransaction> TransactionInfoAsync(IClient client, TransactionTypes type, string txid, string sourceAddress = "")
         {
             if (_client == null)
             {
@@ -67,9 +67,11 @@ namespace VEDrivers.Economy.Transactions
             }
 
             var tokenin = new Tokens2();
+            var addrfrom = string.Empty;
             try
             {
-                transaction.From.Add(info.Vin?.FirstOrDefault().PreviousOutput.Addresses.FirstOrDefault());
+                addrfrom = info.Vin?.FirstOrDefault().PreviousOutput.Addresses.FirstOrDefault();
+                transaction.From.Add(addrfrom);
                 tokenin = info.Vin?.FirstOrDefault().Tokens?.ToList()?.FirstOrDefault();
                 transaction.Confirmations = Convert.ToInt32((double)info.Confirmations);
             }
@@ -112,7 +114,7 @@ namespace VEDrivers.Economy.Transactions
                     });
                 }
 
-                var addr = "";
+                var addrto = string.Empty;
                 var txinfodetails = info.Vout?.FirstOrDefault();
                 if (txinfodetails != null)
                     transaction.Amount = (double)txinfodetails.Value / NeblioCrypto.FromSatToMainRatio;
@@ -122,22 +124,35 @@ namespace VEDrivers.Economy.Transactions
                 {
                     tokenout = info.Vout?.ToList()[1]?.Tokens?.ToList()?.FirstOrDefault();
                     if (tokenout != null)
-                        addr = info.Vout?.ToList()[1]?.ScriptPubKey?.Addresses?.ToList().FirstOrDefault();
+                        addrto = info.Vout?.ToList()[1]?.ScriptPubKey?.Addresses?.ToList().FirstOrDefault();
                     else
                         return null;
+                    
+                    //transaction.Direction = TransactionDirection.Outgoing;
+                }
+                else
+                {
+                    //transaction.Direction = TransactionDirection.Incoming;
+                    addrto = info.Vout?.ToList()[0]?.ScriptPubKey?.Addresses?.ToList().FirstOrDefault();
+                }
 
-                    transaction.Direction = TransactionDirection.Outgoing;
+                if (!string.IsNullOrEmpty(addrfrom) && !string.IsNullOrEmpty(sourceAddress) && !string.IsNullOrEmpty(addrto))
+                {
+                    if (addrfrom == sourceAddress)
+                    {
+                        transaction.Direction = TransactionDirection.Outgoing;
+                    }
+                    else if (addrto == sourceAddress)
+                    {
+                        transaction.Direction = TransactionDirection.Incoming;
+                    }
                 }
                 else
                 {
                     transaction.Direction = TransactionDirection.Incoming;
-                    addr = info.Vout?.ToList()[0]?.ScriptPubKey?.Addresses?.ToList().FirstOrDefault();
                 }
 
-                if (string.IsNullOrEmpty(addr))
-                    return null;
-
-                transaction.To.Add(addr);
+                transaction.To.Add(addrto);
                 if (tokenout != null)
                 {
                     transaction.VoutTokens.Add(new NeblioNTP1Token()
@@ -151,7 +166,7 @@ namespace VEDrivers.Economy.Transactions
                         ImageUrl = tokeninfo.ImageUrl,
                         Metadata = tokeninfo.Metadata,
                         MetadataAvailable = tokeninfo.MetadataAvailable,
-                        TimeStamp = transaction.TimeStamp
+                        TimeStamp = transaction.TimeStamp,
                     });
                 }
             }

@@ -59,41 +59,12 @@ namespace VEDrivers.Economy.Transactions
         public override event EventHandler<NewTransactionDTO> DetailsLoaded;
         public override event EventHandler<NewTransactionDTO> ConfirmedTransaction;
 
-        private bool loading = false;
         private int attempts = 5;
-
-        public bool Loading
-        {
-            get
-            {
-               return loading;
-            }
-        }
-
-        private bool _loaded = false;
-
-        public bool Loaded
-        {
-            get
-            {
-                return _loaded;
-            }
-        }
-
-        private bool _cantLoad = false;
-
-        public bool CantLoad
-        {
-            get
-            {
-                return _cantLoad;
-            }
-        }
 
         private async Task<bool> LoadRoutine()
         {
             var conf = Confirmations;
-            loading = true;
+            Loading = true;
             var dto = await LoadInfoFromAPI();
 
             if (dto != null)
@@ -105,7 +76,7 @@ namespace VEDrivers.Economy.Transactions
                 }
                 else
                 {
-                    loading = false;
+                    Loading = false;
                     if (conf < EconomyMainContext.NumberOfConfirmationsToAccept)
                     {
                         if (InvokeLoadFinish)
@@ -130,14 +101,14 @@ namespace VEDrivers.Economy.Transactions
 
         public override async Task GetInfo()
         {
-            attempts = 5;
+            attempts = 10;
 
             await Task.Delay(1);
 
             _ = Task.Run(async () =>
             {
-                loading = true;
-                while (!_loaded)
+                Loading = true;
+                while (!Loaded)
                 {
                     var res = false;
 
@@ -152,23 +123,23 @@ namespace VEDrivers.Economy.Transactions
 
                     if (res)
                     {
-                        _loaded = true;
+                        Loaded = true;
                         break;
                     }
                     else
                     {
-                        await Task.Delay(100);
+                        await Task.Delay(200);
                     }
 
                     if (attempts <= 0)
                     {
-                        _cantLoad = true;
+                        CantLoad = true;
                         break;
                     }
                 }
 
                 //client = null;
-                loading = false;
+                Loading = false;
             });        
         }
 
@@ -184,7 +155,7 @@ namespace VEDrivers.Economy.Transactions
 
             try
             {
-                var txd = await NeblioTransactionHelpers.TransactionInfoAsync(null, TransactionTypes.Neblio, TxId);
+                var txd = await NeblioTransactionHelpers.TransactionInfoAsync(null, TransactionTypes.Neblio, TxId, Address);
 
                 if (txd != null)
                 {

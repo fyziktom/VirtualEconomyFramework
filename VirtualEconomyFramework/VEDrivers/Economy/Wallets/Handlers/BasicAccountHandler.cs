@@ -148,38 +148,69 @@ namespace VEDrivers.Economy.Wallets.Handlers
         public override IDictionary<string, IToken> FindTokenByMetadata(string account, string key, string value = "")
         {
             var result = new Dictionary<string, IToken>();
+            var txss = new List<ITransaction>();
             try
             {
                 if (EconomyMainContext.Accounts.TryGetValue(account, out var acc))
                 {
-                    foreach(var t in acc.Transactions)
+                    var txs = acc.Transactions.ToList();
+
+                    foreach(var t in txs)
                     {
                         var tx = t.Value;
-                        if(tx.VinTokens != null)
+                        if (tx.Loaded)
                         {
-                            var found = false;
-
-                            foreach (var tok in tx.VinTokens)
+                            if (tx.VinTokens != null)
                             {
-                                if (tok.Metadata.TryGetValue(key, out var v))
+                                var found = false;
+                                /*
+                                foreach (var tok in tx.VinTokens)
                                 {
-                                    result.Add(t.Key, tok);
-                                    found = true;
-                                }
-                            }
-
-                            if (!found)
-                            {
-                                foreach (var tok in tx.VoutTokens)
-                                {
-                                    if (tok.Metadata.TryGetValue(key, out var v))
+                                    if (tok.Metadata.TryGetValue(key, out var v) && !found)
                                     {
-                                        result.Add(t.Key, tok);
+                                        if (!string.IsNullOrEmpty(value))
+                                        {
+                                            if (v == value)
+                                            {
+                                                result.Add(t.Key, tok);
+                                                found = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            result.Add(t.Key, tok);
+                                            found = true;
+                                        }
+                                    }
+                                }
+                                */
+                                if (!found)
+                                {
+                                    foreach (var tok in tx.VoutTokens)
+                                    {
+                                        if (tok.Metadata.TryGetValue(key, out var v))
+                                        {
+                                            if (!string.IsNullOrEmpty(value))
+                                            {
+                                                if (v == value)
+                                                {
+                                                    result.Add(t.Key, tok);
+                                                    txss.Add(t.Value);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                result.Add(t.Key, tok);
+                                                txss.Add(t.Value);
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+
+                    ;
                 }
             }
             catch(Exception ex)
@@ -198,18 +229,22 @@ namespace VEDrivers.Economy.Wallets.Handlers
             {
                 if (EconomyMainContext.Accounts.TryGetValue(account, out var acc))
                 {
-                    foreach (var t in acc.Transactions)
+                    var txs = acc.Transactions.ToList();
+                    foreach (var t in txs)
                     {
                         var tx = t.Value;
-                        if (tx.VoutTokens != null)
+                        if (tx.Loaded)
                         {
-                            var tok = tx.VoutTokens.FirstOrDefault();
-                            if (tok != null)
+                            if (tx.VoutTokens != null)
                             {
-                                tok.Direction = tx.Direction;
-                                tok.TxId = tx.TxId;
-                                tok.TimeStamp = tx.TimeStamp;
-                                result.Add(tx.TxId, tok);
+                                var tok = tx.VoutTokens.FirstOrDefault();
+                                if (tok != null)
+                                {
+                                    tok.Direction = tx.Direction;
+                                    tok.TxId = tx.TxId;
+                                    tok.TimeStamp = tx.TimeStamp;
+                                    result.Add(tx.TxId, tok);
+                                }
                             }
                         }
                     }

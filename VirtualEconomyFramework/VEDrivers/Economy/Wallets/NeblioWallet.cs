@@ -297,7 +297,7 @@ namespace VEDrivers.Economy.Wallets
             {
                 //Console.WriteLine($"Transaction: {item}");
 
-                var tr = await NeblioTransactionHelpers.TransactionInfoAsync(client, TransactionTypes.Neblio, item);
+                var tr = await NeblioTransactionHelpers.TransactionInfoAsync(client, TransactionTypes.Neblio, item, acc.Address);
 
                 if (tr != null)
                 {

@@ -135,7 +135,8 @@ namespace VEconomy.Controllers
 
         public class ChessMoveData
         {
-            public string accountAddress { get; set; }
+            public string player1Address { get; set; }
+            public string player2Address { get; set; }
             public string gameId { get; set; }
             public string chessboardState { get; set; }
         }
@@ -149,12 +150,12 @@ namespace VEconomy.Controllers
                 if (string.IsNullOrEmpty(data.gameId))
                     throw new HttpResponseException((HttpStatusCode)501, "Cannot write move, wrong game Id!");
 
-                if (string.IsNullOrEmpty(data.accountAddress))
+                if (string.IsNullOrEmpty(data.player1Address) || string.IsNullOrEmpty(data.player2Address))
                    throw new HttpResponseException((HttpStatusCode)501, "Cannot write move, wrong account address!");
 
                 if (MainGameDataContext.Games.TryGetValue(data.gameId, out var game))
                 {
-                    var res = await (game as ChessGame).WriteMove(data.chessboardState, (game as ChessGame).Player2Address);
+                    var res = await (game as ChessGame).WriteMove(data.chessboardState, data.player1Address, data.player2Address);
                     return res;
                 }
                 else

@@ -82,7 +82,7 @@ namespace VEGameDrivers.Game
                                 {
                                     //GameHistoryTxIds.Add(t.Key);
 
-                                    if (Players.Count == 0 && parsedData.Players.Count > 0)
+                                    if (parsedData.Players.Count > 0)
                                         Players = parsedData.Players;
 
                                     parsedData.TxId = t.Key;
@@ -218,6 +218,12 @@ namespace VEGameDrivers.Game
 
                 dto.Players = new Dictionary<string, ChessPlayer>();
 
+                if (Players.TryGetValue(Player1Address, out var pl1))
+                    pl1.FigureType = FigureTypes.White;
+
+                if (Players.TryGetValue(Player1Address, out var pl2))
+                    pl2.FigureType = FigureTypes.Black;
+
                 foreach (var pl in Players)
                     dto.Players.TryAdd(pl.Key, pl.Value);
 
@@ -309,7 +315,7 @@ namespace VEGameDrivers.Game
             }
         }
 
-        public async Task<string> WriteMove(string stateString, string address)
+        public async Task<string> WriteMove(string stateString, string onMoveAddress, string player2Address)
         {
             GameState state = null;
 
@@ -318,11 +324,12 @@ namespace VEGameDrivers.Game
             else
                 return await Task.FromResult("Cannot load state String. It is empty!");
 
-            if (!Players.ContainsKey(address))
+            if (!Players.ContainsKey(onMoveAddress) || !Players.ContainsKey(player2Address))
                 return await Task.FromResult("Player address is not in the list of players!");
 
             try
             {
+                state.LastMovePlayer = onMoveAddress;
                 var dto = new ChessGameDto()
                 {
                     GameId = Id.ToString(),
@@ -344,8 +351,8 @@ namespace VEGameDrivers.Game
                 {
                     Amount = 1,
                     Symbol = TokenSymbol,
-                    ReceiverAddress = Player2Address,
-                    SenderAddress = Player1Address,
+                    ReceiverAddress = player2Address,
+                    SenderAddress = onMoveAddress,
                     Id = TokenId
                 };
 

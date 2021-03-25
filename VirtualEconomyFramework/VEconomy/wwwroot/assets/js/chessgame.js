@@ -10,9 +10,17 @@ var GameHistory = [];
 var newMovedragged = false;
 var replayRunning = false;
 
+function onDragStart (source, piece, position, orientation) {
+    newMovedragged = true;
+    document.getElementById('btnChessHistory').innerText = 'New Unconfirmed Move';
+    $('#chessAutoRefreshCheckBox').prop('checked', false);
+    $('#btnConfirmChessGameMove').removeClass('btn-secondary').addClass('btn-primary');
+}
+
 function onChange (oldPos, newPos) {
     newMovedragged = true;
     document.getElementById('btnChessHistory').innerText = 'New Unconfirmed Move';
+    $('#chessAutoRefreshCheckBox').prop('checked', false);
     $('#btnConfirmChessGameMove').removeClass('btn-secondary').addClass('btn-primary');
 }
 
@@ -60,7 +68,8 @@ function loadChessPageStartUp() {
     var config = {
         draggable: true,
         position: 'start',
-        onChange: onChange
+        onChange: onChange,
+        onDragStart : onDragStart
     }
 
     board = Chessboard('board1', config);
@@ -201,31 +210,36 @@ function LoadChessGame(setToLast) {
 
                 if (GameHistory.length > 0) {
                     var dto = GameHistory[GameHistory.length - 1];
-                    if (dto.GameState != '') {
-                        var gs = JSON.parse(dto.GameState);
-                        var pos = JSON.parse(gs.BoardStringData);
 
-                        var config = {
-                            draggable: true,
-                            position: pos,
-                            onChange: onChange
-                        }
-                        board = Chessboard('board1', config);
-                    }
-                    else {
-                        var config = {
-                            draggable: true,
-                            position: 'start',
-                            onChange: onChange
-                        }
-                        board = Chessboard('board1', config);
-                    }
+                    if (!waitingForPartnerAfterMove || (waitingForPartnerAfterMove && newMove)) {
+                        if (dto.GameState != '') {
+                            var gs = JSON.parse(dto.GameState);
+                            var pos = JSON.parse(gs.BoardStringData);
 
+                            var config = {
+                                draggable: true,
+                                position: pos,
+                                onChange: onChange,
+                                onDragStart : onDragStart
+                            }
+                            board = Chessboard('board1', config);
+                        }
+                        else {
+                            var config = {
+                                draggable: true,
+                                position: 'start',
+                                onChange: onChange,
+                                onDragStart : onDragStart
+                            }
+                            board = Chessboard('board1', config);
+                        }
+                    }
                     var j = GameHistory.length-1;
                     for(var i = 0; i < GameHistory.length; i++) {
                         accountChessHistory[i] = j;
                         j--;
                     }
+                    
                     
                     reloadChessHistory(selectedChessAccount);
 
@@ -238,6 +252,7 @@ function LoadChessGame(setToLast) {
 
                     if (newMove) {
                         alert('New Move Loaded!');
+                        waitingForPartnerAfterMove = false;
                     }
                 
                 }
@@ -277,7 +292,8 @@ function LoadChessGameState() {
                             var config = {
                                 draggable: true,
                                 position: pos,
-                                onChange: onChange
+                                onChange: onChange,
+                                onDragStart : onDragStart
                             }
                             board = Chessboard('board1', config);
 
@@ -333,7 +349,8 @@ function RequestNewChessGame() {
                     var config = {
                         draggable: true,
                         position: 'start',
-                        onChange: onChange
+                        onChange: onChange,
+                        onDragStart : onDragStart
                     }
                 
                     board = Chessboard('board1', config);
@@ -349,10 +366,18 @@ function RequestNewChessGame() {
     ShowConfirmModal('', 'Do you realy want to start new game with player: ' + data.player2Address +'?');
 }
 
+var waitingForPartnerAfterMove = false;
+
 function ConfirmChessMove() {
 
     if (selectedChessAccount == '') {
         alert('Please select Account!');
+        return;
+    }
+
+    var pl2 = $('#chessPlayer2Address').val();
+    if (pl2 == ''){
+        alert('Player 2 Address cannot be empty!');
         return;
     }
 
@@ -370,13 +395,15 @@ function ConfirmChessMove() {
     if (state != null) {
         if(state != '') {
             var data = {
-                "accountAddress": selectedChessAccount,
+                "player1Address": selectedChessAccount,
+                "player2Address": pl2,
                 "gameId": actualGameId,
                 "chessboardState" : state
             };
         
             $("#confirmButtonOk").off();
             $("#confirmButtonOk").click(function() {
+
                 var url = document.location.origin + '/api/ConfirmChessMove';
 
                 if (bootstrapstudio) {
@@ -392,9 +419,10 @@ function ConfirmChessMove() {
                         timeout: 10000,     // timeout milliseconds
                         success: function (data, status, xhr) {   // success callback function
                             //actualGameId = data;
-                            alert('New Move Sent!');
-
-                            LoadChessGame(true);
+                            alert('New Move Sent. Wait for info about partner move!');
+                            waitingForPartnerAfterMove = true;
+                            $('#chessAutoRefreshCheckBox').prop('checked', true);
+                            //LoadChessGame(true);
                             newMovedragged = false;
                         },
                         error: function (jqXhr, textStatus, errorMessage) { // error callback 
@@ -485,7 +513,8 @@ function setChessHistory(historytx) {
         var config = {
             draggable: true,
             position: pos,
-            onChange: onChange
+            onChange: onChange,
+            onDragStart : onDragStart
         }
         board = Chessboard('board1', config);
     }
@@ -493,7 +522,8 @@ function setChessHistory(historytx) {
         var config = {
             draggable: true,
             position: 'start',
-            onChange: onChange
+            onChange: onChange,
+            onDragStart : onDragStart
         }
         board = Chessboard('board1', config);
     }
