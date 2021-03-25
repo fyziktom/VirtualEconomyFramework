@@ -43,6 +43,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	JS Script can be tested with simulated tx data or last tx real data. No need to send tx during debbuging of JS Scripts.
 -	Web UI contains hash library for creating hash of any file on the client side and use it as metadata in NFT token transactions
 -	Connection to PostgreSQL where local data about digital twins and settings are stored.
+-	Stored Last Processed Transaction and Last Confirmed Transaction for recovery after crash for each Account (works without Db too)
 -	Db is connected via Entity Framework Core so it can be connected to another Db.
 -	Db connection is optional and app can run without it
 -	Security controller for creating users, rights, roles which limit access to API
@@ -53,13 +54,13 @@ IMPORTANT! This repository is now under huge development so please wait until it
 
 # Main Planned Features
 
-- Async loading of Tx - almost done, testing, cancel and progressbar/state
+- Async loading of Tx - almost done, testing, cancel
 -	DocFx documentation of project
 -	Raspberry PI pre-installed image - in progress, almost done
 -	Integrated MQTT Broker - almost done, just testing now
 -	ReddCoin and Bitcoin drivers (maybe Polkadot and Chainlink)
 -	Lock and unlock desktop wallet and other RPC commands for wallets
--	Transactions details in UI
+-	Transactions details in UI - almost done (need to add token meta details)
 -	HTTPS support
 -	Analytics drivers
 -	Nuget Package of VEDrivers
@@ -88,7 +89,7 @@ And other platforms which .NET Core 5.0 supports.
 This application needs few steps of installation to run with all features.
 
 If you do not want to use Database or QT wallet just skip these steps. In appsetings.json you can disable working with Db and QT.
-
+You can run app without Db but with QT support and oposite too. Without QT app cannot sign transactions now!
 
 1.	Database - Optional
 -	Download build of PostgreSQL for your platform: https://www.postgresql.org/download/
@@ -193,7 +194,7 @@ More detailed explanation of structure of code will be added soon (especially fo
 
 # Pre-Beta Pre-Build :)
 
-There you can download first pre-beta pre-build. It is preset to work without Db and QT wallet. It can just display data or set anything to RAM (will be lost after reset of app). You can edit addresses in appsetting.json in section "Accounts". Accounts in this list will be loaded after start of the app and all tx data will be downloaded and prepared from blockchain. Then you can browse tokens, check moves in chess, or test nodes.
+There you can download first pre-beta pre-build. It is preset to work without Db and QT wallet. It can just display data or set anything to RAM (will be lost after reset of app). You can edit addresses in appsetting.json in section "Accounts". Accounts in this list will be loaded after start of the app and all tx data will be downloaded and prepared from blockchain. Then you can browse tokens, check moves in chess, or test nodes. If you have QT wallet you can send Tx too. Just set to Accounts List in the appsetting.json some of the address from QT. Then you can run it without Db but with sending tx support.
 
 If you need to acces UI via your network you have to change IP in "MQTT" section in the appsetting.json.
 
@@ -202,9 +203,6 @@ Here you can download the app:
 [VEFramework Release Folder](https://technicinsider-my.sharepoint.com/:f:/p/tomas_svoboda/EgLTmYjsqDRHvQyGvkKkO6EBl44-fFopmkSZUQH_gF__Xg?e=HKcLCg)
 
 In the folder you can find .NET Core 5.0 and ASP.NET 5.0 installers too.
-
-Please do not load addresses with many transactions. It will load for long time without some progressbar. This will be solved in next pre-beta :)
-Now it is loading at background, but you will not see how many still remains.
 
 # Thanks
 
