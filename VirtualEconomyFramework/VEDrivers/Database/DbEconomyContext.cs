@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VEDrivers.Database.Models;
 using VEDrivers.Economy.Wallets;
 using VEDrivers.Nodes;
+using VEDrivers.Security;
 
 namespace VEDrivers.Database
 {
@@ -16,12 +17,15 @@ namespace VEDrivers.Database
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Node> Nodes { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
 
-        public DbEconomyContext() { }
+        public DbEconomyContext(DbContextOptions<DbEconomyContext> options) : base(options) { }
 
+        /*
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder
                     .UseNpgsql(ConnectString)
                     .UseLazyLoadingProxies();
+        */
     }
 }

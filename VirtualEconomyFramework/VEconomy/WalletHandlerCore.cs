@@ -45,9 +45,10 @@ namespace VEconomy
             EconomyMainContext.NumberOfConfirmationsToAccept = settings.GetValue<int>("NumberOfConfirmationsToAccept", 1);
 
             EconomyMainContext.WorkWithDb = Convert.ToBoolean(settings.GetValue<bool>("UseDatabase"));
+            /*
             if (EconomyMainContext.WorkWithDb)
             {
-                var constr = settings["ConnectionStrings:VEFrameworkDb"];  //we are not using DI for DbContext
+                var constr = settings["ConnectionStrings:PostgreSQL"];  //we are not using DI for DbContext
                 if (!string.IsNullOrEmpty(constr))
                 {
                     DbEconomyContext.ConnectString = constr;
@@ -60,6 +61,7 @@ namespace VEconomy
                     EconomyMainContext.WorkWithDb = false;
                 }
             }
+            */
 
             settings.GetSection("QTRPC").Bind(EconomyMainContext.QTRPConfig);
             if (EconomyMainContext.QTRPConfig != null)
@@ -77,9 +79,6 @@ namespace VEconomy
                 log.Error("Cannot get details about cryptocurrency, please check the internet connection or firewall!");
             }
 
-            var owner = new Owner() { Id = Guid.NewGuid(), Name = "John", SurName = "Doe" };
-            EconomyMainContext.Owners.TryAdd("Default", owner);
-
             EconomyMainContext.StartBrowserAtStart = settings.GetValue<bool>("StartBrowserAtStart");
             var mainport = settings.GetValue<int>("MainPort", 0);
             if (mainport != 0)
@@ -87,36 +86,6 @@ namespace VEconomy
                 EconomyMainContext.MainPort = mainport;
             }
 
-            // load data from database
-            // load or create default wallet if db is not avaiable
-            if (EconomyMainContext.WorkWithDb)
-            {
-                if (!MainDataContext.WalletHandler.LoadWalletsFromDb())
-                    MainDataContext.WalletHandler.UpdateWallet(Guid.NewGuid(), owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326).GetAwaiter().GetResult();
-
-                if (!MainDataContext.NodeHandler.LoadNodesFromDb())
-                    Console.WriteLine("No nodes in Db, continue with empty list of nodes");
-            }
-            else
-            {
-                var acc = new List<string>();
-                settings.GetSection("Accounts").Bind(acc);
-                if (acc != null)
-                    EconomyMainContext.AccountsFromConfig = acc;
-
-                var uid = Guid.NewGuid();
-                MainDataContext.WalletHandler.UpdateWallet(uid, owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326).GetAwaiter().GetResult();
-                if (EconomyMainContext.Wallets.TryGetValue(uid.ToString(), out var wallet))
-                {
-                    foreach(var a in EconomyMainContext.AccountsFromConfig)
-                    {
-                        MainDataContext.AccountHandler.UpdateAccount(a, uid, AccountTypes.Neblio, a).GetAwaiter().GetResult();
-                    }
-                }
-            }
-
-            if (!MainDataContext.WalletHandler.ReloadAccounts())
-                Console.WriteLine("Cannot reload accounts");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stopToken)
@@ -137,6 +106,40 @@ namespace VEconomy
             bool start = true;
 
             await Task.Delay(1);
+
+            var owner = new Owner() { Id = Guid.NewGuid(), Name = "John", SurName = "Doe" };
+            EconomyMainContext.Owners.TryAdd("Default", owner);
+
+            // load data from database
+            // load or create default wallet if db is not avaiable
+            if (EconomyMainContext.WorkWithDb)
+            {
+                if (!MainDataContext.WalletHandler.LoadWalletsFromDb(EconomyMainContext.DbService))
+                    MainDataContext.WalletHandler.UpdateWallet(Guid.NewGuid(), owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326, EconomyMainContext.DbService).GetAwaiter().GetResult();
+
+                if (!MainDataContext.NodeHandler.LoadNodesFromDb(EconomyMainContext.DbService))
+                    Console.WriteLine("No nodes in Db, continue with empty list of nodes");
+            }
+            else
+            {
+                var acc = new List<string>();
+                settings.GetSection("Accounts").Bind(acc);
+                if (acc != null)
+                    EconomyMainContext.AccountsFromConfig = acc;
+
+                var uid = Guid.NewGuid();
+                MainDataContext.WalletHandler.UpdateWallet(uid, owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326, EconomyMainContext.DbService).GetAwaiter().GetResult();
+                if (EconomyMainContext.Wallets.TryGetValue(uid.ToString(), out var wallet))
+                {
+                    foreach (var a in EconomyMainContext.AccountsFromConfig)
+                    {
+                        MainDataContext.AccountHandler.UpdateAccount(a, uid, AccountTypes.Neblio, a, EconomyMainContext.DbService).GetAwaiter().GetResult();
+                    }
+                }
+            }
+
+            if (!MainDataContext.WalletHandler.ReloadAccounts())
+                Console.WriteLine("Cannot reload accounts");
 
             if (EconomyMainContext.StartBrowserAtStart)
                 BrowserHelpers.OpenBrowser($"http://localhost:{EconomyMainContext.MainPort}/");

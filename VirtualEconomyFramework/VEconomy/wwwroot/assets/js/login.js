@@ -129,11 +129,12 @@ function LogOut() {
             } 
     }); 
 
+    /*
     $.cookie('userName', null, { expires: 1 });
     $.cookie('userLogin', null, { expires: 1 });
     $.cookie('UserRights', null, { expires: 1 });
     $.cookie('remember', false, { expires: 1 });
-
+    */
 }
 
 function CancelLogin() {

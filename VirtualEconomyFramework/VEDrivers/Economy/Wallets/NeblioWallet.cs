@@ -241,9 +241,9 @@ namespace VEDrivers.Economy.Wallets
 
             try
             {
-                if (useRPC)
-                    await ListAccountWithRPC(withTx);
-                else
+                //if (useRPC)
+                //    await ListAccountWithRPC(withTx);
+                //else
                     await LoadAccountsFromAPI(withTx);
 
                 //await CheckNewTxWaitingForDetails();

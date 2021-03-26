@@ -28,9 +28,9 @@ namespace VEDrivers.Economy.Wallets.Handlers
         /// </summary>
         private bool firstLoadAfterStart = true;
 
-        public override async Task<string> UpdateWallet(Guid id, Guid ownerid, string walletName, WalletTypes type, string urlBase, int port)
+        public override async Task<string> UpdateWallet(Guid id, Guid ownerid, string walletName, WalletTypes type, string urlBase, int port, IDbConnectorService dbservice)
         {
-            IDbConnectorService dbservice = new DbConnectorService();
+            //IDbConnectorService dbservice = new DbConnectorService();
 
             if (EconomyMainContext.Wallets.TryGetValue(id.ToString(), out var wallet))
             {
@@ -165,9 +165,9 @@ namespace VEDrivers.Economy.Wallets.Handlers
             }
         }
 
-        public override bool LoadWalletsFromDb()
+        public override bool LoadWalletsFromDb(IDbConnectorService dbservice)
         {
-            IDbConnectorService dbservice = new DbConnectorService();
+            //IDbConnectorService dbservice = new DbConnectorService();
 
             try
             {

@@ -296,7 +296,7 @@ function LoadChessGameState() {
                                 onDragStart : onDragStart
                             }
                             board = Chessboard('board1', config);
-
+                            
                             setChessHistory(GameHistory.length-1);
                         }
                     }

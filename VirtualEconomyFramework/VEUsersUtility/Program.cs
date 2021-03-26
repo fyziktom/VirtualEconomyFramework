@@ -4,7 +4,10 @@ namespace VEUsersUtility
 {
     class Program
     {
-        static string ConnectionString = "Host=localhost;Port=5432;Database=veframework;Username=veadmin;Password=veadmin";
+        static string DbProvider = "SQLite";
+        const string ConnectionStringSQLiteDefault = "Data Source=C:\\VEFramework\\veframeworkdb.db";
+        static string ConnectionString = "Data Source=C:\\VEFramework\\veframeworkdb.db";
+        //static string ConnectionString = "Host=localhost;Port=5432;Database=veframework;Username=veadmin;Password=veadmin"; // for PostgreSQL
         static void Main(string[] args)
         {
             Console.WriteLine("---------------------");
@@ -57,7 +60,7 @@ namespace VEUsersUtility
             if (!string.IsNullOrEmpty(login) && !string.IsNullOrWhiteSpace(login) &&
                 !string.IsNullOrEmpty(name) && !string.IsNullOrWhiteSpace(name))
             {
-                UsersUtilities.AddUser(ConnectionString, $"{login},Administrator,{name}");
+                UsersUtilities.AddUser(ConnectionString, DbProvider, $"{login},Administrator,{name}");
             }
             else
             {
@@ -78,7 +81,7 @@ namespace VEUsersUtility
             if (!string.IsNullOrEmpty(login) && !string.IsNullOrWhiteSpace(login) &&
                 !string.IsNullOrEmpty(pass) && !string.IsNullOrWhiteSpace(pass))
             {
-                UsersUtilities.SetUserPassword(ConnectionString, $"{login},{pass}");
+                UsersUtilities.SetUserPassword(ConnectionString, DbProvider, $"{login},{pass}");
             }
             else
             {
@@ -88,8 +91,29 @@ namespace VEUsersUtility
 
         static void SetConnectionString()
         {
+            Console.WriteLine("Setting of Db connecion");
+            Console.WriteLine("Actual Db Provider:" + DbProvider);
             Console.WriteLine("Actual Connection string:" + ConnectionString);
-            Console.WriteLine("Please input new Connection string:");
+
+            Console.WriteLine("Please input new Db Provider (hit enter for default - SQLite):");
+            var dbp = Console.ReadLine();
+
+            if (!string.IsNullOrEmpty(dbp) && !string.IsNullOrWhiteSpace(dbp))
+            {
+                DbProvider = dbp;
+
+                Console.WriteLine("New Db Provider setted!");
+                Console.WriteLine("New Db Provider:" + DbProvider);
+            }
+            else
+            {
+                DbProvider = "SQLite";
+
+                Console.WriteLine("New Db Provider setted!");
+                Console.WriteLine("New Db Provider:" + DbProvider);
+            }
+
+            Console.WriteLine("Please input new Connection string (hit enter for restore default):");
             var con = Console.ReadLine();
 
             if (!string.IsNullOrEmpty(con) && !string.IsNullOrWhiteSpace(con))
@@ -99,6 +123,13 @@ namespace VEUsersUtility
                 Console.WriteLine("New Connection string setted!");
                 Console.WriteLine("New Connection string:" + ConnectionString);
             }
+            else
+            {
+                ConnectionString = ConnectionStringSQLiteDefault;
+                Console.WriteLine("New Connection string setted!");
+                Console.WriteLine("New Connection string:" + ConnectionString);
+            }
+
         }
     }
 }

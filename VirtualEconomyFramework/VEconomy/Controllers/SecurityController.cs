@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using VEconomy.Common;
+using VEDrivers.Database;
 using VEDrivers.Security;
 
 namespace VEconomy.Controllers
@@ -19,10 +20,19 @@ namespace VEconomy.Controllers
     [ApiController]
     public class SecurityController : Controller
     {
+        /*
         private readonly IConfiguration settings;
         public SecurityController(IConfiguration settings)
         {
             this.settings = settings;
+        }
+        */
+        private readonly IDbConnectorService dbService;
+        private readonly DbEconomyContext _context;
+        public SecurityController(DbEconomyContext context)
+        {
+            _context = context;
+            dbService = new DbConnectorService(_context);
         }
 
         [HttpGet]
@@ -105,10 +115,10 @@ namespace VEconomy.Controllers
 
         private LoggedUser ValidateUser(Credentials credentials)
         {
-            using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
+            //using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
             {
                 var now = DateTime.UtcNow;
-                var user = ctx.Users
+                var user = _context.Users
                     .Where(u => u.Login == credentials.Login && u.Active && (u.ValidFrom == null || u.ValidFrom <= now) && (u.ValidTo == null || u.ValidTo >= now))
                     .Select(u => new { u.Login, u.Name, u.Rights, u.PasswordHash })
                     .FirstOrDefault();
@@ -140,9 +150,9 @@ namespace VEconomy.Controllers
             var now = DateTime.UtcNow;
             try
             {
-                using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
+                //using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
                 {
-                    var user = ctx.Users.FirstOrDefault(u => u.Login == login);
+                    var user = _context.Users.FirstOrDefault(u => u.Login == login);
                     if (user == null) throw new Exception();
 
                     if (!SecurityUtil.VerifyPassword(data.OldPass, user.PasswordHash)) throw new Exception();
@@ -150,7 +160,7 @@ namespace VEconomy.Controllers
                     user.PasswordHash = SecurityUtil.HashPassword(data.Pass);
                     user.ModifiedBy = login;
                     user.ModifiedOn = now;
-                    ctx.SaveChanges();
+                    _context.SaveChanges();
                 }
             }
             catch 
@@ -167,9 +177,9 @@ namespace VEconomy.Controllers
         [Route("users")]
         public IEnumerable<UserDto> ListUsers()
         {
-            using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
+            //using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
             {
-                return ctx.Users.Select(u => new UserDto
+                return _context.Users.Select(u => new UserDto
                 {
                     Login = u.Login,
                     Name = u.Name,
@@ -192,10 +202,10 @@ namespace VEconomy.Controllers
             var now = DateTime.UtcNow;
             try
             {
-                using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
+                //using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
                 {
-                    if (ctx.Users.Any(u => u.Login == data.Login)) throw new HttpResponseException(HttpStatusCode.BadRequest, $"Duplicate user '{data.Login}'");
-                    ctx.Users.Add(new UserEntity()
+                    if (_context.Users.Any(u => u.Login == data.Login)) throw new HttpResponseException(HttpStatusCode.BadRequest, $"Duplicate user '{data.Login}'");
+                    _context.Users.Add(new UserEntity()
                     {
                         Login = data.Login,
                         Name = data.Name,
@@ -211,7 +221,7 @@ namespace VEconomy.Controllers
                         ModifiedBy = login,
                         ModifiedOn = now,
                     });
-                    ctx.SaveChanges();
+                    _context.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -230,9 +240,9 @@ namespace VEconomy.Controllers
             var now = DateTime.UtcNow;
             try
             {
-                using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
+                //using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
                 {
-                    var user = ctx.Users.FirstOrDefault(u => u.Login == data.Login);
+                    var user = _context.Users.FirstOrDefault(u => u.Login == data.Login);
                     if (user == null) throw new HttpResponseException(HttpStatusCode.BadRequest, $"Non existing user '{data.Login}'");
                     //user.Login = data.Login;
                     user.Name = data.Name;
@@ -245,7 +255,7 @@ namespace VEconomy.Controllers
 
                     user.ModifiedBy = login;
                     user.ModifiedOn = now;
-                    ctx.SaveChanges();
+                    _context.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -262,15 +272,15 @@ namespace VEconomy.Controllers
         {
             try
             {
-                using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
+                //using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
                 {
-                    var user = ctx.Users.FirstOrDefault(u => u.Login == login);
+                    var user = _context.Users.FirstOrDefault(u => u.Login == login);
                     if (user == null) throw new HttpResponseException(HttpStatusCode.BadRequest, $"Non existing user '{login}'");
-                    ctx.Users.Remove(user);
+                    _context.Users.Remove(user);
                     //user.Active = false;
                     //user.ModifiedBy = login; TODO: change to current login
                     //user.ModifiedOn = now; TODO: get now
-                    ctx.SaveChanges();
+                    _context.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -289,14 +299,14 @@ namespace VEconomy.Controllers
             var now = DateTime.UtcNow;
             try
             {
-                using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
+                //using (var ctx = new SecurityDatabaseContext(settings["ConnectionStrings:VEFrameworkDb"]))
                 {
-                    var user = ctx.Users.FirstOrDefault(u => u.Login == data.Login);
+                    var user = _context.Users.FirstOrDefault(u => u.Login == data.Login);
                     if (user == null) throw new HttpResponseException(HttpStatusCode.BadRequest, $"Non existing user '{data.Login}'");
                     user.PasswordHash = SecurityUtil.HashPassword(data.Pass);
                     user.ModifiedBy = login;
                     user.ModifiedOn = now;
-                    ctx.SaveChanges();
+                    _context.SaveChanges();
                 }
             }
             catch (Exception ex)

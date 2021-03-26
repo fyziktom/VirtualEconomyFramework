@@ -180,7 +180,7 @@ namespace TestNeblio
         public static void TransactionInfo(DbConnection conn, string param, object obj)
         {
             var client = (IClient)new Client(httpClient) { BaseUrl = "https://ntp1node.nebl.io" };
-            NeblioTransactionHelpers.TransactionInfo(TransactionTypes.Neblio, param, null);
+            NeblioTransactionHelpers.TransactionInfo(TransactionTypes.Neblio, string.Empty, param, null);
         }
 
         //todo connect to testnet
@@ -188,7 +188,7 @@ namespace TestNeblio
         public static void TransactionInfoTest(DbConnection conn, string param, object obj)
         {
             var client = (IClient)new TestnetClient(httpClient) { BaseUrl = "https://ntp1node.nebl.io" }; ;
-            NeblioTransactionHelpers.TransactionInfo(TransactionTypes.Neblio, param, null);
+            NeblioTransactionHelpers.TransactionInfo(TransactionTypes.Neblio, string.Empty, param, null);
         }
 
 

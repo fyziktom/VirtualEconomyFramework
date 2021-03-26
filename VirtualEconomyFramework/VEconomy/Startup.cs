@@ -26,6 +26,9 @@ using MQTTnet.AspNetCore.Extensions;
 using VEDrivers.Common;
 using MQTTnet.Protocol;
 using System.Threading;
+using VEDrivers.Database;
+using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace VEconomy
 {
@@ -74,6 +77,71 @@ namespace VEconomy
                     options.ExpireTimeSpan = span;
                 }
             });
+
+            EconomyMainContext.WorkWithDb = Convert.ToBoolean(Configuration.GetValue<bool>("UseDatabase"));
+            if (EconomyMainContext.WorkWithDb)
+            {
+                // Check Provider and get ConnectionString
+                if (Configuration["Provider"] == "SQLite")
+                {
+                    var constr = Configuration.GetConnectionString("SQLite");
+                    if (!string.IsNullOrEmpty(constr))
+                    {
+                        var file = constr.Split('=');
+                        if (file.Length > 0)
+                        {
+                            var f = file[1];
+                            if (!FileHelpers.IsFileExists(f))
+                            {
+                                var appdataFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+                                var destFolder = Path.Combine(appdataFolder, "VEFramework");
+                                FileHelpers.CheckOrCreateTheFolder(destFolder);
+                                var defaultDbFile = Path.Combine(destFolder, "veframeworkdb.db");
+                                constr = "Data Source=" + defaultDbFile;
+                                if (!FileHelpers.IsFileExists(defaultDbFile))
+                                {
+                                    var loc = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DDL", "veframeworkdb.db");
+                                    var destLoc = Path.Combine(destFolder, "veframeworkdb.db");
+
+                                    if (!FileHelpers.CopyFile(loc, destLoc))
+                                    {
+                                        throw new Exception("Cannot copy default SQLite Db and configured file does not exists!");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    services.AddDbContext<DbEconomyContext>(options =>
+                        options.UseSqlite(constr));
+
+                    var optionsBuilder = new DbContextOptionsBuilder<DbEconomyContext>();
+                    optionsBuilder.UseSqlite(constr);
+                    EconomyMainContext.DbService = new DbConnectorService(new DbEconomyContext(optionsBuilder.Options));
+                }
+                else if (Configuration["Provider"] == "MSSQL")
+                {
+                    services.AddDbContext<DbEconomyContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+
+                    var optionsBuilder = new DbContextOptionsBuilder<DbEconomyContext>();
+                    optionsBuilder.UseSqlServer(Configuration.GetConnectionString("MSSQL"));
+                    EconomyMainContext.DbService = new DbConnectorService(new DbEconomyContext(optionsBuilder.Options));
+                }
+                else if (Configuration["Provider"] == "PostgreSQL")
+                {
+                    services.AddDbContext<DbEconomyContext>(options =>
+                        options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL")));
+
+                    var optionsBuilder = new DbContextOptionsBuilder<DbEconomyContext>();
+                    optionsBuilder.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"));
+                    EconomyMainContext.DbService = new DbConnectorService(new DbEconomyContext(optionsBuilder.Options));
+                }
+                // Exception
+                else
+                { throw new ArgumentException("Not a valid database type"); }
+
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

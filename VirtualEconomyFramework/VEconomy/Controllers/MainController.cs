@@ -33,10 +33,11 @@ namespace VEconomy.Controllers
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IDbConnectorService dbService;
-
-        public MainController()
+        private readonly DbEconomyContext _context;
+        public MainController(DbEconomyContext context)
         {
-            dbService = new DbConnectorService();
+            _context = context;
+            dbService = new DbConnectorService(_context);
         }
 
         [HttpGet]
@@ -105,7 +106,7 @@ namespace VEconomy.Controllers
                     }
                 }
 
-                return await MainDataContext.WalletHandler.UpdateWallet(id, ownid, wallData.walletName, wallData.walletType, wallData.walletBaseHost, wallData.walletPort);
+                return await MainDataContext.WalletHandler.UpdateWallet(id, ownid, wallData.walletName, wallData.walletType, wallData.walletBaseHost, wallData.walletPort, dbService);
             }
             catch (Exception ex)
             {
@@ -319,7 +320,7 @@ namespace VEconomy.Controllers
                 if (string.IsNullOrEmpty(accountData.accountAddress))
                     accountData.accountAddress = "";
 
-                return await MainDataContext.AccountHandler.UpdateAccount(accountData.accountAddress, walletId, accountData.accountType, accountData.accountName, accountData.saveJustToDb);
+                return await MainDataContext.AccountHandler.UpdateAccount(accountData.accountAddress, walletId, accountData.accountType, accountData.accountName, dbService, accountData.saveJustToDb);
             }
             catch (Exception ex)
             {
@@ -613,7 +614,7 @@ namespace VEconomy.Controllers
                                 nodeData.nodeName, 
                                 nodeData.nodeType,
                                 nodeData.isActivated, 
-                                nodeData.parameters);
+                                nodeData.parameters, dbService);
             }
             catch (Exception ex)
             {
@@ -652,7 +653,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                return await MainDataContext.NodeHandler.SeNodeActivation(nodeData.nodeId, nodeData.isActivated);
+                return await MainDataContext.NodeHandler.SeNodeActivation(nodeData.nodeId, nodeData.isActivated, dbService);
             }
             catch (Exception ex)
             {
@@ -674,7 +675,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                return await MainDataContext.NodeHandler.SetNodeTrigger(nodeData.nodeId, nodeData.type);
+                return await MainDataContext.NodeHandler.SetNodeTrigger(nodeData.nodeId, nodeData.type, dbService);
             }
             catch (Exception ex)
             {

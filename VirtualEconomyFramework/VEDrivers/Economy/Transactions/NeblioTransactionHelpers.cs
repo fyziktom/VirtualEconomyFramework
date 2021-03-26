@@ -366,6 +366,7 @@ namespace VEDrivers.Economy.Transactions
                 {
                     // create raw tx
                     var hexToSign = await SendRawNTP1TxAsync(TransactionTypes.Neblio, dto);
+
                     // sign tx
                     res = await qtRPCClient.RPCLocalCommandSplitedAsync("signrawtransaction", new string[] { hexToSign });
                     // send tx

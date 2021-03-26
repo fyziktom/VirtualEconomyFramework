@@ -18,9 +18,9 @@ namespace VEDrivers.Economy.Wallets.Handlers
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public override async Task<string> UpdateAccount(string accountAddress, Guid walletId, AccountTypes type, string name, bool justInDb = true)
+        public override async Task<string> UpdateAccount(string accountAddress, Guid walletId, AccountTypes type, string name, IDbConnectorService dbservice, bool justInDb = true)
         {
-            IDbConnectorService dbservice = new DbConnectorService();
+            //IDbConnectorService dbservice = new DbConnectorService();
 
             if (EconomyMainContext.Wallets.TryGetValue(walletId.ToString(), out var wallet))
             {

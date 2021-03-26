@@ -233,29 +233,6 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="tokenMetadataModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Token Metadata</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseLogin"><span aria-hidden="true">×</span></button>
-                </div>
-                <div class="modal-body">
-                    <p class="d-xl-flex justify-content-xl-center" id="confirmModalContent-1">This metadata is contained in the token</p>
-                    <div class="row">
-                        <div class="col">
-                            <div class="row" style="margin-top: 20px;">
-                                <div class="col d-xl-flex justify-content-xl-center"><textarea id="tokenMetadataModalTextarea" style="width: 400px;min-height: 200px;"></textarea></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col d-xl-flex justify-content-xl-center"><span class="text-danger" id="loginError"></span></div>
-                    </div>
-                </div>
-                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
-            </div>
-        </div>
-    </div>
     <div class="modal fade" role="dialog" tabindex="-1" id="newTokensReceivedModal">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -359,6 +336,34 @@
                     <p id="hashOfFile">Please drop here the file to create hash</p>
                 </div>
                 <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnUseHashAsMetadata" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="loginModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Login</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseLogin"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmModalContent-2">If you need to control or setup the Production Line please Log In</p>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center"><span>User name</span></div>
+                                <div class="col"><input type="text" id="loginName" style="width: 200px;"></div>
+                            </div>
+                            <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center"><span>User password</span></div>
+                                <div class="col"><input type="password" id="loginPass" style="width: 200px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center"><span class="text-danger" id="loginError-1"></span></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" id="btnCancelLogin" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmLogin" type="button"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
     </div>

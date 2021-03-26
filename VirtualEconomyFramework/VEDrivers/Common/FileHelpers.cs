@@ -30,6 +30,20 @@ namespace VEDrivers.Common
             }
         }
 
+        public static bool CopyFile(string sourceFilePath, string destinatinFilePath)
+        {
+            try
+            {
+                File.Copy(sourceFilePath, destinatinFilePath);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Cannot copy file: {Path.GetFileName(sourceFilePath)} to the folder {Path.GetDirectoryName(destinatinFilePath)} exception: {ex}");
+                return false;
+            }
+        }
+
         public static string GetDateTimeString()
         {
             string date = DateTime.Today.ToShortDateString().Replace('.', '_').Replace('/', '_');
@@ -98,6 +112,14 @@ namespace VEDrivers.Common
                 return File.ReadAllText(path);
             else
                 return string.Empty;
+        }
+
+        public static bool IsFileExists(string path)
+        {
+            if (File.Exists(path))
+                return true;
+            else
+                return false;
         }
     }
 }

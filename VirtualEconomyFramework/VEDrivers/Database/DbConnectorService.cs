@@ -14,8 +14,13 @@ namespace VEDrivers.Database
 {
     public class DbConnectorService : IDbConnectorService
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public DbConnectorService(DbEconomyContext _context)
+        {
+            context = _context;
+        }
 
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private DbEconomyContext context;
         /// <summary>
         /// Function returns all Wallets stored in database
         /// </summary>
@@ -24,7 +29,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                ////using var context = new DbEconomyContext();
 
                 var walllets = new List<IWallet>();
 
@@ -51,7 +56,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                ////using var context = new DbEconomyContext();
 
                 var accounts = new List<IAccount>();
 
@@ -77,7 +82,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                ////using var context = new DbEconomyContext();
 
                 var nodes = new List<INode>();
                 NodeActionParameters parameters = new NodeActionParameters();
@@ -122,7 +127,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
                 var wallet = context.Wallets
                     .Where(w => !w.Deleted)
                     .Where(w => w.Id == id.ToString())
@@ -145,7 +150,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
 
                 using (var transaction = context.Database.BeginTransaction())
                 {
@@ -194,7 +199,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
 
                 using (var transaction = context.Database.BeginTransaction())
                 {
@@ -247,7 +252,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
 
                 using (var transaction = context.Database.BeginTransaction())
                 {
@@ -295,7 +300,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
                 var a = context.Accounts
                     .Where(a => !a.Deleted)
                     .Where(a => a.Id == id.ToString())
@@ -318,7 +323,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
 
                 using (var transaction = context.Database.BeginTransaction())
                 {
@@ -364,7 +369,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
 
                 using (var transaction = context.Database.BeginTransaction())
                 {
@@ -402,7 +407,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
 
                 using (var transaction = context.Database.BeginTransaction())
                 {
@@ -437,7 +442,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
                 var node = context.Nodes
                     .Where(n => !n.Deleted)
                     .Where(n => n.Id == id.ToString())
@@ -477,7 +482,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
 
                 using (var transaction = context.Database.BeginTransaction())
                 {
@@ -523,7 +528,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
 
                 using (var transaction = context.Database.BeginTransaction())
                 {
@@ -561,7 +566,7 @@ namespace VEDrivers.Database
         {
             try
             {
-                using var context = new DbEconomyContext();
+                //using var context = new DbEconomyContext();
 
                 using (var transaction = context.Database.BeginTransaction())
                 {

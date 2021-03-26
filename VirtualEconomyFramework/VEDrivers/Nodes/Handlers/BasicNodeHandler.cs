@@ -18,9 +18,9 @@ namespace VEDrivers.Nodes.Handlers
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public override string UpdateNode(string accountAddress, string nodeId, Guid ownerid, string nodeName, NodeTypes type, bool isActivated, NodeActionParameters parameters)
+        public override string UpdateNode(string accountAddress, string nodeId, Guid ownerid, string nodeName, NodeTypes type, bool isActivated, NodeActionParameters parameters, IDbConnectorService dbservice)
         {
-            IDbConnectorService dbservice = new DbConnectorService();
+            //IDbConnectorService dbservice = new DbConnectorService();
 
             try
             {
@@ -94,9 +94,9 @@ namespace VEDrivers.Nodes.Handlers
         }
 
 
-        public override async Task<string> SeNodeActivation(string nodeId, bool isActivated)
+        public override async Task<string> SeNodeActivation(string nodeId, bool isActivated, IDbConnectorService dbservice)
         {
-            IDbConnectorService dbservice = new DbConnectorService();
+            //IDbConnectorService dbservice = new DbConnectorService();
 
             try
             {
@@ -128,9 +128,9 @@ namespace VEDrivers.Nodes.Handlers
             }
         }
 
-        public override async Task<string> SetNodeTrigger(string nodeId, NodeActionTriggerTypes type)
+        public override async Task<string> SetNodeTrigger(string nodeId, NodeActionTriggerTypes type, IDbConnectorService dbservice)
         {
-            IDbConnectorService dbservice = new DbConnectorService();
+            //IDbConnectorService dbservice = new DbConnectorService();
 
             try
             {
@@ -160,9 +160,9 @@ namespace VEDrivers.Nodes.Handlers
         }
 
 
-        public override bool LoadNodesFromDb()
+        public override bool LoadNodesFromDb(IDbConnectorService dbservice)
         {
-            IDbConnectorService dbservice = new DbConnectorService();
+            //IDbConnectorService dbservice = new DbConnectorService();
 
             try
             {
