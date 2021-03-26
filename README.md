@@ -42,10 +42,11 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	Web UI has integrated JavaScript editor.
 -	JS Script can be tested with simulated tx data or last tx real data. No need to send tx during debbuging of JS Scripts.
 -	Web UI contains hash library for creating hash of any file on the client side and use it as metadata in NFT token transactions
--	Connection to PostgreSQL where local data about digital twins and settings are stored.
+-	Connection to Database where local data about digital twins and settings are stored.
 -	Stored Last Processed Transaction and Last Confirmed Transaction for recovery after crash for each Account (works without Db too)
 -	Db is connected via Entity Framework Core so it can be connected to another Db.
 -	Db connection is optional and app can run without it
+-	You can setup different Db providers. SQLite is default (it create default file if not exists), optional PostgreSQL and MSSQL
 -	Security controller for creating users, rights, roles which limit access to API
 -	Node-Red executor application – can run node.js and node-red as a service.
 -	QT Wallet executor application – can run QT Wallet as a service.
@@ -55,6 +56,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 # Main Planned Features
 
 - Async loading of Tx - almost done, testing, cancel
+- Sign transactions with NBitcoin library
 -	DocFx documentation of project
 -	Raspberry PI pre-installed image - in progress, almost done
 -	Integrated MQTT Broker - almost done, just testing now
@@ -66,7 +68,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	Nuget Package of VEDrivers
 -	Connection to AI ML.NET Neural Network library
 -	Examples of customized applications based on VEFramework - chess game example ready.
--	Connector to MS SQL
+-	Connector to MS SQL - integrated, needs tests. Also integrated and tested SQLite ;)
 -	Unit tests
 -	Docker support
 
@@ -91,12 +93,14 @@ This application needs few steps of installation to run with all features.
 If you do not want to use Database or QT wallet just skip these steps. In appsetings.json you can disable working with Db and QT.
 You can run app without Db but with QT support and oposite too. Without QT app cannot sign transactions now!
 
+Default setting of the app uses SQLite Db. This is automatically created after start if not exists in user AppData folder (on Win 10 C:\Users\UserName\AppData\Roaming\VEFramework). To install another database please follow instructions below.
+
 1.	Database - Optional
 -	Download build of PostgreSQL for your platform: https://www.postgresql.org/download/
 -	Install it based on instructions.
 -	After installation open pgAdmin and create new database named “veframework” (you can change the name, but it must be changed in “appsettings.json” in the ConnectionStrings).
 -	Create new user “veadmin” with password “veadmin” (you can change the user and pass, but it must be changed in “appsettings.json” in the ConnectionStrings).
--	Open query tool and run script “CreateTableScript.sql” (VEDrivers/DDL/CreateTableScript.sql). This will create tables and fill some sample data (in section “Accounts” please fill some your account addresses instead of string “Account Address”)!!!
+-	Open query tool and run script “CreateTableScript.sql” (VEDrivers/DDL/CreateTableScript - PostgreSQL.sql). This will create tables and fill some sample data (in section “Accounts” please fill some your account addresses instead of default example accounts address)!!!
 -	Grant privileges to “veadmin” – uncomment and run just last lines of “CreateTableScript.sql” file.
 -	That should be all about preparing the Database.
 
@@ -194,7 +198,11 @@ More detailed explanation of structure of code will be added soon (especially fo
 
 # Pre-Beta Pre-Build :)
 
-There you can download first pre-beta pre-build. It is preset to work without Db and QT wallet. It can just display data or set anything to RAM (will be lost after reset of app). You can edit addresses in appsetting.json in section "Accounts". Accounts in this list will be loaded after start of the app and all tx data will be downloaded and prepared from blockchain. Then you can browse tokens, check moves in chess, or test nodes. If you have QT wallet you can send Tx too. Just set to Accounts List in the appsetting.json some of the address from QT. Then you can run it without Db but with sending tx support.
+There you can download first pre-beta pre-build. It is preset to work with SQLite Db (created automatically after start if not exists) and QT wallet. 
+It can run without db too, to just display data or set anything to RAM (will be lost after reset of app). 
+In that case you can edit addresses in appsetting.json in section "Accounts". Accounts in this list will be loaded after start of the app and all tx data will be downloaded and prepared from blockchain.  You can browse tokens, check moves in chess, or test nodes. 
+
+If you have QT wallet you can send Tx too. Just set to Accounts List in the appsetting.json (if you run without Db] some of the address from QT. Then you can run it without Db but with sending tx support.
 
 If you need to acces UI via your network you have to change IP in "MQTT" section in the appsetting.json.
 
