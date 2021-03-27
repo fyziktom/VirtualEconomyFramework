@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.IO;
+using System.Reflection;
 using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Security;
@@ -60,6 +62,33 @@ namespace VEUsersUtility
             // Check Provider and get ConnectionString
             if (provider == "SQLite")
             {
+                if (!string.IsNullOrEmpty(connectionString))
+                {
+                    var file = connectionString.Split('=');
+                    if (file.Length > 0)
+                    {
+                        var f = file[1];
+                        if (!FileHelpers.IsFileExists(f))
+                        {
+                            var appdataFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+                            var destFolder = Path.Combine(appdataFolder, "VEFramework");
+                            FileHelpers.CheckOrCreateTheFolder(destFolder);
+                            var defaultDbFile = Path.Combine(destFolder, "veframeworkdb.db");
+                            connectionString = "Data Source=" + defaultDbFile;
+                            if (!FileHelpers.IsFileExists(defaultDbFile))
+                            {
+                                var loc = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DDL", "veframeworkdb.db");
+                                var destLoc = Path.Combine(destFolder, "veframeworkdb.db");
+
+                                if (!FileHelpers.CopyFile(loc, destLoc))
+                                {
+                                    throw new Exception("Cannot copy default SQLite Db and configured file does not exists!");
+                                }
+                            }
+                        }
+                    }
+                }
+
                 var optionsBuilder = new DbContextOptionsBuilder<DbEconomyContext>();
                 optionsBuilder.UseSqlite(connectionString);
                 return new DbEconomyContext(optionsBuilder.Options);
