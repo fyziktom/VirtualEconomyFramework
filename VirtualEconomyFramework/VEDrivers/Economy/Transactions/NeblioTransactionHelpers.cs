@@ -1,4 +1,6 @@
 ﻿using log4net;
+using NBitcoin;
+using NBitcoin.Altcoins;
 using Neblio.RestApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -365,30 +367,146 @@ namespace VEDrivers.Economy.Transactions
                 try
                 {
                     // create raw tx
+                    var str = JsonConvert.SerializeObject(dto);
+
                     var hexToSign = await SendRawNTP1TxAsync(TransactionTypes.Neblio, dto);
-
-                    // sign tx
-                    res = await qtRPCClient.RPCLocalCommandSplitedAsync("signrawtransaction", new string[] { hexToSign });
-                    // send tx
-
-                    var parsedRes = JsonConvert.DeserializeObject<TokenTxRPCControlerResponse>(res);
-
-                    if (parsedRes != null)
-                    {
-                        if (parsedRes.result.complete)
-                        {
-                            var bdto = new BroadcastTxRequest()
-                            {
-                                TxHex = parsedRes.result.hex
-                            };
-
-                            var txid = await BroadcastNTP1TxAsync(TransactionTypes.Neblio, bdto);
-
-                            res = txid;
-                        }
                     
-                    }
+                    if (!string.IsNullOrEmpty(hexToSign))
+                    {
+                        if (EconomyMainContext.WorkWithQTRPC)
+                        {
+                            // sign tx
+                            res = await qtRPCClient.RPCLocalCommandSplitedAsync("signrawtransaction", new string[] { hexToSign });
 
+                            var parsedRes = JsonConvert.DeserializeObject<TokenTxRPCControlerResponse>(res);
+
+                            if (parsedRes != null)
+                            {
+                                if (parsedRes.result.complete)
+                                {
+                                    var bdto = new BroadcastTxRequest()
+                                    {
+                                        TxHex = parsedRes.result.hex
+                                    };
+
+                                    var txid = await BroadcastNTP1TxAsync(TransactionTypes.Neblio, bdto);
+
+                                    res = txid;
+                                }
+
+                            }
+                        }
+                        else
+                        {
+
+                            var key = string.Empty;
+                            if (EconomyMainContext.Accounts.TryGetValue(data.SenderAddress, out var account))
+                            {
+                                if (account.AccountKey.IsLoaded)
+                                {
+                                    if (account.AccountKey.IsEncrypted && string.IsNullOrEmpty(data.Password))
+                                    {
+                                        log.Error("Cannot send token transaction. Password is not filled and key is encrypted!");
+                                    }
+                                    else if (!account.AccountKey.IsEncrypted)
+                                    {
+                                        key = account.AccountKey.GetEncryptedKey();
+                                    }
+                                    else if (account.AccountKey.IsEncrypted && !string.IsNullOrEmpty(data.Password))
+                                    {
+                                        key = account.AccountKey.GetEncryptedKey(data.Password);
+                                    }
+                                }
+                            }
+
+                            var network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
+                            BitcoinSecret keyfromFile = null;
+                            BitcoinAddress addressForTx = null;
+
+                            if (!string.IsNullOrEmpty(key))
+                            {
+                                try
+                                {
+                                    keyfromFile = network.CreateBitcoinSecret(key);
+                                    addressForTx = keyfromFile.GetAddress(ScriptPubKeyType.Legacy);
+                                }
+                                catch (Exception ex)
+                                {
+                                    log.Error("Cannot send token transaction!", ex);
+                                    Console.WriteLine($"Cannot send token transaction, cannot create keys");
+                                }
+
+                                try
+                                { 
+                                    if (Transaction.TryParse(hexToSign, network, out var transaction))
+                                    {
+                                        // download input tx objects  
+                                        var txrespToken = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[0].PrevOut.Hash.ToString());
+                                        var txrespNebl = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[1].PrevOut.Hash.ToString());
+
+                                        // there is still some issue in parsing json from api. now need to reparse the hex.
+
+                                        if (!Transaction.TryParse(txrespToken.Hex, network, out var tx1)) // token
+                                        {
+                                            log.Error("Cannot load previous token transaction!");
+                                            Console.WriteLine($"Cannot load previous token transaction!");
+                                            return string.Empty;
+                                        }
+                                            
+                                        if (!Transaction.TryParse(txrespNebl.Hex, network, out var tx2)) // nebl
+                                        {
+                                            log.Error("Cannot load previous token transaction!");
+                                            Console.WriteLine($"Cannot load previous token transaction!");
+                                            return string.Empty;
+                                        }
+
+                                        // load list of input coins for the source address
+                                        // some of them must be spendable
+                                        List<ICoin> list = new List<ICoin>();
+                                        foreach (var to in tx1.Outputs)
+                                        {
+                                            if (to.ScriptPubKey == addressForTx.ScriptPubKey)
+                                                list.Add(new Coin(tx1, (uint)(tx1.Outputs.IndexOf(to))));
+                                        }
+
+                                        foreach (var to in tx2.Outputs)
+                                        {
+                                            if (to.ScriptPubKey == addressForTx.ScriptPubKey)
+                                                list.Add(new Coin(tx2, (uint)(tx2.Outputs.IndexOf(to))));
+                                        }
+
+                                        transaction.Inputs[0].ScriptSig = addressForTx.ScriptPubKey; 
+                                        transaction.Inputs[1].ScriptSig = addressForTx.ScriptPubKey;
+
+                                        transaction.Sign(keyfromFile, list);
+
+                                        var txhex = transaction.ToHex();
+
+                                        if (!string.IsNullOrEmpty(txhex))
+                                        {
+                                            var bdto = new BroadcastTxRequest()
+                                            {
+                                                TxHex = txhex
+                                            };
+
+                                            var txid = await BroadcastNTP1TxAsync(TransactionTypes.Neblio, bdto);
+
+                                            res = txid;
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Exception during loading inputs or signing tx: {ex}");
+                                }
+                            }
+                            else
+                            {
+                                log.Warn("Key wasnt provided. Cannot sign transaction without key!");
+                                return string.Empty;
+                            }
+                        }
+                    }
                 }
                 catch(Exception ex)
                 {

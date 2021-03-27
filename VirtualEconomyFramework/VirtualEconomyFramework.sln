@@ -19,6 +19,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEQTWalletExecutor", "VEQTW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEGameDrivers", "VEGameDrivers\VEGameDrivers.csproj", "{D389CE3D-BA81-4A95-9CA1-1973B6754432}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NBitcoin", "..\..\NBitcoin\NBitcoin\NBitcoin.csproj", "{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NBitcoin.Altcoins", "..\..\NBitcoin\NBitcoin.Altcoins\NBitcoin.Altcoins.csproj", "{8C5C3763-3C41-4640-AC11-A628462E5D7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +95,22 @@ Global
 		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Release|x86.ActiveCfg = Release|Any CPU
 		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Release|x86.Build.0 = Release|Any CPU
+		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Debug|x86.Build.0 = Debug|Any CPU
+		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Release|x86.ActiveCfg = Release|Any CPU
+		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Release|x86.Build.0 = Release|Any CPU
+		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Debug|x86.Build.0 = Debug|Any CPU
+		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|x86.ActiveCfg = Release|Any CPU
+		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

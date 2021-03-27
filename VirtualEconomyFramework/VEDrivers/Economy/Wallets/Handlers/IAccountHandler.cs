@@ -15,5 +15,6 @@ namespace VEDrivers.Economy.Wallets.Handlers
         IDictionary<string, IToken> FindTokenByMetadata(string account, string key, string value = "");
         IDictionary<string, IToken> FindAllTokens(string account);
         LastTxSaveDto GetLastAccountProcessedTxs(string address);
+        string LoadAccountKey(string wallet, string address, string key, string password = "");
     }
 }

@@ -9,6 +9,7 @@ using VEDrivers.Economy.DTO;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Nodes;
+using VEDrivers.Security;
 
 namespace VEDrivers.Economy.Wallets
 {
@@ -29,6 +30,7 @@ namespace VEDrivers.Economy.Wallets
         public bool LoadingData { get; set; } = false;
         public string LastProcessedTxId { get; set; } = string.Empty;
         public string LastConfirmedTxId { get; set; } = string.Empty;
+        public EncryptionKey AccountKey { get; set; }
 
         //Db interface interface
         public string CreatedBy { get; set; }

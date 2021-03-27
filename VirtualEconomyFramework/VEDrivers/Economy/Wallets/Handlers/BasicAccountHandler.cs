@@ -273,5 +273,26 @@ namespace VEDrivers.Economy.Wallets.Handlers
 
             return null;
         }
+
+        public override string LoadAccountKey(string wallet, string address, string key, string password = "")
+        {
+            try
+            {
+                if(EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
+                {
+                    if(w.Accounts.TryGetValue(address, out var account))
+                    {
+                        account.AccountKey = new Security.EncryptionKey(key, password);
+                        return "OK";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot load key to the account!", ex);
+            }
+
+            return "Load Account Key - ERROR";
+        }
     }
 }

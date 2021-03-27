@@ -385,6 +385,29 @@ namespace VEconomy.Controllers
             return null;
         }
 
+        public class AccountKeyData
+        {
+            public string walletId { get; set; }
+            public string accountAddress { get; set; }
+            public string key { get; set; } = string.Empty;
+            public string password { get; set; } = string.Empty;
+        }
+        [HttpPut]
+        [Route("LoadAccountKey")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> LoadAccountKey([FromBody] AccountKeyData keyData)
+        {
+            try
+            {
+                return MainDataContext.AccountHandler.LoadAccountKey(keyData.walletId, keyData.accountAddress, keyData.key, keyData.password);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot load Account Key!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot load Account {keyData.accountAddress} Key!");
+            }
+        }
+
         public class DeleteAccountData
         {
             public string walletId { get; set; }

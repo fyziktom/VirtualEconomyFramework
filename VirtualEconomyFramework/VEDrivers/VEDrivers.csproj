@@ -23,6 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\NBitcoin\NBitcoin.Altcoins\NBitcoin.Altcoins.csproj" />
+    <ProjectReference Include="..\..\..\NBitcoin\NBitcoin\NBitcoin.csproj" />
     <ProjectReference Include="..\NeblioRestApi\NeblioRestApi.csproj" />
   </ItemGroup>
 

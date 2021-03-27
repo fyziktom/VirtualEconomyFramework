@@ -16,6 +16,7 @@ namespace VEDrivers.Economy.DTO
         /// Address from where token will be send
         /// </summary>
         public string SenderAddress { get; set; }
+        public string Password { get; set; }
         /// <summary>
         /// Address where token will be send
         /// </summary>
