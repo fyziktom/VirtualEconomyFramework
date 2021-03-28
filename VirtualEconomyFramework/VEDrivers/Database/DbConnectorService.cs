@@ -111,7 +111,7 @@ namespace VEDrivers.Database
                             }
                             catch (Exception ex)
                             {
-                                log.Error("Cannot get Node Parameters from Db. Continue with empty parameters", ex);
+                                log.Warn("Cannot get Node Parameters from Db. Continue with empty parameters", ex);
                             }
                         }
                     }

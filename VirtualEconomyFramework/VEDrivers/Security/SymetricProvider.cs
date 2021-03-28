@@ -18,7 +18,11 @@ namespace VEDrivers.Security
 
             using (Aes aes = Aes.Create())
             {
-                aes.Key = Encoding.UTF8.GetBytes(key); // todo wrong lenght!!
+                var keySize = 256 / 8;
+
+                var k = Encoding.UTF8.GetBytes(key);
+                Array.Resize(ref k, keySize);
+                aes.Key = k; // todo wrong lenght!!
                 aes.IV = iv;
 
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
@@ -47,7 +51,13 @@ namespace VEDrivers.Security
 
             using (Aes aes = Aes.Create())
             {
-                aes.Key = Encoding.UTF8.GetBytes(key);
+                var keySize = 256 / 8;
+
+                var k = Encoding.UTF8.GetBytes(key);
+                Array.Resize(ref k, keySize);
+                aes.Key = k; // todo wrong lenght!!
+
+                //aes.Key = Encoding.UTF8.GetBytes(key);
                 aes.IV = iv;
                 ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 

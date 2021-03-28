@@ -402,19 +402,29 @@ namespace VEDrivers.Economy.Transactions
                             var key = string.Empty;
                             if (EconomyMainContext.Accounts.TryGetValue(data.SenderAddress, out var account))
                             {
-                                if (account.AccountKey.IsLoaded)
+                                if (account.AccountKey != null)
                                 {
-                                    if (account.AccountKey.IsEncrypted && string.IsNullOrEmpty(data.Password))
+                                    if (account.AccountKey.IsLoaded)
                                     {
-                                        log.Error("Cannot send token transaction. Password is not filled and key is encrypted!");
-                                    }
-                                    else if (!account.AccountKey.IsEncrypted)
-                                    {
-                                        key = account.AccountKey.GetEncryptedKey();
-                                    }
-                                    else if (account.AccountKey.IsEncrypted && !string.IsNullOrEmpty(data.Password))
-                                    {
-                                        key = account.AccountKey.GetEncryptedKey(data.Password);
+                                        if (account.AccountKey.IsEncrypted && string.IsNullOrEmpty(data.Password) && !account.AccountKey.IsPassLoaded)
+                                        {
+                                            throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
+                                        }
+                                        else if (!account.AccountKey.IsEncrypted)
+                                        {
+                                            key = account.AccountKey.GetEncryptedKey();
+                                        }
+                                        else if (account.AccountKey.IsEncrypted && (!string.IsNullOrEmpty(data.Password) || account.AccountKey.IsPassLoaded))
+                                        {
+                                            if (account.AccountKey.IsPassLoaded)
+                                                key = account.AccountKey.GetEncryptedKey(string.Empty);
+                                            else
+                                                key = account.AccountKey.GetEncryptedKey(data.Password);
+                                        }
+
+                                        if (account.IsLocked())
+                                            throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
+
                                     }
                                 }
                             }
@@ -510,6 +520,9 @@ namespace VEDrivers.Economy.Transactions
                 }
                 catch(Exception ex)
                 {
+                    if (ex.Message.ToString().Contains("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!"))
+                        throw new Exception(ex.Message.ToString());
+
                     log.Error("Cannot send token transaction!", ex);
                     Console.WriteLine("Cannot send token transaction!");
                 }

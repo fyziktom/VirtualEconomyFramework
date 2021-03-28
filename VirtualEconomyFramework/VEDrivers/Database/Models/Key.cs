@@ -110,7 +110,7 @@ namespace VEDrivers.Database.Models
                 key.PasswordHash = PasswordHash;
 
             if (!string.IsNullOrEmpty(StoredKey))
-                key.LoadNewKey(StoredKey);
+                key.LoadNewKey(StoredKey, fromDb: true);
 
             return key;
         }

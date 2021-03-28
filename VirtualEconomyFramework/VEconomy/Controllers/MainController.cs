@@ -410,6 +410,49 @@ namespace VEconomy.Controllers
             }
         }
 
+        public class UnlockAccountData
+        {
+            public string walletId { get; set; }
+            public string accountAddress { get; set; }
+            public string password { get; set; } = string.Empty;
+        }
+        [HttpPut]
+        [Route("UnlockAccount")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> UnlockAccount([FromBody] UnlockAccountData keyData)
+        {
+            try
+            {
+                return MainDataContext.AccountHandler.UnlockAccount(keyData.walletId, keyData.accountAddress, keyData.password);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot unlock Account!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot unlock Account {keyData.accountAddress}!");
+            }
+        }
+
+        public class LockAccountData
+        {
+            public string walletId { get; set; }
+            public string accountAddress { get; set; }
+        }
+        [HttpPut]
+        [Route("LockAccount")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> LockAccount([FromBody] LockAccountData keyData)
+        {
+            try
+            {
+                return MainDataContext.AccountHandler.LockAccount(keyData.walletId, keyData.accountAddress);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot lock Account!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot lock Account {keyData.accountAddress}!");
+            }
+        }
+
         public class DeleteKeyData
         {
             public string walletId { get; set; }
@@ -989,8 +1032,11 @@ namespace VEconomy.Controllers
             }
             catch (Exception ex)
             {
-                log.Error("Cannot get Neblio Bitcoin price", ex);
-                throw new HttpResponseException((HttpStatusCode)501, "Cannot get wallet info!");
+                if (ex.Message.ToString().Contains("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!"))
+                    throw new HttpResponseException((HttpStatusCode)501, ex.Message.ToString());
+
+                log.Error("Cannot send Neblio Token", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Neblio Token {ex}!");
             }
         }
 

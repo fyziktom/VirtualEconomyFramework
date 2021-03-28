@@ -30,7 +30,8 @@ namespace VEDrivers.Economy.Wallets
         public bool LoadingData { get; set; } = false;
         public string LastProcessedTxId { get; set; } = string.Empty;
         public string LastConfirmedTxId { get; set; } = string.Empty;
-        public EncryptionKey AccountKey { get; set; }
+        [JsonIgnore]
+        public EncryptionKey AccountKey { get; set; } = new EncryptionKey("");
 
         //Db interface interface
         public string CreatedBy { get; set; }
@@ -47,6 +48,8 @@ namespace VEDrivers.Economy.Wallets
         public abstract event EventHandler<IAccount> DetailsLoaded;
         public abstract event EventHandler<NewTransactionDTO> TxDetailsLoaded;
         public abstract event EventHandler<NewTransactionDTO> ConfirmedTransaction;
+
+        public abstract bool IsLocked();
         public abstract Task<string> StartRefreshingData(int interval = 1000);
     }
 }

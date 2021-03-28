@@ -35,8 +35,8 @@ namespace VEDrivers.Economy.Wallets
         bool LoadingData { get; set; }
         string LastProcessedTxId { get; set; }
         string LastConfirmedTxId { get; set; }
+        [JsonIgnore]
         EncryptionKey AccountKey { get; set; }
-
         IDictionary<string, IToken> Tokens { get; set; }
 
         [JsonIgnore]
@@ -46,6 +46,7 @@ namespace VEDrivers.Economy.Wallets
         event EventHandler<NewTransactionDTO> TxDetailsLoaded;
         event EventHandler<NewTransactionDTO> ConfirmedTransaction;
 
+        bool IsLocked();
         Task<string> StartRefreshingData(int interval = 1000);
 
     }

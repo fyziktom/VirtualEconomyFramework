@@ -18,6 +18,9 @@ namespace VEDrivers.Security
         public EncryptionKey(string key, string password = "")
         {
             LoadNewKey(key, password);
+            if (!string.IsNullOrEmpty(password))
+                LoadPassword(password);
+
             if (Id == Guid.Empty)
                 Id = Guid.NewGuid();
         }
@@ -29,6 +32,8 @@ namespace VEDrivers.Security
         public Guid RelatedItemId { get; set; } = Guid.Empty;
         public string Name { get; set; }
         public byte[] PasswordHash { get; set; }
+        private string loadedPassword = string.Empty;
+        private bool passwordLoaded = false;
         public bool IsEncrypted { get; set; } = false;
         public string CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -44,12 +49,26 @@ namespace VEDrivers.Security
             }
         }
 
+        public bool IsPassLoaded
+        {
+            get
+            {
+                return passwordLoaded;
+            }
+        }
+
         public string GetEncryptedKey(string password = "", bool returnEncrypted = false)
         {
             if (returnEncrypted)
             {
                 return _key;
             }
+
+            if (passwordLoaded && string.IsNullOrEmpty(password))
+                password = loadedPassword;
+
+            if (!passwordLoaded && string.IsNullOrEmpty(password))
+                return null;
 
             if (!string.IsNullOrEmpty(password))
             {
@@ -74,13 +93,21 @@ namespace VEDrivers.Security
             }
         }
 
-        public bool LoadNewKey(string key, string password = "")
+        public bool LoadNewKey(string key, string password = "", bool fromDb = false)
         {
             if (string.IsNullOrEmpty(key))
                 return false;
 
+            if (fromDb)
+            {
+                _key = key;
+                return true;
+            }
+
             if (!string.IsNullOrEmpty(password))
             {
+                loadedPassword = password;
+                passwordLoaded = true;
                 PasswordHash = SecurityUtil.HashPassword(password);
                 _key = SymetricProvider.EncryptString(password, key);
                 IsEncrypted = true;
@@ -92,6 +119,19 @@ namespace VEDrivers.Security
                 IsEncrypted = false;
                 return true;
             }
+        }
+
+        public void Lock()
+        {
+            loadedPassword = string.Empty;
+            passwordLoaded = false;
+        }
+
+        public bool LoadPassword(string password)
+        {
+            loadedPassword = password;
+            passwordLoaded = true;
+            return true;
         }
     }
 }

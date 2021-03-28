@@ -155,7 +155,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                 {
                     var txs = acc.Transactions.ToList();
 
-                    foreach(var t in txs)
+                    foreach (var t in txs)
                     {
                         var tx = t.Value;
                         if (tx.Loaded)
@@ -213,7 +213,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                     ;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error("Cannot find token by metadata", ex);
             }
@@ -262,7 +262,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
         {
             try
             {
-                var ltx = FileHelpers.ReadTextFromFile(Path.Join(EconomyMainContext.CurrentLocation,$"Accounts/{address}.txt"));
+                var ltx = FileHelpers.ReadTextFromFile(Path.Join(EconomyMainContext.CurrentLocation, $"Accounts/{address}.txt"));
                 var ltxParsed = JsonConvert.DeserializeObject<LastTxSaveDto>(ltx);
                 return ltxParsed;
             }
@@ -276,15 +276,11 @@ namespace VEDrivers.Economy.Wallets.Handlers
 
         public override string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string password = "", string name = "", bool storeInDb = true)
         {
-
-            if (!string.IsNullOrEmpty(password))
-                return "Load Account Key Error - Password encryption not implemented yet!";
-
             try
             {
-                if(EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
+                if (EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
                 {
-                    if(w.Accounts.TryGetValue(address, out var account))
+                    if (w.Accounts.TryGetValue(address, out var account))
                     {
                         account.AccountKey = new Security.EncryptionKey(key, password);
                         account.AccountKey.RelatedItemId = account.Id;
@@ -310,6 +306,56 @@ namespace VEDrivers.Economy.Wallets.Handlers
             }
 
             return "Load Account Key - ERROR";
+        }
+
+
+        public override string UnlockAccount(string wallet, string address, string password)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
+                {
+                    if (w.Accounts.TryGetValue(address, out var account))
+                    {
+
+                        if (!string.IsNullOrEmpty(password))
+                        {
+                            if (Security.SecurityUtil.VerifyPassword(password, account.AccountKey.PasswordHash))
+                            {
+                                account.AccountKey.LoadPassword(password);
+                            }
+                        }
+                        return "OK";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot unlock the account!", ex);
+            }
+
+            return "Unlock Account - ERROR";
+        }
+
+        public override string LockAccount(string wallet, string address)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
+                {
+                    if (w.Accounts.TryGetValue(address, out var account))
+                    {
+                        account.AccountKey.Lock();
+                        return "OK";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot lock the account!", ex);
+            }
+
+            return "Lock Account - ERROR";
         }
     }
 }

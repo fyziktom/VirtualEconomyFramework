@@ -59,6 +59,14 @@ namespace VEDrivers.Economy.Wallets
         private ConcurrentQueue<string> transactionsToLoad = new ConcurrentQueue<string>();
         private ConcurrentDictionary<string, string> transactionsInLoading = new ConcurrentDictionary<string, string>();
 
+        public override bool IsLocked()
+        {
+            if (AccountKey != null)
+                return !AccountKey.IsPassLoaded && AccountKey.IsEncrypted;
+            else
+                return false;
+        }
+
         public void AddToken(string address, IToken token)
         {
             Tokens.Add(address, token);
