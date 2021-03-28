@@ -264,6 +264,15 @@
                                                 <div class="col"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="accountDetailsWalletId" style="width: 350px;" name="" title="" maxlength="150" required="" minlength="1" placeholder="" readonly=""></div>
                                             </div>
                                             <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Locked Status</span></div>
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="accountDetailsModalIsLocked">Not Loaded</span></div>
+                                                <div class="col"><button class="btn btn-primary" id="btnAccountDetailsLockUnlock" type="button">Unlock</button></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Import Key</span></div>
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnAccountDetailsImportKey" type="button">Import Key</button></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
                                                 <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Number of Transactions</span></div>
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="accountDetailsNumOfTx" style="margin-left: 5px;font-size: 20px;font-weight: bold;">0</span></div>
                                                 <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnAccountTransactionsDetails" type="button">Details</button></div>
@@ -590,6 +599,9 @@
                         </div>
                         <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center" style="min-width: 80px;"><i class="fa fa-remove" style="font-size: 36px;color: var(--danger);"></i></div>
                     </div>
+                    <div class="row" style="height: 100px;">
+                        <div class="col d-xl-flex justify-content-xl-center" style="margin-top: 30px;margin-bottom: 10px;"><span id="txNotSendMessage">No message</span></div>
+                    </div>
                 </div>
                 <div class="modal-footer"></div>
             </div>
@@ -714,6 +726,30 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="importAccountKeyModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Are you sure to import the key?</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Name</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="importAccountKeyName" style="width: 300px;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Key</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyKey" style="width: 300px;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Password</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyPassword" style="width: 300px;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmImportAccountKey" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" role="dialog" tabindex="-1" id="confirmModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -724,6 +760,26 @@
                     <p id="confirmModalContent">Do you realy want to save?</p>
                 </div>
                 <div class="modal-footer"><button class="btn btn-dark" id="confirmButtonCancel" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="confirmButtonOk" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="unlockAccountModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Are you sure to unlock the wallet?</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Enter account password</span></div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input class="d-xl-flex" type="password" id="accountPasswordInput" style="width: 250px;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="confirmUnlockAccountPassword" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
     </div>

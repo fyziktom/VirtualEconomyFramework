@@ -453,6 +453,42 @@ namespace VEconomy.Controllers
             }
         }
 
+        public class AccountLockedData
+        {
+            public string walletId { get; set; }
+            public string accountAddress { get; set; }
+        }
+        [HttpPut]
+        [Route("IsAccountLocked")]
+        //[Authorize(Rights.Administration)]
+        public async Task<bool> IsAccountLocked([FromBody] AccountLockedData keyData)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(keyData.walletId, out var wallet))
+                {
+                    if (wallet.Accounts.TryGetValue(keyData.accountAddress, out var account))
+                    {
+                        return account.IsLocked();
+                    }
+                    else
+                    {
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot check account lock status for {keyData.accountAddress}. Account does not exists!");
+                    }
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot check account lock status for {keyData.walletId}. Wallet does not exists!");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot check account lock status!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot check account lock status!");
+            }
+        }
+
         public class DeleteKeyData
         {
             public string walletId { get; set; }
@@ -1032,11 +1068,8 @@ namespace VEconomy.Controllers
             }
             catch (Exception ex)
             {
-                if (ex.Message.ToString().Contains("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!"))
-                    throw new HttpResponseException((HttpStatusCode)501, ex.Message.ToString());
-
                 log.Error("Cannot send Neblio Token", ex);
-                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Neblio Token {ex}!");
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Neblio Token - {ex.Message}!");
             }
         }
 

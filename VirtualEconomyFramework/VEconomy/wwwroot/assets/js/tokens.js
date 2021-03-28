@@ -177,10 +177,14 @@ function sendTokenApiCommand(apicommand, data) {
             error: function (jqXhr, textStatus, errorMessage) { // error callback 
                 console.log('Error: "' + errorMessage + '"');
 
+                $('#txNotSendMessage').text(jqXhr.responseText);
+
                 $('#transactionNotSentModal').modal("show"); 
                 setTimeout(() => {
-                    $('#transactionNotSentModal').modal("toggle");
-                }, 2500);
+                    if($('#transactionNotSentModal').hasClass('in')) {
+                        $('#transactionNotSentModal').modal("toggle"); 
+                    }
+                }, 5000);
             }
         });
 }

@@ -398,7 +398,6 @@ namespace VEDrivers.Economy.Transactions
                         }
                         else
                         {
-
                             var key = string.Empty;
                             if (EconomyMainContext.Accounts.TryGetValue(data.SenderAddress, out var account))
                             {
@@ -443,7 +442,8 @@ namespace VEDrivers.Economy.Transactions
                                 catch (Exception ex)
                                 {
                                     log.Error("Cannot send token transaction!", ex);
-                                    Console.WriteLine($"Cannot send token transaction, cannot create keys");
+                                    //Console.WriteLine($"Cannot send token transaction, cannot create keys");
+                                    throw new Exception("Cannot send token transaction. cannot create keys!");
                                 }
 
                                 try
@@ -512,8 +512,7 @@ namespace VEDrivers.Economy.Transactions
                             }
                             else
                             {
-                                log.Warn("Key wasnt provided. Cannot sign transaction without key!");
-                                return string.Empty;
+                                throw new Exception("Key wasnt provided. Cannot sign transaction without key!");
                             }
                         }
                     }
@@ -523,8 +522,14 @@ namespace VEDrivers.Economy.Transactions
                     if (ex.Message.ToString().Contains("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!"))
                         throw new Exception(ex.Message.ToString());
 
+                    if (ex.Message.ToString().Contains("Key wasnt provided. Cannot sign transaction without key!"))
+                        throw new Exception(ex.Message.ToString());
+
+                    if (ex.Message.ToString().Contains("Cannot send token transaction. cannot create keys!"))
+                        throw new Exception(ex.Message.ToString());
+
                     log.Error("Cannot send token transaction!", ex);
-                    Console.WriteLine("Cannot send token transaction!");
+                    throw new Exception(ex.Message);
                 }
 
             }

@@ -22,6 +22,22 @@ $(document).ready(function () {
         showAccountTransactions();
     });
 
+    $("#btnAccountDetailsLockUnlock").off();
+    $("#btnAccountDetailsLockUnlock").click(function() {
+        lockunlockAccount();
+    });
+
+    $("#btnAccountDetailsImportKey").off();
+    $("#btnAccountDetailsImportKey").click(function() {
+        showImportAccountKeyModal();
+    });
+
+    $('#btnAccountDetailsImportKey').on('shown.bs.modal', function () {
+        $(function() {
+            $('#accountPasswordInput').focus();
+        });
+    });
+
     try {
         getAccountTypes();
     }
@@ -190,7 +206,7 @@ function showAccountDetails(id) {
 }
 
 function fillAccountDetails(account,refresh) {
-    
+    checkAccountLockStatus();
     $('#accountDetailsAddress').val(account["Address"]);
 
     if (!refresh) {
@@ -201,6 +217,192 @@ function fillAccountDetails(account,refresh) {
 
     $('#accountDetailsTotalNEBL').text(account["TotalBalance"].toString());
     $('#accountDetailsWalletId').val(account["WalletId"]);
+}
+
+var accountLockState = true;
+function checkAccountLockStatus() {
+
+    var url = ApiUrl + '/IsAccountLocked';
+
+    if (ActualWallet != {} && ActualAccount != {}) {
+        var data = {
+            'walletId' : ActualWallet.Id,
+            'accountAddress': ActualAccount.Address
+        };
+    }
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(data),
+        method: 'PUT',
+        dataType: 'json',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            //console.log(`Status: ${status}, Data:${data}`);
+            if(data) {
+                $('#accountDetailsModalIsLocked').text('Locked');
+                $('#btnAccountDetailsLockUnlock').text('Unlock');
+                accountLockState = true;
+            }
+            else {
+                $('#accountDetailsModalIsLocked').text('Unlocked');
+                $('#btnAccountDetailsLockUnlock').text('Lock');
+                accountLockState = false;
+            }
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+        }
+    });
+}
+
+function lockunlockAccount() {
+    if(!accountLockState) {
+        lockAccount();
+    }
+    else {
+
+        $("#confirmUnlockAccountPassword").off();
+        $("#confirmUnlockAccountPassword").click(function() {
+            var password = $('#accountPasswordInput').val();
+            unlockAccount(password);
+        });
+
+        $('#unlockAccountModal').modal('show');
+    }
+}
+
+function showImportAccountKeyModal() {
+    importAccountClearFields();
+
+    $("#btnConfirmImportAccountKey").off();
+    $("#btnConfirmImportAccountKey").click(function() {
+        importAccountKey();
+    });
+
+    $('#importAccountKeyModal').modal('show');
+}
+
+function importAccountClearFields() {
+    $('#importAccountKeyName').val('');
+    $('#importAccountKeyName').val('');
+    $('#importAccountKeyName').val('');
+}
+
+function importAccountKey() {
+
+    var name = $('#importAccountKeyName').val();
+    var key = $('#importAccountKeyKey').val();
+    var password = $('#importAccountKeyPassword').val();
+
+    if (key == undefined || key == null || key == '') {
+        alert('You must fill the key!');
+        $('#importAccountKeyModal').modal('show');
+        return;
+    }
+
+    var url = ApiUrl + '/LoadAccountKey';
+
+    if (ActualWallet != {} && ActualAccount != {}) {
+        var data = {
+            'walletId' : ActualWallet.Id,
+            'accountAddress': ActualAccount.Address,
+            'key' : key,
+            'name': name,
+            'password' : password
+        };
+    }
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(data),
+        method: 'PUT',
+        dataType: 'json',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            //console.log(`Status: ${status}, Data:${data}`);
+            importAccountClearFields();
+            checkAccountLockStatus();
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+            importAccountClearFields();
+            checkAccountLockStatus();
+        }
+    });   
+}
+
+function unlockAccount(password) {
+
+    var url = ApiUrl + '/UnlockAccount';
+
+    if (ActualWallet != {} && ActualAccount != {}) {
+        var data = {
+            'walletId' : ActualWallet.Id,
+            'accountAddress': ActualAccount.Address,
+            'password' : password
+        };
+    }
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(data),
+        method: 'PUT',
+        dataType: 'json',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            //console.log(`Status: ${status}, Data:${data}`);
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+        }
+    });
+}
+
+function lockAccount() {
+    
+    var url = ApiUrl + '/LockAccount';
+
+    if (ActualWallet != {} && ActualAccount != {}) {
+        var data = {
+            'walletId' : ActualWallet.Id,
+            'accountAddress': ActualAccount.Address
+        };
+    }
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(data),
+        method: 'PUT',
+        dataType: 'json',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            //console.log(`Status: ${status}, Data:${data}`);
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+        }
+    });
 }
 
 var totalTokens = 0;

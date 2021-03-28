@@ -62,9 +62,26 @@ namespace VEDrivers.Economy.Wallets
         public override bool IsLocked()
         {
             if (AccountKey != null)
-                return !AccountKey.IsPassLoaded && AccountKey.IsEncrypted;
+            {
+                if (AccountKey.IsEncrypted)
+                {
+                    if (AccountKey.IsPassLoaded)
+                        return false;
+                    else
+                        return true;
+                }
+                else
+                {
+                    if (AccountKey.IsLoaded)
+                        return false;
+                    else
+                        return true;
+                }
+            }
             else
-                return false;
+            {
+                return true;
+            }
         }
 
         public void AddToken(string address, IToken token)
