@@ -21,6 +21,10 @@ namespace VEDrivers.Database.Models
         [ForeignKey(nameof(Account.Id))]
         virtual public HashSet<Account> Settings { get; set; } = new HashSet<Account>();
 
+        [ForeignKey(nameof(Key.Id))]
+        virtual public HashSet<Key> Keys { get; set; } = new HashSet<Key>();
+
+
         public void Update(IWallet wallet)
         {
             if (string.IsNullOrEmpty(Id))

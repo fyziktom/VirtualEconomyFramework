@@ -22,6 +22,7 @@ namespace VEDrivers.Common
         public static int MainPort { get; set; } = 8080;
         public static bool StartBrowserAtStart { get; set; } = false;
         public static bool WorkWithDb { get; set; } = true;
+        public static bool DbLoaded { get; set; } = true;
         public static bool WorkWithQTRPC {get; set; } = true;
         public static string MQTTIP { get; set; }
         public static int MQTTPort { get; set; }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VEDrivers.Economy.Wallets;
 using VEDrivers.Nodes;
 using VEDrivers.Nodes.Dto;
+using VEDrivers.Security;
 
 namespace VEDrivers.Database
 {
@@ -62,7 +63,18 @@ namespace VEDrivers.Database
 
                 foreach (var a in context.Accounts.Where(a => !a.Deleted))
                 {
-                    accounts.Add(a.Fill(AccountFactory.GetAccount(new Guid(a.Id), (AccountTypes)a.Type, Guid.Empty, new Guid(a.WalletId), string.Empty, string.Empty, 0)));
+                    var key = context.Keys
+                        .Where(k => !k.Deleted)
+                        .Where(k => k.RelatedItemId == a.Id)
+                        .FirstOrDefault();
+
+                    var acc = AccountFactory.GetAccount(new Guid(a.Id), (AccountTypes)a.Type, Guid.Empty, new Guid(a.WalletId), string.Empty, string.Empty, 0);
+                    
+                    // load key if exist
+                    if (key != null)
+                        acc.AccountKey = key.Fill(new EncryptionKey(""));
+
+                    accounts.Add(a.Fill(acc));
                 }
 
                 return accounts;
@@ -115,6 +127,33 @@ namespace VEDrivers.Database
             catch (Exception ex)
             {
                 log.Error("Cannot get accounts list from Db", ex);
+                return null;
+            }
+        }
+        /// <summary>
+        /// Function returns all Keys stored in database
+        /// </summary>
+        /// <returns>List of EncryptionKey object created based on specified type</returns>
+        public List<EncryptionKey> GetKeys()
+        {
+            try
+            {
+                var keys = new List<EncryptionKey>();
+
+                foreach (var k in context.Keys.Where(n => !n.Deleted))
+                {
+                    if (k != null)
+                    {
+                        var key = k.Fill(new EncryptionKey(k.StoredKey));
+                        keys.Add(key);
+                    }
+                }
+
+                return keys;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get keys list from Db", ex);
                 return null;
             }
         }
@@ -237,7 +276,7 @@ namespace VEDrivers.Database
             }
             catch (Exception ex)
             {
-                log.Error("Cannot set Account as deleted in Db", ex);
+                log.Error("Cannot set Wallet as deleted in Db", ex);
                 return false;
             }
         }
@@ -589,6 +628,139 @@ namespace VEDrivers.Database
             catch (Exception ex)
             {
                 log.Error("Cannot remove Node from Db", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Function returns key stored in database based on id
+        /// </summary>
+        /// <returns>EncryptionKey object created based on specified type</returns>
+        public EncryptionKey GetKey(Guid id)
+        {
+            try
+            {
+                var key = context.Keys
+                    .Where(k => !k.Deleted)
+                    .Where(k => k.Id == id.ToString())
+                    .FirstOrDefault();
+
+                return key.Fill(new EncryptionKey(key.StoredKey));
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get key from Db", ex);
+                return null;
+            }
+        }
+        /// <summary>
+        /// Function save key to the database
+        /// </summary>
+        /// <returns>true when success</returns>
+        public bool SaveKey(EncryptionKey key)
+        {
+            try
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    var keydb = context.Keys
+                    .Where(k => !k.Deleted)
+                    .Where(k => k.Id == key.Id.ToString())
+                    .FirstOrDefault();
+
+                    if (keydb != null)
+                    {
+                        keydb.Update(key);
+                        keydb.ModifiedOn = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        var k = new Models.Key();
+                        k.Update(key);
+                        k.CreatedOn = DateTime.UtcNow;
+                        k.CreatedBy = "admin";
+                        k.ModifiedBy = "admin";
+                        context.Keys.Add(k);
+                    }
+
+                    context.SaveChanges();
+
+                    transaction.Commit();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot save Key to Db", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Function will set specified Key as deleted
+        /// </summary>
+        /// <returns></returns>
+        public bool DeleteKey(string keyId)
+        {
+            try
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    var key = context.Keys
+                    .Where(k => !k.Deleted)
+                    .Where(k => k.Id == keyId)
+                    .FirstOrDefault();
+
+                    if (key != null)
+                    {
+                        key.Deleted = true;
+                        context.Keys.Update(key);
+                    }
+
+                    context.SaveChanges();
+
+                    transaction.Commit();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot set Key as deleted in Db", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Function will remove specified key from database
+        /// </summary>
+        /// <returns></returns>
+        public bool RemoveKey(string keyId)
+        {
+            try
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    var key = context.Keys
+                    .Where(k => k.Id == keyId)
+                    .FirstOrDefault();
+
+                    if (key != null)
+                    {
+                        context.Keys.Remove(key);
+                    }
+
+                    context.SaveChanges();
+
+                    transaction.Commit();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot remove Key from Db", ex);
                 return false;
             }
         }

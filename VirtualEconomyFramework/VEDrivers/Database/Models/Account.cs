@@ -23,6 +23,9 @@ namespace VEDrivers.Database.Models
         [ForeignKey(nameof(Node.Id))]
         virtual public HashSet<Node> Nodes { get; set; } = new HashSet<Node>();
 
+        [ForeignKey(nameof(Key.Id))]
+        virtual public HashSet<Key> Keys { get; set; } = new HashSet<Key>();
+
         public void Update(IAccount acc)
         {
             if (string.IsNullOrEmpty(Id))

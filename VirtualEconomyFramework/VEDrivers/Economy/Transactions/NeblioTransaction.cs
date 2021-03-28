@@ -33,7 +33,6 @@ namespace VEDrivers.Economy.Transactions
             VoutTokens = new List<IToken>();
             Address = address;
             WalletName = walletName;
-
         }
 
         public NeblioTransaction(string txid, List<string> from, List<string> to, ConcurrentDictionary<string,string> metadata, double ammount)

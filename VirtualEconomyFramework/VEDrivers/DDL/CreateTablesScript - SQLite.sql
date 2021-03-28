@@ -96,3 +96,28 @@ insert into "Nodes" ("Id", "Name", "AccountId", "Parameters", "IsActivated", "Ty
 --select * from "Nodes"
 
 ----------------------------------------------------------------------------------
+
+create table "Keys"
+(
+    "Id" text primary key,
+    "Name" text,
+	"StoredKey" text,
+	"RelatedItemId" text references "Accounts"("Id"),--todo multi reference to all tables Ids--
+	"PasswordHash" text,
+	"IsEncrypted" boolean not null default false,
+	"Type" integer not null,
+	"CreatedBy" text not null,
+    "CreatedOn" timestamp not null,
+	"ModifiedBy" text not null,
+    "ModifiedOn" timestamp not null,
+	"Version" text,
+	"Deleted" boolean not null default false
+);
+
+insert into "Keys" ("Id", "Name", "RelatedItemId", "StoredKey",  "PasswordHash", "IsEncrypted", "Type", "CreatedBy", "CreatedOn", "ModifiedBy", "ModifiedOn", "Version") values
+('0aa38ea1-08yd-43lc-b457-0bfb18234kjk', 'TestKey' ,'fc5df2f1-6def-4f08-973b-d9584e85b4d2', '', '', false, 1, 'fyziktom', datetime(),'fyziktom', datetime(), '0.1'),
+('4fl49487-f544-lsdf-a544-7c32jfa53lcd', 'MainAccountKey', '851e5874-1824-4fa9-bba6-7c4fc007aea5', '', '', false, 1, 'fyziktom', datetime(),'fyziktom', datetime(), '0.1');
+
+--select * from "Keys"
+
+----------------------------------------------------------------------------------

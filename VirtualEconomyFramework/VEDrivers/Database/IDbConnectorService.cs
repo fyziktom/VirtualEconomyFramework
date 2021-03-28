@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDrivers.Economy.Wallets;
 using VEDrivers.Nodes;
+using VEDrivers.Security;
 
 namespace VEDrivers.Database
 {
@@ -25,6 +26,11 @@ namespace VEDrivers.Database
         /// </summary>
         /// <returns>List of INode object created based on specified type</returns>
         List<INode> GetNodes();
+        /// <summary>
+        /// Function returns all Keys stored in database
+        /// </summary>
+        /// <returns>List of EncryptionKey object created based on specified type</returns>
+        List<EncryptionKey> GetKeys();
         /// <summary>
         /// Function returns Wallet stored in database based on id
         /// </summary>
@@ -93,5 +99,26 @@ namespace VEDrivers.Database
         /// <param name="nodeId"></param>
         /// <returns></returns>
         bool RemoveNode(string nodeId);
+
+        /// <summary>
+        /// Function returns key stored in database based on id
+        /// </summary>
+        /// <returns>EncryptionKey object created based on specified type</returns>
+        EncryptionKey GetKey(Guid id);
+        /// <summary>
+        /// Function save key to the database
+        /// </summary>
+        /// <returns>true when success</returns>
+        bool SaveKey(EncryptionKey key);
+        /// <summary>
+        /// Function will set specified Key as deleted
+        /// </summary>
+        /// <returns></returns>
+        bool DeleteKey(string keyId);
+        /// <summary>
+        /// Function will remove specified key from database
+        /// </summary>
+        /// <returns></returns>
+        bool RemoveKey(string keyId);
     }
 }

@@ -274,8 +274,12 @@ namespace VEDrivers.Economy.Wallets.Handlers
             return null;
         }
 
-        public override string LoadAccountKey(string wallet, string address, string key, string password = "")
+        public override string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string password = "", string name = "", bool storeInDb = true)
         {
+
+            if (!string.IsNullOrEmpty(password))
+                return "Load Account Key Error - Password encryption not implemented yet!";
+
             try
             {
                 if(EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
@@ -283,6 +287,19 @@ namespace VEDrivers.Economy.Wallets.Handlers
                     if(w.Accounts.TryGetValue(address, out var account))
                     {
                         account.AccountKey = new Security.EncryptionKey(key, password);
+                        account.AccountKey.RelatedItemId = account.Id;
+                        account.AccountKey.Type = Security.EncryptionKeyType.AccountKey;
+
+                        if (!string.IsNullOrEmpty(password))
+                            account.AccountKey.PasswordHash = Security.SecurityUtil.HashPassword(password);
+
+                        account.AccountKey.Name = name;
+
+                        if (EconomyMainContext.WorkWithDb)
+                        {
+                            dbservice.SaveKey(account.AccountKey);
+                        }
+
                         return "OK";
                     }
                 }

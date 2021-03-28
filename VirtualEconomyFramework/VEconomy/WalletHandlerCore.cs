@@ -1,5 +1,7 @@
 ﻿using log4net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
@@ -39,7 +41,7 @@ namespace VEconomy
             // create folder for Accounts LastTx data
             var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             EconomyMainContext.CurrentLocation = loc;
-            FileHelpers.CheckOrCreateTheFolder(Path.Join(loc,"Accounts"));
+            FileHelpers.CheckOrCreateTheFolder(Path.Join(loc, "Accounts"));
 
             // this tells how many confirmations are needed for transaction to invoke confirmed event
             EconomyMainContext.NumberOfConfirmationsToAccept = settings.GetValue<int>("NumberOfConfirmationsToAccept", 1);
@@ -63,57 +65,22 @@ namespace VEconomy
             }
             */
 
-            settings.GetSection("QTRPC").Bind(EconomyMainContext.QTRPConfig);
-            if (EconomyMainContext.QTRPConfig != null)
-            {
-                EconomyMainContext.QTRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
-                NeblioTransactionHelpers.qtRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
-            }
-
-            // fill default Cryptocurrency, Owner and Wallet
-            try { 
-                EconomyMainContext.Cryptocurrencies.TryAdd("Neblio", new NeblioCryptocurrency());
-            }
-            catch(Exception ex)
-            {
-                log.Error("Cannot get details about cryptocurrency, please check the internet connection or firewall!");
-            }
-
-            EconomyMainContext.StartBrowserAtStart = settings.GetValue<bool>("StartBrowserAtStart");
-            var mainport = settings.GetValue<int>("MainPort", 0);
-            if (mainport != 0)
-            {
-                EconomyMainContext.MainPort = mainport;
-            }
-
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stopToken)
-        {
-            try
-            {
-                if (EconomyMainContext.WorkWithQTRPC)
-                {
-                    EconomyMainContext.QTRPCClient.InitClients();
-                    NeblioTransactionHelpers.qtRPCClient.InitClients();
-                }
-            }
-            catch(Exception ex)
-            {
-                log.Error("Cannot init QTRPC Client! Please check settings in appsetting.json", ex);
-            }
-
-            bool start = true;
-
-            await Task.Delay(1);
 
             var owner = new Owner() { Id = Guid.NewGuid(), Name = "John", SurName = "Doe" };
             EconomyMainContext.Owners.TryAdd("Default", owner);
-
+            var attempts = 60000; // 30 seconds wait for db connection then error
             // load data from database
             // load or create default wallet if db is not avaiable
             if (EconomyMainContext.WorkWithDb)
             {
+                while (!EconomyMainContext.DbLoaded)
+                {
+                    Task.Delay(500).GetAwaiter().GetResult();
+                    attempts--;
+                    if (attempts <= 0)
+                        throw new Exception("Cannot load the database withing 30 seconds even it is required. Turn off Db support in appseting.json or setup correct connection parameters!");
+                }
+
                 if (!MainDataContext.WalletHandler.LoadWalletsFromDb(EconomyMainContext.DbService))
                     MainDataContext.WalletHandler.UpdateWallet(Guid.NewGuid(), owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326, EconomyMainContext.DbService).GetAwaiter().GetResult();
 
@@ -138,11 +105,56 @@ namespace VEconomy
                 }
             }
 
+            settings.GetSection("QTRPC").Bind(EconomyMainContext.QTRPConfig);
+            if (EconomyMainContext.QTRPConfig != null)
+            {
+                EconomyMainContext.QTRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
+                NeblioTransactionHelpers.qtRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
+            }
+
+            // fill default Cryptocurrency, Owner and Wallet
+            try
+            {
+                EconomyMainContext.Cryptocurrencies.TryAdd("Neblio", new NeblioCryptocurrency());
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get details about cryptocurrency, please check the internet connection or firewall!");
+            }
+
+            EconomyMainContext.StartBrowserAtStart = settings.GetValue<bool>("StartBrowserAtStart");
+            var mainport = settings.GetValue<int>("MainPort", 0);
+            if (mainport != 0)
+            {
+                EconomyMainContext.MainPort = mainport;
+            }
+
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stopToken)
+        {
+            bool start = true;
+
+            await Task.Delay(1);
+
             if (!MainDataContext.WalletHandler.ReloadAccounts())
                 Console.WriteLine("Cannot reload accounts");
 
             if (EconomyMainContext.StartBrowserAtStart)
                 BrowserHelpers.OpenBrowser($"http://localhost:{EconomyMainContext.MainPort}/");
+
+            try
+            {
+                if (EconomyMainContext.WorkWithQTRPC)
+                {
+                    EconomyMainContext.QTRPCClient.InitClients();
+                    NeblioTransactionHelpers.qtRPCClient.InitClients();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot init QTRPC Client! Please check settings in appsetting.json", ex);
+            }
 
             try
             {

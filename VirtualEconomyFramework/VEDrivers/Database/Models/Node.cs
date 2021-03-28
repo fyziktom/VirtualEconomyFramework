@@ -21,6 +21,10 @@ namespace VEDrivers.Database.Models
         public string AccountId { get; set; }
         public bool? IsActivated { get; set; }
 
+        [ForeignKey(nameof(Key.Id))]
+        virtual public HashSet<Key> Keys { get; set; } = new HashSet<Key>();
+
+
         public void Update(INode node)
         {
             if (string.IsNullOrEmpty(Id))

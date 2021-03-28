@@ -391,6 +391,8 @@ namespace VEconomy.Controllers
             public string accountAddress { get; set; }
             public string key { get; set; } = string.Empty;
             public string password { get; set; } = string.Empty;
+            public string name { get; set; } = string.Empty;
+            public bool storeInDb { get; set; } = true;
         }
         [HttpPut]
         [Route("LoadAccountKey")]
@@ -399,12 +401,90 @@ namespace VEconomy.Controllers
         {
             try
             {
-                return MainDataContext.AccountHandler.LoadAccountKey(keyData.walletId, keyData.accountAddress, keyData.key, keyData.password);
+                return MainDataContext.AccountHandler.LoadAccountKey(keyData.walletId, keyData.accountAddress, keyData.key, dbService, keyData.password, keyData.name, keyData.storeInDb);
             }
             catch (Exception ex)
             {
                 log.Error("Cannot load Account Key!", ex);
                 throw new HttpResponseException((HttpStatusCode)501, $"Cannot load Account {keyData.accountAddress} Key!");
+            }
+        }
+
+        public class DeleteKeyData
+        {
+            public string walletId { get; set; }
+            public string accountAddress { get; set; }
+            public string keyId { get; set; } = string.Empty;
+        }
+        [HttpPut]
+        [Route("DeleteAccountKey")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> DeleteAccountKey([FromBody] DeleteKeyData keyData)
+        {
+            if (!EconomyMainContext.WorkWithDb)
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot delete Key. App dont work with Db!");
+
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(keyData.walletId, out var wallet))
+                {
+                    if (wallet.Accounts.TryGetValue(keyData.accountAddress, out var account))
+                    {
+                        account.AccountKey = null;
+                        dbService.DeleteKey(keyData.keyId);
+                        return "OK";
+                    }
+                    else
+                    {
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot delete key for {keyData.accountAddress}. Account does not exists!");
+                    }
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot delete key for {keyData.walletId}. Wallet does not exists!");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot delete Key!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot delete Key!");
+            }
+        }
+
+        [HttpPut]
+        [Route("RemoveAccountKey")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> RemoveAccountKey([FromBody] DeleteKeyData keyData)
+        {
+            if (!EconomyMainContext.WorkWithDb)
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot remove Key. App dont work with Db!");
+
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(keyData.walletId, out var wallet))
+                {
+                    if (wallet.Accounts.TryGetValue(keyData.accountAddress, out var account))
+                    {
+                        account.AccountKey = null;
+                        dbService.RemoveKey(keyData.keyId);
+                        return "OK";
+                    }
+                    else
+                    {
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot remove key for {keyData.accountAddress}. Account does not exists!");
+                    }
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot remove key for {keyData.walletId}. Wallet does not exists!");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot remove Key!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot remove Key!");
             }
         }
 

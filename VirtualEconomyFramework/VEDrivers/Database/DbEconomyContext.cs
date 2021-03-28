@@ -13,19 +13,12 @@ namespace VEDrivers.Database
 {
     public class DbEconomyContext : DbContext
     {
-        public static string ConnectString { private get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Node> Nodes { get; set; }
         public DbSet<UserEntity> Users { get; set; }
+        public DbSet<Key> Keys { get; set; }
 
         public DbEconomyContext(DbContextOptions<DbEconomyContext> options) : base(options) { }
-
-        /*
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder
-                    .UseNpgsql(ConnectString)
-                    .UseLazyLoadingProxies();
-        */
     }
 }

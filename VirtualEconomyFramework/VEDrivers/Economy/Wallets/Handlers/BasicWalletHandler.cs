@@ -194,6 +194,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 }
 
                                 a.WalletName = w.Name;
+
                                 a.StartRefreshingData(EconomyMainContext.WalletRefreshInterval);
                                 if (a.WalletId == w.Id)
                                     w.Accounts.TryAdd(a.Address, a);

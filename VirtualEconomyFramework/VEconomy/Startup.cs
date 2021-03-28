@@ -47,37 +47,6 @@ namespace VEconomy
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddControllers(o => o.Filters.Add(new HttpResponseExceptionFilter()))
-                .AddNewtonsoftJson(o =>
-                {
-                    o.UseMemberCasing();  //generates identical javascript and c# names
-                    o.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;  //easier javascript work with ".Include"
-                    if (Environment.IsDevelopment()) o.SerializerSettings.Formatting = Formatting.Indented;
-                });
-
-
-            var config = new MQTTConfig();
-            Configuration.GetSection("MQTT").Bind(config);
-
-            services
-                .AddHostedMqttServer(mqttServer =>
-                mqttServer
-                        .WithConnectionValidator(c => { if (c.Username != config.User) return; if (c.Password != config.Pass) return; c.ReasonCode = MqttConnectReasonCode.Success; })
-                        .WithoutDefaultEndpoint())
-                .AddMqttConnectionHandler()
-                .AddConnections();
-
-            services.AddSwaggerGen();
-
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
-            {
-                if (TimeSpan.TryParse(Configuration["LoginExpiration"], out var span))
-                {
-                    options.ExpireTimeSpan = span;
-                }
-            });
-
             EconomyMainContext.WorkWithDb = Convert.ToBoolean(Configuration.GetValue<bool>("UseDatabase"));
             if (EconomyMainContext.WorkWithDb)
             {
@@ -111,7 +80,7 @@ namespace VEconomy
                             }
                         }
                     }
-                    
+
                     services.AddDbContext<DbEconomyContext>(options =>
                         options.UseSqlite(constr));
 
@@ -141,7 +110,40 @@ namespace VEconomy
                 else
                 { throw new ArgumentException("Not a valid database type"); }
 
+                EconomyMainContext.DbLoaded = true;
             }
+
+            services
+                .AddControllers(o => o.Filters.Add(new HttpResponseExceptionFilter()))
+                .AddNewtonsoftJson(o =>
+                {
+                    o.UseMemberCasing();  //generates identical javascript and c# names
+                    o.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;  //easier javascript work with ".Include"
+                    if (Environment.IsDevelopment()) o.SerializerSettings.Formatting = Formatting.Indented;
+                });
+
+
+            var config = new MQTTConfig();
+            Configuration.GetSection("MQTT").Bind(config);
+
+            services
+                .AddHostedMqttServer(mqttServer =>
+                mqttServer
+                        .WithConnectionValidator(c => { if (c.Username != config.User) return; if (c.Password != config.Pass) return; c.ReasonCode = MqttConnectReasonCode.Success; })
+                        .WithoutDefaultEndpoint())
+                .AddMqttConnectionHandler()
+                .AddConnections();
+
+            services.AddSwaggerGen();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+            {
+                if (TimeSpan.TryParse(Configuration["LoginExpiration"], out var span))
+                {
+                    options.ExpireTimeSpan = span;
+                }
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
