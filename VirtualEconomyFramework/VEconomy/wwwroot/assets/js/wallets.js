@@ -1,5 +1,5 @@
 
-$(document).ready(function () {
+function walletAfterLoad() {
 
     $("#btnDeleteWallet").off();
     $("#btnDeleteWallet").click(function() {
@@ -17,8 +17,7 @@ $(document).ready(function () {
     catch {
         console.log('Cannot load wallet types from API.');
     }
-
-});
+}
 
 var selectedWalletType = 'Neblio';
 var actualWalletID = '';

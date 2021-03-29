@@ -116,6 +116,8 @@ function loadConfig(loaded) {
 
                 loaded();
 
+                checkComponents();
+
                 tryToConnect = setInterval(function () {
                     ConnectMQTT();
                 }, 1000);
@@ -145,12 +147,24 @@ $(document).ready(function () {
 
     loadRights();
     loadConfig(loaded);
+
 });
 
 function loaded() {    
 
-   checkLocation();
+    checkLocation();
 
+    if (ActualPage == Pages.users) {
+        userAfterLoad();
+    }
+    else if (ActualPage == Pages.wallets || ActualPage == Pages.dashboard || ActualPage == Pages.tokens || ActualPage == Pages.games || ActualPage == Pages.nodes) {
+        walletAfterLoad();
+        accountsAfterLoad();
+        tokensAfterLoad();
+        if (ActualPage == Pages.games) {
+            loadChessPageStartUp();
+        }
+    }
 }
 
 function checkLocation() {
@@ -171,9 +185,11 @@ function checkLocation() {
     else if (currentLocation.includes('users')) {
         ActualPage = Pages.users;
     }
+    else if (currentLocation.includes('tokens')) {
+        ActualPage = Pages.tokens;
+    }
     else if (currentLocation.includes('chess')) {
         ActualPage = Pages.games;
-        loadChessPageStartUp();
     }
     else {
         ActualPage = Pages.none;
@@ -228,4 +244,46 @@ function downloadDataAsTextFile(data,filename){
 
  function isNumeric(num){
     return !isNaN(num)
+}
+
+function checkComponents() {
+    var url = document.location.origin + '/api/' + 'IsRPCAvailable';
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        method: 'GET',
+        dataType: 'json',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            isRPCAvailable = data;
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+        }
+    });
+
+    url = document.location.origin + '/api/' + 'IsDbAvailable';
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        method: 'GET',
+        dataType: 'json',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            isDbAvailable = data;
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+        }
+    });
 }

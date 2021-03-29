@@ -308,6 +308,7 @@
                                                     <div class="row">
                                                         <div class="col d-xl-flex justify-content-xl-end"><span id="accountDetailsTotalNEBL" style="margin-left: 5px;font-size: 24px;font-weight: bold;">0</span></div>
                                                         <div class="col d-xl-flex justify-content-xl-start align-items-xl-center"><img src="assets/img/neblio%20logo.jpg" style="width: 25px;"></div>
+                                                        <div class="col d-xl-flex justify-content-xl-start align-items-xl-center"><button class="btn btn-primary" id="btnAccountModalSendTx" type="button">Send</button></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -360,6 +361,10 @@
                                             <div class="row" style="margin-top: 20px;">
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Wallet Id</span></div>
                                                 <div class="col"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="newAccountWalletId" style="width: 350px;" name="" title="" maxlength="150" required="" minlength="1" placeholder="" readonly=""></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Password (fill to encrypt the key!)</span></div>
+                                                <div class="col d-xl-flex justify-content-xl-center"><input type="password" id="newAccountPassword" style="width: 350px;"></div>
                                             </div>
                                             <div class="row" style="margin-top: 20px;">
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Type</span></div>
@@ -556,6 +561,57 @@
                                             </div>
                                             <div class="row" style="margin-top: 30px;">
                                                 <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnSendTokenModalConfirm" type="button">Send</button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="sendTxModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Send Transaction</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 700px;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 700px;">
+                                <div class="card-body" style="min-width: 800px;max-width: 800px;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>WalletName</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="sendTxModalWalletName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Name and Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="sendTxModalAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Amount</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input class="d-xl-flex" type="text" id="sendTxModalAmount" style="width: 400px;" value="1" inputmode="numeric"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Send to Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="sendTxModalReceiverAddress" style="width: 400px;"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 30px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnSendTxModalConfirm" type="button">Send</button></div>
                                             </div>
                                         </div>
                                     </div>

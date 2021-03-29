@@ -28,6 +28,7 @@ namespace VEDrivers.Economy.Wallets
         public double? TotalSpendableBalance { get; set; } = 0.0;
         public double? TotalUnconfirmedBalance { get; set; } = 0.0;
         public bool LoadingData { get; set; } = false;
+        public string SpendableTxId { get; set; } = string.Empty;
         public string LastProcessedTxId { get; set; } = string.Empty;
         public string LastConfirmedTxId { get; set; } = string.Empty;
         [JsonIgnore]

@@ -8,6 +8,9 @@ var mqttPort = null;
 var mqttUser = null;
 var mqttPass = null;
 
+var isDbAvailable = false;
+var isRPCAvailable = false;
+
 var WalletTypes = [];
 var Wallets = {};
 var ActualWallet = {};
@@ -26,7 +29,8 @@ const Pages = Object.freeze({
     "accounts": 3,
     "nodes": 4,
     "users": 5,
-    "games": 6
+    "games": 6,
+    "tokens": 7
 });
 
 var ActualPage = Pages.dashboard;

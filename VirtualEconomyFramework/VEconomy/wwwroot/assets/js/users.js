@@ -1,5 +1,5 @@
 
-$(document).ready(function () {
+function userAfterLoad() {
 
     $("#btnAddUserShowModal").off();
     $("#btnAddUserShowModal").click(function() {
@@ -24,10 +24,13 @@ $(document).ready(function () {
     LoadRights();
 
     setInterval(function() {
-        GetUsers();
+        if (ActualPage == Pages.users) {
+            if (UserRights == 1) {
+                GetUsers();
+            }
+        }
     },2500);
-    
-});
+}
 
 function DeleteUser() {
 

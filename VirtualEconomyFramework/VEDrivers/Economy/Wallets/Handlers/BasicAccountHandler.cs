@@ -1,4 +1,5 @@
 ﻿using log4net;
+using NBitcoin;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public override async Task<string> UpdateAccount(string accountAddress, Guid walletId, AccountTypes type, string name, IDbConnectorService dbservice, bool justInDb = true)
+        public override async Task<string> UpdateAccount(string accountAddress, Guid walletId, AccountTypes type, string name, IDbConnectorService dbservice, bool justInDb = true, string password = "")
         {
             //IDbConnectorService dbservice = new DbConnectorService();
 
@@ -51,11 +52,16 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 // creating wallet in desktop QT Wallet
 
                                 var accresp = new QTWalletResponseDto();
+                                var keyresp = new QTWalletResponseDto();
+                                var privateKey = string.Empty;
 
                                 if (!justInDb)
                                 {
                                     var acc = await EconomyMainContext.QTRPCClient.RPCLocalCommandSplitedAsync("getnewaddress", new string[] { name });
                                     accresp = JsonConvert.DeserializeObject<QTWalletResponseDto>(acc);
+
+                                    var kr = await EconomyMainContext.QTRPCClient.RPCLocalCommandSplitedAsync("dumpprivatekey", new string[] { accresp.result });
+                                    keyresp = JsonConvert.DeserializeObject<QTWalletResponseDto>(kr);
                                 }
                                 else
                                 {
@@ -83,6 +89,12 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                     wallet.Accounts.TryAdd(account.Address, account);
                                     wallet.RegisterAccountEvents(account.Address);
 
+                                    if (!string.IsNullOrEmpty(privateKey))
+                                    {
+                                        // load and save address private key if was dumped correctly
+                                        LoadAccountKey(walletId.ToString(), account.Address, privateKey, dbservice, password, account.Name + "-key");
+                                    }
+
                                     if (EconomyMainContext.WorkWithDb && account != null)
                                     {
                                         if (!dbservice.SaveAccount(account))
@@ -103,7 +115,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 return "Cannot create account - RPC is not connected, probably not configured!";
                             }
                         }
-                        else
+                        else if (!EconomyMainContext.WorkWithQTRPC && justInDb)
                         {
                             // if not work with RPC you must fill address
                             if (!string.IsNullOrEmpty(accountAddress))
@@ -129,6 +141,49 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 log.Error("Cannot create account - RPC is disabled and accountAddress is empty!");
                                 return "Cannot create account - RPC is disabled and accountAddress is empty!";
                             }
+                        }
+                        else if (!EconomyMainContext.WorkWithQTRPC && EconomyMainContext.WorkWithDb && !justInDb)
+                        {
+                            try
+                            {
+                                // create new address with NBitcoin library
+                                var network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
+                                Key privateKey = new Key(); // generate a random private key
+                                PubKey publicKey = privateKey.PubKey;
+                                BitcoinSecret privateKeyFromNetwork = privateKey.GetBitcoinSecret(network);
+                                var address = publicKey.GetAddress(ScriptPubKeyType.Legacy, network);
+
+
+                                var account = AccountFactory.GetAccount(Guid.Empty, type, wallet.Owner, walletId, name, address.ToString(), 0);
+
+                                // check if some files with last state already exists
+                                var ltxParsed = GetLastAccountProcessedTxs(account.Address);
+                                if (ltxParsed != null)
+                                {
+                                    account.LastConfirmedTxId = ltxParsed.LastConfirmedTxId;
+                                    account.LastProcessedTxId = ltxParsed.LastProcessedTxId;
+                                }
+
+                                account.WalletName = wallet.Name;
+                                account.StartRefreshingData(EconomyMainContext.WalletRefreshInterval);
+                                wallet.Accounts.TryAdd(account.Address, account);
+                                wallet.RegisterAccountEvents(account.Address);
+
+                                // load and save address private key
+                                LoadAccountKey(walletId.ToString(), address.ToString(), privateKeyFromNetwork.ToString(), dbservice, password, account.Name + "-key");
+
+                                return "OK";
+                            }
+                            catch(Exception ex)
+                            {
+                                log.Error("Cannot create account - NBitcoin cannot create new address!");
+                                return "Cannot create account - NBitcoin cannot create new address!";
+                            }
+                        }
+                        else
+                        {
+                            log.Error("Cannot create account - RPC is disabled, accountAddress is empty!");
+                            return "Cannot create account - RPC is disabled and accountAddress is empty!";
                         }
                     }
                     else

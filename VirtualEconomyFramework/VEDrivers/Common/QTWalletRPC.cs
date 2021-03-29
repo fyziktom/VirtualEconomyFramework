@@ -17,6 +17,7 @@ namespace VEDrivers.Common
         {
             { "getaccount", CommonOneParameterRequest },
             { "getnewaddress", CommonOneParameterRequest },
+            { "dumpprivatekey", CommonOneParameterRequest },
             { "getwalletinfo", CommonNoParameterRequest },
             { "getntp1balances", CommonNoParameterRequest },
             { "getpeerinfo", CommonNoParameterRequest },

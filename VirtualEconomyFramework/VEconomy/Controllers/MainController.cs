@@ -50,6 +50,20 @@ namespace VEconomy.Controllers
             };
         }
 
+        [HttpGet]
+        [Route("IsRPCAvailable")]
+        public bool IsRPCAvailable()
+        {
+            return EconomyMainContext.WorkWithQTRPC;
+        }
+
+        [HttpGet]
+        [Route("IsDbAvailable")]
+        public bool IsDbAvailable()
+        {
+            return EconomyMainContext.WorkWithDb;
+        }
+
         public class UpdateWalletData
         {
             public string owner { get; set; }
@@ -287,6 +301,7 @@ namespace VEconomy.Controllers
             public string walletId { get; set; }
             public string accountAddress { get; set; }
             public string accountName { get; set; }
+            public string password { get; set; }
             public bool saveJustToDb { get; set; } = true;
             public AccountTypes accountType { get; set; }
         }
@@ -320,7 +335,14 @@ namespace VEconomy.Controllers
                 if (string.IsNullOrEmpty(accountData.accountAddress))
                     accountData.accountAddress = "";
 
-                return await MainDataContext.AccountHandler.UpdateAccount(accountData.accountAddress, walletId, accountData.accountType, accountData.accountName, dbService, accountData.saveJustToDb);
+                return await MainDataContext.AccountHandler.UpdateAccount(
+                    accountData.accountAddress, 
+                    walletId, 
+                    accountData.accountType, 
+                    accountData.accountName, 
+                    dbService, 
+                    accountData.saveJustToDb,
+                    accountData.password);
             }
             catch (Exception ex)
             {
@@ -1068,8 +1090,27 @@ namespace VEconomy.Controllers
             }
             catch (Exception ex)
             {
-                log.Error("Cannot send Neblio Token", ex);
+                //log.Error("Cannot send Neblio Token", ex);
                 throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Neblio Token - {ex.Message}!");
+            }
+        }
+
+        [HttpPut]
+        [Route("SendNeblioTx")]
+        //[Authorize(Rights.Administration)]
+        public async Task<object> SendNeblioTx([FromBody] SendTxData data)
+        {
+            try
+            {
+                var res = await NeblioTransactionHelpers.SendNeblioTransactionAPI(data);
+
+                return new { info = res, ReadingError = "OK" }; ;
+
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Transaction", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Transaction Token - {ex.Message}!");
             }
         }
 

@@ -1,5 +1,5 @@
 
-$(document).ready(function () {
+function accountsAfterLoad() {
 
     $("#btnAddNewAccount").off();
     $("#btnAddNewAccount").click(function() {
@@ -32,6 +32,17 @@ $(document).ready(function () {
         showImportAccountKeyModal();
     });
 
+    $("#btnAccountModalSendTx").off();
+    $("#btnAccountModalSendTx").click(function() {
+        fillAndShowSendTxModal();
+    });
+
+    $("#btnSendTxModalConfirm").off();
+    $("#btnSendTxModalConfirm").click(function() {
+        sendTx();
+    });
+    
+
     $('#btnAccountDetailsImportKey').on('shown.bs.modal', function () {
         $(function() {
             $('#accountPasswordInput').focus();
@@ -44,8 +55,7 @@ $(document).ready(function () {
     catch {
         console.log('Cannot load wallet types from API.');
     }
-
-});
+}
 
 
 function AddNewAccount() {
@@ -58,11 +68,19 @@ function AddNewAccount() {
         if(!$("#chboxSaveNewAccountJustToDb").is(':checked')) {
             justToDb = false;
         }
+
+        var password = $('#newAccountPassword').val();
+        if (password == '' || password == ' ')
+        {
+            alert('password cannot be empty!');
+            return;
+        }
         
         var acc = {
             "walletId": $('#newAccountWalletId').val(),
             "Address": $('#newAccountAddress').val(),
             "Name": $('#newAccountName').val(),
+            "password" : password,
             "saveJustToDb": justToDb,
             "accountType": 1//account.Type //now support just for neblio, todo reddcoin and bitcoin
         };
@@ -82,10 +100,18 @@ function UpdateAccount(account, justToDb) {
 
     if (account != null && ActualWallet != null) {
 
+        var password = '';
+        if (account.password != undefined) {
+            if (account.password != null) {
+                password = account.password;
+            }
+        }
+        
         var acc = {
             "walletId": ActualWallet.Id,
             "accountAddress": account.Address,
             "accountName": account.Name,
+            "password" : password,
             "saveJustToDb": justToDb,
             "accountType": 1//account.Type //now support just for neblio, todo reddcoin and bitcoin
         };
@@ -206,7 +232,7 @@ function showAccountDetails(id) {
 }
 
 function fillAccountDetails(account,refresh) {
-    checkAccountLockStatus();
+    checkAccountLockStatus(account.Address);
     $('#accountDetailsAddress').val(account["Address"]);
 
     if (!refresh) {
@@ -220,14 +246,14 @@ function fillAccountDetails(account,refresh) {
 }
 
 var accountLockState = true;
-function checkAccountLockStatus() {
+function checkAccountLockStatus(address) {
 
     var url = ApiUrl + '/IsAccountLocked';
 
     if (ActualWallet != {} && ActualAccount != {}) {
         var data = {
             'walletId' : ActualWallet.Id,
-            'accountAddress': ActualAccount.Address
+            'accountAddress': address
         };
     }
 
@@ -270,9 +296,11 @@ function lockunlockAccount() {
         $("#confirmUnlockAccountPassword").off();
         $("#confirmUnlockAccountPassword").click(function() {
             var password = $('#accountPasswordInput').val();
+            $('#accountPasswordInput').val('');
             unlockAccount(password);
         });
 
+        $('#accountPasswordInput').val('');
         $('#unlockAccountModal').modal('show');
     }
 }
@@ -332,12 +360,12 @@ function importAccountKey() {
         success: function (data, status, xhr) {   // success callback function
             //console.log(`Status: ${status}, Data:${data}`);
             importAccountClearFields();
-            checkAccountLockStatus();
+            checkAccountLockStatus(ActualAccount.Address);
         },
         error: function (jqXhr, textStatus, errorMessage) { // error callback 
             console.log('Error: "' + errorMessage + '"');
             importAccountClearFields();
-            checkAccountLockStatus();
+            checkAccountLockStatus(ActualAccount.Address);
         }
     });   
 }
@@ -651,4 +679,82 @@ function getTxReceipt(walletId, accountAddr, txid) {
 function downloadReceiptPageAsFile(data) {
     var fn = 'TxReceipt-' + Date.now().toString() + '.html';
     downloadDataAsTextFile(data, fn);
+}
+
+/////////////////////
+// sending currency transaction
+
+function fillAndShowSendTxModal() {
+    $('#sendTxModalWalletName').text(ActualWallet.Name);
+    $('#sendTxModalAccountAddress').text(ActualAccount.Name + ' - ' + ActualAccount.Address);
+    $('#sendTxModal').modal('show');
+}
+
+function sendTx() {
+
+    var add = $('#sendTxModalReceiverAddress').val();
+    if (add == '') {
+        alert('Address Cannot Be empty');
+        return;
+    }
+
+    var amount = parseFloat($('#sendTxModalAmount').val());
+    if (amount == 0) {
+        alert('Cannot send 0 Nebl');
+        return;
+    }
+
+    var data = {
+        "ReceiverAddress": add,
+        "SenderAddress": ActualAccount.Address,
+        "Symbol": "NEBL",
+        "CustomMessage": '',
+        "Amount": amount
+    };
+
+    $("#confirmButtonOk").off();
+    $("#confirmButtonOk").click(function() {
+        sendTxApiCommand('SendNeblioTx', data);
+    });
+    
+    ShowConfirmModal('', 'Do you realy want to send this transaction?');  
+
+}
+
+function sendTxApiCommand(apicommand, data) {
+    var url = document.location.origin + "/api/" + apicommand;
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(data),
+        method: 'PUT',
+        dataType: 'json',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            console.log(`Status: ${status}, Data:${data}`);
+            $('#transactionSentModal').modal("show"); 
+            setTimeout(() => {
+                if($('#transactionSentModal').hasClass('in')) {
+                    $('#transactionSentModal').modal("toggle"); 
+                }
+            }, 2500);
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+
+            $('#txNotSendMessage').text(jqXhr.responseText);
+
+            $('#transactionNotSentModal').modal("show"); 
+            setTimeout(() => {
+                if($('#transactionNotSentModal').hasClass('in')) {
+                    $('#transactionNotSentModal').modal("toggle"); 
+                }
+            }, 5000);
+        }
+    });
 }

@@ -370,6 +370,11 @@ var waitingForPartnerAfterMove = false;
 
 function ConfirmChessMove() {
 
+    if (!isUserOnMoveNow) {
+        alert('This is not your turn, you cannot confirm move now. Wait for partner move!');
+        return;
+    }
+
     if (selectedChessAccount == '') {
         alert('Please select Account!');
         return;
@@ -486,6 +491,7 @@ function reloadAccountChessGames() {
     }
 }
 
+var isUserOnMoveNow = false;
 function setChessHistory(historytx) {
     newMovedragged = false;
     $('#btnConfirmChessGameMove').removeClass('btn-primary').addClass('btn-secondary');
@@ -505,9 +511,17 @@ function setChessHistory(historytx) {
 
         if (gs.LastMovePlayer != selectedChessAccount) {
             $('#chessOnMove').text('Your Turn!');
+            isUserOnMoveNow = true;
         }
         else {
             $('#chessOnMove').text('Partner Turn!');
+            isUserOnMoveNow = false;
+        }
+
+        for(var p in dto.Players) {
+            if (p != selectedChessAccount) {
+                $('#chessPlayer2Address').val(p);
+            }
         }
 
         var config = {

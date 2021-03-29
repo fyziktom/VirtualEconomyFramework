@@ -1,6 +1,6 @@
 
 
-$(document).ready(function () {
+function tokensAfterLoad() {
 
     $("#btnTokenDetailsSendToken").off();
     $("#btnTokenDetailsSendToken").click(function() {
@@ -19,7 +19,7 @@ $(document).ready(function () {
         });
     }
     catch{}
-});
+}
 
 function fillTokenDetails(token) {
     if (token != null) {
@@ -171,7 +171,9 @@ function sendTokenApiCommand(apicommand, data) {
                 console.log(`Status: ${status}, Data:${data}`);
                 $('#transactionSentModal').modal("show"); 
                 setTimeout(() => {
-                    $('#transactionSentModal').modal("toggle");
+                    if($('#transactionSentModal').hasClass('in')) {
+                        $('#transactionSentModal').modal("toggle"); 
+                    }
                 }, 2500);
             },
             error: function (jqXhr, textStatus, errorMessage) { // error callback 

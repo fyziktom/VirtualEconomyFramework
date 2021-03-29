@@ -33,6 +33,7 @@ namespace VEDrivers.Economy.Wallets
         double NumberOfTransaction { get; set; }
         double NumberOfLoadedTransaction { get; }
         bool LoadingData { get; set; }
+        string SpendableTxId { get; set; }
         string LastProcessedTxId { get; set; }
         string LastConfirmedTxId { get; set; }
         [JsonIgnore]

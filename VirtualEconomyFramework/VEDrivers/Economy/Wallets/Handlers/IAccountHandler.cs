@@ -11,7 +11,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
 {
     public interface IAccountHandler
     {
-        Task<string> UpdateAccount(string accountAddress, Guid walletId, AccountTypes type, string name, IDbConnectorService dbservice, bool justInDb = true);
+        Task<string> UpdateAccount(string accountAddress, Guid walletId, AccountTypes type, string name, IDbConnectorService dbservice, bool justInDb = true, string password = "");
         IDictionary<string, IToken> FindTokenByMetadata(string account, string key, string value = "");
         IDictionary<string, IToken> FindAllTokens(string account);
         LastTxSaveDto GetLastAccountProcessedTxs(string address);

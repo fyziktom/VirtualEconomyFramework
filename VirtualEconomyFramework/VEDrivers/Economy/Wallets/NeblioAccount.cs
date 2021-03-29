@@ -30,15 +30,15 @@ namespace VEDrivers.Economy.Wallets
             Transactions = new ConcurrentDictionary<string, ITransaction>();
             NumberOfTransaction = 0;
             Type = AccountTypes.Neblio;
-            client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            //client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
 
             lastTxSaveDto = new LastTxSaveDto();
         }
 
-        private QTWalletRPCClient rpcClient;
-        private HttpClient httpClient = new HttpClient();
-        private IClient client;
-        private ICryptocurrency NeblioCrypto { get; set; } = new NeblioCryptocurrency();
+        //private QTWalletRPCClient rpcClient;
+        //private HttpClient httpClient = new HttpClient();
+        //private IClient client;
+        //private ICryptocurrency NeblioCrypto { get; set; } = new NeblioCryptocurrency();
 
         public override event EventHandler<IAccount> DetailsLoaded;
         public override event EventHandler<NewTransactionDTO> TxDetailsLoaded;
@@ -203,7 +203,7 @@ namespace VEDrivers.Economy.Wallets
             Tokens.Clear();
             foreach (var t in tokacc)
             {
-                var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, t.TokenId, string.Empty);
+                var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(TokenTypes.NTP1, t.TokenId, string.Empty);
                 tdetails.ActualBalance = t.Balance;
                 Tokens.Add(t.TokenId, tdetails);
             }
@@ -248,7 +248,7 @@ namespace VEDrivers.Economy.Wallets
 
                                         try
                                         {
-                                            var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(client, TokenTypes.NTP1, tokid, string.Empty);
+                                            var tdetails = await NeblioTransactionHelpers.TokenMetadataAsync(TokenTypes.NTP1, tokid, string.Empty);
                                             tdetails.ActualBalance = bal;
                                             tokens.Add(tokid, tdetails);
                                         }
@@ -296,7 +296,7 @@ namespace VEDrivers.Economy.Wallets
                 {
                     try
                     {
-                        addrinfo = await AddressInfoAsync(client, Address);
+                        addrinfo = await NeblioTransactionHelpers.AddressInfoAsync(Address);
                     }
                     catch(Exception ex)
                     {
@@ -310,6 +310,7 @@ namespace VEDrivers.Economy.Wallets
 
                         if (addrinfo.Transactions != null)
                         {
+                            SpendableTxId = addrinfo.Transactions.LastOrDefault();
                             // this will run just in first turn after init of account
                             // if there is some stored LastProcessedTxId it will load all tx until this one without invoke event
                             // if there is no last tx stored it will count until end and set all as already handled in some previous run of the app
@@ -367,32 +368,5 @@ namespace VEDrivers.Economy.Wallets
 
             return await Task.FromResult("END");
         }
-
-        //todo move to transaction helpers and preprocess data to get just IAccount
-        private async Task<GetAddressResponse> AddressInfoAsync(IClient client, string addr)
-        {
-            var address = await client.GetAddressAsync(addr);
-            /*
-            Console.WriteLine($"AddrStr                     = {address.AddrStr                 }   ");
-            Console.WriteLine($"Balance                     = {address.Balance                 }   ");
-            Console.WriteLine($"BalanceSat                  = {address.BalanceSat              }   ");
-            Console.WriteLine($"TotalReceived               = {address.TotalReceived           }   ");
-            Console.WriteLine($"TotalReceivedSat            = {address.TotalReceivedSat        }   ");
-            Console.WriteLine($"TotalSent                   = {address.TotalSent               }   ");
-            Console.WriteLine($"TotalSentSat                = {address.TotalSentSat            }   ");
-            Console.WriteLine($"UnconfirmedBalance          = {address.UnconfirmedBalance      }   ");
-            Console.WriteLine($"UnconfirmedBalanceSat       = {address.UnconfirmedBalanceSat   }   ");
-            Console.WriteLine($"UnconfirmedTxAppearances    = {address.UnconfirmedTxAppearances}   ");
-            Console.WriteLine($"TxAppearances               = {address.TxAppearances           }   ");
-
-            foreach (var item in address.AdditionalProperties)
-            {
-                Console.WriteLine($"Property: Key = {item.Key}, Value = {item.Value}");
-            }
-            Console.WriteLine();
-            */
-            return address;
-        }
-
     }
 }
