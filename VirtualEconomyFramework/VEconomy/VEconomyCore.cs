@@ -31,6 +31,7 @@ namespace VEconomy
 
             EconomyMainContext.CommonConfig = settings;
 
+            //load the main MQTT parameters
             EconomyMainContext.MQTT = new MQTTConfig();
             settings.GetSection("MQTT").Bind(EconomyMainContext.MQTT);
         }

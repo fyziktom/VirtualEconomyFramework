@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace VEDrivers.Economy.DTO
 {
+    /// <summary>
+    /// Data carrier for sending token
+    /// </summary>
     public class SendTokenTxData
     {
         public SendTokenTxData()
@@ -16,6 +19,10 @@ namespace VEDrivers.Economy.DTO
         /// Address from where token will be send
         /// </summary>
         public string SenderAddress { get; set; }
+        /// <summary>
+        /// If the account is locked you can provide password directly in the send token api command
+        /// if the account is unlocked or the QT wallet is connected fill empty string
+        /// </summary>
         public string Password { get; set; }
         /// <summary>
         /// Address where token will be send

@@ -40,6 +40,10 @@ namespace VEconomy.Controllers
             dbService = new DbConnectorService(_context);
         }
 
+        /// <summary>
+        /// Get Server parameters. Now it returns just MQTT parameters. Refer to MQTTConfig.cs class
+        /// </summary>
+        /// <returns>Object with MQTTConfig class, item is called MQTT</returns>
         [HttpGet]
         [Route("GetServerParams")]
         public object GetServerParams()
@@ -50,6 +54,10 @@ namespace VEconomy.Controllers
             };
         }
 
+        /// <summary>
+        /// Get status of RPC configuration. If the RPC is allowed returns true. Setting of RPC is in appsetting.json
+        /// </summary>
+        /// <returns>true if RPC available</returns>
         [HttpGet]
         [Route("IsRPCAvailable")]
         public bool IsRPCAvailable()
@@ -57,6 +65,10 @@ namespace VEconomy.Controllers
             return EconomyMainContext.WorkWithQTRPC;
         }
 
+        /// <summary>
+        /// Get status of Db configuration. If the Db is allowed returns true. Setting of Db is in appsetting.json
+        /// </summary>
+        /// <returns>true if Db available</returns>
         [HttpGet]
         [Route("IsDbAvailable")]
         public bool IsDbAvailable()
@@ -64,18 +76,44 @@ namespace VEconomy.Controllers
             return EconomyMainContext.WorkWithDb;
         }
 
+        /// <summary>
+        /// Data carrier for UpdateWallet API command
+        /// </summary>
         public class UpdateWalletData
         {
+            /// <summary>
+            /// Not implemented now
+            /// </summary>
             public string owner { get; set; }
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// readable name of wallet
+            /// </summary>
             public string walletName { get; set; }
+            /// <summary>
+            /// This is for connection to RPC, not implemented yet for each wallet, but prepared
+            /// </summary>
             public string walletBaseHost { get; set; }
+            /// <summary>
+            /// This is for connection to RPC, not implemented yet for each wallet, but prepared
+            /// </summary>
             public int walletPort { get; set; }
+            /// <summary>
+            /// Wallet type. Now supported just Neblio
+            /// </summary>
             public WalletTypes walletType {get;set;}
         }
 
         #region Wallets
 
+        /// <summary>
+        /// Create or update wallet. If wallet is not found it is created. 
+        /// </summary>
+        /// <param name="wallData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("UpdateWallet")]
         //[Authorize(Rights.Administration | Rights.RoleTrader)]
@@ -129,6 +167,10 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all walet types. Usefull for creating dropbox in UI
+        /// </summary>
+        /// <returns>List of all wallet types</returns>
         [HttpGet]
         [Route("GetWalletTypes")]
         public async Task<List<string>> GetWalletTypes()
@@ -144,6 +186,11 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns info about QT wallet. Implemented just in Neblio wallet. Not recommended to use now
+        /// </summary>
+        /// <param name="walletName"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetWalletInfo")]
         //[Authorize(Rights.Administration)]
@@ -168,6 +215,10 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns all stored wallets in Db. Works just when Db is available
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetWalletsFromDb")]
         //[Authorize(Rights.Administration)]
@@ -175,8 +226,15 @@ namespace VEconomy.Controllers
         {
             try
             {
-                var walls = dbService.GetWallets();
-                return walls;
+                if (EconomyMainContext.WorkWithDb)
+                {
+                    var walls = dbService.GetWallets();
+                    return walls;
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, "Cannot get Wallets from Db. Db is not setted up!");
+                }
             }
             catch (Exception ex)
             {
@@ -185,12 +243,26 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Remove wallet API command carrier
+        /// </summary>
         public class RemoveWalletData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// if this is true all accounts of this wallet is deleted too
+            /// </summary>
             public bool withAccounts { get; set; }
         }
 
+        /// <summary>
+        /// Delete wallet in Db. Delete just set the "Deleted" flag in the object. The record is kept in the Db, but it is not considered in queries
+        /// </summary>
+        /// <param name="walletData"></param>
+        /// <returns>OK if wallet was deleted</returns>
         [HttpPut]
         [Route("DeleteWallet")]
         //[Authorize(Rights.Administration)]
@@ -222,6 +294,11 @@ namespace VEconomy.Controllers
             return resp;
         }
 
+        /// <summary>
+        /// Remove wallet in Db. This will remove record from Db. 
+        /// </summary>
+        /// <param name="walletData"></param>
+        /// <returns>OK if wallet was removed</returns>
         [HttpPut]
         [Route("RemoveWallet")]
         //[Authorize(Rights.Administration)]
@@ -257,6 +334,10 @@ namespace VEconomy.Controllers
 
         #region Accounts
 
+        /// <summary>
+        /// Returns list with all account types. Usefull for dropbox in UI
+        /// </summary>
+        /// <returns>List of account types</returns>
         [HttpGet]
         [Route("GetAccountTypes")]
         public async Task<List<string>> GetAccountTypes()
@@ -272,6 +353,13 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns dictionary of all token transactions of some address.
+        /// Implemented just for the Neblio now
+        /// Key is the txid of this token transaction
+        /// </summary>
+        /// <param name="address">Neblio address</param>
+        /// <returns>Dictionary with key - txid, value - IToken object</returns>
         [HttpGet]
         [Route("GetAccountTokens/{address}")]
         public async Task<IDictionary<string,IToken>> GetAccountTokens(string address)
@@ -296,16 +384,48 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for UpdateAccount API command
+        /// </summary>
         public class UpdateAccountData
         {
+            /// <summary>
+            /// Guid format
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account address
+            /// Set empty string or null if new address should be created
+            /// </summary>
             public string accountAddress { get; set; }
+            /// <summary>
+            /// Readable name of the account
+            /// </summary>
             public string accountName { get; set; }
-            public string password { get; set; }
+            /// <summary>
+            /// if you want to encrypt the password this must be filled, in other case provide empty string ""
+            /// </summary>
+            public string password { get; set; } = string.Empty;
+            /// <summary>
+            /// if you dont want to create new account, but just store existing account in the database set this true. 
+            /// Default is true to prevent creating new accounts accidentaly
+            /// if you create account just to db you have to import the key separately
+            /// </summary>
             public bool saveJustToDb { get; set; } = true;
+            /// <summary>
+            /// account type, now available just Neblio
+            /// </summary>
             public AccountTypes accountType { get; set; }
         }
 
+
+        /// <summary>
+        /// Create or Update account
+        /// if account does not exists the new will be created. In this case leave empty the address field in dto. 
+        /// you can store existing address to Db or created new one. If you have connection with QT wallet, account is created in QT wallet
+        /// </summary>
+        /// <param name="accountData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("UpdateAccount")]
         //[Authorize(Rights.Administration)]
@@ -351,6 +471,10 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetAccountsFromDb")]
         //[Authorize(Rights.Administration)]
@@ -358,8 +482,15 @@ namespace VEconomy.Controllers
         {
             try
             {
-                var accs = dbService.GetAccounts();
-                return accs;
+                if (EconomyMainContext.WorkWithDb)
+                {
+                    var accs = dbService.GetAccounts();
+                    return accs;
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, "Cannot get Accounts from Db!. Db is not setted up");
+                }
             }
             catch (Exception ex)
             {
@@ -368,12 +499,29 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for Get Account transactions API command
+        /// </summary>
         public class GetAccountTransactionsData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
             public string accountAddress { get; set; }
+            /// <summary>
+            /// Maximum items received back - not implemented now
+            /// </summary>
             public int maxItems { get; set; }
         }
+        /// <summary>
+        /// Get all account transactions, now it is not limited for maximum amount of tx items. 
+        /// </summary>
+        /// <param name="accountData"></param>
+        /// <returns>>Dictionary of account transactions, key - txid, value - ITransaction</returns>
         [HttpPut]
         [Route("GetAccountTransactions")]
         //[Authorize(Rights.Administration)]
@@ -407,15 +555,45 @@ namespace VEconomy.Controllers
             return null;
         }
 
+        /// <summary>
+        /// Data carrier for Loading account key API command
+        /// </summary>
         public class AccountKeyData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account addres, now just Neblio address
+            /// </summary>
             public string accountAddress { get; set; }
+            /// <summary>
+            /// Private key of the address. It is unique code combined with network parameters. 
+            /// You can obtain it from QT Wallet with console and compant "dumpprivatekey address"
+            /// </summary>
             public string key { get; set; } = string.Empty;
+            /// <summary>
+            /// If you want to encrypt the key in the database (strongly reccomended with) fill this field with some string, in other case leave empty string
+            /// I reccomend to use password longer than 12 characters and including also numbers and special characters
+            /// </summary>
             public string password { get; set; } = string.Empty;
+            /// <summary>
+            /// Optional name of the key - not implemented in ui now
+            /// will be used later for storing another types of keys
+            /// </summary>
             public string name { get; set; } = string.Empty;
+            /// <summary>
+            /// if you want to store key in db set true
+            /// This if for case when you want to load the key just for the instance without keep it after restart of application
+            /// </summary>
             public bool storeInDb { get; set; } = true;
         }
+        /// <summary>
+        /// This command will load account private key important for signing the blockchain transactions
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("LoadAccountKey")]
         //[Authorize(Rights.Administration)]
@@ -432,12 +610,32 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for unlock account API command
+        /// </summary>
         public class UnlockAccountData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
             public string accountAddress { get; set; }
+            /// <summary>
+            /// Password to decrypt the private key if it is encrypted. If not leave empty string
+            /// </summary>
             public string password { get; set; } = string.Empty;
         }
+
+        /// <summary>
+        /// Unlock the account. 
+        /// This will init load of the key from the database and load it with the password to the EncryptionKey class in the account.
+        /// After that the account is ready for signing and sending payments
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("UnlockAccount")]
         //[Authorize(Rights.Administration)]
@@ -454,11 +652,23 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for Loading account key API command
+        /// </summary>
         public class LockAccountData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
             public string accountAddress { get; set; }
         }
+        /// <summary>
+        /// Command will lock the account and drop the object with the key
+        /// </summary>
         [HttpPut]
         [Route("LockAccount")]
         //[Authorize(Rights.Administration)]
@@ -475,11 +685,25 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for get account lock state API command
+        /// </summary>
         public class AccountLockedData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
             public string accountAddress { get; set; }
         }
+        /// <summary>
+        /// this command will return lock/unlock state of the account
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <returns>true if the account is locked</returns>
         [HttpPut]
         [Route("IsAccountLocked")]
         //[Authorize(Rights.Administration)]
@@ -511,12 +735,30 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for deleting the key account data 
+        /// </summary>
         public class DeleteKeyData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
             public string accountAddress { get; set; }
+            /// <summary>
+            /// Guid format of the key
+            /// </summary>
             public string keyId { get; set; } = string.Empty;
         }
+        /// <summary>
+        /// This command will delete the account key in the Db. 
+        /// It means set the deleted flag to true and the reccords are kept in the Db but not considered int he queries
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("DeleteAccountKey")]
         //[Authorize(Rights.Administration)]
@@ -553,6 +795,12 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// This command will remove the account key in the Db. 
+        /// It means the record it is removed permanently from the Db.
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("RemoveAccountKey")]
         //[Authorize(Rights.Administration)]
@@ -589,12 +837,27 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for deleting account API command
+        /// </summary>
         public class DeleteAccountData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
             public string accountAddress { get; set; }
             public bool withNodes { get; set; }
         }
+        /// <summary>
+        /// This command will delete the account in the Db. 
+        /// It means set the deleted flag to true and the reccords are kept in the Db but not considered int he queries
+        /// </summary>
+        /// <param name="accountData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("DeleteAccount")]
         //[Authorize(Rights.Administration)]
@@ -633,7 +896,12 @@ namespace VEconomy.Controllers
             return resp;
         }
 
-
+        /// <summary>
+        /// This command will remove the account in the Db. 
+        /// It means the record it is removed permanently from the Db.
+        /// </summary>
+        /// <param name="accountData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("RemoveAccount")]
         //[Authorize(Rights.Administration)]
@@ -672,6 +940,12 @@ namespace VEconomy.Controllers
             return resp;
         }
 
+        /// <summary>
+        /// Returns all accounts of the wallet, should be without tx details, but not implemented yet, 
+        /// same asGetWalletAccountsWithTx
+        /// </summary>
+        /// <param name="walletName"></param>
+        /// <returns>Dictionary of the accounts, key - address, value - IAccount</returns>
         [HttpGet]
         [Route("GetWalletAccounts")]
         //[Authorize(Rights.Administration)]
@@ -696,6 +970,11 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Now same as GetWalletAccounts
+        /// </summary>
+        /// <param name="walletName"></param>
+        /// <returns>Dictionary of the accounts, key - address, value - IAccount include all tx data</returns>
         [HttpGet]
         [Route("GetWalletAccountsWithTx")]
         //[Authorize(Rights.Administration)]
@@ -720,13 +999,33 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for get token by metadata API command
+        /// </summary>
         public class GetTokenByMetadataData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
             public string accountAddress { get; set; }
+            /// <summary>
+            /// Key which can be matched in the metadata field
+            /// </summary>
             public string metadataName { get; set; }
+            /// <summary>
+            /// You can find also keys which includes some specific value, leave empty string if you need just special keys
+            /// </summary>
             public string metadataValue { get; set; }
         }
+        /// <summary>
+        /// Returns dictionary of tokens where some specific key or value is matched. If there is more than one all match are returned
+        /// </summary>
+        /// <param name="metadataData"></param>
+        /// <returns>Dictionary of matched results, key - txid, value - IToken</returns>
         [HttpPut]
         [Route("GetTokenByMetadata")]
         //[Authorize(Rights.Administration)]
@@ -766,6 +1065,10 @@ namespace VEconomy.Controllers
 
         #region Nodes
 
+        /// <summary>
+        /// Get all node types. Useful for dropdown in UI
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetNodesTypes")]
         public async Task<List<string>> GetNodesTypes()
@@ -781,6 +1084,10 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all trigger node types. Useful for dropdown in UI
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetNodeTriggersTypes")]
         public async Task<List<string>> GetNodeTriggersTypes()
@@ -796,16 +1103,45 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for update node API command
+        /// </summary>
         public class UpdateNodeData
         {
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
             public string accountAddress { get; set; }
+            /// <summary>
+            /// Optional readable node name
+            /// </summary>
             public string nodeName { get; set; }
+            /// <summary>
+            /// Guid formad of nodeId
+            /// Leave empty string if new node should be created
+            /// </summary>
             public string nodeId { get; set; }
+            /// <summary>
+            /// activate or disable the node
+            /// </summary>
             public bool isActivated { get; set; }
+            /// <summary>
+            /// Set node type
+            /// </summary>
             public NodeTypes nodeType { get; set; }
+            /// <summary>
+            /// add optional parameters for the node type
+            /// please check call the API command GetNodeActionParametersCarrier for get the coorect structure
+            /// </summary>
             public NodeActionParameters parameters { get; set; }
         }
 
+        /// <summary>
+        /// Create or update the node
+        /// If the node does not exits new one is created
+        /// </summary>
+        /// <param name="nodeData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("UpdateNode")]
         //[Authorize(Rights.Administration)]
@@ -827,6 +1163,10 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns all nodes in the Db
+        /// </summary>
+        /// <returns>List of INode objects</returns>
         [HttpGet]
         [Route("GetNodesFromDb")]
         //[Authorize(Rights.Administration)]
@@ -834,8 +1174,15 @@ namespace VEconomy.Controllers
         {
             try
             {
-                var nodes = dbService.GetNodes();
-                return nodes;
+                if (EconomyMainContext.WorkWithDb)
+                {
+                    var nodes = dbService.GetNodes();
+                    return nodes;
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, "Cannot get Nodes from Db! Db is not setted up.");
+                }
             }
             catch (Exception ex)
             {
@@ -844,12 +1191,26 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for updating node actiation API command
+        /// </summary>
         public class SetActivateNodeData
         {
+            /// <summary>
+            /// Guid format of node Id
+            /// </summary>
             public string nodeId { get; set; }
+            /// <summary>
+            /// Set true if the node should be activated
+            /// </summary>
             public bool isActivated { get; set; }
         }
 
+        /// <summary>
+        /// Activate or Deactivate the node 
+        /// </summary>
+        /// <param name="nodeData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("SetNodeActivateStatus")]
         //[Authorize(Rights.Administration)]
@@ -866,12 +1227,24 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for setting node trigger API command
+        /// </summary>
         public class SetNodeTriggerData
         {
+            /// <summary>
+            /// Guid format of node Id
+            /// </summary>
             public string nodeId { get; set; }
             public NodeActionTriggerTypes type { get; set; }
         }
 
+        /// <summary>
+        /// Set specific node trigger
+        /// Without setting the trigger the node cannot invoke the action
+        /// </summary>
+        /// <param name="nodeData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("SetNodeTrigger")]
         //[Authorize(Rights.Administration)]
@@ -888,10 +1261,22 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for deleting the node
+        /// </summary>
         public class DeleteNodeData
         {
+            /// <summary>
+            /// Guid format of node Id
+            /// </summary>
             public string nodeId { get; set; }
         }
+        /// <summary>
+        /// This command will delete the node in the Db. 
+        /// It means set the deleted flag to true and the reccords are kept in the Db but not considered int he queries
+        /// </summary>
+        /// <param name="nodeData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("DeleteNode")]
         //[Authorize(Rights.Administration)]
@@ -924,6 +1309,12 @@ namespace VEconomy.Controllers
             return resp;
         }
 
+        /// <summary>
+        /// This command will remove the node in the Db. 
+        /// It means the record it is removed permanently from the Db.
+        /// </summary>
+        /// <param name="nodeData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("RemoveNode")]
         //[Authorize(Rights.Administration)]
@@ -996,16 +1387,50 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for invoke node API command
+        /// </summary>
         public class InvokeNodeData
         {
+            /// <summary>
+            /// Type of trigger in the simulated invoke
+            /// </summary>
             public NodeActionTriggerTypes triggerType { get; set; } = NodeActionTriggerTypes.UnconfirmedTokenTxArrived;
+            /// <summary>
+            /// Guid format of node Id
+            /// </summary>
             public string nodeId { get; set; } = string.Empty;
+            /// <summary>
+            /// Specific data for node actions
+            /// </summary>
             public string[] data { get; set; }
+            /// <summary>
+            /// You can call this invoke multiple time automatically.
+            /// </summary>
             public int NumberOfCalls { get; set; } = 1;
+            /// <summary>
+            /// If this is set to true, the node will take last token tx data and use it during invoke as source data
+            /// </summary>
             public bool UseLastTokenTxData { get; set; } = false;
+            /// <summary>
+            /// if you want to just test the new JavaScript please fill it to this variable and set the useAltScript
+            /// The main script stored in the Db will be ignored and node will do action with use of this script
+            /// Good for testing scripts from UI without storing it
+            /// </summary>
             public string altScript { get; set; } = string.Empty;
+            /// <summary>
+            /// set to true if the altScript should be used instead of stored script
+            /// </summary>
             public bool useAltScript { get; set; } = false;
         }
+        /// <summary>
+        /// This command can invoke the node function via API immediately. 
+        /// You can use it for the testing or as the function from API which is called in backend
+        /// You can use it as partial JavaScript backend - just write your function to JS and run it in the node.
+        /// You can use MQTT node to publish result back to UI
+        /// </summary>
+        /// <param name="nodeData"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("InvokeNodeAction")]
         //[Authorize(Rights.Administration)]
@@ -1058,6 +1483,11 @@ namespace VEconomy.Controllers
 
         #region Transactions
 
+        /// <summary>
+        /// Return object ITransaction with tx details
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <returns>ITransaction object</returns>
         [HttpGet]
         [Route("GetNeblioTransactionInfo")]
         public async Task<object> GetNeblioTransactionInfo(string txid)
@@ -1076,6 +1506,13 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Send specific amount Neblio NTP1 tokens to the addres
+        /// It can contain custom metadata
+        /// Please check SendTokenTxData dto for the details
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("SendNTP1Token")]
         //[Authorize(Rights.Administration)]
@@ -1095,6 +1532,12 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Send specific amount Neblio coins to the addres
+        /// Please check SendTxData dto for the details
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("SendNeblioTx")]
         //[Authorize(Rights.Administration)]
@@ -1114,17 +1557,37 @@ namespace VEconomy.Controllers
             }
         }
 
+        /// <summary>
+        /// Data carrier for tx receipt API command
+        /// </summary>
         public class TxReceiptData
         {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
             public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
             public string accountAddress { get; set; }
+            /// <summary>
+            /// tx id
+            /// </summary>
             public string txId { get; set; }
         }
+        /// <summary>
+        /// Data carrier for tx response from receipt API command
+        /// </summary>
         public class TxReceiptResponse
         {
             public IReceipt receipt { get; set; }
             public string htmlReceipt { get; set; }
         }
+        /// <summary>
+        /// return the html page with receipt and receipt object with details about the transaction and the currecny
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("GetTxReceipt")]
         //[Authorize(Rights.Administration)]
@@ -1163,6 +1626,11 @@ namespace VEconomy.Controllers
 
         #region ExchangeCommands
 
+        /// <summary>
+        /// Get actual Nebl price in btc sat.
+        /// Price is get from Binance API
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetNeblBtcPrice")]
         public async Task<string> GetNeblBtcPrice()

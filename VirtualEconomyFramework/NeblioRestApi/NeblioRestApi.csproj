@@ -2,10 +2,28 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <PackageId>VEFramework.NeblioRestApi</PackageId>
+    <Authors>fyziktom, Jan Kuznik</Authors>
+    <Company>VEFramework</Company>
+    <Description>Neblio Rest Api is new .NET 5.0 client for Neblio blockchain API.</Description>
+    <Copyright>fyziktom</Copyright>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>VEFramework, Cryptocurrencies, Crypto, Bitcoin, ReddCoin, Neblio, Nebl, Blockchain, eCommerce, dApps</PackageTags>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\License\license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>0.1.0</Version>
+    <Company>VEFramework</Company>
+    <Description>VE Drivers is set of drivers for Virtual Economy Applications connected to blockchains.</Description>
+    <PackageId>VEFramework.VEDrivers</PackageId>
+    <Authors>fyziktom</Authors>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>VEFramework, Cryptocurrencies, Crypto, Bitcoin, ReddCoin, Neblio, Nebl, Blockchain, eCommerce, dApps</PackageTags>
+    <Copyright>fyziktom</Copyright>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +46,10 @@
     </None>
     <None Update="Economy\Receipt\ReceiptTemplate\NeblioReceipt.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\License\license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 

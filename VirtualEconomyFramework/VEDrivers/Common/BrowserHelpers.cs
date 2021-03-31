@@ -10,6 +10,11 @@ namespace VEDrivers.Common
 {
     public static class BrowserHelpers
     {
+        /// <summary>
+        /// function will start browser with some preset url
+        /// it will detect automaticaly browser based on platform
+        /// </summary>
+        /// <param name="url"></param>
         public static void OpenBrowser(string url)
         {
             try

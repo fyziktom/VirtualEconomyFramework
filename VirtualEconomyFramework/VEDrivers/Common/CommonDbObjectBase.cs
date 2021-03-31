@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace VEDrivers.Common
 {
+    // todo implement to EncryptionKey
     /// <summary>
     /// This class is used for mapping in the database
     /// All of these properties are recommended to use when writing to the Db

@@ -36,9 +36,12 @@ namespace VEconomy
             this.settings = settings; //startup configuration in appsettings.json
             this.lifetime = lifetime;
 
+            // load from settings if app should start with the RPC, then it needs QT wallet
             EconomyMainContext.WorkWithQTRPC = Convert.ToBoolean(settings.GetValue<bool>("UseRPC"));
 
             // create folder for Accounts LastTx data
+            // neblio account will store last data about processed tx.
+            // this it important for recovery and start from specific tx which was last processed and not received (there can be lots of tx received during crash)
             var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             EconomyMainContext.CurrentLocation = loc;
             FileHelpers.CheckOrCreateTheFolder(Path.Join(loc, "Accounts"));
@@ -46,33 +49,19 @@ namespace VEconomy
             // this tells how many confirmations are needed for transaction to invoke confirmed event
             EconomyMainContext.NumberOfConfirmationsToAccept = settings.GetValue<int>("NumberOfConfirmationsToAccept", 1);
 
+            // load from settings if app should start with the db
             EconomyMainContext.WorkWithDb = Convert.ToBoolean(settings.GetValue<bool>("UseDatabase"));
-            /*
-            if (EconomyMainContext.WorkWithDb)
-            {
-                var constr = settings["ConnectionStrings:PostgreSQL"];  //we are not using DI for DbContext
-                if (!string.IsNullOrEmpty(constr))
-                {
-                    DbEconomyContext.ConnectString = constr;
-                    EconomyMainContext.DbService = new DbConnectorService();
-                }
-                else
-                {
-                    log.Error("Cannot connect to Db without connection string!");
-                    Console.WriteLine("Cannot connect to Db without connection string!");
-                    EconomyMainContext.WorkWithDb = false;
-                }
-            }
-            */
 
 
+            // owner are not implemented yet, so just create dummy one
             var owner = new Owner() { Id = Guid.NewGuid(), Name = "John", SurName = "Doe" };
             EconomyMainContext.Owners.TryAdd("Default", owner);
             var attempts = 60000; // 30 seconds wait for db connection then error
-            // load data from database
+            // load data from database - wait for the connection - it is started with the web server so load must wait
             // load or create default wallet if db is not avaiable
             if (EconomyMainContext.WorkWithDb)
             {
+                
                 while (!EconomyMainContext.DbLoaded)
                 {
                     Task.Delay(500).GetAwaiter().GetResult();
@@ -81,14 +70,18 @@ namespace VEconomy
                         throw new Exception("Cannot load the database withing 30 seconds even it is required. Turn off Db support in appseting.json or setup correct connection parameters!");
                 }
 
+                // try to load wallets from db. If not successfull create dummy one
                 if (!MainDataContext.WalletHandler.LoadWalletsFromDb(EconomyMainContext.DbService))
                     MainDataContext.WalletHandler.UpdateWallet(Guid.NewGuid(), owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326, EconomyMainContext.DbService).GetAwaiter().GetResult();
 
+                // load nodes from db
                 if (!MainDataContext.NodeHandler.LoadNodesFromDb(EconomyMainContext.DbService))
                     Console.WriteLine("No nodes in Db, continue with empty list of nodes");
             }
             else
             {
+                // load preset list of account in setting file
+                // this is used just when db is not setted up and you still need to start app with some setted accounts
                 var acc = new List<string>();
                 settings.GetSection("Accounts").Bind(acc);
                 if (acc != null)
@@ -105,14 +98,18 @@ namespace VEconomy
                 }
             }
 
-            settings.GetSection("QTRPC").Bind(EconomyMainContext.QTRPConfig);
-            if (EconomyMainContext.QTRPConfig != null)
+            //if the RPC is setted up try to get the setting
+            if (EconomyMainContext.WorkWithQTRPC)
             {
-                EconomyMainContext.QTRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
-                NeblioTransactionHelpers.qtRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
+                settings.GetSection("QTRPC").Bind(EconomyMainContext.QTRPConfig);
+                if (EconomyMainContext.QTRPConfig != null)
+                {
+                    EconomyMainContext.QTRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
+                    NeblioTransactionHelpers.qtRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
+                }
             }
 
-            // fill default Cryptocurrency, Owner and Wallet
+            // fill default Cryptocurrency
             try
             {
                 EconomyMainContext.Cryptocurrencies.TryAdd("Neblio", new NeblioCryptocurrency());
@@ -122,7 +119,10 @@ namespace VEconomy
                 log.Error("Cannot get details about cryptocurrency, please check the internet connection or firewall!");
             }
 
+            // if the app should run the browser automaticaly load and set
             EconomyMainContext.StartBrowserAtStart = settings.GetValue<bool>("StartBrowserAtStart");
+
+            // load main port of the app, default is 8080
             var mainport = settings.GetValue<int>("MainPort", 0);
             if (mainport != 0)
             {
