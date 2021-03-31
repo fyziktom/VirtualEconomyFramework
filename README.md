@@ -21,6 +21,14 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	VEUsersUtility – utility to create first admin user in Db
 
 
+# Other Projects
+
+This repository contains also project examples for Arduino IDE. It is developed on M5StickC HW. It is based on ESP32 MCU (official page: [M5Stack](https://m5stack.com/)). These projects you can find in folder [Examples-ArduinoIDE-M5StickC](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/Examples/ArduinoIDE/M5StickC).
+
+For compilation you need to install Arduino IDE and M5Stack libraries and ESP32 libraries into IDE ([Guidlines](https://docs.m5stack.com/#/en/arduino/arduino_development)).
+ 
+
+
 # Features
 
 -	ASP.NET Core base application, VEconomy, which can be shaped for your app needs.
@@ -30,8 +38,9 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	Simple Chess Game which store game data to blockchain as example
 -	REST API with OpenAPI description in Swagger.
 -	QT Wallet RPC client and controller for communication with desktop wallet or core of blockchain based on Bitcoin QT Wallet.
--	QT Wallet is optional. App can run without it, but you cannot sign transaction without it.
+-	QT Wallet is optional.
 -	Neblio API .NET Core wrapper (ReddCoin and Bitcoin to be soon).
+-	Wrapper for NBitcoin library to simple create Neblio addresses, sign and send transactions of Nebl and Tokens without QTWallet or Nebliod (other currencies soon).
 -	Integrated MQTT Broker with TCP/IP and WebSocket support
 -	Connection to Binance Exchange data.
 -	Testing application for integration tests.
@@ -56,10 +65,8 @@ IMPORTANT! This repository is now under huge development so please wait until it
 # Main Planned Features
 
 - Async loading of Tx - almost done, testing, cancel
-- Sign transactions with NBitcoin library
 -	DocFx documentation of project
 -	Raspberry PI pre-installed image - in progress, almost done
--	Integrated MQTT Broker - almost done, just testing now
 -	ReddCoin and Bitcoin drivers (maybe Polkadot and Chainlink)
 -	Lock and unlock desktop wallet and other RPC commands for wallets
 -	Transactions details in UI - almost done (need to add token meta details)
@@ -68,6 +75,7 @@ IMPORTANT! This repository is now under huge development so please wait until it
 -	Nuget Package of VEDrivers
 -	Connection to AI ML.NET Neural Network library
 -	Examples of customized applications based on VEFramework - chess game example ready.
+-	Examples with Arduino IDE + Client for VEconomy API
 -	Connector to MS SQL - integrated, needs tests. Also integrated and tested SQLite ;)
 -	Unit tests
 -	Docker support
@@ -202,7 +210,9 @@ There you can download first pre-beta pre-build. It is preset to work with SQLit
 It can run without db too, to just display data or set anything to RAM (will be lost after reset of app). 
 In that case you can edit addresses in appsetting.json in section "Accounts". Accounts in this list will be loaded after start of the app and all tx data will be downloaded and prepared from blockchain.  You can browse tokens, check moves in chess, or test nodes. 
 
-If you have QT wallet you can send Tx too. Just set to Accounts List in the appsetting.json (if you run without Db] some of the address from QT. Then you can run it without Db but with sending tx support.
+If you have QT wallet you can send Tx too via RPC. Just set to Accounts List in the appsetting.json (if you run without Db] some of the address from QT. Then you can run it without Db but with sending tx support.
+
+Actual version now supports sending transactions without QT Wallet. You can also create addresses without QT wallet. It works as independent Wallet for Neblio now.
 
 If you need to acces UI via your network you have to change IP in "MQTT" section in the appsetting.json.
 
@@ -223,6 +233,7 @@ This project uses some other opensource libraries or other tools. Many thanks to
 -	Neblio – Blockchain solution for Enterprises – https://github.com/NeblioTeam/neblio 
 -	Microsoft - .NET Core, C#, Entity Framework Core - https://docs.microsoft.com/en-us/dotnet/core/introduction 
 -	Newtonsoft.Json – JSON parsing library - https://github.com/JamesNK/Newtonsoft.Json 
+-	NBitcoin - .NET C# Library for Bitcoin based cryptocurrencies - https://github.com/MetacoSA/NBitcoin
 -	DocFx – API documentation generator - https://github.com/dotnet/docfx 
 -	Swagger – OpenAPI description of REST API - https://swagger.io/ 
 -	MQTTNet – library for MQTT connection - https://github.com/chkr1011/MQTTnet
