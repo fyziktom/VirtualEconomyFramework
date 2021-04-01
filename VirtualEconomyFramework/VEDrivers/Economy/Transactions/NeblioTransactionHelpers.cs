@@ -117,9 +117,11 @@ namespace VEDrivers.Economy.Transactions
                 }
 
                 var addrto = string.Empty;
-                var txinfodetails = info.Vout?.FirstOrDefault();
+                var txinfodetails = info.Vout?.ToList()?[0];
                 if (txinfodetails != null)
+                {
                     transaction.Amount = (double)txinfodetails.Value / NeblioCrypto.FromSatToMainRatio;
+                }
 
                 var tokenout = info.Vout?.ToList()[0]?.Tokens?.ToList()?.FirstOrDefault();
                 if (tokenout == null)
@@ -147,11 +149,13 @@ namespace VEDrivers.Economy.Transactions
                     else if (addrto == sourceAddress)
                     {
                         transaction.Direction = TransactionDirection.Incoming;
+                        transaction.To.Add(sourceAddress);
                     }
                 }
                 else
                 {
                     transaction.Direction = TransactionDirection.Incoming;
+                    transaction.To.Add(sourceAddress);
                 }
 
                 transaction.To.Add(addrto);
@@ -170,6 +174,35 @@ namespace VEDrivers.Economy.Transactions
                         MetadataAvailable = tokeninfo.MetadataAvailable,
                         TimeStamp = transaction.TimeStamp,
                     });
+                }
+            }
+            else // not token tx
+            {
+                var txinfodetails = info.Vout?.ToList()?[0];
+                if (txinfodetails != null)
+                {
+                     transaction.Amount = (double)txinfodetails.Value / NeblioCrypto.FromSatToMainRatio;
+                }
+
+                var addrto = string.Empty;
+                addrto = info.Vout?.ToList()[0]?.ScriptPubKey?.Addresses?.ToList().FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(addrfrom) && !string.IsNullOrEmpty(sourceAddress) && !string.IsNullOrEmpty(addrto))
+                {
+                    if (addrfrom == sourceAddress)
+                    {
+                        transaction.Direction = TransactionDirection.Outgoing;
+                    }
+                    else if (addrto == sourceAddress)
+                    {
+                        transaction.Direction = TransactionDirection.Incoming;
+                        transaction.To.Add(sourceAddress);
+                    }
+                }
+                else
+                {
+                    transaction.Direction = TransactionDirection.Incoming;
+                    transaction.To.Add(sourceAddress);
                 }
             }
 

@@ -198,7 +198,6 @@ function getAccountByID(id) {
     }
 }
 
-
 function loadAccounts(wallet){
 
     var list = $('#walletDetailsAccountsTable tbody');
@@ -207,13 +206,14 @@ function loadAccounts(wallet){
     if (wallet != null) {
         for (var a in wallet.Accounts) {
             var acc = wallet.Accounts[a];
+            var shortadd = acc.Address.substring(0,3) + '...' + acc.Address.substring(acc.Address.length-3);
             list.append(
                 '<tr>' +
-                '<td>' + acc.Name + ', ' + acc.Address + '</td>' +
+                '<td>' + acc.Name + ', ' + shortadd + '</td>' +
                 '<td>' +
                     '<div class="row">' + 
                         '<div class="col">' + 
-                            '<button class="btn btn-primary" style="margin: 2px; width: 80px;" onclick=\'showAccountDetails("' + acc.Address + '")\'>Details</button>' +
+                            '<button class="btn btn-primary" style="margin: 2px;" onclick=\'showAccountDetails("' + acc.Address + '")\'><i class="fa fa-info-circle"></i></button>' +
                         '</div>' +
                     '</div>' +
                 '</td>' +
@@ -232,17 +232,18 @@ function showAccountDetails(id) {
 }
 
 function fillAccountDetails(account,refresh) {
+
     checkAccountLockStatus(account.Address);
-    $('#accountDetailsAddress').val(account["Address"]);
+    $('#accountDetailsAddress').text(account.Address);
 
     if (!refresh) {
-        $('#accountDetailsName').val(account["Name"]);
+        $('#accountDetailsName').val(account.Name);
     }
-    var ntxs = 'Loaded: ' + account["NumberOfLoadedTransaction"].toString() + ' of ' + account["NumberOfTransaction"].toString();
+    var ntxs = 'Loaded: ' + account.NumberOfLoadedTransaction.toString() + ' of ' + account.NumberOfTransaction.toString();
     $('#accountDetailsNumOfTx').text(ntxs);
 
-    $('#accountDetailsTotalNEBL').text(account["TotalBalance"].toString());
-    $('#accountDetailsWalletId').val(account["WalletId"]);
+    $('#accountDetailsTotalNEBL').text(account.TotalBalance.toString());
+    //$('#accountDetailsWalletId').val(account.WalletId);
 }
 
 var accountLockState = true;
@@ -449,12 +450,14 @@ function loadTokens(account){
 
             list.append(
                 '<tr>' +
-                '<td>' + tok.Symbol + '</td>' +
+                '<td>' + 
+                    '<img style="width: 25px;margin-right: 10px;;" src="' + tok.ImageUrl + '" />' + tok.Symbol + 
+                '</td>' +
                 '<td>' + tok.ActualBalance + '</td>' +
                 '<td>' +
                     '<div class="row">' + 
                         '<div class="col">' + 
-                            '<button class="btn btn-primary" style="margin: 2px; width: 80px;" onclick=\'showTokenDetails("' + tok.Id + '")\'>Details</button>' +
+                            '<button class="btn btn-primary" style="margin: 2px;" onclick=\'showTokenDetails("' + tok.Id + '")\'><i class="fa fa-info-circle"></i></button>' +
                         '</div>' +
                     '</div>' +
                 '</td>' +
@@ -576,14 +579,14 @@ function loadAccountTransactions(account) {
                 
                             list.append(
                                 '<tr>' +
-                                '<td>' + trx.TxId + '</td>' +
+                                '<td>' + '...' + trx.TxId.substring(trx.TxId.length-5) + '</td>' +
                                 '<td>' + direction + '</td>' +
-                                '<td>' + trx.Amount.toString() + '</td>' +
+                                '<td>' + parseFloat(trx.Amount).toString() + '</td>' +
                                 '<td>' + withTokens + '</td>' +
                                 '<td>' +
                                     '<div class="row">' + 
                                         '<div class="col">' + 
-                                            '<button class="btn btn-primary" style="margin: 2px; width: 80px;" onclick=\'showTxDetails("' + trx.TxId + '")\'>Details</button>' +
+                                            '<button class="btn btn-primary" style="margin: 2px; width: 80px;" onclick=\'showTxDetails("' + trx.TxId + '")\'><i class="fa fa-info-circle"></i></button>' +
                                         '</div>' +
                                     '</div>' +
                                 '</td>' +

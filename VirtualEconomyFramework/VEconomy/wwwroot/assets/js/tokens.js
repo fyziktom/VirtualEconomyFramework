@@ -318,6 +318,7 @@ function refreshTokens() {
         var tok = AcountTokens[t];
         var drawIt = false;
         var filterActive = false;
+
         if (tok != undefined && tok != null) {
 
             var filter = $('#tokenListSearchByNameSymbol').val();

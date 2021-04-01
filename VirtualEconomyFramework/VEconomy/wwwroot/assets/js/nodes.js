@@ -77,7 +77,7 @@ function getNodeComponent(node) {
     '    <td>' + type + '</td>'+
     '    <td>' + trigger + '</td>'+
     '    <td>'+
-    '<button class="btn btn-primary" type="button" style="margin: 5px;" onclick="showNodeDetails(\'' + node.Id + '\')">Details</button>'+
+    '<button class="btn btn-primary" type="button" style="margin: 5px;" onclick="showNodeDetails(\'' + node.Id + '\')"><i class="fa fa-info-circle"></i></button>'+
     '</td>'+
     '</tr>';
     

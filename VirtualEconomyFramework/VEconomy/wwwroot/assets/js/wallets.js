@@ -11,6 +11,11 @@ function walletAfterLoad() {
         UpdateWallet();
     });
 
+    $("#btnShowAddNewWalletModal").off();
+    $("#btnShowAddNewWalletModal").click(function() {
+        $('#addNewWalletModal').modal('show');
+    });
+
     try {
         getWalletTypes();
     }
@@ -55,7 +60,8 @@ function getWalletTypes() {
 
 function loadWalletDetails(w) {
 
-    document.getElementById('walletId').value = w.Id;
+    $('#walletTypeHeading').text(GetWalletType(w.Type));
+    //document.getElementById('walletId').value = w.Id;
     document.getElementById('btnWalletType').innerText = GetWalletType(w.Type);
     document.getElementById('walletName').value = w.Name;
     document.getElementById('walletHost').value = w.ConnectionUrlBaseAddress;
@@ -130,19 +136,37 @@ function WalletsRefresh(wallets){
     for (var wall in wallets){
 
         var w = wallets[wall];
+        
+        var shortenId = '';
 
+        if (!$('#mobilePlatformXS').is(':hidden') || !$('#mobilePlatformSM').is(':hidden')) {
+            shortenId = '';
+        }
+        else {
+            var spid = w.Id.split('-');
+            if (spid.length > 4) {
+                shortenId = spid[4] + ', ';
+            }
+        }
+        
         document.getElementById('walletList').innerHTML +=
-        '<tr><td>' +
-        w['Id'] + ', ' +
-        w['Name'] + ', ' +
-        GetWalletType(w['Type']) + ', ' +
-        w['ConnectionUrlBaseAddress'] + '&nbsp;</td><td>' +
-        '<button class="btn btn-success" onclick=\'showWalletDetails(\"' + w['Id'] + '\")\'>Load Details</button>' +
-        '</td></tr>';
+        '<tr>' + 
+            '<td>' +
+                shortenId +
+                w.Name + ', ' +
+                GetWalletType(w.Type) +
+            '</td>' +
+            '<td>' +
+                '<div class="row">' +
+                    '<div class="col d-xl-flex justify-content-xl-center">' +
+                    '<button class="btn btn-primary " onclick=\'showWalletDetails(\"' + w.Id + '\")\'><i class="fa fa-info-circle"></i></button>' +
+                    '</div>' +
+                '</div>' +
+            '</td>' +
+        '</tr>';
     }
 
     HideVisibleItemsByRights();
-
 }
 
 function UpdateWallet() {

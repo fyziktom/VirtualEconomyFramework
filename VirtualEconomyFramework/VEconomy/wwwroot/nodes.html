@@ -123,16 +123,16 @@
                 <div class="modal-body">
                     <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Id</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="nodeDetailsId">Loading...</span></div>
+                        <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center align-items-xl-center"><span id="nodeDetailsId">Loading...</span></div>
                     </div>
                     <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Name</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeDetailsName" style="width: 400px;" placeholder="Fill Name"></div>
+                        <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center align-items-xl-center"><input type="text" id="nodeDetailsName" style="width: 250px;" placeholder="Fill Name"></div>
                     </div>
                     <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Type</span></div>
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                            <div class="dropdown" id="nodeType"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeType" type="button" style="width: 400px;">None</button>
+                            <div class="dropdown" id="nodeType"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeType" type="button" style="width: 100%;">None</button>
                                 <div class="dropdown-menu" id="nodeTypesDropDown"></div>
                             </div>
                         </div>
@@ -140,7 +140,7 @@
                     <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Trigger Type</span></div>
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                            <div class="dropdown" id="nodeTriggerType"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeTriggerType" type="button" style="width: 400px;">None</button>
+                            <div class="dropdown" id="nodeTriggerType"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeTriggerType" type="button" style="width: 100%;">None</button>
                                 <div class="dropdown-menu" id="nodeTriggerTypesDropDown"></div>
                             </div>
                         </div>
@@ -148,7 +148,7 @@
                     <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Is Activated</span></div>
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                            <div class="dropdown" id="nodeActivation"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeActivation" type="button" style="width: 400px;">None</button>
+                            <div class="dropdown" id="nodeActivation"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeActivation" type="button" style="width: 100%;">None</button>
                                 <div class="dropdown-menu" id="nodeActivationDropDown"></div>
                             </div>
                         </div>
@@ -156,7 +156,7 @@
                     <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Account</span></div>
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                            <div class="dropdown" id="nodeType-3"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeAccountAddress" type="button" style="width: 400px;font-size: 12px;">None</button>
+                            <div class="dropdown" id="nodeType-3"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeAccountAddress" type="button" style="width: 100%;font-size: 12px;">None</button>
                                 <div class="dropdown-menu" id="nodeAccountAddressesDropDown"><a class="dropdown-item" href="#" onclick="setWalletType(&quot;Neblio&quot;)">Neblio</a><a class="dropdown-item" href="#" onclick="setWalletType(&quot;ReddCoin&quot;)">Reddcoin</a><a class="dropdown-item" href="#" onclick="setWalletType(&quot;Bitcoin&quot;)">Bitcoin</a></div>
                             </div>
                         </div>
@@ -170,23 +170,22 @@
                             </div>
                             <div class="row" style="margin-top: 20px;">
                                 <div class="col d-xl-flex justify-content-xl-center"><input class="d-xl-flex" type="file" id="file-input"></div>
-                                <div class="col d-xl-flex justify-content-xl-center"><button class="btn btn-primary" id="btnLoadNodeDataFromFile" type="button">Load Data From File</button></div>
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center"><button class="btn btn-primary" id="btnLoadNodeDataFromFile" type="button">Load Data From File</button></div>
                             </div>
                             <div class="row">
-                                <div class="col d-xl-flex justify-content-xl-center" style="margin-top: 20px;"><textarea class="d-xl-flex flex-fill" id="nodeFullData" style="min-height: 200px;min-width: 300px;"></textarea></div>
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center" style="margin-top: 20px;"><textarea class="d-xl-flex flex-fill" id="nodeFullData" style="min-height: 200px;min-width: 300px;"></textarea></div>
                             </div>
                             <div class="row" style="margin-top: 20px;">
-                                <div class="col d-xl-flex justify-content-xl-center"><button class="btn btn-primary" id="btnSaveNodeData" type="button">Save Data To File</button></div>
-                                <div class="col d-xl-flex justify-content-xl-center"><button class="btn btn-primary" id="btnOpenNodeParametersDetails" type="button">Open Parameters In Details</button></div>
+                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center"><button class="btn btn-primary" id="btnSaveNodeData" type="button">Save Data To File</button></div>
+                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center"><button class="btn btn-primary" id="btnOpenNodeParametersDetails" type="button">Open Parameters In Details</button></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div class="row d-xl-flex flex-fill justify-content-xl-end">
-                        <div class="col d-xl-flex align-self-start justify-content-xl-start"><button class="btn btn-light d-xl-flex rights-admin" id="btnRemoveNode" type="button" data-dismiss="modal">Remove Node</button></div>
-                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" id="btnSaveChangedNodeData" type="button" style="min-width: 200px;">Save changes to Core</button></div>
-                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" type="button" data-dismiss="modal" style="min-width: 100px;">Close</button></div>
+                        <div class="col d-flex d-xl-flex justify-content-center align-self-start justify-content-lg-start justify-content-xl-start"><button class="btn btn-danger d-xl-flex rights-admin" id="btnRemoveNode" type="button" data-dismiss="modal"><i class="fa fa-trash-o"></i></button></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center justify-content-xl-center"><button class="btn btn-light" id="btnSaveChangedNodeData" type="button">Save changes</button><button class="btn btn-light" type="button" data-dismiss="modal" style="min-width: 100px;margin-left: 15px;">Close</button></div>
                     </div>
                 </div>
             </div>
@@ -198,57 +197,61 @@
                 <div class="modal-header">
                     <h4 class="modal-title">Node Parameters Details</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                 </div>
-                <div class="modal-body">
-                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Command</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsCommand" style="width: 400px;"></div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Parameters</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnOpenNodeSpecificParametersModal" type="button">Open Node Specific Parameters Setting</button></div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Script</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><div>
-    <div class="editor language-js" style="min-width:500px;min-height:200px;border-style: solid;">
+                <div class="modal-body d-lg-flex justify-content-lg-center" style="width: 100%;">
+                    <div class="row d-lg-flex justify-content-lg-center" style="width: 100%;">
+                        <div class="col" style="width: 100%;">
+                            <div class="row d-flex justify-content-center" style="margin-top: 10px;margin-bottom: 10px;width: 100%;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Command</span></div>
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsCommand" style="width: 250px;"></div>
+                            </div>
+                            <div class="row" style="margin-top: 10px;margin-bottom: 10px;width: 100%;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Parameters</span></div>
+                                <div class="col d-sm-flex d-lg-flex d-xl-flex justify-content-sm-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnOpenNodeSpecificParametersModal" type="button" style="width: auto;">Open Specific Parameters</button></div>
+                            </div>
+                            <div class="row" style="margin-top: 10px;margin-bottom: 10px;width: 100%;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Script</span></div>
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;"><div style="width: 100%;">
+    <div class="editor language-js" style="width: 100%; min-width:200px;min-height:200px;border-style: solid;">
     </div>
 </div></div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Test Script</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                            <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxTestWithNodeFunction" checked=""><label class="form-check-label" for="formCheck-1">With Node Function</label></div>
-                        </div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnTestScript" type="button">Test</button></div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Is Script Activated</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="checkbox" id="nodeParametersDetailsIsScriptActive"></div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>TimeDelay</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsTimeDelay" style="width: 400px;"></div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Login</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsCommand-3" style="width: 400px;"></div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Password</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsCommand-2" style="width: 400px;"></div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;margin-bottom: 10px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Trigger Type</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                            <div class="dropdown" id="nodeTriggerType-1"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeParamTriggerType" type="button" style="width: 400px;">None</button>
-                                <div class="dropdown-menu" id="nodeParamTriggerTypesDropDown"></div>
+                            </div>
+                            <div class="row" style="margin-top: 10px;margin-bottom: 10px;width: 100%;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Test Script</span></div>
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxTestWithNodeFunction" checked=""><label class="form-check-label" for="formCheck-1">With Node Function</label></div>
+                                </div>
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnTestScript" type="button">Test</button></div>
+                            </div>
+                            <div class="row" style="margin-top: 10px;margin-bottom: 10px;width: 100%;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Is Script Activated</span></div>
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="checkbox" id="nodeParametersDetailsIsScriptActive"></div>
+                            </div>
+                            <div class="row d-flex justify-content-center" style="margin-top: 10px;margin-bottom: 10px;width: 100%;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>TimeDelay</span></div>
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsTimeDelay" style="width: 250px;"></div>
+                            </div>
+                            <div class="row d-flex justify-content-center" style="margin-top: 10px;margin-bottom: 10px;width: 100%;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Login</span></div>
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsCommand-3" style="width: 250px;"></div>
+                            </div>
+                            <div class="row d-flex justify-content-center" style="margin-top: 10px;margin-bottom: 10px;width: 100%;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Password</span></div>
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input type="text" id="nodeParametersDetailsCommand-2" style="width: 250px;"></div>
+                            </div>
+                            <div class="row d-flex justify-content-center" style="margin-top: 10px;margin-bottom: 10px;width: 100%;">
+                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" style="max-width: 200px;"><span>Trigger Type</span></div>
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <div class="dropdown" id="nodeTriggerType-1"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNodeParamTriggerType" type="button" style="width: 250px;">None</button>
+                                        <div class="dropdown-menu" id="nodeParamTriggerTypesDropDown"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="row d-xl-flex flex-fill justify-content-xl-end">
-                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" id="btnSaveChangedNodeParameters" type="button" style="min-width: 200px;">Save changes</button></div>
+                    <div class="row d-sm-flex d-xl-flex flex-fill justify-content-sm-end justify-content-xl-end">
+                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" id="btnSaveChangedNodeParameters" type="button">Save</button></div>
                         <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" type="button" data-dismiss="modal" style="min-width: 100px;">Close</button></div>
                     </div>
                 </div>
@@ -262,7 +265,7 @@
                     <h4 class="modal-title">Node Specific Parameters Details</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                 </div>
                 <div class="modal-body">
-                    <div class="table-responsive">
+                    <div class="table-responsive" style="width: 100%;">
                         <table class="table" id="nodeSpecificParametersTable">
                             <thead>
                                 <tr>
@@ -275,8 +278,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="row d-xl-flex flex-fill justify-content-xl-end">
-                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" id="btnSaveNodeSpecificParameters" type="button" style="min-width: 200px;">Save changes</button></div>
+                    <div class="row d-flex d-xl-flex flex-fill justify-content-end justify-content-xl-end">
+                        <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" id="btnSaveNodeSpecificParameters" type="button">Save</button></div>
                         <div class="col-auto d-xl-flex justify-content-xl-center"><button class="btn btn-light" type="button" data-dismiss="modal" style="min-width: 100px;">Close</button></div>
                     </div>
                 </div>
@@ -375,96 +378,6 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="newTokensReceivedModal">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Tokens Received/Send - Confirmed</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col d-xl-flex justify-content-xl-center" style="width: 700px;">
-                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 700px;">
-                                <div class="card-body" style="min-width: 800px;max-width: 800px;">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="row">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Token Symbol and Name</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTokenModalSymbolName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>WalletName</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTokensModalWalletName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTokensModalAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Amount</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTokensModalAmount" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="newTransactionModal">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">New Transaction - Unconfirmed</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col d-xl-flex justify-content-xl-center" style="width: 700px;">
-                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 700px;">
-                                <div class="card-body" style="min-width: 800px;max-width: 800px;">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="row">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTxModalAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Wallet Name</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTxModalAccountName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Transactions Id</span></div>
-                                            </div>
-                                            <div class="row" style="margin-top: 20px;">
-                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTxModalTxId" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
-            </div>
-        </div>
-    </div>
     <div class="modal fade" role="dialog" tabindex="-1" id="loginModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -497,7 +410,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Are you sure to unlock the wallet?</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Are you sure to unlock the account?</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -510,6 +423,101 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="confirmUnlockAccountPassword" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div><div style="font-size: 0px;" id="mobilePlatformXS" class="visible-xs hidden-sm hidden-md hidden-lg hidden-xl d-block d-sm-none">xs</div>
+<div style="font-size: 0px;" id="mobilePlatformSM" class="hidden-xs visible-sm hidden-md hidden-lg hidden-xl d-none d-sm-block d-md-none">sm</div>
+<div style="font-size: 0px;" class="hidden-xs hidden-sm visible-md hidden-lg hidden-xl d-none d-md-block d-lg-none">md</div>
+<div style="font-size: 0px;" class="hidden-xs hidden-sm hidden-md visible-lg hidden-xl d-none d-lg-block d-xl-none">lg</div>
+<div style="font-size: 0px;" class="hidden-xs hidden-sm hidden-md hidden-lg visible-xl d-none d-xl-block">xl</div>
+
+    <div class="modal fade" role="dialog" tabindex="-1" id="newTokensReceivedModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Tokens Received/Send - Confirmed</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center" style="width: 100%;">
+                    <div class="row" style="width: 100%;">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 100%;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;">
+                                <div class="card-body d-flex justify-content-center" style="width: 100%;">
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col" style="width: 100%;">
+                                            <div class="row">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Token Symbol and Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="newTokenModalSymbolName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>WalletName</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="newTokensModalWalletName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="newTokensModalAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Amount</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="newTokensModalAmount" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="newTransactionModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">New Transaction - Unconfirmed</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center" style="width: 100%;">
+                    <div class="row" style="width: 100%;">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 100%;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;">
+                                <div class="card-body d-flex justify-content-center" style="width: 100%;">
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col" style="width: 100%;">
+                                            <div class="row">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="newTxModalAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Wallet Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="newTxModalAccountName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Transactions Id</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="newTxModalTxId" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
             </div>
         </div>
     </div>
