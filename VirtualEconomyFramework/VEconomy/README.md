@@ -10,7 +10,8 @@ Application runs Web server and MQTT server. It also provides connection to the 
 - Integration with another system on API level
 - Automated operations triggered by transactions for integrations or automatic processing transactions
 - Creating own dApp based on this template
-- 
+- Playing games (now Chess game)
+- Messaging client with encryption on blockchain
 
 # Main application setting
 Main application setitng you can find in the appsetting.json in the main folder (where the VEconomy.exe or .dll is located).
@@ -129,6 +130,52 @@ You can open UI in your browser on http://localhost:8080/.
 If you connecting from different PC you have to set the address and then you can connect with specified addres (for example http://192.168.0.1:8080/ if you run VEconomy on pc with IP 192.168.0.1)
 
 Step by step tutorial for web UI will be published soon.
+
+# Messaging Client
+
+VEconomy application has inbuild messaging client. This client uses MSGT tokens to transfer and store message data. Messages can be encrypted with asymmetric encryption (RSA). Each side has own key. This key is different than key for Account (Blockchain Address). Message encryption keys can be created separately with own password for their safe storage in the database. You can create for each new message new key or use the same one. Encrypted messages can be readed just with the original Private Key. So dont lose it and dont lose the passwrod for your encrypted private key.
+
+## How This messaging works?
+
+Alice wants to privately chat with the Bob. She will download the VEconomy, starts it, create address and buy some MSGT tokens. Bob will do the same things. Alice will start communication with Bob by sending "Init Message". This message is public and it is not encrypted. But with this message Alice can select key (or create new one) and "check" the option Encrypt Message. 
+
+![image](https://user-images.githubusercontent.com/78320021/113488381-08f67a00-94be-11eb-85ee-3a1adbb08a43.png)
+
+This option will take selected public key and add it into message. This will tells to the Bob client to encrypt message with this Public key before he will send message back the Alice.
+
+Same thing can do the Bob when he is sending his message to the Alice. 
+When Bob sends the message he always sends the copy of original message but he will use the Alice public key to encrypt it same as his new message. Thanks to this Alice will use just one encryption by her Private Key to read "First" message and the "Response".
+
+![image](https://user-images.githubusercontent.com/78320021/113488520-fb8dbf80-94be-11eb-9562-da465377231f.png)
+
+Alice will receive this message:
+
+![image](https://user-images.githubusercontent.com/78320021/113488553-2aa43100-94bf-11eb-9d57-ab8f88cb87d8.png)
+
+And she can decrypt it with her private key which is stored in the VEconomy database (encrypted with her password) or she can import it and then use it.
+
+![image](https://user-images.githubusercontent.com/78320021/113488594-63dca100-94bf-11eb-8148-6fad3979a688.png)
+
+Each "Init Message" will create new Unique ID of message stream. This stream UID can track some group communication. Also each Message contains TxId of previous message to allow track the exact stream of messages.
+
+Here you can find the example of ecrypted message on the [Neblio Blockchain Explorer](https://explorer.nebl.io/tx/c0f3f2508e693fb5f731f3da8807300db7dd78f36dad6bd475e6ed366f1d87ea)
+
+This is the "Init Message" already with Alice public key [Neblio Blockchain Explorer](https://explorer.nebl.io/tx/9cf9d4d897876ea36c46201861fca4099bacd07ac4f8a7fe93e1844456d5b0c9)
+
+Alice can display all her messages. They are searched from her address transactions:
+
+![image](https://user-images.githubusercontent.com/78320021/113488816-b4083300-94c0-11eb-89dd-4a89a30b4e8f.png)
+
+If Alice needs new key she can easily create new one which is encrypted with her password and stored in her local database:
+
+![image](https://user-images.githubusercontent.com/78320021/113488843-e6199500-94c0-11eb-9b18-a4b18bd29d59.png)
+
+To use this feature Alice must have on her account [MSGT tokens](https://explorer.nebl.io/token/La3Fiunz84XRHDGb1HhQboH6x3TzhV2PMeRQNZ) (I am preparing shop for MSGT) and some Neblio for fees:
+
+![image](https://user-images.githubusercontent.com/78320021/113488872-1a8d5100-94c1-11eb-80f9-95931ca7ea22.png)
+
+The UI needs a lots of improvement. I expect during April there will be support of trancking/marking aswered messages, grouping of messages, filtering, sorting, addings attachenments to the messages.
+If you are interested in testing please write me on the twitter @fyziktom and I can send you some MSGT tokens if you will help me with the testing.
 
 
 # VEconomy Structure
