@@ -790,6 +790,59 @@
         }
       }
     },
+    "/api/GetAccountTransaction": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAccountTransactionData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAccountTransactionData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAccountTransactionData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAccountTransactionData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ITransaction"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ITransaction"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ITransaction"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/GetAccountTransactions": {
       "put": {
         "tags": [
@@ -1314,6 +1367,155 @@
         "responses": {
           "200": {
             "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GetAccountMessages/{account}": {
+      "get": {
+        "tags": [
+          "Main"
+        ],
+        "parameters": [
+          {
+            "name": "account",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/IToken"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/IToken"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/IToken"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GetAccountKeys/{account}": {
+      "get": {
+        "tags": [
+          "Main"
+        ],
+        "parameters": [
+          {
+            "name": "account",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/AccountKeyDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/AccountKeyDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/AccountKeyDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/DecryptMessage": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetDecryptedMessageDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetDecryptedMessageDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetDecryptedMessageDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetDecryptedMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecryptedMessageResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecryptedMessageResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecryptedMessageResponseDto"
+                }
+              }
+            }
           }
         }
       }
@@ -1911,6 +2113,42 @@
         }
       }
     },
+    "/api/SendMessageToken": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/SendNeblioTx": {
       "put": {
         "tags": [
@@ -2401,6 +2639,23 @@
           },
           "storeInDb": {
             "type": "boolean"
+          },
+          "isItMainAccountKey": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AccountKeyDto": {
+        "type": "object",
+        "properties": {
+          "keyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "keyId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2450,6 +2705,20 @@
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "DecryptedMessageResponseDto": {
+        "type": "object",
+        "properties": {
+          "prevMsg": {
+            "type": "string",
+            "nullable": true
+          },
+          "newMsg": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "DeleteAccountData": {
         "type": "object",
@@ -2511,6 +2780,10 @@
             "format": "uuid"
           },
           "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "publicKey": {
             "type": "string",
             "nullable": true
           },
@@ -2602,6 +2875,24 @@
         },
         "additionalProperties": false
       },
+      "GetAccountTransactionData": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "txId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "GetAccountTransactionsData": {
         "type": "object",
         "properties": {
@@ -2616,6 +2907,32 @@
           "maxItems": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetDecryptedMessageDto": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "senderPubKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "txId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2840,6 +3157,17 @@
           },
           "accountKey": {
             "$ref": "#/components/schemas/EncryptionKey"
+          },
+          "accountKeyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "accountKeys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EncryptionKey"
+            },
+            "nullable": true
           },
           "tokens": {
             "type": "object",
@@ -3263,6 +3591,14 @@
             "type": "string",
             "nullable": true
           },
+          "to": {
+            "type": "string",
+            "nullable": true
+          },
+          "from": {
+            "type": "string",
+            "nullable": true
+          },
           "metadataAvailable": {
             "type": "boolean"
           },
@@ -3670,6 +4006,70 @@
         "type": "integer",
         "format": "int32"
       },
+      "SendMessageDto": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "messageStreamUID": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverPubKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "senderAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "senderPubKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "keyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "prevTxId": {
+            "type": "string",
+            "nullable": true
+          },
+          "tokenTxId": {
+            "type": "string",
+            "nullable": true
+          },
+          "initMessage": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "messageData": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "encrypt": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "SendTokenTxData": {
         "type": "object",
         "properties": {
@@ -3703,6 +4103,9 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "useRPCPrimarily": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
