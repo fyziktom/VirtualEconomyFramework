@@ -49,6 +49,7 @@ For compilation you need to install Arduino IDE and M5Stack libraries and ESP32 
 -	Set of drivers/helpers for economy-based applications.
 -	Set of drivers/helpers for using blockchain in games
 -	Simple Chess Game which store game data to blockchain as example
+-	Client for encrypted messaging via Neblio Blockchain. Optional Both side asymmetric RSA encryption. With UI
 -	REST API with OpenAPI description in Swagger.
 -	QT Wallet RPC client and controller for communication with desktop wallet or core of blockchain based on Bitcoin QT Wallet.
 -	QT Wallet is optional.
@@ -84,6 +85,7 @@ For compilation you need to install Arduino IDE and M5Stack libraries and ESP32 
 -	Lock and unlock desktop wallet and other RPC commands for wallets
 -	Support for multiple QT Wallets
 -	Transactions details in UI - almost done (need to add token meta details)
+-	Improve messaging system and UI, message grouping, coversation history, mark answered messages
 -	HTTPS support
 -	MQTT Broker on all available IPs
 -	Analytics drivers
