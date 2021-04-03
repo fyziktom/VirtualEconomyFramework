@@ -19,6 +19,8 @@ namespace VEDrivers.Database.Models
         public int Type { get; set; }
         public string RelatedItemId { get; set; }
         public string StoredKey { get; set; }
+        public string PublicKey { get; set; }
+
         public byte[] PasswordHash { get; set; }
         public bool? IsEncrypted { get; set; }
 
@@ -38,6 +40,9 @@ namespace VEDrivers.Database.Models
 
             IsEncrypted = key.IsEncrypted;
             StoredKey = key.GetEncryptedKey(returnEncrypted : true);
+
+            if (!string.IsNullOrEmpty(key.PublicKey))
+                PublicKey = key.PublicKey;
 
             if (key.PasswordHash?.Length > 0)
                 PasswordHash = key.PasswordHash;
@@ -98,6 +103,7 @@ namespace VEDrivers.Database.Models
 
             key.IsEncrypted = (bool)IsEncrypted;
             key.Name = Name;
+            key.PublicKey = PublicKey;
             key.Type = (EncryptionKeyType)Type;
             key.Version = Version;
             key.ModifiedOn = ModifiedOn;

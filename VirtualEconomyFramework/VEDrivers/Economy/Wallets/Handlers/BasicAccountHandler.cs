@@ -172,7 +172,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 // load and save address private key
                                 LoadAccountKey(walletId.ToString(), address.ToString(), privateKeyFromNetwork.ToString(), dbservice, password, account.Name + "-key");
 
-                                return "OK";
+                                return account.Address;
                             }
                             catch(Exception ex)
                             {
@@ -215,57 +215,38 @@ namespace VEDrivers.Economy.Wallets.Handlers
                         var tx = t.Value;
                         if (tx.Loaded)
                         {
-                            if (tx.VinTokens != null)
+                            if (tx.VoutTokens != null)
                             {
-                                var found = false;
-                                /*
-                                foreach (var tok in tx.VinTokens)
+                                foreach (var tok in tx.VoutTokens)
                                 {
-                                    if (tok.Metadata.TryGetValue(key, out var v) && !found)
+                                    if (tok.Metadata.TryGetValue(key, out var v))
                                     {
+                                        if (tx.From[0] == account)
+                                            tok.Direction = TransactionDirection.Outgoing;
+                                        else
+                                            tok.Direction = TransactionDirection.Incoming;
+
+                                        tok.From = tx.From[0];
+                                        tok.To = tx.To[0];
+
                                         if (!string.IsNullOrEmpty(value))
                                         {
                                             if (v == value)
                                             {
                                                 result.Add(t.Key, tok);
-                                                found = true;
+                                                txss.Add(t.Value);
                                             }
                                         }
                                         else
                                         {
                                             result.Add(t.Key, tok);
-                                            found = true;
-                                        }
-                                    }
-                                }
-                                */
-                                if (!found)
-                                {
-                                    foreach (var tok in tx.VoutTokens)
-                                    {
-                                        if (tok.Metadata.TryGetValue(key, out var v))
-                                        {
-                                            if (!string.IsNullOrEmpty(value))
-                                            {
-                                                if (v == value)
-                                                {
-                                                    result.Add(t.Key, tok);
-                                                    txss.Add(t.Value);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                result.Add(t.Key, tok);
-                                                txss.Add(t.Value);
-                                            }
+                                            txss.Add(t.Value);
                                         }
                                     }
                                 }
                             }
                         }
                     }
-
-                    ;
                 }
             }
             catch (Exception ex)
@@ -329,7 +310,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
             return null;
         }
 
-        public override string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string password = "", string name = "", bool storeInDb = true)
+        public override string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string password = "", string name = "", bool storeInDb = true, bool isItMainAccountKey = false)
         {
             try
             {
@@ -337,21 +318,50 @@ namespace VEDrivers.Economy.Wallets.Handlers
                 {
                     if (w.Accounts.TryGetValue(address, out var account))
                     {
-                        account.AccountKey = new Security.EncryptionKey(key, password);
-                        account.AccountKey.RelatedItemId = account.Id;
-                        account.AccountKey.Type = Security.EncryptionKeyType.AccountKey;
-
-                        if (!string.IsNullOrEmpty(password))
-                            account.AccountKey.PasswordHash = Security.SecurityUtil.HashPassword(password);
-
-                        account.AccountKey.Name = name;
-
-                        if (EconomyMainContext.WorkWithDb)
+                        if (isItMainAccountKey)
                         {
-                            dbservice.SaveKey(account.AccountKey);
-                        }
+                            account.AccountKey = new Security.EncryptionKey(key, password);
+                            account.AccountKey.RelatedItemId = account.Id;
+                            account.AccountKey.Type = Security.EncryptionKeyType.AccountKey;
+                            account.AccountKeyId = account.AccountKey.Id;
+                            account.AccountKey.PublicKey = account.Address;
 
-                        return "OK";
+                            if (!string.IsNullOrEmpty(password))
+                                account.AccountKey.PasswordHash = Security.SecurityUtil.HashPassword(password);
+
+                            account.AccountKey.Name = name;
+
+                            if (EconomyMainContext.WorkWithDb)
+                            {
+                                dbservice.SaveKey(account.AccountKey);
+                            }
+
+                            return "OK";
+                        }
+                        else
+                        {
+                            // obtain new key pair
+                            var keypair = Security.AsymmetricProvider.GenerateNewKeyPair();
+                            // create enc object
+                            var k = new Security.EncryptionKey(keypair.PrivateKey, password);
+                            k.PublicKey = keypair.PublicKey;
+
+                            k.RelatedItemId = account.Id;
+                            k.Type = Security.EncryptionKeyType.BasicSecurity;
+                                                                                    
+                            if (!string.IsNullOrEmpty(password))
+                                k.PasswordHash = Security.SecurityUtil.HashPassword(password);
+
+                            k.Name = name;
+                            account.AccountKeys.Add(k);
+
+                            if (EconomyMainContext.WorkWithDb)
+                            {
+                                dbservice.SaveKey(k);
+                            }
+
+                            return "OK";
+                        }
                     }
                 }
             }

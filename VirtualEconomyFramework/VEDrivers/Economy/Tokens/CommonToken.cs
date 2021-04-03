@@ -14,6 +14,8 @@ namespace VEDrivers.Economy.Tokens
         public string Symbol { get; set; } = string.Empty;
         public string BaseURL { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
+        public string To { get; set; } = string.Empty;
+        public string From { get; set; } = string.Empty;
         public string IssuerName { get; set; } = string.Empty;
         public bool MetadataAvailable { get; set; } = false;
         public double? MaxSupply { get; set; } = 0;

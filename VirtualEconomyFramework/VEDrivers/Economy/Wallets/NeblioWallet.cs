@@ -56,6 +56,7 @@ namespace VEDrivers.Economy.Wallets
         {
             try
             {
+
                 var r = await rpcClient.RPCLocalCommandAsync("getwalletinfo", null);
 
                 var jsonread = JsonConvert.DeserializeObject<NeblioQTWalletInfo>(r);

@@ -343,7 +343,8 @@ function importAccountKey() {
             'accountAddress': ActualAccount.Address,
             'key' : key,
             'name': name,
-            'password' : password
+            'password' : password,
+            'isItMainAccountKey' : true
         };
     }
 

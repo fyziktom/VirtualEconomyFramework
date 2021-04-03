@@ -63,16 +63,27 @@ namespace VEDrivers.Database
 
                 foreach (var a in context.Accounts.Where(a => !a.Deleted))
                 {
-                    var key = context.Keys
+                    var keys = context.Keys
                         .Where(k => !k.Deleted)
                         .Where(k => k.RelatedItemId == a.Id)
-                        .FirstOrDefault();
+                        .ToList();
 
                     var acc = AccountFactory.GetAccount(new Guid(a.Id), (AccountTypes)a.Type, Guid.Empty, new Guid(a.WalletId), string.Empty, string.Empty, 0);
-                    
-                    // load key if exist
-                    if (key != null)
-                        acc.AccountKey = key.Fill(new EncryptionKey(""));
+
+                    // load keys and key if exist
+                    if (keys != null)
+                    {
+                        // this will load main account key for signing transactions
+                        var key = keys.FirstOrDefault(k => k.Id == a.AccountKeyId);
+                        if (key != null)
+                            acc.AccountKey = key.Fill(new EncryptionKey(""));
+
+                        // fill other account keys - messages, etc.
+                        foreach(var k in keys)
+                        {
+                            acc.AccountKeys.Add(k.Fill(new EncryptionKey("")));
+                        }
+                    }
 
                     accounts.Add(a.Fill(acc));
                 }

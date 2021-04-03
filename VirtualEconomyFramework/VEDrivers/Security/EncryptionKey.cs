@@ -31,6 +31,7 @@ namespace VEDrivers.Security
         public Guid Id { get; set; } = Guid.Empty;
         public Guid RelatedItemId { get; set; } = Guid.Empty;
         public string Name { get; set; }
+        public string PublicKey { get; set; }
         public byte[] PasswordHash { get; set; }
         private string loadedPassword = string.Empty;
         private bool passwordLoaded = false;

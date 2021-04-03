@@ -18,6 +18,7 @@ namespace VEDrivers.Database.Models
         public int Type { get; set; }
         public string Address { get; set; }
         public string WalletId { get; set; }
+        public string AccountKeyId { get; set; }
 
 
         [ForeignKey(nameof(Node.Id))]
@@ -39,6 +40,9 @@ namespace VEDrivers.Database.Models
                     Id = Guid.NewGuid().ToString();
                 }
             }
+
+            if (!string.IsNullOrEmpty(acc.AccountKeyId.ToString()))
+                AccountKeyId = acc.AccountKeyId.ToString();
 
             Name = acc.Name;
             Address = acc.Address;
@@ -81,7 +85,17 @@ namespace VEDrivers.Database.Models
                 log.Error("Account Guid stored in db is not valid, creating new one", ex);
                 acc.Id = new Guid();
             }
-            
+
+            try
+            {
+                acc.AccountKeyId = new Guid(AccountKeyId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Account Guid Key stored in db is not valid or empty, create empty!");
+                acc.AccountKeyId = Guid.Empty;
+            }
+
             acc.Name = Name;
             acc.Address = Address;
             acc.Type = (AccountTypes)Type;

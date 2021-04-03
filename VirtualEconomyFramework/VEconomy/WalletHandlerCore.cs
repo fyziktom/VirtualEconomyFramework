@@ -99,15 +99,15 @@ namespace VEconomy
             }
 
             //if the RPC is setted up try to get the setting
-            if (EconomyMainContext.WorkWithQTRPC)
-            {
+           // if (EconomyMainContext.WorkWithQTRPC)
+            //{
                 settings.GetSection("QTRPC").Bind(EconomyMainContext.QTRPConfig);
                 if (EconomyMainContext.QTRPConfig != null)
                 {
                     EconomyMainContext.QTRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
                     NeblioTransactionHelpers.qtRPCClient = new QTWalletRPCClient(EconomyMainContext.QTRPConfig);
                 }
-            }
+            //}
 
             // fill default Cryptocurrency
             try

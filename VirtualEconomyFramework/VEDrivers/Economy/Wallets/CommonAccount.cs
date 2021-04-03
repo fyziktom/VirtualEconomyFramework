@@ -32,7 +32,11 @@ namespace VEDrivers.Economy.Wallets
         public string LastProcessedTxId { get; set; } = string.Empty;
         public string LastConfirmedTxId { get; set; } = string.Empty;
         [JsonIgnore]
-        public EncryptionKey AccountKey { get; set; } = new EncryptionKey("");
+        public EncryptionKey AccountKey { get; set; }
+        [JsonIgnore]
+        public Guid AccountKeyId { get; set; } = Guid.Empty;
+        [JsonIgnore]
+        public List<EncryptionKey> AccountKeys { get; set; } = new List<EncryptionKey>();
 
         //Db interface interface
         public string CreatedBy { get; set; }

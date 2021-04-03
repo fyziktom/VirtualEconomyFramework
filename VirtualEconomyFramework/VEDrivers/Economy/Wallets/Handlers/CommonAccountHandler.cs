@@ -15,7 +15,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
         public abstract IDictionary<string, IToken> FindTokenByMetadata(string account, string key, string value = "");
         public abstract IDictionary<string, IToken> FindAllTokens(string account);
         public abstract LastTxSaveDto GetLastAccountProcessedTxs(string address);
-        public abstract string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string password = "", string name = "", bool storeInDb = true);
+        public abstract string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string password = "", string name = "", bool storeInDb = true, bool isItMainAccountKey = false);
         public abstract string UnlockAccount(string wallet, string address, string password);
         public abstract string LockAccount(string wallet, string address);
     }

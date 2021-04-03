@@ -12,13 +12,12 @@ function tokensAfterLoad() {
         getNewMetadataLine();
     });
 
-    try{
+    if (ActualPage == Pages.tokens) {
         $("#btnLoadAccountTokens").off();
         $("#btnLoadAccountTokens").click(function() {
             ReloadAcountTokens();
         });
     }
-    catch{}
 }
 
 function fillTokenDetails(token) {
@@ -194,10 +193,10 @@ function sendTokenApiCommand(apicommand, data) {
 function getTokenComponent(token) {
     
     var meta = 'No Metadata';
-    var metastyle = '';
+    var metastyle = 'style="font-size: 12px;';
     if (token.MetadataAvailable) {
         meta = 'Click for details';
-        metastyle = 'class="bold" style="font-size: 20px;"';
+        metastyle = 'class="bold" style="font-size: 14px;"';
     }
 
     var dir = 'Incoming';
@@ -205,7 +204,7 @@ function getTokenComponent(token) {
         dir = 'Outgoing';
     }
 
-    var tokenComponent = '<div class="card shadow" style="width: 750px;">'+
+    var tokenComponent = '<div class="card shadow" style="width: 350px;">'+
     '    <div class="card-header d-xl-flex justify-content-xl-center align-items-xl-center py-3">'+
     '        <h4 id="chessBoardHeading">' + token.Symbol + '</h4>'+
     '    </div>'+
@@ -214,38 +213,38 @@ function getTokenComponent(token) {
     '            <div class="row" style="margin-bottom: 30px;">'+
     '                <div class="col">'+
     '                    <div class="row">'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Token Name</span></div>'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>' + token.Name + '</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Token Name</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>' + token.Name + '</span></div>'+
     '                    </div>'+
     '                    <div class="row">'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Token Link</span></div>'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><a target="_blank" href="https://explorer.nebl.io/token/' + token.Id +'">Go To Explorer</a></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Token Link</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><a target="_blank" href="https://explorer.nebl.io/token/' + token.Id +'">Go To Explorer</a></div>'+
     '                    </div>'+
     '                    <div class="row">'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Tx Details Link</span></div>'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><a target="_blank" href="https://explorer.nebl.io/tx/' + token.TxId +'">Go To Explorer</a></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Tx Details Link</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><a target="_blank" href="https://explorer.nebl.io/tx/' + token.TxId +'">Go To Explorer</a></div>'+
     '                    </div>'+
     '                    <div class="row">'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Time Stamp</span></div>'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>'+ token.TimeStamp.toString() + '</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Time Stamp</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span style="font-size:12px">'+ token.TimeStamp.toString() + '</span></div>'+
     '                    </div>'+
     '                    <div class="row">'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Amount</span></div>'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>'+ token.ActualBalance + '</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Amount</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>'+ token.ActualBalance + '</span></div>'+
     '                    </div>'+
     '                    <div class="row">'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Direction</span></div>'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>'+ dir + '</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Direction</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>'+ dir + '</span></div>'+
     '                    </div>'+
     '                    <div class="row">'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Metadata</span></div>'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><a ' + metastyle + ' onclick="showTokenMetadata(\'' + token.TxId + '\')">' + meta + '</a></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Metadata</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><a ' + metastyle + ' onclick="showTokenMetadata(\'' + token.TxId + '\')">' + meta + '</a></div>'+
     '                    </div>'+
     '                    <div class="row">'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Image</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Image</span></div>'+
     '                    </div>'+
     '                    <div class="row">'+
-    '                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><img style="min-width: 400px;max-width: 400px;min-height: 200px;max-height: 600px;" src="' + token.ImageUrl + '" /></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><img style="width: auto;max-width: 100%;min-height: 100%; max-height: 400px;" src="' + token.ImageUrl + '" /></div>'+
     '                    </div>'+
     '                </div>'+
     '            </div>'+
@@ -313,7 +312,7 @@ function ReloadAcountTokens() {
 function refreshTokens() {
 
     $('#tokensCards').empty();
-    $('#tokensCards').append('<div id="tokensCardsRow" class="row"></div>');
+    $('#tokensCards').append('<div class="row"><div class="col"><div id="tokensCardsRow" class="row d-flex justify-content-center"></div></div></div>');
     for (var t in AcountTokens) {
         var tok = AcountTokens[t];
         var drawIt = false;
@@ -352,7 +351,7 @@ function refreshTokens() {
 
             if (drawIt && filterActive) {
                 $('#tokensCardsRow').append(
-                    '<div class="col">' +
+                    '<div class="col-auto">' +
                     getTokenComponent(tok) +
                     '</div>'
                 );

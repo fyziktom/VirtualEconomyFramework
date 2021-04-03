@@ -44,5 +44,10 @@ namespace VEDrivers.Economy.DTO
         /// Metadata dictionary, key-value pairs
         /// </summary>
         public IDictionary<string, string> Metadata { get; set; }
+
+        /// <summary>
+        /// If you use RPC and NBitcoin you can preffer using RPC with set this to true
+        /// </summary>
+        public bool UseRPCPrimarily { get; set; }
     }
 }

@@ -21,6 +21,8 @@ using VEDrivers.Economy.Receipt;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Economy.Wallets;
+using VEDrivers.Messages;
+using VEDrivers.Messages.DTO;
 using VEDrivers.Nodes;
 using VEDrivers.Nodes.Dto;
 using VEDrivers.Security;
@@ -500,6 +502,65 @@ namespace VEconomy.Controllers
         }
 
         /// <summary>
+        /// Data carrier for Get Account transaction API command
+        /// </summary>
+        public class GetAccountTransactionData
+        {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
+            public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
+            public string accountAddress { get; set; }
+            /// <summary>
+            /// Maximum items received back - not implemented now
+            /// </summary>
+            public string txId { get; set; }
+        }
+        /// <summary>
+        /// Get all account transaction by TxId,
+        /// </summary>
+        /// <param name="accountData"></param>
+        /// <returns>ITransaction</returns>
+        [HttpPut]
+        [Route("GetAccountTransaction")]
+        //[Authorize(Rights.Administration)]
+        public async Task<ITransaction> GetAccountTransaction([FromBody] GetAccountTransactionData accountData)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(accountData.walletId, out var wallet))
+                {
+                    // todo - remove address from real QT wallet
+                    if (wallet.Accounts.TryGetValue(accountData.accountAddress, out var account))
+                    {
+                        if (account.Transactions.TryGetValue(accountData.txId, out var tx))
+                            return tx;
+                        else
+                            return null;
+                    }
+                    else
+                    {
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {accountData.accountAddress} transaction, Account Not Found!");
+                    }
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {accountData.accountAddress} transaction, Wallet Not Found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get Account Transactions!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {accountData.accountAddress} Transactions!");
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Data carrier for Get Account transactions API command
         /// </summary>
         public class GetAccountTransactionsData
@@ -588,6 +649,11 @@ namespace VEconomy.Controllers
             /// This if for case when you want to load the key just for the instance without keep it after restart of application
             /// </summary>
             public bool storeInDb { get; set; } = true;
+            /// <summary>
+            /// if you want this key as primary key of your account set this true
+            /// if you set this false function will generate new RSA private and public key stored in account keys list
+            /// </summary>
+            public bool isItMainAccountKey { get; set; } = false;
         }
         /// <summary>
         /// This command will load account private key important for signing the blockchain transactions
@@ -601,7 +667,7 @@ namespace VEconomy.Controllers
         {
             try
             {
-                return MainDataContext.AccountHandler.LoadAccountKey(keyData.walletId, keyData.accountAddress, keyData.key, dbService, keyData.password, keyData.name, keyData.storeInDb);
+                return MainDataContext.AccountHandler.LoadAccountKey(keyData.walletId, keyData.accountAddress, keyData.key, dbService, keyData.password, keyData.name, keyData.storeInDb, keyData.isItMainAccountKey);
             }
             catch (Exception ex)
             {
@@ -996,6 +1062,111 @@ namespace VEconomy.Controllers
             {
                 log.Error("Cannot get Neblio Bitcoin price", ex);
                 throw new HttpResponseException((HttpStatusCode)501, "Cannot get wallet info!");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAccountMessages/{account}")]
+        //[Authorize(Rights.Administration)]
+        public async Task<IDictionary<string, IToken>> GetAccountMessages(string account)
+        {
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(account, out var acc))
+                {
+
+                    // use default now, can be override
+                    MessagesHelpers.TokenId = EconomyMainContext.MessagingToken.Id;
+                    MessagesHelpers.TokenSymbol = EconomyMainContext.MessagingToken.Symbol;
+
+                    var toks = MainDataContext.AccountHandler.FindTokenByMetadata(account, "MessageData");
+
+                    var resp = new Dictionary<string, IToken>();
+
+                    if (toks != null)
+                    {
+                        foreach (var t in toks.Values)
+                        {
+                            if (t.Symbol == EconomyMainContext.MessagingToken.Symbol)
+                            {
+                                resp.Add(t.TxId, t);
+                            }
+                        }
+                    }
+                    
+                    return resp;
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot find metadata of token, Account Not Found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot find metadata of token!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot find metadata of token!");
+            }
+        }
+
+        public class AccountKeyDto
+        {
+            public string KeyName { get; set; }
+            public string KeyId { get; set; }
+        }
+        [HttpGet]
+        [Route("GetAccountKeys/{account}")]
+        //[Authorize(Rights.Administration)]
+        public async Task<IDictionary<string, AccountKeyDto>> GetAccountKeys(string account)
+        {
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(account, out var acc))
+                {
+
+                    var resp = new Dictionary<string, AccountKeyDto>();
+
+                    if (acc.AccountKeys != null)
+                    {
+                        foreach (var k in acc.AccountKeys)
+                        {
+                            resp.Add(k.Id.ToString(), new AccountKeyDto() { KeyId = k.Id.ToString(), KeyName = k.Name });
+                        }
+                    }
+
+                    return resp;
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot find account keys - Account Not Found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot find account keys!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot find account keys!");
+            }
+        }
+
+
+
+        /// <summary>
+        /// Returns decrypted message if the Sender Pub Key is found in the account keys and it can be unlocked by the password
+        /// </summary>
+        /// <param name="metadataData"></param>
+        /// <returns>Decrypted mesage</returns>
+        [HttpPut]
+        [Route("DecryptMessage")]
+        //[Authorize(Rights.Administration)]
+        public async Task<DecryptedMessageResponseDto> DecryptMessage([FromBody] GetDecryptedMessageDto data)
+        {
+            try
+            {
+                return await MessagesHelpers.DecryptMessage(data);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot decrypt message!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot decrypt messagen!");
             }
         }
 
@@ -1521,6 +1692,31 @@ namespace VEconomy.Controllers
             try
             {
                 var res = await NeblioTransactionHelpers.SendNTP1TokenAPI(data);
+
+                return new { info = res, ReadingError = "OK" }; ;
+
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Token", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Neblio Token - {ex.Message}!");
+            }
+        }
+
+        /// <summary>
+        /// Send Message with Neblio MSGT token to the addres
+        /// Please check SendMessageDto class for the details
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("SendMessageToken")]
+        //[Authorize(Rights.Administration)]
+        public async Task<object> SendMessageToken([FromBody] SendMessageDto data)
+        {
+            try
+            {
+                var res = await MessagesHelpers.SendMessage(data);
 
                 return new { info = res, ReadingError = "OK" }; ;
 

@@ -38,6 +38,10 @@ namespace VEDrivers.Economy.Wallets
         string LastConfirmedTxId { get; set; }
         [JsonIgnore]
         EncryptionKey AccountKey { get; set; }
+        [JsonIgnore]
+        Guid AccountKeyId { get; set; }
+        [JsonIgnore]
+        List<EncryptionKey> AccountKeys { get; set; }
         IDictionary<string, IToken> Tokens { get; set; }
 
         [JsonIgnore]

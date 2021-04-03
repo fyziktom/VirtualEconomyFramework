@@ -157,12 +157,15 @@ function loaded() {
     if (ActualPage == Pages.users) {
         userAfterLoad();
     }
-    else if (ActualPage == Pages.wallets || ActualPage == Pages.dashboard || ActualPage == Pages.tokens || ActualPage == Pages.games || ActualPage == Pages.nodes) {
+    else if (ActualPage == Pages.wallets || ActualPage == Pages.dashboard || ActualPage == Pages.tokens || ActualPage == Pages.games || ActualPage == Pages.nodes || ActualPage == Pages.messages) {
         walletAfterLoad();
         accountsAfterLoad();
         tokensAfterLoad();
         if (ActualPage == Pages.games) {
             loadChessPageStartUp();
+        }
+        if (ActualPage == Pages.messages) {
+            messagesAfterLoad();
         }
     }
 }
@@ -190,6 +193,9 @@ function checkLocation() {
     }
     else if (currentLocation.includes('chess')) {
         ActualPage = Pages.games;
+    }
+    else if (currentLocation.includes('messages')) {
+        ActualPage = Pages.messages;
     }
     else {
         ActualPage = Pages.none;

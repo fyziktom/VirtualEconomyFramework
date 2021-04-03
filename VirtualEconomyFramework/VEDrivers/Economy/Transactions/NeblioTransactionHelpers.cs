@@ -112,7 +112,8 @@ namespace VEDrivers.Economy.Transactions
                         Metadata = tokeninfo.Metadata,
                         ImageUrl = tokeninfo.ImageUrl,
                         MetadataAvailable = tokeninfo.MetadataAvailable,
-                        TimeStamp = transaction.TimeStamp
+                        TimeStamp = transaction.TimeStamp,
+                        TxId = info.Txid
                     });
                 }
 
@@ -173,6 +174,7 @@ namespace VEDrivers.Economy.Transactions
                         Metadata = tokeninfo.Metadata,
                         MetadataAvailable = tokeninfo.MetadataAvailable,
                         TimeStamp = transaction.TimeStamp,
+                        TxId = info.Txid
                     });
                 }
             }
@@ -371,7 +373,7 @@ namespace VEDrivers.Economy.Transactions
             if (!qtRPCClient.IsConnected)
                 qtRPCClient.InitClients();
 
-            if (qtRPCClient.IsConnected)
+            if ((EconomyMainContext.WorkWithQTRPC && qtRPCClient.IsConnected) || !EconomyMainContext.WorkWithQTRPC)
             {
                 if (data.Metadata != null)
                 {
@@ -454,7 +456,7 @@ namespace VEDrivers.Economy.Transactions
                                                 key = account.AccountKey.GetEncryptedKey(data.Password);
                                         }
 
-                                        if (account.IsLocked())
+                                        if (string.IsNullOrEmpty(key))
                                             throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
 
                                     }

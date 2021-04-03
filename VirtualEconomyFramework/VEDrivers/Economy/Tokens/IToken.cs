@@ -18,6 +18,8 @@ namespace VEDrivers.Economy.Tokens
         string TxId { get; set; }
         string IssuerName { get; set; }
         string ImageUrl { get; set; }
+        string To { get; set; }
+        string From { get; set; }
         bool MetadataAvailable { get; set; }
         double? ActualBalance { get; set; }
         TransactionDirection Direction { get; set; }

@@ -10,6 +10,7 @@ using VEDrivers.Database;
 using VEDrivers.Economy;
 using VEDrivers.Economy.Exchanges;
 using VEDrivers.Economy.Persons;
+using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Wallets;
 using VEDrivers.Nodes;
 
@@ -134,5 +135,11 @@ namespace VEDrivers.Common
         /// Value - ICryptocurrency object, now just Neblio
         /// </summary>
         public static IDictionary<string, ICryptocurrency> Cryptocurrencies { get; set; } = new ConcurrentDictionary<string, ICryptocurrency>();
-    }
+
+        /// <summary>
+        /// This Token is used for sending messages
+        /// </summary>
+        public static NeblioNTP1Token MessagingToken { get; set; } = new NeblioNTP1Token() { Symbol = "MSGT", Id = "La3Fiunz84XRHDGb1HhQboH6x3TzhV2PMeRQNZ" };
+
+        }
 }
