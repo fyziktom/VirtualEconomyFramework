@@ -51,12 +51,27 @@ function showTokenDetails(tokenId) {
 //////////////////////////////
 // send token
 
+function prepareSendTx() {
+    if (accountLockState) {
+        $('#unlockAccountForOneTxConfirm').off();
+        $("#unlockAccountForOneTxConfirm").click(function() {
+            var password = $('#unlockAccountForOneTxPassword').val();
+            sendToken(password);
+        });
+
+        $('#addPassForTxMessageModal').modal('show');
+    }
+    else {
+        sendToken(null);
+    }
+}
+
 function showSendTokenModal() {
     fillSendTokenModal();
 
     $("#btnSendTokenModalConfirm").off();
     $("#btnSendTokenModalConfirm").click(function() {
-        sendToken();
+        prepareSendTx();
     });
 
     $('#sendTokenModal').modal("show"); 
@@ -116,7 +131,7 @@ function removeMetadataLine(line) {
     $(line).parents('tr').remove();
 }
 
-function sendToken() {
+function sendToken(password) {
     if (selectedToken != null) {
         var metadata = {};
 
@@ -134,13 +149,19 @@ function sendToken() {
             return;
         }
 
+        var pass = '';
+        if (password != null) {
+            pass = password;
+        }
+
         var token = {
             "ReceiverAddress": add,
             "SenderAddress": ActualAccount.Address,
             "Symbol": selectedToken.Symbol,
             "Id": selectedToken.Id,
             "Amount": amount,
-            "Metadata": metadata
+            "Metadata": metadata,
+            "Password": pass
         };
     
         $("#confirmButtonOk").off();
@@ -273,7 +294,7 @@ var AcountTokens = {};
 
 function ReloadAcountTokens() {
 
-    if (selectedTokensAccountAddress == null) {
+    if (selectedTokensAccountAddress == null || selectedTokensAccountAddress == '') {
         alert('Please select the account address!');
         return;
     }
@@ -375,7 +396,8 @@ function reloadTokenLIstAccountsAddressesDropDown() {
         document.getElementById('tokenListAccountAddressesDropDown').innerHTML = '';
         for (var acc in Accounts) {
             var a = Accounts[acc];
-            document.getElementById('tokenListAccountAddressesDropDown').innerHTML += '<button style=\"width: 400px;font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setTokenListAccountAddress(\'' + acc + '\')\">' + a.Name + ' - ' + acc + '</button>';
+            var add = acc.substring(0,3) + '...' + acc.substring(acc.length-3);  
+            document.getElementById('tokenListAccountAddressesDropDown').innerHTML += '<button style=\"font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setTokenListAccountAddress(\'' + acc + '\')\">' + a.Name + ' - ' + add + '</button>';
         }
     }
 }

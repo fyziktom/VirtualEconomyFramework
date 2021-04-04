@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VEDrivers.Database.Models;
 
-namespace VEDrivers.Security
+namespace VECryptographyUtilities
 {
     public enum EncryptionKeyType
     {

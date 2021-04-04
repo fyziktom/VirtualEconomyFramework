@@ -23,8 +23,8 @@ namespace VEGameDrivers.Game
         public abstract Task<string> LoadHistory();
         public abstract Task<string> LoadPlayers();
 
-        public abstract Task<string> SendCapitulationRequest(GameTypes type, string address);
+        public abstract Task<string> SendCapitulationRequest(GameTypes type, string address, string password = "");
 
-        public abstract Task<string> SendNewGameRequest(GameTypes type, string address);
+        public abstract Task<string> SendNewGameRequest(GameTypes type, string address, string password = "");
     }
 }

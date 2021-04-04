@@ -31,14 +31,15 @@ const Pages = Object.freeze({
     "users": 5,
     "games": 6,
     "tokens": 7,
-    "messages": 8
+    "messages": 8,
+    "keys": 9,
 });
 
 var ActualPage = Pages.dashboard;
 
 // this must be false during export from bootstrap studio
 // bootstrap studio preview runs on different port
-var bootstrapstudio = true;
+var bootstrapstudio = false;
 
 var ApiUrl = 'http://localhost:8080/api'; //placeholder
 var UserRights = 0;  //placeholder to be filled by login

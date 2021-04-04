@@ -12,6 +12,7 @@ using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
+using VEDrivers.Security;
 
 namespace VEDrivers.Economy.Wallets.Handlers
 {
@@ -92,7 +93,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                     if (!string.IsNullOrEmpty(privateKey))
                                     {
                                         // load and save address private key if was dumped correctly
-                                        LoadAccountKey(walletId.ToString(), account.Address, privateKey, dbservice, password, account.Name + "-key");
+                                        LoadAccountKey(walletId.ToString(), account.Address, privateKey, dbservice, account.Address, password, account.Name + "-key");
                                     }
 
                                     if (EconomyMainContext.WorkWithDb && account != null)
@@ -310,7 +311,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
             return null;
         }
 
-        public override string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string password = "", string name = "", bool storeInDb = true, bool isItMainAccountKey = false)
+        public override string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string pubkey = "", string password = "", string name = "", bool storeInDb = true, bool isItMainAccountKey = false, bool alreadyEncrypted = false)
         {
             try
             {
@@ -340,11 +341,70 @@ namespace VEDrivers.Economy.Wallets.Handlers
                         }
                         else
                         {
-                            // obtain new key pair
-                            var keypair = Security.AsymmetricProvider.GenerateNewKeyPair();
-                            // create enc object
-                            var k = new Security.EncryptionKey(keypair.PrivateKey, password);
-                            k.PublicKey = keypair.PublicKey;
+                            
+                            EncryptionKey k = null;
+                            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(pubkey))
+                            {
+                                // validate the key pair if it is correct combination of RSA keys
+                                try
+                                {
+                                    if (alreadyEncrypted)
+                                    {
+                                        var kd = SymetricProvider.DecryptString(password, key);
+                                        if (kd != null)
+                                        {
+                                            key = kd;
+                                        }
+                                    }
+
+                                    var m = AsymmetricProvider.EncryptString("test", pubkey);
+                                    var r = AsymmetricProvider.DecryptString(m, key);
+                                    if (r != "test")
+                                    {
+                                        throw new Exception("Key pair is not valid RSA key pair!");
+                                    }
+
+                                    k = new EncryptionKey(key, password);
+                                }
+                                catch(Exception ex)
+                                {
+                                    throw new Exception("Key pair is not valid RSA key pair!");
+                                }
+                            }
+                            else if (!string.IsNullOrEmpty(key) && string.IsNullOrEmpty(pubkey))
+                            {
+                                if (alreadyEncrypted)
+                                {
+                                    var kd = SymetricProvider.DecryptString(password, key);
+                                    if (kd != null)
+                                    {
+                                        k = new Security.EncryptionKey(kd, password);
+                                    }
+                                }
+                                else
+                                {
+                                    k = new Security.EncryptionKey(key, password);
+                                    k.LoadNewKey(key, fromDb: true);
+                                }
+                            }
+                            else if (!string.IsNullOrEmpty(pubkey) && string.IsNullOrEmpty(key))
+                            {
+                                // create enc object
+                                k = new Security.EncryptionKey("passtest", password, true); // this can be used for testing the password
+                                k.PublicKey = pubkey;
+                            }
+                            else if (string.IsNullOrEmpty(key) && string.IsNullOrEmpty(pubkey))
+                            {
+                                // obtain new RSA key pair
+                                var keypair = Security.AsymmetricProvider.GenerateNewKeyPair();
+                                // create enc object
+                                k = new EncryptionKey(keypair.PrivateKey, password);
+                                k.PublicKey = keypair.PublicKey;
+                            }
+                            else
+                            {
+                                throw new Exception("Strange input!");
+                            }
 
                             k.RelatedItemId = account.Id;
                             k.Type = Security.EncryptionKeyType.BasicSecurity;
@@ -373,6 +433,80 @@ namespace VEDrivers.Economy.Wallets.Handlers
             return "Load Account Key - ERROR";
         }
 
+        public override string ChangeKeyName(string wallet, string address, string keyId, string newName, IDbConnectorService dbservice)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
+                {
+                    if (w.Accounts.TryGetValue(address, out var account))
+                    {
+                        var key = account.AccountKeys.FirstOrDefault(k => k.Id.ToString() == keyId);
+                        if (key != null)
+                        {
+                            key.Name = newName;
+
+                            if (EconomyMainContext.WorkWithDb)
+                            {
+                                dbservice.SaveKey(key);
+                            }
+
+                            return "OK";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot change key name!", ex);
+            }
+
+            return "Change Key Name - ERROR";
+        }
+
+        public override EncryptionKey DeleteKey(string walletId, string address, string keyId, IDbConnectorService dbservice)
+        {
+            EncryptionKey respkey = null;
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(walletId, out var wallet))
+                {
+                    if (wallet.Accounts.TryGetValue(address, out var account))
+                    {
+                        var key = account.AccountKeys.FirstOrDefault(k => k.Id.ToString() == keyId);
+                        if (key != null)
+                        {
+                            respkey = key;
+                            account.AccountKeys.Remove(key);
+                        }
+                        if (account.AccountKey != null)
+                        {
+                            if (account.AccountKey.Id.ToString() == keyId)
+                            {
+                                account.AccountKey = null;
+                            }
+                        }
+                    }
+                }
+
+                if (EconomyMainContext.WorkWithDb)
+                {
+                    var k = dbservice.GetKey(new Guid(keyId));
+                    if (k != null)
+                    {
+                        respkey = k;
+                        dbservice.DeleteKey(keyId);
+                    }
+                }
+
+                return respkey;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot delete the key!", ex);
+                throw new Exception($"Cannot delete the key!");
+            }
+        }
 
         public override string UnlockAccount(string wallet, string address, string password)
         {

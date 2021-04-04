@@ -27,7 +27,7 @@ namespace VEGameDrivers.Game
 
         Task<string> LoadHistory();
         Task<string> LoadPlayers();
-        Task<string> SendNewGameRequest(GameTypes type, string address);
-        Task<string> SendCapitulationRequest(GameTypes type, string address);
+        Task<string> SendNewGameRequest(GameTypes type, string address, string password = "");
+        Task<string> SendCapitulationRequest(GameTypes type, string address, string password = "");
     }
 }

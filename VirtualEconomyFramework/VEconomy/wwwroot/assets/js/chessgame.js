@@ -47,12 +47,19 @@ function loadChessPageStartUp() {
 
     $("#btnRequestNewChessGame").off();
     $("#btnRequestNewChessGame").click(function() {
-        RequestNewChessGame();
+        checkAccountLockStatus(selectedChessAccount);
+        setTimeout(() => {
+            prepareRequestNewChessGame();
+        }, 500);
     });
 
     $("#btnConfirmChessGameMove").off();
     $("#btnConfirmChessGameMove").click(function() {
-        ConfirmChessMove();
+        checkAccountLockStatus(selectedChessAccount);
+        setTimeout(() => {
+            prepareConfirmChessMove();
+        }, 500);
+        
     });
 
     $("#btnCapitulationChessGame").off();
@@ -310,7 +317,22 @@ function LoadChessGameState() {
     ShowConfirmModal('', 'Do you realy want load last game state?');
 }
 
-function RequestNewChessGame() {
+function prepareRequestNewChessGame() {
+    if (accountLockState) {
+        $('#unlockAccountForOneTxConfirm').off();
+        $("#unlockAccountForOneTxConfirm").click(function() {
+            var password = $('#unlockAccountForOneTxPassword').val();
+            RequestNewChessGame(password);
+        });
+
+        $('#addPassForTxMessageModal').modal('show');
+    }
+    else {
+        RequestNewChessGame(null);
+    }
+}
+
+function RequestNewChessGame(password) {
 
     if (selectedChessAccount == '') {
         alert('Please select Account!');
@@ -323,9 +345,15 @@ function RequestNewChessGame() {
         return;
     }
 
+    var pass = '';
+    if (password != null) {
+        pass = password;
+    }
+
     var data = {
         "player1Address": selectedChessAccount,
-        "player2Address": pl2
+        "player2Address": pl2,
+        "password": pass
     };
 
     $("#confirmButtonOk").off();
@@ -368,7 +396,22 @@ function RequestNewChessGame() {
 
 var waitingForPartnerAfterMove = false;
 
-function ConfirmChessMove() {
+function prepareConfirmChessMove() {
+    if (accountLockState) {
+        $('#unlockAccountForOneTxConfirm').off();
+        $("#unlockAccountForOneTxConfirm").click(function() {
+            var password = $('#unlockAccountForOneTxPassword').val();
+            ConfirmChessMove(password);
+        });
+
+        $('#addPassForTxMessageModal').modal('show');
+    }
+    else {
+        ConfirmChessMove(null);
+    }
+}
+
+function ConfirmChessMove(password) {
 
     if (!isUserOnMoveNow) {
         alert('This is not your turn, you cannot confirm move now. Wait for partner move!');
@@ -396,6 +439,11 @@ function ConfirmChessMove() {
         return;
     }
 
+    var pass = '';
+    if (password != null) {
+        pass = password;
+    }
+
     var state = JSON.stringify(board.position());
     if (state != null) {
         if(state != '') {
@@ -403,7 +451,8 @@ function ConfirmChessMove() {
                 "player1Address": selectedChessAccount,
                 "player2Address": pl2,
                 "gameId": actualGameId,
-                "chessboardState" : state
+                "chessboardState" : state,
+                "password" : pass
             };
         
             $("#confirmButtonOk").off();

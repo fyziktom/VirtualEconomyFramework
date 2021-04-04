@@ -630,10 +630,15 @@ namespace VEconomy.Controllers
             /// </summary>
             public string accountAddress { get; set; }
             /// <summary>
-            /// Private key of the address. It is unique code combined with network parameters. 
-            /// You can obtain it from QT Wallet with console and compant "dumpprivatekey address"
+            /// Private key. It is unique code.
+            /// For accounts you can obtain it from QT Wallet with console and compant "dumpprivatekey address"
             /// </summary>
             public string key { get; set; } = string.Empty;
+            /// <summary>
+            /// Public key. It is unique code.
+            /// In Blockchain it is account address
+            /// </summary>
+            public string pubkey { get; set; } = string.Empty;
             /// <summary>
             /// If you want to encrypt the key in the database (strongly reccomended with) fill this field with some string, in other case leave empty string
             /// I reccomend to use password longer than 12 characters and including also numbers and special characters
@@ -654,6 +659,11 @@ namespace VEconomy.Controllers
             /// if you set this false function will generate new RSA private and public key stored in account keys list
             /// </summary>
             public bool isItMainAccountKey { get; set; } = false;
+            /// <summary>
+            /// if you load already encrypted key you must set this true.
+            /// during loading without setting this to true the input key will be encrypted with the password.
+            /// </summary>
+            public bool alreadyEncrypted { get; set; } = false;
         }
         /// <summary>
         /// This command will load account private key important for signing the blockchain transactions
@@ -667,12 +677,206 @@ namespace VEconomy.Controllers
         {
             try
             {
-                return MainDataContext.AccountHandler.LoadAccountKey(keyData.walletId, keyData.accountAddress, keyData.key, dbService, keyData.password, keyData.name, keyData.storeInDb, keyData.isItMainAccountKey);
+                return MainDataContext.AccountHandler.LoadAccountKey(keyData.walletId, 
+                                                                     keyData.accountAddress, 
+                                                                     keyData.key, 
+                                                                     dbService, 
+                                                                     keyData.pubkey, 
+                                                                     keyData.password, 
+                                                                     keyData.name, 
+                                                                     keyData.storeInDb, 
+                                                                     keyData.isItMainAccountKey,
+                                                                     keyData.alreadyEncrypted);
             }
             catch (Exception ex)
             {
                 log.Error("Cannot load Account Key!", ex);
                 throw new HttpResponseException((HttpStatusCode)501, $"Cannot load Account {keyData.accountAddress} Key!");
+            }
+        }
+
+        /// <summary>
+        /// Data carrier for Loading account key API command
+        /// </summary>
+        public class KeyChangeNameData
+        {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
+            public string walletId { get; set; }
+            /// <summary>
+            /// Account addres, now just Neblio address
+            /// </summary>
+            public string accountAddress { get; set; }
+            /// <summary>
+            /// Guid format of Key Id
+            /// </summary>
+            public string keyId { get; set; } = string.Empty;
+            /// <summary>
+            /// New name for the key
+            /// </summary>
+            public string newName { get; set; } = string.Empty;
+        }
+        /// <summary>
+        /// This command will change the key name
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("ChangeKeyName")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> ChangeKeyName([FromBody] KeyChangeNameData keyData)
+        {
+            try
+            {
+                return MainDataContext.AccountHandler.ChangeKeyName(keyData.walletId, keyData.accountAddress, keyData.keyId, keyData.newName, dbService);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot change key name!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot change key name!");
+            }
+        }
+
+
+        /// <summary>
+        /// Data carrier for Loading account key API command
+        /// </summary>
+        public class KeyDownloadData
+        {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
+            public string walletId { get; set; }
+            /// <summary>
+            /// Account addres, now just Neblio address
+            /// </summary>
+            public string accountAddress { get; set; }
+            /// <summary>
+            /// Guid format of Key Id
+            /// </summary>
+            public string keyId { get; set; } = string.Empty;
+        }
+
+        /// <summary>
+        /// This command will find and download the key
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("DownloadKey")]
+        //[Authorize(Rights.Administration)]
+        public async Task<EncryptionKeyTransferDto> DownloadKey([FromBody] KeyDownloadData keyData)
+        {
+            try
+            {
+                EncryptionKey key = null;
+                EncryptionKeyTransferDto keydto = new EncryptionKeyTransferDto();
+
+                if (EconomyMainContext.WorkWithDb)
+                {
+                    key = dbService.GetKey(new Guid(keyData.keyId));
+                }
+                else
+                {
+                    foreach(var a in EconomyMainContext.Accounts)
+                    {
+                        var k = a.Value.AccountKeys.FirstOrDefault(k => k.Id.ToString() == keyData.keyId);
+                        if (k != null)
+                        {
+                            key = k;
+                        }
+                    }
+                }
+
+                if (key != null)
+                {
+                    keydto.Update(key);
+                    key = null;
+                    return keydto;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot change key name!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot change key name!");
+            }
+        }
+
+        /// <summary>
+        /// Data carrier for Loading account key API command
+        /// </summary>
+        public class KeyDeleteData
+        {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
+            public string walletId { get; set; }
+            /// <summary>
+            /// Account addres, now just Neblio address
+            /// </summary>
+            public string accountAddress { get; set; }
+            /// <summary>
+            /// Guid format of Key Id
+            /// </summary>
+            public string keyId { get; set; } = string.Empty;
+        }
+
+        /// <summary>
+        /// This command will delete the key
+        /// This means just set the flag deleted to bool
+        /// Full remove is not supported now for security reason. You have to remove the key permanently in the database
+        /// </summary>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("DeleteKey")]
+        //[Authorize(Rights.Administration)]
+        public async Task<EncryptionKeyTransferDto> DeleteKey([FromBody] KeyDeleteData keyData)
+        {
+            try
+            {
+                var keydto = new EncryptionKeyTransferDto();
+                var key = MainDataContext.AccountHandler.DeleteKey(keyData.walletId, keyData.accountAddress, keyData.keyId, dbService);
+
+                if (key != null)
+                {
+                    keydto.Update(key);
+                    key = null;
+                    return keydto;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot delete the key!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot delete the key!");
+            }
+        }
+
+        /// <summary>
+        /// Get all key types. Usefull for creating dropbox in UI
+        /// </summary>
+        /// <returns>List of all key types</returns>
+        [HttpGet]
+        [Route("GetKeyTypes")]
+        public async Task<List<string>> GetKeyTypes()
+        {
+            try
+            {
+                return Enum.GetValues(typeof(EncryptionKeyType)).Cast<EncryptionKeyType>().Select(t => t.ToString()).ToList();
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get Keys Types", ex);
+                throw new HttpResponseException((HttpStatusCode)501, "Cannot get Keys types!");
             }
         }
 
@@ -1081,6 +1285,7 @@ namespace VEconomy.Controllers
 
                     var toks = MainDataContext.AccountHandler.FindTokenByMetadata(account, "MessageData");
 
+                    var tmp = new List<IToken>();
                     var resp = new Dictionary<string, IToken>();
 
                     if (toks != null)
@@ -1089,11 +1294,20 @@ namespace VEconomy.Controllers
                         {
                             if (t.Symbol == EconomyMainContext.MessagingToken.Symbol)
                             {
-                                resp.Add(t.TxId, t);
+                                tmp.Add(t);
                             }
                         }
+
+                        tmp = tmp.OrderBy(p => p.TimeStamp)
+                            .Reverse()
+                            .ToList();
+
+                        foreach (var t in tmp)
+                        {
+                            resp.Add(t.TxId, t);
+                        }
                     }
-                    
+
                     return resp;
                 }
                 else
@@ -1112,6 +1326,7 @@ namespace VEconomy.Controllers
         {
             public string KeyName { get; set; }
             public string KeyId { get; set; }
+            public int Type { get; set; }
         }
         [HttpGet]
         [Route("GetAccountKeys/{account}")]
@@ -1129,7 +1344,7 @@ namespace VEconomy.Controllers
                     {
                         foreach (var k in acc.AccountKeys)
                         {
-                            resp.Add(k.Id.ToString(), new AccountKeyDto() { KeyId = k.Id.ToString(), KeyName = k.Name });
+                            resp.Add(k.Id.ToString(), new AccountKeyDto() { KeyId = k.Id.ToString(), KeyName = k.Name, Type = Convert.ToInt32(k.Type) });
                         }
                     }
 
@@ -1212,7 +1427,28 @@ namespace VEconomy.Controllers
                     // todo - remove address from real QT wallet
                     if (!string.IsNullOrEmpty(metadataData.metadataName))
                     {
-                        var resp = MainDataContext.AccountHandler.FindTokenByMetadata(metadataData.accountAddress, metadataData.metadataName, metadataData.metadataValue);
+                        var toks = MainDataContext.AccountHandler.FindTokenByMetadata(metadataData.accountAddress, metadataData.metadataName, metadataData.metadataValue);
+
+                        var tmp = new List<IToken>();
+                        var resp = new Dictionary<string, IToken>();
+
+                        if (toks != null)
+                        {
+                            foreach (var t in toks.Values)
+                            {
+                                tmp.Add(t);
+                            }
+
+                            tmp = tmp.OrderBy(p => p.TimeStamp)
+                                .Reverse()
+                                .ToList();
+
+                            foreach (var t in tmp)
+                            {
+                                resp.Add(t.TxId, t);
+                            }
+                        }
+
                         return resp;
                     }
                     else

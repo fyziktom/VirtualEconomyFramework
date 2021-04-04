@@ -39,7 +39,7 @@ function accountsAfterLoad() {
 
     $("#btnSendTxModalConfirm").off();
     $("#btnSendTxModalConfirm").click(function() {
-        sendTx();
+        prepareSendTx(null);
     });
     
 
@@ -272,13 +272,13 @@ function checkAccountLockStatus(address) {
         success: function (data, status, xhr) {   // success callback function
             //console.log(`Status: ${status}, Data:${data}`);
             if(data) {
-                $('#accountDetailsModalIsLocked').text('Locked');
-                $('#btnAccountDetailsLockUnlock').text('Unlock');
+                $('#accountDetailsModalIsLocked').text('<i class="fa fa-lock"></i> Locked');
+                $('#btnAccountDetailsLockUnlock').text('<i class="fa fa-unlock"></i> Unlock');
                 accountLockState = true;
             }
             else {
-                $('#accountDetailsModalIsLocked').text('Unlocked');
-                $('#btnAccountDetailsLockUnlock').text('Lock');
+                $('#accountDetailsModalIsLocked').text('<i class="fa fa-unlock"></i> Unlocked');
+                $('#btnAccountDetailsLockUnlock').text('<i class="fa fa-lock"></i> Lock');
                 accountLockState = false;
             }
         },
@@ -335,6 +335,11 @@ function importAccountKey() {
         return;
     }
 
+    var alreadyEncrypted = false;
+    if ($('#chbxAccountImportAlreadyEncryptedKey').is(':checked')) {
+        alreadyEncrypted = true;
+    }
+
     var url = ApiUrl + '/LoadAccountKey';
 
     if (ActualWallet != {} && ActualAccount != {}) {
@@ -344,7 +349,8 @@ function importAccountKey() {
             'key' : key,
             'name': name,
             'password' : password,
-            'isItMainAccountKey' : true
+            'isItMainAccountKey' : true,
+            'alreadyEncrypted' : alreadyEncrypted
         };
     }
 
@@ -688,13 +694,28 @@ function downloadReceiptPageAsFile(data) {
 /////////////////////
 // sending currency transaction
 
-function fillAndShowSendTxModal() {
+function fillAndShowSendTxModal() {    
     $('#sendTxModalWalletName').text(ActualWallet.Name);
     $('#sendTxModalAccountAddress').text(ActualAccount.Name + ' - ' + ActualAccount.Address);
     $('#sendTxModal').modal('show');
 }
 
-function sendTx() {
+function prepareSendTx() {
+    if (accountLockState) {
+        $('#unlockAccountForOneTxConfirm').off();
+        $("#unlockAccountForOneTxConfirm").click(function() {
+            var password = $('#unlockAccountForOneTxPassword').val();
+            sendTx(password);
+        });
+
+        $('#addPassForTxMessageModal').modal('show');
+    }
+    else {
+        sendTx(null);
+    }
+}
+
+function sendTx(password) {
 
     var add = $('#sendTxModalReceiverAddress').val();
     if (add == '') {
@@ -708,12 +729,18 @@ function sendTx() {
         return;
     }
 
+    var pass = '';
+    if (password != null) {
+        pass = password;
+    }
+
     var data = {
         "ReceiverAddress": add,
         "SenderAddress": ActualAccount.Address,
         "Symbol": "NEBL",
         "CustomMessage": '',
-        "Amount": amount
+        "Amount": amount,
+        "Password": pass
     };
 
     $("#confirmButtonOk").off();

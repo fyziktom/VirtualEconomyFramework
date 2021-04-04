@@ -200,7 +200,7 @@ namespace VEGameDrivers.Game
             throw new NotImplementedException();
         }
 
-        public override async Task<string> SendCapitulationRequest(GameTypes type, string address)
+        public override async Task<string> SendCapitulationRequest(GameTypes type, string address, string password = "")
         {
             if (!Players.ContainsKey(address))
                 return await Task.FromResult("Player address is not in the list of players!");
@@ -240,6 +240,7 @@ namespace VEGameDrivers.Game
 
                 tkData.Metadata.TryAdd("GameId", Id.ToString());
                 tkData.Metadata.TryAdd("GameData", moveString);
+                tkData.Password = password;
                 
                 var res = await NeblioTransactionHelpers.SendNTP1TokenAPI(tkData, 30000);
                 
@@ -252,7 +253,7 @@ namespace VEGameDrivers.Game
             }
         }
 
-        public override async Task<string> SendNewGameRequest(GameTypes type, string address)
+        public override async Task<string> SendNewGameRequest(GameTypes type, string address, string password = "")
         {
             if (!Players.ContainsKey(address))
                 return await Task.FromResult("Player address is not in the list of players!");
@@ -286,6 +287,7 @@ namespace VEGameDrivers.Game
 
                 tkData.Metadata.TryAdd("GameId", Id.ToString());
                 tkData.Metadata.TryAdd("GameData", moveString);
+                tkData.Password = password;
                 
                 var res = await NeblioTransactionHelpers.SendNTP1TokenAPI(tkData, 30000);
 
@@ -315,7 +317,7 @@ namespace VEGameDrivers.Game
             }
         }
 
-        public async Task<string> WriteMove(string stateString, string onMoveAddress, string player2Address)
+        public async Task<string> WriteMove(string stateString, string onMoveAddress, string player2Address, string password = "")
         {
             GameState state = null;
 
@@ -358,6 +360,7 @@ namespace VEGameDrivers.Game
 
                 tkData.Metadata.TryAdd("GameId", Id.ToString());
                 tkData.Metadata.TryAdd("GameData", moveString);
+                tkData.Password = password;
                 
                 var res = await NeblioTransactionHelpers.SendNTP1TokenAPI(tkData, 30000);
 

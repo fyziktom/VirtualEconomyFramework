@@ -103,6 +103,7 @@ namespace VEconomy.Controllers
         {
             public string player1Address { get; set; }
             public string player2Address { get; set; }
+            public string password { get; set; }
         }
 
         [HttpPut]
@@ -122,7 +123,7 @@ namespace VEconomy.Controllers
 
                 MainGameDataContext.Games.TryAdd(id, game);
 
-                var res = await game.SendNewGameRequest(GameTypes.ChessGame, data.player2Address);
+                var res = await game.SendNewGameRequest(GameTypes.ChessGame, data.player2Address, data.password);
 
                 return id.ToString();
             }
@@ -137,6 +138,7 @@ namespace VEconomy.Controllers
         {
             public string player1Address { get; set; }
             public string player2Address { get; set; }
+            public string password { get; set; }
             public string gameId { get; set; }
             public string chessboardState { get; set; }
         }
@@ -155,7 +157,7 @@ namespace VEconomy.Controllers
 
                 if (MainGameDataContext.Games.TryGetValue(data.gameId, out var game))
                 {
-                    var res = await (game as ChessGame).WriteMove(data.chessboardState, data.player1Address, data.player2Address);
+                    var res = await (game as ChessGame).WriteMove(data.chessboardState, data.player1Address, data.player2Address, data.password);
                     return res;
                 }
                 else

@@ -428,7 +428,7 @@ var AcountMessages = {};
 
 function ReloadAcountMessages() {
 
-    if (selectedMessagesAccountAddress == null) {
+    if (selectedMessagesAccountAddress == null || selectedMessagesAccountAddress == '') {
         alert('Please select the account address!');
         return;
     }
@@ -460,7 +460,7 @@ function ReloadAcountMessages() {
             });
     }); 
 
-    ShowConfirmModal('', 'Do you realy want load all account tokens?');
+    ShowConfirmModal('', 'Do you realy want load all account messages?');
 
 }
 
@@ -535,8 +535,9 @@ function reloadMessagesListAccountsAddressesDropDown() {
     if (Accounts != null) {
         document.getElementById('messagesListAccountAddressesDropDown').innerHTML = '';
         for (var acc in Accounts) {
-            var a = Accounts[acc];         
-            document.getElementById('messagesListAccountAddressesDropDown').innerHTML += '<button style=\"width: 400px;font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setMessagesListAccountAddress(\'' + acc + '\')\">' + a.Name + ' - ' + acc + '</button>';
+            var a = Accounts[acc];
+            var add = acc.substring(0,3) + '...' + acc.substring(acc.length-3);         
+            document.getElementById('messagesListAccountAddressesDropDown').innerHTML += '<button style=\"font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setMessagesListAccountAddress(\'' + acc + '\')\">' + a.Name + ' - ' + add + '</button>';
         }
     }
 }
@@ -612,24 +613,26 @@ function addNewMessageKeyRequest() {
 
     var name = $('#importAccountKeyName').val();
     var key = $('#importAccountKeyKey').val();
+    var pubkey = $('#importAccountKeyPubKey').val();
     var password = $('#importAccountKeyPassword').val();
 
-    if (key == undefined || key == null || key == '') {
-        alert('You must fill the key!');
-        $('#importAccountKeyModal').modal('show');
-        return;
-    }
-
     var url = ApiUrl + '/LoadAccountKey';
+
+    var alreadyEncrypted = false;
+    if ($('#chbxMessagesImportAlreadyEncryptedKey').is(':checked')) {
+        alreadyEncrypted = true;
+    }
 
     if (ActualWallet != {} && ActualAccount != {}) {
         var data = {
             'walletId' : selectedWallet,
             'accountAddress': selectedMessagesAccountAddress,
             'key' : key,
+            'pubkey': pubkey,
             'name': name,
             'password' : password,
-            'isItMainAccountKey' : false
+            'isItMainAccountKey' : false,
+            'alreadyEncrypted': alreadyEncrypted
         };
     }
 

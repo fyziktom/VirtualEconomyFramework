@@ -11,7 +11,7 @@ namespace VEUsersUtility
         static void Main(string[] args)
         {
             Console.WriteLine("---------------------");
-            Console.WriteLine("PL Users Utility 1.0 ");
+            Console.WriteLine("VE Users Utility 1.0 ");
             Console.WriteLine("---------------------");
             Console.WriteLine("Default Connection String:" + ConnectionString);
 

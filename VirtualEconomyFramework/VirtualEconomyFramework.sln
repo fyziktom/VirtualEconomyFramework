@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NBitcoin", "..\..\NBitcoin\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NBitcoin.Altcoins", "..\..\NBitcoin\NBitcoin.Altcoins\NBitcoin.Altcoins.csproj", "{8C5C3763-3C41-4640-AC11-A628462E5D7D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VECryptographyUtilities", "VECryptographyUtilities\VECryptographyUtilities.csproj", "{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,14 @@ Global
 		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|x86.ActiveCfg = Release|Any CPU
 		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|x86.Build.0 = Release|Any CPU
+		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Debug|x86.Build.0 = Debug|Any CPU
+		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Release|x86.ActiveCfg = Release|Any CPU
+		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

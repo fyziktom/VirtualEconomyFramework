@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -25,7 +25,7 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link" id="tokens" href="tokens.html"><i class="fas fa-user-alt"></i><span>Tokens</span></a><a class="nav-link" id="Games" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a><a class="nav-link active" id="Messages" href="messages.html"><i class="fas fa-user-alt"></i><span>Messages</span></a><a class="nav-link" id="Keys" href="keys.html"><i class="fas fa-user-alt"></i><span>Keys</span></a></li>
+                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link" id="tokens" href="tokens.html"><i class="fas fa-user-alt"></i><span>Tokens</span></a><a class="nav-link" id="Games" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a><a class="nav-link" id="Messages" href="messages.html"><i class="fas fa-user-alt"></i><span>Messages</span></a><a class="nav-link active" id="Keys" href="keys.html"><i class="fas fa-user-alt"></i><span>Keys</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -57,7 +57,7 @@
                 </nav>
                 <div class="container-fluid">
                     <div class="d-sm-flex justify-content-between align-items-center justify-content-xl-center mb-4">
-                        <h3 class="text-dark mb-0">Messages</h3>
+                        <h3 class="text-dark mb-0">Keys</h3>
                     </div>
                     <div class="d-sm-flex justify-content-between align-items-center justify-content-xl-center mb-4">
                         <div class="row">
@@ -65,28 +65,24 @@
                                 <div class="row">
                                     <div class="col">
                                         <div class="row d-flex justify-content-center">
-                                            <div class="col-auto">
-                                                <div class="dropdown"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnAccountAddressToLoadMessages" type="button" onclick="reloadMessagesListAccountsAddressesDropDown()" style="width: 100%;font-size: 12px;">Please Select Account Address</button>
-                                                    <div class="dropdown-menu" id="messagesListAccountAddressesDropDown" style="width: 100%;"></div>
+                                            <div class="col-auto d-flex justify-content-center" style="margin-top: 10px;">
+                                                <div class="dropdown"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnAccountAddressToLoadKeys" type="button" onclick="reloadKeysListAccountsAddressesDropDown()" style="width: 100%;font-size: 12px;">Please Select Account Address</button>
+                                                    <div class="dropdown-menu" id="keysListAccountAddressesDropDown" style="width: 100%;"></div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row d-flex justify-content-center">
-                                            <div class="col-auto"><button class="btn btn-primary" id="btnLoadAccountMessages" type="button"><i class="fa fa-refresh"></i>&nbsp;Load</button></div>
-                                            <div class="col-auto"><button class="btn btn-primary" id="btnSendInitMessage" type="button"><i class="fa fa-send-o"></i>&nbsp;Init Msg</button></div>
+                                            <div class="col-auto" style="margin-top: 10px;"><button class="btn btn-primary" id="btnLoadAccountKeys" type="button"><i class="fa fa-refresh"></i>&nbsp;Load</button></div>
+                                            <div class="col-auto" style="margin-top: 10px;"><button class="btn btn-primary" id="btnKeysAddNewKey" type="button"><i class="fa fa-cloud-upload"></i>&nbsp;New Key</button></div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row d-flex d-lg-flex justify-content-center justify-content-lg-center">
+                                        <div class="row d-flex justify-content-center" style="margin-top: 10px;">
                                             <div class="col-auto">
-                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxMessagesListIncoming" checked="" onclick="refreshMessages()"><label class="form-check-label" for="formCheck-1">Incoming</label></div>
+                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxKeysListAccountKey" checked="" onclick="refreshKeys()"><label class="form-check-label" for="formCheck-1">Account Keys</label></div>
                                             </div>
                                             <div class="col-auto">
-                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxMessagesListOutgoing" onclick="refreshMessages()"><label class="form-check-label" for="formCheck-1">Outgoing</label></div>
+                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxKeysListBasicKey" onclick="refreshKeys()" checked=""><label class="form-check-label" for="formCheck-1">Basic Keys</label></div>
                                             </div>
-                                            <div class="col-auto"><input type="text" id="messagesListSearchByNameAddress" placeholder="Name or Address" onkeyup="refreshMessages()"></div>
+                                            <div class="col-auto"><input type="text" id="keysListSearchByNameAddress" placeholder="Name or Id" onkeyup="refreshKeys()"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -95,7 +91,7 @@
                     </div>
                     <div class="row">
                         <div class="col" style="margin-top: 20px;">
-                            <div id="messagesCards"></div>
+                            <div id="keysCards"></div>
                         </div>
                     </div>
                 </div>
@@ -189,7 +185,7 @@
                                 <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center"><textarea id="messageModalNewReceivedTextarea" style="width: 400px;height: 100px;"></textarea></div>
                             </div>
                             <div class="row" style="margin-top: 20px;">
-                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center"><button class="btn btn-primary" id="btnDecryptMessage" type="button"><i class="fa fa-unlock"></i>&nbsp;Decrypt Message</button></div>
+                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center"><button class="btn btn-primary" id="btnDecryptMessage" type="button">Decrypt Message</button></div>
                             </div>
                             <div class="row" style="margin-top: 20px;">
                                 <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center"><span>Your reply</span></div>
@@ -215,7 +211,7 @@
                                 <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center messageKeyPasswordItems"><input type="password" id="sendMessageKeyPassword"></div>
                             </div>
                             <div class="row" style="margin-top: 20px;">
-                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center"><button class="btn btn-primary" id="btnSendMessage" type="button" onclick="prepareSendMessage()"><i class="fa fa-send-o"></i>&nbsp;Send Message</button></div>
+                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center"><button class="btn btn-primary" id="btnSendMessage" type="button" onclick="prepareSendMessage()">Send Message</button></div>
                             </div>
                         </div>
                     </div>
@@ -261,17 +257,20 @@
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>If you want to create new key leave Key field empty!</span></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span class="text-center">Remember this dialog can create or import just Basic Keys. Account key you have to add in the wallet manager.</span></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Private Key</span></div>
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyKey" style="width: 300px;"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                            <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxMessagesImportAlreadyEncryptedKey"><label class="form-check-label" for="formCheck-1" style="font-size: 12px;">Key is already encrypted. Check if your key is in encrypted form</label></div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxKeysImportAlreadyEncryptedKey"><label class="form-check-label" for="formCheck-1" style="font-size: 12px;">Key is already encrypted. Check if your key is in encrypted form</label></div>
                         </div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Public Key</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyPubKey" style="width: 300px;"></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyPublicKey" style="width: 300px;"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Password</span></div>
@@ -292,6 +291,28 @@
                     <p id="confirmModalContent">Do you realy want to save the setting?</p>
                 </div>
                 <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="confirmButtonOk" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="changeKeyNameModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Change Key Name</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-xl-flex justify-content-xl-center align-items-xl-center">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col d-lg-flex justify-content-lg-center align-items-lg-center" style="margin-top: 10px;"><span>Input New name</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-lg-flex justify-content-lg-center align-items-lg-center"><input type="text" id="changeKeyNameInput"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnChangeKeyNameConfirm" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
     </div>
@@ -500,6 +521,31 @@
                     </div>
                 </div>
                 <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="addPassForTxMessageModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">One Tx Unlock Account Message</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-xl-flex justify-content-xl-center align-items-xl-center">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col d-lg-flex justify-content-lg-center align-items-lg-center"><span style="font-size: 12px;">This will unlock account just for this one transaction</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-lg-flex justify-content-lg-center align-items-lg-center" style="margin-top: 10px;"><span>Input Password</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-lg-flex justify-content-lg-center align-items-lg-center"><input type="password" id="unlockAccountForOneTxPassword"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="unlockAccountForOneTxConfirm" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
     </div>
