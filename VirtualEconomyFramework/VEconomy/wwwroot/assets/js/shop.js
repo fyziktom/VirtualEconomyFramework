@@ -152,34 +152,46 @@ function refreshShopItems() {
     }		
 }
 
+var nfts = {};
 
 function refreshShopItemNFTs() {
 
-    $('#shopNFTItemsCards').empty();
+    //$('#shopNFTItemsCards').empty();
     $('#shopNFTItemsCards').append('<div class="row"><div class="col"><div id="shopItemsNFTCardsRow" class="row d-flex justify-content-center"></div></div></div>');
     for (var sid in AccountShopItems) {
         var shopItem = AccountShopItems[sid];
 
-        var nfts = shopItem.getNFTShopComponents();
-        for (var nft in nfts) {
+        var nnfts = shopItem.getNFTShopComponents();
+        for (var nft in nnfts) {
+
             var drawIt = false;
             var filterActive = false;
 
-            shopItem.refreshAddressInfo();
+            //shopItem.refreshAddressInfo();
 
-            if (shopItem != undefined && shopItem != null) {
+            if (!(nft in nfts)) {
+                if (shopItem != undefined && shopItem != null) {
 
-                // todo get tx details and check sender address
-                filterActive = true;
-                drawIt = true;
+                    // todo get tx details and check sender address
+                    filterActive = true;
+                    drawIt = true;
+                    nfts[nft] = nnfts[nft];
 
-                if (drawIt && filterActive) {
-                    $('#shopItemsNFTCardsRow').append(
-                        '<div class="col-auto">' +
-                        nfts[nft] +
-                        '</div>'
-                    );
+                    if (drawIt && filterActive) {
+                        $('#shopItemsNFTCardsRow').append(
+                            '<div id="' + nft + '" class="col-auto">' +
+                            nfts[nft] +
+                            '</div>'
+                        );
+                    }
                 }
+            }
+        }
+        // delete old ones
+        for (var n in nfts) {
+            if (!(n in nnfts)) {
+                delete nfts[n];
+                $('#'+ n).delete();
             }
         }
     }		

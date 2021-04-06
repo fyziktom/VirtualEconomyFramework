@@ -702,8 +702,8 @@ function fillAndShowSendTxModal() {
 
 function prepareSendTx() {
     if (accountLockState) {
-        $('#unlockAccountForOneTxConfirmAccounts').off();
-        $("#unlockAccountForOneTxConfirmAccounts").click(function() {
+        $('#unlockAccountForOneTxConfirm').off();
+        $("#unlockAccountForOneTxConfirm").click(function() {
             var password = $('#unlockAccountForOneTxPassword').val();
             sendTx(password);
         });

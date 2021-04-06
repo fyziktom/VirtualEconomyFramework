@@ -119,11 +119,10 @@ class Utxo {
                                     var tok = ot.tokens[t];
                                     if (tok.amount == 1) {
                                         this.isNFT = true;
-                                        if (this.txid == '09494f0f6f373aabd3a06c046bb1c3e2aac6d883a700c4d4f05b66c28b2d9e65' ){
-                                         var a = '';
+                                        if (this.sellableToken.tokenId == tok.tokenId) {
+                                            this.tokenId = tok.tokenId;
+                                            this.checkIfIsNFT(this.txid);
                                         }
-                                        this.tokenId = tok.tokenId;
-                                        this.checkIfIsNFT(this.txid);
                                     }
                                     if (tok.tokenId == this.sellableToken.tokenId) {
                                         this.isSellableToken = true;
@@ -203,6 +202,9 @@ class Utxo {
         }      
     }
 
+    getUtxoTxId() {
+        return this.txid;
+    }
     getNFTImage () {
         return this.originalNFTImage;
     }
@@ -513,7 +515,7 @@ class ShopItem {
         '</div>';
         
         return keyComponent;
-}
+    }
 
     getNFTShopComponents() {
 
@@ -524,7 +526,7 @@ class ShopItem {
 
         for (var uo in this.utxos) {
             var uno = this.utxos[uo];
-            if (uno.isNFT && uno.isOrignalNFTDataFound) {
+            if (uno.getNFTImage() != '' && uno.isOrignalNFTDataFound) {
               
                 var price = (this.price/this.NeblFromSatToMainRatio).toString();
 
@@ -608,6 +610,16 @@ class ShopItem {
                 '                    </div>'+
                 '                    <div class="row">'+
                 '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                '                           <span>NFT Last TxId</span>'+
+                '                        </div>'+
+                '                    </div>'+
+                '                    <div class="row">'+
+                '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                '                           <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.getUtxoTxId() +'" target="blank">Last Transaction With This NFT</a></span>'+
+                '                       </div>'+
+                '                    </div>'+
+                '                    <div class="row">'+
+                '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
                 '                           <span>Tokens NFT for Sale</span>'+
                 '                        </div>'+
                 '                    </div>'+
@@ -647,10 +659,24 @@ class ShopItem {
                 if (this.addressInfo.utxos != null) {
                     for (var u in this.addressInfo.utxos) {
                         var ut = this.addressInfo.utxos[u];
-                        if (this.utxos[ut.txid] == null || this.utxos[ut.txid] == undefined) {
+                        if (this.utxos[ut.txid] == undefined || this.utxos[ut.txid] == null) {
                             this.utxos[ut.txid] = new Utxo(ut.txid, ut.value, ut.scriptPubKey.addresses[0], this.token);
                         }
                         //console.log(this.utxos[u.txid]);
+                    }
+
+                    for (var u in this.utxos) {
+                        var ut = this.utxos[u];
+                        var isin = false;
+                        for (var ui in this.addressInfo.utxos) {
+                            var uti = this.addressInfo.utxos[ui];
+                            if (ut.txid == uti.txid) {
+                                isin = true;
+                            }
+                        }
+                        if (!isin) {
+                            delete this.utxos[u];
+                        }
                     }
                 }
             }

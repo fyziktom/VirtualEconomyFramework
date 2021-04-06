@@ -387,11 +387,53 @@ namespace VEDrivers.Economy.Transactions
 
                     dto.Fee = fee;
 
-                    if (data.sendUtxo != null)
-                        dto.Sendutxo = data.sendUtxo;
-
                     dto.Flags = new Flags2() { SplitChange = true };
-                    dto.From = new List<string>() { data.SenderAddress };
+
+                    // neblio API accept sendUtxo (both token and nebl) or from and it will find some unspecified spendable
+                    // if you correct format of sendUtxo is hash:index for example for token tx you must send this
+                    // 
+                    // "4213dfd34dca0b691a5c0e41080c098681e6f1be45935e7b36cad3559fe6b446:0" - token utxo
+                    // "255b33cfe724800bf158b63985ed2cafc39db897d3dfb475b7535cdec0b69923:1" - nebl utxo
+                    //
+                    // to simplify this in the function is used search for nebl utxo! it means if you want to send just one token you will fill just one utxo of this token
+
+                    if (data.sendUtxo != null)
+                    {
+                        dto.Sendutxo = new List<string>();
+                        
+                        foreach (var it in data.sendUtxo)
+                        {
+                            var vout = await ValidateNeblioUtxo(data.SenderAddress, it);
+                            if (vout.Item1)
+                                dto.Sendutxo.Add(it + ":" + vout.Item2); // copy received utxos and add item number of vout after validation
+                        }
+
+                        // need some neblio too
+                        // to be sure to have last tx request it from neblio network
+                        // set some minimum amount
+                        var utxos = await GetAddressNeblUtxo(data.SenderAddress, fee, 2*fee); // to be sure find at leas 2 times of expected fee
+                        // create raw Tx with NBitcoin
+                        NBitcoin.Altcoins.Neblio.NeblioTransaction neblUtxo = null;
+                        if (utxos == null)
+                        {
+                            throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+                        }
+
+                        foreach (var u in utxos)
+                        {
+                            if ((u.Amount * NeblioCrypto.FromSatToMainRatio) >= 2 * fee)
+                            {
+                                dto.Sendutxo.Add(u.Txid + ":" + u.Vout);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        dto.From = new List<string>() { data.SenderAddress };
+                    }
+
+                   
                     dto.To = new List<To>()
                     {
                         new To()
@@ -525,8 +567,8 @@ namespace VEDrivers.Economy.Transactions
                                             transaction.Inputs[0].ScriptSig = addressForTx.ScriptPubKey;
                                             transaction.Inputs[1].ScriptSig = addressForTx.ScriptPubKey;
 
+                                            // just for skpping in debug
                                             var a = false;
-
                                             if (a)
                                                 return null;
 
@@ -906,6 +948,26 @@ namespace VEDrivers.Economy.Transactions
             }
 
             return resp;
+        }
+
+        public static async Task<(bool, double)> ValidateNeblioUtxo(string address, string txid)
+        {
+            if (_client == null)
+            {
+                _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            }
+
+            var utxos = await _client.GetAddressUtxosAsync(address);
+            var resp = new List<Anonymous>();
+
+            if (utxos != null)
+            {
+                var ut = utxos.FirstOrDefault(u => u.Txid == txid);
+                if (ut != null)
+                    return (true, (double)ut.Vout);
+            }
+
+            return (false, 0);
         }
 
     }

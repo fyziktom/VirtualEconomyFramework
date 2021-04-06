@@ -56,18 +56,41 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4"></div>
-                    <h2 class="text-center text-dark mb-0">Main Dashboard</h2>
+                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                        <h4 class="text-dark mb-0">Saved Wallets</h4>
+                    </div>
                     <div class="row">
                         <div class="col">
-                            <div class="row d-flex d-xl-flex justify-content-center justify-content-xl-center">
-                                <div class="col"></div>
+                            <div class="row">
+                                <div class="col" style="max-width: 600px;">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <h5>Wallets</h5>
+                                                </div>
+                                                <div class="col-auto d-xl-flex justify-content-xl-end"><button class="btn btn-secondary" id="btnShowAddNewWalletModal" type="button"><i class="fa fa-plus"></i></button></div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive table-bordered">
+                                                <table class="table table-striped table-bordered table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Wallet Name</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="walletList"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="row"></div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
