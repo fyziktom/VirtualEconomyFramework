@@ -184,7 +184,7 @@ function checkLocation() {
     var currentLocation = window.location.toString();
 
     if (currentLocation.includes('index')){
-        ActualPage = Pages.dashboard;
+        ActualPage = Pages.wallets;
     }
     else if (currentLocation.includes('wallets')) {
         ActualPage = Pages.wallets;
@@ -211,7 +211,7 @@ function checkLocation() {
         ActualPage = Pages.keys;
     }
     else {
-        ActualPage = Pages.none;
+        ActualPage = Pages.wallets;
     }
 }
 

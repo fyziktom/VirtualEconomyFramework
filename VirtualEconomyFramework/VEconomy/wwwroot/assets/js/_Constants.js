@@ -44,3 +44,5 @@ var bootstrapstudio = false;
 var ApiUrl = 'http://localhost:8080/api'; //placeholder
 var UserRights = 0;  //placeholder to be filled by login
 var AvailableRights = {};
+
+var NeblFromSatToMainRatio = 100000000;

@@ -16,7 +16,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
         IDictionary<string, IToken> FindTokenByMetadata(string account, string key, string value = "");
         IDictionary<string, IToken> FindAllTokens(string account);
         LastTxSaveDto GetLastAccountProcessedTxs(string address);
-        string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string pubkey = "", string password = "", string name = "", bool storeInDb = true, bool isItMainAccountKey = false, bool alreadyEncrypted = false);
+        string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string pubkey = "", string password = "", string name = "", bool storeInDb = true, bool isItMainAccountKey = false, bool alreadyEncrypted = false, EncryptionKeyType type = EncryptionKeyType.BasicSecurity);
         string ChangeKeyName(string wallet, string address, string keyId, string newName, IDbConnectorService dbservice);
         EncryptionKey DeleteKey(string walletId, string address, string keyId, IDbConnectorService dbservice);
         string UnlockAccount(string wallet, string address, string password);

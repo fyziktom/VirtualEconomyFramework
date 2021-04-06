@@ -376,6 +376,8 @@ function getMessageComponent(token) {
         to = token.To.substring(0,3) + '...' + token.To.substring(token.To.length-3);
     }   
 
+    var time = token.TimeStamp.toString().replace('T', '\n').replace('Z','');
+
     var tokenComponent = '<div class="card shadow" style="width: 350px;">'+
     '    <div class="card-header d-xl-flex justify-content-xl-center align-items-xl-center py-3">'+
     '        <h4 id="chessBoardHeading">' + token.Symbol + ' - Message</h4>'+
@@ -402,7 +404,7 @@ function getMessageComponent(token) {
     '                    </div>'+
     '                    <div class="row">'+
     '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Time Stamp</span></div>'+
-    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span style="font-size: 12px">'+ token.TimeStamp.toString() + '</span></div>'+
+    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span style="font-size: 12px">'+ time + '</span></div>'+
     '                    </div>'+
     '                    <div class="row">'+
     '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Direction</span></div>'+

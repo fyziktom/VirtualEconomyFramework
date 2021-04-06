@@ -1,6 +1,13 @@
+// https://chessboardjs.com/examples.html
+// https://github.com/jhlywa/chess.js
 
 var chessInit = false;
 var board = null; 
+var game = new Chess();
+var whiteSquareGrey = '#a9a9a9';
+var blackSquareGrey = '#696969';
+var $status = $('#chessStatus');
+
 var allGamesIds = [];
 var actualGameId = '';
 var accountChessHistory = {};
@@ -10,11 +17,113 @@ var GameHistory = [];
 var newMovedragged = false;
 var replayRunning = false;
 
+
+function removeGreySquares () {
+    $('#board1 .square-55d63').css('background', '')
+  }
+  
+  function greySquare (square) {
+    var $square = $('#board1 .square-' + square)
+  
+    var background = whiteSquareGrey
+    if ($square.hasClass('black-3c85d')) {
+      background = blackSquareGrey
+    }
+  
+    $square.css('background', background)
+  }
+
 function onDragStart (source, piece, position, orientation) {
+    // do not pick up pieces if the game is over
+    if (game.game_over()) return false;
+
+    // only pick up pieces for the side to move
+    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+        return false;
+    }
+
     newMovedragged = true;
     document.getElementById('btnChessHistory').innerText = 'New Unconfirmed Move';
     $('#chessAutoRefreshCheckBox').prop('checked', false);
     $('#btnConfirmChessGameMove').removeClass('btn-secondary').addClass('btn-primary');
+}
+
+function onDrop (source, target) {
+
+    removeGreySquares();
+
+    // see if the move is legal
+    var move = game.move({
+      from: source,
+      to: target,
+      promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    });
+  
+    // illegal move
+    if (move === null) return 'snapback';
+  
+    updateStatus();
+}
+
+// update the board position after the piece snap
+// for castling, en passant, pawn promotion
+function onSnapEnd () {
+    board.position(game.fen());
+}
+
+function onMouseoverSquare (square, piece) {
+    // get list of possible moves for this square
+    var moves = game.moves({
+      square: square,
+      verbose: true
+    })
+  
+    // exit if there are no moves available for this square
+    if (moves.length === 0) return
+  
+    // highlight the square they moused over
+    greySquare(square);
+  
+    // highlight the possible squares for this piece
+    for (var i = 0; i < moves.length; i++) {
+      greySquare(moves[i].to);
+    }
+}
+  
+function onMouseoutSquare (square, piece) {
+    removeGreySquares();
+}
+
+function updateStatus () {
+    var status = '';
+  
+    var moveColor = 'White';
+    if (game.turn() === 'b') {
+      moveColor = 'Black';
+    }
+  
+    // checkmate?
+    if (game.in_checkmate()) {
+      status = 'Game over, ' + moveColor + ' is in checkmate.';
+    }
+  
+    // draw?
+    else if (game.in_draw()) {
+      status = 'Game over, drawn position';
+    }
+  
+    // game still on
+    else {
+      status = moveColor + ' to move';
+  
+      // check?
+      if (game.in_check()) {
+        status += ', ' + moveColor + ' is in check';
+      }
+    }
+  
+    $status.html(status);
 }
 
 function onChange (oldPos, newPos) {
@@ -76,7 +185,11 @@ function loadChessPageStartUp() {
         draggable: true,
         position: 'start',
         onChange: onChange,
-        onDragStart : onDragStart
+        onDragStart : onDragStart,
+        onDrop: onDrop,
+        onMouseoutSquare: onMouseoutSquare,
+        onMouseoverSquare: onMouseoverSquare,
+        onSnapEnd: onSnapEnd
     }
 
     board = Chessboard('board1', config);
@@ -227,7 +340,12 @@ function LoadChessGame(setToLast) {
                                 draggable: true,
                                 position: pos,
                                 onChange: onChange,
-                                onDragStart : onDragStart
+                                onDragStart : onDragStart,
+                                onDrop: onDrop,
+                                onMouseoutSquare: onMouseoutSquare,
+                                onMouseoverSquare: onMouseoverSquare,
+                                onSnapEnd: onSnapEnd
+                                
                             }
                             board = Chessboard('board1', config);
                         }
@@ -236,7 +354,11 @@ function LoadChessGame(setToLast) {
                                 draggable: true,
                                 position: 'start',
                                 onChange: onChange,
-                                onDragStart : onDragStart
+                                onDragStart : onDragStart,
+                                onDrop: onDrop,
+                                onMouseoutSquare: onMouseoutSquare,
+                                onMouseoverSquare: onMouseoverSquare,
+                                onSnapEnd: onSnapEnd
                             }
                             board = Chessboard('board1', config);
                         }
@@ -300,7 +422,11 @@ function LoadChessGameState() {
                                 draggable: true,
                                 position: pos,
                                 onChange: onChange,
-                                onDragStart : onDragStart
+                                onDragStart : onDragStart,
+                                onDrop: onDrop,
+                                onMouseoutSquare: onMouseoutSquare,
+                                onMouseoverSquare: onMouseoverSquare,
+                                onSnapEnd: onSnapEnd
                             }
                             board = Chessboard('board1', config);
                             
@@ -378,7 +504,11 @@ function RequestNewChessGame(password) {
                         draggable: true,
                         position: 'start',
                         onChange: onChange,
-                        onDragStart : onDragStart
+                        onDragStart : onDragStart,
+                        onDrop: onDrop,
+                        onMouseoutSquare: onMouseoutSquare,
+                        onMouseoverSquare: onMouseoverSquare,
+                        onSnapEnd: onSnapEnd
                     }
                 
                     board = Chessboard('board1', config);
@@ -512,7 +642,8 @@ function reloadChessAccounts() {
 
         for (var a in Accounts) {
             var acc = Accounts[a];
-            document.getElementById('chessAccountsDropDown').innerHTML += '<button class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setChessAccount(\'' + acc.Address + '\',\'' + acc.Name + '\')\">' + acc.Name + ' - ' + acc.Address + '</button>';
+            var add = a.substring(0,3) + '...' + a.substring(a.length-3); 
+            document.getElementById('chessAccountsDropDown').innerHTML += '<button class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setChessAccount(\'' + acc.Address + '\',\'' + acc.Name + '\')\">' + acc.Name + ' - ' + add + '</button>';
         }
     }
     catch{
@@ -521,7 +652,8 @@ function reloadChessAccounts() {
 
 function setAccountChessGameId(id) {
     actualGameId = id;
-    document.getElementById('btnAccountChessGames').innerText = id;
+    var gmId = id.substring(0,4) + '...' + id.substring(id.length-4);
+    document.getElementById('btnAccountChessGames').innerText = gmId;
 
     LoadChessGameRequest(true);
 }
@@ -533,7 +665,8 @@ function reloadAccountChessGames() {
 
         for (var indx in allGamesIds) {
             gameId = allGamesIds[indx];
-            document.getElementById('chessAccountGamesDropDown').innerHTML += '<button class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setAccountChessGameId(\'' + gameId + '\')\">' + gameId + '</button>';
+            var gmId = gameId.substring(0,4) + '...' + gameId.substring(gameId.length-4);
+            document.getElementById('chessAccountGamesDropDown').innerHTML += '<button class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setAccountChessGameId(\'' + gameId + '\')\">' + gmId + '</button>';
         }
     }
     catch{
@@ -558,15 +691,6 @@ function setChessHistory(historytx) {
         var gs = JSON.parse(dto.GameState);
         var pos = JSON.parse(gs.BoardStringData);
 
-        if (gs.LastMovePlayer != selectedChessAccount) {
-            $('#chessOnMove').text('Your Turn!');
-            isUserOnMoveNow = true;
-        }
-        else {
-            $('#chessOnMove').text('Partner Turn!');
-            isUserOnMoveNow = false;
-        }
-
         for(var p in dto.Players) {
             if (p != selectedChessAccount) {
                 $('#chessPlayer2Address').val(p);
@@ -577,18 +701,70 @@ function setChessHistory(historytx) {
             draggable: true,
             position: pos,
             onChange: onChange,
-            onDragStart : onDragStart
+            onDragStart : onDragStart,
+            onDrop: onDrop,
+            onMouseoutSquare: onMouseoutSquare,
+            onMouseoverSquare: onMouseoverSquare,
+            onSnapEnd: onSnapEnd
         }
+
         board = Chessboard('board1', config);
+
+        var saved_positions =  board.fen();
+        if (saved_positions == 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1') {
+            game = new Chess();
+        }
+
+        var onmove = 'w';
+
+        if (gs.LastMovePlayer != selectedChessAccount) {
+            $('#chessOnMove').text('Your Turn!');
+            isUserOnMoveNow = true;
+            if(dto.Players[selectedChessAccount].FigureType == 0) {
+                onmove = 'b';
+            }
+            else if (dto.Players[selectedChessAccount].FigureType == 1) {
+                onmove = 'w';
+            }
+        }
+        else {
+            $('#chessOnMove').text('Partner Turn!');
+            isUserOnMoveNow = false;
+
+            var player = null;
+            for(var p in dto.Players) {
+                if (p != selectedChessAccount) {
+                    player = p;
+                }
+            }
+
+            if(dto.Players[p].FigureType == 0) {
+                onmove = 'b';
+            }
+            else if (dto.Players[p].FigureType == 1) {
+                onmove = 'w';
+            }
+        }
+
+        game.load(saved_positions + ' ' + onmove + ' - - 0 1');
+        //game.setTurn('w');
+
+        updateStatus();
     }
     else {
         var config = {
             draggable: true,
             position: 'start',
             onChange: onChange,
-            onDragStart : onDragStart
+            onDragStart : onDragStart,
+            onDrop: onDrop,
+            onMouseoutSquare: onMouseoutSquare,
+            onMouseoverSquare: onMouseoverSquare,
+            onSnapEnd: onSnapEnd
         }
         board = Chessboard('board1', config);
+        game = new Chess();
+        updateStatus();
     }
 
 }
@@ -600,7 +776,7 @@ function reloadChessHistory(account) {
 
         for (var h in accountChessHistory) {
             var dto = GameHistory[accountChessHistory[h]];
-            document.getElementById('chessHistoryDropDown').innerHTML += '<button class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setChessHistory(\'' + h + '\')\">' + h + ' - ' + dto.TimeStamp.toString() + '</button>';
+            document.getElementById('chessHistoryDropDown').innerHTML += '<button style="font-size:10px;" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setChessHistory(\'' + h + '\')\">' + h + ' - ' + dto.TimeStamp.toString() + '</button>';
         }
     }
     catch{

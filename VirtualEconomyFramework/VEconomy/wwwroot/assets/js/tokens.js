@@ -51,7 +51,7 @@ function showTokenDetails(tokenId) {
 //////////////////////////////
 // send token
 
-function prepareSendTx() {
+function prepareSendTokenTx() {
     if (accountLockState) {
         $('#unlockAccountForOneTxConfirm').off();
         $("#unlockAccountForOneTxConfirm").click(function() {
@@ -71,7 +71,7 @@ function showSendTokenModal() {
 
     $("#btnSendTokenModalConfirm").off();
     $("#btnSendTokenModalConfirm").click(function() {
-        prepareSendTx();
+        prepareSendTokenTx();
     });
 
     $('#sendTokenModal').modal("show"); 

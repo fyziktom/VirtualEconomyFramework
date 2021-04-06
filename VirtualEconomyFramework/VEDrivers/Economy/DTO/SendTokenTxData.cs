@@ -44,6 +44,10 @@ namespace VEDrivers.Economy.DTO
         /// Metadata dictionary, key-value pairs
         /// </summary>
         public IDictionary<string, string> Metadata { get; set; }
+        /// <summary>
+        /// Initial Utxo for sending transaction from if you want to specify them
+        /// </summary>
+        public ICollection<string> sendUtxo { get; set; }
 
         /// <summary>
         /// If you use RPC and NBitcoin you can preffer using RPC with set this to true

@@ -93,7 +93,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                     if (!string.IsNullOrEmpty(privateKey))
                                     {
                                         // load and save address private key if was dumped correctly
-                                        LoadAccountKey(walletId.ToString(), account.Address, privateKey, dbservice, account.Address, password, account.Name + "-key");
+                                        LoadAccountKey(walletId.ToString(), account.Address, privateKey, dbservice, account.Address, password, account.Name + "-key", false, true, false, EncryptionKeyType.AccountKey);
                                     }
 
                                     if (EconomyMainContext.WorkWithDb && account != null)
@@ -135,6 +135,12 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 account.StartRefreshingData(EconomyMainContext.WalletRefreshInterval);
                                 wallet.Accounts.TryAdd(account.Address, account);
                                 wallet.RegisterAccountEvents(account.Address);
+
+                                if (EconomyMainContext.WorkWithDb && account != null)
+                                {
+                                    if (!dbservice.SaveAccount(account))
+                                        return "Cannot save new account to the Db!";
+                                }
                                 return "OK";
                             }
                             else
@@ -171,7 +177,13 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 wallet.RegisterAccountEvents(account.Address);
 
                                 // load and save address private key
-                                LoadAccountKey(walletId.ToString(), address.ToString(), privateKeyFromNetwork.ToString(), dbservice, password, account.Name + "-key");
+                                LoadAccountKey(walletId.ToString(), address.ToString(), privateKeyFromNetwork.ToString(), dbservice, address.ToString(), password, account.Name + "-key", false, true, false, EncryptionKeyType.AccountKey);
+
+                                if (EconomyMainContext.WorkWithDb && account != null)
+                                {
+                                    if (!dbservice.SaveAccount(account))
+                                        return "Cannot save new account to the Db!";
+                                }
 
                                 return account.Address;
                             }
@@ -311,7 +323,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
             return null;
         }
 
-        public override string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string pubkey = "", string password = "", string name = "", bool storeInDb = true, bool isItMainAccountKey = false, bool alreadyEncrypted = false)
+        public override string LoadAccountKey(string wallet, string address, string key, IDbConnectorService dbservice, string pubkey = "", string password = "", string name = "", bool storeInDb = true, bool isItMainAccountKey = false, bool alreadyEncrypted = false, EncryptionKeyType type = EncryptionKeyType.BasicSecurity)
         {
             try
             {
@@ -337,6 +349,13 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 dbservice.SaveKey(account.AccountKey);
                             }
 
+                            account.AccountKeyId = account.AccountKey.Id;
+
+                            if (EconomyMainContext.WorkWithDb)
+                            {
+                                dbservice.SaveAccount(account);
+                            }
+
                             return "OK";
                         }
                         else
@@ -348,20 +367,23 @@ namespace VEDrivers.Economy.Wallets.Handlers
                                 // validate the key pair if it is correct combination of RSA keys
                                 try
                                 {
-                                    if (alreadyEncrypted)
+                                    if (type != EncryptionKeyType.AccountKey)
                                     {
-                                        var kd = SymetricProvider.DecryptString(password, key);
-                                        if (kd != null)
+                                        if (alreadyEncrypted)
                                         {
-                                            key = kd;
+                                            var kd = SymetricProvider.DecryptString(password, key);
+                                            if (kd != null)
+                                            {
+                                                key = kd;
+                                            }
                                         }
-                                    }
 
-                                    var m = AsymmetricProvider.EncryptString("test", pubkey);
-                                    var r = AsymmetricProvider.DecryptString(m, key);
-                                    if (r != "test")
-                                    {
-                                        throw new Exception("Key pair is not valid RSA key pair!");
+                                        var m = AsymmetricProvider.EncryptString("test", pubkey);
+                                        var r = AsymmetricProvider.DecryptString(m, key);
+                                        if (r != "test")
+                                        {
+                                            throw new Exception("Key pair is not valid RSA key pair!");
+                                        }
                                     }
 
                                     k = new EncryptionKey(key, password);
@@ -418,6 +440,16 @@ namespace VEDrivers.Economy.Wallets.Handlers
                             if (EconomyMainContext.WorkWithDb)
                             {
                                 dbservice.SaveKey(k);
+                            }
+
+                            if (isItMainAccountKey)
+                            {
+                                account.AccountKeyId = account.AccountKey.Id;
+
+                                if (EconomyMainContext.WorkWithDb)
+                                {
+                                    dbservice.SaveAccount(account);
+                                }
                             }
 
                             return "OK";

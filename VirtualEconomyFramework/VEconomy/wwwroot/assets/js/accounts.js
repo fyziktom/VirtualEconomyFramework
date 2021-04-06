@@ -272,13 +272,13 @@ function checkAccountLockStatus(address) {
         success: function (data, status, xhr) {   // success callback function
             //console.log(`Status: ${status}, Data:${data}`);
             if(data) {
-                $('#accountDetailsModalIsLocked').text('<i class="fa fa-lock"></i> Locked');
-                $('#btnAccountDetailsLockUnlock').text('<i class="fa fa-unlock"></i> Unlock');
+                $('#accountDetailsModalIsLocked').html('<i class="fa fa-lock"></i> Locked');
+                $('#btnAccountDetailsLockUnlock').html('<i class="fa fa-unlock"></i> Unlock');
                 accountLockState = true;
             }
             else {
-                $('#accountDetailsModalIsLocked').text('<i class="fa fa-unlock"></i> Unlocked');
-                $('#btnAccountDetailsLockUnlock').text('<i class="fa fa-lock"></i> Lock');
+                $('#accountDetailsModalIsLocked').html('<i class="fa fa-unlock"></i> Unlocked');
+                $('#btnAccountDetailsLockUnlock').html('<i class="fa fa-lock"></i> Lock');
                 accountLockState = false;
             }
         },
@@ -702,8 +702,8 @@ function fillAndShowSendTxModal() {
 
 function prepareSendTx() {
     if (accountLockState) {
-        $('#unlockAccountForOneTxConfirm').off();
-        $("#unlockAccountForOneTxConfirm").click(function() {
+        $('#unlockAccountForOneTxConfirmAccounts').off();
+        $("#unlockAccountForOneTxConfirmAccounts").click(function() {
             var password = $('#unlockAccountForOneTxPassword').val();
             sendTx(password);
         });
