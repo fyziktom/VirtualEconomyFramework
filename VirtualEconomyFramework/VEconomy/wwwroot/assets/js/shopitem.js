@@ -53,11 +53,15 @@ class Utxo {
         this.originalNFTData = {};
         this.orignalNFTDataFound = false;
         this.orignalNFTDataNotFound = true;
-        this.fistNFTtxId = '';
+        this.nftTradeRequestDataFound = false;
+        this.nftTradeResponseDataFound = false;
+        this.firstNFTtxId = '';
         this.originalNFTType = '';
         this.originalNFTAuthor = '';
         this.originalNFTImage = '';
         this.originalNFTDecription = '';
+        this.nftTradeRequestUtxo = '';
+        this.nftTradeRequestMessage = '';
 
         if (txid != null || txid != '' || txid != ' ') {
             this.getInfo();
@@ -181,10 +185,10 @@ class Utxo {
                     //console.log(data);
                     if (data != null){
                         try {
-                            if (data.vin[0].tokens[0].amount == 1) {
+                            if (data.vin[0].tokens[0].amount == 1 && !thisClass.nftTradeRequestDataFound) {
                                 if (data.vin[0].tokens[0].tokenId == thisClass.tokenId) {
                                     var txid = data.vin[0].txid;
-                                    thisClass.fistNFTtxId = inTxId;
+                                    thisClass.firstNFTtxId = inTxId;
                                     // reset flags because NFT must starts from some bigger lot
                                     thisClass.orignalNFTDataFound = false;
                                     thisClass.orignalNFTDataNotFound = true;
@@ -219,6 +223,12 @@ class Utxo {
     }
     isThisNFT () {
         return this.isNFT;
+    }
+    isNFTTradeRequest() {
+        return this.nftTradeRequestDataFound;
+    }
+    isNFTTradeResponse() {
+        return this.nftTradeResponseDataFound;
     }
 
 
@@ -256,8 +266,8 @@ class Utxo {
                                 for( var m in data.metadataOfUtxo.userData.meta) {
                                     var nft = data.metadataOfUtxo.userData.meta[m]['NFT'];
                                     if (nft != undefined){
-                                        console.log('NFT!!!');
-                                        thisClass.fistNFTtxId = initTxId;
+                                        //console.log('NFT!!!');
+                                        thisClass.firstNFTtxId = initTxId;
                                         thisClass.isNFT = true;
                                         thisClass.orignalNFTDataFound = true;
                                         thisClass.orignalNFTDataNotFound = false;
@@ -280,6 +290,43 @@ class Utxo {
                                     var desc = data.metadataOfUtxo.userData.meta[m]['Description'];
                                     if (desc != undefined){
                                         thisClass.originalNFTDecription = desc;
+                                    }
+                                    
+                                    var trade = data.metadataOfUtxo.userData.meta[m]['NFT Trade Request'];
+                                    if (trade != undefined) {
+                                        if (trade) {
+                                            thisClass.nftTradeRequestDataFound = true;
+                                            thisClass.firstNFTtxId = initTxId;
+                                            var tradeutxo = data.metadataOfUtxo.userData.meta[1]['NFT Utxo'];
+                                            if (tradeutxo != undefined){
+                                                thisClass.nftTradeRequestUtxo = tradeutxo;
+                                                thisClass.loadTradedNFTData(tradeutxo);
+                                            }
+
+                                            var msg = data.metadataOfUtxo.userData.meta[2]['Message'];
+                                            if (msg != undefined){
+                                                thisClass.nftTradeRequestMessage = msg;
+                                            }
+                                        }
+                                    }
+
+                                    var tradeResp = data.metadataOfUtxo.userData.meta[m]['NFT Trade Response'];
+                                    if (tradeResp != undefined) {
+                                        if (tradeResp) {
+                                            thisClass.nftTradeResponseDataFound = true;
+                                            thisClass.firstNFTtxId = initTxId;
+                                            var tradeutxo = data.metadataOfUtxo.userData.meta[1]['NFT Utxo'];
+                                            if (tradeutxo != undefined){
+                                                thisClass.nftTradeRequestUtxo = tradeutxo;
+                                                thisClass.loadTradedNFTData(tradeutxo);
+                                            }
+
+                                            var msg = data.metadataOfUtxo.userData.meta[2]['Message'];
+                                            if (msg != undefined){
+                                                thisClass.nftTradeRequestMessage = msg;
+                                            }
+
+                                        }
                                     }
                                 }
 
@@ -304,10 +351,78 @@ class Utxo {
             });
         }
     }
+
+    loadTradedNFTData = function(initTxId) {
+
+        if (this.orignalNFTDataFound) {
+            return;
+        }
+
+        if (!this.orignalNFTDataNotFound) {
+            return;
+        }
+
+        if (initTxId != '' || initTxId != ' ') {
+
+            var url = 'https://ntp1node.nebl.io/ntp1/tokenmetadata/' + this.tokenId + '/' + initTxId;
+            var thisClass = this;
+            $.ajax(url,
+            {
+                contentType: 'application/json;charset=utf-8',
+                method: 'GET',
+                dataType: 'json',   // type of response data
+                timeout: 10000,     // timeout milliseconds
+                success: function (data, status, xhr) {   // success callback function
+                    //console.log(data);
+                    if (data != null){
+                        try 
+                        {
+                            if (data.metadataOfUtxo.userData.meta != undefined) {
+                                if (data.metadataOfUtxo.userData.meta.length == 0) {
+                                    thisClass.checkTxNFTInputs(initTxId);
+                                    return;
+                                }
+
+                                for( var m in data.metadataOfUtxo.userData.meta) {
+                                    var nft = data.metadataOfUtxo.userData.meta[m]['NFT'];
+                                    if (nft != undefined){
+                                        //console.log('NFT!!!');
+                                        
+                                        //thisClass.isNFT = true;
+                                        //thisClass.orignalNFTDataFound = true;
+                                        //thisClass.orignalNFTDataNotFound = false;
+                                        thisClass.originalNFTType = 'NFT';
+                                        thisClass.originalNFTData = data;
+                                    }
+                                    
+                                    var aut = data.metadataOfUtxo.userData.meta[m]['Author'];
+                                    if (aut != undefined){
+                                        thisClass.originalNFTAuthor = aut;
+                                    }
+                                    var img = data.metadataOfUtxo.userData.meta[m]['Image'];
+                                    if (img != undefined){
+                                        thisClass.originalNFTImage = img;
+                                    }
+                                    var desc = data.metadataOfUtxo.userData.meta[m]['Description'];
+                                    if (desc != undefined){
+                                        thisClass.originalNFTDecription = desc;
+                                    }
+                                }
+                            }
+                        }
+                        catch {}
+                    }
+                },
+                error: function (jqXhr, textStatus, errorMessage) { // error callback 
+                    console.log('Error: "' + errorMessage + '"');
+                }
+            });
+        }
+    }
 }
 
 class ShopItem {
-    constructor(id, address, type, tokenSymbol, tokenId, amount, price, name, description) {
+    constructor(id, address, type, tokenSymbol, tokenId, amount, price, name, description, _isShopHostedOnVEF) {
         this.address = address;
         this.addressInfo = {};
         this.utxos = {};
@@ -322,6 +437,7 @@ class ShopItem {
         this.isActive = false;
         this.maxLotsPerBuy = 9;
         this.NeblFromSatToMainRatio = 100000000;
+        this.isShopHostedOnVEF = _isShopHostedOnVEF;
     }
 
     setActive() {
@@ -410,7 +526,7 @@ class ShopItem {
 
         var price = (this.price/this.NeblFromSatToMainRatio).toString();
     
-        var keyComponent = '<div class="card shadow" style="min-width: 400px; width:100%">'+
+        var keyComponent = '<div class="card shadow" style="min-width: 350px; width:100%">'+
         '    <div class="card-header d-xl-flex justify-content-xl-center align-items-xl-center py-3">'+
         '        <h4>' + this.name + ' - Item</h4>'+
         '    </div>'+
@@ -517,22 +633,221 @@ class ShopItem {
         return keyComponent;
     }
 
-    getNFTShopComponents() {
+    getNFTShopComponents(asShopItem) {
 
-        var type = 'NFT Item';
+        var type = 'NFT Image';
 
         //let unsolvedOrders = this.getUnsolvedOrders();
         var components = {};
 
+        var hidden = 'd-none';
+        if (this.isShopHostedOnVEF) {
+            hidden = '';
+        }
+
+        var shopItemHidden = 'd-none';
+        if (asShopItem) {
+            shopItemHidden = '';
+        }
+
         for (var uo in this.utxos) {
             var uno = this.utxos[uo];
             if (uno.getNFTImage() != '' && uno.isOrignalNFTDataFound) {
-              
-                var price = (this.price/this.NeblFromSatToMainRatio).toString();
 
-                var nftComponent = '<div class="card shadow" style="min-width: 400px; width:100%">'+
+                if (!uno.isNFTTradeRequest() && !uno.isNFTTradeResponse()) {
+                
+                    var price = (this.price/this.NeblFromSatToMainRatio).toString();
+
+                    var nftComponent = '<div class="card shadow" style="min-width: 350px; width:100%">'+
+                    '    <div class="card-header d-xl-flex justify-content-xl-center align-items-xl-center py-3">'+
+                    '        <h4>' + this.name + ' - Item</h4>'+
+                    '    </div>'+
+                    '    <div class="card-body" style="padding-bottom: 0px;">'+
+                    '        <div class="col">'+
+                    '            <div class="row" style="margin-bottom: 30px;">'+
+                    '                <div class="col">'+
+                    '                    <div class="row">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">' +
+                    '                           <span>Name</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row d-flex d-xl-flex justify-content-center justify-content-xl-center" style="margin-top: 5px;">'+
+                    '                        <div class="col-auto d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                           <span>' + this.name + '</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                    '                           <span>Type</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                           <span>'+ type + '</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                    '                           <span>Owner</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                           <span style="font-size:12px"><a href="https://explorer.nebl.io/address/' + this.address + '" target="blank">' + this.address + '</a></span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                    '                           <span>Tx Id</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                           <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                               <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.firstNFTtxId + '" target="blank">Go To Explorer</a></span>'+
+                    '                           </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                    '                           <span>Description</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                           <span style="font-size: 12px;">' + uno.getOriginalNFTDescription() + '</span>'+
+                    '                       </div>'+
+                    '                    </div>'+
+                    '                    <div class="row ' + shopItemHidden + '">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                    '                           <span>Nuber Of Tokens For Sale</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row ' + shopItemHidden + '">'+
+                    '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                           <span style="font-size: 12px;">' + this.amount + ' / one lot</span>'+
+                    '                       </div>'+
+                    '                    </div>'+
+                    '                    <div class="row ' + shopItemHidden + '">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                    '                           <span>Price</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row ' + shopItemHidden + '">'+
+                    '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                           <span style="font-size: 12px;">' + price + ' Nebl</span>'+
+                    '                       </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                    '                           <span>NFT Last TxId</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                           <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.getUtxoTxId() +'" target="blank">Last Transaction With This NFT</a></span>'+
+                    '                       </div>'+
+                    '                    </div>'+
+                    '                    <div class="row ' + shopItemHidden + '">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                    '                           <span>This NFT</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row">'+
+                    '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                           <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.firstNFTtxId +'" target="blank"><img style="max-width:200px;max-height:200px;margin-left:5px" src="' + uno.getNFTImage() + '"></a></span>'+
+                    '                       </div>'+
+                    '                    </div>'+
+                    '                    <div class="row '+ shopItemHidden + '">'+
+                    '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
+                    '                           <span>Unresolved Orders</span>'+
+                    '                        </div>'+
+                    '                    </div>'+
+                    '                    <div class="row '+ shopItemHidden + '">'+
+                    '                       <div id="' + this.id + '-unresolvedOrders" class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                                                this.getUnsolvedOrdersLines() +
+                    '                       </div>'+
+                    '                    </div>'+
+                    '                   <div class="card-footer ' + hidden + '" style="padding-top: 5px; margin-top: 20px;">'+
+                    '                    <div class="row">'+
+                    '                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                               <button class="btn btn-primary" type="button" onclick="sendNeblioNFT(\'' + this.token.tokenId + '\',\'' + uno.getUtxoTxId() + '\',\'' + uno.firstNFTtxId + '\',\'' + this.token.tokenSymbol + '\',\'' + uno.getNFTImage() + '\')">'+
+                    '                                   <i class="fa fa-send-o"></i>'+
+                    '                               </button>'+
+                    '                         </div>'+
+                    '                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                    '                               <button class="btn btn-primary" type="button" onclick="requestNeblioNFTTrade(\'' + this.address + '\',\'' + this.token.tokenId + '\',\'' + uno.getUtxoTxId() + '\',\'' + uno.firstNFTtxId + '\',\'' + this.token.tokenSymbol + '\',\'' + uno.getNFTImage() + '\')">'+
+                    '                                   <i class="fa fa-comments-o"></i>'+
+                    '                               </button>'+
+                    '                         </div>'+
+                    '                      </div>'+
+                    '                   </div>'+
+                    '                </div>'+
+                    '            </div>'+
+                    '        </div>'+
+                    '    </div>'+
+                    '</div>';
+
+                    components[uo] = nftComponent;
+                    
+                }
+            }
+        }
+        
+        return components;
+    }
+
+
+    getNFTTradeRequestComponents(asShopItem) {
+
+        var components = {};
+
+        var hidden = 'd-none';
+        if (this.isShopHostedOnVEF) {
+            hidden = '';
+        }
+
+        var shopItemHidden = 'd-none';
+        if (asShopItem) {
+            shopItemHidden = '';
+        }
+
+        for (var uo in this.utxos) {
+            var uno = this.utxos[uo];
+            if (uno.isNFTTradeRequest() || uno.isNFTTradeResponse()) {
+
+                var image = '';
+                var firstTxId = '';
+                var reqresp = 'Trade Request';
+                if (uno.isNFTTradeResponse()) {
+                    reqresp = 'Trade Response';
+                }
+
+                if (uno.isNFTTradeRequest()) {
+                    if (this.utxos[uno.nftTradeRequestUtxo] == undefined || this.utxos[uno.nftTradeRequestUtxo] == null) {
+                        return;
+                    }
+
+                    var requestedNft = this.utxos[uno.nftTradeRequestUtxo];
+
+                    if (requestedNft == undefined || requestedNft == null) {
+                        return;
+                    }
+
+                    // wait until image is loaded
+                    if (requestedNft.getNFTImage() == '' || !requestedNft.isOrignalNFTDataFound) {
+                        return;
+                    }
+
+                    image = requestedNft.getNFTImage();
+                    firstTxId = requestedNft.firstNFTtxId;
+                }
+                else {
+                    image = uno.getNFTImage();
+                    firstTxId = uno.firstNFTtxId;
+                }
+              
+                var nftComponent = '<div class="card shadow" style="min-width: 350px; width:100%">'+
                 '    <div class="card-header d-xl-flex justify-content-xl-center align-items-xl-center py-3">'+
-                '        <h4>' + this.name + ' - Item</h4>'+
+                '        <h4>' + reqresp + '</h4>'+
                 '    </div>'+
                 '    <div class="card-body" style="padding-bottom: 0px;">'+
                 '        <div class="col">'+
@@ -540,104 +855,48 @@ class ShopItem {
                 '                <div class="col">'+
                 '                    <div class="row">'+
                 '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">' +
-                '                           <span>Name</span>'+
-                '                        </div>'+
-                '                    </div>'+
-                '                    <div class="row d-flex d-xl-flex justify-content-center justify-content-xl-center" style="margin-top: 5px;">'+
-                '                        <div class="col-auto d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                '                           <span>' + this.name + '</span>'+
-                '                        </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
-                '                           <span>Type</span>'+
+                '                           <span>From</span>'+
                 '                        </div>'+
                 '                    </div>'+
                 '                    <div class="row">'+
                 '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                '                           <span>'+ type + '</span>'+
+                '                           <span style="font-size:12px"><a href="https://explorer.nebl.io/address/' + uno.fromAddress + '" target="blank">' + uno.fromAddress + '</a></span>'+
                 '                        </div>'+
                 '                    </div>'+
                 '                    <div class="row">'+
                 '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
-                '                           <span>Owner</span>'+
-                '                        </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                '                           <span style="font-size:12px"><a href="https://explorer.nebl.io/address/' + this.address + '" target="blank">' + this.address + '</a></span>'+
-                '                        </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
-                '                           <span>Tx Id</span>'+
+                '                           <span>NFT Utxo</span>'+
                 '                        </div>'+
                 '                    </div>'+
                 '                    <div class="row">'+
                 '                           <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                '                               <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.fistNFTtxId + '" target="blank">Go To Explorer</a></span>'+
+                '                               <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.nftTradeRequestUtxo + '" target="blank">Go To Explorer</a></span>'+
                 '                           </div>'+
                 '                    </div>'+
                 '                    <div class="row">'+
                 '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
-                '                           <span>Description</span>'+
+                '                           <span>Message</span>'+
                 '                        </div>'+
                 '                    </div>'+
                 '                    <div class="row">'+
                 '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                '                           <span style="font-size: 12px;">' + uno.getOriginalNFTDescription() + '</span>'+
+                '                           <span style="font-size: 12px;">' + uno.nftTradeRequestMessage + '</span>'+
                 '                       </div>'+
                 '                    </div>'+
+                '                   <div class="card-footer ' + hidden + '" style="padding-top: 5px; margin-top: 20px;">'+
                 '                    <div class="row">'+
-                '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
-                '                           <span>Nuber Of Tokens For Sale</span>'+
-                '                        </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                '                           <span style="font-size: 12px;">' + this.amount + ' / one lot</span>'+
-                '                       </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
-                '                           <span>Price</span>'+
-                '                        </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                '                           <span style="font-size: 12px;">' + price + ' Nebl</span>'+
-                '                       </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
-                '                           <span>NFT Last TxId</span>'+
-                '                        </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                '                           <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.getUtxoTxId() +'" target="blank">Last Transaction With This NFT</a></span>'+
-                '                       </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
-                '                           <span>Tokens NFT for Sale</span>'+
-                '                        </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                '                           <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.fistNFTtxId +'" target="blank"><img style="max-width:200px;max-height:200px;margin-left:5px" src="' + uno.getNFTImage() + '"></a></span>'+
-                '                       </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
-                '                           <span>Unresolved Orders</span>'+
-                '                        </div>'+
-                '                    </div>'+
-                '                    <div class="row">'+
-                '                       <div id="' + this.id + '-unresolvedOrders" class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                                            this.getUnsolvedOrdersLines() +
-                '                       </div>'+
-                '                    </div>'+
+                '                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                '                               <button class="btn btn-primary" type="button" onclick="sendNeblioNFT(\'' + this.token.tokenId + '\',\'' + uno.nftTradeRequestUtxo + '\',\'' + firstTxId + '\',\'' + this.token.tokenSymbol + '\',\'' + image + '\')">'+
+                '                                   <i class="fa fa-send-o"></i>'+
+                '                               </button>'+
+                '                         </div>'+
+                '                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                '                               <button class="btn btn-primary" type="button" onclick="sendNeblioNFTTradeResponse(\'' + uno.txid + '\',\'' + uno.fromAddress + '\',\'' + uno.toAddress + '\',\'' + this.token.tokenId + '\',\'' + uno.nftTradeRequestUtxo + '\',\'' + firstTxId + '\',\'' + this.token.tokenSymbol + '\',\'' + image + '\')">'+
+                '                                   <i class="fa fa-comments-o"></i>'+
+                '                               </button>'+
+                '                         </div>'+
+                '                      </div>'+
+                '                   </div>'+
                 '                </div>'+
                 '            </div>'+
                 '        </div>'+

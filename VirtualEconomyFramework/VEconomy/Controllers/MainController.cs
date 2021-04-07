@@ -1990,6 +1990,56 @@ namespace VEconomy.Controllers
         }
 
         /// <summary>
+        /// Send specific amount Neblio NFT to the addres
+        /// Please check SendTxData dto for the details
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("SendNeblioNFT")]
+        //[Authorize(Rights.Administration)]
+        public async Task<object> SendNeblioNFT([FromBody] SendTokenTxData data)
+        {
+            try
+            {
+                var res = await NeblioTransactionHelpers.SendNTP1TokenAPI(data, isNFTtx: true);
+
+                return new { info = res, ReadingError = "OK" }; ;
+
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Transaction", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Transaction Token - {ex.Message}!");
+            }
+        }
+
+        /// <summary>
+        /// Mint Neblio NFT token to addres
+        /// Please check MintNFTData dto for the details
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("MintNeblioNFT")]
+        //[Authorize(Rights.Administration)]
+        public async Task<object> MintNeblioNFT([FromBody] MintNFTData data)
+        {
+            try
+            {
+                var res = await NeblioTransactionHelpers.MintNFTToken(data);
+
+                return new { info = res, ReadingError = "OK" }; ;
+
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Transaction", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Transaction Token - {ex.Message}!");
+            }
+        }
+
+        /// <summary>
         /// Data carrier for tx receipt API command
         /// </summary>
         public class TxReceiptData

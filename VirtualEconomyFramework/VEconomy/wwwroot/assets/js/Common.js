@@ -163,11 +163,15 @@ function loaded() {
              ActualPage == Pages.games || 
              ActualPage == Pages.nodes || 
              ActualPage == Pages.messages || 
-             ActualPage == Pages.keys) {
+             ActualPage == Pages.keys ||
+             ActualPage == Pages.shop) {
 
         walletAfterLoad();
         accountsAfterLoad();
         tokensAfterLoad();
+        if (ActualPage == Pages.shop) {
+            shopOnLoad(true);
+        }
         if (ActualPage == Pages.keys) {
             keysAfterLoad();
         }
@@ -209,6 +213,9 @@ function checkLocation() {
     }
     else if (currentLocation.includes('keys')) {
         ActualPage = Pages.keys;
+    }
+    else if (currentLocation.includes('shop')) {
+        ActualPage = Pages.shop;
     }
     else {
         ActualPage = Pages.wallets;

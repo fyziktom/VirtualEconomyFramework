@@ -69,11 +69,13 @@ function AddNewAccount() {
             justToDb = false;
         }
 
-        var password = $('#newAccountPassword').val();
-        if (password == '' || password == ' ')
-        {
-            alert('password cannot be empty!');
-            return;
+        if (!justToDb) {
+            var password = $('#newAccountPassword').val();
+            if (password == '' || password == ' ')
+            {
+                alert('password cannot be empty!');
+                return;
+            }
         }
         
         var acc = {

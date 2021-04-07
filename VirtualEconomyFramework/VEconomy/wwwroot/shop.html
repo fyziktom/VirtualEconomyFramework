@@ -57,49 +57,58 @@
                 </nav>
                 <div class="container-fluid">
                     <div class="d-flex d-sm-flex justify-content-center align-items-center justify-content-xl-center mb-4">
-                        <h3 class="text-dark mb-0">Shop</h3>
+                        <h3 class="text-dark mb-0">My NFTs</h3>
                     </div>
-                    <div class="d-sm-flex justify-content-between align-items-center justify-content-xl-center mb-4">
+                    <div class="d-flex d-sm-flex justify-content-center justify-content-xl-center mb-4">
                         <div class="row">
                             <div class="col">
                                 <div class="row">
                                     <div class="col">
-                                        <div class="row d-flex justify-content-center">
+                                        <div class="row d-flex justify-content-center align-items-center">
                                             <div class="col-auto d-flex justify-content-center" style="margin-top: 10px;">
-                                                <div class="dropdown"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnAccountAddressToLoadShop" type="button" onclick="reloadKeysListAccountsAddressesDropDown()" style="width: 100%;font-size: 12px;">Please Select Account Address</button>
+                                                <div class="dropdown"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnAccountAddressToLoadShop" type="button" onclick="reloadShopListAccountsAddressesDropDown()" style="width: 100%;font-size: 12px;">Please Select Account Address</button>
                                                     <div class="dropdown-menu" id="shopListAccountAddressesDropDown" style="width: 100%;"></div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row d-flex justify-content-center">
-                                            <div class="col-auto" style="margin-top: 10px;"><button class="btn btn-primary" id="btnLoadAccountShop" type="button"><i class="fa fa-refresh"></i>&nbsp;Load</button></div>
+                                        <div class="row d-flex justify-content-center align-items-center">
                                             <div class="col-auto" style="margin-top: 10px;"><button class="btn btn-primary" id="btnShopAddNewShopItem" type="button"><i class="fa fa-cloud-upload"></i>&nbsp;New Item</button></div>
                                         </div>
-                                        <div class="row d-flex justify-content-center" style="margin-top: 10px;">
+                                        <div class="row d-flex justify-content-center align-items-center" style="margin-top: 10px;">
                                             <div class="col-auto">
-                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxShopListShopItemsThing" checked="" onclick="refreshShopItems()"><label class="form-check-label" for="formCheck-1">Token Thing</label></div>
+                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxShopListShopItemsImages" checked="" onclick="refreshItems()"><label class="form-check-label" for="formCheck-1">NFT Image</label></div>
                                             </div>
                                             <div class="col-auto">
-                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxShopListShopItemsServices" checked="" onclick="refreshShopItems()"><label class="form-check-label" for="formCheck-1">Token Service</label></div>
+                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxShopListShopItemsFiles" checked="" onclick="refreshItems()"><label class="form-check-label" for="formCheck-1">NFT File</label></div>
                                             </div>
                                             <div class="col-auto">
-                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxShopListShopItemsNFT" onclick="refreshShopItems()" checked=""><label class="form-check-label" for="formCheck-1">NFT</label></div>
+                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxShopListShopItemsDocuments" onclick="refreshItems()" checked=""><label class="form-check-label" for="formCheck-1">NFT Document</label></div>
                                             </div>
-                                            <div class="col-auto"><input type="text" id="shopListSearchByNameAddress" placeholder="Name or Id" onkeyup="refreshShopItems()"></div>
+                                            <div class="col-auto"><input type="text" id="shopListSearchByAny" placeholder="Name or Id" onkeyup="refreshItems()"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row d-flex justify-content-center align-items-center">
                         <div class="col" style="margin-top: 20px;">
                             <div id="shopItemsCards"></div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row d-flex justify-content-center align-items-center">
                         <div class="col" style="margin-top: 20px;">
                             <div id="shopNFTItemsCards"></div>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top: 20px;">
+                        <div class="col d-flex justify-content-center" style="margin-top: 20px;">
+                            <h5>Trade Requests</h5>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top: 10px;">
+                        <div class="col" style="margin-top: 20px;">
+                            <div id="shopNFTTradeRequestsCards"></div>
                         </div>
                     </div>
                 </div>
@@ -250,42 +259,160 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="importAccountKeyModal">
+    <div class="modal fade" role="dialog" tabindex="-1" id="mintNewNFTModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Are you sure to import the private key?</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <div class="modal-header d-lg-flex">
+                    <h4 class="modal-title">Mint new Neblio NFT</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Name</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="importAccountKeyName" style="width: 300px;"></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Author</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTAuthor" style="width: 300px;"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>If you want to create new key leave Key field empty!</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Description</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTDescription" style="width: 300px;"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span class="text-center">Remember this dialog can create or import just Basic Keys. Account key you have to add in the wallet manager.</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Image</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTImage" style="width: 300px;" placeholder="Optional"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Private Key</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyKey" style="width: 300px;"></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Link</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTLink" style="width: 300px;" placeholder="Optional"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Type</span></div>
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                            <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxKeysImportAlreadyEncryptedKey"><label class="form-check-label" for="formCheck-1" style="font-size: 12px;">Key is already encrypted. Check if your key is in encrypted form</label></div>
+                            <div class="dropdown"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnMintNFTType" type="button">NFT Image</button>
+                                <div class="dropdown-menu" id="mintNFTTypeDrowpDown"><a class="dropdown-item" href="#" onclick="changeType(&#39;NFT Image&#39;)">NFT Image</a><a class="dropdown-item" href="#" onclick="changeType(&#39;NFT File&#39;)">NFT File</a><a class="dropdown-item" href="#" onclick="changeType(&#39;NFT Document&#39;)">NFT Document</a><a class="dropdown-item" href="#" onclick="changeType(&#39;NFT Code&#39;)">NFT Code</a></div>
+                            </div>
                         </div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Public Key</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyPublicKey" style="width: 300px;"></div>
-                    </div>
-                    <div class="row" style="margin-top: 20px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Password</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyPassword" style="width: 300px;"></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>NFT Receive Address</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="dropdown" data-toggle="tooltip" data-bss-tooltip="" title="This address must be different than source address!"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnMintNFTReceiverAddress" type="button">Select Final Address</button>
+                                <div class="dropdown-menu" id="mintNFTbtnMintNFTReceiverAddressDrowpDown"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmImportAccountKey" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmMintNFT" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="sendNFTModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-lg-flex">
+                    <h4 class="modal-title">Send Neblio NFT</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Unspended token TxId</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="sendNFTModalUtxoLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>First this NFT TxId</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="sendNFTModalFirstLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Main Token Carier</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="sendNFTModalTokenLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col d-flex justify-content-center align-items-center"><img id="sendNFTModalImage" style="width: 100%;max-width: 250px;max-height: 250px;min-height: 100%;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Receiver Address</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="sendNFTModalReceiverAddress" style="width: 300px;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Message</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" id="sendNFTModalMessage" style="width: 300px;" placeholder="Optional" title="This message will be add to the metadata. It will not be encrypted!"></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmSendNFT" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="requestNFTTradeModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-lg-flex">
+                    <h4 class="modal-title">Request Neblio NFT Trade</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Owner of NFT</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="requestNFTModalOwnerLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Unspended token TxId</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="requestNFTModalUtxoLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>First this NFT TxId</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="requestNFTModalFirstLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Main Token Carier</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="requestNFTModalTokenLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col d-flex justify-content-center align-items-center"><img id="requestNFTModalImage" style="width: 100%;max-width: 250px;max-height: 250px;min-height: 100%;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>From Account</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="dropdown" data-toggle="tooltip" data-bss-tooltip="" title="This address must be different than source address!"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnRequestNFTTradeSenderAddress" type="button">Select Final Address</button>
+                                <div class="dropdown-menu" id="requestNFTTradeSenderAddressDrowpDown"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Message</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" id="requestNFTModalMessage" style="width: 300px;" placeholder="Optional" title="This message will be add to the metadata. It will not be encrypted!"></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmRequestNFT" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="requestNFTTradeModalResponse">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-lg-flex">
+                    <h4 class="modal-title">Response for Neblio NFT Trade</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Trading Partner NFT</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="responseNFTTradeModalPartnerLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Unspended token TxId</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="responseNFTTRadeModalUtxoLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>First this NFT TxId</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="responseNFTTradeModalFirstLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Main Token Carier</span></div>
+                        <div class="col-auto d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center"><a id="responseNFTTradeModalTokenLink" href="#" target="_blank"><i class="fa fa-info-circle"></i></a></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col d-flex justify-content-center align-items-center"><img id="responseNFTModalImage" style="width: 100%;max-width: 250px;max-height: 250px;min-height: 100%;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Message</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" id="responseNFTModalMessage" style="width: 300px;" placeholder="Optional" title="This message will be add to the metadata. It will not be encrypted!"></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmResponseNFTTrade" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
     </div>
@@ -321,31 +448,6 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnChangeKeyNameConfirm" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="addPassForTxMessageModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">One Tx Unlock Account Message</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                </div>
-                <div class="modal-body d-xl-flex justify-content-xl-center align-items-xl-center">
-                    <div class="row">
-                        <div class="col">
-                            <div class="row">
-                                <div class="col d-lg-flex justify-content-lg-center align-items-lg-center"><span style="font-size: 12px;">This will unlock account just for this one transaction</span></div>
-                            </div>
-                            <div class="row">
-                                <div class="col d-lg-flex justify-content-lg-center align-items-lg-center" style="margin-top: 10px;"><span>Input Password</span></div>
-                            </div>
-                            <div class="row">
-                                <div class="col d-lg-flex justify-content-lg-center align-items-lg-center"><input type="password" id="unlockAccountForOneTxPassword"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="unlockAccountForOneTxConfirm" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
     </div>

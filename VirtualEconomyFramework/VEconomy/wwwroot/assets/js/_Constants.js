@@ -33,6 +33,7 @@ const Pages = Object.freeze({
     "tokens": 7,
     "messages": 8,
     "keys": 9,
+    "shop": 10
 });
 
 var ActualPage = Pages.dashboard;
