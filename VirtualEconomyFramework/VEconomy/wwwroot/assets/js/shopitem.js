@@ -51,6 +51,8 @@ class Utxo {
         this.NFTtxInfo = {}
         this.NFTInitData = {};
         this.originalNFTData = {};
+        this.NFTInitTxFound = false;
+        this.NFTFirstTxFound = false;
         this.orignalNFTDataFound = false;
         this.orignalNFTDataNotFound = true;
         this.nftTradeRequestDataFound = false;
@@ -263,6 +265,7 @@ class Utxo {
                                     return;
                                 }
 
+                                // check if it is NFT
                                 for( var m in data.metadataOfUtxo.userData.meta) {
                                     var nft = data.metadataOfUtxo.userData.meta[m]['NFT'];
                                     if (nft != undefined){
@@ -274,26 +277,52 @@ class Utxo {
                                         thisClass.originalNFTType = 'NFT';
                                         thisClass.originalNFTData = data;
                                     }
-                                    else if (nft != undefined && !thisClass.orignalNFTDataFound)
-                                    {
-                                        thisClass.checkTxNFTInputs(initTxId);
+                                }
+
+                                // check if it is NFT init tx
+                                for( var m in data.metadataOfUtxo.userData.meta) {
+                                    var nftinit = data.metadataOfUtxo.userData.meta[m]['NFT Init'];
+                                    if (nftinit != undefined){
+                                        //console.log('NFT Init tx!!!');
+                                        thisClass.NFTInitTxFound = true;
+
+                                        // init tx is just for validation. no need any action now
                                         return;
                                     }
-                                    var aut = data.metadataOfUtxo.userData.meta[m]['Author'];
-                                    if (aut != undefined){
-                                        thisClass.originalNFTAuthor = aut;
+                                }
+
+                                // check if it is NFT init tx
+                                for( var m in data.metadataOfUtxo.userData.meta) {
+                                    var nftfirst = data.metadataOfUtxo.userData.meta[m]['NFT FirstTx'];
+                                    if (nftfirst != undefined){
+                                        //console.log('NFT First Tx!!!');
+                                        thisClass.NFTFirstTxFound = true;
+                                        thisClass.firstNFTtxId = initTxId;
+                                        // This is first NFT tx so we can load all info from it
+                                        for( var m in data.metadataOfUtxo.userData.meta) {
+
+                                            var aut = data.metadataOfUtxo.userData.meta[m]['Author'];
+                                            if (aut != undefined){
+                                                thisClass.originalNFTAuthor = aut;
+                                            }
+                                            var img = data.metadataOfUtxo.userData.meta[m]['Image'];
+                                            if (img != undefined){
+                                                thisClass.originalNFTImage = img;
+                                            }
+                                            var desc = data.metadataOfUtxo.userData.meta[m]['Description'];
+                                            if (desc != undefined){
+                                                thisClass.originalNFTDecription = desc;
+                                            }
+                                        }
+
+                                        return;
                                     }
-                                    var img = data.metadataOfUtxo.userData.meta[m]['Image'];
-                                    if (img != undefined){
-                                        thisClass.originalNFTImage = img;
-                                    }
-                                    var desc = data.metadataOfUtxo.userData.meta[m]['Description'];
-                                    if (desc != undefined){
-                                        thisClass.originalNFTDecription = desc;
-                                    }
-                                    
+                                }
+
+                                // check if it is trade request or response
+                                for( var m in data.metadataOfUtxo.userData.meta) {
                                     var trade = data.metadataOfUtxo.userData.meta[m]['NFT Trade Request'];
-                                    if (trade != undefined) {
+                                    if (trade != undefined && !thisClass.orignalNFTDataFound) {
                                         if (trade) {
                                             thisClass.nftTradeRequestDataFound = true;
                                             thisClass.firstNFTtxId = initTxId;
@@ -311,7 +340,7 @@ class Utxo {
                                     }
 
                                     var tradeResp = data.metadataOfUtxo.userData.meta[m]['NFT Trade Response'];
-                                    if (tradeResp != undefined) {
+                                    if (tradeResp != undefined && !thisClass.orignalNFTDataFound) {
                                         if (tradeResp) {
                                             thisClass.nftTradeResponseDataFound = true;
                                             thisClass.firstNFTtxId = initTxId;
@@ -330,11 +359,20 @@ class Utxo {
                                     }
                                 }
 
-                                if (thisClass.orignalNFTDataFound) {
-                                    // check if the previous input was amount 1
-                                    thisClass.checkTxNFTInputs(initTxId);
-                                    return;
+                                // load source Utxo info
+                                for( var m in data.metadataOfUtxo.userData.meta) {
+
+                                    var srcutxo = data.metadataOfUtxo.userData.meta[m]['SourceUtxo'];
+                                    if (srcutxo != undefined){
+                                        thisClass.firstNFTtxId = srcutxo;
+                                        // if the NFT wasnt found but sourceUtxo info is available check this txid
+                                        if (!thisClass.orignalNFTDataFound) {
+                                            thisClass.checkIfIsNFT(srcutxo);
+                                            return;
+                                        }
+                                    }
                                 }
+                                
                             }
                             else
                             {
@@ -406,6 +444,20 @@ class Utxo {
                                     var desc = data.metadataOfUtxo.userData.meta[m]['Description'];
                                     if (desc != undefined){
                                         thisClass.originalNFTDecription = desc;
+                                    }
+                                }
+
+                                // load source Utxo info
+                                for( var m in data.metadataOfUtxo.userData.meta) {
+
+                                    var srcutxo = data.metadataOfUtxo.userData.meta[m]['SourceUtxo'];
+                                    if (srcutxo != undefined){
+                                        thisClass.firstNFTtxId = srcutxo;
+                                        // if the NFT wasnt found but sourceUtxo info is available check this txid
+                                        if (!thisClass.orignalNFTDataFound) {
+                                            thisClass.checkIfIsNFT(srcutxo);
+                                            return;
+                                        }
                                     }
                                 }
                             }

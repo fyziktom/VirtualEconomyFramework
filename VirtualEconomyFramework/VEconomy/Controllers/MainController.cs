@@ -2002,10 +2002,20 @@ namespace VEconomy.Controllers
         {
             try
             {
-                var res = await NeblioTransactionHelpers.SendNTP1TokenAPI(data, isNFTtx: true);
+                if (data.Metadata != null)
+                {
+                    if(data.Metadata.TryGetValue("SourceUtxo", out var sourceUtxo))
+                    {
+                        if (!string.IsNullOrEmpty(sourceUtxo))
+                        {
+                            var res = await NeblioTransactionHelpers.SendNTP1TokenAPI(data, isNFTtx: true);
 
-                return new { info = res, ReadingError = "OK" }; ;
-
+                            return new { info = res, ReadingError = "OK" };
+                        }
+                    }
+                }
+                
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send NFT Transaction - you did not provided source of the NFT!");
             }
             catch (Exception ex)
             {

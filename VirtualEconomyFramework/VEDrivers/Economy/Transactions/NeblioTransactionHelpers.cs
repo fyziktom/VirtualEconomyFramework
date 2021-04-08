@@ -689,6 +689,8 @@ namespace VEDrivers.Economy.Transactions
         {
 
             var utxos = new List<string>();
+            var mainUtxo = string.Empty;
+
             if (!string.IsNullOrEmpty(data.sendUtxo))
             {
                 utxos.Add(data.sendUtxo);
@@ -697,11 +699,22 @@ namespace VEDrivers.Economy.Transactions
             {
                 var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 1);
 
-                foreach(var u in utxs)
+                if (utxs != null)
                 {
-                    utxos.Add(u.Txid + ":" + u.Index);
+                    mainUtxo = utxs.FirstOrDefault()?.Txid;
+
+                    foreach (var u in utxs)
+                    {
+                        utxos.Add(u.Txid + ":" + u.Index);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Dont have any spendable source tokens to mint new NFT!");
                 }
             }
+
+            //data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", mainUtxo));
 
             var dto = new SendTokenTxData()
             {
@@ -710,12 +723,37 @@ namespace VEDrivers.Economy.Transactions
                 Metadata = data.Metadata,
                 Password = data.Password,
                 SenderAddress = data.SenderAddress,
-                ReceiverAddress = data.ReceiverAddress,
+                ReceiverAddress = data.SenderAddress,
                 sendUtxo = utxos,
                 UseRPCPrimarily = false
             };
 
+            data.Metadata.Add(new KeyValuePair<string, string>("NFT Init", "true"));
+
             var resp = await SendNTP1TokenAPI(dto, isItMintNFT: true);
+
+            data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", resp));
+
+            data.Metadata.Remove("NFT Init");
+            data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
+
+            var utxs2 = new List<string>() { resp };
+
+            dto = new SendTokenTxData()
+            {
+                Amount = 1,
+                Id = data.Id,
+                Metadata = data.Metadata,
+                Password = data.Password,
+                SenderAddress = data.SenderAddress,
+                ReceiverAddress = data.ReceiverAddress,
+                sendUtxo = utxs2,
+                UseRPCPrimarily = false
+            };
+
+            await Task.Delay(1500); // wait at leas one and half second to bc update data
+
+            resp = await SendNTP1TokenAPI(dto);
 
             return resp;
         }

@@ -115,7 +115,7 @@ function initShop(address) {
 
 var AccountShopItems = {};
 
-function requestNeblioNFTTrade(owner, tokenId, utxoTxId, firstUtxo, symbol, imageSrc) {
+function requestNeblioNFTTrade(owner, tokenId, utxoTxId, firstNFTUtxo, symbol, imageSrc) {
 
     if (!isShopHostedOnVEF) {
         alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -127,12 +127,12 @@ function requestNeblioNFTTrade(owner, tokenId, utxoTxId, firstUtxo, symbol, imag
         var sender = selectedNFTTradeRequestSenderAccountAddress;
         var message = $('#requestNFTModalMessage').val();
 
-        sendNeblioNFTrequestAPI(owner, sender, message, utxoTxId, tokenId);
+        sendNeblioNFTrequestAPI(owner, sender, message, utxoTxId, firstNFTUtxo, tokenId);
     });
 
     $('#sendNFTModalOwnerLink').attr('href', 'https://explorer.nebl.io/address/' + owner);
     $('#requestNFTModalUtxoLink').attr('href', 'https://explorer.nebl.io/tx/' + utxoTxId);
-    $('#requestNFTModalFirstLink').attr('href', 'https://explorer.nebl.io/tx/' + firstUtxo);
+    $('#requestNFTModalFirstLink').attr('href', 'https://explorer.nebl.io/tx/' + firstNFTUtxo);
     $('#requestNFTModalTokenLink').attr('href', 'https://explorer.nebl.io/token/' + tokenId);
 
     $('#requestNFTModalImage').attr('src', imageSrc);
@@ -140,7 +140,7 @@ function requestNeblioNFTTrade(owner, tokenId, utxoTxId, firstUtxo, symbol, imag
     $('#requestNFTTradeModal').modal('show');   
 }
 
-function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, tokenId, symbol) {
+function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, firstNFTUtxo, tokenId, symbol) {
 
     if (!isShopHostedOnVEF) {
         alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -169,6 +169,8 @@ function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, tokenId, s
         return;
     }
 
+    metadata['SourceUtxo'] = firstNFTUtxo;
+
     var nft = {
         "senderAddress": sender,
         "receiverAddress": receiver,
@@ -186,7 +188,7 @@ function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, tokenId, s
     ShowConfirmModal('', 'Do you realy want to send this NFT Trade Request?');  
 }
 
-function sendNeblioNFTTradeResponse(msgUtxo, receiver, sender, tokenId, utxoTxId, firstUtxo, symbol, imageSrc) {
+function sendNeblioNFTTradeResponse(msgUtxo, receiver, sender, tokenId, utxoTxId, firstNFTUtxo, symbol, imageSrc) {
 
     if (!isShopHostedOnVEF) {
         alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -197,12 +199,12 @@ function sendNeblioNFTTradeResponse(msgUtxo, receiver, sender, tokenId, utxoTxId
     $("#btnConfirmResponseNFTTrade").click(function() {
         var message = $('#responseNFTModalMessage').val();
 
-        sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoTxId);
+        sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoTxId, firstNFTUtxo);
     });
 
     $('#responseNFTTradeModalPartnerLink').attr('href', 'https://explorer.nebl.io/address/' + receiver);
     $('#responseNFTTRadeModalUtxoLink').attr('href', 'https://explorer.nebl.io/tx/' + utxoTxId);
-    $('#responseNFTTradeModalFirstLink').attr('href', 'https://explorer.nebl.io/tx/' + firstUtxo);
+    $('#responseNFTTradeModalFirstLink').attr('href', 'https://explorer.nebl.io/tx/' + firstNFTUtxo);
     $('#responseNFTTradeModalTokenLink').attr('href', 'https://explorer.nebl.io/token/' + tokenId);
 
     $('#responseNFTModalImage').attr('src', imageSrc);
@@ -210,7 +212,7 @@ function sendNeblioNFTTradeResponse(msgUtxo, receiver, sender, tokenId, utxoTxId
     $('#requestNFTTradeModalResponse').modal('show');   
 }
 
-function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoTxId) {
+function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoTxId, firstNFTUtxo) {
 
     if (!isShopHostedOnVEF) {
         alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -239,6 +241,8 @@ function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoT
         return;
     }
 
+    metadata['SourceUtxo'] = firstNFTUtxo;
+
     var nft = {
         "senderAddress": sender,
         "receiverAddress": receiver,
@@ -259,7 +263,7 @@ function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoT
     ShowConfirmModal('', 'Do you realy want to send this response?');  
 }
 
-function sendNeblioNFT(tokenId, utxoTxId, firstUtxo, symbol, imageSrc) {
+function sendNeblioNFT(tokenId, utxoTxId, firstNFTUtxo, symbol, imageSrc) {
 
     if (!isShopHostedOnVEF) {
         alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -268,14 +272,14 @@ function sendNeblioNFT(tokenId, utxoTxId, firstUtxo, symbol, imageSrc) {
 
     $("#btnConfirmSendNFT").off();
     $("#btnConfirmSendNFT").click(function() {
-        var receiver = selectedMintReceiverAccountAddress;
+        var receiver = $('#sendNFTModalReceiverAddress').val();
         var message = $('#sendNFTModalMessage').val();
 
-        sendNeblioNFTAPI(receiver, message, utxoTxId, tokenId);
+        sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, symbol);
     });
 
     $('#sendNFTModalUtxoLink').attr('href', 'https://explorer.nebl.io/tx/' + utxoTxId);
-    $('#sendNFTModalFirstLink').attr('href', 'https://explorer.nebl.io/tx/' + firstUtxo);
+    $('#sendNFTModalFirstLink').attr('href', 'https://explorer.nebl.io/tx/' + firstNFTUtxo);
     $('#sendNFTModalTokenLink').attr('href', 'https://explorer.nebl.io/token/' + tokenId);
 
     $('#sendNFTModalImage').attr('src', imageSrc);
@@ -285,7 +289,7 @@ function sendNeblioNFT(tokenId, utxoTxId, firstUtxo, symbol, imageSrc) {
 }
 
 
-function sendNeblioNFTAPI(receiver, message, utxoTxId, tokenId, symbol) {
+function sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, symbol) {
 
     if (!isShopHostedOnVEF) {
         alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -302,6 +306,8 @@ function sendNeblioNFTAPI(receiver, message, utxoTxId, tokenId, symbol) {
     if (message != '' && message != ' ') {
         metadata['Message'] = message;
     }    
+
+    metadata['SourceUtxo'] = firstNFTUtxo;
 
     var nft = {
         "senderAddress": selectedShopAccountAddress,
@@ -381,7 +387,7 @@ function mintNewNFT(author, description, image, link, type, tokenId) {
 
         var nft = {
             "SenderAddress": selectedShopAccountAddress,
-            "ReceiverAddress": selectedMintReceiverAccountAddress,
+            "ReceiverAddress": selectedShopAccountAddress,
             "Id": 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei',
             "Metadata": metadata,
         };
