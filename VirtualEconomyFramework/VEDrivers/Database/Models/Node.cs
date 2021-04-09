@@ -43,7 +43,12 @@ namespace VEDrivers.Database.Models
 
             Name = node.Name;
             Parameters = node.Parameters;
-            AccountId = node.AccountId.ToString();
+
+            if (node.AccountId != Guid.Empty)
+                AccountId = node.AccountId.ToString();
+            else
+                AccountId = null;
+
             Type = (int)node.Type;
             if (!string.IsNullOrEmpty(node.Version))
                 Version = node.Version;
@@ -66,7 +71,6 @@ namespace VEDrivers.Database.Models
 
             CreatedOn = node.CreatedOn;
 
-            AccountId = node.AccountId.ToString();
         }
 
         public INode Fill(INode node)

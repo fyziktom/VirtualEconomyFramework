@@ -5671,11 +5671,12 @@ namespace Neblio.RestApi
         /// <summary>Txid of this UTXO</summary>
         [Newtonsoft.Json.JsonProperty("txid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Txid { get; set; }
-    
+
         /// <summary>Blockheight of the UTXO</summary>
         [Newtonsoft.Json.JsonProperty("blockheight", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Blockheight { get; set; }
-    
+
+
         /// <summary>Blocktime of the UTXO</summary>
         [Newtonsoft.Json.JsonProperty("blocktime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Blocktime { get; set; }
@@ -5780,12 +5781,12 @@ namespace Neblio.RestApi
         public double? Blockheight { get; set; }
     
         /// <summary>Blockheight this output was used in</summary>
-        [Newtonsoft.Json.JsonProperty("usedBlockheight", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("usedBlockheight")]//, Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? UsedBlockheight { get; set; }
     
         /// <summary>TXID this output was used in</summary>
-        [Newtonsoft.Json.JsonProperty("usedTxid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string UsedTxid { get; set; }
+        [Newtonsoft.Json.JsonProperty("usedTxid")]//, Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? UsedTxid { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     

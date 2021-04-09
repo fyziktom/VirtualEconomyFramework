@@ -2020,7 +2020,7 @@ namespace VEconomy.Controllers
             catch (Exception ex)
             {
                 //log.Error("Cannot send Neblio Transaction", ex);
-                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Transaction Token - {ex.Message}!");
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send NFT Tx - {ex.Message}!");
             }
         }
 
@@ -2045,7 +2045,7 @@ namespace VEconomy.Controllers
             catch (Exception ex)
             {
                 //log.Error("Cannot send Neblio Transaction", ex);
-                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Transaction Token - {ex.Message}!");
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot Mint NFT - {ex.Message}!");
             }
         }
 

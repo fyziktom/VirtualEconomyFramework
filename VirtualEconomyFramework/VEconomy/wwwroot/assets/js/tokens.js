@@ -192,7 +192,7 @@ function sendTokenApiCommand(apicommand, data) {
                 $('#transactionSentModal').modal("show"); 
                 setTimeout(() => {
                     if($('#transactionSentModal').hasClass('show')) {
-                        $('#transactionSentModal').modal("toggle"); 
+                        $('#transactionSentModal').modal("hide"); 
                     }
                 }, 2500);
             },
@@ -204,7 +204,7 @@ function sendTokenApiCommand(apicommand, data) {
                 $('#transactionNotSentModal').modal("show"); 
                 setTimeout(() => {
                     if($('#transactionNotSentModal').hasClass('show')) {
-                        $('#transactionNotSentModal').modal("toggle"); 
+                        $('#transactionNotSentModal').modal("hide"); 
                     }
                 }, 5000);
             }

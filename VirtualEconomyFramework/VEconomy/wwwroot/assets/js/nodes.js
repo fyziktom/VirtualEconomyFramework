@@ -198,6 +198,18 @@ function getNodeById(nodeId) {
 //////////////////////////////
 // API calls
 
+function getNodeAccountByID(id) {
+    if (Accounts != undefined && Accounts != null){
+        for (var a in Accounts) {
+            if (Accounts[a] != undefined && Accounts[a] != null) {
+                if (Accounts[a].Id == id) {
+                    return Accounts[a];
+                }
+            }
+        }
+    }
+}
+
 function UpdateNode() {
 
     if (ActualNode != null) {
@@ -205,7 +217,7 @@ function UpdateNode() {
         params.TriggerType = selectedNodeTriggerType;
         selectedNodeActivationState = ActualNode.IsActivated;
 
-        selectedNodeAccountAddress = getAccountByID(ActualNode.AccountId).Address;
+        //selectedNodeAccountAddress = getNodeAccountByID(ActualNode.AccountId).Address;
 
         var node = {
             "nodeId": ActualNode.Id,

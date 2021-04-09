@@ -127,7 +127,13 @@ namespace VEDrivers.Database
                         }
                     }
 
-                    var node = n.Fill(NodeFactory.GetNode((NodeTypes)n.Type, new Guid(n.Id), new Guid(n.AccountId), n.Name, (bool)n.IsActivated, parameters));
+                    var actid = string.Empty;
+                    if (!string.IsNullOrEmpty(n.AccountId))
+                    {
+                        actid = n.AccountId;
+                    }
+
+                    var node = n.Fill(NodeFactory.GetNode((NodeTypes)n.Type, new Guid(n.Id), new Guid(actid), n.Name, (bool)n.IsActivated, parameters));
                     node.SetNodeTriggerType(parameters.TriggerType);
 
                     nodes.Add(node);
@@ -137,7 +143,7 @@ namespace VEDrivers.Database
             }
             catch (Exception ex)
             {
-                log.Error("Cannot get accounts list from Db", ex);
+                log.Error("Cannot get Node Parameters from Db. Continue with empty parameters", ex);
                 return null;
             }
         }

@@ -235,7 +235,7 @@ function showNewTxDetails(NewTx) {
 
     setTimeout(function(){
         if($('#newTransactionModal').hasClass('in')) {
-            $('#newTransactionModal').modal("toggle"); 
+            $('#newTransactionModal').modal("hide"); 
         }
     },5000);
 }
@@ -254,7 +254,7 @@ function showNewTxConfDetails(NewTx) {
 
     setTimeout(function(){
         if($('#newTransactionConfirmedModal').hasClass('in')) {
-            $('#newTransactionConfirmedModal').modal("toggle"); 
+            $('#newTransactionConfirmedModal').modal("hide"); 
         }
     },5000);
 }
@@ -274,7 +274,7 @@ function showNewTokensDetails(NewTx) {
 
     setTimeout(function(){
         if($('#newTokensReceivedModal').hasClass('in')) {
-            $('#newTokensReceivedModal').modal("toggle"); 
+            $('#newTokensReceivedModal').modal("hide"); 
         }
     },5000);
 }

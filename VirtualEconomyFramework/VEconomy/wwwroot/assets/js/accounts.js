@@ -41,13 +41,31 @@ function accountsAfterLoad() {
     $("#btnSendTxModalConfirm").click(function() {
         prepareSendTx(null);
     });
-    
 
-    $('#btnAccountDetailsImportKey').on('shown.bs.modal', function () {
+    $('#loginModal').on('shown.bs.modal', function () {
         $(function() {
-            $('#accountPasswordInput').focus();
+            $('#loginName').focus();
         });
     });
+    
+
+    try { 
+        $('#addPassForTxMessageModal').on('shown.bs.modal', function () {
+            $(function() {
+                $('#unlockAccountForOneTxPassword').focus();
+            });
+        });
+    }
+    catch {}
+
+    try {    
+        $('#unlockAccountModal').on('shown.bs.modal', function () {
+            $(function() {
+                $('#accountPasswordInput').focus();
+            });
+        });
+    }
+    catch {}
 
     try {
         getAccountTypes();
@@ -296,6 +314,19 @@ function lockunlockAccount() {
     }
     else {
 
+        $('#accountPasswordInput').bind("enterKey",function(e){
+            var password = $('#accountPasswordInput').val();
+            $('#accountPasswordInput').val('');
+            unlockAccount(password);
+            $('#unlockAccountModal').modal('hide');
+        });
+        $('#accountPasswordInput').keyup(function(e){
+            if(e.keyCode == 13)
+            {
+                $(this).trigger("enterKey");
+            }
+        });
+         
         $("#confirmUnlockAccountPassword").off();
         $("#confirmUnlockAccountPassword").click(function() {
             var password = $('#accountPasswordInput').val();
@@ -405,6 +436,7 @@ function unlockAccount(password) {
         timeout: 10000,     // timeout milliseconds
         success: function (data, status, xhr) {   // success callback function
             //console.log(`Status: ${status}, Data:${data}`);
+            checkAccountLockStatus(ActualAccount.Address);
         },
         error: function (jqXhr, textStatus, errorMessage) { // error callback 
             console.log('Error: "' + errorMessage + '"');
@@ -436,6 +468,7 @@ function lockAccount() {
         timeout: 10000,     // timeout milliseconds
         success: function (data, status, xhr) {   // success callback function
             //console.log(`Status: ${status}, Data:${data}`);
+            checkAccountLockStatus(ActualAccount.Address);
         },
         error: function (jqXhr, textStatus, errorMessage) { // error callback 
             console.log('Error: "' + errorMessage + '"');
@@ -704,6 +737,19 @@ function fillAndShowSendTxModal() {
 
 function prepareSendTx() {
     if (accountLockState) {
+
+        $('#unlockAccountForOneTxPassword').bind("enterKey",function(e){
+            var password = $('#unlockAccountForOneTxPassword').val();
+            sendTx(password);
+            $('#addPassForTxMessageModal').modal('hide');
+        });
+        $('#unlockAccountForOneTxPassword').keyup(function(e){
+            if(e.keyCode == 13)
+            {
+                $(this).trigger("enterKey");
+            }
+        });
+
         $('#unlockAccountForOneTxConfirm').off();
         $("#unlockAccountForOneTxConfirm").click(function() {
             var password = $('#unlockAccountForOneTxPassword').val();

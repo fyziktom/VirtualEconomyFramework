@@ -589,19 +589,24 @@ function sendShopApiCommand(apicommand, data) {
                 $('#transactionSentModal').modal("show"); 
                 setTimeout(() => {
                     if($('#transactionSentModal').hasClass('show')) {
-                        $('#transactionSentModal').modal("toggle"); 
+                        $('#transactionSentModal').modal("hide"); 
                     }
                 }, 2500);
             },
             error: function (jqXhr, textStatus, errorMessage) { // error callback 
                 console.log('Error: "' + errorMessage + '"');
 
-                $('#txNotSendMessage').text(jqXhr.responseText);
+                if (errorMessage == 'Not Implemented') {
+                    $('#txNotSendMessage').text("Probably still waiting for confirmation of previous tx.");
+                }
+                else {
+                    $('#txNotSendMessage').text(jqXhr.responseText);
+                }
 
                 $('#transactionNotSentModal').modal("show"); 
                 setTimeout(() => {
                     if($('#transactionNotSentModal').hasClass('show')) {
-                        $('#transactionNotSentModal').modal("toggle"); 
+                        $('#transactionNotSentModal').modal("hide"); 
                     }
                 }, 5000);
             }
@@ -650,17 +655,18 @@ function setShopRequestNFTTradeSenderAccountAddress(accountAddress) {
 function reloadShopListAccountsAddressesDropDown() {
     if (Accounts != null) {
         document.getElementById('shopListAccountAddressesDropDown').innerHTML = '';
-        document.getElementById('mintNFTbtnMintNFTReceiverAddressDrowpDown').innerHTML = '';
+        //document.getElementById('mintNFTbtnMintNFTReceiverAddressDrowpDown').innerHTML = '';
         document.getElementById('requestNFTTradeSenderAddressDrowpDown').innerHTML = '';
         for (var acc in Accounts) {
             var a = Accounts[acc];     
             var add = acc.substring(0,3) + '...' + acc.substring(acc.length-3);      
             document.getElementById('shopListAccountAddressesDropDown').innerHTML += '<button style=\"font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setShopListAccountAddress(\'' + acc + '\')\">' + a.Name + ' - ' + add + '</button>';
             
+            /*
             if (selectedShopAccountAddress != acc) {
                 document.getElementById('mintNFTbtnMintNFTReceiverAddressDrowpDown').innerHTML += '<button style=\"font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setShopMintReceiverAccountAddress(\'' + acc + '\')\">' + a.Name + ' - ' + add + '</button>';
             }
-
+            */
             document.getElementById('requestNFTTradeSenderAddressDrowpDown').innerHTML += '<button style=\"font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setShopRequestNFTTradeSenderAccountAddress(\'' + acc + '\')\">' + a.Name + ' - ' + add + '</button>';
         }
     }

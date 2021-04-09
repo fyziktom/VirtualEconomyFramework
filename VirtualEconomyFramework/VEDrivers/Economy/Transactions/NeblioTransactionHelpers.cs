@@ -377,14 +377,7 @@ namespace VEDrivers.Economy.Transactions
             {
                 if (data.Metadata != null)
                 {
-                    foreach (var d in data.Metadata)
-                    {
-                        var obj = new JObject();
-                        obj[d.Key] = d.Value;
-
-                        dto.Metadata.UserData.Meta.Add(obj);
-                    }
-
+                    
                     dto.Fee = fee;
 
                     dto.Flags = new Flags2() { SplitChange = true };
@@ -402,29 +395,26 @@ namespace VEDrivers.Economy.Transactions
 
                     if (data.sendUtxo != null)
                     {
-                        foreach (var it in data.sendUtxo)
+                        if (!isItMintNFT)
                         {
-                            var itt = it;
-                            if (it.Contains(":"))
-                                itt = it.Split(":")[0];
-
-                            if (!isItMintNFT && !isNFTtx)
+                            foreach (var it in data.sendUtxo)
                             {
+                                var itt = it;
+                                if (it.Contains(":"))
+                                    itt = it.Split(":")[0];
+
                                 var vout = await ValidateNeblioTokenUtxo(data.SenderAddress, itt);
 
                                 if (vout.Item1)
                                     dto.Sendutxo.Add(itt + ":" + vout.Item2); // copy received utxos and add item number of vout after validation
                             }
-                            else if (isNFTtx && !isItMintNFT)
+                        }
+                        else
+                        {
+                            // if isItMing flag is set the utxo was already found and checked by internal function
+                            foreach (var u in data.sendUtxo)
                             {
-                                var vout = await ValidateOneTokenNFTUtxo(data.SenderAddress, itt);
-
-                                if (vout.Item1)
-                                    dto.Sendutxo.Add(itt + ":" + vout.Item2); // copy received utxos and add item number of vout after validation
-                            }
-                            else
-                            {
-                                dto.Sendutxo.Add(it);
+                                dto.Sendutxo.Add(u);
                             }
                         }
                     }
@@ -439,6 +429,13 @@ namespace VEDrivers.Economy.Transactions
                             dto.Sendutxo.Add(u.Txid + ":" + u.Index);
                         }
                     }
+
+
+                    if (dto.Sendutxo.Count == 0)
+                        throw new Exception("Cannot find any spendable token source Utxos");
+
+                    if (isItMintNFT && dto.Sendutxo.Count > 0)
+                        data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", dto.Sendutxo.ToArray()?[0].Split(":")[0]));
 
                     // need some neblio too
                     // to be sure to have last tx request it from neblio network
@@ -459,7 +456,15 @@ namespace VEDrivers.Economy.Transactions
                             break;
                         }
                     }
-                    
+
+
+                    foreach (var d in data.Metadata)
+                    {
+                        var obj = new JObject();
+                        obj[d.Key] = d.Value;
+
+                        dto.Metadata.UserData.Meta.Add(obj);
+                    }
 
                     /* If you want to find possible utxos by neblio API. This can send away the NFT if you want to send just one token!
                     else
@@ -467,7 +472,7 @@ namespace VEDrivers.Economy.Transactions
                         dto.From = new List<string>() { data.SenderAddress };
                     }
                     */
-                   
+
                     dto.To = new List<To>()
                     {
                         new To()
@@ -589,13 +594,23 @@ namespace VEDrivers.Economy.Transactions
                                             foreach (var to in tx1.Outputs)
                                             {
                                                 if (to.ScriptPubKey == addressForTx.ScriptPubKey)
-                                                    list.Add(new Coin(tx1, (uint)(tx1.Outputs.IndexOf(to))));
+                                                    if (to.Value.Satoshi == 10000) // token tx
+                                                        foreach (var d in dto.Sendutxo)
+                                                        {
+                                                            if (d.Split(":")[1] == (tx1.Outputs.IndexOf(to).ToString()))
+                                                                list.Add(new Coin(tx1, (uint)(tx1.Outputs.IndexOf(to))));
+                                                        }
                                             }
 
                                             foreach (var to in tx2.Outputs)
                                             {
                                                 if (to.ScriptPubKey == addressForTx.ScriptPubKey)
-                                                    list.Add(new Coin(tx2, (uint)(tx2.Outputs.IndexOf(to))));
+                                                    if (to.Value.Satoshi > 10000) // nebl 10000 is just tokens or fee, everything should be bigger thant this in neblio
+                                                        foreach (var d in dto.Sendutxo)
+                                                        {
+                                                            if (d.Split(":")[1] == (tx2.Outputs.IndexOf(to).ToString()))
+                                                                list.Add(new Coin(tx2, (uint)(tx2.Outputs.IndexOf(to))));
+                                                        }
                                             }
 
                                             transaction.Inputs[0].ScriptSig = addressForTx.ScriptPubKey;
@@ -685,9 +700,8 @@ namespace VEDrivers.Economy.Transactions
             return info.Txid;
         }
 
-        public static async Task<string> MintNFTToken(MintNFTData data, double fee = 10000)
+        public static async Task<string> MintNFTToken(MintNFTData data, double fee = 30000)
         {
-
             var utxos = new List<string>();
             var mainUtxo = string.Empty;
 
@@ -728,32 +742,9 @@ namespace VEDrivers.Economy.Transactions
                 UseRPCPrimarily = false
             };
 
-            data.Metadata.Add(new KeyValuePair<string, string>("NFT Init", "true"));
-
-            var resp = await SendNTP1TokenAPI(dto, isItMintNFT: true);
-
-            data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", resp));
-
-            data.Metadata.Remove("NFT Init");
             data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
 
-            var utxs2 = new List<string>() { resp };
-
-            dto = new SendTokenTxData()
-            {
-                Amount = 1,
-                Id = data.Id,
-                Metadata = data.Metadata,
-                Password = data.Password,
-                SenderAddress = data.SenderAddress,
-                ReceiverAddress = data.ReceiverAddress,
-                sendUtxo = utxs2,
-                UseRPCPrimarily = false
-            };
-
-            await Task.Delay(1500); // wait at leas one and half second to bc update data
-
-            resp = await SendNTP1TokenAPI(dto);
+            var resp = await SendNTP1TokenAPI(dto, fee: fee, isItMintNFT: true);
 
             return resp;
         }
@@ -1048,14 +1039,32 @@ namespace VEDrivers.Economy.Transactions
             {
                 foreach(var utx in utxos)
                 {
-                    if (utx.Tokens.Count == 0)
+                    if (utx.Blockheight > 0)
                     {
-                        if (((double)utx.Value * NeblioCrypto.FromSatToMainRatio) > minAmount)
+                        if (utx.Tokens.Count == 0)
                         {
-                            resp.Add(utx);
-                            founded += (double)utx.Value * NeblioCrypto.FromSatToMainRatio;
-                            if (founded >= requiredAmount)
-                                return resp;
+                            if (((double)utx.Value * NeblioCrypto.FromSatToMainRatio) > minAmount)
+                            {
+                                try
+                                {
+                                    var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+
+                                    if (tx != null)
+                                    {
+                                        if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                        {
+                                            resp.Add(utx);
+                                            founded += (double)utx.Value * NeblioCrypto.FromSatToMainRatio;
+                                            if (founded >= requiredAmount)
+                                                return resp;
+                                        }
+                                    }
+                                }
+                                catch(Exception ex)
+                                {
+                                    ;
+                                }
+                            }
                         }
                     }
                 }
@@ -1071,20 +1080,31 @@ namespace VEDrivers.Economy.Transactions
                 _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
             }
 
-            var utxos = await _client.GetAddressUtxosAsync(address);
-            var resp = new List<Anonymous>();
-
-            if (utxos != null)
+            var info = await _client.GetAddressInfoAsync(address);
+            
+            if (info != null)
             {
-                var ut = utxos.FirstOrDefault(u => u.Txid == txid);
-                if (ut != null)
-                    return (true, (double)ut.Vout);
+                var ut = info.Utxos.FirstOrDefault(u => u.Txid == txid);
+                if (ut.Blockheight > 0)
+                {
+                    if (ut != null)
+                    {
+                        var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                        if (tx != null)
+                        {
+                            if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                            {
+                                return (true, (double)ut.Index);
+                            }
+                        }
+                    }
+                }
             }
 
             return (false, 0);
         }
 
-        public static async Task<(bool, double)> ValidateNeblioTokenUtxo(string address, string txid)
+        public static async Task<(bool, double)> ValidateNeblioTokenUtxo(string address, string txid, bool isMint = false)
         {
             if (_client == null)
             {
@@ -1098,11 +1118,30 @@ namespace VEDrivers.Economy.Transactions
 
             if (utxos != null)
             {
-                var ut = utxos.FirstOrDefault(u => u.Txid == txid);
-                if (ut != null)
-                {
-                    if (ut.Tokens.Count > 0)
-                        return (true, (double)ut.Index);
+                foreach (var ut in utxos)
+                { 
+                    if (ut != null)
+                    {
+                        if (ut.Blockheight > 0)
+                        {
+                            if (ut.Tokens.Count > 0)
+                            {
+                                var toks = ut.Tokens.ToArray();
+                                if ((toks[0].Amount > 0 && !isMint) || (toks[0].Amount > 1 && isMint))
+                                { 
+                                    var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                                    if (tx != null)
+                                    {
+                                        if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                        {
+                                            return (true, (double)ut.Index);
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -1124,11 +1163,27 @@ namespace VEDrivers.Economy.Transactions
             if (utxos != null)
             {
                 var ut = utxos.FirstOrDefault(u => u.Txid == txid);
+
                 if (ut != null)
                 {
-                    if (ut.Tokens.Count > 0)
-                        if (ut.Tokens.Count == 1)
-                            return (true, (double)ut.Index);
+                    if (ut.Blockheight > 0)
+                    {
+                        if (ut.Tokens.Count > 0)
+                        {
+                            var toks = ut.Tokens.ToArray();
+                            if (toks[0].Amount == 1)
+                            {
+                                var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                                if (tx != null)
+                                {
+                                    if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                    {
+                                        return (true, (double)ut.Index);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -1151,25 +1206,35 @@ namespace VEDrivers.Economy.Transactions
             if (utxos != null)
             {
                 utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
-                
+
                 foreach (var utx in utxos)
                 {
-                    if (utx.Tokens.Count > 0)
+                    if (utx.Blockheight > 0)
                     {
-                        if (utx.Value == oneTokenSat)
+                        if (utx.Tokens.Count > 0)
                         {
-                            var tok = utx.Tokens.ToArray()?[0];
-                            if (tok != null)
+                            if (utx.Value == oneTokenSat)
                             {
-                                if (tok.TokenId == tokenId)
+                                var tok = utx.Tokens.ToArray()?[0];
+                                if (tok != null)
                                 {
-                                    if (tok?.Amount > 1)
+                                    if (tok.TokenId == tokenId)
                                     {
-                                        founded += (double)tok.Amount;
-                                        resp.Add(utx);
+                                        if (tok?.Amount > 1)
+                                        {
+                                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                                            if (tx != null)
+                                            {
+                                                if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                                {
+                                                    founded += (double)tok.Amount;
+                                                    resp.Add(utx);
 
-                                        if (founded > numberToMint)
-                                            return resp;
+                                                    if (founded > numberToMint)
+                                                        return resp;
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
