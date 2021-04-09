@@ -403,10 +403,19 @@ namespace VEDrivers.Economy.Transactions
                                 if (it.Contains(":"))
                                     itt = it.Split(":")[0];
 
-                                var vout = await ValidateNeblioTokenUtxo(data.SenderAddress, itt);
+                                (bool,double) voutstate;
 
-                                if (vout.Item1)
-                                    dto.Sendutxo.Add(itt + ":" + vout.Item2); // copy received utxos and add item number of vout after validation
+                                if (!isNFTtx)
+                                {
+                                    voutstate = await ValidateNeblioTokenUtxo(data.SenderAddress, itt);
+                                }
+                                else
+                                {
+                                   voutstate = await ValidateOneTokenNFTUtxo(data.SenderAddress, itt);
+                                }
+
+                                if (voutstate.Item1)
+                                    dto.Sendutxo.Add(itt + ":" + voutstate.Item2); // copy received utxos and add item number of vout after validation
                             }
                         }
                         else
@@ -1051,7 +1060,7 @@ namespace VEDrivers.Economy.Transactions
 
                                     if (tx != null)
                                     {
-                                        if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                        if (tx.Confirmations > 0 && tx.Blockheight > 0)
                                         {
                                             resp.Add(utx);
                                             founded += (double)utx.Value * NeblioCrypto.FromSatToMainRatio;
@@ -1084,17 +1093,22 @@ namespace VEDrivers.Economy.Transactions
             
             if (info != null)
             {
-                var ut = info.Utxos.FirstOrDefault(u => u.Txid == txid);
-                if (ut.Blockheight > 0)
-                {
-                    if (ut != null)
+                var uts = info.Utxos.Where(u => u.Txid == txid);
+                if (uts != null) {
+                    foreach (var ut in uts)
                     {
-                        var tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                        if (tx != null)
+                        if (ut.Blockheight > 0)
                         {
-                            if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                            if (ut != null)
                             {
-                                return (true, (double)ut.Index);
+                                var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                                if (tx != null)
+                                {
+                                    if (tx.Confirmations > 0 && tx.Blockheight > 0)
+                                    {
+                                        return (true, (double)ut.Index);
+                                    }
+                                }
                             }
                         }
                     }
@@ -1132,7 +1146,7 @@ namespace VEDrivers.Economy.Transactions
                                     var tx = await _client.GetTransactionInfoAsync(ut.Txid);
                                     if (tx != null)
                                     {
-                                        if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                        if (tx.Confirmations > 0 && tx.Blockheight > 0)
                                         {
                                             return (true, (double)ut.Index);
 
@@ -1162,23 +1176,26 @@ namespace VEDrivers.Economy.Transactions
 
             if (utxos != null)
             {
-                var ut = utxos.FirstOrDefault(u => u.Txid == txid);
+                var uts = utxos.Where(u => u.Txid == txid); // you can have multiple utxos with same txid but different amount of tokens
 
-                if (ut != null)
+                if (uts != null)
                 {
-                    if (ut.Blockheight > 0)
+                    foreach (var ut in uts)
                     {
-                        if (ut.Tokens.Count > 0)
+                        if (ut.Blockheight > 0)
                         {
-                            var toks = ut.Tokens.ToArray();
-                            if (toks[0].Amount == 1)
+                            if (ut.Tokens.Count > 0)
                             {
-                                var tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                                if (tx != null)
+                                var toks = ut.Tokens.ToArray();
+                                if (toks[0].Amount == 1)
                                 {
-                                    if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                    var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                                    if (tx != null)
                                     {
-                                        return (true, (double)ut.Index);
+                                        if (tx.Confirmations > 0 && tx.Blockheight > 0)
+                                        {
+                                            return (true, (double)ut.Index);
+                                        }
                                     }
                                 }
                             }

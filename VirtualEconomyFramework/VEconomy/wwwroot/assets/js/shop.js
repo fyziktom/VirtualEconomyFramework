@@ -182,7 +182,7 @@ function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, firstNFTUt
 
     $("#confirmButtonOk").off();
     $("#confirmButtonOk").click(function() {
-        sendShopApiCommand('SendNTP1Token', nft);
+        sendShopApiCommand('SendNeblioNFT', nft);
     });
     
     ShowConfirmModal('', 'Do you realy want to send this NFT Trade Request?');  
@@ -257,7 +257,7 @@ function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoT
 
     $("#confirmButtonOk").off();
     $("#confirmButtonOk").click(function() {
-        sendShopApiCommand('SendNTP1Token', nft);
+        sendShopApiCommand('SendNeblioNFT', nft);
     });
     
     ShowConfirmModal('', 'Do you realy want to send this response?');  
@@ -507,7 +507,7 @@ function refreshShopItemNFTs() {
 
                     if (drawIt && filterActive) {
                         $('#shopItemsNFTCardsRow').append(
-                            '<div id="' + nft + '" class="col-auto">' +
+                            '<div id="' + nft + '" class="col col-auto">' +
                             nfts[nft] +
                             '</div>'
                         );
@@ -516,12 +516,15 @@ function refreshShopItemNFTs() {
             }
         }
         // delete old ones
-        for (var n in nfts) {
-            if (!(n in nnfts)) {
-                delete nfts[n];
-                $('#'+ n).remove();
+        $('#shopItemsNFTCardsRow').children('div').each(function() {
+            var $this = $(this);
+            var id = this.id;
+            if (!(id in nnfts)) {
+                delete nfts[id];
+                $(this).remove();
             }
-        }
+        });
+
     }		
 }
 
@@ -560,13 +563,16 @@ function refreshShopItemNFTRequests() {
                 }
             }
         }
+
         // delete old ones
-        for (var n in tradeRequests) {
-            if (!(n in nnfts)) {
-                delete tradeRequests[n];
-                $('#'+ n).remove();
+        $('#shopItemsNFTTradeReqCardsRow').children('div').each(function() {
+            var $this = $(this);
+            var id = this.id;
+            if (!(id in nnfts)) {
+                delete tradeRequests[id];
+                $(this).remove();
             }
-        }
+        });
     }		
 }
 
