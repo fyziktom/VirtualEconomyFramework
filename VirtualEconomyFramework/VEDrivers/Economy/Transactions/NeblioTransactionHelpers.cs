@@ -650,6 +650,7 @@ namespace VEDrivers.Economy.Transactions
                                     catch (Exception ex)
                                     {
                                         Console.WriteLine($"Exception during loading inputs or signing tx: {ex}");
+                                        throw new Exception("Exception during loading inputs or signing tx!");
                                     }
                                 }
                                 else
@@ -711,51 +712,58 @@ namespace VEDrivers.Economy.Transactions
 
         public static async Task<string> MintNFTToken(MintNFTData data, double fee = 30000)
         {
-            var utxos = new List<string>();
-            var mainUtxo = string.Empty;
-
-            if (!string.IsNullOrEmpty(data.sendUtxo))
+            try
             {
-                utxos.Add(data.sendUtxo);
-            }
-            else
-            {
-                var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 1);
+                var utxos = new List<string>();
+                var mainUtxo = string.Empty;
 
-                if (utxs != null)
+                if (!string.IsNullOrEmpty(data.sendUtxo))
                 {
-                    mainUtxo = utxs.FirstOrDefault()?.Txid;
-
-                    foreach (var u in utxs)
-                    {
-                        utxos.Add(u.Txid + ":" + u.Index);
-                    }
+                    utxos.Add(data.sendUtxo);
                 }
                 else
                 {
-                    throw new Exception("Dont have any spendable source tokens to mint new NFT!");
+                    var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 1);
+
+                    if (utxs != null)
+                    {
+                        mainUtxo = utxs.FirstOrDefault()?.Txid;
+
+                        foreach (var u in utxs)
+                        {
+                            utxos.Add(u.Txid + ":" + u.Index);
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Dont have any spendable source tokens to mint new NFT!");
+                    }
                 }
+
+                //data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", mainUtxo));
+
+                var dto = new SendTokenTxData()
+                {
+                    Amount = 1,
+                    Id = data.Id,
+                    Metadata = data.Metadata,
+                    Password = data.Password,
+                    SenderAddress = data.SenderAddress,
+                    ReceiverAddress = data.SenderAddress,
+                    sendUtxo = utxos,
+                    UseRPCPrimarily = false
+                };
+
+                data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
+
+                var resp = await SendNTP1TokenAPI(dto, fee: fee, isItMintNFT: true);
+
+                return resp;
             }
-
-            //data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", mainUtxo));
-
-            var dto = new SendTokenTxData()
+            catch (Exception ex)
             {
-                Amount = 1,
-                Id = data.Id,
-                Metadata = data.Metadata,
-                Password = data.Password,
-                SenderAddress = data.SenderAddress,
-                ReceiverAddress = data.SenderAddress,
-                sendUtxo = utxos,
-                UseRPCPrimarily = false
-            };
-
-            data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
-
-            var resp = await SendNTP1TokenAPI(dto, fee: fee, isItMintNFT: true);
-
-            return resp;
+                throw new Exception(ex.Message);
+            }
         }
 
         public static async Task<string> SendNeblioTransactionAPI(SendTxData data, double fee = 10000)

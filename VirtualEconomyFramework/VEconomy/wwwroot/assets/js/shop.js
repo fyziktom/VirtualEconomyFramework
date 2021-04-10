@@ -111,6 +111,7 @@ function initShop(address) {
         // add to shop items object and refresh 
         //AccountShopItems[uid] = CHESSItem;
         AccountShopItems[address] = MSGTItem;
+        refreshItems();
 }
 
 var AccountShopItems = {};
@@ -455,6 +456,13 @@ function refreshShopItems() {
 
 var nfts = {};
 
+function cleanNFTShops() {
+    for (var add in AccountShopItems) {
+        $('#shopTab-' + add + '-shopNFTItemsCards-row').empty();
+        nfts = {};
+    }
+}
+
 function refreshShopItemNFTs() {
 
     //$('#shopNFTItemsCards').empty();
@@ -466,22 +474,29 @@ function refreshShopItemNFTs() {
         
         if (actualAddress == add) {
 
+            var orderList = false;
+            
             if (add in Accounts) {
-                isAsShop = true;
+                orderList = true;
             }
             else {
-                isAsShop = false;
+                orderList = false;
             }
 
+            var allowSendingReq = false;
+            if (selectedShopAccountAddress != '') {
+                allowSendingReq = true;
+            }
+            
             var allowSendingOfNFTs = false;
-            if (actualAddress == selectedShopAccountAddress) {
+            if (selectedShopAccountAddress == add) {
                 allowSendingOfNFTs = true;
             }
             else {
                 allowSendingOfNFTs = false;
             }
 
-            var nnfts = shopItem.getNFTShopComponents(isAsShop, allowSendingOfNFTs, false);
+            var nnfts = shopItem.getNFTShopComponents(isAsShop, allowSendingOfNFTs, allowSendingReq, orderList);
             for (var nft in nnfts) {
 
                 var drawIt = false;
@@ -627,10 +642,10 @@ function sendShopApiCommand(apicommand, data) {
                 console.log('Error: "' + errorMessage + '"');
 
                 if (errorMessage == 'Not Implemented') {
-                    $('#txNotSendMessage').text("Probably still waiting for confirmation of previous tx.");
+                    $('#txNotSendMessage').text("Probably still waiting for confirmation of previous tx. " + errorMessage);
                 }
                 else {
-                    $('#txNotSendMessage').text(jqXhr.responseText);
+                    $('#txNotSendMessage').text(jqXhr.responseText + errorMessage);
                 }
 
                 $('#transactionNotSentModal').modal("show"); 
@@ -648,6 +663,9 @@ var selectedShopAccountAddress = '';
 var selectedShopWalletId = '';
 
 function setShopListAccountAddress(accountAddress) {
+
+    cleanNFTShops();
+
     selectedShopAccountAddress = accountAddress;
     var a = Accounts[accountAddress];
     selectedShopWalletId = a.WalletId;
@@ -799,13 +817,18 @@ function getNewShopTab(address) {
         bookmarkAction = 'removeBookmark(\''+ address + '\')';
     }
 
+    var bkname = getAccountInBookmarksName(address) + ' -';
+    if (bkname == ' -') {
+        bkname = '';
+    }
+
     var newTabContent = 
     '<div role="tabpanel" class="tab-pane active" id="shopTab-' + address + '" style="min-height: 200px;">'+
     '    <div class="row">' +
     '       <div class="col">' +
     '           <div class="row" style="margin-top: 10px;">' +
     '               <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">' +
-    '                   <h4>Shop - ' + address +'</h4>'+
+    '                   <h4 id="shopTab-heading-' + address + '">' + bkname + ' Shop - ' + address +'</h4>'+
     '                   <a id="shopTab-bookmarkActionLink-' + address + '" onclick="' + bookmarkAction + '" style="font-size: 20px; margin-left:15px; margin-bottom: 10px">' +
     '                       <i id="shopTab-bookmarkIcon-' + address + '" class="fa fa-star" ' + starStyle + '></i>' +
     '                   </a>'+
@@ -882,6 +905,15 @@ function isAccountInBookmarks(address) {
         }
     }
     return false;
+}
+
+function getAccountInBookmarksName(address) {
+    for (var b in selectedShopAccountBookmarks) {
+        if (selectedShopAccountBookmarks[b].Address == address) {
+            return selectedShopAccountBookmarks[b].Name;
+        }
+    }
+    return '';
 }
 
 function getAccountBookmarkIdByBookmarkAddress(address) {
@@ -972,6 +1004,7 @@ function removeBookmark(address) {
             var bookmarkAction = 'addToBookmarks(\''+ address + '\')';
             $('#shopTab-bookmarkActionLink-' + address).attr('onclick', bookmarkAction)
             getAccountBookmarks(selectedShopAccountAddress);
+            $('#shopTab-heading-' + address).text('Shop - ' + address);
         },
         error: function (jqXhr, textStatus, errorMessage) { // error callback 
             console.log('Error: "' + errorMessage + '"');
@@ -1001,7 +1034,8 @@ function addBookmarkAPI(indata) {
             //console.log(`Status: ${status}, Data:${data}`);
             $('#shopTab-bookmarkIcon-' + indata.bookmarkAddress).attr('style', 'color: var(--yellow);"');
             var bookmarkAction = 'removeBookmark(\''+ indata.bookmarkAddress + '\')';
-            $('#shopTab-bookmarkActionLink-' + indata.bookmarkAddress).attr('onclick', bookmarkAction)
+            $('#shopTab-bookmarkActionLink-' + indata.bookmarkAddress).attr('onclick', bookmarkAction);
+            $('#shopTab-heading-' + indata.bookmarkAddress).text(indata.bookmarkName + ' - Shop - ' + indata.bookmarkAddress);
             getAccountBookmarks(selectedShopAccountAddress);        
         },
         error: function (jqXhr, textStatus, errorMessage) { // error callback 

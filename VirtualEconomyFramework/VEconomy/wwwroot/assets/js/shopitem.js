@@ -698,7 +698,7 @@ class ShopItem {
         return keyComponent;
     }
 
-    getNFTShopComponents(asShopItem, allowSendingOfNFTs, allowOrdeList) {
+    getNFTShopComponents(asShopItem, allowSendingOfNFTs, allowSendingReq, allowOrdeList) {
 
         var type = 'NFT Image';
 
@@ -718,7 +718,7 @@ class ShopItem {
         }
 
         var hiddenRequests = 'd-none';
-        if (asShopItem) {
+        if (allowSendingReq) {
             hiddenRequests = '';
         }
 
@@ -865,14 +865,14 @@ class ShopItem {
                                                     this.getUnsolvedOrdersLines() +
                         '                       </div>'+
                         '                    </div>'+
-                        '                   <div class="card-footer" style="padding-top: 5px; margin-top: 20px;">'+
+                        '                   <div class="card-footer d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="padding-top: 5px; margin-top: 20px;">'+
                         '                    <div class="row">'+
-                        '                         <div class="col ' + hiddenSending + ' d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                        '                         <div class="col ' + hiddenSending + '" d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
                         '                               <button class="btn btn-primary" type="button" onclick="sendNeblioNFT(\'' + this.token.tokenId + '\',\'' + uno.getUtxoTxId() + '\',\'' + uno.firstNFTtxId + '\',\'' + this.token.tokenSymbol + '\',\'' + uno.getNFTImage() + '\')">'+
                         '                                   <i class="fa fa-send-o"></i>'+
                         '                               </button>'+
                         '                         </div>'+
-                        '                         <div class="col ' + hiddenRequests + ' d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                        '                         <div class="col ' + hiddenRequests + '" d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
                         '                               <button class="btn btn-primary" type="button" onclick="requestNeblioNFTTrade(\'' + this.address + '\',\'' + this.token.tokenId + '\',\'' + uno.getUtxoTxId() + '\',\'' + uno.firstNFTtxId + '\',\'' + this.token.tokenSymbol + '\',\'' + uno.getNFTImage() + '\')">'+
                         '                                   <i class="fa fa-comments-o"></i>'+
                         '                               </button>'+
