@@ -271,7 +271,7 @@ function checkAccountLockStatus(address) {
 
     var url = ApiUrl + '/IsAccountLocked';
 
-    if (ActualWallet != {} && ActualAccount != {}) {
+    if (ActualWallet != {}) {
         var data = {
             'walletId' : ActualWallet.Id,
             'accountAddress': address

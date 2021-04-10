@@ -841,7 +841,7 @@ class ShopItem {
                         '                    </div>'+
                         '                    <div class="row">'+
                         '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                        '                           <span style="font-size: 12px;"><a href="' + uno.getNFTImage() +'" target="blank">Last Transaction With This NFT</a></span>'+
+                        '                           <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.firstNFTtxId +'"  target="blank">Last Transaction With This NFT</a></span>'+
                         '                       </div>'+
                         '                    </div>'+
                         '                    <div class="row ' + shopItemHidden + '">'+
@@ -851,7 +851,7 @@ class ShopItem {
                         '                    </div>'+
                         '                    <div class="row">'+
                         '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                        '                           <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.firstNFTtxId +'" target="blank"><img style="max-width:200px;max-height:200px;margin-left:5px" src="' + uno.getNFTImage() + '"></a></span>'+
+                        '                           <span style="font-size: 12px;"><a href="' + uno.getNFTImage() +'" target="blank"><img style="max-width:200px;max-height:200px;margin-left:5px" src="' + uno.getNFTImage() + '"></a></span>'+
                         '                       </div>'+
                         '                    </div>'+
                                             videoComponent +

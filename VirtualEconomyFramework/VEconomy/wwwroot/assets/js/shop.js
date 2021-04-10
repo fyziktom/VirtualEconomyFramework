@@ -66,6 +66,10 @@ function shopOnLoad(_isShopHostedOnVEF) {
             refreshShopItemNFTs();
             refreshShopItemNFTRequests();
         }, 500);
+
+        if (selectedShopAccountAddress != '') {
+            checkAccountLockStatus(selectedShopAccountAddress);
+        }
         
     }, 2000);
 }
@@ -123,14 +127,6 @@ function requestNeblioNFTTrade(owner, tokenId, utxoTxId, firstNFTUtxo, symbol, i
         return;
     }
 
-    $("#btnConfirmRequestNFT").off();
-    $("#btnConfirmRequestNFT").click(function() {
-        var sender = selectedNFTTradeRequestSenderAccountAddress;
-        var message = $('#requestNFTModalMessage').val();
-
-        sendNeblioNFTrequestAPI(owner, sender, message, utxoTxId, firstNFTUtxo, tokenId);
-    });
-
     $('#sendNFTModalOwnerLink').attr('href', 'https://explorer.nebl.io/address/' + owner);
     $('#requestNFTModalUtxoLink').attr('href', 'https://explorer.nebl.io/tx/' + utxoTxId);
     $('#requestNFTModalFirstLink').attr('href', 'https://explorer.nebl.io/tx/' + firstNFTUtxo);
@@ -138,10 +134,28 @@ function requestNeblioNFTTrade(owner, tokenId, utxoTxId, firstNFTUtxo, symbol, i
 
     $('#requestNFTModalImage').attr('src', imageSrc);
 
-    $('#requestNFTTradeModal').modal('show');   
+    $("#btnConfirmRequestNFT").off();
+    $("#btnConfirmRequestNFT").click(function() {
+        var sender = selectedNFTTradeRequestSenderAccountAddress;
+        var message = $('#requestNFTModalMessage').val();
+
+        if (accountLockState) {
+            $("#unlockAccountForOneTxConfirm").off();
+            $("#unlockAccountForOneTxConfirm").click(function() {
+                var pass = $('#unlockAccountForOneTxPassword').val();
+                sendNeblioNFTrequestAPI(owner, sender, message, utxoTxId, firstNFTUtxo, tokenId, pass);
+            });
+            $('#addPassForTxMessageModal').modal('show');
+        }
+        else {
+            sendNeblioNFTrequestAPI(owner, sender, message, utxoTxId, firstNFTUtxo, tokenId, '');
+        }
+    });
+    $('#requestNFTTradeModal').modal('show'); 
+
 }
 
-function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, firstNFTUtxo, tokenId, symbol) {
+function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, firstNFTUtxo, tokenId, symbol, pass) {
 
     if (!isShopHostedOnVEF) {
         alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -170,6 +184,10 @@ function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, firstNFTUt
         return;
     }
 
+    if (pass == undefined || pass == null) {
+        pass = '';
+    }
+
     metadata['SourceUtxo'] = firstNFTUtxo;
 
     var nft = {
@@ -178,6 +196,7 @@ function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, firstNFTUt
         "symbol": "CART",
         "Id": 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei',
         "amount": 1,
+        "Password": pass,
         "metadata": metadata,
     };
 
@@ -196,13 +215,6 @@ function sendNeblioNFTTradeResponse(msgUtxo, receiver, sender, tokenId, utxoTxId
         return;
     }
 
-    $("#btnConfirmResponseNFTTrade").off();
-    $("#btnConfirmResponseNFTTrade").click(function() {
-        var message = $('#responseNFTModalMessage').val();
-
-        sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoTxId, firstNFTUtxo);
-    });
-
     $('#responseNFTTradeModalPartnerLink').attr('href', 'https://explorer.nebl.io/address/' + receiver);
     $('#responseNFTTRadeModalUtxoLink').attr('href', 'https://explorer.nebl.io/tx/' + utxoTxId);
     $('#responseNFTTradeModalFirstLink').attr('href', 'https://explorer.nebl.io/tx/' + firstNFTUtxo);
@@ -210,10 +222,29 @@ function sendNeblioNFTTradeResponse(msgUtxo, receiver, sender, tokenId, utxoTxId
 
     $('#responseNFTModalImage').attr('src', imageSrc);
 
+    $("#btnConfirmResponseNFTTrade").off();
+    $("#btnConfirmResponseNFTTrade").click(function() {
+        var message = $('#responseNFTModalMessage').val();
+        
+        if (accountLockState) {
+            $("#unlockAccountForOneTxConfirm").off();
+            $("#unlockAccountForOneTxConfirm").click(function() {
+                var pass = $('#unlockAccountForOneTxPassword').val();
+                sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoTxId, firstNFTUtxo, pass);
+            });
+            
+            $('#addPassForTxMessageModal').modal('show');
+        }
+        else {
+            sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoTxId, firstNFTUtxo, pass);
+        }
+    });
     $('#requestNFTTradeModalResponse').modal('show');   
+
+
 }
 
-function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoTxId, firstNFTUtxo) {
+function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoTxId, firstNFTUtxo, pass) {
 
     if (!isShopHostedOnVEF) {
         alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -242,6 +273,10 @@ function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoT
         return;
     }
 
+    if (pass == undefined || pass == null) {
+        pass = '';
+    }
+
     metadata['SourceUtxo'] = firstNFTUtxo;
 
     var nft = {
@@ -250,6 +285,7 @@ function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoT
         "symbol": "CART",
         "Id": 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei',
         "amount": 1,
+        "Password": pass,
         "sendUtxo" : [
             msgUtxo
         ],
@@ -271,26 +307,36 @@ function sendNeblioNFT(tokenId, utxoTxId, firstNFTUtxo, symbol, imageSrc) {
         return;
     }
 
-    $("#btnConfirmSendNFT").off();
-    $("#btnConfirmSendNFT").click(function() {
-        var receiver = $('#sendNFTModalReceiverAddress').val();
-        var message = $('#sendNFTModalMessage').val();
-
-        sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, symbol);
-    });
-
     $('#sendNFTModalUtxoLink').attr('href', 'https://explorer.nebl.io/tx/' + utxoTxId);
     $('#sendNFTModalFirstLink').attr('href', 'https://explorer.nebl.io/tx/' + firstNFTUtxo);
     $('#sendNFTModalTokenLink').attr('href', 'https://explorer.nebl.io/token/' + tokenId);
 
     $('#sendNFTModalImage').attr('src', imageSrc);
 
+    $("#btnConfirmSendNFT").off();
+    $("#btnConfirmSendNFT").click(function() {
+        var receiver = $('#sendNFTModalReceiverAddress').val();
+        var message = $('#sendNFTModalMessage').val();
+        
+        // account is locked
+        if (accountLockState) {
+            $("#unlockAccountForOneTxConfirm").off();
+            $("#unlockAccountForOneTxConfirm").click(function() {
+                var pass = $('#unlockAccountForOneTxPassword').val();
+                sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, symbol, pass);
+            });
+            $('#addPassForTxMessageModal').modal('show');
+        }
+        else {
+                sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, symbol, '');
+        }
+    });
     $('#sendNFTModal').modal('show');
-    
+
 }
 
 
-function sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, symbol) {
+function sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, symbol, pass) {
 
     if (!isShopHostedOnVEF) {
         alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -308,6 +354,10 @@ function sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, sy
         metadata['Message'] = message;
     }    
 
+    if (pass == undefined || pass == null) {
+        pass = '';
+    }
+
     metadata['SourceUtxo'] = firstNFTUtxo;
 
     var nft = {
@@ -319,6 +369,7 @@ function sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, sy
         "sendUtxo": [
           utxoTxId
         ],
+        "Password": pass,
         "metadata": metadata,
     };
 
@@ -345,8 +396,21 @@ function createNewItem() {
         var link = $('#mintNFTLink').val();
         var youtube = $('#mintNFTYoutubeCode').val();
         var type = $('#btnMintNFTType').text();
-        mintNewNFT(author, description, image, link, youtube, type);
-    //}); 
+
+            // account is locked
+    if (accountLockState) {
+        $("#unlockAccountForOneTxConfirm").off();
+        $("#unlockAccountForOneTxConfirm").click(function() {
+            var pass = $('#unlockAccountForOneTxPassword').val();
+
+            mintNewNFT(author, description, image, link, youtube, type, pass);
+        });
+        $('#addPassForTxMessageModal').modal('show');
+    }
+    else {
+
+        mintNewNFT(author, description, image, link, youtube, type, '');
+    }
 
     //ShowConfirmModal('', 'Do you realy want create this NFT?');
 }
@@ -355,7 +419,7 @@ function changeType(type) {
     $('#btnMintNFTType').text(type);
 }
 
-function mintNewNFT(author, description, image, link, youtube, type, tokenId) {
+function mintNewNFT(author, description, image, link, youtube, type, tokenId, pass) {
 
         if (!isShopHostedOnVEF) {
             alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -392,6 +456,7 @@ function mintNewNFT(author, description, image, link, youtube, type, tokenId) {
             "SenderAddress": selectedShopAccountAddress,
             "ReceiverAddress": selectedShopAccountAddress,
             "Id": 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei',
+            "Password": pass,
             "Metadata": metadata,
         };
     
@@ -475,13 +540,14 @@ function refreshShopItemNFTs() {
         if (actualAddress == add) {
 
             var orderList = false;
-            
+            //for now, before auto selling
+            /*
             if (add in Accounts) {
                 orderList = true;
             }
             else {
                 orderList = false;
-            }
+            }*/
 
             var allowSendingReq = false;
             if (selectedShopAccountAddress != '') {
@@ -666,9 +732,15 @@ function setShopListAccountAddress(accountAddress) {
 
     cleanNFTShops();
 
+    if (!(accountAddress in AccountShopItems)) {
+        getNewShopTab(accountAddress);
+    }
+
     selectedShopAccountAddress = accountAddress;
     var a = Accounts[accountAddress];
     selectedShopWalletId = a.WalletId;
+
+    ActualWallet = Wallets[a.WalletId];
 
     //initShop(accountAddress);
     getAccountBookmarks(accountAddress);
