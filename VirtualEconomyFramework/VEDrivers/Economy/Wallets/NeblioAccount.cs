@@ -17,6 +17,7 @@ using log4net;
 using System.Reflection;
 using System.IO;
 using Newtonsoft.Json;
+using VEDrivers.Bookmarks;
 
 namespace VEDrivers.Economy.Wallets
 {
@@ -33,6 +34,7 @@ namespace VEDrivers.Economy.Wallets
             //client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
 
             lastTxSaveDto = new LastTxSaveDto();
+            Bookmarks = new List<IBookmark>();
         }
 
         //private QTWalletRPCClient rpcClient;

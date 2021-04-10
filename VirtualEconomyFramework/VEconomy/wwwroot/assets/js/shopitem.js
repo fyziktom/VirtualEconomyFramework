@@ -62,6 +62,8 @@ class Utxo {
         this.originalNFTType = '';
         this.originalNFTAuthor = '';
         this.originalNFTImage = '';
+        this.originalNFTLink = '';
+        this.youtubeCode = '';
         this.originalNFTDecription = '';
         this.nftTradeRequestUtxo = '';
         this.nftTradeRequestMessage = '';
@@ -260,13 +262,6 @@ class Utxo {
                     if (data != null){
                         try 
                         {
-                            if (initTxId == 'fd194053cf36954ce41a3fd3cdff4facbd1988147396fe3a84c1027781e9ea8d') {
-                                var a = '';
-                            }
-                            if (initTxId == 'e59ed6108ce9f0a9fe8683c792d8886ea6e2960dbec0d702fbf4dfede14633b6') {
-                                var a = '';
-                            }
-
                             if (data.metadataOfUtxo.userData.meta != undefined) {
                                 if (data.metadataOfUtxo.userData.meta.length == 0) {
                                     thisClass.checkTxNFTInputs(initTxId);
@@ -320,6 +315,16 @@ class Utxo {
                                             var desc = data.metadataOfUtxo.userData.meta[m]['Description'];
                                             if (desc != undefined){
                                                 thisClass.originalNFTDecription = desc;
+                                            }
+
+                                            var link = data.metadataOfUtxo.userData.meta[m]['Link'];
+                                            if (link != undefined){
+                                                thisClass.originalNFTLink = link;
+                                            }
+
+                                            var youtube = data.metadataOfUtxo.userData.meta[m]['Youtube'];
+                                            if (youtube != undefined){
+                                                thisClass.youtubeCode = youtube;
                                             }
                                         }
 
@@ -586,7 +591,7 @@ class ShopItem {
 
         var price = (this.price/this.NeblFromSatToMainRatio).toString();
     
-        var keyComponent = '<div class="card shadow" style="min-width: 350px; width:100%">'+
+        var keyComponent = '<div class="card shadow" style="max-width: 350px; width:100%">'+
         '    <div class="card-header d-xl-flex justify-content-xl-center align-items-xl-center py-3">'+
         '        <h4>' + this.name + ' - Item</h4>'+
         '    </div>'+
@@ -693,20 +698,32 @@ class ShopItem {
         return keyComponent;
     }
 
-    getNFTShopComponents(asShopItem) {
+    getNFTShopComponents(asShopItem, allowSendingOfNFTs, allowOrdeList) {
 
         var type = 'NFT Image';
 
         //let unsolvedOrders = this.getUnsolvedOrders();
         var components = {};
 
-        var hidden = 'd-none';
-        if (this.isShopHostedOnVEF) {
-            hidden = '';
+     
+        var hiddenAll = '';
+        /*
+        if (asShopItem) {
+            hiddenAll = '';
+        }*/
+
+        var hiddenSending = 'd-none';
+        if (allowSendingOfNFTs) {
+            hiddenSending = '';
+        }
+
+        var hiddenRequests = 'd-none';
+        if (asShopItem) {
+            hiddenRequests = '';
         }
 
         var shopItemHidden = 'd-none';
-        if (asShopItem) {
+        if (allowOrdeList) {
             shopItemHidden = '';
         }
 
@@ -717,15 +734,29 @@ class ShopItem {
 
                 if (uno.getNFTImage() != '' && uno.isOrignalNFTDataFound) {
 
-                    if (uo == '67cb7ea3a1ad40eee448ba9b91984f90a422406eb6b40617342a77f5e8f6b') {
-                        var a = '';
-                    }
-
                     if (!uno.isNFTTradeRequest() && !uno.isNFTTradeResponse()) {
                     
+                        var videoComponent = '';
+                        if (uno.youtubeCode != '' && uno.youtubeCode != ' ') {
+                           var link = 'https://youtube.com/embed/' + uno.youtubeCode;
+
+                            videoComponent = 
+                            '<div class="row" style="margin-top: 10px">' +
+                            '   <div class="col">' +
+                            '       <iframe width="100%" height="100%" src="' + link + '" ' +
+                            '           style="max-width: 350px;" ' +
+                            '           title="YouTube video NFT" ' +
+                            '           frameborder="0" ' +
+                            '           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
+                            '           allowfullscreen>' +
+                            '       </iframe>' +
+                            '   </div>' +
+                            '</div>';
+                        }
+
                         var price = (this.price/this.NeblFromSatToMainRatio).toString();
 
-                        var nftComponent = '<div class="card shadow" style="min-width: 350px; width:100%">'+
+                        var nftComponent = '<div class="card shadow" style="max-width: 350px; width:100%">'+
                         '    <div class="card-header d-xl-flex justify-content-xl-center align-items-xl-center py-3">'+
                         '        <h4>' + this.name + ' - Item</h4>'+
                         '    </div>'+
@@ -810,7 +841,7 @@ class ShopItem {
                         '                    </div>'+
                         '                    <div class="row">'+
                         '                       <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
-                        '                           <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.getUtxoTxId() +'" target="blank">Last Transaction With This NFT</a></span>'+
+                        '                           <span style="font-size: 12px;"><a href="' + uno.getNFTImage() +'" target="blank">Last Transaction With This NFT</a></span>'+
                         '                       </div>'+
                         '                    </div>'+
                         '                    <div class="row ' + shopItemHidden + '">'+
@@ -823,6 +854,7 @@ class ShopItem {
                         '                           <span style="font-size: 12px;"><a href="https://explorer.nebl.io/tx/' + uno.firstNFTtxId +'" target="blank"><img style="max-width:200px;max-height:200px;margin-left:5px" src="' + uno.getNFTImage() + '"></a></span>'+
                         '                       </div>'+
                         '                    </div>'+
+                                            videoComponent +
                         '                    <div class="row '+ shopItemHidden + '">'+
                         '                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top: 10px;">'+
                         '                           <span>Unresolved Orders</span>'+
@@ -833,14 +865,14 @@ class ShopItem {
                                                     this.getUnsolvedOrdersLines() +
                         '                       </div>'+
                         '                    </div>'+
-                        '                   <div class="card-footer ' + hidden + '" style="padding-top: 5px; margin-top: 20px;">'+
+                        '                   <div class="card-footer" style="padding-top: 5px; margin-top: 20px;">'+
                         '                    <div class="row">'+
-                        '                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                        '                         <div class="col ' + hiddenSending + ' d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
                         '                               <button class="btn btn-primary" type="button" onclick="sendNeblioNFT(\'' + this.token.tokenId + '\',\'' + uno.getUtxoTxId() + '\',\'' + uno.firstNFTtxId + '\',\'' + this.token.tokenSymbol + '\',\'' + uno.getNFTImage() + '\')">'+
                         '                                   <i class="fa fa-send-o"></i>'+
                         '                               </button>'+
                         '                         </div>'+
-                        '                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
+                        '                         <div class="col ' + hiddenRequests + ' d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">'+
                         '                               <button class="btn btn-primary" type="button" onclick="requestNeblioNFTTrade(\'' + this.address + '\',\'' + this.token.tokenId + '\',\'' + uno.getUtxoTxId() + '\',\'' + uno.firstNFTtxId + '\',\'' + this.token.tokenSymbol + '\',\'' + uno.getNFTImage() + '\')">'+
                         '                                   <i class="fa fa-comments-o"></i>'+
                         '                               </button>'+

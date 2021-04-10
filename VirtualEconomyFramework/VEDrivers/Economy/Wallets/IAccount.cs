@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using VEDrivers.Bookmarks;
 using VEDrivers.Common;
 using VEDrivers.Economy.Coins;
 using VEDrivers.Economy.DTO;
@@ -42,6 +43,7 @@ namespace VEDrivers.Economy.Wallets
         Guid AccountKeyId { get; set; }
         [JsonIgnore]
         List<EncryptionKey> AccountKeys { get; set; }
+        List<IBookmark> Bookmarks { get; set; }
         IDictionary<string, IToken> Tokens { get; set; }
 
         [JsonIgnore]

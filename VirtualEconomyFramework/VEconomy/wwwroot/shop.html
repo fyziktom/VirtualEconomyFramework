@@ -97,6 +97,18 @@
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center align-items-center">
+                        <div class="col">
+                            <div>
+                                <ul class="nav nav-tabs" role="tablist" id="shopTabsHeadings">
+                                    <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-toggle="tab" onclick="showAddNewShopTabModal()"><i class="fa fa-plus" style="font-size: 20px;"></i></a></li>
+                                </ul>
+                                <div class="tab-content" id="shopTabsContent">
+                                    <div class="tab-pane" role="tabpanel" id="tab-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center align-items-center">
                         <div class="col" style="margin-top: 20px;">
                             <div id="shopNFTItemsCards"></div>
                         </div>
@@ -283,6 +295,10 @@
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTLink" style="width: 250px;" placeholder="Optional"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Youtube Code</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTYoutubeCode" style="width: 250px;" placeholder="Optional"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Type</span></div>
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
                             <div class="dropdown"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnMintNFTType" type="button">NFT Image</button>
@@ -359,7 +375,7 @@
                     <div class="row" style="margin-top: 20px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>From Account</span></div>
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
-                            <div class="dropdown" data-toggle="tooltip" data-bss-tooltip="" title="This address must be different than source address!"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnRequestNFTTradeSenderAddress" type="button">Select Final Address</button>
+                            <div class="dropdown" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" title="This address must be different than source address!"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnRequestNFTTradeSenderAddress" type="button" onclick="reloadShopListAccountsAddressesDropDown()">Select Final Address</button>
                                 <div class="dropdown-menu" id="requestNFTTradeSenderAddressDrowpDown"></div>
                             </div>
                         </div>
@@ -370,6 +386,62 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmRequestNFT" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="openNewShopTabModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-lg-flex">
+                    <h4 class="modal-title">Add new Shop Tab</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>From Bookmarks For Main selected Account</span></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" data-toggle="tooltip" data-bss-tooltip="">
+                            <div class="dropdown" title="This address must be different than source address!"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnAddShopTabModalShopFromBookmark" type="button" onclick="reloadShopListAccountsAddressesDropDown()" style="min-width: 200px;">Select from Bookmarks</button>
+                                <div class="dropdown-menu" id="addShopTabModalShopFromBookmarkDrowpDown" style="min-width: 200px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Add Public Address</span></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="addShopTabModalPublicAddress"></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>Or select your saved Address</span></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="dropdown" title="This address must be different than source address!"><button class="btn dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnAddShopTabModalShopAddress" type="button" onclick="reloadShopListAccountsAddressesDropDown()" style="min-width: 200px;">Select Address</button>
+                                <div class="dropdown-menu" id="addShopTabModalShopAddressDrowpDown" style="min-width: 200px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnAddShopTabModalConfirm" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="addNewShopBookmarkModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-lg-flex">
+                    <h4 class="modal-title">Add new Shop Bookmark</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><span>BookmarkName</span></div>
+                    </div>
+                    <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="addNewShopBookmarkName"></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnAddNewShopBookmarkConfirm" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
     </div>

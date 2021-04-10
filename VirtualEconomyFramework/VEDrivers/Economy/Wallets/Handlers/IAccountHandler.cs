@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDrivers.Bookmarks;
 using VEDrivers.Database;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
@@ -21,5 +22,9 @@ namespace VEDrivers.Economy.Wallets.Handlers
         EncryptionKey DeleteKey(string walletId, string address, string keyId, IDbConnectorService dbservice);
         string UnlockAccount(string wallet, string address, string password);
         string LockAccount(string wallet, string address);
+        string UpdateBookmark(string wallet, string address, BookmarkTypes type, string bookmarkId, string name, string bookmarkAddress, IDbConnectorService dbservice);
+        string DeleteBookmark(string wallet, string address, string bookmarkId, IDbConnectorService dbservice);
+        string RemoveBookmark(string wallet, string address, string bookmarkId, IDbConnectorService dbservice);
+        List<IBookmark> GetAccountBookmarks(string address);
     }
 }

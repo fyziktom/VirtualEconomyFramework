@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Newtonsoft.Json;
 using VEconomy.Common;
+using VEDrivers.Bookmarks;
 using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.DTO;
@@ -2115,6 +2116,157 @@ namespace VEconomy.Controllers
 
         #endregion
 
+
+        #region bookmarks
+
+
+        public class UpdateBookmarkData
+        {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
+            public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
+            public string accountAddress { get; set; }
+
+            /// <summary>
+            /// Guid format of bookmark Id
+            /// Leave empty for new one
+            /// </summary>
+            public string bookmarkId { get; set; }
+            /// <summary>
+            /// Bookmark Name
+            /// </summary>
+            public string bookmarkName { get; set; }
+            /// <summary>
+            /// Address on bookmark
+            /// </summary>
+            public string bookmarkAddress { get; set; }
+
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
+            public BookmarkTypes type { get; set; }
+        }
+        /// <summary>
+        /// add or update bookmark
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("UpdateBookmark")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> UpdateBookmark([FromBody] UpdateBookmarkData data)
+        {
+            try
+            {
+                var resp = MainDataContext.AccountHandler.UpdateBookmark(data.walletId, 
+                                                                         data.accountAddress, 
+                                                                         data.type,
+                                                                         data.bookmarkId, 
+                                                                         data.bookmarkName, 
+                                                                         data.bookmarkAddress, 
+                                                                         dbService);
+                    return resp;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot add or update bookmark", ex);
+                throw new HttpResponseException((HttpStatusCode)501, "Cannot add or update bookmark!");
+            }
+        }
+
+        public class DeleteBookmarkData
+        {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
+            public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
+            public string accountAddress { get; set; }
+
+            /// <summary>
+            /// Guid format of bookmark Id
+            /// Leave empty for new one
+            /// </summary>
+            public string bookmarkId { get; set; }
+        }
+        /// <summary>
+        /// add or update bookmark
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("DeleteBookmark")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> DeleteBookmark([FromBody] DeleteBookmarkData data)
+        {
+            try
+            {
+                var resp = MainDataContext.AccountHandler.DeleteBookmark(data.walletId,
+                                                                         data.accountAddress,
+                                                                         data.bookmarkId,
+                                                                         dbService);
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot delete bookmark", ex);
+                throw new HttpResponseException((HttpStatusCode)501, "Cannot delete bookmark!");
+            }
+        }
+
+        /// <summary>
+        /// remove bookmark
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("RemoveBookmark")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> RemoveBookmark([FromBody] DeleteBookmarkData data)
+        {
+            try
+            {
+                var resp = MainDataContext.AccountHandler.RemoveBookmark(data.walletId,
+                                                                         data.accountAddress,
+                                                                         data.bookmarkId,
+                                                                         dbService);
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot delete bookmark", ex);
+                throw new HttpResponseException((HttpStatusCode)501, "Cannot delete bookmark!");
+            }
+        }
+
+        /// <summary>
+        /// remove bookmark
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetAccountBookmarks/{address}")]
+        //[Authorize(Rights.Administration)]
+        public async Task<List<IBookmark>> GetAccountBookmarks(string address)
+        {
+            try
+            {
+                return MainDataContext.AccountHandler.GetAccountBookmarks(address);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get bookmarks", ex);
+                throw new HttpResponseException((HttpStatusCode)501, "Cannot get bookmarks!");
+            }
+        }
+
+        #endregion
 
         #region ExchangeCommands
 

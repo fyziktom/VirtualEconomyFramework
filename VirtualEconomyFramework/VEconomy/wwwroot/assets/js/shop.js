@@ -79,7 +79,7 @@ function refreshItems() {
         // draw items
         //refreshShopItems();
         nfts = {};
-        $('#shopNFTItemsCards').empty();
+        //$('#shopNFTItemsCards').empty();
         refreshShopItemNFTs();
         refreshShopItemNFTRequests();
     }, 500);
@@ -96,8 +96,8 @@ function uuidv4() {
   }
 
 function initShop(address) {
-        AccountShopItems = {};
-        $('#shopNFTItemsCards').empty();
+        //AccountShopItems = {};
+        //$('#' + activeShopTabDivId).empty();
         // create data for shop item
         var uid = uuidv4();
         var name = 'CART Token';
@@ -110,7 +110,7 @@ function initShop(address) {
     
         // add to shop items object and refresh 
         //AccountShopItems[uid] = CHESSItem;
-        AccountShopItems[uid] = MSGTItem;
+        AccountShopItems[address] = MSGTItem;
 }
 
 var AccountShopItems = {};
@@ -342,8 +342,9 @@ function createNewItem() {
         var description = $('#mintNFTDescription').val();
         var image = $('#mintNFTImage').val();
         var link = $('#mintNFTLink').val();
+        var youtube = $('#mintNFTYoutubeCode').val();
         var type = $('#btnMintNFTType').text();
-        mintNewNFT(author, description, image, link, type);
+        mintNewNFT(author, description, image, link, youtube, type);
     //}); 
 
     //ShowConfirmModal('', 'Do you realy want create this NFT?');
@@ -353,7 +354,7 @@ function changeType(type) {
     $('#btnMintNFTType').text(type);
 }
 
-function mintNewNFT(author, description, image, link, type, tokenId) {
+function mintNewNFT(author, description, image, link, youtube, type, tokenId) {
 
         if (!isShopHostedOnVEF) {
             alert('This shop is not hosted on VEF you cannot create new item now!');
@@ -383,6 +384,7 @@ function mintNewNFT(author, description, image, link, type, tokenId) {
         metadata['Description'] = description;
         metadata['Image'] = image;
         metadata['Link'] = link;
+        metadata['Youtube'] = youtube;
         metadata['Type'] = type;
 
         var nft = {
@@ -456,74 +458,94 @@ var nfts = {};
 function refreshShopItemNFTs() {
 
     //$('#shopNFTItemsCards').empty();
-    $('#shopNFTItemsCards').append('<div class="row"><div class="col"><div id="shopItemsNFTCardsRow" class="row d-flex justify-content-center"></div></div></div>');
-    for (var sid in AccountShopItems) {
-        var shopItem = AccountShopItems[sid];
+    
+   for (var add in AccountShopItems) {
+        var shopItem = AccountShopItems[add];
 
-        var nnfts = shopItem.getNFTShopComponents(isAsShop);
-        for (var nft in nnfts) {
+        var actualAddress = activeShopTabDivId.split('-')[1];
+        
+        if (actualAddress == add) {
 
-            var drawIt = false;
-            var filterActive = false;
+            if (add in Accounts) {
+                isAsShop = true;
+            }
+            else {
+                isAsShop = false;
+            }
 
-            //shopItem.refreshAddressInfo();
+            var allowSendingOfNFTs = false;
+            if (actualAddress == selectedShopAccountAddress) {
+                allowSendingOfNFTs = true;
+            }
+            else {
+                allowSendingOfNFTs = false;
+            }
 
-            if (!(nft in nfts)) {
-                if (shopItem != undefined && shopItem != null) {
+            var nnfts = shopItem.getNFTShopComponents(isAsShop, allowSendingOfNFTs, false);
+            for (var nft in nnfts) {
 
-                    var filter = $('#shopListSearchByAny').val();
-                    if (filter != '' && filter != ' ') {
-                        filter = filter.toLowerCase();
-                        if (nnfts[nft].toLowerCase().includes(filter)) {
+                var drawIt = false;
+                var filterActive = false;
+
+                //shopItem.refreshAddressInfo();
+
+                if (!(nft in nfts)) {
+                    if (shopItem != undefined && shopItem != null) {
+
+                        var filter = $('#shopListSearchByAny').val();
+                        if (filter != '' && filter != ' ') {
+                            filter = filter.toLowerCase();
+                            if (nnfts[nft].toLowerCase().includes(filter)) {
+                                filterActive = true;
+                            }
+                        }
+                        else {
                             filterActive = true;
                         }
-                    }
-                    else {
-                        filterActive = true;
-                    }
-                                
-                    if ($('#chbxShopListShopItemsImages').is(':checked')) {
-                        if (nnfts[nft].includes('NFT Image')) {
-                            drawIt = true;
+                                    
+                        if ($('#chbxShopListShopItemsImages').is(':checked')) {
+                            if (nnfts[nft].includes('NFT Image')) {
+                                drawIt = true;
+                            }
                         }
-                    }
-        
-                    if ($('#chbxShopListShopItemsFiles').is(':checked')) {
-                        if (nnfts[nft].includes('NFT File')) {
-                            drawIt = true;
+            
+                        if ($('#chbxShopListShopItemsFiles').is(':checked')) {
+                            if (nnfts[nft].includes('NFT File')) {
+                                drawIt = true;
+                            }
                         }
-                    }
 
-                    if ($('#chbxShopListShopItemsDocuments').is(':checked')) {
-                        if (nnfts[nft].includes('NFT Document')) {
-                            drawIt = true;
+                        if ($('#chbxShopListShopItemsDocuments').is(':checked')) {
+                            if (nnfts[nft].includes('NFT Document')) {
+                                drawIt = true;
+                            }
                         }
-                    }
 
-                    //filterActive = true;
-                    //drawIt = true;
+                        //filterActive = true;
+                        //drawIt = true;
 
-                    nfts[nft] = nnfts[nft];
+                        nfts[nft] = nnfts[nft];
 
-                    if (drawIt && filterActive) {
-                        $('#shopItemsNFTCardsRow').append(
-                            '<div id="' + nft + '" class="col col-auto">' +
-                            nfts[nft] +
-                            '</div>'
-                        );
+                        if (drawIt && filterActive) {
+                            $('#' + activeShopTabDivId + '-row').append(
+                                '<div id="' + nft + '" class="col-auto">' +
+                                nfts[nft] +
+                                '</div>'
+                            );
+                        }
                     }
                 }
             }
+            // delete old ones
+            $('#'+ activeShopTabDivId + '-row').children('div').each(function() {
+                var $this = $(this);
+                var id = this.id;
+                if (!(id in nnfts)) {
+                    delete nfts[id];
+                    $(this).remove();
+                }
+            });
         }
-        // delete old ones
-        $('#shopItemsNFTCardsRow').children('div').each(function() {
-            var $this = $(this);
-            var id = this.id;
-            if (!(id in nnfts)) {
-                delete nfts[id];
-                $(this).remove();
-            }
-        });
 
     }		
 }
@@ -535,44 +557,46 @@ function refreshShopItemNFTRequests() {
     //$('#shopNFTItemsCards').empty();
     $('#shopNFTTradeRequestsCards').append('<div class="row"><div class="col"><div id="shopItemsNFTTradeReqCardsRow" class="row d-flex justify-content-center"></div></div></div>');
     for (var sid in AccountShopItems) {
-        var shopItem = AccountShopItems[sid];
+        if (selectedShopAccountAddress == sid) {
+            var shopItem = AccountShopItems[sid];
 
-        var nnfts = shopItem.getNFTTradeRequestComponents(isAsShop);
-        for (var nft in nnfts) {
+            var nnfts = shopItem.getNFTTradeRequestComponents(isAsShop);
+            for (var nft in nnfts) {
 
-            var drawIt = false;
-            var filterActive = false;
+                var drawIt = false;
+                var filterActive = false;
 
-            //shopItem.refreshAddressInfo();
+                //shopItem.refreshAddressInfo();
 
-            if (!(nft in tradeRequests)) {
-                if (shopItem != undefined && shopItem != null) {
+                if (!(nft in tradeRequests)) {
+                    if (shopItem != undefined && shopItem != null) {
 
-                    // todo get tx details and check sender address
-                    filterActive = true;
-                    drawIt = true;
-                    tradeRequests[nft] = nnfts[nft];
+                        // todo get tx details and check sender address
+                        filterActive = true;
+                        drawIt = true;
+                        tradeRequests[nft] = nnfts[nft];
 
-                    if (drawIt && filterActive) {
-                        $('#shopItemsNFTTradeReqCardsRow').append(
-                            '<div id="' + nft + '" class="col-auto">' +
-                            tradeRequests[nft] +
-                            '</div>'
-                        );
+                        if (drawIt && filterActive) {
+                            $('#shopItemsNFTTradeReqCardsRow').append(
+                                '<div id="' + nft + '" class="col-auto">' +
+                                tradeRequests[nft] +
+                                '</div>'
+                            );
+                        }
                     }
                 }
             }
-        }
 
-        // delete old ones
-        $('#shopItemsNFTTradeReqCardsRow').children('div').each(function() {
-            var $this = $(this);
-            var id = this.id;
-            if (!(id in nnfts)) {
-                delete tradeRequests[id];
-                $(this).remove();
-            }
-        });
+            // delete old ones
+            $('#shopItemsNFTTradeReqCardsRow').children('div').each(function() {
+                var $this = $(this);
+                var id = this.id;
+                if (!(id in nnfts)) {
+                    delete tradeRequests[id];
+                    $(this).remove();
+                }
+            });
+        }
     }		
 }
 
@@ -621,13 +645,15 @@ function sendShopApiCommand(apicommand, data) {
 
 
 var selectedShopAccountAddress = '';
+var selectedShopWalletId = '';
 
 function setShopListAccountAddress(accountAddress) {
     selectedShopAccountAddress = accountAddress;
     var a = Accounts[accountAddress];
+    selectedShopWalletId = a.WalletId;
 
-    initShop(accountAddress);
-
+    //initShop(accountAddress);
+    getAccountBookmarks(accountAddress);
     reloadShopListAccountsAddressesDropDown();
 
     if (a != null) {
@@ -640,6 +666,7 @@ var selectedMintReceiverAccountAddress = '';
 
 function setShopMintReceiverAccountAddress(accountAddress) {
     selectedMintReceiverAccountAddress = accountAddress;
+    
     var a = Accounts[accountAddress];
 
     if (a != null) {
@@ -658,11 +685,23 @@ function setShopRequestNFTTradeSenderAccountAddress(accountAddress) {
     }
 }
 
+var newShopTabAccountAddress = '';
+
+function addNewShopTabAccountAddress(accountAddress) {
+    newShopTabAccountAddress = accountAddress;
+    var a = Accounts[accountAddress];
+
+    if (a != null) {
+        document.getElementById('btnAddShopTabModalShopAddress').innerText = a.Name + ' - ' + accountAddress.substring(0,3) + '...' + accountAddress.substring(accountAddress.length-3);
+    }
+}
+
 function reloadShopListAccountsAddressesDropDown() {
     if (Accounts != null) {
         document.getElementById('shopListAccountAddressesDropDown').innerHTML = '';
         //document.getElementById('mintNFTbtnMintNFTReceiverAddressDrowpDown').innerHTML = '';
         document.getElementById('requestNFTTradeSenderAddressDrowpDown').innerHTML = '';
+        document.getElementById('addShopTabModalShopAddressDrowpDown').innerHTML = '';
         for (var acc in Accounts) {
             var a = Accounts[acc];     
             var add = acc.substring(0,3) + '...' + acc.substring(acc.length-3);      
@@ -674,6 +713,299 @@ function reloadShopListAccountsAddressesDropDown() {
             }
             */
             document.getElementById('requestNFTTradeSenderAddressDrowpDown').innerHTML += '<button style=\"font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"setShopRequestNFTTradeSenderAccountAddress(\'' + acc + '\')\">' + a.Name + ' - ' + add + '</button>';
+            document.getElementById('addShopTabModalShopAddressDrowpDown').innerHTML += '<button style=\"font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"addNewShopTabAccountAddress(\'' + acc + '\')\">' + a.Name + ' - ' + add + '</button>';
+        
         }
     }
+}
+
+//////////////////////////////
+/// shop tabs
+
+function showAddNewShopTabModal() {
+
+    $("#btnAddShopTabModalConfirm").off();
+    $("#btnAddShopTabModalConfirm").click(function() {
+        addNewShopTab();
+    });
+
+    $('#openNewShopTabModal').modal('show');
+}
+
+function addNewShopTab () {
+
+    var inputAddr = $('#addShopTabModalPublicAddress').val();
+    
+    if (selectedBookmarkForNewTab != '') {
+        getNewShopTab(selectedBookmarkForNewTab);
+    }
+    else {
+        if ((newShopTabAccountAddress == '' ||
+            newShopTabAccountAddress == ' ')) {
+            if (inputAddr !=  ' ' || inputAddr != '') {
+                getNewShopTab(inputAddr);
+            }
+            else {
+                alert('please fill or select the address!');
+                return;
+            }
+        }
+        else {
+            getNewShopTab(newShopTabAccountAddress);
+        }
+    }
+    clearBookmarkForOpenNewTab();
+}
+
+var activeShopTabDivId = '';
+
+function getNewShopTab(address) {
+
+    var shortAddress = '';
+    if (address.length > 20) { // todo
+        shortAddress = address.substring(0,3) + '...' + address.substring(address.length-3);
+    }
+    else {
+        alert('Address has too short length. Is it blockchain address?');
+        return;
+    }
+
+    var addTab = 
+    '<li role="presentation" class="nav-item">'+
+    '     <a role="tab" data-toggle="tab" class="nav-link active" onclick="showAddNewShopTabModal()" style="font-size: 12px;">'+
+    '              <i class="fa fa-plus"></i>'+
+    '          </button>'+
+    '     </a>'+
+    '</li>';
+
+    var newTabHeading = 
+    '<li id="shopTabHeading-' + address + '" role="presentation" class="nav-item">'+
+    '     <a role="tab" data-toggle="tab" class="nav-link active" onclick="setActiveShopTab(\'shopTab-' + address + '-shopNFTItemsCards\',\'' + address + '\')" href="#shopTab-' + address + '" style="font-size: 12px;">'+
+    '          ' + shortAddress + ''+
+    '          <button class="btn btn-secondary" onclick="removeShopTab(\''+ address + '\',\'shopTab-'+ address + '\',\'shopTabHeading-' + address + '\')" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 0px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">'+
+    '               <i class="fa fa-close"></i>'+
+    '          </button>'+
+    '     </a>'+
+    '</li>';
+
+    $('#shopTabsContent').children('div').each(function() {
+        $(this).removeClass('active');
+    })
+
+    var starStyle = '';
+    var bookmarkAction = 'addToBookmarks(\''+ address + '\')';
+    if (isAccountInBookmarks(address)) {
+        starStyle = 'style="color: var(--yellow);"';
+        bookmarkAction = 'removeBookmark(\''+ address + '\')';
+    }
+
+    var newTabContent = 
+    '<div role="tabpanel" class="tab-pane active" id="shopTab-' + address + '" style="min-height: 200px;">'+
+    '    <div class="row">' +
+    '       <div class="col">' +
+    '           <div class="row" style="margin-top: 10px;">' +
+    '               <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">' +
+    '                   <h4>Shop - ' + address +'</h4>'+
+    '                   <a id="shopTab-bookmarkActionLink-' + address + '" onclick="' + bookmarkAction + '" style="font-size: 20px; margin-left:15px; margin-bottom: 10px">' +
+    '                       <i id="shopTab-bookmarkIcon-' + address + '" class="fa fa-star" ' + starStyle + '></i>' +
+    '                   </a>'+
+    '               </div>' +
+    '           </div>' +
+    '           <div class="row" style="margin-top:20px">' +
+    '               <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">' +
+    '                   <div id="shopTab-' + address + '-shopNFTItemsCards"></div>'+
+    '               </div>' +
+    '           </div>' +
+    '       </div>' +
+    '    </div>' +
+    '</div>';
+	
+    $('#shopTabsHeadings').children('li').last().remove();
+    $('#shopTabsHeadings').append(newTabHeading);
+    $('#shopTabsHeadings').append(addTab);
+    
+    $('#shopTabsContent').append(newTabContent);
+
+    initShop(address);
+
+    activeShopTabDivId = 'shopTab-' + address + '-shopNFTItemsCards';
+
+    $('#'+ activeShopTabDivId).append('<div class="row"><div class="col"><div id="' + activeShopTabDivId + '-row" class="row d-flex justify-content-center"></div></div></div>');    
+}
+
+function setActiveShopTab(divtabId, address) {
+    activeShopTabDivId = divtabId;
+    
+    $('#shopTabsContent').children('div').each(function() {
+        $(this).removeClass('active');
+    })
+
+    $('#shopTab-' + address).addClass('active');
+}
+
+function removeShopTab(address, tabId, tabHeadingId) {
+    $('#' + tabId).remove();
+    $('#' + tabHeadingId).remove();
+    delete AccountShopItems[address];
+
+    $('#shopTabsContent').children('div').each(function() {
+        $(this).removeClass('active');
+    })
+
+    $('#shopTabsContent').children('div').last().addClass('active');
+}
+
+function addToBookmarks(address) {
+    
+    $("#btnAddNewShopBookmarkConfirm").off();
+    $("#btnAddNewShopBookmarkConfirm").click(function() {
+
+        var name = $('#addNewShopBookmarkName').val();
+
+        var bookmark = {
+            "walletId": selectedShopWalletId,
+            "accountAddress": selectedShopAccountAddress,
+            "bookmarkName": name,
+            "bookmarkAddress": address,
+        };
+
+        addBookmarkAPI(bookmark);
+    });
+
+    $('#addNewShopBookmarkModal').modal('show');
+}
+
+function isAccountInBookmarks(address) {
+    for (var b in selectedShopAccountBookmarks) {
+        if (selectedShopAccountBookmarks[b].Address == address) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function getAccountBookmarkIdByBookmarkAddress(address) {
+    for (var b in selectedShopAccountBookmarks) {
+        if (selectedShopAccountBookmarks[b].Address == address) {
+            return selectedShopAccountBookmarks[b].Id;
+        }
+    }
+    return false;
+}
+
+var selectedBookmarkForNewTab = '';
+
+function selectBookmarkForOpenNewTab (bkname, bookmarkAddress) {
+    selectedBookmarkForNewTab = bookmarkAddress;
+    var add = bookmarkAddress.substring(0,3) + '...' + bookmarkAddress.substring(bookmarkAddress.length-3);
+    $('#btnAddShopTabModalShopFromBookmark').text(bkname + '-' + add);
+}
+
+function clearBookmarkForOpenNewTab () {
+    selectedBookmarkForNewTab = '';
+    $('#btnAddShopTabModalShopFromBookmark').text('Select from Bookmarks');
+}
+
+var selectedShopAccountBookmarks = {};
+
+function getAccountBookmarks(address) {
+
+    var url = document.location.origin + "/api/GetAccountBookmarks/" + address;
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    $.ajax(url,
+        {
+            contentType: 'application/json;charset=utf-8',
+            method: 'GET',
+            dataType: 'json',   // type of response data
+            timeout: 10000,     // timeout milliseconds
+            success: function (data, status, xhr) {   // success callback function
+                console.log(`Status: ${status}, Data:${data}`);
+
+                $('#addShopTabModalShopFromBookmarkDrowpDown').html('');
+                if (data != undefined) {
+                    for (var b in data) {
+                        selectedShopAccountBookmarks = data;
+                        var bkm = data[b];
+                        var add = bkm.Address.substring(0,3) + '...' + bkm.Address.substring(bkm.Address.length-3);  
+                        document.getElementById('addShopTabModalShopFromBookmarkDrowpDown').innerHTML += '<button style=\"font-size:12px\" class=\"dropdown-item btn btn-light\" ' +  'onclick=\"selectBookmarkForOpenNewTab(\'' + bkm.Name + '\',\'' + bkm.Address + '\')\">' + bkm.Name + ' - ' + add + '</button>';
+                    }
+                }
+
+            },
+            error: function (jqXhr, textStatus, errorMessage) { // error callback 
+                console.log('Error: "' + errorMessage + '"');
+            }
+        });
+
+}
+
+function removeBookmark(address) {
+
+    var url = document.location.origin + "/api/RemoveBookmark/";
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    var id = getAccountBookmarkIdByBookmarkAddress(address);
+
+    var data = {
+        "walletId" : selectedShopWalletId, 
+        "accountAddress" : selectedShopAccountAddress,
+        "bookmarkId" : id
+    };
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(data),
+        method: 'PUT',
+        dataType: 'text',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            //console.log(`Status: ${status}, Data:${data}`);
+            $('#shopTab-bookmarkIcon-' + address).attr('style', 'color: var(--gray);');
+            var bookmarkAction = 'addToBookmarks(\''+ address + '\')';
+            $('#shopTab-bookmarkActionLink-' + address).attr('onclick', bookmarkAction)
+            getAccountBookmarks(selectedShopAccountAddress);
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+        }
+    });
+}
+
+
+function addBookmarkAPI(indata) {
+
+    var url = document.location.origin + "/api/UpdateBookmark/";
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    //var id = getAccountBookmarkIdByBookmarkAddress(address); //todo update of existing
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(indata),
+        method: 'PUT',
+        dataType: 'text',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            //console.log(`Status: ${status}, Data:${data}`);
+            $('#shopTab-bookmarkIcon-' + indata.bookmarkAddress).attr('style', 'color: var(--yellow);"');
+            var bookmarkAction = 'removeBookmark(\''+ indata.bookmarkAddress + '\')';
+            $('#shopTab-bookmarkActionLink-' + indata.bookmarkAddress).attr('onclick', bookmarkAction)
+            getAccountBookmarks(selectedShopAccountAddress);        
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+        }
+    });
 }

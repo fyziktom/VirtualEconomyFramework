@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VEDrivers.Bookmarks;
 using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.Tokens;
@@ -587,6 +588,130 @@ namespace VEDrivers.Economy.Wallets.Handlers
             }
 
             return "Lock Account - ERROR";
+        }
+
+        public override string UpdateBookmark(string wallet, string address, BookmarkTypes type, string bookmarkId, string name, string bookmarkAddress, IDbConnectorService dbservice)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
+                {
+                    if (w.Accounts.TryGetValue(address, out var account))
+                    {
+                        IBookmark bkm = null;
+                        bkm = account.Bookmarks.FirstOrDefault(b => b.Id.ToString() == bookmarkId);
+                        if (bkm != null)
+                        {
+                            if (!string.IsNullOrEmpty(name))
+                                bkm.Name = name;
+
+                            if (!string.IsNullOrEmpty(bookmarkAddress))
+                                bkm.Address = bookmarkAddress;
+
+                            if (type != bkm.Type)
+                                bkm.Type = type;
+
+                        }
+                        else
+                        {
+                            bkm = BookmarkFactory.GetBookmark(type, account.Id, name, bookmarkAddress);
+
+                            bkm.Id = Guid.NewGuid();
+                            account.Bookmarks.Add(bkm);
+                        }
+
+                        if (EconomyMainContext.WorkWithDb)
+                        {
+                            dbservice.SaveBookmark(bkm);
+                        }
+
+                        return "OK";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot add bookmark!", ex);
+            }
+
+            return "Add bookmark - ERROR";
+        }
+
+        public override string DeleteBookmark(string wallet, string address, string bookmarkId, IDbConnectorService dbservice)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
+                {
+                    if (w.Accounts.TryGetValue(address, out var account))
+                    {
+                        var bkm = account.Bookmarks.FirstOrDefault(b => b.Id.ToString() == bookmarkId);
+                        if (bkm != null)
+                        {
+                            account.Bookmarks.Remove(bkm);
+                            if (EconomyMainContext.WorkWithDb)
+                            {
+                                dbservice.DeleteBookmark(bkm.Id.ToString());
+                            }
+
+                            return "OK";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot delete bookmark!", ex);
+            }
+
+            return "Delete Bookmark - ERROR";
+        }
+
+        public override string RemoveBookmark(string wallet, string address, string bookmarkId, IDbConnectorService dbservice)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(wallet, out var w))
+                {
+                    if (w.Accounts.TryGetValue(address, out var account))
+                    {
+                        var bkm = account.Bookmarks.FirstOrDefault(b => b.Id.ToString() == bookmarkId);
+                        if (bkm != null)
+                        {
+                            account.Bookmarks.Remove(bkm);
+                            if (EconomyMainContext.WorkWithDb)
+                            {
+                                dbservice.RemoveBookmark(bkm.Id.ToString());
+                            }
+
+                            return "OK";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot remove bookmark!", ex);
+            }
+
+            return "Remove Bookmark - ERROR";
+        }
+
+        public override List<IBookmark> GetAccountBookmarks(string address)
+        {
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(address, out var account))
+                {
+                    return account.Bookmarks;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get bookmarks!", ex);
+            }
+
+            return null;
         }
     }
 }

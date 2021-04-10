@@ -116,11 +116,33 @@ create table "Keys"
 );
 
 insert into "Keys" ("Id", "Name", "RelatedItemId", "StoredKey",  "PasswordHash", "IsEncrypted", "Type", "CreatedBy", "CreatedOn", "ModifiedBy", "ModifiedOn", "Version") values
-('0aa38ea1-08yd-43lc-b457-0bfb18234kjk', 'TestKey' ,'fc5df2f1-6def-4f08-973b-d9584e85b4d2', '', '', false, 1, 'fyziktom', now(),'fyziktom', now(), '0.1'),
-('4fl49487-f544-lsdf-a544-7c32jfa53lcd', 'MainAccountKey', '851e5874-1824-4fa9-bba6-7c4fc007aea5', '', '', false, 1, 'fyziktom', now(),'fyziktom', now(), '0.1');
+('0aa38ea1-08ad-43lc-b457-0bfb18234fac', 'TestKey' ,'fc5df2f1-6def-4f08-973b-d9584e85b4d2', '', '', false, 1, 'fyziktom', now(),'fyziktom', now(), '0.1'),
+('4fl49487-f544-aadf-a544-7c32ffa53acd', 'MainAccountKey', '851e5874-1824-4fa9-bba6-7c4fc007aea5', '', '', false, 1, 'fyziktom', now(),'fyziktom', now(), '0.1');
 
 
 --select * from "Keys"
+
+----------------------------------------------------------------------------------
+
+create table "Bookmarks"
+(
+    "Id" text primary key,
+    "Name" text,
+	"Address" text,
+	"RelatedItemId" text references "Accounts"("Id"),--todo multi reference to all tables Ids--
+	"Type" integer not null,
+	"CreatedBy" text not null,
+    "CreatedOn" timestamp not null,
+	"ModifiedBy" text not null,
+    "ModifiedOn" timestamp not null,
+	"Version" text,
+	"Deleted" boolean not null default false
+);
+
+insert into "Bookmarks" ("Id", "Name", "Address", "RelatedItemId", "Type", "CreatedBy", "CreatedOn", "ModifiedBy", "ModifiedOn", "Version") values
+('0aa38fa1-08ad-43ac-b457-0bfb4a3fd4fc', 'Test Bookmark', 'NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA' ,'fc5df2f1-6def-4f08-973b-d9584e85b4d2', 0, 'fyziktom', datetime(),'fyziktom', datetime(), '0.1');
+
+--select * from "Bookmarks"
 
 ----------------------------------------------------------------------------------
 

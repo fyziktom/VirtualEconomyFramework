@@ -18,6 +18,7 @@ namespace VEDrivers.Database
         public DbSet<Node> Nodes { get; set; }
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<Key> Keys { get; set; }
+        public DbSet<BookmarkEntity> Bookmarks { get; set; }
 
         public DbEconomyContext(DbContextOptions<DbEconomyContext> options) : base(options) { }
     }

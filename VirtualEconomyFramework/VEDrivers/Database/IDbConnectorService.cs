@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDrivers.Bookmarks;
 using VEDrivers.Economy.Wallets;
 using VEDrivers.Nodes;
 using VEDrivers.Security;
@@ -120,5 +121,32 @@ namespace VEDrivers.Database
         /// </summary>
         /// <returns></returns>
         bool RemoveKey(string keyId);
+
+        /// <summary>
+        /// Function returns all Bookmarks stored in database
+        /// </summary>
+        /// <returns>List of IBookmark object created based on specified type</returns>
+        List<IBookmark> GetBookmarks();
+        /// <summary>
+        /// Function returns Bookmark stored in database based on id
+        /// </summary>
+        /// <returns>IBookmark object created based on specified type</returns>
+        IBookmark GetBookmark(Guid id);
+        /// <summary>
+        /// Function Bookmark to the database
+        /// </summary>
+        /// <returns>true when success</returns>
+        bool SaveBookmark(IBookmark bookmark);
+        /// <summary>
+        /// Function will set specified Bookmark as deleted
+        /// </summary>
+        /// <returns></returns>
+        bool DeleteBookmark(string bookmarkId);
+
+        /// <summary>
+        /// Function will remove specified Bookmark from database
+        /// </summary>
+        /// <returns></returns>
+        bool RemoveBookmark(string bookmarkId);
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VEDrivers.Bookmarks;
 using VEDrivers.Economy.Wallets;
 using VEDrivers.Nodes;
 using VEDrivers.Nodes.Dto;
@@ -68,6 +69,11 @@ namespace VEDrivers.Database
                         .Where(k => k.RelatedItemId == a.Id)
                         .ToList();
 
+                    var bookmarks = context.Bookmarks
+                        .Where(b => !b.Deleted)
+                        .Where(b => b.RelatedItemId == a.Id)
+                        .ToList();
+
                     var acc = AccountFactory.GetAccount(new Guid(a.Id), (AccountTypes)a.Type, Guid.Empty, new Guid(a.WalletId), string.Empty, string.Empty, 0);
 
                     // load keys and key if exist
@@ -82,6 +88,16 @@ namespace VEDrivers.Database
                         foreach(var k in keys)
                         {
                             acc.AccountKeys.Add(k.Fill(new EncryptionKey("")));
+                        }
+                    }
+
+                    // load bookmarks
+                    if (bookmarks != null)
+                    {
+                        // fill account bookmarks
+                        foreach (var b in bookmarks)
+                        {
+                            acc.Bookmarks.Add(b.Fill(BookmarkFactory.GetBookmark((BookmarkTypes)b.Type, new Guid(b.Id), b.Name, b.Address)));
                         }
                     }
 
@@ -171,6 +187,34 @@ namespace VEDrivers.Database
             catch (Exception ex)
             {
                 log.Error("Cannot get keys list from Db", ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Function returns all Bookmarks stored in database
+        /// </summary>
+        /// <returns>List of IBookmark object created based on specified type</returns>
+        public List<IBookmark> GetBookmarks()
+        {
+            try
+            {
+                var bookmarks = new List<IBookmark>();
+
+                foreach (var bkm in context.Bookmarks.Where(b => !b.Deleted))
+                {
+                    if (bkm != null)
+                    {
+                        var bookmark = bkm.Fill(BookmarkFactory.GetBookmark((BookmarkTypes)bkm.Type, new Guid(bkm.RelatedItemId), bkm.Name, bkm.Address));
+                        bookmarks.Add(bookmark);
+                    }
+                }
+
+                return bookmarks;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get bookmarks list from Db", ex);
                 return null;
             }
         }
@@ -778,6 +822,140 @@ namespace VEDrivers.Database
             catch (Exception ex)
             {
                 log.Error("Cannot remove Key from Db", ex);
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// Function returns Bookmark stored in database based on id
+        /// </summary>
+        /// <returns>IBookmark object created based on specified type</returns>
+        public IBookmark GetBookmark(Guid id)
+        {
+            try
+            {
+                var bookmark = context.Bookmarks
+                    .Where(b => !b.Deleted)
+                    .Where(b => b.Id == id.ToString())
+                    .FirstOrDefault();
+
+                return bookmark.Fill(BookmarkFactory.GetBookmark((BookmarkTypes)bookmark.Type, new Guid(bookmark.RelatedItemId), bookmark.Name, bookmark.Address));
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get Bookmark from Db", ex);
+                return null;
+            }
+        }
+        /// <summary>
+        /// Function Bookmark to the database
+        /// </summary>
+        /// <returns>true when success</returns>
+        public bool SaveBookmark(IBookmark bookmark)
+        {
+            try
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    var bkm = context.Bookmarks
+                    .Where(b => !b.Deleted)
+                    .Where(b => b.Id == bookmark.Id.ToString())
+                    .FirstOrDefault();
+
+                    if (bkm != null)
+                    {
+                        bkm.Update(bookmark);
+                        bkm.ModifiedOn = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        var bk = new Models.BookmarkEntity();
+                        bk.Update(bookmark);
+                        bk.CreatedOn = DateTime.UtcNow;
+                        bk.CreatedBy = "admin";
+                        bk.ModifiedBy = "admin";
+                        context.Bookmarks.Add(bk);
+                    }
+
+                    context.SaveChanges();
+
+                    transaction.Commit();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot save Bookmark to Db", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Function will set specified Bookmark as deleted
+        /// </summary>
+        /// <returns></returns>
+        public bool DeleteBookmark(string bookmarkId)
+        {
+            try
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    var bookmark = context.Bookmarks
+                    .Where(b => !b.Deleted)
+                    .Where(b => b.Id == bookmarkId)
+                    .FirstOrDefault();
+
+                    if (bookmark != null)
+                    {
+                        bookmark.Deleted = true;
+                        context.Bookmarks.Update(bookmark);
+                    }
+
+                    context.SaveChanges();
+
+                    transaction.Commit();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot set Bookmark as deleted in Db", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Function will remove specified Bookmark from database
+        /// </summary>
+        /// <returns></returns>
+        public bool RemoveBookmark(string bookmarkId)
+        {
+            try
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    var bookmark = context.Bookmarks
+                    .Where(b => b.Id == bookmarkId)
+                    .FirstOrDefault();
+
+                    if (bookmark != null)
+                    {
+                        context.Bookmarks.Remove(bookmark);
+                    }
+
+                    context.SaveChanges();
+
+                    transaction.Commit();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot remove Bookmark from Db", ex);
                 return false;
             }
         }
