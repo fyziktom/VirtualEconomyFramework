@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.DTO;
+using VEDrivers.Economy.Shops;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Nodes.Dto;
@@ -165,7 +166,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
             }
         }
 
-        public override bool LoadWalletsFromDb(IDbConnectorService dbservice)
+        public override async Task<bool> LoadWalletsFromDb(IDbConnectorService dbservice)
         {
             //IDbConnectorService dbservice = new DbConnectorService();
 
@@ -174,6 +175,28 @@ namespace VEDrivers.Economy.Wallets.Handlers
                 var wallets = dbservice.GetWallets();
                 var accounts = dbservice.GetAccounts();
 
+                
+                foreach (var account in accounts)
+                {
+                    if (account.AccountKeyId != Guid.Empty)
+                    {
+                        try
+                        {
+                            if (account.Shop == null)
+                            {
+                                account.Shop = ShopFactory.GetShop(ShopTypes.NeblioTokenShop, account.Address, "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
+                            }
+
+                            account.Shop.IsActive = true;
+                            await account.Shop.StartShop();
+                        }
+                        catch(Exception ex)
+                        {
+                            ; // probably no setting for the shop
+                        }
+                    }
+                }
+                
                 if (wallets != null && accounts != null)
                 {
                     // this function will load accounts to proper wallets

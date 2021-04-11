@@ -71,7 +71,7 @@ namespace VEconomy
                 }
 
                 // try to load wallets from db. If not successfull create dummy one
-                if (!MainDataContext.WalletHandler.LoadWalletsFromDb(EconomyMainContext.DbService))
+                if (!MainDataContext.WalletHandler.LoadWalletsFromDb(EconomyMainContext.DbService).GetAwaiter().GetResult())
                     MainDataContext.WalletHandler.UpdateWallet(Guid.NewGuid(), owner.Id, "NeblioWallet", WalletTypes.Neblio, "127.0.0.1", 6326, EconomyMainContext.DbService).GetAwaiter().GetResult();
 
                 // load nodes from db

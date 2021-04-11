@@ -9,7 +9,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
 {
     public abstract class CommonWalletHandler : IWalletHandler
     {
-        public abstract bool LoadWalletsFromDb(IDbConnectorService dbservice);
+        public abstract Task<bool> LoadWalletsFromDb(IDbConnectorService dbservice);
 
         public abstract Task RefreshWallets();
 

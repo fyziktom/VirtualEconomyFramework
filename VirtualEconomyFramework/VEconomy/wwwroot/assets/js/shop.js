@@ -16,10 +16,10 @@ function shopOnLoad(_isShopHostedOnVEF) {
 
     // create data for shop item
     var uid1 = 'cecd86f6-bd5e-4735-9092-908bb6700548';
-    var name = 'CART Token For sale';
-    var description = 'CART Token nft';
-    var tokenSymbol = 'CART';
-    var tokenId = 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei';
+    var name = 'VENFT Token For sale';
+    var description = 'VENFT Token nft';
+    var tokenSymbol = 'VENFT';
+    var tokenId = 'La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8';
     var lot = 1;
     var price = 100000000;
     var address = 'NikErRpjtRXpryFRc3RkP5nxRzm1ApxFH8';
@@ -69,8 +69,9 @@ function shopOnLoad(_isShopHostedOnVEF) {
 
         if (selectedShopAccountAddress != '') {
             checkAccountLockStatus(selectedShopAccountAddress);
+            getActualAccountSourceTokenBalance();
         }
-        
+
     }, 2000);
 }
 
@@ -104,10 +105,10 @@ function initShop(address) {
         //$('#' + activeShopTabDivId).empty();
         // create data for shop item
         var uid = uuidv4();
-        var name = 'CART Token';
-        var description = 'CART Token nft';
-        var tokenSymbol = 'CART';
-        var tokenId = 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei';
+        var name = 'VENFT Token';
+        var description = 'VEFramework Token for NFTs';
+        var tokenSymbol = 'VENFT';
+        var tokenId = 'La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8';
         var lot = 1;
         var price = 100000000;
         var MSGTItem = new ShopItem(uid, address, 0, tokenSymbol, tokenId, lot, price, name, description, isShopHostedOnVEF);
@@ -143,12 +144,12 @@ function requestNeblioNFTTrade(owner, tokenId, utxoTxId, firstNFTUtxo, symbol, i
             $("#unlockAccountForOneTxConfirm").off();
             $("#unlockAccountForOneTxConfirm").click(function() {
                 var pass = $('#unlockAccountForOneTxPassword').val();
-                sendNeblioNFTrequestAPI(owner, sender, message, utxoTxId, firstNFTUtxo, tokenId, pass);
+                sendNeblioNFTrequestAPI(owner, sender, message, utxoTxId, firstNFTUtxo, tokenId, '', pass);
             });
             $('#addPassForTxMessageModal').modal('show');
         }
         else {
-            sendNeblioNFTrequestAPI(owner, sender, message, utxoTxId, firstNFTUtxo, tokenId, '');
+            sendNeblioNFTrequestAPI(owner, sender, message, utxoTxId, firstNFTUtxo, tokenId, '', '');
         }
     });
     $('#requestNFTTradeModal').modal('show'); 
@@ -193,8 +194,8 @@ function sendNeblioNFTrequestAPI(receiver, sender, message, utxoTxId, firstNFTUt
     var nft = {
         "senderAddress": sender,
         "receiverAddress": receiver,
-        "symbol": "CART",
-        "Id": 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei',
+        "symbol": "VENFT",
+        "Id": 'La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8',
         "amount": 1,
         "Password": pass,
         "metadata": metadata,
@@ -282,8 +283,8 @@ function sendNeblioNFTTradeResponseAPI(msgUtxo, receiver, sender, message, utxoT
     var nft = {
         "senderAddress": sender,
         "receiverAddress": receiver,
-        "symbol": "CART",
-        "Id": 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei',
+        "symbol": "VENFT",
+        "Id": 'La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8',
         "amount": 1,
         "Password": pass,
         "sendUtxo" : [
@@ -363,8 +364,8 @@ function sendNeblioNFTAPI(receiver, message, utxoTxId, firstNFTUtxo, tokenId, sy
     var nft = {
         "senderAddress": selectedShopAccountAddress,
         "receiverAddress": receiver,
-        "symbol": "CART",
-        "Id": 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei',
+        "symbol": "VENFT",
+        "Id": 'La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8',
         "amount": 1,
         "sendUtxo": [
           utxoTxId
@@ -403,13 +404,13 @@ function createNewItem() {
         $("#unlockAccountForOneTxConfirm").click(function() {
             var pass = $('#unlockAccountForOneTxPassword').val();
 
-            mintNewNFT(author, description, image, link, youtube, type, pass);
+            mintNewNFT(author, description, image, link, youtube, type, '', pass);
         });
         $('#addPassForTxMessageModal').modal('show');
     }
     else {
 
-        mintNewNFT(author, description, image, link, youtube, type, '');
+        mintNewNFT(author, description, image, link, youtube, type, '', '');
     }
 
     //ShowConfirmModal('', 'Do you realy want create this NFT?');
@@ -455,7 +456,7 @@ function mintNewNFT(author, description, image, link, youtube, type, tokenId, pa
         var nft = {
             "SenderAddress": selectedShopAccountAddress,
             "ReceiverAddress": selectedShopAccountAddress,
-            "Id": 'La8N1QroEDxxjkKYaPdPzatRj12nvRnL9JbUei',
+            "Id": 'La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8',
             "Password": pass,
             "Metadata": metadata,
         };
@@ -1114,4 +1115,111 @@ function addBookmarkAPI(indata) {
             console.log('Error: "' + errorMessage + '"');
         }
     });
+}
+
+function getActualAccountSourceTokenBalance() {
+
+    var url = document.location.origin + "/api/GetActualMintingTokenSupply";
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    var indata = {
+        "accountAddress": selectedShopAccountAddress,
+        "tokenId": "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8"
+    };
+    //var id = getAccountBookmarkIdByBookmarkAddress(address); //todo update of existing
+
+    $.ajax(url,
+    {
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(indata),
+        method: 'PUT',
+        dataType: 'json',   // type of response data
+        timeout: 10000,     // timeout milliseconds
+        success: function (data, status, xhr) {   // success callback function
+            //console.log(`Status: ${status}, Data:${data}`);
+            if (data != null) {
+                 $('#actualAccountSourceTokensBalance').text(data.totalAmount.toString());
+            }
+        },
+        error: function (jqXhr, textStatus, errorMessage) { // error callback 
+            console.log('Error: "' + errorMessage + '"');
+        }
+    });
+}
+
+// send neblio nft source tokens order
+
+function showSendSourceTokensOrderModal() {
+
+    var receiverAddress = 'NRJs13ULX5RPqCDfEofpwxGptg5ePB8Ypw';
+    $('#sendSourceTokenOrderModalWalletName').text(selectedShopWalletId);
+    $('#sendSourceTokenOrderModalAccountAddress').text(selectedShopAccountAddress);
+    $('#sendSourceTokenOrderModalReceiverAddress').val(receiverAddress);
+
+    $("#btnSendSourceTokenOrderModalConfirm").off();
+    $("#btnSendSourceTokenOrderModalConfirm").click(function() {
+
+        if (accountLockState) {
+            $("#unlockAccountForOneTxConfirm").off();
+            $("#unlockAccountForOneTxConfirm").click(function() {
+                var pass = $('#unlockAccountForOneTxPassword').val();
+                sendSourceTokensOrderAPI(receiverAddress, pass);
+            });
+            $('#addPassForTxMessageModal').modal('show');
+        }
+        else {
+            sendSourceTokensOrderAPI(receiverAddress, '');
+        }
+    });
+    $('#sendSourceTokenOrderModal').modal('show'); 
+
+}
+
+function sendSourceTokensOrderAPI(receiverAddress, pass) {
+
+    var url = document.location.origin + "/api/OrderSourceTokens/";
+
+    if (bootstrapstudio) {
+        url = url.replace('8000','8080');
+    }
+
+    var indata = {
+        "ReceiverAddress": receiverAddress,
+        "SenderAddress": selectedShopAccountAddress,
+        "Amount": 0.1,
+        "Password": pass
+    };
+
+    $.ajax(url,
+        {
+            contentType: 'application/json;charset=utf-8',
+            data: JSON.stringify(indata),
+            method: 'PUT',
+            dataType: 'json',   // type of response data
+            timeout: 10000,     // timeout milliseconds
+            success: function (data, status, xhr) {   // success callback function
+                console.log(`Status: ${status}, Data:${data}`);
+                $('#transactionSentModal').modal("show"); 
+                setTimeout(() => {
+                    if($('#transactionSentModal').hasClass('show')) {
+                        $('#transactionSentModal').modal("hide"); 
+                    }
+                }, 2500);
+            },
+            error: function (jqXhr, textStatus, errorMessage) { // error callback 
+                console.log('Error: "' + errorMessage + '"');
+
+                $('#txNotSendMessage').text(jqXhr.responseText);
+
+                $('#transactionNotSentModal').modal("show"); 
+                setTimeout(() => {
+                    if($('#transactionNotSentModal').hasClass('show')) {
+                        $('#transactionNotSentModal').modal("hide"); 
+                    }
+                }, 5000);
+            }
+        });
 }

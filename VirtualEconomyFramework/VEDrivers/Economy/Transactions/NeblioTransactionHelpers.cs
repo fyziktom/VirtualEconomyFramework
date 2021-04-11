@@ -101,7 +101,7 @@ namespace VEDrivers.Economy.Transactions
 
                 if (tokenin != null)
                 {
-                    transaction.VinTokens.Add(new NeblioNTP1Token()
+                    transaction.VinTokens.Add(new NeblioNTP1Token(string.Empty)
                     {
                         ActualBalance = tokenin.Amount,
                         Id = tokenin.TokenId,
@@ -114,7 +114,7 @@ namespace VEDrivers.Economy.Transactions
                         MetadataAvailable = tokeninfo.MetadataAvailable,
                         TimeStamp = transaction.TimeStamp,
                         TxId = info.Txid
-                    });
+                    }); ;
                 }
 
                 var addrto = string.Empty;
@@ -162,7 +162,7 @@ namespace VEDrivers.Economy.Transactions
                 transaction.To.Add(addrto);
                 if (tokenout != null)
                 {
-                    transaction.VoutTokens.Add(new NeblioNTP1Token()
+                    transaction.VoutTokens.Add(new NeblioNTP1Token(string.Empty)
                     {
                         ActualBalance = tokenout.Amount,
                         Id = tokenout.TokenId,
@@ -232,7 +232,7 @@ namespace VEDrivers.Economy.Transactions
                 _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
             }
 
-            IToken token = new NeblioNTP1Token();
+            IToken token = new NeblioNTP1Token("");
 
             GetTokenMetadataResponse info = new GetTokenMetadataResponse();
             try
@@ -393,7 +393,7 @@ namespace VEDrivers.Economy.Transactions
                     
                     dto.Sendutxo = new List<string>();
 
-                    if (data.sendUtxo != null)
+                    if (data.sendUtxo?.Count != 0)
                     {
                         if (!isItMintNFT)
                         {
@@ -449,7 +449,7 @@ namespace VEDrivers.Economy.Transactions
                     // need some neblio too
                     // to be sure to have last tx request it from neblio network
                     // set some minimum amount
-                    var utxos = await GetAddressNeblUtxo(data.SenderAddress, fee, 2*fee); // to be sure find at leas 2 times of expected fee
+                    var utxos = await GetAddressNeblUtxo(data.SenderAddress, 0.0001, 2*0.0001); // to be sure find at leas 2 times of expected fee
                     // create raw Tx with NBitcoin
                     NBitcoin.Altcoins.Neblio.NeblioTransaction neblUtxo = null;
                     if (utxos == null)
@@ -457,15 +457,38 @@ namespace VEDrivers.Economy.Transactions
                         throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
                     }
 
-                    foreach (var u in utxos)
+
+                    var found = false;
+                    if (!string.IsNullOrEmpty(data.NeblUtxo))
                     {
-                        if ((u.Value * NeblioCrypto.FromSatToMainRatio) >= 2 * fee)
+                        foreach(var u in utxos)
                         {
-                            dto.Sendutxo.Add(u.Txid + ":" + u.Index);
-                            break;
+                            if (u.Txid == data.NeblUtxo)
+                            {
+                                dto.Sendutxo.Add(u.Txid + ":" + u.Index);
+                                found = true;
+                                break;
+                            }
                         }
                     }
 
+                    if (!found && !data.SendEvenNeblUtxoNotFound && string.IsNullOrEmpty(data.NeblUtxo))
+                        throw new Exception("Input Neblio Utxo is not spendable!");
+
+                    if (!found && data.SendEvenNeblUtxoNotFound)
+                    {
+                        if (string.IsNullOrEmpty(data.NeblUtxo))
+                        {
+                            foreach (var u in utxos)
+                            {
+                                if ((u.Value * NeblioCrypto.FromSatToMainRatio) >= 2 * fee)
+                                {
+                                    dto.Sendutxo.Add(u.Txid + ":" + u.Index);
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
                     foreach (var d in data.Metadata)
                     {
@@ -723,7 +746,7 @@ namespace VEDrivers.Economy.Transactions
                 }
                 else
                 {
-                    var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 1);
+                    var utxs = await FindUtxoForMintNFT(data.SenderAddress, "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", 1);
 
                     if (utxs != null)
                     {
@@ -742,19 +765,21 @@ namespace VEDrivers.Economy.Transactions
 
                 //data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", mainUtxo));
 
+                data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
+
                 var dto = new SendTokenTxData()
                 {
                     Amount = 1,
-                    Id = data.Id,
+                    Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
+                    Symbol = "VENFT",
                     Metadata = data.Metadata,
                     Password = data.Password,
                     SenderAddress = data.SenderAddress,
                     ReceiverAddress = data.SenderAddress,
                     sendUtxo = utxos,
+                    SendEvenNeblUtxoNotFound = true,
                     UseRPCPrimarily = false
                 };
-
-                data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
 
                 var resp = await SendNTP1TokenAPI(dto, fee: fee, isItMintNFT: true);
 
@@ -850,7 +875,7 @@ namespace VEDrivers.Economy.Transactions
                     }
 
                     // to be sure to have last tx request it from neblio network
-                    var utxos = await GetAddressNeblUtxo(data.SenderAddress, data.Amount + fee, data.Amount);
+                    var utxos = await GetAddressNeblUtxo(data.SenderAddress, ((2 * fee)/NeblioCrypto.FromSatToMainRatio), (data.Amount * NeblioCrypto.FromSatToMainRatio));
                     // create raw Tx with NBitcoin
                     NBitcoin.Altcoins.Neblio.NeblioTransaction neblUtxo = null;
                     if (utxos == null)
@@ -910,7 +935,7 @@ namespace VEDrivers.Economy.Transactions
                         allNeblCoins += (double)u.Value;
 
                     var amountinSat = Convert.ToUInt64(data.Amount * NeblioCrypto.FromSatToMainRatio);
-                    var balanceinSat = Convert.ToUInt64(allNeblCoins * NeblioCrypto.FromSatToMainRatio);
+                    var balanceinSat = Convert.ToUInt64(allNeblCoins);
                     var diffinSat = balanceinSat - amountinSat - Convert.ToUInt64(fee);
 
                     //var feescriptpubkey = new Script("OP_RETURN 4e5403100100010000001d789cab562a2d4e2d72492c4954b2aa56ca4d05d1d1b1b5b5006ab30885");
@@ -1023,6 +1048,54 @@ namespace VEDrivers.Economy.Transactions
             return utxos;
         }
 
+        public static async Task<ICollection<Utxos>> GetAddressTokensUtxos(string addr)
+        {
+            if (_client == null)
+            {
+                _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            }
+
+            var utxosAll = await _client.GetAddressInfoAsync(addr);
+            var utxos = new List<Utxos>();
+
+            if (utxosAll.Utxos != null)
+            {
+                foreach (var u in utxosAll.Utxos)
+                {
+                    if (u.Tokens.Count > 0)
+                    {
+                        utxos.Add(u);
+                    }
+                }
+            }
+
+            return utxos;
+        }
+
+        public static async Task<ICollection<Utxos>> GetAddressNFTsUtxos(string addr)
+        {
+            if (_client == null)
+            {
+                _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            }
+
+            var utxosAll = await _client.GetAddressInfoAsync(addr);
+            var utxos = new List<Utxos>();
+
+            if (utxosAll.Utxos != null)
+            {
+                foreach (var u in utxosAll.Utxos)
+                {
+                    if (u.Tokens.Count == 1)
+                    {
+                        utxos.Add(u);
+                    }
+                }
+            }
+
+            return utxos;
+        }
+
         public static async Task<string> BroadcastNeblTxAsync(BroadcastTxRequest dto)
         {
             if (_client == null)
@@ -1060,7 +1133,7 @@ namespace VEDrivers.Economy.Transactions
                     {
                         if (utx.Tokens.Count == 0)
                         {
-                            if (((double)utx.Value * NeblioCrypto.FromSatToMainRatio) > minAmount)
+                            if (((double)utx.Value) > (minAmount * NeblioCrypto.FromSatToMainRatio))
                             {
                                 try
                                 {
@@ -1071,8 +1144,8 @@ namespace VEDrivers.Economy.Transactions
                                         if (tx.Confirmations > 0 && tx.Blockheight > 0)
                                         {
                                             resp.Add(utx);
-                                            founded += (double)utx.Value * NeblioCrypto.FromSatToMainRatio;
-                                            if (founded >= requiredAmount)
+                                            founded += (double)utx.Value;
+                                            if (founded > requiredAmount)
                                                 return resp;
                                         }
                                     }

@@ -50,6 +50,17 @@ namespace VEDrivers.Economy.DTO
         public ICollection<string> sendUtxo { get; set; }
 
         /// <summary>
+        /// If you wish to add specific neblio utxo as source for the fee
+        /// </summary>
+        public string NeblUtxo { get; set; } = string.Empty;
+        /// <summary>
+        /// If this is set and you will provide NeblUtxo, but it is not found in the list of spendable nebl utxos
+        /// it will find another spendable utxo
+        /// If this is not set and utxo is not found it will throw exception
+        /// </summary>
+        public bool SendEvenNeblUtxoNotFound { get; set; } = false;
+
+        /// <summary>
         /// If you use RPC and NBitcoin you can preffer using RPC with set this to true
         /// </summary>
         public bool UseRPCPrimarily { get; set; }

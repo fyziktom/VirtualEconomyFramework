@@ -139,7 +139,7 @@ namespace VEDrivers.Common
         /// <summary>
         /// This Token is used for sending messages
         /// </summary>
-        public static NeblioNTP1Token MessagingToken { get; set; } = new NeblioNTP1Token() { Symbol = "MSGT", Id = "La3Fiunz84XRHDGb1HhQboH6x3TzhV2PMeRQNZ" };
+        public static NeblioNTP1Token MessagingToken { get; set; } = new NeblioNTP1Token(string.Empty) { Symbol = "MSGT", Id = "La3Fiunz84XRHDGb1HhQboH6x3TzhV2PMeRQNZ" };
 
         }
 }

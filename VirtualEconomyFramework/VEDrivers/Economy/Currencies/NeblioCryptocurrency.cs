@@ -42,7 +42,7 @@ namespace VEDrivers.Economy
             // load other detail about cryptocurrency
             try
             {
-                GetDetails().GetAwaiter().GetResult();
+                //GetDetails().GetAwaiter().GetResult();
             }
             catch(Exception ex)
             {

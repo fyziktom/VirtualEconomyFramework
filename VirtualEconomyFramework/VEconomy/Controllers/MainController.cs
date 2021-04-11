@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Neblio.RestApi;
 using Newtonsoft.Json;
 using VEconomy.Common;
 using VEDrivers.Bookmarks;
@@ -19,6 +20,7 @@ using VEDrivers.Common;
 using VEDrivers.Database;
 using VEDrivers.Economy.DTO;
 using VEDrivers.Economy.Receipt;
+using VEDrivers.Economy.Shops;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Economy.Wallets;
@@ -2009,6 +2011,8 @@ namespace VEconomy.Controllers
                     {
                         if (!string.IsNullOrEmpty(sourceUtxo))
                         {
+                            data.Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+                            data.Symbol = "VENFT";
                             var res = await NeblioTransactionHelpers.SendNTP1TokenAPI(data, isNFTtx: true);
 
                             return new { info = res, ReadingError = "OK" };
@@ -2047,6 +2051,212 @@ namespace VEconomy.Controllers
             {
                 //log.Error("Cannot send Neblio Transaction", ex);
                 throw new HttpResponseException((HttpStatusCode)501, $"Cannot Mint NFT - {ex.Message}!");
+            }
+        }
+
+        public class GetMintingStatusDto
+        {
+            public string accountAddress { get; set; } = string.Empty;
+            public string tokenId { get; set; } = string.Empty;
+        }
+
+        /// <summary>
+        /// Get actual balance for minting
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns> list of utxos (key utxos, value List<Utxos>) and token data (key token, value IToken) </returns>
+        [HttpPut]
+        [Route("GetActualMintingTokenSupply")]
+        //[Authorize(Rights.Administration)]
+        public async Task<object> GetActualMintingTokenSupply([FromBody] GetMintingStatusDto data)
+        {
+            try
+            {
+                //var res = await NeblioTransactionHelpers.FindUtxoForMintNFT(data.accountAddress, data.tokenId);
+
+                // this will get all utxos of the tokens biger than 1 token
+                var res = await NeblioTransactionHelpers.GetAddressTokensUtxos(data.accountAddress);
+                var utxos = new List<Utxos>();
+                foreach(var r in res)
+                {
+                    var toks = r.Tokens.ToArray()?[0];
+                    if (toks != null) {
+                        if (toks.Amount > 1)
+                        {
+                            if (toks.TokenId == "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
+                                utxos.Add(r);
+                        }
+                    }
+                }
+
+                var token = await NeblioTransactionHelpers.TokenMetadataAsync(TokenTypes.NTP1, data.tokenId, string.Empty);
+
+                var totalAmount = 0.0;
+                foreach (var u in utxos)
+                    totalAmount += (double)u.Tokens.ToArray()?[0]?.Amount;
+
+                var info = new
+                {
+                    totalAmount = totalAmount,
+                    utxos = utxos,
+                    token = token
+                };
+
+                return info;
+
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Transaction", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot Get Minting Token supply - {ex.Message}!");
+            }
+        }
+
+        /// <summary>
+        /// Send Message with Neblio VENFT token to the addres
+        /// Please check SendMessageDto class for the details
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("SendShopSettingToken")]
+        //[Authorize(Rights.Administration)]
+        public async Task<object> SendShopSettingToken([FromBody] SendNeblioShopSettingTokenTxData data)
+        {
+            try
+            {
+                data.Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+                data.TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+                data.Symbol = "VENFT";
+                data.Metadata.Add("ShopSettingToken", "true");
+                data.Metadata.Add("Name", data.ShopName);
+                data.Metadata.Add("Description", data.ShopDescription);
+
+                data.Metadata.Add("ShopItems", JsonConvert.SerializeObject(data.ShopItems));
+
+                var resp = await NeblioTransactionHelpers.SendNTP1TokenAPI(data, fee: 30000);
+
+                return new { info = resp, ReadingError = "OK" };
+
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Token", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Neblio Token - {ex.Message}!");
+            }
+        }
+
+        public class StartShopDto
+        {
+            /// <summary>
+            /// Guid format of wallet Id
+            /// </summary>
+            public string walletId { get; set; }
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
+            public string accountAddress { get; set; }
+            public string tokenId { get; set; } = string.Empty;
+        }
+
+        /// <summary>
+        /// Start Account Shop
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("StartAccountShop")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> StartAccountShop([FromBody] StartShopDto data)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(data.walletId, out var w))
+                {
+                    if (w.Accounts.TryGetValue(data.accountAddress, out var account))
+                    {
+                        if (account.Shop == null)
+                        {
+                            account.Shop = ShopFactory.GetShop(ShopTypes.NeblioTokenShop, data.accountAddress, data.tokenId);
+                        }
+
+                        account.Shop.IsActive = true;
+                        var resp = await account.Shop.StartShop();
+
+                        return resp;
+                    }
+                }
+
+                return string.Empty;
+
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Transaction", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot Get Minting Token supply - {ex.Message}!");
+            }
+        }
+
+        /// <summary>
+        /// Restart Account Shop
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("RestartAccountShop")]
+        //[Authorize(Rights.Administration)]
+        public async Task<string> RestartAccountShop([FromBody] StartShopDto data)
+        {
+            try
+            {
+                if (EconomyMainContext.Wallets.TryGetValue(data.walletId, out var w))
+                {
+                    if (w.Accounts.TryGetValue(data.accountAddress, out var account))
+                    {
+                        account.Shop = null; //todo cancel and dispose
+                        
+                        account.Shop = ShopFactory.GetShop(ShopTypes.NeblioTokenShop, data.accountAddress, data.tokenId);
+                        
+                        account.Shop.IsActive = true;
+                        var resp = await account.Shop.StartShop();
+
+                        return resp;
+                    }
+                }
+
+                return string.Empty;
+
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Transaction", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot Get Minting Token supply - {ex.Message}!");
+            }
+        }
+
+        /// <summary>
+        /// Send 1 NEBL to VEF address to obtain the 100 VENFT tokens
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("OrderSourceTokens")]
+        //[Authorize(Rights.Administration)]
+        public async Task<object> OrderSourceTokens([FromBody] SendTxData data)
+        {
+            try
+            {
+                data.Amount = 1;
+                data.Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+                data.Symbol = "VENFT";
+                var res = await NeblioTransactionHelpers.SendNeblioTransactionAPI(data);
+
+                return new { info = res, ReadingError = "OK" };
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Transaction", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot send Transaction Token - {ex.Message}!");
             }
         }
 

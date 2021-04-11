@@ -8,6 +8,7 @@ using VEDrivers.Bookmarks;
 using VEDrivers.Common;
 using VEDrivers.Economy.Coins;
 using VEDrivers.Economy.DTO;
+using VEDrivers.Economy.Shops;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Nodes;
@@ -44,6 +45,7 @@ namespace VEDrivers.Economy.Wallets
         [JsonIgnore]
         List<EncryptionKey> AccountKeys { get; set; }
         List<IBookmark> Bookmarks { get; set; }
+        IShop Shop { get; set; }
         IDictionary<string, IToken> Tokens { get; set; }
 
         [JsonIgnore]

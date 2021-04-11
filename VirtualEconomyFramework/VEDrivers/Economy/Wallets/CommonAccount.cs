@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VEDrivers.Bookmarks;
 using VEDrivers.Economy.Coins;
 using VEDrivers.Economy.DTO;
+using VEDrivers.Economy.Shops;
 using VEDrivers.Economy.Tokens;
 using VEDrivers.Economy.Transactions;
 using VEDrivers.Nodes;
@@ -40,6 +41,7 @@ namespace VEDrivers.Economy.Wallets
         public List<EncryptionKey> AccountKeys { get; set; } = new List<EncryptionKey>();
 
         public List<IBookmark> Bookmarks { get; set; }
+        public IShop Shop { get; set; }
 
         //Db interface interface
         public string CreatedBy { get; set; }

@@ -10,7 +10,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
     public interface IWalletHandler
     {
         Task<string> UpdateWallet(Guid id, Guid ownerid, string walletName, WalletTypes type, string urlBase, int port, IDbConnectorService dbservice);
-        bool LoadWalletsFromDb(IDbConnectorService dbservice);
+        Task<bool> LoadWalletsFromDb(IDbConnectorService dbservice);
         Task RefreshWallets();
         bool ReloadAccounts();
     }

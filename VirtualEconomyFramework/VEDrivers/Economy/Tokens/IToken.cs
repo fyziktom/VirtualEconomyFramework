@@ -14,6 +14,7 @@ namespace VEDrivers.Economy.Tokens
     }
     public interface IToken : IUnitBase
     {
+        TokenTypes Type { get; set; }
         string Id { get; set; }
         string TxId { get; set; }
         string IssuerName { get; set; }

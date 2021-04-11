@@ -8,6 +8,7 @@ namespace VEDrivers.Economy.Tokens
 {
     public abstract class CommonToken : IToken
     {
+        public TokenTypes Type { get; set; }
         public string Id { get; set; } = string.Empty;
         public string TxId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
