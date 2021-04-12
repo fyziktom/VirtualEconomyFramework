@@ -472,10 +472,10 @@ namespace VEDrivers.Economy.Transactions
                         }
                     }
 
-                    if (!found && !data.SendEvenNeblUtxoNotFound && string.IsNullOrEmpty(data.NeblUtxo))
+                    if (!found && !data.SendEvenNeblUtxoNotFound && !string.IsNullOrEmpty(data.NeblUtxo))
                         throw new Exception("Input Neblio Utxo is not spendable!");
 
-                    if (!found && data.SendEvenNeblUtxoNotFound)
+                    if (!found)
                     {
                         if (string.IsNullOrEmpty(data.NeblUtxo))
                         {
@@ -630,7 +630,7 @@ namespace VEDrivers.Economy.Transactions
                                                         foreach (var d in dto.Sendutxo)
                                                         {
                                                             if (d.Split(":")[1] == (tx1.Outputs.IndexOf(to).ToString()))
-                                                                list.Add(new Coin(tx1, (uint)(tx1.Outputs.IndexOf(to))));
+                                                                list.Add(new Coin(tx1, Convert.ToUInt32(d.Split(":")[1])));
                                                         }
                                             }
 
@@ -641,7 +641,7 @@ namespace VEDrivers.Economy.Transactions
                                                         foreach (var d in dto.Sendutxo)
                                                         {
                                                             if (d.Split(":")[1] == (tx2.Outputs.IndexOf(to).ToString()))
-                                                                list.Add(new Coin(tx2, (uint)(tx2.Outputs.IndexOf(to))));
+                                                                list.Add(new Coin(tx2, Convert.ToUInt32(d.Split(":")[1])));
                                                         }
                                             }
 
@@ -914,7 +914,8 @@ namespace VEDrivers.Economy.Transactions
                             foreach (var to in txin.Outputs)
                             {
                                 if (to.ScriptPubKey == addressForTx.ScriptPubKey)
-                                    list.Add(new Coin(txin, (uint)(txin.Outputs.IndexOf(to))));
+                                    if (to.Value.Satoshi != 10000)
+                                        list.Add(new Coin(txin, (uint)utxo.Index));
                             }
                             if (transaction.Inputs.Count > 0)
                             {
@@ -1141,7 +1142,7 @@ namespace VEDrivers.Economy.Transactions
 
                                     if (tx != null)
                                     {
-                                        if (tx.Confirmations > 0 && tx.Blockheight > 0)
+                                        if (tx.Confirmations > 1 && tx.Blockheight > 0)
                                         {
                                             resp.Add(utx);
                                             founded += (double)utx.Value;
@@ -1185,7 +1186,7 @@ namespace VEDrivers.Economy.Transactions
                                 var tx = await _client.GetTransactionInfoAsync(ut.Txid);
                                 if (tx != null)
                                 {
-                                    if (tx.Confirmations > 0 && tx.Blockheight > 0)
+                                    if (tx.Confirmations > 1 && tx.Blockheight > 0)
                                     {
                                         return (true, (double)ut.Index);
                                     }
@@ -1227,7 +1228,7 @@ namespace VEDrivers.Economy.Transactions
                                     var tx = await _client.GetTransactionInfoAsync(ut.Txid);
                                     if (tx != null)
                                     {
-                                        if (tx.Confirmations > 0 && tx.Blockheight > 0)
+                                        if (tx.Confirmations > 1 && tx.Blockheight > 0)
                                         {
                                             return (true, (double)ut.Index);
 
@@ -1273,7 +1274,7 @@ namespace VEDrivers.Economy.Transactions
                                     var tx = await _client.GetTransactionInfoAsync(ut.Txid);
                                     if (tx != null)
                                     {
-                                        if (tx.Confirmations > 0 && tx.Blockheight > 0)
+                                        if (tx.Confirmations > 1 && tx.Blockheight > 0)
                                         {
                                             return (true, (double)ut.Index);
                                         }
@@ -1342,6 +1343,146 @@ namespace VEDrivers.Economy.Transactions
             }
             
             return resp;
+        }
+
+        public static async Task<Utxos> FindUtxoToSplit(string addr, string tokenId, int lotAmount = 100, double oneTokenSat = 10000)
+        {
+            if (_client == null)
+            {
+                _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            }
+
+            var addinfo = await _client.GetAddressInfoAsync(addr);
+            var utxos = addinfo.Utxos;
+
+            var resp = new List<Utxos>();
+            var founded = 0.0;
+
+            if (utxos != null)
+            {
+
+                utxos = utxos.OrderBy(u => u.Value).ToList();
+
+                foreach (var utx in utxos)
+                {
+                    if (utx.Blockheight > 0)
+                    {
+                        if (utx.Tokens.Count > 0)
+                        {
+                            if (utx.Value == oneTokenSat)
+                            {
+                                var tok = utx.Tokens.ToArray()?[0];
+                                if (tok != null)
+                                {
+                                    if (tok.TokenId == tokenId)
+                                    {
+                                        if (tok?.Amount > lotAmount)
+                                        {
+                                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                                            if (tx != null)
+                                            {
+                                                if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                                {
+                                                    founded += (double)tok.Amount;
+                                                    
+                                                    return utx;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public static async Task<List<string>> SplitTheTokens (string address, string password, string tokenId, int lotAmount, int numberOfLots)
+        {
+            var listofFinalUtxo = new List<string>();
+
+            if (lotAmount > 1)
+            {
+                for (int i = 0; i < numberOfLots; i++)
+                {
+                    try
+                    {
+                        Console.WriteLine($"Starting spliting lot number {i}!");
+
+                        var utxoFound = false;
+                        var attempts = 120;
+                        Utxos sutx = null;
+                        Utxos neblUtxo = null;
+
+                        while (!utxoFound)
+                        {
+                            sutx = await NeblioTransactionHelpers.FindUtxoToSplit(address, tokenId, lotAmount + 2);
+                            var neblUtxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, 0.0002);
+                            neblUtxo = neblUtxos?.FirstOrDefault();
+                            if (sutx != null && neblUtxo != null)
+                            {
+                                utxoFound = true;
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Waiting for source Utxo for spliting for item {i} of {numberOfLots}!");
+                                await Task.Delay(1000);
+                                attempts--;
+                                if (attempts < 0)
+                                {
+                                    Console.WriteLine("Too long to get utxo for spliting!");
+                                    throw new Exception("Cannot find Utxos for spliting!");
+                                }
+                            }
+                        }
+
+                        if (sutx != null && neblUtxo != null)
+                        {
+                            Console.WriteLine("Utxo for spliting found, start spliting!");
+
+                            var meta = new Dictionary<string, string>();
+                            meta.Add("Split Coin Process", "true");
+
+                            var sendutxos = new List<string>();
+
+                            sendutxos.Add(sutx.Txid + ":" + sutx.Index);
+
+                            var dto = new SendTokenTxData()
+                            {
+                                Amount = lotAmount,
+                                Id = tokenId,
+                                Metadata = meta,
+                                Password = password,
+                                SenderAddress = address,
+                                ReceiverAddress = address,
+                                sendUtxo = sendutxos,
+                                UseRPCPrimarily = false
+                            };
+
+                            var resp = await NeblioTransactionHelpers.SendNTP1TokenAPI(dto, isItMintNFT: true);
+
+                            if (!string.IsNullOrEmpty(resp))
+                            {
+                                Console.WriteLine($"Succesfully splited in txid {resp}!");
+                                listofFinalUtxo.Add(resp);
+                            }
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error("Cannot split tokens!", ex);
+                    }
+                }
+
+                return listofFinalUtxo;
+            }
+
+            return null;
         }
 
     }

@@ -427,6 +427,11 @@ function mintNewNFT(author, description, image, link, youtube, type, tokenId, pa
             return;
         }
 
+        if (parseFloat($('#actualAccountSourceTokensBalance').text()) < 2) {
+            alert('You dont have enough of source tokens. Please buy some.');
+            return;
+        }
+
         var metadata = {};
 
         if (type == 'NFT Image') {
@@ -709,7 +714,7 @@ function sendShopApiCommand(apicommand, data) {
                 console.log('Error: "' + errorMessage + '"');
 
                 if (errorMessage == 'Not Implemented') {
-                    $('#txNotSendMessage').text("Probably still waiting for confirmation of previous tx. " + errorMessage);
+                    $('#txNotSendMessage').text("Probably still waiting for confirmation of previous tx. " + jqXhr.responseText);
                 }
                 else {
                     $('#txNotSendMessage').text(jqXhr.responseText + errorMessage);

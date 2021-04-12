@@ -168,7 +168,7 @@ namespace VEDrivers.Economy.Shops
                     meta.Add("Token Order", "true");
                     meta.Add("PaymentTxId", utxo.Txid);
 
-                    var sutxs = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, TokenId, amountOfTokens);
+                    var sutxs = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, TokenId, amountOfTokens-1);
                     if (sutxs.Count != 0)
                     {
                         var sendutxos = new List<string>();

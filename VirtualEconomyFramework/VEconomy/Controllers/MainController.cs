@@ -2197,6 +2197,47 @@ namespace VEconomy.Controllers
             }
         }
 
+        public class SplitTokesData
+        {
+            /// <summary>
+            /// Account address, now just Neblio addresses
+            /// </summary>
+            public string accountAddress { get; set; }
+            public string tokenId { get; set; } = string.Empty;
+            public string password { get; set; } = string.Empty;
+            public int lotAmount { get; set; } = 100;
+            public int numberOfLots { get; set; } = 10;
+        }
+
+        /// <summary>
+        /// Split tokens to smaller lots
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("SplitTokens")]
+        //[Authorize(Rights.Administration)]
+        public async Task<List<string>> SplitTokens([FromBody] SplitTokesData data)
+        {
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(data.accountAddress, out var account))
+                {
+                    var resp = await NeblioTransactionHelpers.SplitTheTokens(data.accountAddress, data.password, data.tokenId, data.lotAmount, data.numberOfLots);
+
+                    return resp;
+                }
+
+                return null;
+
+            }
+            catch (Exception ex)
+            {
+                //log.Error("Cannot send Neblio Transaction", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot Split Tokens - {ex.Message}!");
+            }
+        }
+
         /// <summary>
         /// Restart Account Shop
         /// </summary>
