@@ -6,9 +6,13 @@ Application uses PostgreSQL to store local data, publish data to MQTT and lots o
 Main framework is .NET Core 5.0 (ASP.NET). Code is written in C#, HTML, CSS and JavaScript.
 Solution is for Visual Studio 2019.
 
-IMPORTANT! This repository is now under huge development so please wait until it will be tagged as Beta before you will post any issues or any contribution. Expected beta is planned to end of the March 2021.
+IMPORTANT! This repository is now under huge development so please wait until it will be tagged as Beta before you will post any issues or any contribution. Expected beta is planned to end of the April 2021.
 
 # Project and Code Documentation
+
+Project Wiki
+
+[Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki)
 
 VE Economy Application
 
@@ -29,6 +33,7 @@ Most important are the comments in the Controller class in VEconomy:
 -	VEconomy – ASP.NET application to be shaped to your app or used as it is.
 -	VEDrivers – digital twins and other drivers for economy-based applications.
 -	VEGameDrivers - drivers for connecting games and blockchain
+-	VECryptographyUtilities - encrypt and decrypt keys
 -	VENodeExecutor – runs node-red as a service.
 -	VEQTWalletExecutor – runs QT Wallet as a service.
 -	VEUsersUtility – utility to create first admin user in Db
@@ -48,8 +53,11 @@ For compilation you need to install Arduino IDE and M5Stack libraries and ESP32 
 -	Digital Twins of objects related to blockchain such as Wallet, Account, Transaction, Token, etc. and publishing these data to MQTT.
 -	Set of drivers/helpers for economy-based applications.
 -	Set of drivers/helpers for using blockchain in games
+-	Set of drivers/helpers for minting and trade NFTs
+-	Automatic shop for selling source tokens (send nebl receive lot of tokens)
 -	Simple Chess Game which store game data to blockchain as example
 -	Client for encrypted messaging via Neblio Blockchain. Optional Both side asymmetric RSA encryption. With UI
+-	Integrated key manager for storing keys in encrypted form. Solves export and import keys.
 -	REST API with OpenAPI description in Swagger.
 -	QT Wallet RPC client and controller for communication with desktop wallet or core of blockchain based on Bitcoin QT Wallet.
 -	QT Wallet is optional.
@@ -79,12 +87,13 @@ For compilation you need to install Arduino IDE and M5Stack libraries and ESP32 
 # Main Planned Features
 
 - Async loading of Tx - almost done, testing, cancel
+- Automatic shop for selling specific NFTs
 -	DocFx documentation of project - in progress, available [here](https://veframework.com/documentation/api/index.html)
 -	Raspberry PI pre-installed image - in progress, almost done
 -	ReddCoin and Bitcoin drivers (maybe Polkadot and Chainlink)
 -	Lock and unlock desktop wallet and other RPC commands for wallets
 -	Support for multiple QT Wallets
--	Transactions details in UI - almost done (need to add token meta details)
+-	Transactions details in UI - almost done (need to add token meta details) - needs page listing!
 -	Improve messaging system and UI, message grouping, coversation history, mark answered messages
 -	HTTPS support
 -	MQTT Broker on all available IPs
@@ -96,7 +105,6 @@ For compilation you need to install Arduino IDE and M5Stack libraries and ESP32 
 -	Connector to MS SQL - integrated, needs tests. Also integrated and tested SQLite ;)
 -	Unit tests
 -	Docker support
-
 
 # Supported Platforms
 
@@ -118,7 +126,7 @@ This application needs few steps of installation to run with all features.
 If you do not want to use Database or QT wallet just skip these steps. In appsetings.json you can disable working with Db and QT.
 You can run app without Db but with QT support and oposite too. Without QT app cannot sign transactions now!
 
-Default setting of the app uses SQLite Db. This is automatically created after start if not exists in user AppData folder (on Win 10 C:\Users\UserName\AppData\Roaming\VEFramework). To install another database please follow instructions below.
+Default setting of the app uses SQLite Db. This is automatically created after start if not exists in user AppData folder (on Win 10 C:\Users\UserName\AppData\Roaming\VEFramework). To install another database please follow instructions below. For simplified setup plese check [Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki) please.
 
 1.	Database - Optional
 -	Download build of PostgreSQL for your platform: https://www.postgresql.org/download/
@@ -173,9 +181,9 @@ Please remember. If you will install MQTT Broker in Node-RED you have to set dif
 
 Here you can download first pre-beta pre-build. It is preset to work with SQLite Db (created automatically after start if not exists).
 
-Actual version now supports signing and sending transactions without QT Wallet. It works as independent Wallet for Neblio now.
+Actual version now supports signing and sending transactions even without QT Wallet. It works as independent Wallet for Neblio now.
 
-For details about setting of VEconomy application please read the VEconomy [Application Readme](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEconomy#veconomy-application).
+For details about setting of VEconomy application please read the VEconomy [Application Readme](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEconomy#veconomy-application). For using please visit the [Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki)
 
 Here you can download the app:
 
