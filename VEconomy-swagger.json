@@ -2382,6 +2382,354 @@
         }
       }
     },
+    "/api/SendNeblioNFT": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTokenTxData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTokenTxData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTokenTxData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTokenTxData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MintNeblioNFT": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MintNFTData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MintNFTData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MintNFTData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MintNFTData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GetActualMintingTokenSupply": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetMintingStatusDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetMintingStatusDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetMintingStatusDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetMintingStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SendShopSettingToken": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendNeblioShopSettingTokenTxData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendNeblioShopSettingTokenTxData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendNeblioShopSettingTokenTxData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendNeblioShopSettingTokenTxData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/StartAccountShop": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartShopDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartShopDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartShopDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartShopDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/SplitTokens": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SplitTokesData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SplitTokesData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SplitTokesData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SplitTokesData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/RestartAccountShop": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartShopDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartShopDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartShopDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartShopDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/OrderSourceTokens": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTxData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTxData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTxData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTxData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/GetTxReceipt": {
       "put": {
         "tags": [
@@ -2428,6 +2776,213 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TxReceiptResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/UpdateBookmark": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookmarkData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookmarkData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookmarkData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookmarkData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/DeleteBookmark": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBookmarkData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBookmarkData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBookmarkData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBookmarkData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/RemoveBookmark": {
+      "put": {
+        "tags": [
+          "Main"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBookmarkData"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBookmarkData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBookmarkData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBookmarkData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GetAccountBookmarks/{address}": {
+      "get": {
+        "tags": [
+          "Main"
+        ],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IBookmark"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IBookmark"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IBookmark"
+                  }
                 }
               }
             }
@@ -2891,6 +3446,14 @@
         "type": "integer",
         "format": "int32"
       },
+      "BookmarkTypes": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "Credentials": {
         "type": "object",
         "properties": {
@@ -2941,6 +3504,24 @@
           },
           "withNodes": {
             "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DeleteBookmarkData": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "bookmarkId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -3197,6 +3778,20 @@
         },
         "additionalProperties": false
       },
+      "GetMintingStatusDto": {
+        "type": "object",
+        "properties": {
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "tokenId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "GetTokenByMetadataData": {
         "type": "object",
         "properties": {
@@ -3437,6 +4032,16 @@
             },
             "nullable": true
           },
+          "bookmarks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IBookmark"
+            },
+            "nullable": true
+          },
+          "shop": {
+            "$ref": "#/components/schemas/IShop"
+          },
           "tokens": {
             "type": "object",
             "additionalProperties": {
@@ -3596,6 +4201,55 @@
           },
           "data": {
             "$ref": "#/components/schemas/IBinanceStreamKline"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IBookmark": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedItemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "$ref": "#/components/schemas/BookmarkTypes"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "string",
+            "nullable": true
+          },
+          "deleted": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "modifiedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -3840,9 +4494,92 @@
         },
         "additionalProperties": false
       },
+      "IShop": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/ShopTypes"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "link": {
+            "type": "string",
+            "nullable": true
+          },
+          "ownerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isSettingFound": {
+            "type": "boolean"
+          },
+          "isRunning": {
+            "type": "boolean"
+          },
+          "settingToken": {
+            "$ref": "#/components/schemas/IToken"
+          },
+          "shopItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IShopItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IShopItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "lot": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxSupply": {
+            "type": "number",
+            "format": "double"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isLotDynamic": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "IToken": {
         "type": "object",
         "properties": {
+          "type": {
+            "$ref": "#/components/schemas/TokenTypes"
+          },
           "id": {
             "type": "string",
             "nullable": true
@@ -4212,6 +4949,42 @@
         },
         "additionalProperties": false
       },
+      "MintNFTData": {
+        "type": "object",
+        "properties": {
+          "senderAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "sendUtxo": {
+            "type": "string",
+            "nullable": true
+          },
+          "useRPCPrimarily": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "NodeActionFinishedArgs": {
         "type": "object",
         "properties": {
@@ -4396,6 +5169,79 @@
         },
         "additionalProperties": false
       },
+      "SendNeblioShopSettingTokenTxData": {
+        "type": "object",
+        "properties": {
+          "senderAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "sendUtxo": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "neblUtxo": {
+            "type": "string",
+            "nullable": true
+          },
+          "sendEvenNeblUtxoNotFound": {
+            "type": "boolean"
+          },
+          "useRPCPrimarily": {
+            "type": "boolean"
+          },
+          "shopName": {
+            "type": "string",
+            "nullable": true
+          },
+          "shopDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "tokenId": {
+            "type": "string",
+            "nullable": true
+          },
+          "shopItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenShopItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "SendTokenTxData": {
         "type": "object",
         "properties": {
@@ -4429,6 +5275,20 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "sendUtxo": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "neblUtxo": {
+            "type": "string",
+            "nullable": true
+          },
+          "sendEvenNeblUtxoNotFound": {
+            "type": "boolean"
           },
           "useRPCPrimarily": {
             "type": "boolean"
@@ -4495,6 +5355,100 @@
           }
         },
         "additionalProperties": false
+      },
+      "ShopTypes": {
+        "enum": [
+          0
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "SplitTokesData": {
+        "type": "object",
+        "properties": {
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "tokenId": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "lotAmount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numberOfLots": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "StartShopDto": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "tokenId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TokenShopItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "lot": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxSupply": {
+            "type": "number",
+            "format": "double"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isLotDynamic": {
+            "type": "boolean"
+          },
+          "token": {
+            "$ref": "#/components/schemas/IToken"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TokenTypes": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
       },
       "TransactionDirection": {
         "enum": [
@@ -4586,6 +5540,35 @@
           },
           "accountType": {
             "$ref": "#/components/schemas/AccountTypes"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateBookmarkData": {
+        "type": "object",
+        "properties": {
+          "walletId": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "bookmarkId": {
+            "type": "string",
+            "nullable": true
+          },
+          "bookmarkName": {
+            "type": "string",
+            "nullable": true
+          },
+          "bookmarkAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/BookmarkTypes"
           }
         },
         "additionalProperties": false
