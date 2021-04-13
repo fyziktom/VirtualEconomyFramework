@@ -72,7 +72,10 @@ function shopOnLoad(_isShopHostedOnVEF) {
             getActualAccountSourceTokenBalance();
         }
 
-    }, 2000);
+        $('#shopSelectedAddressBalance').text(shopAddressBanner.balance.toFixed(5).toString());
+        $('#shopSelectedAddressUnconfirmedBalance').text(shopAddressBanner.unconfirmedBalance.toFixed(5).toString());
+
+    }, 3000);
 }
 
 function refreshItems() {
@@ -578,7 +581,7 @@ function refreshShopItemNFTs() {
 
                 if (!(nft in nfts)) {
                     if (shopItem != undefined && shopItem != null) {
-
+                        /*
                         var filter = $('#shopListSearchByAny').val();
                         if (filter != '' && filter != ' ') {
                             filter = filter.toLowerCase();
@@ -607,9 +610,10 @@ function refreshShopItemNFTs() {
                                 drawIt = true;
                             }
                         }
+                        */
 
-                        //filterActive = true;
-                        //drawIt = true;
+                        filterActive = true;
+                        drawIt = true;
 
                         nfts[nft] = nnfts[nft];
 
@@ -734,6 +738,8 @@ function sendShopApiCommand(apicommand, data) {
 var selectedShopAccountAddress = '';
 var selectedShopWalletId = '';
 
+var shopAddressBanner = null;
+
 function setShopListAccountAddress(accountAddress) {
 
     cleanNFTShops();
@@ -747,6 +753,8 @@ function setShopListAccountAddress(accountAddress) {
     selectedShopWalletId = a.WalletId;
 
     ActualWallet = Wallets[a.WalletId];
+
+    shopAddressBanner = new NeblioAddressBanner(accountAddress);
 
     //initShop(accountAddress);
     getAccountBookmarks(accountAddress);

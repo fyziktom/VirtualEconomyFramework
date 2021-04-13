@@ -43,11 +43,11 @@ namespace VEDrivers.Economy.DTO
         /// <summary>
         /// Metadata dictionary, key-value pairs
         /// </summary>
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// Initial Utxo for sending transaction from if you want to specify them
         /// </summary>
-        public ICollection<string> sendUtxo { get; set; }
+        public ICollection<string> sendUtxo { get; set; } = new List<string>();
 
         /// <summary>
         /// If you wish to add specific neblio utxo as source for the fee

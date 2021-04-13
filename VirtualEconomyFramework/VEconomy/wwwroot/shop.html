@@ -70,30 +70,22 @@
                                                     <div class="dropdown-menu" id="shopListAccountAddressesDropDown" style="width: 100%;"></div>
                                                 </div>
                                             </div>
+                                            <div class="col-auto" style="margin-top: 10px;margin-left: 10px;">
+                                                <div class="row">
+                                                    <div class="col d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center" style="width: 80px;"><span style="font-size: 12px;">Balance</span></div>
+                                                    <div class="col d-flex justify-content-center align-items-center" style="width: 80px;"><span style="font-size: 12px;">Unconfirmed</span></div>
+                                                    <div class="col d-flex justify-content-center align-items-center" style="width: 100px;"><span class="d-flex" style="font-size: 12px;text-align: center;">Source Tokens</span></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col d-flex justify-content-center"><span id="shopSelectedAddressBalance" style="font-size: 11px;">0</span></div>
+                                                    <div class="col d-flex justify-content-center"><span id="shopSelectedAddressUnconfirmedBalance" style="font-size: 11px;">0</span></div>
+                                                    <div class="col d-flex justify-content-center"><span id="actualAccountSourceTokensBalance" style="font-size: 11px;">0</span></div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col-auto" style="margin-top: 10px;">
-                                                <div class="row">
-                                                    <div class="col"><span>Available Source Tokens</span></div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col d-xl-flex justify-content-xl-center"><span id="actualAccountSourceTokensBalance">Not Loaded</span></div>
-                                                </div>
-                                            </div>
                                             <div class="col-auto" style="margin-top: 10px;"><button class="btn btn-primary" id="btnShopAddNewShopItem" type="button"><i class="fa fa-cloud-upload"></i>&nbsp;New Item</button></div>
                                             <div class="col-auto" style="margin-top: 10px;"><button class="btn btn-primary" id="btnShopBuySourceTokens" type="button" onclick="showSendSourceTokensOrderModal()"><i class="fa fa-cart-arrow-down"></i>&nbsp;Buy Source Tokens</button></div>
-                                        </div>
-                                        <div class="row d-flex justify-content-center align-items-center" style="margin-top: 10px;">
-                                            <div class="col-auto">
-                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxShopListShopItemsImages" checked="" onclick="refreshItems()"><label class="form-check-label" for="formCheck-1">NFT Image</label></div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxShopListShopItemsFiles" checked="" onclick="refreshItems()"><label class="form-check-label" for="formCheck-1">NFT File</label></div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxShopListShopItemsDocuments" onclick="refreshItems()" checked=""><label class="form-check-label" for="formCheck-1">NFT Document</label></div>
-                                            </div>
-                                            <div class="col-auto"><input type="text" id="shopListSearchByAny" placeholder="Name or Id" onkeyup="refreshItems()"></div>
                                         </div>
                                     </div>
                                 </div>

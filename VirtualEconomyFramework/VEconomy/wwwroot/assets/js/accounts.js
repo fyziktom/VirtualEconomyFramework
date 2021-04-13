@@ -837,3 +837,59 @@ function sendTxApiCommand(apicommand, data) {
         }
     });
 }
+
+
+class NeblioAddressBanner {
+    constructor(address) {
+        this.address = address;
+        this.balance = 0.0;
+        this.balanceInSat = 0.0;
+        this.unconfirmedBalance = 0.0;
+        this.unconfirmedBalanceInSat = 0.0;
+        this.unconfirmedTx = 0.0;
+        this.totalTx = 0.0;
+        this.totalSent = 0.0;
+        this.totalSentSat = 0.0;
+        this.totalReceived = 0.0;
+        this.totalReceivedSat = 0.0;
+
+        this.getInfo();
+        
+        setInterval(() => {
+            this.getInfo();
+        }, 2500);
+    }
+
+    getInfo = function() {
+        if (this.address != '' || this.address != ' ') {
+            var url = 'https://ntp1node.nebl.io/ins/addr/' + this.address;
+            var thisClass = this;
+            $.ajax(url,
+            {
+                contentType: 'application/json;charset=utf-8',
+                method: 'GET',
+                dataType: 'json',   // type of response data
+                timeout: 10000,     // timeout milliseconds
+                success: function (data, status, xhr) {   // success callback function
+                    //console.log(data);
+                    if (data != null){
+                        thisClass.balance = data.balance;
+                        thisClass.balanceInSat = data.balanceSat;
+                        thisClass.unconfirmedBalance = data.unconfirmedBalance;
+                        thisClass.unconfirmedBalanceInSat = data.unconfirmedBalanceSat;
+                        thisClass.unconfirmedTx = data.unconfirmedTxApperances;
+                        thisClass.totalTx = data.txApperances;
+                        thisClass.totalSent = data.totalSent;
+                        thisClass.totalSentSat = data.totalSentSat;
+                        thisClass.totalReceived = data.totalReceived;
+                        thisClass.totalReceivedSat = data.totalReceivedSat;
+                    }
+                },
+                error: function (jqXhr, textStatus, errorMessage) { // error callback 
+                    console.log('Error: "' + errorMessage + '"');
+                }
+            });
+        }
+    }
+    
+}

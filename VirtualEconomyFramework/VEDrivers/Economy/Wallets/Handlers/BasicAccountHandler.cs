@@ -334,6 +334,7 @@ namespace VEDrivers.Economy.Wallets.Handlers
                     {
                         if (isItMainAccountKey)
                         {
+                            // todo load already encrypted key
                             account.AccountKey = new Security.EncryptionKey(key, password);
                             account.AccountKey.RelatedItemId = account.Id;
                             account.AccountKey.Type = Security.EncryptionKeyType.AccountKey;

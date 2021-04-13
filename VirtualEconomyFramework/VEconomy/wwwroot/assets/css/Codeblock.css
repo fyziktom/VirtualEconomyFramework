@@ -5,3 +5,7 @@
   color: var(--primary);
 }
 
+.modal {
+  overflow-y: auto;
+}
+

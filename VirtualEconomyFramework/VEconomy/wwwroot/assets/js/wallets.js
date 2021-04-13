@@ -62,10 +62,16 @@ function loadWalletDetails(w) {
 
     $('#walletTypeHeading').text(GetWalletType(w.Type));
     //document.getElementById('walletId').value = w.Id;
+    try {
     document.getElementById('btnWalletType').innerText = GetWalletType(w.Type);
+    }
+    catch{}
+    try {
     document.getElementById('walletName').value = w.Name;
     document.getElementById('walletHost').value = w.ConnectionUrlBaseAddress;
     document.getElementById('walletPort').value = w.ConnectionPort;
+    }
+    catch{}
     $('#walletDetailsTotalNEBL').text(w.TotalBalance.toString());
     getAllTokenCount();
     $('#walletDetailsTotalPLFTokens').text(totalTokensInWallet.toString());
