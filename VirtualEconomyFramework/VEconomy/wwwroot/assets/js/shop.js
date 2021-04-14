@@ -30,7 +30,7 @@ function shopOnLoad(_isShopHostedOnVEF) {
 
     $("#btnShopAddNewShopItem").off();
     $("#btnShopAddNewShopItem").click(function() {
-        cleanMintForm();
+        //cleanMintForm();
         if (selectedShopAccountAddress == '' || selectedShopAccountAddress == ' ') {
             alert('Please select the address first!');
             return;
@@ -45,6 +45,8 @@ function shopOnLoad(_isShopHostedOnVEF) {
             alert('Receiver must be different than address which creates NFT!');
             return;
         }
+
+        createNewItem();
     });
     
     // add to shop items object and refresh 
