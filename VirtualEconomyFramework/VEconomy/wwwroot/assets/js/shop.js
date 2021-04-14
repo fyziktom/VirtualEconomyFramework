@@ -30,7 +30,7 @@ function shopOnLoad(_isShopHostedOnVEF) {
 
     $("#btnShopAddNewShopItem").off();
     $("#btnShopAddNewShopItem").click(function() {
-
+        cleanMintForm();
         if (selectedShopAccountAddress == '' || selectedShopAccountAddress == ' ') {
             alert('Please select the address first!');
             return;
@@ -45,8 +45,6 @@ function shopOnLoad(_isShopHostedOnVEF) {
             alert('Receiver must be different than address which creates NFT!');
             return;
         }
-
-        createNewItem();
     });
     
     // add to shop items object and refresh 
@@ -391,7 +389,7 @@ function createNewItem() {
         alert('This shop is not hosted on VEF you cannot create new item now!');
         return;
     }
-    
+
     //$("#confirmButtonOk").off();
     //$("#confirmButtonOk").click(function() {
         var author = $('#mintNFTAuthor').val();
@@ -421,6 +419,17 @@ function createNewItem() {
 
 function changeType(type) {
     $('#btnMintNFTType').text(type);
+}
+
+function cleanMintForm() {
+    $('#mintNFTAuthor').val('');
+    $('#mintNFTDescription').val('');
+    $('#ipfsUploadedImage').attr('src', '');
+    $('#ipfsUploadedImage').attr('alt', '');
+    $('#mintNFTImage').val('');
+    $('#mintNFTLink').val('');
+    $('#mintNFTYoutubeCode').val('');
+    $('#btnMintNFTType').text('NFT Image');    
 }
 
 function mintNewNFT(author, description, image, link, youtube, type, tokenId, pass) {
@@ -718,6 +727,10 @@ function sendShopApiCommand(apicommand, data) {
                         $('#transactionSentModal').modal("hide"); 
                     }
                 }, 2500);
+
+                if (apicommand == 'MintNeblioNFT') {
+                    cleanMintForm();
+                }
             },
             error: function (jqXhr, textStatus, errorMessage) { // error callback 
                 console.log('Error: "' + errorMessage + '"');

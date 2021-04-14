@@ -1,5 +1,9 @@
+var hld = null;
+try {
+    hld = document.getElementById('holder');
+}
+catch{}
 
-var hld = document.getElementById('holder');
 var holder = null;
 if (hld != undefined && hld != null) {
     var holder = hld;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -287,8 +287,12 @@
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Description</span></div>
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTDescription" style="width: 250px;font-size: 12px;"></div>
                     </div>
+                    <div class="row" id="ipfsImageUpload" style="margin-top: 20px;height: 150px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span class="d-flex justify-content-center align-items-center">Drop the image</span></div>
+                        <div class="col d-flex d-xl-flex justify-content-center align-items-center justify-content-xl-center align-items-xl-center" id="ipfsImageColumn" style="max-width: 250px;max-height: 150px;"><img id="ipfsUploadedImage" style="width: 100%;height: 100%;"></div>
+                    </div>
                     <div class="row" style="margin-top: 20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Image</span></div>
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Or add Image link</span></div>
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTImage" style="width: 250px;font-size: 12px;"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
@@ -296,8 +300,8 @@
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTLink" style="width: 250px;" placeholder="Optional"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Youtube Code</span></div>
-                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTYoutubeCode" style="width: 250px;" placeholder="Optional"></div>
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Youtube Code</span></div>
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input type="text" id="mintNFTYoutubeCode" style="width: 250px;" placeholder="Optional"></div>
                     </div>
                     <div class="row" style="margin-top: 20px;">
                         <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Type</span></div>
@@ -787,12 +791,14 @@
     <script src="assets/js/crypto-js.min.js"></script>
     <script src="assets/js/editor.js"></script>
     <script src="assets/js/hash.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
+    <script src="https://bundle.run/buffer@5.2.1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+    <script src="https://unpkg.com/ipfs-http-client@30.1.3/dist/index.js"></script>
     <script src="assets/js/chart.min.js"></script>
     <script src="assets/js/chess.js"></script>
     <script src="assets/js/chessboard-1.0.0.js"></script>
     <script src="assets/js/chessgame.js"></script>
+    <script src="assets/js/ipfs.js"></script>
     <script src="assets/js/keys.js"></script>
     <script src="assets/js/login.js"></script>
     <script src="assets/js/messages.js"></script>
