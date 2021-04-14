@@ -25,7 +25,7 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="NFTs" href="shop.html"><i class="fas fa-user-alt"></i><span>NFTs</span></a><a class="nav-link" id="Messages" href="messages.html"><i class="fas fa-user-alt"></i><span>Messages</span></a><a class="nav-link" id="Games" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link" id="tokens" href="tokens.html"><i class="fas fa-user-alt"></i><span>Tokens</span></a><a class="nav-link" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link" id="Keys" href="keys.html"><i class="fas fa-user-alt"></i><span>Keys</span></a></li>
+                    <li class="nav-item"><a class="nav-link" id="mainDashboard" href="wallets.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" id="walletsPage" href="wallets.html"><i class="fas fa-table"></i><span>Wallets</span></a><a class="nav-link" id="nodesPage" href="nodes.html"><i class="fas fa-table"></i><span>Nodes</span></a><a class="nav-link" id="users" href="users.html"><i class="fas fa-user-alt"></i><span>Users</span></a><a class="nav-link" id="tokens" href="tokens.html"><i class="fas fa-user-alt"></i><span>Tokens</span></a><a class="nav-link" id="Games" href="chess.html"><i class="fas fa-user-alt"></i><span>Games</span></a><a class="nav-link" id="Messages" href="messages.html"><i class="fas fa-user-alt"></i><span>Messages</span></a><a class="nav-link" id="Keys" href="keys.html"><i class="fas fa-user-alt"></i><span>Keys</span></a><a class="nav-link" id="Keys" href="shop.html"><i class="fas fa-user-alt"></i><span>Shop</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -99,44 +99,697 @@
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="confirmModal">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" role="dialog" tabindex="-1" id="walletDetailsModal">
+        <div class="modal-dialog modal-lg" role="document" style="display: table;width: 100%;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Are you sure?</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="walletTypeHeading">Neblio</h4>
+                    <h4 class="modal-title" style="margin-left: 5px;">Wallet</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                 </div>
-                <div class="modal-body">
-                    <p id="confirmModalContent">Do you realy want to save the setting?</p>
-                </div>
-                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="confirmButtonOk" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="loginModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Login</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseLogin"><span aria-hidden="true">×</span></button>
-                </div>
-                <div class="modal-body">
-                    <p id="confirmModalContent-2">If you need to control or setup the Production Line please Log In</p>
-                    <div class="row">
-                        <div class="col">
-                            <div class="row" style="margin-top: 20px;">
-                                <div class="col d-xl-flex justify-content-xl-center"><span>User name</span></div>
-                                <div class="col"><input type="text" id="loginName" style="width: 200px;"></div>
-                            </div>
-                            <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
-                                <div class="col d-xl-flex justify-content-xl-center"><span>User password</span></div>
-                                <div class="col"><input type="password" id="loginPass" style="width: 200px;"></div>
+                <div class="modal-body" style="width: 100%;">
+                    <div class="row" style="width: 100%;">
+                        <div class="col" style="width: 100%;">
+                            <div class="card align-items-xl-center">
+                                <div class="card-body" style="width: 100%;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Main Wallet Id</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="walletDetailsId" style="width: 250px;font-size: 12px;" name="" placeholder="" title="" required="" maxlength="30" minlength="2"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 10px;">
+                                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Name of wallet</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="walletDetailsName" style="width: 250px;" name="" title="Name can be any text. Please maximum of 100 chars" pattern="^[A-Za-z_@! 0-9.\-]*$" maxlength="100" required="" minlength="1" placeholder="Fill Name"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 10px;">
+                                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Host of wallet</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="walletDetailsHost" style="width: 250px;" name="" title="" maxlength="100" required="" minlength="1" placeholder="Fill Host"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 10px;">
+                                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Port of wallet</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="walletDetailsPort" style="width: 250px;" name="" title="" maxlength="100" required="" minlength="1" placeholder="Fill Port"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Accounts</span></div>
+                                                <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-secondary" id="btnAddNewAccount" type="button"><i class="fa fa-plus"></i></button></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col">
+                                                    <div class="table-responsive">
+                                                        <table class="table" id="walletDetailsAccountsTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Address</th>
+                                                                    <th>Details</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Address1</td>
+                                                                    <td><button class="btn btn-primary" type="button"><i class="fa fa-info-circle"></i></button></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Number of NEBL</span></div>
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-end"><span id="walletDetailsTotalNEBL" style="margin-left: 5px;font-size: 24px;font-weight: bold;">0</span></div>
+                                                        <div class="col d-xl-flex justify-content-xl-start align-items-xl-center"><img src="assets/img/neblio%20logo.jpg" style="width: 25px;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Nubmer of Tokens</span></div>
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-end"><span id="walletDetailsTotalPLFTokens" style="margin-left: 5px;font-size: 24px;font-weight: bold;">0</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col d-xl-flex justify-content-xl-center"><span class="text-danger" id="loginError-1"></span></div>
+                </div>
+                <div class="modal-footer d-xl-flex justify-content-xl-center align-items-xl-center">
+                    <div class="row d-xl-flex flex-fill align-items-xl-center">
+                        <div class="col"><button class="btn btn-danger" id="btnDeleteWallet" type="button"><i class="fa fa-trash-o"></i></button></div>
+                        <div class="col-auto"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnUpdateMainWalletDetails" type="button" data-dismiss="modal" style="margin-left: 20px;"><i class="fa fa-check"></i></button></div>
                     </div>
                 </div>
-                <div class="modal-footer"><button class="btn btn-dark" id="btnCancelLogin" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmLogin" type="button"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="accountDetailsModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style="margin-left: 5px;">Account</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col" style="width: 100%;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;">
+                                <div class="card-body" style="width: 100%;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center" style="font-size: 12px;"><span id="accountDetailsAddress">Not Loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Account Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="accountDetailsName" style="width: 250px;" name="" title="Name can be any text. Please maximum of 100 chars" pattern="^[A-Za-z_@! 0-9.\-]*$" maxlength="100" required="" minlength="1" placeholder="Fill Name"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col d-flex justify-content-center"><span>Account Encryption</span></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="row" style="margin-top: 5px;">
+                                                                <div class="col d-flex justify-content-center"><span id="accountDetailsModalIsLocked" style="font-size: 14px;">Not Loaded</span></div>
+                                                            </div>
+                                                            <div class="row" style="margin-top: 5px;">
+                                                                <div class="col d-flex justify-content-center"><button class="btn btn-primary" id="btnAccountDetailsLockUnlock" type="button">Unlock</button></div>
+                                                            </div>
+                                                            <div class="row" style="margin-top: 10px;">
+                                                                <div class="col d-flex justify-content-center"><button class="btn btn-primary" id="btnAccountDetailsImportKey" type="button"><i class="fa fa-cloud-upload"></i>&nbsp;Import Key</button></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Number of Transactions</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><span id="accountDetailsNumOfTx" style="margin-left: 5px;font-size: 20px;font-weight: bold;">0</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnAccountTransactionsDetails" type="button"><i class="fa fa-history"></i>&nbsp;Transaction History</button></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Tokens</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                                                    <div class="table-responsive">
+                                                        <table class="table" id="accountDetailsTokensTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Token Symbol</th>
+                                                                    <th>Total Balance</th>
+                                                                    <th>Details</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td><img src="assets/img/neblio%20logo.jpg" style="width: 25px;margin-right: 10px;">Token Symbol</td>
+                                                                    <td>0</td>
+                                                                    <td><button class="btn btn-primary" type="button"><i class="fa fa-info-circle"></i></button></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Number of NEBL</span></div>
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-end"><span id="accountDetailsTotalNEBL" style="margin-left: 5px;font-size: 24px;font-weight: bold;">0</span></div>
+                                                        <div class="col d-xl-flex justify-content-xl-start align-items-xl-center"><img src="assets/img/neblio%20logo.jpg" style="width: 25px;"></div>
+                                                        <div class="col d-xl-flex justify-content-xl-start align-items-xl-center"><button class="btn btn-primary" id="btnAccountModalSendTx" type="button"><i class="fa fa-send-o"></i>&nbsp;Send</button></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Nubmer of Tokens</span></div>
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col d-xl-flex justify-content-xl-end"><span id="accountDetailsTotalPLFTokens" style="margin-left: 5px;font-size: 24px;font-weight: bold;">0</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row flex-fill">
+                        <div class="col"><button class="btn btn-danger" id="btnDeleteAccount" type="button"><i class="fa fa-trash-o"></i></button></div>
+                        <div class="col d-xl-flex justify-content-xl-end"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnUpdateAccountDetails" type="button" data-dismiss="modal" style="margin-left: 20px;"><i class="fa fa-check"></i></button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="addNewAccountModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add New Account</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-flex d-md-flex justify-content-center justify-content-md-center" style="width: 100%;">
+                    <div class="row" style="width: 100%;">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 100%;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;">
+                                <div class="card-body d-flex d-xl-flex justify-content-center justify-content-xl-center" style="width: 100%;">
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col" style="width: 100%;">
+                                            <div class="row" style="width: 100%;">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="newAccountAddress" style="width: 250px;font-size: 12px;" name="" placeholder="Leave empty for new address" title="" required="" minlength="2"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Account Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="newAccountName" style="width: 250px;" name="" title="Name can be any text. Please maximum of 100 chars" pattern="^[A-Za-z_@! 0-9.\-]*$" maxlength="100" required="" minlength="1" placeholder="Fill Name"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Password (fill to encrypt the key!)</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center"><input type="password" id="newAccountPassword" style="width: 250px;"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-lg-flex d-xl-flex justify-content-center justify-content-lg-center justify-content-xl-center align-items-xl-center"><span>Account Type</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col">
+                                                    <div class="dropdown d-flex d-lg-flex justify-content-center justify-content-lg-center" id="walletType-1"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnNewAccountType" type="button" style="width: 250px;">Neblio</button>
+                                                        <div class="dropdown-menu" id="newAccountTypesDropDown"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Save Just to Db (dont create new address)</span></div>
+                                                <div class="col"><input type="checkbox" id="chboxSaveNewAccountJustToDb"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnAddNewAccountConfirm" type="button"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="addNewWalletModal">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add New Wallet</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center">
+                                <div class="card-body" style="min-width: 100%;">
+                                    <div class="row">
+                                        <div class="col" style="min-width: 100%;">
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Wallet Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="walletName" name="" title="Name can be any text. Please maximum of 100 chars" pattern="^[A-Za-z_@! 0-9.\-]*$" maxlength="100" required="" minlength="1" placeholder="Fill Name"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Wallet Type</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col">
+                                                    <div class="dropdown d-xl-flex justify-content-xl-center" id="walletType-2"><button class="btn btn-light dropdown-toggle" aria-expanded="false" data-toggle="dropdown" id="btnWalletType" type="button">Neblio</button>
+                                                        <div class="dropdown-menu" id="walletTypesDropDown"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>RPC Host</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="walletHost" name="" title="" maxlength="150" required="" minlength="1" placeholder="" readonly="" value="127.0.0.1"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>RPC Port</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center"><input type="text" data-toggle="tooltip" data-bss-tooltip="" data-placement="right" id="walletPort" name="" title="" maxlength="150" required="" minlength="1" placeholder="" readonly="" value="6326"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnUpdateWallet" type="button"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="newTransactionConfirmedModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">New Transaction Confirmed</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 700px;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 700px;">
+                                <div class="card-body" style="min-width: 800px;max-width: 800px;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Account Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTxConfModalAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Wallet Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTxConfModalAccountName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Transactions Id</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span id="newTxConfModalTxId" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="tokenDetailsModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Tokens Details</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-flex d-lg-flex justify-content-center justify-content-lg-center" style="width: 100%;">
+                    <div class="row" style="width: 100%;">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 100%;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;">
+                                <div class="card-body" style="width: 100%;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Token Symbol and Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="tokenDetailsSymbolAndName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Token Image</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><img id="tokenDetailsImage" style="max-width: 100px;max-height: 100px;"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Token Id</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="tokenDetailsId" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Token Issuer</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="tokenDetailsIssuer" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Maximum Suply</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="tokenDetailsMaximumSuply" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Actual Amount</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="tokenDetailsActualAmount" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnTokenDetailsSendToken" type="button">Send Token</button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="sendTokenModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Send Tokens</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center" style="width: 100%;">
+                    <div class="row" style="width: 100%;">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 100%;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;">
+                                <div class="card-body d-flex justify-content-center" style="width: 100%;">
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col" style="width: 100%;">
+                                            <div class="row">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Token Symbol and Name</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="sendTokenModalSymbolName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>WalletName</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="sendTokenModalWalletName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Account Name and Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="sendTokenModalAccountAddress" style="margin-left: 5px;font-size: 12px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Amount</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input class="d-md-flex d-xl-flex" type="text" id="sendTokenModalAmount" style="width: 200px;text-align: center;" value="1" inputmode="numeric"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Send to Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input type="text" id="sendTokenModalReceiverAddress" style="width: 250px;font-size: 12px;text-align: center;"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Meta Data</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center" id="sendTokenModalMetadataCol">
+                                                    <div class="table-responsive" style="max-width: 600px;">
+                                                        <table class="table" id="sendTokenMetadataTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="d-xl-flex">Name</th>
+                                                                    <th>Content</th>
+                                                                    <th>Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><button class="btn btn-secondary" id="btnSendTokenModalAddMetadataField" type="button" style="padding-top: 2px;padding-bottom: 2px;padding-right: 10px;padding-left: 10px;">+</button></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 30px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnSendTokenModalConfirm" type="button"><i class="fa fa-send-o"></i>&nbsp;Send</button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="sendTxModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Send Transaction</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center" style="width: 100%;">
+                    <div class="row" style="width: 100%;">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 100%;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;">
+                                <div class="card-body d-flex justify-content-center" style="width: 100%;">
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col" style="width: 100%;">
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>WalletName</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="sendTxModalWalletName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Account Name and Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="sendTxModalAccountAddress" style="margin-left: 5px;font-size: 12px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Amount</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input class="d-xl-flex" type="text" id="sendTxModalAmount" style="width: 200px;text-align: center;" value="1" inputmode="numeric"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Send to Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><input type="text" id="sendTxModalReceiverAddress" style="width: 250px;font-size: 12px;text-align: center;"></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 30px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnSendTxModalConfirm" type="button"><i class="fa fa-send-o"></i>&nbsp;Send</button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="transactionSentModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Transaction Sent</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center">
+                            <p>Your transaction has been sent.</p>
+                        </div>
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center" style="min-width: 80px;"><i class="fa fa-check" style="font-size: 36px;color: rgb(33,217,29);"></i></div>
+                    </div>
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="transactionNotSentModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Error - Transaction was not Send</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center">
+                            <p>Your transaction was not send.</p>
+                        </div>
+                        <div class="col-auto d-xl-flex justify-content-xl-center align-items-xl-center" style="min-width: 80px;"><i class="fa fa-remove" style="font-size: 36px;color: var(--danger);"></i></div>
+                    </div>
+                    <div class="row" style="height: 100px;">
+                        <div class="col d-xl-flex justify-content-xl-center" style="margin-top: 30px;margin-bottom: 10px;"><span id="txNotSendMessage">No message</span></div>
+                    </div>
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="accountTransactionsListModal">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Account Transactions</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="table-responsive">
+                                <table class="table" id="accountTransactionsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>TxId</th>
+                                            <th>Direction</th>
+                                            <th>Amount</th>
+                                            <th>With Tokens</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Not Loaded</td>
+                                            <td>Not Loaded</td>
+                                            <td>Not Loaded</td>
+                                            <td>Not Loaded</td>
+                                            <td class="d-xl-flex justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" type="button"><i class="fa fa-info-circle"></i></button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="transactionDetailsModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Transaction Details</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center" style="width: 100%;">
+                    <div class="row" style="width: 100%;">
+                        <div class="col d-xl-flex justify-content-xl-center" style="width: 100%;">
+                            <div class="card d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;">
+                                <div class="card-body" style="width: 100%;">
+                                    <div class="row" style="margin-top: 20px;">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Wallet Name</span></div>
+                                    </div>
+                                    <div class="row" style="margin-top: 20px;">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="txDetailsWalletName" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Direction</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="txDetailsDirection" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>From Account Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="txDetailsAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>To Recipient Address</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="txDetailsRecipientAccountAddress" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Amount</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="txDetailsAmount" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span>Transactions Id</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><span id="txDetailsTxId" style="margin-left: 5px;font-size: 16px;font-weight: bold;">Not loaded</span></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 5px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><a id="txDetailsLinkToExplorer" href="#" target="_blank">Show in explorer</a></div>
+                                            </div>
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center"><button class="btn btn-primary" id="btnDownloadTxDetails" type="button">Download Receipt</button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
             </div>
         </div>
     </div>
@@ -155,31 +808,45 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" role="dialog" tabindex="-1" id="loginModal">
+    <div class="modal fade" role="dialog" tabindex="-1" id="importAccountKeyModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Login</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseLogin"><span aria-hidden="true">×</span></button>
+                    <h5 class="modal-title">Are you sure to import account private key?</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                 </div>
                 <div class="modal-body">
-                    <p id="confirmModalContent-2">If you need to control or setup the Production Line please Log In</p>
                     <div class="row">
-                        <div class="col">
-                            <div class="row" style="margin-top: 20px;">
-                                <div class="col d-xl-flex justify-content-xl-center"><span>User name</span></div>
-                                <div class="col"><input type="text" id="loginName" style="width: 200px;"></div>
-                            </div>
-                            <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
-                                <div class="col d-xl-flex justify-content-xl-center"><span>User password</span></div>
-                                <div class="col"><input type="password" id="loginPass" style="width: 200px;"></div>
-                            </div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Name</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="text" id="importAccountKeyName" style="width: 300px;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Private Key</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyKey" style="width: 300px;"></div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <div class="form-check"><input class="form-check-input" type="checkbox" id="chbxAccountImportAlreadyEncryptedKey"><label class="form-check-label" for="formCheck-1" style="font-size: 12px;">Key is already encrypted. Check if your key is in encrypted form</label></div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col d-xl-flex justify-content-xl-center"><span class="text-danger" id="loginError-1"></span></div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><span>Password</span></div>
+                        <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><input type="password" id="importAccountKeyPassword" style="width: 300px;"></div>
                     </div>
                 </div>
-                <div class="modal-footer"><button class="btn btn-dark" id="btnCancelLogin" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmLogin" type="button"><i class="fa fa-check"></i></button></div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal" onclick="importAccountClearFields();"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmImportAccountKey" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="confirmModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Are you sure?</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmModalContent">Do you realy want to save?</p>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" id="confirmButtonCancel" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="confirmButtonOk" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
     </div>
@@ -202,12 +869,7 @@
                 <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="confirmUnlockAccountPassword" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
-    </div><div style="font-size: 0px;" id="mobilePlatformXS" class="visible-xs hidden-sm hidden-md hidden-lg hidden-xl d-block d-sm-none">xs</div>
-<div style="font-size: 0px;" id="mobilePlatformSM" class="hidden-xs visible-sm hidden-md hidden-lg hidden-xl d-none d-sm-block d-md-none">sm</div>
-<div style="font-size: 0px;" class="hidden-xs hidden-sm visible-md hidden-lg hidden-xl d-none d-md-block d-lg-none">md</div>
-<div style="font-size: 0px;" class="hidden-xs hidden-sm hidden-md visible-lg hidden-xl d-none d-lg-block d-xl-none">lg</div>
-<div style="font-size: 0px;" class="hidden-xs hidden-sm hidden-md hidden-lg visible-xl d-none d-xl-block">xl</div>
-
+    </div>
     <div class="modal fade" role="dialog" tabindex="-1" id="newTokensReceivedModal">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -295,6 +957,64 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="loginModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Login</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close" id="btnCloseLogin"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmModalContent-2">If you need to control or setup the Production Line please Log In</p>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center"><span>User name</span></div>
+                                <div class="col"><input type="text" id="loginName" style="width: 200px;"></div>
+                            </div>
+                            <div class="row" style="margin-top: 20px;margin-bottom: 20px;">
+                                <div class="col d-xl-flex justify-content-xl-center"><span>User password</span></div>
+                                <div class="col"><input type="password" id="loginPass" style="width: 200px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-xl-flex justify-content-xl-center"><span class="text-danger" id="loginError-1"></span></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" id="btnCancelLogin" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="btnConfirmLogin" type="button"><i class="fa fa-check"></i></button></div>
+            </div>
+        </div>
+    </div><div style="font-size: 0px;" id="mobilePlatformXS" class="visible-xs hidden-sm hidden-md hidden-lg hidden-xl d-block d-sm-none">xs</div>
+<div style="font-size: 0px;" id="mobilePlatformSM" class="hidden-xs visible-sm hidden-md hidden-lg hidden-xl d-none d-sm-block d-md-none">sm</div>
+<div style="font-size: 0px;" class="hidden-xs hidden-sm visible-md hidden-lg hidden-xl d-none d-md-block d-lg-none">md</div>
+<div style="font-size: 0px;" class="hidden-xs hidden-sm hidden-md visible-lg hidden-xl d-none d-lg-block d-xl-none">lg</div>
+<div style="font-size: 0px;" class="hidden-xs hidden-sm hidden-md hidden-lg visible-xl d-none d-xl-block">xl</div>
+
+    <div class="modal fade" role="dialog" tabindex="-1" id="addPassForTxMessageModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">One Tx Unlock Account Message</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body d-xl-flex justify-content-xl-center align-items-xl-center">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col d-lg-flex justify-content-lg-center align-items-lg-center"><span style="font-size: 12px;">This will unlock account just for this one transaction</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center align-items-lg-center" style="margin-top: 10px;"><span>Input Password</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-flex d-lg-flex justify-content-center justify-content-lg-center align-items-lg-center"><input type="password" id="unlockAccountForOneTxPassword"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-dark" type="button" data-dismiss="modal"><i class="fa fa-close"></i></button><button class="btn btn-primary" id="unlockAccountForOneTxConfirm" type="button" data-dismiss="modal"><i class="fa fa-check"></i></button></div>
             </div>
         </div>
     </div>

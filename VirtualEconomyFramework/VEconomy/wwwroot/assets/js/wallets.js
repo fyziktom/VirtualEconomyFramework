@@ -196,7 +196,7 @@ function UpdateWallet() {
 function DeleteWallet() {
 
     var wallet = {
-        "walletId": $('#walletId').val(),
+        "walletId": $('#walletDetailsId').val(),
         //todo checkbox
         "withAccounts": $('#deleteWalletWithAccounts').val()
      };
@@ -206,7 +206,7 @@ function DeleteWallet() {
         ComandAPIRequest('DeleteWallet', wallet);
     });
     
-    ShowConfirmModal('', 'Do you realy want to remove this wallet: '+ wallet.Id +'?');  
+    ShowConfirmModal('', 'Do you realy want to remove this wallet: '+ wallet.walletId +'?');  
 }
 
 function GetWalletType(wallettype) {

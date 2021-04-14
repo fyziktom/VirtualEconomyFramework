@@ -182,13 +182,16 @@ namespace VEDrivers.Economy.Wallets.Handlers
                     {
                         try
                         {
-                            if (account.Shop == null)
+                            if (EconomyMainContext.StartWithShops)
                             {
-                                account.Shop = ShopFactory.GetShop(ShopTypes.NeblioTokenShop, account.Address, "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
-                            }
+                                if (account.Shop == null)
+                                {
+                                    account.Shop = ShopFactory.GetShop(ShopTypes.NeblioTokenShop, account.Address, "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
+                                }
 
-                            account.Shop.IsActive = true;
-                            await account.Shop.StartShop();
+                                account.Shop.IsActive = true;
+                                account.Shop.StartShop();
+                            }
                         }
                         catch(Exception ex)
                         {

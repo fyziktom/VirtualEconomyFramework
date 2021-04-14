@@ -617,12 +617,17 @@ function refreshShopItemNFTs() {
 
                         nfts[nft] = nnfts[nft];
 
-                        if (drawIt && filterActive) {
-                            $('#' + activeShopTabDivId + '-row').append(
-                                '<div id="' + nft + '" class="col-auto">' +
-                                nfts[nft] +
-                                '</div>'
-                            );
+                        if ($("#" + nft).length) {
+                            //object already exists
+                        }
+                        else {
+                            if (drawIt && filterActive) {
+                                $('#' + activeShopTabDivId + '-row').append(
+                                    '<div id="' + nft + '" class="col-auto">' +
+                                    nfts[nft] +
+                                    '</div>'
+                                );
+                            }
                         }
                     }
                 }

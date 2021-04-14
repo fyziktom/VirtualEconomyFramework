@@ -81,6 +81,8 @@ namespace VEconomy.Controllers
             return EconomyMainContext.WorkWithDb;
         }
 
+        #region Wallets
+
         /// <summary>
         /// Data carrier for UpdateWallet API command
         /// </summary>
@@ -111,8 +113,6 @@ namespace VEconomy.Controllers
             /// </summary>
             public WalletTypes walletType {get;set;}
         }
-
-        #region Wallets
 
         /// <summary>
         /// Create or update wallet. If wallet is not found it is created. 

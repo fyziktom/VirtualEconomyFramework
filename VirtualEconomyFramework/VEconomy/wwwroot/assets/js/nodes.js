@@ -215,7 +215,7 @@ function UpdateNode() {
     if (ActualNode != null) {
         var params = ActualNode.ParsedParams;
         params.TriggerType = selectedNodeTriggerType;
-        selectedNodeActivationState = ActualNode.IsActivated;
+        //selectedNodeActivationState = ActualNode.IsActivated;
 
         //selectedNodeAccountAddress = getNodeAccountByID(ActualNode.AccountId).Address;
 

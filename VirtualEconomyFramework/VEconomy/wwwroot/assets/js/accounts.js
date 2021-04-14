@@ -87,18 +87,32 @@ function AddNewAccount() {
             justToDb = false;
         }
 
-        if (!justToDb) {
+        var account = $('#newAccountAddress').val();
+
+        if (account == '' && justToDb) {
+            alert('You have to fill the address if you want to save it just to db!');
+            $('#addNewAccountModal').modal('show');
+            return;
+        }
+
+        if (account != '' && !justToDb) {
+            alert('You cannot save to db already existing address!');
+            $('#addNewAccountModal').modal('show');
+            return;
+        }
+
+        if (!justToDb || account == '') {
             var password = $('#newAccountPassword').val();
             if (password == '' || password == ' ')
             {
-                alert('password cannot be empty!');
+                alert('password cannot be empty for new account!');
                 return;
             }
         }
         
         var acc = {
             "walletId": $('#newAccountWalletId').val(),
-            "Address": $('#newAccountAddress').val(),
+            "Address": account,
             "Name": $('#newAccountName').val(),
             "password" : password,
             "saveJustToDb": justToDb,
@@ -854,7 +868,7 @@ class NeblioAddressBanner {
         this.totalReceivedSat = 0.0;
 
         this.getInfo();
-        
+
         setInterval(() => {
             this.getInfo();
         }, 2500);

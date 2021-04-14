@@ -148,6 +148,10 @@ namespace VEDrivers.Database
                     {
                         actid = n.AccountId;
                     }
+                    else
+                    {
+                        actid = Guid.Empty.ToString();
+                    }
 
                     var node = n.Fill(NodeFactory.GetNode((NodeTypes)n.Type, new Guid(n.Id), new Guid(actid), n.Name, (bool)n.IsActivated, parameters));
                     node.SetNodeTriggerType(parameters.TriggerType);
@@ -159,7 +163,7 @@ namespace VEDrivers.Database
             }
             catch (Exception ex)
             {
-                log.Error("Cannot get Node Parameters from Db. Continue with empty parameters", ex);
+                log.Error("Cannot get Nodes from Db. Continue with empty list!", ex);
                 return null;
             }
         }

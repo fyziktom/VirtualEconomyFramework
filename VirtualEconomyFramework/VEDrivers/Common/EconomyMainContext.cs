@@ -35,6 +35,10 @@ namespace VEDrivers.Common
         /// </summary>
         public static bool StartBrowserAtStart { get; set; } = false;
         /// <summary>
+        /// If this is set, app will try to find settings tokens for the each account to start the shop
+        /// </summary>
+        public static bool StartWithShops { get; set; } = false;
+        /// <summary>
         /// set this true if application works with the db
         /// Corect connection string must be provided then
         /// </summary>

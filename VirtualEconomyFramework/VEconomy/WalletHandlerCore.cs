@@ -52,6 +52,8 @@ namespace VEconomy
             // load from settings if app should start with the db
             EconomyMainContext.WorkWithDb = Convert.ToBoolean(settings.GetValue<bool>("UseDatabase"));
 
+            EconomyMainContext.StartWithShops = Convert.ToBoolean(settings.GetValue<bool>("StartWithShops"));
+
 
             // owner are not implemented yet, so just create dummy one
             var owner = new Owner() { Id = Guid.NewGuid(), Name = "John", SurName = "Doe" };
