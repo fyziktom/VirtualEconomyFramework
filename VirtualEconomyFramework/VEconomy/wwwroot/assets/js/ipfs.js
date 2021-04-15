@@ -23,6 +23,7 @@ if (ipfsHolder != null) {
         e.dataTransfer.dropEffect = 'copy';
     });
 
+    // example from https://ethereum.stackexchange.com/questions/4531/how-to-add-a-file-to-ipfs-using-the-api
     const ipfs = window.IpfsHttpClient('ipfs.infura.io', '5001', { protocol: 'https' });
 
     ipfsHolder.addEventListener('drop', function(e) {
