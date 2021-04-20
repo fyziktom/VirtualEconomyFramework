@@ -19,11 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEQTWalletExecutor", "VEQTW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEGameDrivers", "VEGameDrivers\VEGameDrivers.csproj", "{D389CE3D-BA81-4A95-9CA1-1973B6754432}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NBitcoin", "..\..\NBitcoin\NBitcoin\NBitcoin.csproj", "{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VECryptographyUtilities", "VECryptographyUtilities\VECryptographyUtilities.csproj", "{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NBitcoin.Altcoins", "..\..\NBitcoin\NBitcoin.Altcoins\NBitcoin.Altcoins.csproj", "{8C5C3763-3C41-4640-AC11-A628462E5D7D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VECryptographyUtilities", "VECryptographyUtilities\VECryptographyUtilities.csproj", "{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeblioConsoleAppExample", "NeblioConsoleAppExample\NeblioConsoleAppExample.csproj", "{089BF369-C91D-471E-982B-B310F87DB40D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,22 +95,6 @@ Global
 		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Release|x86.ActiveCfg = Release|Any CPU
 		{D389CE3D-BA81-4A95-9CA1-1973B6754432}.Release|x86.Build.0 = Release|Any CPU
-		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Debug|x86.Build.0 = Debug|Any CPU
-		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Release|x86.ActiveCfg = Release|Any CPU
-		{72DAF5D0-4E15-43F9-B21C-C77D27B208F6}.Release|x86.Build.0 = Release|Any CPU
-		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Debug|x86.Build.0 = Debug|Any CPU
-		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|x86.ActiveCfg = Release|Any CPU
-		{8C5C3763-3C41-4640-AC11-A628462E5D7D}.Release|x86.Build.0 = Release|Any CPU
 		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -121,6 +103,14 @@ Global
 		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Release|x86.ActiveCfg = Release|Any CPU
 		{293F2B44-F4B2-4C6A-A82A-CE57EDB65DE2}.Release|x86.Build.0 = Release|Any CPU
+		{089BF369-C91D-471E-982B-B310F87DB40D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{089BF369-C91D-471E-982B-B310F87DB40D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{089BF369-C91D-471E-982B-B310F87DB40D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{089BF369-C91D-471E-982B-B310F87DB40D}.Debug|x86.Build.0 = Debug|Any CPU
+		{089BF369-C91D-471E-982B-B310F87DB40D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{089BF369-C91D-471E-982B-B310F87DB40D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{089BF369-C91D-471E-982B-B310F87DB40D}.Release|x86.ActiveCfg = Release|Any CPU
+		{089BF369-C91D-471E-982B-B310F87DB40D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

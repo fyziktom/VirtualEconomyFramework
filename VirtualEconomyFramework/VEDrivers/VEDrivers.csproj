@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <Version>0.1.0</Version>
+    <Version>0.1.2</Version>
     <Company>VEFramework</Company>
     <Description>VE Drivers is set of drivers for Virtual Economy Applications connected to blockchains.</Description>
     <PackageId>VEFramework.VEDrivers</PackageId>
@@ -31,13 +31,10 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="5.0.1" />
     <PackageReference Include="MQTTnet" Version="3.0.14" />
+    <PackageReference Include="NBitcoin" Version="5.0.77" />
+    <PackageReference Include="NBitcoin.Altcoins" Version="2.0.31" />
+    <PackageReference Include="NeblioRestApi" Version="1.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\NBitcoin\NBitcoin.Altcoins\NBitcoin.Altcoins.csproj" />
-    <ProjectReference Include="..\..\..\NBitcoin\NBitcoin\NBitcoin.csproj" />
-    <ProjectReference Include="..\NeblioRestApi\NeblioRestApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -452,11 +452,10 @@ namespace VEDrivers.Economy.Transactions
                     var utxos = await GetAddressNeblUtxo(data.SenderAddress, 0.0001, 2*0.0001); // to be sure find at leas 2 times of expected fee
                     // create raw Tx with NBitcoin
                     NBitcoin.Altcoins.Neblio.NeblioTransaction neblUtxo = null;
-                    if (utxos == null)
+                    if (utxos == null || utxos.Count == 0)
                     {
                         throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
                     }
-
 
                     var found = false;
                     if (!string.IsNullOrEmpty(data.NeblUtxo))
@@ -601,19 +600,21 @@ namespace VEDrivers.Economy.Transactions
                                     {
                                         if (Transaction.TryParse(hexToSign, network, out var transaction))
                                         {
-                                            var txrespToken = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[0].PrevOut.Hash.ToString());
-                                            var txrespNebl = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[1].PrevOut.Hash.ToString());
+                                            //var txrespToken = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[0].PrevOut.Hash.ToString()); // not accessible in NBitcoin nuget now
+                                            //var txrespNebl = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[1].PrevOut.Hash.ToString()); // not accessible in NBitcoin nuget now
+                                            var txrespTokenHex = await GetTxHex(transaction.Inputs[0].PrevOut.Hash.ToString());
+                                            var txrespNeblHex = await GetTxHex(transaction.Inputs[1].PrevOut.Hash.ToString());
 
                                             // there is still some issue in parsing json from api. now need to reparse the hex.
 
-                                            if (!Transaction.TryParse(txrespToken.Hex, network, out var tx1)) // token
+                                            if (!Transaction.TryParse(txrespTokenHex, network, out var tx1)) // token
                                             {
                                                 log.Error("Cannot load previous token transaction!");
                                                 Console.WriteLine($"Cannot load previous token transaction!");
                                                 return string.Empty;
                                             }
 
-                                            if (!Transaction.TryParse(txrespNebl.Hex, network, out var tx2)) // nebl
+                                            if (!Transaction.TryParse(txrespNeblHex, network, out var tx2)) // nebl
                                             {
                                                 log.Error("Cannot load previous token transaction!");
                                                 Console.WriteLine($"Cannot load previous token transaction!");
@@ -891,11 +892,13 @@ namespace VEDrivers.Economy.Transactions
                     // there is still some issue in parsing json from api. now need to reparse the hex.
                     foreach (var utxo in utxos)
                     {
-                        neblUtxo = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(utxo.Txid);
+                        //neblUtxo = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(utxo.Txid); // not accessible in NBitcoin nuget now
+                        var neblUtxoHex = await GetTxHex(utxo.Txid);
 
-                        if (neblUtxo != null)
+                        if (!string.IsNullOrEmpty(neblUtxoHex))
                         {
-                            if (!Transaction.TryParse(neblUtxo.Hex, network, out var txin)) // nebl
+                            //if (!Transaction.TryParse(neblUtxo.Hex, network, out var txin)) // nebl
+                            if (!Transaction.TryParse(neblUtxoHex, network, out var txin)) // nebl
                             {
                                 log.Error("Cannot load previous token transaction!");
                                 Console.WriteLine($"Cannot load previous token transaction!");
@@ -1071,6 +1074,21 @@ namespace VEDrivers.Economy.Transactions
             }
 
             return utxos;
+        }
+
+        public static async Task<string> GetTxHex(string txid)
+        {
+            if (_client == null)
+            {
+                _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
+            }
+
+            var tx = await _client.GetTransactionInfoAsync(txid);
+
+            if (tx != null)
+                return tx.Hex;
+            else
+                return string.Empty;
         }
 
         public static async Task<ICollection<Utxos>> GetAddressNFTsUtxos(string addr)

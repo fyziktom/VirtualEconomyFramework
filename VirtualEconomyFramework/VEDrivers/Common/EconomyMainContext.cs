@@ -73,7 +73,7 @@ namespace VEDrivers.Common
         /// correct connection parameters to QT Wallet RPC server must be provided.
         /// QT Wallet must has activated RPC server
         /// </summary>
-        public static bool WorkWithQTRPC { get; set; } = true;
+        public static bool WorkWithQTRPC { get; set; } = false;
         /// <summary>
         /// QT Wallet RPC parameters
         /// </summary>
