@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -111,7 +111,7 @@ namespace VEconomy.Controllers
             /// <summary>
             /// Wallet type. Now supported just Neblio
             /// </summary>
-            public WalletTypes walletType {get;set;}
+            public WalletTypes walletType { get; set; }
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace VEconomy.Controllers
                     {
                         ownid = new Guid(wallData.owner);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         log.Info(ex.ToString());
                         throw new HttpResponseException((HttpStatusCode)501, "Cannot create Guid for owner, wrong format!");
@@ -209,7 +209,7 @@ namespace VEconomy.Controllers
                 }
 
                 var res = await wallet.GetDetails();
-                
+
                 return new { info = res, ReadingError = "OK" }; ;
 
             }
@@ -367,12 +367,12 @@ namespace VEconomy.Controllers
         /// <returns>Dictionary with key - txid, value - IToken object</returns>
         [HttpGet]
         [Route("GetAccountTokens/{address}")]
-        public async Task<IDictionary<string,IToken>> GetAccountTokens(string address)
+        public async Task<IDictionary<string, IToken>> GetAccountTokens(string address)
         {
             try
             {
                 if (EconomyMainContext.Accounts.TryGetValue(address, out var account))
-                { 
+                {
                     var tokens = MainDataContext.AccountHandler.FindAllTokens(address);
 
                     return tokens;
@@ -461,11 +461,11 @@ namespace VEconomy.Controllers
                     accountData.accountAddress = "";
 
                 return await MainDataContext.AccountHandler.UpdateAccount(
-                    accountData.accountAddress, 
-                    walletId, 
-                    accountData.accountType, 
-                    accountData.accountName, 
-                    dbService, 
+                    accountData.accountAddress,
+                    walletId,
+                    accountData.accountType,
+                    accountData.accountName,
+                    dbService,
                     accountData.saveJustToDb,
                     accountData.password);
             }
@@ -589,7 +589,7 @@ namespace VEconomy.Controllers
         [HttpPut]
         [Route("GetAccountTransactions")]
         //[Authorize(Rights.Administration)]
-        public async Task<IDictionary<string,ITransaction>> GetAccountTransactions([FromBody] GetAccountTransactionsData accountData)
+        public async Task<IDictionary<string, ITransaction>> GetAccountTransactions([FromBody] GetAccountTransactionsData accountData)
         {
             try
             {
@@ -782,7 +782,7 @@ namespace VEconomy.Controllers
                 }
                 else
                 {
-                    foreach(var a in EconomyMainContext.Accounts)
+                    foreach (var a in EconomyMainContext.Accounts)
                     {
                         var k = a.Value.AccountKeys.FirstOrDefault(k => k.Id.ToString() == keyData.keyId);
                         if (k != null)
@@ -1559,11 +1559,11 @@ namespace VEconomy.Controllers
         {
             try
             {
-                return MainDataContext.NodeHandler.UpdateNode(nodeData.accountAddress, 
-                                nodeData.nodeId, Guid.Empty, 
-                                nodeData.nodeName, 
+                return MainDataContext.NodeHandler.UpdateNode(nodeData.accountAddress,
+                                nodeData.nodeId, Guid.Empty,
+                                nodeData.nodeName,
                                 nodeData.nodeType,
-                                nodeData.isActivated, 
+                                nodeData.isActivated,
                                 nodeData.parameters, dbService);
             }
             catch (Exception ex)
@@ -2007,7 +2007,7 @@ namespace VEconomy.Controllers
             {
                 if (data.Metadata != null)
                 {
-                    if(data.Metadata.TryGetValue("SourceUtxo", out var sourceUtxo))
+                    if (data.Metadata.TryGetValue("SourceUtxo", out var sourceUtxo))
                     {
                         if (!string.IsNullOrEmpty(sourceUtxo))
                         {
@@ -2019,7 +2019,7 @@ namespace VEconomy.Controllers
                         }
                     }
                 }
-                
+
                 throw new HttpResponseException((HttpStatusCode)501, $"Cannot send NFT Transaction - you did not provided source of the NFT!");
             }
             catch (Exception ex)
@@ -2077,10 +2077,11 @@ namespace VEconomy.Controllers
                 // this will get all utxos of the tokens biger than 1 token
                 var res = await NeblioTransactionHelpers.GetAddressTokensUtxos(data.accountAddress);
                 var utxos = new List<Utxos>();
-                foreach(var r in res)
+                foreach (var r in res)
                 {
                     var toks = r.Tokens.ToArray()?[0];
-                    if (toks != null) {
+                    if (toks != null)
+                    {
                         if (toks.Amount > 1)
                         {
                             if (toks.TokenId == "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
@@ -2255,9 +2256,9 @@ namespace VEconomy.Controllers
                     if (w.Accounts.TryGetValue(data.accountAddress, out var account))
                     {
                         account.Shop = null; //todo cancel and dispose
-                        
+
                         account.Shop = ShopFactory.GetShop(ShopTypes.NeblioTokenShop, data.accountAddress, data.tokenId);
-                        
+
                         account.Shop.IsActive = true;
                         var resp = await account.Shop.StartShop();
 
@@ -2413,14 +2414,14 @@ namespace VEconomy.Controllers
         {
             try
             {
-                var resp = MainDataContext.AccountHandler.UpdateBookmark(data.walletId, 
-                                                                         data.accountAddress, 
+                var resp = MainDataContext.AccountHandler.UpdateBookmark(data.walletId,
+                                                                         data.accountAddress,
                                                                          data.type,
-                                                                         data.bookmarkId, 
-                                                                         data.bookmarkName, 
-                                                                         data.bookmarkAddress, 
+                                                                         data.bookmarkId,
+                                                                         data.bookmarkName,
+                                                                         data.bookmarkAddress,
                                                                          dbService);
-                    return resp;
+                return resp;
             }
             catch (Exception ex)
             {
