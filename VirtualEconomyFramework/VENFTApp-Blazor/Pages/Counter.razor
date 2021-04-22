@@ -1,0 +1,59 @@
+﻿@using VEDriversLite
+@inject HttpClient _client
+@page "/counter"
+
+<h1>Token Transaction</h1>
+
+<p>Sent transaction: @txid</p>
+<button class="btn btn-primary" @onclick="SendTx">Send Tx</button>
+
+@code {
+    private string txid = "";
+    private NeblioAccount account = new NeblioAccount();
+    private string receiver = "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA";
+    KeyDto kdto;
+
+    protected override async Task OnInitializedAsync()
+    {
+        kdto = await _client.GetFromJsonAsync<KeyDto>("../key.json"); //place file with encrypted key into app main directory
+    }
+
+    private async Task SendTx()
+    {
+        txid = "Sending...";
+
+        if (string.IsNullOrEmpty(account.Address))
+            account.LoadAccount("mypass", kdto.Key, kdto.Address); // put here your password
+
+
+        // create token metadata
+        var metadata = new Dictionary<string, string>();
+        metadata.Add("Data", "My first metadata in token with VEDriversLite and Blazor");
+
+        // fill input data for sending tx
+        var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+        {
+            Amount = 1,
+            Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+            Symbol = "VENFT", // symbol of token
+            Metadata = metadata,
+            Password = "mypass", // put here your password
+            SenderAddress = account.Address,
+            ReceiverAddress = receiver
+        };
+
+        var rtxid = string.Empty;
+        try
+        {
+            // send tx
+            rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, account);
+            if (rtxid != null)
+                txid = rtxid;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot send neblio transaction: " + ex.Message);
+            txid = ex.Message;
+        }
+    }
+}

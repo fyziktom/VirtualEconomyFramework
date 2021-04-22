@@ -111,5 +111,23 @@ namespace VEDriversLite
 
             return false;
         }
+
+        public bool LoadAccount(string password, string encryptedKey, string address)
+        {
+            try
+            {
+                AccountKey = new EncryptionKey(encryptedKey, fromDb: true);
+                AccountKey.LoadPassword(password);
+                AccountKey.IsEncrypted = true;
+
+                Address = address;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
+            }
+
+            return false;
+        }
     }
 }

@@ -184,7 +184,7 @@ namespace VEDriversLite
                     // create raw tx
                     var str = JsonConvert.SerializeObject(dto);
 
-                    var hexToSign = SendRawNTP1TxAsync(dto).GetAwaiter().GetResult();
+                    var hexToSign = await SendRawNTP1TxAsync(dto);
 
                     if (!string.IsNullOrEmpty(hexToSign))
                     {
@@ -341,7 +341,7 @@ namespace VEDriversLite
             return res;
         }
 
-        public static string SendNTP1TokenAPI(MintNFTData data, NeblioAccount account, double fee = 20000)
+        public static string MintNFTToken(MintNFTData data, NeblioAccount account, double fee = 20000)
         {
             var res = MintNFTTokenAsync(data, account, fee).GetAwaiter().GetResult();
             return res;
@@ -404,7 +404,7 @@ namespace VEDriversLite
             }
         }
 
-        public static string SendNTP1TokenAPI(SendTxData data, NeblioAccount account, double fee = 20000)
+        public static string SendNeblioTransactionAPI(SendTxData data, NeblioAccount account, double fee = 20000)
         {
             var res = SendNeblioTransactionAPIAsync(data, account, fee).GetAwaiter().GetResult();
             return res;
@@ -606,7 +606,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var info = _client.SendTokenAsync(data).GetAwaiter().GetResult();
+            var info = await _client.SendTokenAsync(data);
 
             return info.TxHex;
         }
@@ -619,7 +619,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var info = _client.BroadcastTxAsync(data).GetAwaiter().GetResult();
+            var info = await _client.BroadcastTxAsync(data);
 
             return info.Txid;
         }
@@ -631,7 +631,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var address = _client.GetAddressAsync(addr).GetAwaiter().GetResult();
+            var address = await _client.GetAddressAsync(addr);
 
             return address;
         }
@@ -643,7 +643,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var utxos = _client.GetAddressUtxosAsync(addr).GetAwaiter().GetResult();
+            var utxos = await _client.GetAddressUtxosAsync(addr);
 
             return utxos;
         }
@@ -655,7 +655,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var utxosAll = _client.GetAddressInfoAsync(addr).GetAwaiter().GetResult();
+            var utxosAll = await _client.GetAddressInfoAsync(addr);
             var utxos = new List<Utxos>();
 
             if (utxosAll.Utxos != null)
@@ -679,7 +679,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var tx = _client.GetTransactionInfoAsync(txid).GetAwaiter().GetResult();
+            var tx = await _client.GetTransactionInfoAsync(txid);
 
             if (tx != null)
                 return tx.Hex;
@@ -694,7 +694,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var utxosAll = _client.GetAddressInfoAsync(addr).GetAwaiter().GetResult();
+            var utxosAll = await _client.GetAddressInfoAsync(addr);
             var utxos = new List<Utxos>();
 
             if (utxosAll.Utxos != null)
@@ -718,7 +718,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var resp = _client.SendTxAsync(dto).GetAwaiter().GetResult();
+            var resp = await _client.SendTxAsync(dto);
 
             return resp?.Txid;
         }
@@ -731,7 +731,7 @@ namespace VEDriversLite
             }
 
 
-            var addinfo = _client.GetAddressInfoAsync(addr).GetAwaiter().GetResult();
+            var addinfo = await _client.GetAddressInfoAsync(addr);
             var utxos = addinfo.Utxos;
 
             var resp = new List<Utxos>();
@@ -752,7 +752,7 @@ namespace VEDriversLite
                             {
                                 try
                                 {
-                                    var tx = _client.GetTransactionInfoAsync(utx.Txid).GetAwaiter().GetResult();
+                                    var tx = await _client.GetTransactionInfoAsync(utx.Txid);
 
                                     if (tx != null)
                                     {
@@ -785,7 +785,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var info = _client.GetAddressInfoAsync(address).GetAwaiter().GetResult();
+            var info = await _client.GetAddressInfoAsync(address);
 
             if (info != null)
             {
@@ -798,7 +798,7 @@ namespace VEDriversLite
                         {
                             if (ut != null)
                             {
-                                var tx = _client.GetTransactionInfoAsync(ut.Txid).GetAwaiter().GetResult();
+                                var tx = await _client.GetTransactionInfoAsync(ut.Txid);
                                 if (tx != null)
                                 {
                                     if (tx.Confirmations > 1 && tx.Blockheight > 0)
@@ -822,7 +822,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var addinfo = _client.GetAddressInfoAsync(address).GetAwaiter().GetResult();
+            var addinfo = await _client.GetAddressInfoAsync(address);
             var utxos = addinfo.Utxos;
 
             var resp = new List<Utxos>();
@@ -840,7 +840,7 @@ namespace VEDriversLite
                                 var toks = ut.Tokens.ToArray();
                                 if ((toks[0].Amount > 0 && !isMint) || (toks[0].Amount > 1 && isMint))
                                 {
-                                    var tx = _client.GetTransactionInfoAsync(ut.Txid).GetAwaiter().GetResult();
+                                    var tx = await _client.GetTransactionInfoAsync(ut.Txid);
                                     if (tx != null)
                                     {
                                         if (tx.Confirmations > 1 && tx.Blockheight > 0)
@@ -866,7 +866,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var addinfo = _client.GetAddressInfoAsync(address).GetAwaiter().GetResult();
+            var addinfo = await _client.GetAddressInfoAsync(address);
             var utxos = addinfo.Utxos;
 
             var resp = new List<Utxos>();
@@ -886,7 +886,7 @@ namespace VEDriversLite
                                 var toks = ut.Tokens.ToArray();
                                 if (toks[0].Amount == 1)
                                 {
-                                    var tx = _client.GetTransactionInfoAsync(ut.Txid).GetAwaiter().GetResult();
+                                    var tx = await _client.GetTransactionInfoAsync(ut.Txid);
                                     if (tx != null)
                                     {
                                         if (tx.Confirmations > 1 && tx.Blockheight > 0)
@@ -911,7 +911,7 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var addinfo = _client.GetAddressInfoAsync(addr).GetAwaiter().GetResult();
+            var addinfo = await _client.GetAddressInfoAsync(addr);
             var utxos = addinfo.Utxos;
 
             var resp = new List<Utxos>();
@@ -936,7 +936,7 @@ namespace VEDriversLite
                                     {
                                         if (tok?.Amount > 1)
                                         {
-                                            var tx = _client.GetTransactionInfoAsync(utx.Txid).GetAwaiter().GetResult();
+                                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
                                             if (tx != null)
                                             {
                                                 if (tx.Confirmations > 1 && tx.Blockheight > 0)
@@ -993,7 +993,7 @@ namespace VEDriversLite
                                     {
                                         if (tok?.Amount > lotAmount)
                                         {
-                                            var tx = _client.GetTransactionInfoAsync(utx.Txid).GetAwaiter().GetResult();
+                                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
                                             if (tx != null)
                                             {
                                                 if (tx.Confirmations > 1 && tx.Blockheight > 0)

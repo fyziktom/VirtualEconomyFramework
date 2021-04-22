@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEDriversLite", "VEDriversL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VENFTApp-WPF", "VENFTApp-WPF\VENFTApp-WPF.csproj", "{CDE4838E-6029-4010-9193-7CE9642197D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VENFTApp-Blazor", "VENFTApp-Blazor\VENFTApp-Blazor.csproj", "{E3C59C5B-830E-4430-A9A3-C13315A20B08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,6 +193,18 @@ Global
 		{CDE4838E-6029-4010-9193-7CE9642197D2}.Release|x64.Build.0 = Release|Any CPU
 		{CDE4838E-6029-4010-9193-7CE9642197D2}.Release|x86.ActiveCfg = Release|Any CPU
 		{CDE4838E-6029-4010-9193-7CE9642197D2}.Release|x86.Build.0 = Release|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Debug|x64.Build.0 = Debug|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Debug|x86.Build.0 = Debug|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Release|x64.ActiveCfg = Release|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Release|x64.Build.0 = Release|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Release|x86.ActiveCfg = Release|Any CPU
+		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
