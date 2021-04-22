@@ -186,6 +186,7 @@ namespace VEDriversLite.Security
         public bool LoadPassword(string password)
         {
             loadedPassword = password;
+            PasswordHash = SecurityUtil.HashPassword(password);
             passwordLoaded = true;
             return true;
         }

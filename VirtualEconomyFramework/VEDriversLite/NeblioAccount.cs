@@ -55,6 +55,7 @@ namespace VEDriversLite
                 PubKey publicKey = privateKey.PubKey;
                 BitcoinSecret privateKeyFromNetwork = privateKey.GetBitcoinSecret(network);
                 var address = publicKey.GetAddress(ScriptPubKeyType.Legacy, network);
+                Address = address.ToString();
 
                 // todo load already encrypted key
                 AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
@@ -92,8 +93,9 @@ namespace VEDriversLite
                     var k = FileHelpers.ReadTextFromFile("key.txt");
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
-                    AccountKey.LoadNewKey(kdto.Key, password, true);
+                    AccountKey = new EncryptionKey(kdto.Key, fromDb: true);
                     AccountKey.LoadPassword(password);
+                    AccountKey.IsEncrypted = true;
 
                     Address = kdto.Address;
                 }
