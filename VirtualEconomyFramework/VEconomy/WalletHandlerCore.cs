@@ -42,9 +42,11 @@ namespace VEconomy
             // create folder for Accounts LastTx data
             // neblio account will store last data about processed tx.
             // this it important for recovery and start from specific tx which was last processed and not received (there can be lots of tx received during crash)
-            var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            EconomyMainContext.CurrentLocation = loc;
-            FileHelpers.CheckOrCreateTheFolder(Path.Join(loc, "Accounts"));
+            //var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var appdataFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+            var destFolder = Path.Combine(appdataFolder, "VEFramework");
+            EconomyMainContext.CurrentLocation = destFolder;
+            FileHelpers.CheckOrCreateTheFolder(Path.Join(destFolder, "Accounts"));
 
             // this tells how many confirmations are needed for transaction to invoke confirmed event
             EconomyMainContext.NumberOfConfirmationsToAccept = settings.GetValue<int>("NumberOfConfirmationsToAccept", 1);
