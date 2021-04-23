@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient _client
-@page "/counter"
+@page "/nfts"
 
 <h1>Token Transaction</h1>
 
@@ -11,20 +12,33 @@
     private string txid = "";
     private NeblioAccount account = new NeblioAccount();
     private string receiver = "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA";
-    KeyDto kdto;
+
 
     protected override async Task OnInitializedAsync()
     {
-        kdto = await _client.GetFromJsonAsync<KeyDto>("../key.json"); //place file with encrypted key into app main directory
+        var address = string.Empty;
+        var key = string.Empty;
+
+        address = await localStorage.GetItemAsync<string>("address");
+        if (string.IsNullOrEmpty(address))
+        {
+            await account.CreateNewAccount("mypass", false);
+            address = account.Address;
+            key = account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            await localStorage.SetItemAsync("address", address);
+            await localStorage.SetItemAsync("key", key);
+        }
+        else
+        {
+            key = await localStorage.GetItemAsync<string>("key");
+        }
+
+        await account.LoadAccount("mypass", key, address); // put here your password
     }
 
     private async Task SendTx()
     {
         txid = "Sending...";
-
-        if (string.IsNullOrEmpty(account.Address))
-            account.LoadAccount("mypass", kdto.Key, kdto.Address); // put here your password
-
 
         // create token metadata
         var metadata = new Dictionary<string, string>();
@@ -42,17 +56,15 @@
             ReceiverAddress = receiver
         };
 
-        var rtxid = string.Empty;
         try
         {
             // send tx
-            rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, account);
+            var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, account);
             if (rtxid != null)
                 txid = rtxid;
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Cannot send neblio transaction: " + ex.Message);
             txid = ex.Message;
         }
     }

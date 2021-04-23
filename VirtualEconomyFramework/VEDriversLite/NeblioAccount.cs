@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using VEDriversLite.Security;
 
 namespace VEDriversLite
@@ -46,7 +47,7 @@ namespace VEDriversLite
             }
         }
 
-        public bool CreateNewAccount(string password)
+        public async Task<bool> CreateNewAccount(string password, bool saveToFile = false)
         {
             try
             {
@@ -65,14 +66,17 @@ namespace VEDriversLite
                 if (!string.IsNullOrEmpty(password))
                     AccountKey.PasswordHash = Security.SecurityUtil.HashPassword(password);
 
-                // save to file
-                var kdto = new KeyDto()
+                if (saveToFile)
                 {
-                    Address = Address,
-                    Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
-                };
+                    // save to file
+                    var kdto = new KeyDto()
+                    {
+                        Address = Address,
+                        Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
+                    };
 
-                FileHelpers.WriteTextToFile("key.txt", JsonConvert.SerializeObject(kdto));
+                    FileHelpers.WriteTextToFile("key.txt", JsonConvert.SerializeObject(kdto));
+                }
 
                 return true;
             }
@@ -84,7 +88,7 @@ namespace VEDriversLite
             return false;
         }
 
-        public bool LoadAccount(string password)
+        public async Task<bool> LoadAccount(string password)
         {
             if (FileHelpers.IsFileExists("key.txt"))
             {
@@ -112,7 +116,7 @@ namespace VEDriversLite
             return false;
         }
 
-        public bool LoadAccount(string password, string encryptedKey, string address)
+        public async Task<bool> LoadAccount(string password, string encryptedKey, string address)
         {
             try
             {

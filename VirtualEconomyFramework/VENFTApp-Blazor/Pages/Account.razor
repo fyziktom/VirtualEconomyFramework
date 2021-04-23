@@ -1,0 +1,59 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NeblioAPI
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject HttpClient _client
+@page "/account"
+
+<h1>Account Details</h1>
+
+<p>Your Neblio Address: @account.Address</p>
+
+<hr />
+<p>Actual Balance: @addressInfo.Balance NEBL</p>
+<p>Unconfirmed Balance: @addressInfo.UnconfirmedBalance NEBL</p>
+<p>Number Of Transactions: @addressInfo.Transactions.Count</p>
+<hr />
+<button class="btn btn-primary" @onclick="downloadAccountKey">Show Encrypted Private Key</button>
+<p>Your Key: @accountKey</p>
+<hr />
+
+@code {
+    private NeblioAccount account = new NeblioAccount();
+    private GetAddressResponse addressInfo = new GetAddressResponse();
+    private System.Threading.Timer timer;
+    private string accountKey = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        addressInfo.Transactions = new List<string>();
+        var address = string.Empty;
+        var key = string.Empty;
+
+        address = await localStorage.GetItemAsync<string>("address");
+        if (string.IsNullOrEmpty(address))
+        {
+            await account.CreateNewAccount("mypass", false);
+            address = account.Address;
+            key = account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            await localStorage.SetItemAsync("address", address);
+            await localStorage.SetItemAsync("key", key);
+        }
+        else
+        {
+            key = await localStorage.GetItemAsync<string>("key");
+        }
+
+        await account.LoadAccount("mypass", key, address); // put here your password
+
+        timer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(account.Address);
+            StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
+    }
+
+    private async Task downloadAccountKey()
+    {
+        accountKey = account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+    }
+}

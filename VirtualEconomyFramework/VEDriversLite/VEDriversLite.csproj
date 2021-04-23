@@ -1,12 +1,30 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>VEFramework.VEDriversLite</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>fyziktom</Authors>
+    <Company>VEFramework</Company>
+    <Description>.NET Standard version of VEDrivers. Contains just minimum dependencies and now just support of Neblio blockchain.</Description>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>VEFramework, Cryptocurrencies, Crypto, Bitcoin, ReddCoin, Neblio, Nebl, Blockchain, eCommerce, dApps</PackageTags>
+    <Copyright>fyziktom</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="NBitcoin.Altcoins" Version="2.0.31" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\License\license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
