@@ -1,0 +1,52 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject AppData AppData
+@inject HttpClient _client
+@page "/send"
+
+<h1>Send Transaction</h1>
+
+<p>Address: @AppData.Account.Address</p>
+<p>Sent transaction: @txid</p>
+<button class="btn btn-primary" @onclick="SendTx">Send Tx</button>
+<hr />
+
+@code {
+    private string txid = "";
+    private string receiver = "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA";
+
+    private async Task SendTx()
+    {
+        txid = "Sending...";
+
+        // create token metadata
+        var metadata = new Dictionary<string, string>();
+        metadata.Add("Data", "My first metadata in token with VEDriversLite and Blazor");
+
+        // fill input data for sending tx
+        var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+        {
+            Amount = 1,
+            Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+            Symbol = "VENFT", // symbol of token
+            Metadata = metadata,
+            Password = "12345", // put here your password
+            SenderAddress = AppData.Account.Address,
+            ReceiverAddress = receiver
+        };
+
+        try
+        {
+            // send tx
+            var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, AppData.Account);
+            if (rtxid != null)
+                txid = rtxid;
+        }
+        catch (Exception ex)
+        {
+            txid = ex.Message;
+        }
+    }
+}

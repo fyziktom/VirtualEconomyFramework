@@ -1,6 +1,51 @@
-﻿@page "/"
+﻿@using VEDriversLite
+@using VEDriversLite.NeblioAPI
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject HttpClient _client
+@inject AppData AppData
+
+@page "/"
 
 <h1>Hello, Crypto World!</h1>
 
-Welcome to new version of Neblio NFT App written in C# with Blazor
+<div style="margin-top:200px; width :100%; text-align:center">
+    <img src="images/Stacked-Slogan_Dark.png" style="max-height:200px; max-width: 200px;" />
+    <p></p>
+    <hr />
+    <p></p>
+    <p>Welcome to new version of Neblio NFT App written in C# with Blazor</p>
+</div>
 
+@code {
+
+    async Task Load()
+    {
+        if (string.IsNullOrEmpty(AppData.Account.Address))
+        {
+            var address = string.Empty;
+            var key = string.Empty;
+
+            address = await localStorage.GetItemAsync<string>("address");
+            if (string.IsNullOrEmpty(address))
+            {
+                await AppData.Account.CreateNewAccount("12345", false);
+                address = AppData.Account.Address;
+                key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                await localStorage.SetItemAsync("address", address);
+                await localStorage.SetItemAsync("key", key);
+            }
+            else
+            {
+                key = await localStorage.GetItemAsync<string>("key");
+            }
+
+            await AppData.Account.LoadAccount("12345", key, address); // put here your password
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+    }
+}

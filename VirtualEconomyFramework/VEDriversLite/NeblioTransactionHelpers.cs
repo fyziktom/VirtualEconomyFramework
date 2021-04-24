@@ -201,14 +201,14 @@ namespace VEDriversLite
                                 }
                                 else if (!account.AccountKey.IsEncrypted)
                                 {
-                                    key = account.AccountKey.GetEncryptedKey();
+                                    key = await account.AccountKey.GetEncryptedKey();
                                 }
                                 else if (account.AccountKey.IsEncrypted && (!string.IsNullOrEmpty(data.Password) || account.AccountKey.IsPassLoaded))
                                 {
                                     if (account.AccountKey.IsPassLoaded)
-                                        key = account.AccountKey.GetEncryptedKey(string.Empty);
+                                        key = await account.AccountKey.GetEncryptedKey(string.Empty);
                                     else
-                                        key = account.AccountKey.GetEncryptedKey(data.Password);
+                                        key = await account.AccountKey.GetEncryptedKey(data.Password);
                                 }
 
                                 if (string.IsNullOrEmpty(key))
@@ -433,14 +433,14 @@ namespace VEDriversLite
                         }
                         else if (!account.AccountKey.IsEncrypted)
                         {
-                            key = account.AccountKey.GetEncryptedKey();
+                            key = await account.AccountKey.GetEncryptedKey();
                         }
                         else if (account.AccountKey.IsEncrypted && (!string.IsNullOrEmpty(data.Password) || account.AccountKey.IsPassLoaded))
                         {
                             if (account.AccountKey.IsPassLoaded)
-                                key = account.AccountKey.GetEncryptedKey(string.Empty);
+                                key = await account.AccountKey.GetEncryptedKey(string.Empty);
                             else
-                                key = account.AccountKey.GetEncryptedKey(data.Password);
+                                key = await account.AccountKey.GetEncryptedKey(data.Password);
                         }
 
                         if (string.IsNullOrEmpty(key))
@@ -1013,6 +1013,51 @@ namespace VEDriversLite
             }
 
             return null;
+        }
+
+        public static async Task<Dictionary<string, string>> GetTransactionMetadata(string tokenid, string txid)
+        {
+            if (_client == null)
+            {
+                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
+            }
+            var resp = new Dictionary<string, string>();
+
+            var info = await _client.GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
+            if (info.MetadataOfUtxo != null)
+            {
+                if (info.MetadataOfUtxo.UserData.Meta.Count > 0)
+                {
+                    foreach (var o in info.MetadataOfUtxo.UserData.Meta)
+                    {
+                        var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
+
+                        if (od != null)
+                        {
+                            if (od.Count > 0)
+                            {
+                                var of = od.First();
+                                if (!resp.ContainsKey(of.Key))
+                                    resp.Add(of.Key, of.Value);
+                            }
+                        }
+                    }
+                }
+            }
+            return resp;
+        }
+
+        public static async Task<GetTransactionInfoResponse> GetTransactionInfo(string txid)
+        {
+            if (_client == null)
+            {
+                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
+            }
+            var resp = new Dictionary<string, string>();
+
+            var info = await _client.GetTransactionInfoAsync(txid);
+            
+            return info;
         }
 
         public static async Task<List<string>> SplitTheTokens(NeblioAccount account, string address, string password, string tokenId, int lotAmount, int numberOfLots)

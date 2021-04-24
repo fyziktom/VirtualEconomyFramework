@@ -1,12 +1,14 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NeblioAPI
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject HttpClient _client
+@inject AppData AppData
 @page "/account"
 
 <h1>Account Details</h1>
 
-<p>Your Neblio Address: @account.Address</p>
+<p>Your Neblio Address: @AppData.Account.Address</p>
 
 <hr />
 <p>Actual Balance: @addressInfo.Balance NEBL</p>
@@ -16,44 +18,62 @@
 <button class="btn btn-primary" @onclick="downloadAccountKey">Show Encrypted Private Key</button>
 <p>Your Key: @accountKey</p>
 <hr />
+<h3>Transactions:</h3>
+
+@if (addressInfo.Transactions == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>TxId</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tx in addressInfo.Transactions)
+            {
+                <tr>
+                    <td>@tx</td>
+                    <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx)"><i class="oi oi-info"></i></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
-    private NeblioAccount account = new NeblioAccount();
     private GetAddressResponse addressInfo = new GetAddressResponse();
     private System.Threading.Timer timer;
     private string accountKey = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        addressInfo.Transactions = new List<string>();
-        var address = string.Empty;
-        var key = string.Empty;
-
-        address = await localStorage.GetItemAsync<string>("address");
-        if (string.IsNullOrEmpty(address))
+        if (!string.IsNullOrEmpty(AppData.Account.Address))
         {
-            await account.CreateNewAccount("mypass", false);
-            address = account.Address;
-            key = account.AccountKey.GetEncryptedKey(returnEncrypted: true);
-            await localStorage.SetItemAsync("address", address);
-            await localStorage.SetItemAsync("key", key);
+            addressInfo.Transactions = new List<string>();
+
+            timer = new System.Threading.Timer(async (object stateInfo) =>
+            {
+                addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
+                StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+            }, new System.Threading.AutoResetEvent(false), 1000, 1000);
         }
-        else
-        {
-            key = await localStorage.GetItemAsync<string>("key");
-        }
-
-        await account.LoadAccount("mypass", key, address); // put here your password
-
-        timer = new System.Threading.Timer(async (object stateInfo) =>
-        {
-            addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(account.Address);
-            StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
-        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
     }
 
     private async Task downloadAccountKey()
     {
-        accountKey = account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+        if (!string.IsNullOrEmpty(AppData.Account.Address))
+        {
+            accountKey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+        }
+    }
+
+    private async Task ShowTxDetails(string txId)
+    {
+
     }
 }

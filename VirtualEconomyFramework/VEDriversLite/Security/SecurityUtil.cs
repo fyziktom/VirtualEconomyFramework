@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace VEDriversLite.Security
 {
@@ -11,7 +12,7 @@ namespace VEDriversLite.Security
         const int saltSize = 128 / 8;
         const int keySize = 256 / 8;
 
-        public static byte[] HashPassword(string password)
+        public static async Task<byte[]> HashPassword(string password)
         {
             using (var algorithm = new Rfc2898DeriveBytes(password, saltSize, iterations))
             {
@@ -22,7 +23,7 @@ namespace VEDriversLite.Security
             }
         }
 
-        public static bool VerifyPassword(string password, byte[] hash)
+        public static async Task<bool> VerifyPassword(string password, byte[] hash)
         {
             if (hash.Length != saltSize + keySize) return false;
             var salt = hash;

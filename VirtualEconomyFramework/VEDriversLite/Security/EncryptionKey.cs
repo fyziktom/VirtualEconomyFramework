@@ -6,71 +6,6 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Security
 {
-    public enum EncryptionKeyType
-    {
-        BasicSecurity,
-        AccountKey,
-        LicenseKey
-    }
-    public class EncryptionKeyTransferDto
-    {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public EncryptionKeyType Type { get; set; } = EncryptionKeyType.BasicSecurity;
-        public string PublicKey { get; set; } = string.Empty;
-        public string EncryptedKey { get; set; } = string.Empty;
-        public string RelatedItemId { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
-        public bool IsEncrypted { get; set; } = false;
-
-        public void Update(EncryptionKey key)
-        {
-            Id = key.Id.ToString();
-            Name = key.Name;
-            PublicKey = key.PublicKey;
-            EncryptedKey = key.GetEncryptedKey(returnEncrypted: true);
-            RelatedItemId = key.RelatedItemId.ToString();
-            PasswordHash = Encoding.UTF8.GetString(key.PasswordHash);
-            IsEncrypted = key.IsEncrypted;
-        }
-
-        public EncryptionKey Fill(EncryptionKey key)
-        {
-            if (key == null)
-                return null;
-
-            try
-            {
-                key.Id = new Guid(Id);
-            }
-            catch (Exception ex)
-            {
-                key.Id = new Guid();
-            }
-
-            try
-            {
-                key.RelatedItemId = new Guid(RelatedItemId);
-            }
-            catch (Exception ex)
-            {
-                key.RelatedItemId = new Guid();
-            }
-
-            key.IsEncrypted = (bool)IsEncrypted;
-            key.Name = Name;
-            key.PublicKey = PublicKey;
-            key.Type = (EncryptionKeyType)Type;
-
-            if (PasswordHash?.Length > 0)
-                key.PasswordHash = Encoding.UTF8.GetBytes(PasswordHash);
-
-            if (!string.IsNullOrEmpty(EncryptedKey))
-                key.LoadNewKey(EncryptedKey, fromDb: true);
-
-            return key;
-        }
-    }
     public class EncryptionKey
     {
         public EncryptionKey(string key, string password = "", bool fromDb = false)
@@ -83,10 +18,8 @@ namespace VEDriversLite.Security
                 Id = Guid.NewGuid();
         }
 
-
         private string _key = string.Empty;
 
-        public EncryptionKeyType Type { get; set; } = EncryptionKeyType.BasicSecurity;
         public Guid Id { get; set; } = Guid.Empty;
         public Guid RelatedItemId { get; set; } = Guid.Empty;
         public string Name { get; set; }
@@ -113,7 +46,7 @@ namespace VEDriversLite.Security
             }
         }
 
-        public string GetEncryptedKey(string password = "", bool returnEncrypted = false)
+        public async Task<string> GetEncryptedKey(string password = "", bool returnEncrypted = false)
         {
             if (returnEncrypted)
             {
@@ -128,17 +61,7 @@ namespace VEDriversLite.Security
 
             if (!string.IsNullOrEmpty(password))
             {
-                if (PasswordHash?.Length > 0)
-                {
-                    if (SecurityUtil.VerifyPassword(password, PasswordHash))
-                        return SymetricProvider.DecryptString(password, _key);
-                    else
-                        return null;
-                }
-                else
-                {
-                    return null;
-                }
+                return await SymetricProvider.DecryptString(password, _key);
             }
             else
             {
@@ -149,7 +72,7 @@ namespace VEDriversLite.Security
             }
         }
 
-        public bool LoadNewKey(string key, string password = "", bool fromDb = false)
+        public async Task<bool> LoadNewKey(string key, string password = "", bool fromDb = false)
         {
             if (string.IsNullOrEmpty(key))
                 return false;
@@ -164,8 +87,7 @@ namespace VEDriversLite.Security
             {
                 loadedPassword = password;
                 passwordLoaded = true;
-                PasswordHash = SecurityUtil.HashPassword(password);
-                _key = SymetricProvider.EncryptString(password, key);
+                _key = await SymetricProvider.EncryptString(password, key);
                 IsEncrypted = true;
                 return true;
             }
@@ -183,10 +105,9 @@ namespace VEDriversLite.Security
             passwordLoaded = false;
         }
 
-        public bool LoadPassword(string password)
+        public async Task<bool> LoadPassword(string password)
         {
             loadedPassword = password;
-            PasswordHash = SecurityUtil.HashPassword(password);
             passwordLoaded = true;
             return true;
         }

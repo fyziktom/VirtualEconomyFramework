@@ -11,7 +11,7 @@ namespace VEDriversLite.Security
     //https://www.c-sharpcorner.com/article/encryption-and-decryption-using-a-symmetric-key-in-c-sharp/
     public static class SymetricProvider
     {
-        public static string EncryptString(string key, string plainText)
+        public static async Task<string> EncryptString(string key, string plainText)
         {
             byte[] iv = new byte[16];
             byte[] array;
@@ -44,7 +44,7 @@ namespace VEDriversLite.Security
             return Convert.ToBase64String(array);
         }
 
-        public static string DecryptString(string key, string cipherText)
+        public static async Task<string> DecryptString(string key, string cipherText)
         {
             byte[] iv = new byte[16];
             byte[] buffer = Convert.FromBase64String(cipherText);

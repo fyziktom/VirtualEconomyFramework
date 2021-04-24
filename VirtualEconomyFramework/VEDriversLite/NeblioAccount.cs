@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NFT;
 using VEDriversLite.Security;
 
 namespace VEDriversLite
@@ -18,6 +19,7 @@ namespace VEDriversLite
         public double? TotalBalance { get; set; } = 0.0;
         public double? TotalSpendableBalance { get; set; } = 0.0;
         public double? TotalUnconfirmedBalance { get; set; } = 0.0;
+        public List<INFT> NFTs { get; set; } = new List<INFT>();
 
         [JsonIgnore]
         public EncryptionKey AccountKey { get; set; }
@@ -51,32 +53,34 @@ namespace VEDriversLite
         {
             try
             {
-                var network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
-                Key privateKey = new Key(); // generate a random private key
-                PubKey publicKey = privateKey.PubKey;
-                BitcoinSecret privateKeyFromNetwork = privateKey.GetBitcoinSecret(network);
-                var address = publicKey.GetAddress(ScriptPubKeyType.Legacy, network);
-                Address = address.ToString();
+               await Task.Run(async () =>
+               {
+                   var network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
+                   Key privateKey = new Key(); // generate a random private key
+                    PubKey publicKey = privateKey.PubKey;
+                   BitcoinSecret privateKeyFromNetwork = privateKey.GetBitcoinSecret(network);
+                   var address = publicKey.GetAddress(ScriptPubKeyType.Legacy, network);
+                   Address = address.ToString();
 
-                // todo load already encrypted key
-                AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
-                AccountKey.Type = Security.EncryptionKeyType.AccountKey;
-                AccountKey.PublicKey = Address;
+                    // todo load already encrypted key
+                    AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
+                   AccountKey.PublicKey = Address;
 
-                if (!string.IsNullOrEmpty(password))
-                    AccountKey.PasswordHash = Security.SecurityUtil.HashPassword(password);
+                   if (!string.IsNullOrEmpty(password))
+                       AccountKey.PasswordHash = await Security.SecurityUtil.HashPassword(password);
 
-                if (saveToFile)
-                {
-                    // save to file
-                    var kdto = new KeyDto()
-                    {
-                        Address = Address,
-                        Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
-                    };
+                   if (saveToFile)
+                   {
+                        // save to file
+                        var kdto = new KeyDto()
+                       {
+                           Address = Address,
+                           Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
+                       };
 
-                    FileHelpers.WriteTextToFile("key.txt", JsonConvert.SerializeObject(kdto));
-                }
+                       FileHelpers.WriteTextToFile("key.txt", JsonConvert.SerializeObject(kdto));
+                   }
+               });
 
                 return true;
             }
@@ -98,7 +102,7 @@ namespace VEDriversLite
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
                     AccountKey = new EncryptionKey(kdto.Key, fromDb: true);
-                    AccountKey.LoadPassword(password);
+                    await AccountKey.LoadPassword(password);
                     AccountKey.IsEncrypted = true;
 
                     Address = kdto.Address;
@@ -120,11 +124,14 @@ namespace VEDriversLite
         {
             try
             {
-                AccountKey = new EncryptionKey(encryptedKey, fromDb: true);
-                AccountKey.LoadPassword(password);
-                AccountKey.IsEncrypted = true;
+                await Task.Run(async () =>
+                {
+                    AccountKey = new EncryptionKey(encryptedKey, fromDb: true);
+                    await AccountKey.LoadPassword(password);
+                    AccountKey.IsEncrypted = true;
 
-                Address = address;
+                    Address = address;
+                });
             }
             catch (Exception ex)
             {

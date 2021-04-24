@@ -1,71 +1,64 @@
 ﻿@using VEDriversLite
+@using VEDriversLite.NFT
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject AppData AppData
 @inject HttpClient _client
 @page "/nfts"
 
-<h1>Token Transaction</h1>
+<h1>Address NFTs</h1>
 
-<p>Sent transaction: @txid</p>
-<button class="btn btn-primary" @onclick="SendTx">Send Tx</button>
+<p>Address: @AppData.Account.Address</p>
+
+<button class="btn btn-primary" @onclick="LoadNFTs"><i class="oi oi-reload"></i></button>
+<hr />
+
+@if (AppData.Account.NFTs.Count == 0)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table" style="margin-top:50px;">
+        <thead>
+            <tr>
+                <th>TxId</th>
+                <th>Author</th>
+                <th>ImageLink</th>
+                <th>Image</th>
+                <th>Info</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var nft in AppData.Account.NFTs)
+            {
+            <tr>
+                <td>@nft.Description</td>
+                <td>@nft.Author</td>
+                <td>@nft.Description</td>
+                <td><img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></td>
+                <td><button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)"><i class="oi oi-info"></i></button></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
-    private string txid = "";
-    private NeblioAccount account = new NeblioAccount();
-    private string receiver = "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA";
-
 
     protected override async Task OnInitializedAsync()
     {
-        var address = string.Empty;
-        var key = string.Empty;
-
-        address = await localStorage.GetItemAsync<string>("address");
-        if (string.IsNullOrEmpty(address))
-        {
-            await account.CreateNewAccount("mypass", false);
-            address = account.Address;
-            key = account.AccountKey.GetEncryptedKey(returnEncrypted: true);
-            await localStorage.SetItemAsync("address", address);
-            await localStorage.SetItemAsync("key", key);
-        }
-        else
-        {
-            key = await localStorage.GetItemAsync<string>("key");
-        }
-
-        await account.LoadAccount("mypass", key, address); // put here your password
+        await LoadNFTs();
     }
 
-    private async Task SendTx()
+    private async Task LoadNFTs()
     {
-        txid = "Sending...";
+        var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
+        AppData.Account.NFTs = nfts;
+    }
 
-        // create token metadata
-        var metadata = new Dictionary<string, string>();
-        metadata.Add("Data", "My first metadata in token with VEDriversLite and Blazor");
+    private async Task ShowNFTDetails(INFT nft)
+    {
 
-        // fill input data for sending tx
-        var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
-        {
-            Amount = 1,
-            Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
-            Symbol = "VENFT", // symbol of token
-            Metadata = metadata,
-            Password = "mypass", // put here your password
-            SenderAddress = account.Address,
-            ReceiverAddress = receiver
-        };
-
-        try
-        {
-            // send tx
-            var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, account);
-            if (rtxid != null)
-                txid = rtxid;
-        }
-        catch (Exception ex)
-        {
-            txid = ex.Message;
-        }
     }
 }
