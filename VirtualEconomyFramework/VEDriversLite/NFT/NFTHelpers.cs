@@ -120,7 +120,8 @@ namespace VEDriversLite.NFT
                 var nft = await NFTFactory.GetNFT(NFTTypes.Image, u.Txid);
                 if (nft != null)
                 {
-                    nfts.Add(nft);
+                    if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
+                        nfts.Add(nft);
                 }
             }
 

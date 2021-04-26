@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Tewr.Blazor.FileReader;
 
 namespace VENFTApp_Blazor
 {
@@ -17,10 +18,11 @@ namespace VENFTApp_Blazor
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.Services.AddAntDesign();
             builder.RootComponents.Add<App>("app");
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddBlazoredSessionStorage();
-
+            builder.Services.AddFileReaderService(options => options.UseWasmSharedBuffer = true);
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             builder.Services.AddSingleton<AppData>();

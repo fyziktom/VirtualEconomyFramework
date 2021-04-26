@@ -4,43 +4,268 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject HttpClient _client
 @inject AppData AppData
+@inject NavigationManager NavManager
 
 @page "/"
 
-<h1>Hello, Crypto World!</h1>
+<Spin spinning="@creatingAddressSpinner" tip="Creating Address...">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h1>Neblio NFT Web Wallet</h1>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:50px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <img src="images/Stacked-Slogan_Dark.png" style="max-height:200px; max-width: 200px;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <hr />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Welcome to Neblio NFT App written in C# with Blazor</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div style="margin-top:200px; width :100%; text-align:center">
-    <img src="images/Stacked-Slogan_Dark.png" style="max-height:200px; max-width: 200px;" />
-    <p></p>
-    <hr />
-    <p></p>
-    <p>Welcome to new version of Neblio NFT App written in C# with Blazor</p>
-</div>
+    <Modal Title="Please create new Address"
+           Visible="@createNewAddressModalVisible"
+           OnOk="@HandleOk"
+           OnCancel="@HandleCancel">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>You dont have any stored address in your browser. This will create your new address.</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Your private key will be stored just in your local browser encrypted with your password.</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Input Password:</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value=@password Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Confirm Password:</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value=@passwordConfirm OnkeyUp="(e)=>PassMatchCheck(e)" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                @if ((passwordConfirm != password) && password.Length >= 8)
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span class="text-danger">Passwords not match!</span>
+                        </div>
+                    </div>
+                }
+                else if (passwordConfirm == password)
+                {
+                    if (password.Length < 8)
+                    {
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <span class="text-danger">Please fill longer password</span>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <span class="text-success">Passwords Match. Please confirm to create address!</span>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span class="text-secondary">8 characters minimum is length!</span>
+                        </div>
+                    </div>
+                }
+
+                @if (mustCreateAddressMessage)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="You must create new account for continue. There is no account saved in your local browser memory."
+                           ShowIcon="true" />
+                }
+            </div>
+        </div>
+    </Modal>
+
+    <Modal Title="Unlock Account"
+           Visible="@unlockAcocuntModalVisible"
+           OnOk="@UnlockAccountConfirm"
+           OnCancel="@UnclockAccountCancel">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Input password</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value=@unlockPassword Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                @if (unlockOrClearCashMessage)
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span class="text-danger">Unlock account or clear browser local storage for create new one!</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </Modal>
+</Spin>
+
+@if (accountCreated)
+{
+    <Alert Type="@AlertType.Success"
+           Message="Success"
+           Description="Your Neblio address was created and stored in your browser local memory."
+           ShowIcon="true" />
+}
+
+@if (accountCreatedError)
+{
+    <Alert Type="@AlertType.Error"
+           Message="Error"
+           Description=@errorMessage
+           ShowIcon="true" />
+}
 
 @code {
+    bool accountCreatedError = false;
+    string errorMessage = string.Empty;
+    bool accountCreated = false;
+    bool mustCreateAddressMessage = false;
+    bool creatingAddressSpinner = false;
+    private bool createNewAddressModalVisible = false;
+    private string password = string.Empty;
+    private string passwordConfirm = string.Empty;
+    bool passwordsMatch = false;
+    bool unlockAcocuntModalVisible = false;
+    string unlockPassword = string.Empty;
+    string key = string.Empty;
+    string address = string.Empty;
+    bool unlockOrClearCashMessage = false;
+
+    private void PassMatchCheck(KeyboardEventArgs args)
+    {
+        if (password == passwordConfirm)
+            passwordsMatch = true;
+        else
+            passwordsMatch = false;
+
+        StateHasChanged();
+    }
+
+    private async Task UnlockAccountConfirm(MouseEventArgs e)
+    {
+        await AppData.Account.LoadAccount(unlockPassword, key, address); // put here your password
+        unlockOrClearCashMessage = false;
+        unlockAcocuntModalVisible = false;
+        StateHasChanged();
+    }
+
+    private void UnclockAccountCancel(MouseEventArgs e)
+    {
+        unlockAcocuntModalVisible = true;
+        unlockOrClearCashMessage = true;
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        try
+        {
+            creatingAddressSpinner = true;
+            mustCreateAddressMessage = false;
+            StateHasChanged();
+
+            if (password != passwordConfirm)
+            {
+                return;
+            }
+
+            createNewAddressModalVisible = false;
+
+            await AppData.Account.CreateNewAccount(password, false);
+            address = AppData.Account.Address;
+            key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            await localStorage.SetItemAsync("address", address);
+            await localStorage.SetItemAsync("key", key);
+
+            await AppData.Account.LoadAccount(password, key, address); // put here your password
+            creatingAddressSpinner = false;
+            mustCreateAddressMessage = false;
+            accountCreated = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            accountCreated = false;
+            errorMessage = "Your Neblio address was not created." + ex.Message;
+            accountCreatedError = true;
+        }
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        createNewAddressModalVisible = true;
+        mustCreateAddressMessage = true;
+    }
 
     async Task Load()
     {
         if (string.IsNullOrEmpty(AppData.Account.Address))
         {
-            var address = string.Empty;
-            var key = string.Empty;
-
             address = await localStorage.GetItemAsync<string>("address");
             if (string.IsNullOrEmpty(address))
             {
-                await AppData.Account.CreateNewAccount("12345", false);
-                address = AppData.Account.Address;
-                key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
-                await localStorage.SetItemAsync("address", address);
-                await localStorage.SetItemAsync("key", key);
+                createNewAddressModalVisible = true;
             }
             else
             {
                 key = await localStorage.GetItemAsync<string>("key");
+                if (!string.IsNullOrEmpty(key))
+                {
+                    unlockAcocuntModalVisible = true;
+                }
+                else
+                {
+                    createNewAddressModalVisible = true;
+                }
             }
-
-            await AppData.Account.LoadAccount("12345", key, address); // put here your password
         }
     }
 

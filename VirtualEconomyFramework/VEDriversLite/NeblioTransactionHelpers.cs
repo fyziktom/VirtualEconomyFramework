@@ -18,8 +18,9 @@ namespace VEDriversLite
         private static HttpClient httpClient = new HttpClient();
         private static IClient _client;
         private static string BaseURL = "https://ntp1node.nebl.io/";
-        private static double FromSatToMainRatio = 100000000;
-
+        public static double FromSatToMainRatio = 100000000;
+        private static Network network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
+        public static string VENFTId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         private class SignResultDto
         {
             public string hex { get; set; }
@@ -404,7 +405,7 @@ namespace VEDriversLite
             }
         }
 
-        public static string SendNeblioTransactionAPI(SendTxData data, NeblioAccount account, double fee = 20000)
+        public static string SendNeblioTransactionAPI(SendTxData data, NeblioAccount account, double fee = 10000)
         {
             var res = SendNeblioTransactionAPIAsync(data, account, fee).GetAwaiter().GetResult();
             return res;
@@ -721,6 +722,41 @@ namespace VEDriversLite
             var resp = await _client.SendTxAsync(dto);
 
             return resp?.Txid;
+        }
+
+        public static async Task<double> GetSendAmount(GetTransactionInfoResponse tx, string address)
+        {
+            BitcoinAddress addr = null;
+            try
+            {
+                addr = BitcoinAddress.Create(address, network);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot get amount of transaction. cannot create receiver address!");
+            }
+
+            var vinamount = 0.0;
+            foreach (var vin in tx.Vin)
+            {
+                if (vin.Addr == address)
+                {
+                    vinamount += ((double)vin.Value / FromSatToMainRatio);
+                }
+            }
+
+            var amount = 0.0;
+            foreach(var vout in tx.Vout)
+            {
+                if (vout.ScriptPubKey.Hex == addr.ScriptPubKey.ToHex())
+                {
+                    amount += ((double)vout.Value / FromSatToMainRatio);
+                }
+            }
+
+            amount -= vinamount;
+
+            return amount;
         }
 
         public static async Task<List<Utxos>> GetAddressNeblUtxo(string addr, double minAmount = 0.0001, double requiredAmount = 0.0001)

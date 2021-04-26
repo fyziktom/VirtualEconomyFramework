@@ -1,50 +1,185 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using Ipfs.Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject AppData AppData
 @inject HttpClient _client
 @page "/nfts"
 
-<h1>Address NFTs</h1>
+<div class="container-fluid">
+    <Spin spinning="@sendingTransaction" tip="@sendingTransactionState">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h1>Address NFTs</h1>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Address: @AppData.Account.Address</p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-end justify-content-xl-end align-items-xl-end">
+                        <button class="btn btn-primary" @onclick="LoadNFTs"><i class="oi oi-reload"></i></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        @if (AppData.Account.NFTs.Count == 0)
+                        {
+                            <p><em>Loading...</em></p>
+                        }
+                        else
+                        {
+                            <table class="table" style="margin-top:50px;">
+                                <thead>
+                                    <tr>
+                                        <th>TxId</th>
+                                        <th>Author</th>
+                                        <th>ImageLink</th>
+                                        <th>Image</th>
+                                        <th>Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var nft in AppData.Account.NFTs)
+                                    {
+                                        <tr>
+                                            <td>@nft.Description</td>
+                                            <td>@nft.Author</td>
+                                            <td>@nft.Description</td>
+                                            <td><img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></td>
+                                            <td><button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)"><i class="oi oi-info"></i></button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
 
-<p>Address: @AppData.Account.Address</p>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        Status: <a href="https://explorer.nebl.io/tx/@tokentxid" target="_blank">@tokentxid</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Spin>
+</div>
 
-<button class="btn btn-primary" @onclick="LoadNFTs"><i class="oi oi-reload"></i></button>
-<hr />
-
-@if (AppData.Account.NFTs.Count == 0)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table" style="margin-top:50px;">
-        <thead>
-            <tr>
-                <th>TxId</th>
-                <th>Author</th>
-                <th>ImageLink</th>
-                <th>Image</th>
-                <th>Info</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var nft in AppData.Account.NFTs)
+<Modal Title="@nftInDetails.Name"
+       Visible="@nftDetailsVisible"
+       OnOk="@CloseNFTDetails"
+       OnCancel="@CloseNFTDetails">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Name: @nftInDetails.Name</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Author: @nftInDetails.Author</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Description: @nftInDetails.Description</span>
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(nftInDetails.Link))
             {
-            <tr>
-                <td>@nft.Description</td>
-                <td>@nft.Author</td>
-                <td>@nft.Description</td>
-                <td><img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></td>
-                <td><button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)"><i class="oi oi-info"></i></button></td>
-            </tr>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="@nftInDetails.Link" target="_blank">Connected Link</a>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <a href="@nftInDetails.ImageLink" target="_blank">Direct Image Link</a>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <img src="@nftInDetails.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog(nftInDetails)"><i class="oi oi-location"></i> Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+<Modal Title="@confirmTitle"
+       Visible="@confirmVisible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+    <p>@confirmContent</p>
+</Modal>
+
+<Modal Title="Send NFT"
+       Visible="@sendNFTDialogVisible"
+       OnOk="@sendNFTDialogOK"
+       OnCancel="@sendNFTDialogCancel">
+    <p>
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        Fill Receiver Address:
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Name of the NFT" @bind-Value=@receiverAddress Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </p>
+</Modal>
+
+@if (AppData.Account.IsLocked())
+{
+    <Alert Type="@AlertType.Error"
+           Message="Error"
+           Description="Account Is Locked. Please unlock account first."
+           ShowIcon="true" />
+}
+
+@if (errorDuringSend)
+{
+    <Alert Type="@AlertType.Error"
+           Message="Error"
+           Description=@errorMessage
+           ShowIcon="true" />
 }
 
 @code {
+
+    bool sendingTransaction = false;
+    string sendingTransactionState = "Sending NFT...";
+    bool sendNFTDialogVisible = false;
+    bool errorDuringSend = false;
+    string errorMessage = string.Empty;
+
+    bool confirmVisible = false;
+    string confirmTitle = "Send NFT?";
+    string confirmContent = "Do you realy want to send this NFT?";
+
+    string tokentxid = string.Empty;
+    string receiverAddress = string.Empty;
+    bool nftDetailsVisible = false;
+    private INFT nftInDetails = new ImageNFT("");
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,8 +192,90 @@ else
         AppData.Account.NFTs = nfts;
     }
 
+    private async Task CloseNFTDetails(MouseEventArgs e)
+    {
+        nftDetailsVisible = false;
+    }
+
     private async Task ShowNFTDetails(INFT nft)
     {
+        nftDetailsVisible = true;
+        nftInDetails = nft;
+    }
 
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        confirmVisible = false;
+        sendNFTDialogVisible = false;
+        nftDetailsVisible = false;
+
+        await sendNFT();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    private async Task sendNFTDialogOK(MouseEventArgs e)
+    {
+        confirmVisible = true;
+    }
+
+    private void sendNFTDialogCancel(MouseEventArgs e)
+    {
+        sendNFTDialogVisible = false;
+    }
+
+    private async Task ShowSendNFTDialog(INFT nft)
+    {
+        sendNFTDialogVisible = true;
+
+    }
+
+    private async Task sendNFT()
+    {
+        sendingTransaction = true;
+        tokentxid = "Sending...";
+        // create token metadata
+        var metadata = new Dictionary<string, string>();
+        metadata.Add("SourceUtxo", nftInDetails.SourceTxId);
+
+        // fill input data for sending tx
+        var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+        {
+            Amount = 1,
+            Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+            Symbol = "VENFT", // symbol of token
+            Metadata = metadata,
+            Password = "12345", // put here your password,
+            sendUtxo = new List<string>() { nftInDetails.Utxo },
+            SenderAddress = AppData.Account.Address,
+            ReceiverAddress = receiverAddress
+        };
+
+        try
+        {
+            // send tx
+            var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, AppData.Account);
+            if (rtxid != null)
+            {
+                sendingTransactionState = "Transaction Send right!";
+                tokentxid = rtxid;
+                AppData.Account.NFTs.Clear();
+                StateHasChanged();
+                await LoadNFTs();
+                sendingTransaction = false;
+                errorMessage = string.Empty;
+                errorDuringSend = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            tokentxid = ex.Message;
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+
+        }
     }
 }

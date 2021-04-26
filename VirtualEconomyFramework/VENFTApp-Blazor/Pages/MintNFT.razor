@@ -1,0 +1,277 @@
+﻿@using System.IO;
+@using VEDriversLite
+@using VEDriversLite.NFT
+@using Tewr.Blazor.FileReader
+@using System.Threading
+@using System.Threading.Tasks
+@using Ipfs.Http
+@inject IFileReaderService fileReaderService
+@inject AppData AppData
+@inject HttpClient _client
+@inject NavigationManager NavManager
+@page "/mint"
+
+<Spin spinning="@processingMinting" tip="Sending Minting...">
+
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h1>Mint New NFT</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <p>With Address:</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <p><a href="https://explorer.nebl.io/address/@AppData.Account.Address" target="_blank">@AppData.Account.Address</a></p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <p>Name:</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Input Placeholder="Add Name of the NFT" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <p>Author:</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Input Placeholder="Add Author of the NFT" @bind-Value=@newNFT.Author Style="font-size:12px; min-width:250px; max-width:350px;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <p>Description:</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Input Placeholder="Add Description of the NFT" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col">
+                    <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <p>Select and Upload Image:</p>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <input type="file" @ref=inputTypeFileElement />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <button @onclick=ReadFile>Upload Image</button>
+                            </div>
+                        </div>
+                    </Spin>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Input Placeholder="Image Link" @bind-Value=@newNFT.ImageLink Style="font-size:12px; min-width:250px; max-width:350px;" />
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <p>Image Preview:</p>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    @switch (loadingImageStage)
+                    {
+                        case LoadingImageStages.NotStarted:
+                            <p>No image loaded</p>
+                            break;
+                        case LoadingImageStages.Loading:
+                            <Spin Tip="Uploading..." />
+                            break;
+                        case LoadingImageStages.Loaded:
+                            <a href="@newNFT.ImageLink" target="_blank"><img src="@newNFT.ImageLink" style="max-width:350px; min-width:40px;" /></a>
+                            break;
+                    }
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <p>Status: @status</p>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <p>New NFT transaction id: @newNFT.NFTOriginTxId</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</Spin>
+
+<Modal Title="@confirmTitle"
+       Visible="@confirmVisible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+    <p>@confirmContent</p>
+</Modal>
+
+@if (AppData.Account.IsLocked())
+{
+    <Alert Type="@AlertType.Error"
+           Message="Error"
+           Description="Account Is Locked. Please unlock account first."
+           ShowIcon="true" />
+}
+
+@if (errorDuringSend)
+{
+    <Alert Type="@AlertType.Error"
+           Message="Error"
+           Description=@errorMessage
+           ShowIcon="true" />
+}
+
+@code {
+    enum LoadingImageStages
+    {
+        NotStarted,
+        Loading,
+        Loaded
+    }
+
+    bool uploadingImage = false;
+    bool errorDuringSend = false;
+    string errorMessage = string.Empty;
+    bool confirmVisible = false;
+    string confirmTitle = "Mint New NFT?";
+    string confirmContent = "Do you realy want to mint this NFT?";
+    LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
+    private string status = string.Empty;
+    private string tokentxid = string.Empty;
+    private ImageNFT newNFT = new ImageNFT("");
+    static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
+    private CancellationTokenSource cts = new CancellationTokenSource();
+    private ElementReference inputTypeFileElement;
+    private System.Threading.Timer timer;
+    bool processingMinting = false;
+
+    void ShowMintConfirm()
+    {
+        confirmTitle = "Mint New NFT?";
+        confirmContent = "Do you realy want to mint this NFT?";
+        confirmVisible = true;
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        confirmVisible = false;
+        await MintNewNFT();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    public async Task ReadFile()
+    {
+        uploadingImage = true;
+        StateHasChanged();
+        foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
+        {
+            loadingImageStage = LoadingImageStages.Loading;
+            // Read into buffer and act (uses less memory)
+            await using (Stream stream = await file.OpenReadAsync())
+            {
+                var fileinfo = await file.ReadFileInfoAsync();
+
+                var imageLink = await ipfs.FileSystem.AddAsync(stream, fileinfo.Name, null);
+                newNFT.ImageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+
+                timer = new System.Threading.Timer(async (object stateInfo) =>
+                {
+                    using var httpResponse = await _client.GetAsync(newNFT.ImageLink);
+
+                    if (httpResponse.IsSuccessStatusCode)
+                    {
+                        loadingImageStage = LoadingImageStages.Loaded;
+                        uploadingImage = false;
+                        timer.Dispose();
+                    }
+
+                    StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+                }, new System.Threading.AutoResetEvent(false), 1000, 1000);
+            }
+        }
+    }
+
+    private async Task MintNewNFT()
+    {
+        if (AppData.Account.IsLocked())
+        {
+            processingMinting = false;
+            return;
+        }
+
+        status = "Sending...";
+        processingMinting = true;
+
+        // create token metadata
+        var metadata = new Dictionary<string, string>();
+        metadata.Add("NFT", "true");
+        metadata.Add("Name", newNFT.Name);
+        metadata.Add("Author", newNFT.Author);
+        metadata.Add("Description", newNFT.Description);
+        metadata.Add("Image", newNFT.ImageLink);
+        metadata.Add("Link", newNFT.Link);
+        metadata.Add("Type", "NFT Image");
+
+        // fill input data for sending tx
+        var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
+        {
+            Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+            Metadata = metadata,
+            Password = "", // put here your password
+            SenderAddress = AppData.Account.Address,
+        };
+
+        try
+        {
+            // send tx
+            var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, AppData.Account);
+            if (rtxid != null)
+            {
+                tokentxid = rtxid;
+                processingMinting = false;
+                StateHasChanged();
+                await Task.Delay(5);
+                NavManager.NavigateTo("/nfts");
+            }
+        }
+        catch (Exception ex)
+        {
+            tokentxid = ex.Message;
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+        }
+    }
+
+}

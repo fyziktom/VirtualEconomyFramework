@@ -6,48 +6,205 @@
 @inject AppData AppData
 @page "/account"
 
-<h1>Account Details</h1>
-
-<p>Your Neblio Address: @AppData.Account.Address</p>
-
-<hr />
-<p>Actual Balance: @addressInfo.Balance NEBL</p>
-<p>Unconfirmed Balance: @addressInfo.UnconfirmedBalance NEBL</p>
-<p>Number Of Transactions: @addressInfo.Transactions.Count</p>
-<hr />
-<button class="btn btn-primary" @onclick="downloadAccountKey">Show Encrypted Private Key</button>
-<p>Your Key: @accountKey</p>
-<hr />
-<h3>Transactions:</h3>
-
-@if (addressInfo.Transactions == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>TxId</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var tx in addressInfo.Transactions)
+<div class="container-fluid">
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <h1>Account Details</h1>
+        </div>
+    </div>
+    <div class="row" style="margin-top:20px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <p>Your Neblio Address: <a href="https://explorer.nebl.io/address/@AppData.Account.Address" target="_blank">@AppData.Account.Address</a></p>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <hr />
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <p>Actual Balance: @addressInfo.Balance NEBL</p>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <p>Unconfirmed Balance: @addressInfo.UnconfirmedBalance NEBL</p>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <p>Number Of Transactions: @addressInfo.Transactions.Count</p>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <hr />
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            @if (AppData.Account.IsLocked())
             {
-                <tr>
-                    <td>@tx</td>
-                    <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx)"><i class="oi oi-info"></i></button></td>
-                </tr>
+                <span>Wallet is Locked</span>
             }
-        </tbody>
-    </table>
-}
+            else
+            {
+                <span>Wallet is Unlocked</span>
+            }
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            @if (AppData.Account.IsLocked())
+            {
+                <button class="btn btn-primary" @onclick="unlockWallet">Unlock Wallet</button>
+            }
+            else
+            {
+                <button class="btn btn-primary" @onclick="lockWallet">Lock Wallet</button>
+            }
+
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <button class="btn btn-primary" @onclick="downloadAccountKey">Show Encrypted Private Key</button>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <p>Your Key: @accountKey</p>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <hr />
+        </div>
+    </div>
+    <div class="row" style="margin-top:30px;">
+        <div class="col">
+            <div class="row" style="margin-top:30px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h3>Transactions:</h3>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top:30px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    @if (addressInfo.Transactions == null)
+                    {
+                        <p><em><Spin Tip="Loading..." /></em></p>
+                    }
+                    else
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>TxId</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var tx in addressInfo.Transactions)
+                                {
+                                    <tr>
+                                        <td>@ShortenTxId(tx)</td>
+                                        <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx)"><i class="oi oi-info"></i></button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <Modal Title="Transaction Details"
+            Visible="@txDetailsVisible"
+            OnOk="@CloseTxDetails"
+            OnCancel="@CloseTxDetails">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Tx Id</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>@txInDetails.Txid</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Total Send: @txInDetails.Totalsent NEBL</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Time: @txInDetailsTime.ToString()</span>
+                    </div>
+                </div>
+                @if (NFTTransaction)
+                {
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>This is NFT Transaction!</span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <a href="http://explorer.nebl.io/tx/@nftTxId" target="_blank">Explore NFT</a>
+                        </div>
+                    </div>
+                }
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="http://explorer.nebl.io/tx/@txInDetails.Txid" target="_blank">Explorer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Modal>
+
+    <Modal Title="Unlock Account"
+            Visible="@unlockAcocuntModalVisible"
+            OnOk="@UnlockAccountConfirm"
+            OnCancel="@UnclockAccountCancel">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Input password</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value=@password Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Modal>
+</div>
 
 @code {
+    bool txDetailsVisible = false;
+    GetTransactionInfoResponse txInDetails;
+    DateTime txInDetailsTime;
+    Dictionary<string, string> txInDetailsMetadata = new Dictionary<string, string>();
+    bool NFTTransaction = false;
+    string nftTxId = string.Empty;
+    string password = string.Empty;
+    bool unlockAcocuntModalVisible = false;
+
     private GetAddressResponse addressInfo = new GetAddressResponse();
     private System.Threading.Timer timer;
+    private System.Threading.Timer hideTimer;
     private string accountKey = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -55,6 +212,7 @@ else
         if (!string.IsNullOrEmpty(AppData.Account.Address))
         {
             addressInfo.Transactions = new List<string>();
+            addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
 
             timer = new System.Threading.Timer(async (object stateInfo) =>
             {
@@ -64,16 +222,90 @@ else
         }
     }
 
+    private string ShortenTxId(string txid)
+    {
+        var txids = txid.Remove(5, txid.Length - 5) + "....." + txid.Remove(0, txid.Length - 5);
+        return txids;
+    }
+
+    private async Task lockWallet()
+    {
+        AppData.Account.AccountKey.Lock();
+        StateHasChanged();
+    }
+
+    private async Task unlockWallet()
+    {
+        unlockAcocuntModalVisible = true;
+    }
+
     private async Task downloadAccountKey()
     {
         if (!string.IsNullOrEmpty(AppData.Account.Address))
         {
-            accountKey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            if (AppData.Account.IsLocked())
+            {
+                accountKey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            }
+            else
+            {
+                accountKey = await AppData.Account.AccountKey.GetEncryptedKey();
+            }
+
+            hideTimer = new System.Threading.Timer(async (object stateInfo) =>
+            {
+                accountKey = string.Empty;
+                StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+                hideTimer.Dispose();
+            }, new System.Threading.AutoResetEvent(false), 10000, 10000);
         }
+    }
+
+    private async Task UnlockAccountConfirm(MouseEventArgs e)
+    {
+        unlockAcocuntModalVisible = false;
+
+        await AppData.Account.AccountKey.LoadPassword(password); // put here your password
+        StateHasChanged();
+    }
+
+    private void UnclockAccountCancel(MouseEventArgs e)
+    {
+        unlockAcocuntModalVisible = false;
+    }
+
+    private async Task CloseTxDetails(MouseEventArgs e)
+    {
+        txDetailsVisible = false;
     }
 
     private async Task ShowTxDetails(string txId)
     {
+        var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txId);
+        var meta = await NeblioTransactionHelpers.GetTransactionMetadata(NeblioTransactionHelpers.VENFTId, txId);
 
+        if (txinfo != null)
+        {
+            txInDetails = txinfo;
+            if (meta != null)
+            {
+                txInDetailsMetadata = meta;
+
+                if (meta.TryGetValue("NFT", out var nft))
+                {
+                    if (nft == "true")
+                    {
+                        NFTTransaction = true;
+                        if (meta.TryGetValue("SourceUtxo", out var nfttxid))
+                            nftTxId = nfttxid;
+                    }
+                }
+            }
+
+            txInDetailsTime = TimeHelpers.UnixTimestampToDateTime((double)txinfo.Time);
+
+            txInDetails.Totalsent = await NeblioTransactionHelpers.GetSendAmount(txinfo, AppData.Account.Address);
+            txDetailsVisible = true;
+        }
     }
 }
