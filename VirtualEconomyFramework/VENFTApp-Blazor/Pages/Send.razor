@@ -137,12 +137,18 @@
 
     private async Task SendTokenTx()
     {
+        if (AppData.Account.IsLocked())
+        {
+            sendingTransaction = false;
+            return;
+        }
+
         sendingTransaction = true;
         tokentxid = "Sending...";
 
         // create token metadata
         var metadata = new Dictionary<string, string>();
-        metadata.Add("Data", "My first metadata in token with VEDriversLite and Blazor");
+        metadata.Add("Data", "Sent with https://ve-nft.com/");
 
         // fill input data for sending tx
         var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
@@ -151,7 +157,7 @@
             Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
             Symbol = "VENFT", // symbol of token
             Metadata = metadata,
-            Password = "12345", // put here your password
+            Password = "", // put here your password
             SenderAddress = AppData.Account.Address,
             ReceiverAddress = tokenReceiver
         };
@@ -174,6 +180,12 @@
 
     private async Task SendTx()
     {
+        if (AppData.Account.IsLocked())
+        {
+            sendingTransaction = false;
+            return;
+        }
+
         sendingTransaction = true;
         txid = "Sending...";
 
@@ -181,7 +193,7 @@
         var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
         {
             Amount = AmountToSend,
-            Password = "12345", // put here your password
+            Password = "", // put here your password
             SenderAddress = AppData.Account.Address,
             ReceiverAddress = neblReceiver
         };
