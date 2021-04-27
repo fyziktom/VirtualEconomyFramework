@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Bookmarks;
 using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
@@ -115,7 +116,7 @@ namespace VEDriversLite.NFT
         {
             List<INFT> nfts = new List<INFT>();
             var utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
-            foreach(var u in utxos)
+            foreach (var u in utxos)
             {
                 var nft = await NFTFactory.GetNFT(NFTTypes.Image, u.Txid);
                 if (nft != null)
@@ -126,6 +127,16 @@ namespace VEDriversLite.NFT
             }
 
             return nfts;
+        }
+
+        public static async Task<List<ActiveTab>> GetTabs(string tabs)
+        {
+            return JsonConvert.DeserializeObject<List<ActiveTab>>(tabs);
+        }
+
+        public static async Task<string> SerializeTabs(List<ActiveTab> tabs)
+        {
+            return JsonConvert.SerializeObject(tabs);
         }
 
     }

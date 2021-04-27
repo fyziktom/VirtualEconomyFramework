@@ -69,7 +69,7 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input password" @bind-Value=@passwordConfirm OnkeyUp="(e)=>PassMatchCheck(e)" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <InputPassword Placeholder="Input password" @bind-Value=@passwordConfirm Style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
                 @if ((passwordConfirm != password) && password.Length >= 8)
@@ -135,13 +135,26 @@
                         <InputPassword Placeholder="Input password" @bind-Value=@unlockPassword Style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
+                @if (unlockPassword.Length < 8)
+                {
+                    <Alert Type="@AlertType.Warning"
+                           Message="Warrning"
+                           Description="Wrong Password. Too short."
+                           ShowIcon="true" />
+                }
                 @if (unlockOrClearCashMessage)
                 {
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <span class="text-danger">Unlock account or clear browser local storage for create new one!</span>
-                        </div>
-                    </div>
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Unlock account or clear browser local storage for create new one!"
+                           ShowIcon="true" />
+                }
+                @if (accountUnlockingError)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Wrong Password"
+                           ShowIcon="true" />
                 }
             </div>
         </div>
@@ -165,6 +178,7 @@
 }
 
 @code {
+    bool accountUnlockingError = false;
     bool accountCreatedError = false;
     string errorMessage = string.Empty;
     bool accountCreated = false;
@@ -180,22 +194,26 @@
     string address = string.Empty;
     bool unlockOrClearCashMessage = false;
 
-    private void PassMatchCheck(KeyboardEventArgs args)
-    {
-        if (password == passwordConfirm)
-            passwordsMatch = true;
-        else
-            passwordsMatch = false;
-
-        StateHasChanged();
-    }
-
     private async Task UnlockAccountConfirm(MouseEventArgs e)
     {
-        await AppData.Account.LoadAccount(unlockPassword, key, address); // put here your password
-        unlockOrClearCashMessage = false;
-        unlockAcocuntModalVisible = false;
-        StateHasChanged();
+        try
+        {
+            await AppData.Account.LoadAccount(unlockPassword, key, address); // put here your password
+
+            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
+            if (!string.IsNullOrEmpty(kt))
+            {
+                accountUnlockingError = false;
+                unlockOrClearCashMessage = false;
+                unlockAcocuntModalVisible = false;
+                StateHasChanged();
+            }
+        }
+        catch(Exception ex)
+        {
+            accountUnlockingError = true;
+            // todo
+        }
     }
 
     private void UnclockAccountCancel(MouseEventArgs e)
@@ -206,16 +224,20 @@
 
     private async Task HandleOk(MouseEventArgs e)
     {
+        if (password != passwordConfirm)
+        {
+            return;
+        }
+        if (password.Length < 8)
+        {
+            return;
+        }
+
         try
         {
             creatingAddressSpinner = true;
             mustCreateAddressMessage = false;
             StateHasChanged();
-
-            if (password != passwordConfirm)
-            {
-                return;
-            }
 
             createNewAddressModalVisible = false;
 

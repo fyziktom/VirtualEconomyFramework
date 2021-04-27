@@ -13,7 +13,7 @@
             <div class="col">
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <h1>Address NFTs</h1>
+                        <h1>My NFTs</h1>
                     </div>
                 </div>
                 <div class="row" style="margin-top:20px;">
@@ -30,16 +30,15 @@
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         @if (AppData.Account.NFTs.Count == 0)
                         {
-                            <p><em>Loading...</em></p>
+                            <p><em><Spin Tip="Loading...No NFTs found yet"></Spin></em></p>
                         }
                         else
                         {
                             <table class="table" style="margin-top:50px;">
                                 <thead>
                                     <tr>
-                                        <th>TxId</th>
+                                        <th>Name</th>
                                         <th>Author</th>
-                                        <th>ImageLink</th>
                                         <th>Image</th>
                                         <th>Info</th>
                                     </tr>
@@ -48,9 +47,8 @@
                                     @foreach (var nft in AppData.Account.NFTs)
                                     {
                                         <tr>
-                                            <td>@nft.Description</td>
+                                            <td>@nft.Name</td>
                                             <td>@nft.Author</td>
-                                            <td>@nft.Description</td>
                                             <td><img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></td>
                                             <td><button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)"><i class="oi oi-info"></i></button></td>
                                         </tr>
@@ -102,12 +100,14 @@
             }
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <a href="@nftInDetails.ImageLink" target="_blank">Direct Image Link</a>
+                    <a href="https://explorer.nebl.io/tx/@nftInDetails.NFTOriginTxId" target="_blank">Mint Tx In Explorer</a>
                 </div>
             </div>
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <img src="@nftInDetails.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                    <a href="@nftInDetails.ImageLink" target="_blank">
+                        <img src="@nftInDetails.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                        </a>
                 </div>
             </div>
             <div class="row" style="margin-top:20px;">
@@ -239,7 +239,7 @@
         tokentxid = "Sending...";
         // create token metadata
         var metadata = new Dictionary<string, string>();
-        metadata.Add("SourceUtxo", nftInDetails.SourceTxId);
+        metadata.Add("SourceUtxo", nftInDetails.NFTOriginTxId);
 
         // fill input data for sending tx
         var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
@@ -248,7 +248,7 @@
             Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
             Symbol = "VENFT", // symbol of token
             Metadata = metadata,
-            Password = "12345", // put here your password,
+            Password = "", // put here your password,
             sendUtxo = new List<string>() { nftInDetails.Utxo },
             SenderAddress = AppData.Account.Address,
             ReceiverAddress = receiverAddress

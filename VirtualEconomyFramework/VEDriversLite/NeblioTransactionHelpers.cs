@@ -702,9 +702,10 @@ namespace VEDriversLite
             {
                 foreach (var u in utxosAll.Utxos)
                 {
-                    if (u.Tokens.Count == 1)
+                    if (u.Tokens.Count > 0)
                     {
-                        utxos.Add(u);
+                        if (u.Tokens.ToArray()[0]?.Amount == 1)
+                            utxos.Add(u);
                     }
                 }
             }
@@ -1179,6 +1180,40 @@ namespace VEDriversLite
             }
 
             return null;
+        }
+
+
+        public static async Task<(double, GetTokenMetadataResponse)> GetActualMintingSupply(string address)
+        {
+
+            if (_client == null)
+            {
+                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
+            }
+
+            GetTokenMetadataResponse tokeninfo = new GetTokenMetadataResponse();
+            tokeninfo = await _client.GetTokenMetadataAsync("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", 0);
+
+            var res = await NeblioTransactionHelpers.GetAddressTokensUtxos(address);
+            var utxos = new List<Utxos>();
+            foreach (var r in res)
+            {
+                var toks = r.Tokens.ToArray()?[0];
+                if (toks != null)
+                {
+                    if (toks.Amount > 1)
+                    {
+                        if (toks.TokenId == "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
+                            utxos.Add(r);
+                    }
+                }
+            }
+
+            var totalAmount = 0.0;
+            foreach (var u in utxos)
+                totalAmount += (double)u.Tokens.ToArray()?[0]?.Amount;
+
+            return (totalAmount, tokeninfo);
         }
 
     }

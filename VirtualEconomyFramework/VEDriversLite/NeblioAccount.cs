@@ -3,8 +3,10 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Bookmarks;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
 
@@ -20,6 +22,7 @@ namespace VEDriversLite
         public double? TotalSpendableBalance { get; set; } = 0.0;
         public double? TotalUnconfirmedBalance { get; set; } = 0.0;
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
 
         [JsonIgnore]
         public EncryptionKey AccountKey { get; set; }
@@ -139,6 +142,51 @@ namespace VEDriversLite
             }
 
             return false;
+        }
+
+        public async Task LoadBookmarks(string bookmarks)
+        {
+            try
+            {
+                var bkm = JsonConvert.DeserializeObject<List<Bookmark>>(bookmarks);
+                if (bkm != null)
+                    Bookmarks = bkm;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize the bookmarks.");
+            }
+        }
+
+        public async Task<(bool,string)> AddBookmark(string name, string address, string note)
+        {
+            if (!Bookmarks.Any(b => b.Address == address))
+                Bookmarks.Add(new Bookmark()
+                {
+                    Name = name,
+                    Address = address,
+                    Note = note
+                });
+            else
+                return (false,"Already Exists!");
+
+            return (true,JsonConvert.SerializeObject(Bookmarks));
+        }
+
+        public async Task<(bool,string)> RemoveBookmark(string address)
+        {
+            var bk = Bookmarks.FirstOrDefault(b => b.Address == address);
+            if (bk != null)
+                Bookmarks.Remove(bk);
+            else
+                return (false,"Not Found!");
+
+            return (true,JsonConvert.SerializeObject(Bookmarks));
+        }
+
+        public async Task<string> SerializeBookmarks()
+        {
+            return JsonConvert.SerializeObject(Bookmarks);
         }
     }
 }

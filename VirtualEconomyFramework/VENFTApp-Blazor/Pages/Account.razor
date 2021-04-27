@@ -249,7 +249,14 @@
             }
             else
             {
-                accountKey = await AppData.Account.AccountKey.GetEncryptedKey();
+                try
+                {
+                    accountKey = await AppData.Account.AccountKey.GetEncryptedKey();
+                }
+                catch(Exception ex)
+                {
+                    // todo
+                }
             }
 
             hideTimer = new System.Threading.Timer(async (object stateInfo) =>
@@ -282,7 +289,15 @@
     private async Task ShowTxDetails(string txId)
     {
         var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txId);
-        var meta = await NeblioTransactionHelpers.GetTransactionMetadata(NeblioTransactionHelpers.VENFTId, txId);
+        Dictionary<string, string> meta = new Dictionary<string, string>();
+        try
+        {
+            meta = await NeblioTransactionHelpers.GetTransactionMetadata(NeblioTransactionHelpers.VENFTId, txId);
+        }
+        catch (Exception ex)
+        {
+            //todo
+        }
 
         if (txinfo != null)
         {

@@ -1,0 +1,301 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NeblioAPI
+@using VEDriversLite.Bookmarks
+@using VEDriversLite.NFT
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject HttpClient _client
+@inject AppData AppData
+@page "/browser"
+
+<div class="container-fluid">
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <h1>NFT Browser</h1>
+        </div>
+    </div>
+
+    <div class="row d-flex justify-content-center align-items-center" style="margin-top:50px;">
+        <div class="col">
+            <div>
+                <ul class="nav nav-tabs" role="tablist" id="shopTabsHeadings">
+                    @foreach (var tab in Tabs)
+                    {
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab)">
+                                @tab.ShortAddress
+                                <button class="btn btn-secondary" @onclick="async () => removeTab(tab)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 0px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
+                                    <i class="oi oi-circle-x"></i>
+                                </button>
+                            </a>
+                        </li>
+                    }
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-toggle="tab" @onclick=addNewTabModal><i class="oi oi-plus" style="font-size: 20px;"></i></a></li>
+                </ul>
+                <div class="tab-content" id="shopTabsContent">
+
+                    @foreach (var tab in Tabs)
+                    {
+                        var selected = "";
+                        if (tab.Selected)
+                        {
+                        <div role="tabpanel" class="tab-pane active" style="min-height: 200px;">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="row" style="margin-top: 10px;">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                            <h5>@tab.Address</h5>
+                                            <!--
+                                            <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
+                                                <i class="oi oi-star"></i>
+                                            </a>-->
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:20px">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                        @if (tab.NFTs.Count == 0)
+                                                        {
+                                                            <p><em><Spin Tip="Loading...No NFTs found yet"></Spin></em></p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <table class="table" style="margin-top:50px;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Name</th>
+                                                                        <th>Author</th>
+                                                                        <th>Image</th>
+                                                                        <th>Info</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var nft in tab.NFTs)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>@nft.Name</td>
+                                                                            <td>@nft.Author</td>
+                                                                            <td><img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></td>
+                                                                            <td><button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)"><i class="oi oi-info"></i></button></td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Title="Open Tab"
+       Visible="@openTabVisible"
+       OnOk="@addNewTab"
+       OnCancel="@addNewTabCancel">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Please Input Neblio Address</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Input Placeholder="Input Neblio address" @bind-Value=@newTabAddress Style="font-size:12px; min-width:150px; max-width:250px;" />
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+<Modal Title="@nftInDetails.Name"
+       Visible="@nftDetailsVisible"
+       OnOk="@CloseNFTDetails"
+       OnCancel="@CloseNFTDetails">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Name: @nftInDetails.Name</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Author: @nftInDetails.Author</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Description: @nftInDetails.Description</span>
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(nftInDetails.Link))
+            {
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="@nftInDetails.Link" target="_blank">Connected Link</a>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <a href="https://explorer.nebl.io/tx/@nftInDetails.NFTOriginTxId" target="_blank">Mint Tx In Explorer</a>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <a href="@nftInDetails.ImageLink" target="_blank"><img src="@nftInDetails.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    bool nftDetailsVisible = false;
+    private INFT nftInDetails = new ImageNFT("");
+
+
+    private bool openTabVisible = false;
+    private string newTabAddress = string.Empty;
+    private List<ActiveTab> Tabs = new List<ActiveTab>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBookmarksAndState();
+    }
+
+    private async Task CloseNFTDetails(MouseEventArgs e)
+    {
+        nftDetailsVisible = false;
+    }
+
+    private async Task ShowNFTDetails(INFT nft)
+    {
+        nftDetailsVisible = true;
+        nftInDetails = nft;
+    }
+
+    private async Task LoadBookmarksAndState()
+    {
+        try
+        {
+            var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+            if (!string.IsNullOrEmpty(bookmarks))
+            {
+                await AppData.Account.LoadBookmarks(bookmarks);
+            }
+
+            var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
+
+            if (!string.IsNullOrEmpty(browserTabs))
+                Tabs = await NFTHelpers.GetTabs(browserTabs);
+
+            var setFirst = true;
+            if (Tabs.Count > 0)
+            {
+                foreach(var t in Tabs)
+                {
+                    t.Selected = setFirst;
+                    if (setFirst)
+                    {
+                        setFirst = false;
+                        StateHasChanged();
+                        t.NFTs = await NFTHelpers.LoadAddressNFTs(t.Address);
+                        StateHasChanged();
+                    }
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            //todo
+        }
+    }
+
+    private async Task AddBookmark(string name, string address, string note)
+    {
+        if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(address))
+        {
+            if (string.IsNullOrEmpty(note))
+                note = string.Empty;
+
+            var bks = await AppData.Account.AddBookmark(name, address, note);
+            if (bks.Item1)
+                await localStorage.SetItemAsync("bookmarks", bks.Item2);
+        }
+    }
+
+    private async Task RemoveBookmark(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            var bks = await AppData.Account.RemoveBookmark(address);
+            await localStorage.SetItemAsync("bookmarks", bks);
+        }
+    }
+
+    private async Task addNewTabModal()
+    {
+        openTabVisible = true;
+    }
+
+    private async Task addNewTab()
+    {
+        foreach(var t in Tabs)
+            t.Selected = false;
+
+        var tab = new ActiveTab(newTabAddress);
+        tab.Selected = true;
+        openTabVisible = false;
+        Tabs.Add(tab);
+        StateHasChanged();
+        tab.NFTs = await NFTHelpers.LoadAddressNFTs(newTabAddress);
+        StateHasChanged();
+
+        var bst = await NFTHelpers.SerializeTabs(Tabs);
+        await localStorage.SetItemAsync("browserTabs", bst);
+    }
+
+    private async Task addNewTabCancel()
+    {
+        openTabVisible = false;
+    }
+
+    private async Task selectTab(ActiveTab tab)
+    {
+        foreach (var t in Tabs)
+            t.Selected = false;
+
+        Tabs.FirstOrDefault(t => t.Address == tab.Address).Selected = true;
+
+        if (tab.NFTs.Count == 0)
+        {
+            StateHasChanged();
+            tab.NFTs = await NFTHelpers.LoadAddressNFTs(tab.Address);
+            StateHasChanged();
+        }
+    }
+
+    private async Task removeTab(ActiveTab tab)
+    {
+        Tabs.Remove(tab);
+        Tabs.FirstOrDefault().Selected = true;
+
+        var bst = await NFTHelpers.SerializeTabs(Tabs);
+        await localStorage.SetItemAsync("browserTabs", bst);
+    }
+}
