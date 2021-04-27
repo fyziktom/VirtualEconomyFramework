@@ -22,6 +22,7 @@ namespace VEDriversLite
         public double? TotalSpendableBalance { get; set; } = 0.0;
         public double? TotalUnconfirmedBalance { get; set; } = 0.0;
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; } = new Dictionary<string, TokenSupplyDto>();
         public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
 
         [JsonIgnore]
@@ -187,6 +188,11 @@ namespace VEDriversLite
         public async Task<string> SerializeBookmarks()
         {
             return JsonConvert.SerializeObject(Bookmarks);
+        }
+
+        public async Task ReloadTokenSupply()
+        {
+            TokensSupplies = await NeblioTransactionHelpers.CheckTokensSupplies(Address);
         }
     }
 }

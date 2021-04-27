@@ -72,31 +72,35 @@
                         <InputPassword Placeholder="Input password" @bind-Value=@passwordConfirm Style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
-                @if ((passwordConfirm != password) && password.Length >= 8)
+
+                @if (!string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(passwordConfirm))
                 {
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <span class="text-danger">Passwords not match!</span>
-                        </div>
-                    </div>
-                }
-                else if (passwordConfirm == password)
-                {
-                    if (password.Length < 8)
+                    if ((passwordConfirm != password) && password.Length >= 8)
                     {
                         <div class="row">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <span class="text-danger">Please fill longer password</span>
+                                <span class="text-danger">Passwords not match!</span>
                             </div>
                         </div>
                     }
-                    else
+                    else if (passwordConfirm == password)
                     {
-                        <div class="row">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <span class="text-success">Passwords Match. Please confirm to create address!</span>
+                        if (password.Length < 8)
+                        {
+                            <div class="row">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <span class="text-danger">Please fill longer password</span>
+                                </div>
                             </div>
-                        </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <span class="text-success">Passwords Match. Please confirm to create address!</span>
+                                </div>
+                            </div>
+                        }
                     }
                 }
                 else

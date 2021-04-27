@@ -26,6 +26,7 @@ namespace VEDrivers.Economy.Transactions
         private static NeblioCryptocurrency NeblioCrypto = new NeblioCryptocurrency(false);
         public static QTWalletRPCClient qtRPCClient { get; set; }
 
+
         public static ITransaction TransactionInfo(TransactionTypes type, string txid, string sourceAddress, object obj)
         {
             _client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };

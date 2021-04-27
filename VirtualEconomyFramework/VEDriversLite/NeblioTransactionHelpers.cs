@@ -13,6 +13,20 @@ using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite
 {
+    public class TokenSupplyDto
+    {
+        public string TokenSymbol { get; set; } = string.Empty;
+        public string TokenId { get; set; } = string.Empty;
+        public double Amount { get; set; } = 0.0;
+        public string ImageUrl { get; set; } = string.Empty;
+    }
+    public class TokenOwnerDto
+    {
+        public string Address { get; set; } = string.Empty;
+        public string ShortenAddress { get; set; } = string.Empty;
+        public int AmountOfTokens { get; set; } = 0;
+        public int AmountOfNFTs { get; set; } = 0;
+    }
     public static class NeblioTransactionHelpers
     {
         private static HttpClient httpClient = new HttpClient();
@@ -1214,6 +1228,103 @@ namespace VEDriversLite
                 totalAmount += (double)u.Tokens.ToArray()?[0]?.Amount;
 
             return (totalAmount, tokeninfo);
+        }
+
+        private class tokenUrlCarrier
+        {
+            public string name { get; set; } = string.Empty;
+            public string url { get; set; } = string.Empty;
+            public string mimeType { get; set; } = string.Empty;
+        }
+        public static async Task<Dictionary<string,TokenSupplyDto>> CheckTokensSupplies(string address)
+        {
+            var resp = new Dictionary<string, TokenSupplyDto>();
+
+            var res = await NeblioTransactionHelpers.GetAddressTokensUtxos(address);
+            var utxos = new List<Utxos>();
+            foreach (var r in res)
+            {
+                var toks = r.Tokens.ToArray()?[0];
+                if (toks != null)
+                {
+                    if (toks.Amount > 1)
+                    {
+                        GetTokenMetadataResponse tokeninfo = new GetTokenMetadataResponse();
+                        tokeninfo = await _client.GetTokenMetadataAsync(toks.TokenId, 0);
+
+                        if (!resp.TryGetValue(tokeninfo.MetadataOfIssuance.Data.TokenName, out var tk))
+                        {
+
+                            var t = new TokenSupplyDto();
+                            t.TokenSymbol = tokeninfo.MetadataOfIssuance.Data.TokenName;
+                            var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tokeninfo.MetadataOfIssuance.Data.Urls));
+
+                            var tu = tus.FirstOrDefault();
+                            if (tu != null)
+                            {
+                                t.ImageUrl = tu.url;
+                            }
+
+                            t.TokenId = toks.TokenId;
+                            t.Amount += (double)toks.Amount;
+
+                            resp.TryAdd(t.TokenSymbol, t);
+                        }
+                        else
+                        {
+                            tk.Amount += (double)toks.Amount;
+                        }
+                    }
+                }
+            }
+
+            return resp;
+        }
+
+        public static async Task<List<TokenOwnerDto>> GetTokenOwners(string tokenId)
+        {
+            if (_client == null)
+            {
+                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
+            }
+
+            GetTokenHoldersResponse tokenholders = new GetTokenHoldersResponse();
+            tokenholders = await _client.GetTokenHoldersAsync("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
+
+            var resp = new List<TokenOwnerDto>();
+            var hd = tokenholders.Holders.ToList().OrderBy(h => (double)h.Amount).Reverse().ToList();
+            hd.RemoveAt(0);
+            hd.RemoveAt(0);
+            hd.RemoveAt(0);
+
+            var i = 0;
+            foreach (var h in hd)
+            {
+                if (h.Address != "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA" &&
+                    h.Address != "NeNE6a2YQCq4yBLoVbVpcCzx44jVEBLaUE" &&
+                    h.Address != "NikErRpjtRXpryFRc3RkP5nxRzm1ApxFH8")
+                {
+                    var shadd = h.Address.Substring(0, 3) + "..." + h.Address.Substring(h.Address.Length - 3);
+                    var utxs = await GetAddressNFTsUtxos(h.Address);
+                    var us = utxs.ToList();
+
+                    resp.Add(new TokenOwnerDto()
+                    {
+                        Address = h.Address,
+                        ShortenAddress = shadd,
+                        AmountOfNFTs = us.Count,
+                        AmountOfTokens = (int)h.Amount
+                    });
+
+                    i++;
+                    if (i > 50)
+                        break;
+                }
+            }
+
+            resp = resp.OrderBy(r => r.AmountOfNFTs).Reverse().ToList();
+
+            return resp;
         }
 
     }

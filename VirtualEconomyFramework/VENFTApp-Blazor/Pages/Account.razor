@@ -39,6 +39,45 @@
     </div>
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <h6>Available Tokens:</h6>
+        </div>
+    </div>
+    @if (AppData.Account != null)
+    {
+        @if (AppData.Account.TokensSupplies.Count > 0)
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+ 
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <table class="table" style="max-width:300px;">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Symbol</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var tok in AppData.Account.TokensSupplies.Values)
+                                    {
+                                        <tr>
+                                            <td><img style="width: 25px;margin-right: 10px;;" src="@tok.ImageUrl" /></td>
+                                            <td>@tok.TokenSymbol</td>
+                                            <td>@tok.Amount.ToString()</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                         </div>
+                    </div>
+                </div>
+             </div>
+        }
+    }
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
             <hr />
         </div>
     </div>
@@ -124,9 +163,9 @@
     </div>
 
     <Modal Title="Transaction Details"
-            Visible="@txDetailsVisible"
-            OnOk="@CloseTxDetails"
-            OnCancel="@CloseTxDetails">
+           Visible="@txDetailsVisible"
+           OnOk="@CloseTxDetails"
+           OnCancel="@CloseTxDetails">
         <div class="row">
             <div class="col">
                 <div class="row">
@@ -172,9 +211,9 @@
     </Modal>
 
     <Modal Title="Unlock Account"
-            Visible="@unlockAcocuntModalVisible"
-            OnOk="@UnlockAccountConfirm"
-            OnCancel="@UnclockAccountCancel">
+           Visible="@unlockAcocuntModalVisible"
+           OnOk="@UnlockAccountConfirm"
+           OnCancel="@UnclockAccountCancel">
         <div class="row">
             <div class="col">
                 <div class="row">
@@ -219,6 +258,8 @@
                 addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
                 StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
             }, new System.Threading.AutoResetEvent(false), 1000, 1000);
+
+            await AppData.Account.ReloadTokenSupply();
         }
     }
 
