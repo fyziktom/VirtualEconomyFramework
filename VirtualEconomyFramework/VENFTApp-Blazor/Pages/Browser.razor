@@ -39,7 +39,7 @@
                             </a>
                         </li>
                     }
-                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-toggle="tab" @onclick=addNewTabModal><i class="oi oi-plus" style="font-size: 20px;"></i></a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => addNewTabModal()"><i class="oi oi-plus" style="font-size: 20px;"></i></a></li>
                 </ul>
                 <div class="tab-content" id="shopTabsContent">
 
@@ -123,7 +123,7 @@
             </div>
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Input Neblio address" @bind-Value=@newTabAddress Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
                 </div>
             </div>
         </div>
@@ -180,39 +180,46 @@
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Address</th>
-                        <th>Number Of NFTs</th>
-                        <th>Balance of VENFT</th>
-                        <th>Open In Tab</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var owner in VENFTOwners)
-                    {
-                    <tr style="margin-top:10px;">
-                        <td>
-                            <a target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
-                                @owner.ShortenAddress
-                            </a>
-                        </td>
-                        <td>
-                            <span style="margin-left:10px;">@owner.AmountOfNFTs NFTs</span>
-                        </td>
-                        <td>
-                            <span style="margin-left:10px;">@owner.AmountOfTokens VENFT</span>
-                        </td>
-                        <td>
-                            <a style="margin-left:20px;" target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
-                                <i class="oi oi-browser" style="font-size:16px;"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-              </table>
+            @if (VENFTOwners.Count == 0)
+            {
+                <p><Spin Tip="Loading..."></Spin></p>
+            }
+            else
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>Number Of NFTs</th>
+                            <th>Balance of VENFT</th>
+                            <th>Open In Tab</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var owner in VENFTOwners)
+                        {
+                            <tr style="margin-top:10px;">
+                                <td>
+                                    <a target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
+                                        @owner.ShortenAddress
+                                    </a>
+                                </td>
+                                <td>
+                                    <span style="margin-left:10px;">@owner.AmountOfNFTs NFTs</span>
+                                </td>
+                                <td>
+                                    <span style="margin-left:10px;">@owner.AmountOfTokens VENFT</span>
+                                </td>
+                                <td>
+                                    <a style="margin-left:20px;" target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
+                                        <i class="oi oi-browser" style="font-size:16px;"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
     </div>
 </Modal>
@@ -240,7 +247,7 @@
         browsePublicAddresses = false;
     }
 
-    private async Task openPublicAddresses()
+    private async Task openPublicAddresses(MouseEventArgs e)
     {
         browsePublicAddresses = true;
     }
@@ -260,8 +267,6 @@
     {
         try
         {
-            VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
-
             var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
             if (!string.IsNullOrEmpty(bookmarks))
             {
@@ -288,8 +293,11 @@
                     }
                 }
             }
+
+            VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
+
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             //todo
         }

@@ -59,7 +59,7 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input password" @bind-Value=@password Style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <InputPassword Placeholder="Input password" @bind-Value="@password" style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
                 <div class="row">
@@ -69,47 +69,37 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input password" @bind-Value=@passwordConfirm Style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <InputPassword Placeholder="Input password" @bind-Value="@passwordConfirm" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Fill Password longer than 8 characters</span>
                     </div>
                 </div>
 
-                @if (!string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(passwordConfirm))
+                @if (!string.IsNullOrEmpty(password))
                 {
-                    if ((passwordConfirm != password) && password.Length >= 8)
+                    if (password.Length > 4)
                     {
-                        <div class="row">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <span class="text-danger">Passwords not match!</span>
-                            </div>
-                        </div>
-                    }
-                    else if (passwordConfirm == password)
-                    {
-                        if (password.Length < 8)
+                        if (!string.IsNullOrEmpty(passwordConfirm))
                         {
-                            <div class="row">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <span class="text-danger">Please fill longer password</span>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="row">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <span class="text-success">Passwords Match. Please confirm to create address!</span>
-                                </div>
-                            </div>
+                            if (passwordConfirm != password)
+                            {
+                            <Alert Type="@AlertType.Warning"
+                                   Message="Warrning"
+                                   Description="Passwords not match!"
+                                   ShowIcon="true" />
+                            }
+                            else
+                            {
+                            <Alert Type="@AlertType.Success"
+                                   Message="Success"
+                                   Description="Passwords Match. Please confirm to create address!"
+                                   ShowIcon="true" />
+                            }
                         }
                     }
-                }
-                else
-                {
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <span class="text-secondary">8 characters minimum is length!</span>
-                        </div>
-                    </div>
                 }
 
                 @if (mustCreateAddressMessage)
@@ -136,16 +126,10 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input password" @bind-Value=@unlockPassword Style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <InputPassword Placeholder="Input password" @bind-Value="@unlockPassword" style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
-                @if (unlockPassword.Length < 8)
-                {
-                    <Alert Type="@AlertType.Warning"
-                           Message="Warrning"
-                           Description="Wrong Password. Too short."
-                           ShowIcon="true" />
-                }
+
                 @if (unlockOrClearCashMessage)
                 {
                     <Alert Type="@AlertType.Error"
@@ -177,7 +161,7 @@
 {
     <Alert Type="@AlertType.Error"
            Message="Error"
-           Description=@errorMessage
+           Description="@errorMessage"
            ShowIcon="true" />
 }
 
@@ -197,6 +181,51 @@
     string key = string.Empty;
     string address = string.Empty;
     bool unlockOrClearCashMessage = false;
+
+    enum PasswordCheckStates
+    {
+        None,
+        ShortPassword,
+        PasswordsNotMatch,
+        PasswordMatch
+    };
+
+    PasswordCheckStates passState = PasswordCheckStates.ShortPassword;
+
+    private async Task CheckPassState()
+    {
+        if (!string.IsNullOrEmpty(password))
+        {
+            if (password.Length > 4)
+            {
+                if (password.Length < 8)
+                {
+                    passState = PasswordCheckStates.ShortPassword;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(passwordConfirm))
+                    {
+                        if (passwordConfirm.Length >= 8)
+                        {
+                            if (passwordConfirm == password)
+                            {
+                                passState = PasswordCheckStates.PasswordMatch;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (passState != PasswordCheckStates.PasswordsNotMatch)
+                        {
+                            passState = PasswordCheckStates.PasswordsNotMatch;
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     private async Task UnlockAccountConfirm(MouseEventArgs e)
     {
@@ -228,40 +257,35 @@
 
     private async Task HandleOk(MouseEventArgs e)
     {
-        if (password != passwordConfirm)
+        await CheckPassState();
+        if (passState == PasswordCheckStates.PasswordMatch)
         {
-            return;
-        }
-        if (password.Length < 8)
-        {
-            return;
-        }
+            try
+            {
+                creatingAddressSpinner = true;
+                mustCreateAddressMessage = false;
+                StateHasChanged();
 
-        try
-        {
-            creatingAddressSpinner = true;
-            mustCreateAddressMessage = false;
-            StateHasChanged();
+                createNewAddressModalVisible = false;
 
-            createNewAddressModalVisible = false;
+                await AppData.Account.CreateNewAccount(password, false);
+                address = AppData.Account.Address;
+                key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                await localStorage.SetItemAsync("address", address);
+                await localStorage.SetItemAsync("key", key);
 
-            await AppData.Account.CreateNewAccount(password, false);
-            address = AppData.Account.Address;
-            key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
-            await localStorage.SetItemAsync("address", address);
-            await localStorage.SetItemAsync("key", key);
-
-            await AppData.Account.LoadAccount(password, key, address); // put here your password
-            creatingAddressSpinner = false;
-            mustCreateAddressMessage = false;
-            accountCreated = true;
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            accountCreated = false;
-            errorMessage = "Your Neblio address was not created." + ex.Message;
-            accountCreatedError = true;
+                await AppData.Account.LoadAccount(password, key, address); // put here your password
+                creatingAddressSpinner = false;
+                mustCreateAddressMessage = false;
+                accountCreated = true;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                accountCreated = false;
+                errorMessage = "Your Neblio address was not created." + ex.Message;
+                accountCreatedError = true;
+            }
         }
     }
 

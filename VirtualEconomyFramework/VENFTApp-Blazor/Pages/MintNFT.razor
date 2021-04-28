@@ -33,10 +33,35 @@
             </div>
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Available source tokens: @availableTokens</p>
+                    <div class="row d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col">
+                            <p>Balance: @addressInfo.Balance / @addressInfo.UnconfirmedBalance</p>
+                        </div>
+                        <div class="col">
+                            <p>NEBL</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="row d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col">
+                            <p>Available Tokens: @availableTokens.ToString()</p>
+                        </div>
+                        <div class="col">
+                            <p>VENFT</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
+                    <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
+                </div>
+            </div>-->
+            <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <p>Name:</p>
                 </div>
@@ -139,6 +164,40 @@
     <p>@confirmContent</p>
 </Modal>
 
+<Modal Title="Buy Source tokens"
+       Visible="@orderSourceTokensVisible"
+       OnOk="@orderSourceTokensConfirm"
+       OnCancel="@orderSourceTokensCancel">
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <Spin Tip="Processing the Order..." Spinning="@orderingTokens">
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Do you want to buy 100 VENFT tokens? It costs 1 NEBL.</p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Whole order will be processed automatically. It can take few minutes due to speed of confirmations of the transactions.</p>
+                    </div>
+                </div>
+                @if (orderingTokensDone)
+                {
+                    <Alert Type="@AlertType.Success"
+                           Message="Done."
+                           Description="Tokens ordered correctly. Now it will take some minute to process order and delivery the tokens."
+                           ShowIcon="true" />
+                }
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Order TxId: @orderTxId</p>
+                    </div>
+                </div>
+            </Spin>
+        </div>
+    </div>
+</Modal>
+
 @if (AppData.Account.IsLocked())
 {
     <Alert Type="@AlertType.Error"
@@ -155,6 +214,22 @@
            ShowIcon="true" />
 }
 
+@if (errorUpload)
+{
+    <Alert Type="@AlertType.Error"
+           Message="Error"
+           Description="Cannot upload image."
+           ShowIcon="true" />
+}
+
+@if (notEnoughNeblioForBuySourceTokens)
+{
+    <Alert Type="@AlertType.Error"
+           Message="Error"
+           Description="Not enough of Neblio to buy the Source tokens. Please transfer at lease 1,0002 NEBL to this address"
+           ShowIcon="true" />
+}
+
 @code {
     enum LoadingImageStages
     {
@@ -163,6 +238,12 @@
         Loaded
     }
 
+    bool notEnoughNeblioForBuySourceTokens = false;
+    string orderTxId = string.Empty;
+    bool orderSourceTokensVisible = false;
+    bool orderingTokens = false;
+    bool orderingTokensDone = false;
+    bool errorUpload = false;
     bool uploadingImage = false;
     bool errorDuringSend = false;
     string errorMessage = string.Empty;
@@ -177,17 +258,39 @@
     private CancellationTokenSource cts = new CancellationTokenSource();
     private ElementReference inputTypeFileElement;
     private System.Threading.Timer timer;
+    private System.Threading.Timer balanceTimer;
     bool processingMinting = false;
     private static int attemptsToDisplay = 10;
     double availableTokens = 0;
     GetTokenMetadataResponse sourceTokensInfo = new GetTokenMetadataResponse();
-
+    private GetAddressResponse addressInfo = new GetAddressResponse();
 
     protected override async Task OnInitializedAsync()
     {
+        addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
         var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
         availableTokens = mintingSupply.Item1;
         sourceTokensInfo = mintingSupply.Item2;
+        balanceTimer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            try
+            {
+                addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
+                var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
+                availableTokens = mintingSupply.Item1;
+                sourceTokensInfo = mintingSupply.Item2;
+                if (addressInfo.Balance > 1)
+                {
+                    notEnoughNeblioForBuySourceTokens = false;
+                }
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                //todo
+            }
+        }, new System.Threading.AutoResetEvent(false), 5000, 5000);
     }
 
     void ShowMintConfirm()
@@ -195,6 +298,41 @@
         confirmTitle = "Mint New NFT?";
         confirmContent = "Do you realy want to mint this NFT?";
         confirmVisible = true;
+    }
+
+    private async Task orderSourceTokensCancel(MouseEventArgs e)
+    {
+        orderSourceTokensVisible = false;
+    }
+
+    private async Task showOrderTokens()
+    {
+        orderSourceTokensVisible = true;
+    }
+
+    private async Task orderSourceTokensConfirm(MouseEventArgs e)
+    {
+        if (addressInfo.Balance > 1)
+        {
+            notEnoughNeblioForBuySourceTokens = false;
+            orderingTokens = true;
+            StateHasChanged();
+            await Task.Delay(500);
+            var res = await NeblioTransactionHelpers.OrderSourceTokens(AppData.Account);
+            orderingTokens = false;
+            if (!string.IsNullOrEmpty(res))
+            {
+                orderTxId = res;
+                orderingTokensDone = true;
+                orderSourceTokensVisible = false;
+                StateHasChanged();
+                await Task.Delay(2500);
+            }
+        }
+        else
+        {
+            notEnoughNeblioForBuySourceTokens = true;
+        }
     }
 
     private async Task HandleOk(MouseEventArgs e)
@@ -212,6 +350,7 @@
     {
         try
         {
+            errorUpload = false;
             uploadingImage = true;
             attemptsToDisplay = 10;
             StateHasChanged();
@@ -223,7 +362,7 @@
                 {
                     var fileinfo = await file.ReadFileInfoAsync();
 
-                    var imageLink = await ipfs.FileSystem.AddAsync(stream, fileinfo.Name, null);
+                    var imageLink = await ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
                     newNFT.ImageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
 
                     timer = new System.Threading.Timer(async (object stateInfo) =>
@@ -250,7 +389,7 @@
                                 timer.Dispose();
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             //todo
                         }
@@ -260,7 +399,10 @@
         }
         catch (Exception ex)
         {
-            //todo
+            loadingImageStage = LoadingImageStages.NotStarted;
+            uploadingImage = false;
+            errorUpload = true;
+            StateHasChanged();
         }
     }
 
@@ -315,4 +457,4 @@
         }
     }
 
-}
+    }
