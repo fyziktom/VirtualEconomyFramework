@@ -1,9 +1,11 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NeblioAPI
+@using VEDriversLite.NFT
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject HttpClient _client
 @inject AppData AppData
+@inject ClipboardService ClipboardService
 @page "/account"
 
 <div class="container-fluid">
@@ -15,6 +17,17 @@
     <div class="row" style="margin-top:20px;">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
             <p>Your Neblio Address: <a href="https://explorer.nebl.io/address/@AppData.Account.Address" target="_blank">@AppData.Account.Address</a></p>
+            <!--<button class="btn btn-light" @onclick="CopyToClipboard" style="margin-left:20px;"><i class="oi oi-layers" style="font-size:20px;"></i></button>-->
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <hr />
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <VENFTApp_Blazor.Components.Profile ReadOnlyProfile="@false" />
         </div>
     </div>
     <div class="row" style="margin-top:10px;">
@@ -48,7 +61,7 @@
         {
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
- 
+
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             <table class="table" style="max-width:300px;">
@@ -70,10 +83,10 @@
                                     }
                                 </tbody>
                             </table>
-                         </div>
+                        </div>
                     </div>
                 </div>
-             </div>
+            </div>
         }
     }
     <div class="row" style="margin-top:10px;">
@@ -109,7 +122,17 @@
 
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <button class="btn btn-primary" @onclick="downloadAccountKey">Show Encrypted Private Key</button>
+            <span>Please dont forget to save your private key. It is unique key for your Neblio address. If you save it you can backup address anytime.</span>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <span>If your account is unlocked now you can display not encrypted private key. If account is locked the key is encrypted with your password.</span>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <button class="btn btn-primary" @onclick="downloadAccountKey">Show Private Key</button>
         </div>
     </div>
     <div class="row" style="margin-top:10px;">
@@ -252,6 +275,9 @@
         {
             addressInfo.Transactions = new List<string>();
             addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
+            var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
+            AppData.Account.NFTs = nfts;
+            AppData.Account.Profile = await NFTHelpers.FindProfileNFT(AppData.Account);
 
             timer = new System.Threading.Timer(async (object stateInfo) =>
             {
@@ -267,6 +293,18 @@
     {
         var txids = txid.Remove(5, txid.Length - 5) + "....." + txid.Remove(0, txid.Length - 5);
         return txids;
+    }
+
+    async Task CopyToClipboard(MouseEventArgs e)
+    {
+        try
+        {
+            await ClipboardService.WriteTextAsync(AppData.Account.Address);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot write text to clipboard" + ex.Message);
+        }
     }
 
     private async Task lockWallet()
@@ -294,7 +332,7 @@
                 {
                     accountKey = await AppData.Account.AccountKey.GetEncryptedKey();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     // todo
                 }
@@ -330,33 +368,47 @@
     private async Task ShowTxDetails(string txId)
     {
         var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txId);
-        Dictionary<string, string> meta = new Dictionary<string, string>();
-        try
+        var outs = txinfo.Vout.ToList();
+        var toks = false;
+        foreach(var o in outs)
         {
-            meta = await NeblioTransactionHelpers.GetTransactionMetadata(NeblioTransactionHelpers.VENFTId, txId);
+            if (o.Tokens.Count > 0)
+            {
+                toks = true;
+            }
         }
-        catch (Exception ex)
+
+        if (toks)
         {
-            //todo
+            Dictionary<string, string> meta = new Dictionary<string, string>();
+            try
+            {
+                meta = await NeblioTransactionHelpers.GetTransactionMetadata(NeblioTransactionHelpers.VENFTId, txId);
+
+                if (meta != null)
+                {
+                    txInDetailsMetadata = meta;
+
+                    if (meta.TryGetValue("NFT", out var nft))
+                    {
+                        if (nft == "true")
+                        {
+                            NFTTransaction = true;
+                            if (meta.TryGetValue("SourceUtxo", out var nfttxid))
+                                nftTxId = nfttxid;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //todo
+            }
         }
 
         if (txinfo != null)
         {
             txInDetails = txinfo;
-            if (meta != null)
-            {
-                txInDetailsMetadata = meta;
-
-                if (meta.TryGetValue("NFT", out var nft))
-                {
-                    if (nft == "true")
-                    {
-                        NFTTransaction = true;
-                        if (meta.TryGetValue("SourceUtxo", out var nfttxid))
-                            nftTxId = nfttxid;
-                    }
-                }
-            }
 
             txInDetailsTime = TimeHelpers.UnixTimestampToDateTime((double)txinfo.Time);
 

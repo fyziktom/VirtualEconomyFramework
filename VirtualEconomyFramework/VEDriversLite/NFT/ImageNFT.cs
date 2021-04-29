@@ -10,6 +10,7 @@ namespace VEDriversLite.NFT
         public ImageNFT(string utxo)
         {
             Utxo = utxo;
+            Type = NFTTypes.Image;
         }
 
         public override async Task ParseOriginData()
@@ -25,10 +26,14 @@ namespace VEDriversLite.NFT
                     Description = description;
                 if (nftData.NFTMetadata.TryGetValue("Link", out var link))
                     Link = link;
+                if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
+                    Tags = tags;
                 if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
                     ImageLink = imagelink;
                 if (nftData.NFTMetadata.TryGetValue("IconLink", out var iconlink))
                     IconLink = iconlink;
+                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
+                    TypeText = type;
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;

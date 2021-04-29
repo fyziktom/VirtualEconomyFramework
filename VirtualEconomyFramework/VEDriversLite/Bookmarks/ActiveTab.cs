@@ -19,5 +19,6 @@ namespace VEDriversLite.Bookmarks
         public string ShortAddress { get; set; } = string.Empty;
         [JsonIgnore]
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        public ProfileNFT Profile { get; set; } = new ProfileNFT("");
     }
 }

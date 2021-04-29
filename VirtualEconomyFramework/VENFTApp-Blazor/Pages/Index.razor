@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NeblioAPI
+@using VEDriversLite.Security
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject HttpClient _client
@@ -52,7 +53,17 @@
                         <span>Your private key will be stored just in your local browser encrypted with your password.</span>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>If you have Neblio address and private key you can import it or you can create new address</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <button class="btn btn-secondary" @onclick="showImportAccount">Import address</button>
+                    </div>
+                </div>
+                <div class="row"style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <span>Input Password:</span>
                     </div>
@@ -86,17 +97,17 @@
                         {
                             if (passwordConfirm != password)
                             {
-                            <Alert Type="@AlertType.Warning"
-                                   Message="Warrning"
-                                   Description="Passwords not match!"
-                                   ShowIcon="true" />
+                                <Alert Type="@AlertType.Warning"
+                                       Message="Warrning"
+                                       Description="Passwords not match!"
+                                       ShowIcon="true" />
                             }
                             else
                             {
-                            <Alert Type="@AlertType.Success"
-                                   Message="Success"
-                                   Description="Passwords Match. Please confirm to create address!"
-                                   ShowIcon="true" />
+                                <Alert Type="@AlertType.Success"
+                                       Message="Success"
+                                       Description="Passwords Match. Please confirm to create address!"
+                                       ShowIcon="true" />
                             }
                         }
                     }
@@ -147,6 +158,56 @@
             </div>
         </div>
     </Modal>
+
+    <Modal Title="Import Account"
+           Visible="@importAccountVisible"
+           OnOk="@importAccountConfirm"
+           OnCancel="@importAccountCancel">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Input password</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Input address" @bind-Value="@importAccountAddress" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input encrypted private key" @bind-Value="@importAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Is your key already encrypted with the password or not?</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Checkbox Checked="@importKeyAlreadyEncrypted" CheckedChange="@ToggleChecked">
+                            @($"{(importKeyAlreadyEncrypted ? "Already Encrypted Key" : "Not Encrypted Key")}")
+                        </Checkbox>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value="@importAccountPass" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                @if (accountImportError)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Wrong Password or private key"
+                           ShowIcon="true" />
+                }
+            </div>
+        </div>
+    </Modal>
 </Spin>
 
 @if (accountCreated)
@@ -166,6 +227,13 @@
 }
 
 @code {
+
+    bool importAccountVisible = false;
+    bool accountImportError = false;
+    string importAccountAddress = string.Empty;
+    string importAccountKey = string.Empty;
+    string importAccountPass = string.Empty;
+
     bool accountUnlockingError = false;
     bool accountCreatedError = false;
     string errorMessage = string.Empty;
@@ -189,6 +257,7 @@
         PasswordsNotMatch,
         PasswordMatch
     };
+
 
     PasswordCheckStates passState = PasswordCheckStates.ShortPassword;
 
@@ -225,6 +294,72 @@
                 }
             }
         }
+    }
+
+    bool importKeyAlreadyEncrypted = true;
+    void ToggleChecked(bool value)
+    {
+        importKeyAlreadyEncrypted = !importKeyAlreadyEncrypted;
+    }
+
+    private async Task importAccountConfirm(MouseEventArgs e)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(importAccountAddress) || string.IsNullOrEmpty(importAccountKey))
+            {
+                accountImportError = true;
+                return;
+            }
+
+            if (string.IsNullOrEmpty(importAccountPass))
+            {
+                accountImportError = true;
+                return;
+            }
+
+            key = importAccountKey;
+            address = importAccountAddress;
+
+            if (!importKeyAlreadyEncrypted)
+            {
+                key = await SymetricProvider.EncryptString(importAccountPass, key);
+            }
+
+            await AppData.Account.LoadAccount(importAccountPass, key, address); // put here your password
+
+            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
+            if (!string.IsNullOrEmpty(kt))
+            {
+                accountImportError = false;
+                importAccountVisible = false;
+                createNewAddressModalVisible = false;
+                await Task.Delay(50);
+                StateHasChanged();
+
+                await localStorage.SetItemAsync("address", address);
+                await localStorage.SetItemAsync("key", key);
+
+                StateHasChanged();
+                await Task.Delay(50);
+                NavManager.NavigateTo("/account");
+            }
+        }
+        catch (Exception ex)
+        {
+            accountImportError = true;
+            // todo
+        }
+    }
+
+    private async Task importAccountCancel(MouseEventArgs e)
+    {
+        importAccountVisible = false;
+    }
+
+    private async Task showImportAccount(MouseEventArgs e)
+    {
+        importAccountVisible = true;
     }
 
     private async Task UnlockAccountConfirm(MouseEventArgs e)

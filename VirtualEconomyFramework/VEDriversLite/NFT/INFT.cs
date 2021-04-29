@@ -8,7 +8,7 @@ namespace VEDriversLite.NFT
     public enum NFTTypes
     {
         Image,
-        Article,
+        Post,
         Profile,
         Music,
         YouTube,
@@ -16,6 +16,7 @@ namespace VEDriversLite.NFT
     }
     public interface INFT
     {
+        string TypeText { get; set; }
         NFTTypes Type { get; set; }
         string Name { get; set; }
         string Author { get; set; }
@@ -23,6 +24,7 @@ namespace VEDriversLite.NFT
         string Link { get; set; }
         string IconLink { get; set; }
         string ImageLink { get; set; }
+        string Tags { get; set; }
         string Utxo { get; set; }
         string SourceTxId { get; set; }
         string NFTOriginTxId { get; set; }

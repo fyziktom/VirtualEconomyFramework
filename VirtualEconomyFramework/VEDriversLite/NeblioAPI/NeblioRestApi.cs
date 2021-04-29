@@ -82,7 +82,7 @@ namespace VEDriversLite.NeblioAPI
                 {
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-    
+                        
                     PrepareRequest(client_, request_, urlBuilder_);
                     
                     var url_ = urlBuilder_.ToString();
@@ -786,7 +786,7 @@ namespace VEDriversLite.NeblioAPI
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-    
+                    
                     PrepareRequest(client_, request_, urlBuilder_);
                     
                     var url_ = urlBuilder_.ToString();
@@ -5042,7 +5042,7 @@ namespace VEDriversLite.NeblioAPI
         public double Fee { get; set; }
     
         /// <summary>Array of addresses to send the token from</summary>
-        [Newtonsoft.Json.JsonProperty("from", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("from", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<string> From { get; set; }
     
         /// <summary>Array of UTXOs to send the token from</summary>

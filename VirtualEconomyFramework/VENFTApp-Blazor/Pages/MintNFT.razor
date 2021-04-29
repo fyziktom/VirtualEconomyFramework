@@ -56,11 +56,11 @@
                 </div>
             </div>
             <!--
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
-                    <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
-                </div>
-            </div>-->
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
+            <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
+        </div>
+    </div>-->
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <p>Name:</p>
@@ -136,6 +136,14 @@
                             <a href="@newNFT.ImageLink" target="_blank"><img src="@newNFT.ImageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
                             break;
                     }
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <RadioGroup @bind-Value="@newNFTType">
+                        <Radio Value="NFTTypes.Image">Image - Original</Radio>
+                        <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
+                    </RadioGroup>
                 </div>
             </div>
             <div class="row" style="margin-top:20px;">
@@ -231,12 +239,8 @@
 }
 
 @code {
-    enum LoadingImageStages
-    {
-        NotStarted,
-        Loading,
-        Loaded
-    }
+
+    private NFTTypes newNFTType = NFTTypes.Image;
 
     bool notEnoughNeblioForBuySourceTokens = false;
     string orderTxId = string.Empty;
@@ -250,11 +254,11 @@
     bool confirmVisible = false;
     string confirmTitle = "Mint New NFT?";
     string confirmContent = "Do you realy want to mint this NFT?";
-    LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
+    private LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
     private string status = string.Empty;
     private string tokentxid = string.Empty;
     private ImageNFT newNFT = new ImageNFT("");
-    static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
+
     private CancellationTokenSource cts = new CancellationTokenSource();
     private ElementReference inputTypeFileElement;
     private System.Threading.Timer timer;
@@ -362,7 +366,7 @@
                 {
                     var fileinfo = await file.ReadFileInfoAsync();
 
-                    var imageLink = await ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
+                    var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
                     newNFT.ImageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
 
                     timer = new System.Threading.Timer(async (object stateInfo) =>
@@ -417,29 +421,23 @@
         status = "Sending...";
         processingMinting = true;
 
-        // create token metadata
-        var metadata = new Dictionary<string, string>();
-        metadata.Add("NFT", "true");
-        metadata.Add("Name", newNFT.Name);
-        metadata.Add("Author", newNFT.Author);
-        metadata.Add("Description", newNFT.Description);
-        metadata.Add("Image", newNFT.ImageLink);
-        metadata.Add("Link", newNFT.Link);
-        metadata.Add("Type", "NFT Image");
-
-        // fill input data for sending tx
-        var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
-        {
-            Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
-            Metadata = metadata,
-            Password = "", // put here your password
-            SenderAddress = AppData.Account.Address,
-        };
-
         try
         {
             // send tx
-            var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, AppData.Account);
+            var rtxid = string.Empty;
+
+            switch (newNFTType)
+            {
+                case NFTTypes.Image:
+                    rtxid = await NFTHelpers.MintImageNFT(AppData.Account, newNFT);
+                    break;
+                case NFTTypes.Post:
+                    var pn = new PostNFT(newNFT.Utxo);
+                    pn.Fill(newNFT);
+                    rtxid = await NFTHelpers.MintPostNFT(AppData.Account, pn);
+                    break;
+            }
+
             if (rtxid != null)
             {
                 tokentxid = rtxid;

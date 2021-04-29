@@ -54,7 +54,7 @@ namespace VEDriversLite
             dto.Metadata = new Metadata2();
             dto.Metadata.UserData = new UserData3();
             dto.Metadata.UserData.Meta = new List<JObject>();
-
+            
             if (data.Metadata != null)
             {
 
@@ -151,6 +151,7 @@ namespace VEDriversLite
                     }
                 }
 
+                
                 if (!found && !data.SendEvenNeblUtxoNotFound && !string.IsNullOrEmpty(data.NeblUtxo))
                     throw new Exception("Input Neblio Utxo is not spendable!");
 
@@ -198,8 +199,19 @@ namespace VEDriversLite
                 {
                     // create raw tx
                     var str = JsonConvert.SerializeObject(dto);
+                    var hexToSign = string.Empty;
 
-                    var hexToSign = await SendRawNTP1TxAsync(dto);
+                    try
+                    {
+                        var u1 = dto.Sendutxo.ToArray()[0];
+                        var u2 = dto.Sendutxo.ToArray()[1];
+
+                        hexToSign = await SendRawNTP1TxAsync(dto);
+                    }
+                    catch(Exception ex)
+                    {
+                        ;
+                    }
 
                     if (!string.IsNullOrEmpty(hexToSign))
                     {
@@ -592,7 +604,7 @@ namespace VEDriversLite
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Exception during loading inputs or signing tx: {ex}");
+                    throw new Exception($"Exception during loading inputs or signing tx: {ex.Message}");
                 }
             }
             catch (Exception ex)
@@ -621,9 +633,17 @@ namespace VEDriversLite
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             }
 
-            var info = await _client.SendTokenAsync(data);
+            try
+            {
+                var info = await _client.SendTokenAsync(data);
+                return info.TxHex;
+            }
+            catch(Exception ex)
+            {
 
-            return info.TxHex;
+            }
+
+            return null;
         }
 
         public static async Task<string> BroadcastNTP1TxAsync(BroadcastTxRequest data)

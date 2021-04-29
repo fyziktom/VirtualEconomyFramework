@@ -16,6 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
     <PackageReference Include="NBitcoin.Altcoins" Version="2.0.31" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>

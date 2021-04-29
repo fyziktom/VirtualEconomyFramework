@@ -55,11 +55,52 @@
                                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                 <h6>@tab.Address</h6>
                                                 <!--
-                                                <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
-                                                    <i class="oi oi-star"></i>
-                                                </a>-->
+                                                    <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
+                                                        <i class="oi oi-star"></i>
+                                                    </a>-->
                                             </div>
                                         </div>
+
+                                        <div class="row">
+                                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                <h3>Profile</h3>
+                                            </div>
+                                        </div>
+                                        <div class="row bg-light">
+                                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                <div class="row">
+                                                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                        <img src="@tab.Profile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-left:20px;">
+                                                    <div class="col">
+                                                        <div class="row">
+                                                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                <span>Name: @tab.Profile.Name @tab.Profile.Surname</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                Nick: @tab.Profile.Nickname
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                Bio: @tab.Profile.Description
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                <a href="@tab.Profile.Link" target="_blank">Webpage</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
                                         <div class="row" style="margin-top:20px">
                                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                 <div>
@@ -76,6 +117,7 @@
                                                                         <tr>
                                                                             <th>Name</th>
                                                                             <th>Author</th>
+                                                                            <th>Type</th>
                                                                             <th>Image</th>
                                                                             <th>Info</th>
                                                                         </tr>
@@ -83,12 +125,24 @@
                                                                     <tbody>
                                                                         @foreach (var nft in tab.NFTs)
                                                                         {
-                                                                            <tr>
-                                                                                <td>@nft.Name</td>
-                                                                                <td>@nft.Author</td>
-                                                                                <td><img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></td>
-                                                                                <td><button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)"><i class="oi oi-info"></i></button></td>
-                                                                            </tr>
+                                                                            if (nft.TypeText != "NFT Profile" && nft.TypeText != "NFT Settings")
+                                                                            {
+                                                                                <tr>
+                                                                                    <td>@nft.Name</td>
+                                                                                    <td>@nft.Author</td>
+                                                                                    @switch (nft.Type)
+                                                                                    {
+                                                                                        case NFTTypes.Image:
+                                                                                            <td>Original</td>
+                                                                                            break;
+                                                                                        case NFTTypes.Post:
+                                                                                            <td>Post</td>
+                                                                                            break;
+                                                                                    }
+                                                                                    <td><img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></td>
+                                                                                    <td><button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)"><i class="oi oi-info"></i></button></td>
+                                                                                </tr>
+                                                                            }
                                                                         }
                                                                     </tbody>
                                                                 </table>
@@ -283,12 +337,31 @@
             {
                 foreach(var t in Tabs)
                 {
+                    t.Profile = new ProfileNFT("");
+
                     t.Selected = setFirst;
                     if (setFirst)
                     {
                         setFirst = false;
+                        try
+                        {
+                            t.NFTs = await NFTHelpers.LoadAddressNFTs(t.Address);
+                        }
+                        catch (Exception ex)
+                        {
+                            // todo
+                        }
                         StateHasChanged();
-                        t.NFTs = await NFTHelpers.LoadAddressNFTs(t.Address);
+                        try
+                        {
+                            t.Profile = await NFTHelpers.FindProfileNFT(t.NFTs);
+                            if (!string.IsNullOrEmpty(t.Profile.Utxo))
+                                await t.Profile.GetLastData();
+                        }
+                        catch(Exception ex)
+                        {
+                            // todo
+                        }
                         StateHasChanged();
                     }
                 }
@@ -339,16 +412,36 @@
 
     private async Task addNewTab()
     {
-        foreach(var t in Tabs)
-            t.Selected = false;
+        if (Tabs.Count > 0)
+            foreach (var t in Tabs)
+                t.Selected = false;
 
         var tab = new ActiveTab(newTabAddress);
         tab.Selected = true;
         openTabVisible = false;
         Tabs.Add(tab);
         StateHasChanged();
-        tab.NFTs = await NFTHelpers.LoadAddressNFTs(newTabAddress);
-        StateHasChanged();
+
+        try
+        {
+            tab.NFTs = await NFTHelpers.LoadAddressNFTs(newTabAddress);
+            StateHasChanged();
+        }
+        catch(Exception ex)
+        {
+            //
+        }
+
+        try
+        {
+            tab.Profile = await NFTHelpers.FindProfileNFT(tab.NFTs);
+            if (!string.IsNullOrEmpty(tab.Profile.Utxo))
+                await tab.Profile.GetLastData();
+        }
+        catch (Exception ex)
+        {
+            //todo
+        }
 
         var bst = await NFTHelpers.SerializeTabs(Tabs);
         await localStorage.SetItemAsync("browserTabs", bst);
@@ -368,18 +461,41 @@
 
         if (tab.NFTs.Count == 0)
         {
-            StateHasChanged();
-            tab.NFTs = await NFTHelpers.LoadAddressNFTs(tab.Address);
+            try
+            {
+                tab.NFTs = await NFTHelpers.LoadAddressNFTs(tab.Address);
+            }
+            catch(Exception ex)
+            {
+                // todo
+            }
+
+            try
+            {
+                tab.Profile = await NFTHelpers.FindProfileNFT(tab.NFTs);
+                if (!string.IsNullOrEmpty(tab.Profile.Utxo))
+                    await tab.Profile.GetLastData();
+            }
+            catch(Exception ex)
+            {
+                // todo
+            }
             StateHasChanged();
         }
     }
 
     private async Task removeTab(ActiveTab tab)
     {
-        Tabs.Remove(tab);
-        Tabs.FirstOrDefault().Selected = true;
+        if (Tabs.Count > 0)
+        {
+            Tabs.Remove(tab);
 
-        var bst = await NFTHelpers.SerializeTabs(Tabs);
-        await localStorage.SetItemAsync("browserTabs", bst);
+            var t = Tabs.FirstOrDefault();
+            if (t != null)
+                t.Selected = true;
+
+            var bst = await NFTHelpers.SerializeTabs(Tabs);
+            await localStorage.SetItemAsync("browserTabs", bst);
+        }
     }
 }
