@@ -77,5 +77,32 @@ namespace VEDriversLite.NFT
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }
         }
+
+        public async Task LoadLastData(Dictionary<string,string> metadata)
+        {
+            if (metadata != null)
+            {
+                if (metadata.TryGetValue("Name", out var name))
+                    Name = name;
+                if (metadata.TryGetValue("Surname", out var surname))
+                    Surname = surname;
+                if (metadata.TryGetValue("Nickname", out var nickname))
+                    Nickname = nickname;
+                if (metadata.TryGetValue("RelationshipStatus", out var relationshipStatus))
+                    RelationshipStatus = relationshipStatus;
+                if (metadata.TryGetValue("Description", out var description))
+                    Description = description;
+                if (metadata.TryGetValue("Link", out var link))
+                    Link = link;
+                if (metadata.TryGetValue("Image", out var imagelink))
+                    ImageLink = imagelink;
+                if (metadata.TryGetValue("Age", out var age))
+                    Age = Convert.ToInt32(age);
+                if (metadata.TryGetValue("Type", out var type))
+                    TypeText = type;
+                if (metadata.TryGetValue("SourceUtxo", out var su))
+                    NFTOriginTxId = su;
+            }
+        }
     }
 }

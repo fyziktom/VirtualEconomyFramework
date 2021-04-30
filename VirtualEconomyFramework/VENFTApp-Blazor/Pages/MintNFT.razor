@@ -6,237 +6,238 @@
 @using System.Threading
 @using System.Threading.Tasks
 @using Ipfs.Http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IFileReaderService fileReaderService
 @inject AppData AppData
 @inject HttpClient _client
 @inject NavigationManager NavManager
 @page "/mint"
 
-<Spin spinning="@processingMinting" tip="Sending Minting...">
+<div class="container-fluid">
 
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h1>Mint New NFT</h1>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>With Address:</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p><a href="https://explorer.nebl.io/address/@AppData.Account.Address" target="_blank">@AppData.Account.Address</a></p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <div class="row d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <div class="col">
-                            <p>Balance: @addressInfo.Balance / @addressInfo.UnconfirmedBalance</p>
-                        </div>
-                        <div class="col">
-                            <p>NEBL</p>
-                        </div>
+    @if (AppData.Account.IsLocked())
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description="Account Is Locked. Please unlock account first."
+               Closable
+               ShowIcon="true" />
+    }
+
+    @if (errorDuringSend)
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description=@errorMessage
+               ShowIcon="true" />
+    }
+
+    @if (errorUpload)
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description="Cannot upload image."
+               ShowIcon="true" />
+    }
+
+    @if (notEnoughNeblioForBuySourceTokens)
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description="Not enough of Neblio to buy the Source tokens. Please transfer at lease 1,0002 NEBL to this address"
+               ShowIcon="true" />
+    }
+
+    <Spin spinning="@processingMinting" tip="Sending Minting...">
+
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h1>Mint New NFT</h1>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <div class="row d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <div class="col">
-                            <p>Available Tokens: @availableTokens.ToString()</p>
-                        </div>
-                        <div class="col">
-                            <p>VENFT</p>
-                        </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>With Address:</p>
                     </div>
                 </div>
-            </div>
-            <!--
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span style="font-size:12px;">Address: <a href="https://explorer.nebl.io/address/@AppData.Account.Address" style="font-size:12px;" target="_blank">@AppData.Account.Address</a></span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;margin-bottom:2px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span style="font-size:10px;">Actual Balance: @addressInfo.Balance NEBL</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:2px;margin-bottom:2px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span style="font-size:10px;">Unconfirmed Balance: @addressInfo.UnconfirmedBalance NEBL</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span style="font-size:10px;">Source Tokens Balance: @availableTokens VENFT</span>
+                    </div>
+                </div>
+                <!--
     <div class="row">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
             <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
         </div>
     </div>-->
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Name:</p>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Name:</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Add Name of the NFT" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Name of the NFT" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Author:</p>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Author:</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Add Author of the NFT" @bind-Value=@newNFT.Author Style="font-size:12px; min-width:250px; max-width:350px;" />
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Author of the NFT" @bind-Value=@newNFT.Author Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Description:</p>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Description:</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Add Description of the NFT" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Description of the NFT" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col">
-                    <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
-                        <div class="row">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <p>Select and Upload Image:</p>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col">
+                        <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
+                            <div class="row">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <p>Select and Upload Image:</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <input type="file" @ref=inputTypeFileElement />
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <input type="file" @ref=inputTypeFileElement />
+                                </div>
                             </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <button @onclick=ReadFile>Upload Image</button>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <button @onclick=ReadFile>Upload Image</button>
+                                </div>
                             </div>
+                        </Spin>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Image Link" @bind-Value=@newNFT.ImageLink Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Image Preview:</p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        @switch (loadingImageStage)
+                        {
+                            case LoadingImageStages.NotStarted:
+                                <p>No image loaded</p>
+                                break;
+                            case LoadingImageStages.Loading:
+                                <Spin Tip="Uploading..." />
+                                break;
+                            case LoadingImageStages.Loaded:
+                                <a href="@newNFT.ImageLink" target="_blank"><img src="@newNFT.ImageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
+                                break;
+                        }
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <RadioGroup @bind-Value="@newNFTType">
+                            <Radio Value="NFTTypes.Image">Image - Original</Radio>
+                            <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
+                        </RadioGroup>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span style="font-size:8px;">Minting costs 0.0004 NEBL (fee) and 1 VENFT (carrier). The VENFT token will stay on your address as NFT. </span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Status: @status</p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>New NFT transaction id: @newNFT.NFTOriginTxId</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Spin>
+
+    <Modal Title="@confirmTitle"
+           Visible="@confirmVisible"
+           OnOk="@HandleOk"
+           OnCancel="@HandleCancel">
+        <p>@confirmContent</p>
+    </Modal>
+
+    <Modal Title="Buy Source tokens"
+           Visible="@orderSourceTokensVisible"
+           OnOk="@orderSourceTokensConfirm"
+           OnCancel="@orderSourceTokensCancel">
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <Spin Tip="Processing the Order..." Spinning="@orderingTokens">
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <p>Do you want to buy 100 VENFT tokens? It costs 1 NEBL.</p>
                         </div>
-                    </Spin>
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Image Link" @bind-Value=@newNFT.ImageLink Style="font-size:12px; min-width:250px; max-width:350px;" />
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Image Preview:</p>
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    @switch (loadingImageStage)
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <p>Whole order will be processed automatically. It can take few minutes due to speed of confirmations of the transactions.</p>
+                        </div>
+                    </div>
+                    @if (orderingTokensDone)
                     {
-                        case LoadingImageStages.NotStarted:
-                            <p>No image loaded</p>
-                            break;
-                        case LoadingImageStages.Loading:
-                            <Spin Tip="Uploading..." />
-                            break;
-                        case LoadingImageStages.Loaded:
-                            <a href="@newNFT.ImageLink" target="_blank"><img src="@newNFT.ImageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
-                            break;
+                        <Alert Type="@AlertType.Success"
+                               Message="Done."
+                               Description="Tokens ordered correctly. Now it will take some minute to process order and delivery the tokens."
+                               ShowIcon="true" />
                     }
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <RadioGroup @bind-Value="@newNFTType">
-                        <Radio Value="NFTTypes.Image">Image - Original</Radio>
-                        <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
-                    </RadioGroup>
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Status: @status</p>
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>New NFT transaction id: @newNFT.NFTOriginTxId</p>
-                </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <p>Order TxId: @orderTxId</p>
+                        </div>
+                    </div>
+                </Spin>
             </div>
         </div>
-    </div>
-</Spin>
-
-<Modal Title="@confirmTitle"
-       Visible="@confirmVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <p>@confirmContent</p>
-</Modal>
-
-<Modal Title="Buy Source tokens"
-       Visible="@orderSourceTokensVisible"
-       OnOk="@orderSourceTokensConfirm"
-       OnCancel="@orderSourceTokensCancel">
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <Spin Tip="Processing the Order..." Spinning="@orderingTokens">
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Do you want to buy 100 VENFT tokens? It costs 1 NEBL.</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Whole order will be processed automatically. It can take few minutes due to speed of confirmations of the transactions.</p>
-                    </div>
-                </div>
-                @if (orderingTokensDone)
-                {
-                    <Alert Type="@AlertType.Success"
-                           Message="Done."
-                           Description="Tokens ordered correctly. Now it will take some minute to process order and delivery the tokens."
-                           ShowIcon="true" />
-                }
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Order TxId: @orderTxId</p>
-                    </div>
-                </div>
-            </Spin>
-        </div>
-    </div>
-</Modal>
-
-@if (AppData.Account.IsLocked())
-{
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Description="Account Is Locked. Please unlock account first."
-           ShowIcon="true" />
-}
-
-@if (errorDuringSend)
-{
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Description=@errorMessage
-           ShowIcon="true" />
-}
-
-@if (errorUpload)
-{
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Description="Cannot upload image."
-           ShowIcon="true" />
-}
-
-@if (notEnoughNeblioForBuySourceTokens)
-{
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Description="Not enough of Neblio to buy the Source tokens. Please transfer at lease 1,0002 NEBL to this address"
-           ShowIcon="true" />
-}
+    </Modal>
+</div>
 
 @code {
 
@@ -271,30 +272,48 @@
 
     protected override async Task OnInitializedAsync()
     {
-        addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
-        var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
-        availableTokens = mintingSupply.Item1;
-        sourceTokensInfo = mintingSupply.Item2;
-        balanceTimer = new System.Threading.Timer(async (object stateInfo) =>
+        try
         {
-            try
+            if (string.IsNullOrEmpty(AppData.Account.Address))
+            {
+                AppData.Account = new NeblioAccount();
+                await Task.Delay(500);
+                NavManager.NavigateTo("/");
+            }
+            else
             {
                 addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
                 var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
                 availableTokens = mintingSupply.Item1;
                 sourceTokensInfo = mintingSupply.Item2;
-                if (addressInfo.Balance > 1)
+                balanceTimer = new System.Threading.Timer(async (object stateInfo) =>
                 {
-                    notEnoughNeblioForBuySourceTokens = false;
-                }
+                    try
+                    {
+                        addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
+                        var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
+                        availableTokens = mintingSupply.Item1;
+                        sourceTokensInfo = mintingSupply.Item2;
+                        if (addressInfo.Balance > 1)
+                        {
+                            notEnoughNeblioForBuySourceTokens = false;
+                        }
 
-                StateHasChanged();
+                        StateHasChanged();
+                    }
+                    catch (Exception ex)
+                    {
+                        //todo
+                    }
+                }, new System.Threading.AutoResetEvent(false), 5000, 5000);
             }
-            catch (Exception ex)
-            {
-                //todo
-            }
-        }, new System.Threading.AutoResetEvent(false), 5000, 5000);
+        }
+        catch(Exception ex)
+        {
+            AppData.Account = new NeblioAccount();
+            await Task.Delay(500);
+            NavManager.NavigateTo("/");
+        }
     }
 
     void ShowMintConfirm()
@@ -358,6 +377,7 @@
             uploadingImage = true;
             attemptsToDisplay = 10;
             StateHasChanged();
+
             foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
             {
                 loadingImageStage = LoadingImageStages.Loading;
@@ -366,36 +386,64 @@
                 {
                     var fileinfo = await file.ReadFileInfoAsync();
 
-                    var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
-                    newNFT.ImageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                    try
+                    {
+                        var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
+                        newNFT.ImageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+                    }
 
                     timer = new System.Threading.Timer(async (object stateInfo) =>
                     {
                         try
                         {
-                            using var httpResponse = await _client.GetAsync(newNFT.ImageLink);
-
-                            if (httpResponse.IsSuccessStatusCode)
+                            if (!string.IsNullOrEmpty(newNFT.ImageLink))
                             {
-                                loadingImageStage = LoadingImageStages.Loaded;
-                                uploadingImage = false;
+                                using var httpResponse = await _client.GetAsync(newNFT.ImageLink);
 
-                                StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
-                                timer.Dispose();
+                                if (httpResponse.IsSuccessStatusCode)
+                                {
+                                    loadingImageStage = LoadingImageStages.Loaded;
+                                    uploadingImage = false;
+
+                                    StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+                                    timer.Dispose();
+                                }
+
+                                attemptsToDisplay--;
+                                if (attemptsToDisplay < 0)
+                                {
+                                    loadingImageStage = LoadingImageStages.Loaded;
+                                    uploadingImage = false;
+                                    StateHasChanged();
+                                    timer.Dispose();
+                                }
                             }
-
-                            attemptsToDisplay--;
-                            if (attemptsToDisplay < 0)
+                            else
                             {
-                                loadingImageStage = LoadingImageStages.Loaded;
+                                loadingImageStage = LoadingImageStages.NotStarted;
                                 uploadingImage = false;
+                                errorUpload = true;
                                 StateHasChanged();
                                 timer.Dispose();
                             }
                         }
                         catch (Exception ex)
                         {
+                            Console.WriteLine("Error during checking uploaded image!" + ex.Message);
                             //todo
+                            attemptsToDisplay--;
+                            if (attemptsToDisplay < 0)
+                            {
+                                loadingImageStage = LoadingImageStages.NotStarted;
+                                uploadingImage = false;
+                                errorUpload = true;
+                                StateHasChanged();
+                                timer.Dispose();
+                            }
                         }
                     }, new System.Threading.AutoResetEvent(false), 4000, 4000);
                 }
@@ -406,20 +454,46 @@
             loadingImageStage = LoadingImageStages.NotStarted;
             uploadingImage = false;
             errorUpload = true;
+            Console.WriteLine("Error during upload." + ex.Message);
             StateHasChanged();
         }
     }
 
     private async Task MintNewNFT()
     {
+        errorDuringSend = false;
+
         if (AppData.Account.IsLocked())
         {
             processingMinting = false;
+            StateHasChanged();
+            return;
+        }
+
+        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, 0.0002);
+        if (nutxos.Count == 0)
+        {
+            processingMinting = false;
+            errorDuringSend = true;
+            errorMessage = "You dont have Neblio on the address!";
+            StateHasChanged();
+            return;
+        }
+
+        var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(AppData.Account.Address, NFTHelpers.TokenId, 1);
+
+        if (tutxos.Count == 0)
+        {
+            processingMinting = false;
+            errorDuringSend = true;
+            errorMessage = "You dont have VENFT tokens on the address!";
+            StateHasChanged();
             return;
         }
 
         status = "Sending...";
         processingMinting = true;
+        StateHasChanged();
 
         try
         {
@@ -438,7 +512,7 @@
                     break;
             }
 
-            if (rtxid != null)
+            if (!string.IsNullOrEmpty(rtxid))
             {
                 tokentxid = rtxid;
                 processingMinting = false;
@@ -446,6 +520,12 @@
                 await Task.Delay(500);
                 NavManager.NavigateTo("/nfts");
             }
+
+            if (rtxid != null)
+                tokentxid = rtxid;
+
+            processingMinting = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -455,4 +535,4 @@
         }
     }
 
-    }
+}

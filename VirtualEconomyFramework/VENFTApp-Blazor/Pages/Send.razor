@@ -5,9 +5,26 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject AppData AppData
 @inject HttpClient _client
+@inject NavigationManager NavManager
 @page "/send"
 
 <div class="container-fluid">
+    @if (errorDuringSend)
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description=@errorMessage
+               ShowIcon="true" />
+    }
+
+    @if (AppData.Account.IsLocked())
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description="Account Is Locked. Please unlock account first."
+               ShowIcon="true" />
+    }
+
     <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
         <div class="row">
             <div class="col">
@@ -58,13 +75,23 @@
                 </div>
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Sent transaction: @tokentxid</p>
+                        <p>Sent transaction: <a href="https://explorer.nebl.io/tx/@txid" target="_blank">@tokentxid</a></p>
                     </div>
                 </div>
 
                 <div class="row" style="margin-top:40px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <h1>Send Neblio</h1>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Actual Balance: @addressInfo.Balance NEBL</p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Unconfirmed Balance: @addressInfo.UnconfirmedBalance NEBL</p>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
@@ -110,23 +137,8 @@
             </div>
         </div>
 
-        @if (AppData.Account.IsLocked())
-        {
-            <Alert Type="@AlertType.Error"
-                   Message="Error"
-                   Description="Account Is Locked. Please unlock account first."
-                   ShowIcon="true" />
-        }
-
     </Spin>
 
-    @if (errorDuringSend)
-    {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description=@errorMessage
-               ShowIcon="true" />
-    }
 </div>
 
 
@@ -144,23 +156,83 @@
     double availableTokens = 0;
     GetTokenMetadataResponse sourceTokensInfo = new GetTokenMetadataResponse();
 
+    private GetAddressResponse addressInfo = new GetAddressResponse();
+    private System.Threading.Timer timer;
+
     protected override async Task OnInitializedAsync()
     {
-        var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
-        availableTokens = mintingSupply.Item1;
-        sourceTokensInfo = mintingSupply.Item2;
+        try
+        {
+            if (string.IsNullOrEmpty(AppData.Account.Address))
+            {
+                AppData.Account = new NeblioAccount();
+                await Task.Delay(500);
+                NavManager.NavigateTo("/");
+            }
+            else
+            {
+                var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
+                availableTokens = mintingSupply.Item1;
+                sourceTokensInfo = mintingSupply.Item2;
+                addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
+
+                timer = new System.Threading.Timer(async (object stateInfo) =>
+                {
+                    var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
+                    availableTokens = mintingSupply.Item1;
+                    sourceTokensInfo = mintingSupply.Item2;
+
+                    addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
+                    StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+                }, new System.Threading.AutoResetEvent(false), 2000, 2000);
+
+            }
+        }
+        catch(Exception ex)
+        {
+            AppData.Account = new NeblioAccount();
+            await Task.Delay(500);
+            NavManager.NavigateTo("/");
+        }
     }
 
     private async Task SendTokenTx()
     {
+        errorDuringSend = false;
+
         if (AppData.Account.IsLocked())
         {
             sendingTransaction = false;
+            errorDuringSend = true;
+            errorMessage = "Account is locked!";
+            StateHasChanged();
+            return;
+        }
+
+        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, 0.0002);
+        if (nutxos.Count == 0)
+        {
+            sendingTransaction = false;
+            errorDuringSend = true;
+            errorMessage = "You dont have Neblio on the address!";
+            StateHasChanged();
+            return;
+        }
+
+        var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(AppData.Account.Address, NFTHelpers.TokenId, 1);
+
+        if (tutxos.Count == 0)
+        {
+            sendingTransaction = false;
+            errorDuringSend = true;
+            errorMessage = "You dont have VENFT tokens on the address!";
+            StateHasChanged();
             return;
         }
 
         sendingTransaction = true;
         tokentxid = "Sending...";
+        StateHasChanged();
 
         // create token metadata
         var metadata = new Dictionary<string, string>();
@@ -191,19 +263,51 @@
         catch (Exception ex)
         {
             tokentxid = ex.Message;
+            errorDuringSend = true;
+            sendingTransaction = false;
+            errorMessage = ex.Message;
         }
+
+        StateHasChanged();
     }
 
     private async Task SendTx()
     {
+        errorDuringSend = false;
+
         if (AppData.Account.IsLocked())
         {
             sendingTransaction = false;
+            errorDuringSend = true;
+            errorMessage = "Account is locked!";
+            StateHasChanged();
+            return;
+        }
+
+        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, 0.0002);
+        if (nutxos.Count == 0)
+        {
+            sendingTransaction = false;
+            errorDuringSend = true;
+            errorMessage = "You dont have Neblio on the address!";
+            StateHasChanged();
+            return;
+        }
+
+        var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(AppData.Account.Address, NFTHelpers.TokenId, 1);
+
+        if (tutxos.Count == 0)
+        {
+            sendingTransaction = false;
+            errorDuringSend = true;
+            errorMessage = "You dont have VENFT tokens on the address!";
+            StateHasChanged();
             return;
         }
 
         sendingTransaction = true;
         txid = "Sending...";
+        StateHasChanged();
 
         // fill input data for sending tx
         var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
@@ -228,7 +332,9 @@
         {
             txid = ex.Message;
             errorDuringSend = true;
+            sendingTransaction = false;
             errorMessage = ex.Message;
         }
+        StateHasChanged();
     }
 }

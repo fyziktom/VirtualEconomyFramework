@@ -6,6 +6,7 @@
 @inject HttpClient _client
 @inject AppData AppData
 @inject ClipboardService ClipboardService
+@inject NavigationManager NavManager
 @page "/account"
 
 <div class="container-fluid">
@@ -18,6 +19,26 @@
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
             <p>Your Neblio Address: <a href="https://explorer.nebl.io/address/@AppData.Account.Address" target="_blank">@AppData.Account.Address</a></p>
             <!--<button class="btn btn-light" @onclick="CopyToClipboard" style="margin-left:20px;"><i class="oi oi-layers" style="font-size:20px;"></i></button>-->
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;margin-bottom:2px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <span style="font-size:10px;">Actual Balance: @addressInfo.Balance NEBL</span>
+        </div>
+    </div>
+    <div class="row" style="margin-top:2px;margin-bottom:2px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <span style="font-size:10px;">Unconfirmed Balance: @addressInfo.UnconfirmedBalance NEBL</span>
+        </div>
+    </div>
+    <div class="row" style="margin-top:2px;margin-bottom:2px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <span style="font-size:10px;">Source Tokens Balance: @availableTokens VENFT</span>
+        </div>
+    </div>
+    <div class="row" style="margin-top:2px;margin-bottom:2px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <span style="font-size:10px;">NFTs: @addressNFTCount</span>
         </div>
     </div>
     <div class="row" style="margin-top:10px;">
@@ -33,21 +54,6 @@
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
             <hr />
-        </div>
-    </div>
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <p>Actual Balance: @addressInfo.Balance NEBL</p>
-        </div>
-    </div>
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <p>Unconfirmed Balance: @addressInfo.UnconfirmedBalance NEBL</p>
-        </div>
-    </div>
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <p>Number Of Transactions: @addressInfo.Transactions.Count</p>
         </div>
     </div>
     <div class="row" style="margin-top:10px;">
@@ -151,6 +157,11 @@
             <div class="row" style="margin-top:30px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <h3>Transactions:</h3>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span style="font-size:10px;">Number Of Transactions: @addressInfo.Transactions.Count</span>
                 </div>
             </div>
 
@@ -268,24 +279,53 @@
     private System.Threading.Timer timer;
     private System.Threading.Timer hideTimer;
     private string accountKey = string.Empty;
+    private int addressNFTCount = 0;
+    double availableTokens = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        if (!string.IsNullOrEmpty(AppData.Account.Address))
+        try
         {
-            addressInfo.Transactions = new List<string>();
-            addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
-            var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
-            AppData.Account.NFTs = nfts;
-            AppData.Account.Profile = await NFTHelpers.FindProfileNFT(AppData.Account);
-
-            timer = new System.Threading.Timer(async (object stateInfo) =>
+            if (string.IsNullOrEmpty(AppData.Account.Address))
             {
+                AppData.Account = new NeblioAccount();
+                await Task.Delay(500);
+                NavManager.NavigateTo("/");
+            }
+            else
+            {
+                addressInfo.Transactions = new List<string>();
                 addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
-                StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
-            }, new System.Threading.AutoResetEvent(false), 1000, 1000);
+                var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
+                availableTokens = mintingSupply.Item1;
+                var nftsu = await NeblioTransactionHelpers.GetAddressNFTsUtxos(AppData.Account.Address);
+                if (nftsu != null)
+                    addressNFTCount = nftsu.Count;
 
-            await AppData.Account.ReloadTokenSupply();
+                var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
+                AppData.Account.NFTs = nfts;
+                AppData.Account.Profile = await NFTHelpers.FindProfileNFT(AppData.Account);
+
+                timer = new System.Threading.Timer(async (object stateInfo) =>
+                {
+                    addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
+                    var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
+                    availableTokens = mintingSupply.Item1;
+                    StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+                    var nfts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(AppData.Account.Address);
+                    if (nfts != null)
+                        addressNFTCount = nfts.Count;
+
+                }, new System.Threading.AutoResetEvent(false), 2000, 2000);
+
+                await AppData.Account.ReloadTokenSupply();
+            }
+        }
+        catch(Exception ex)
+        {
+            AppData.Account = new NeblioAccount();
+            await Task.Delay(500);
+            NavManager.NavigateTo("/");
         }
     }
 
@@ -370,7 +410,7 @@
         var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txId);
         var outs = txinfo.Vout.ToList();
         var toks = false;
-        foreach(var o in outs)
+        foreach (var o in outs)
         {
             if (o.Tokens.Count > 0)
             {

@@ -456,6 +456,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await Load();
+        try
+        {
+            await Load();
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Cannot init the page!" + ex.Message);
+            try
+            {
+                AppData.Account = new NeblioAccount();
+                await Load();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Cannot init the page!" + e.Message);
+            }
+        }
     }
 }

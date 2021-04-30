@@ -1,0 +1,45 @@
+﻿@using VEDriversLite.NFT
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:2px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                @switch (Type)
+                {
+                    case NFTTypes.Image:
+                        <span style="font-size:11px;">Original</span>
+                        break;
+                    case NFTTypes.Post:
+                        <span style="font-size:11px;">Post</span>
+                        break;
+                }
+
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:12px;">@Name</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:2px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:10px;">@Author</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:2px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:9px;">@Description</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+    [Parameter]
+    public string Author { get; set; } = string.Empty;
+    [Parameter]
+    public string Description { get; set; } = string.Empty;
+    [Parameter]
+    public NFTTypes Type { get; set; } = NFTTypes.Post;
+}

@@ -1,6 +1,7 @@
 ﻿@using System.IO;
 @using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
 @using Ipfs.Http
 @using Tewr.Blazor.FileReader
 @inject IFileReaderService fileReaderService
@@ -8,9 +9,28 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject AppData AppData
 @inject HttpClient _client
+@inject NavigationManager NavManager
 @page "/nfts"
 
 <div class="container-fluid">
+
+
+    @if (AppData.Account.IsLocked())
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description="Account Is Locked. Please unlock account first."
+               ShowIcon="true" />
+    }
+
+    @if (errorDuringSend)
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description=@errorMessage
+               ShowIcon="true" />
+    }
+
     <Spin spinning="@sendingTransaction" tip="@sendingTransactionState">
         <div class="row">
             <div class="col">
@@ -21,7 +41,27 @@
                 </div>
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Address: @AppData.Account.Address</p>
+                        <span style="font-size:12px;">Address: <a href="https://explorer.nebl.io/address/@AppData.Account.Address" style="font-size:12px;" target="_blank">@AppData.Account.Address</a></span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;margin-bottom:2px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span style="font-size:10px;">Actual Balance: @addressInfo.Balance NEBL</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:2px;margin-bottom:2px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span style="font-size:10px;">Unconfirmed Balance: @addressInfo.UnconfirmedBalance NEBL</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:2px;margin-bottom:2px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span style="font-size:10px;">Source Tokens Balance: @availableTokens VENFT</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:2px;margin-bottom:2px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span style="font-size:10px;">NFTs: @addressNFTCount</span>
                     </div>
                 </div>
                 <div class="row" style="margin-top:20px;">
@@ -37,40 +77,31 @@
                         }
                         else
                         {
-                            <table class="table" style="margin-top:50px;">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Author</th>
-                                        <th>Type</th>
-                                        <th>Image</th>
-                                        <th>Info</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var nft in AppData.Account.NFTs)
-                                    {
-                                        if (nft.TypeText != "NFT Profile" && nft.TypeText != "NFT Settings")
-                                        {
-                                        <tr>
-                                            <td>@nft.Name</td>
-                                            <td>@nft.Author</td>
-                                            @switch (nft.Type)
-                                            {
-                                                case NFTTypes.Image:
-                                                    <td>Original</td>
-                                                    break;
-                                                case NFTTypes.Post:
-                                                    <td>Post</td>
-                                                    break;
-                                            }
-                                            <td><img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></td>
-                                            <td><button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)"><i class="oi oi-info"></i></button></td>
-                                        </tr>
-                                        }
-                                    }
-                                </tbody>
-                            </table>
+                            @foreach (var nft in AppData.Account.NFTs)
+                            {
+                                if (nft.TypeText != "NFT Profile" && nft.TypeText != "NFT Settings")
+                                {
+                                    <div class="card" style="margin-left:10px; margin-top:10px; max-width:250px; min-width:50px;">
+                                        <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:auto; max-width:250px; min-width:50px; width:auto;" />
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                            <VENFTApp_Blazor.Components.NFTThumbnail Name="@nft.Name" Type="@nft.Type" Author="@nft.Author" Description="@nft.Description" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                            <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-info" style="font-size:12px;"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
                         }
                     </div>
                 </div>
@@ -114,9 +145,25 @@
                     </div>
                 </div>
             }
+            @if (!string.IsNullOrEmpty(nftInDetails.NFTOriginTxId))
+            {
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="https://explorer.nebl.io/tx/@nftInDetails.NFTOriginTxId" target="_blank">Mint Tx In Explorer</a>
+                    </div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(nftInDetails.Utxo))
+            {
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="https://explorer.nebl.io/tx/@nftInDetails.Utxo" target="_blank">Tx In Explorer</a>
+                    </div>
+                </div>
+            }
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <a href="https://explorer.nebl.io/tx/@nftInDetails.NFTOriginTxId" target="_blank">Mint Tx In Explorer</a>
+                    <span>Confirmations: @nftInDetailsTxInfo.Confirmations.ToString()</span>
                 </div>
             </div>
             <div class="row" style="margin-top:20px;">
@@ -126,17 +173,71 @@
                     </a>
                 </div>
             </div>
-            @if (nftInDetails.Type == NFTTypes.Post)
+            @if (nftInDetailsTxInfo.Confirmations > 1)
             {
+                @if (nftInDetails.Type == NFTTypes.Post)
+                {
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog(nftInDetails)"><i class="oi oi-location"></i> Update</button>
+                        </div>
+                    </div>
+                }
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog(nftInDetails)"><i class="oi oi-location"></i> Update</button>
+                        <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog(nftInDetails)"><i class="oi oi-location"></i> Send</button>
                     </div>
                 </div>
             }
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog(nftInDetails)"><i class="oi oi-location"></i> Send</button>
+                    <hr />
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <button class="btn btn-primary" @onclick="async () => LoadNFTHistory(nftInDetails)"><i class="oi oi-timer"></i> Load NFT History</button>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Spin Tip="Loading History..." Spinning="@loadingNFTHistory">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Image</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (nftInDetailsHistory != null)
+                                {
+                                    @if (nftInDetailsHistory.Count > 0)
+                                    {
+                                        @foreach (var nft in nftInDetailsHistory)
+                                        {
+                                            <tr>
+                                                <td>@nft.Name</td>
+                                                <td>@nft.Description</td>
+                                                <td>
+                                                    <a href="@nft.ImageLink" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td>History Not Loaded</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </Spin>
                 </div>
             </div>
         </div>
@@ -280,22 +381,6 @@
     </div>
 </Modal>
 
-@if (AppData.Account.IsLocked())
-{
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Description="Account Is Locked. Please unlock account first."
-           ShowIcon="true" />
-}
-
-@if (errorDuringSend)
-{
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Description=@errorMessage
-           ShowIcon="true" />
-}
-
 @code {
 
     bool uploadingImage = false;
@@ -325,9 +410,60 @@
     private INFT nftInDetails = new ImageNFT("");
     string utxoInDetails = string.Empty;
 
+    bool loadingNFTHistory = false;
+    List<INFT> nftInDetailsHistory = new List<INFT>();
+
+    private GetAddressResponse addressInfo = new GetAddressResponse();
+    private System.Threading.Timer refreshBalanceTimer;
+    private int addressNFTCount = 0;
+    double availableTokens = 0;
+
+    private GetTransactionInfoResponse nftInDetailsTxInfo = new GetTransactionInfoResponse();
+    private System.Threading.Timer nftInDetailsTxInfoRefresh;
+
     protected override async Task OnInitializedAsync()
     {
-        await LoadNFTs();
+        try
+        {
+            nftInDetailsTxInfo.Confirmations = 0;
+
+            if (string.IsNullOrEmpty(AppData.Account.Address))
+            {
+                AppData.Account = new NeblioAccount();
+                await Task.Delay(500);
+                NavManager.NavigateTo("/");
+            }
+            else
+            {
+                await LoadNFTs();
+
+                addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
+                var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
+                availableTokens = mintingSupply.Item1;
+                StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+                var nfts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(AppData.Account.Address);
+                if (nfts != null)
+                    addressNFTCount = nfts.Count;
+
+                refreshBalanceTimer = new System.Threading.Timer(async (object stateInfo) =>
+                {
+                    addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
+                    var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
+                    availableTokens = mintingSupply.Item1;
+                    StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+                    var nfts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(AppData.Account.Address);
+                    if (nfts != null)
+                        addressNFTCount = nfts.Count;
+
+                }, new System.Threading.AutoResetEvent(false), 2000, 2000);
+            }
+        }
+        catch(Exception ex)
+        {
+            AppData.Account = new NeblioAccount();
+            await Task.Delay(500);
+            NavManager.NavigateTo("/");
+        }
     }
 
     private async Task LoadNFTs()
@@ -339,12 +475,32 @@
     private async Task CloseNFTDetails(MouseEventArgs e)
     {
         nftDetailsVisible = false;
+        nftInDetailsTxInfoRefresh.Dispose();
     }
 
     private async Task ShowNFTDetails(INFT nft)
     {
-        nftDetailsVisible = true;
+        nftInDetailsHistory = new List<INFT>();
         nftInDetails = nft;
+        nftDetailsVisible = true;
+
+        nftInDetailsTxInfo = await NeblioTransactionHelpers.GetTransactionInfo(nftInDetails.Utxo);
+        if (nftInDetailsTxInfo == null)
+        {
+            nftInDetailsTxInfo = new GetTransactionInfoResponse();
+            nftInDetailsTxInfo.Confirmations = 0;
+        }
+
+        nftInDetailsTxInfoRefresh = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            nftInDetailsTxInfo = await NeblioTransactionHelpers.GetTransactionInfo(nftInDetails.Utxo);
+            if (nftInDetailsTxInfo == null)
+            {
+                nftInDetailsTxInfo = new GetTransactionInfoResponse();
+                nftInDetailsTxInfo.Confirmations = 0;
+            }
+
+        }, new System.Threading.AutoResetEvent(false), 2000, 2000);
     }
 
     private async Task HandleOk(MouseEventArgs e)
@@ -379,10 +535,77 @@
 
     private async Task sendNFT()
     {
+        errorDuringSend = false;
+
+        if (AppData.Account.IsLocked())
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+            return;
+        }
+
+        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, 0.0002);
+        if (nutxos.Count == 0)
+        {
+            processingMinting = false;
+            errorDuringSend = true;
+            errorMessage = "You dont have Neblio on the address!";
+            StateHasChanged();
+            return;
+        }
+
+
+        if (!string.IsNullOrEmpty(nftInDetails.Utxo))
+        {
+            var utxo = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(AppData.Account.Address, nftInDetails.Utxo);
+            if (!utxo.Item1)
+            {
+                processingMinting = false;
+                errorDuringSend = true;
+                errorMessage = "Provided source tx transaction is not spendable!";
+                StateHasChanged();
+                return;
+            }
+        }
+        else
+        {
+            var utxo = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(AppData.Account.Address, utxoInDetails);
+            if (!utxo.Item1)
+            {
+                processingMinting = false;
+                errorDuringSend = true;
+                errorMessage = "Provided source tx transaction is not spendable!";
+                StateHasChanged();
+                return;
+            }
+        }
+
         sendingTransaction = true;
         tokentxid = "Sending...";
+        StateHasChanged();
+
         // create token metadata
         var metadata = new Dictionary<string, string>();
+        metadata.Add("NFT", "true");
+        switch (nftInDetails.Type)
+        {
+            case NFTTypes.Image:
+                metadata.Add("Type", "NFT Image");
+                break;
+            case NFTTypes.Post:
+                metadata.Add("Type", "NFT Post");
+                break;
+        }
+
+        if (nftInDetails.Type == NFTTypes.Post)
+        {
+            metadata.Add("Name", nftInDetails.Name);
+            metadata.Add("Author", nftInDetails.Author);
+            metadata.Add("Description", nftInDetails.Description);
+            metadata.Add("Image", nftInDetails.ImageLink);
+            metadata.Add("Link", nftInDetails.Link);
+        }
+
         metadata.Add("SourceUtxo", nftInDetails.NFTOriginTxId);
 
         // fill input data for sending tx
@@ -437,6 +660,17 @@
         }
     }
 
+    private async Task LoadNFTHistory(INFT nft)
+    {
+        loadingNFTHistory = true;
+        await Task.Delay(50);
+        StateHasChanged();
+        nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(nft.Utxo);
+        loadingNFTHistory = false;
+        await Task.Delay(50);
+        StateHasChanged();
+    }
+
     private async Task createNewPostConfirm(MouseEventArgs e)
     {
         createNewPostVisible = false;
@@ -465,36 +699,63 @@
                 {
                     var fileinfo = await file.ReadFileInfoAsync();
 
-                    var imageLink = await ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
-                    newPostNFT.ImageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                    try
+                    {
+                        var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
+                        newPostNFT.ImageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+                    }
 
                     timer = new System.Threading.Timer(async (object stateInfo) =>
                     {
                         try
                         {
-                            using var httpResponse = await _client.GetAsync(newPostNFT.ImageLink);
-
-                            if (httpResponse.IsSuccessStatusCode)
+                            if (!string.IsNullOrEmpty(newPostNFT.ImageLink))
                             {
-                                loadingImageStage = LoadingImageStages.Loaded;
-                                uploadingImage = false;
+                                using var httpResponse = await _client.GetAsync(newPostNFT.ImageLink);
 
-                                StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
-                                timer.Dispose();
+                                if (httpResponse.IsSuccessStatusCode)
+                                {
+                                    loadingImageStage = LoadingImageStages.Loaded;
+                                    uploadingImage = false;
+
+                                    StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+                                    timer.Dispose();
+                                }
+
+                                attemptsToDisplay--;
+                                if (attemptsToDisplay < 0)
+                                {
+                                    loadingImageStage = LoadingImageStages.Loaded;
+                                    uploadingImage = false;
+                                    StateHasChanged();
+                                    timer.Dispose();
+                                }
                             }
-
-                            attemptsToDisplay--;
-                            if (attemptsToDisplay < 0)
+                            else
                             {
-                                loadingImageStage = LoadingImageStages.Loaded;
+                                loadingImageStage = LoadingImageStages.NotStarted;
                                 uploadingImage = false;
+                                errorUpload = true;
                                 StateHasChanged();
                                 timer.Dispose();
                             }
                         }
                         catch (Exception ex)
                         {
-                            //todo
+                            Console.WriteLine("Error during checking uploaded image!" + ex.Message);
+                            attemptsToDisplay--;
+                            if (attemptsToDisplay < 0)
+                            {
+                                loadingImageStage = LoadingImageStages.NotStarted;
+                                uploadingImage = false;
+                                errorUpload = true;
+                                StateHasChanged();
+                                timer.Dispose();
+                            }
                         }
                     }, new System.Threading.AutoResetEvent(false), 4000, 4000);
                 }
@@ -512,14 +773,52 @@
     private async Task MintNewPostNFT()
     {
 
+        errorDuringSend = false;
+
         if (AppData.Account.IsLocked())
         {
             processingMinting = false;
             return;
         }
 
+        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, 0.0002);
+        if (nutxos.Count == 0)
+        {
+            processingMinting = false;
+            errorDuringSend = true;
+            errorMessage = "You dont have Neblio on the address!";
+            StateHasChanged();
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(nftInDetails.Utxo))
+        {
+            var utxo = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(AppData.Account.Address, nftInDetails.Utxo);
+            if (!utxo.Item1)
+            {
+                processingMinting = false;
+                errorDuringSend = true;
+                errorMessage = "Provided source tx transaction is not spendable!";
+                StateHasChanged();
+                return;
+            }
+        }
+        else
+        {
+            var utxo = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(AppData.Account.Address, utxoInDetails);
+            if (!utxo.Item1)
+            {
+                processingMinting = false;
+                errorDuringSend = true;
+                errorMessage = "Provided source tx transaction is not spendable!";
+                StateHasChanged();
+                return;
+            }
+        }
+
         sendingTransaction = true;
         processingMinting = true;
+        StateHasChanged();
 
         try
         {
@@ -533,7 +832,7 @@
 
             rtxid = await NFTHelpers.ChangePostNFT(AppData.Account, newPostNFT, utxo);
 
-            if (rtxid != string.Empty)
+            if (!string.IsNullOrEmpty(rtxid))
             {
                 tokentxid = rtxid;
 
@@ -543,11 +842,15 @@
                 var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
                 AppData.Account.NFTs = nfts;
 
-                nftDetailsVisible = false;
-                sendingTransaction = false;
-                createNewPostVisible = false;
-                StateHasChanged();
             }
+
+            if (rtxid != null)
+                tokentxid = rtxid;
+
+            nftDetailsVisible = false;
+            sendingTransaction = false;
+            createNewPostVisible = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {

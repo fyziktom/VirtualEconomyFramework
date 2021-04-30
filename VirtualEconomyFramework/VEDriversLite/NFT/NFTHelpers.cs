@@ -30,7 +30,7 @@ namespace VEDriversLite.NFT
         private static HttpClient httpClient = new HttpClient();
         private static IClient _client;
         private static string BaseURL = "https://ntp1node.nebl.io/";
-        private static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+        public static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         private static string TokenSymbol = "VENFT";
         public static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
 
@@ -92,16 +92,6 @@ namespace VEDriversLite.NFT
 
                             return result;
                         }
-                    }
-                }
-                if (meta.TryGetValue("SourceUtxo", out var srcTxId))
-                {
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        result.NFTMetadata = meta;
-                        result.NFTOriginTxId = srcTxId;
-
-                        return result;
                     }
                 }
             }
@@ -169,49 +159,113 @@ namespace VEDriversLite.NFT
 
             foreach (var u in utxos)
             {
-                NFTTypes ntype = NFTTypes.Image;
-
-                var meta = await NeblioTransactionHelpers.GetTransactionMetadata(TokenId, u.Txid);
-                if (meta.TryGetValue("Type", out var type))
+                if (u.Tokens != null)
                 {
-                    if (!string.IsNullOrEmpty(type))
+                    if (u.Tokens.Count > 0)
                     {
-                        switch (type)
+                        foreach(var t in u.Tokens)
                         {
-                            case "NFT Profile":
-                                ntype = NFTTypes.Profile;
-                                break;
-                            case "NFT Post":
-                                ntype = NFTTypes.Post;
-                                break;
-                            case "NFT Image":
-                                ntype = NFTTypes.Image;
-                                break;
+                            if (t.Amount == 1)
+                            {
+                                var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
+
+                                if (nft != null)
+                                {
+                                    if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
+                                        nfts.Add(nft);
+                                }
+                            }
                         }
                     }
-                }
-
-                var nft = await NFTFactory.GetNFT(ntype, u.Txid);
-
-                if (ntype == NFTTypes.Post)
-                {
-                    nft.TypeText = "NFT Post";
-                    await (nft as PostNFT).GetLastData();
-                }
-                if (ntype == NFTTypes.Profile)
-                {
-                    nft.TypeText = "NFT Profile";
-                    await (nft as ProfileNFT).GetLastData();
-                }
-
-                if (nft != null)
-                {
-                    if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
-                        nfts.Add(nft);
                 }
             }
 
             return nfts;
+        }
+
+        public static async Task<List<INFT>> LoadNFTsHistory(string utxo)
+        {
+            try
+            {
+                List<INFT> nfts = new List<INFT>();
+                bool end = false;
+                var txid = utxo;
+
+                while (!end)
+                {
+                    end = true;
+
+                    GetTransactionInfoResponse txinfo = null;
+                    List<Vin> vins = new List<Vin>();
+                    try
+                    {
+                        txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txid);
+                        vins = txinfo.Vin.ToList();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Cannot load transaction info." + ex.Message);
+                    }
+
+                    if (vins != null)
+                    {
+                        foreach (var vin in vins)
+                        {
+                            if (vin.Tokens != null)
+                            {
+                                var toks = vin.Tokens.ToList();
+                                if (toks != null)
+                                {
+                                    if (toks.Count > 0)
+                                    {
+                                        if (toks[0] != null)
+                                        {
+                                            if (toks[0].Amount > 0) // this is still nft so load the state in the moment of history
+                                            {
+                                                try
+                                                {
+                                                    var nft = await NFTFactory.GetNFT(TokenId, txinfo.Txid);
+
+                                                    if (nft != null)
+                                                    {
+                                                        if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
+                                                        {
+                                                            nfts.Add(nft);
+                                                        }
+                                                        // go to previous tx
+                                                        txid = vin.Txid;
+                                                    }
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    Console.WriteLine("Error while loading NFT history step" + ex.Message);
+                                                }
+
+                                                if (toks[0].Amount > 1)
+                                                {
+                                                    end = true;
+                                                }
+                                                else if (toks[0].Amount == 1)
+                                                {
+                                                    end = false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                         
+                return nfts;
+            }
+            catch(Exception ex)
+            {
+                var msg = ex.Message;
+                Console.WriteLine("Exception during loading NFT history: " + msg);
+                return new List<INFT>();
+            }
         }
 
         public static async Task<List<ActiveTab>> GetTabs(string tabs)
@@ -223,7 +277,6 @@ namespace VEDriversLite.NFT
         {
             return JsonConvert.SerializeObject(tabs);
         }
-
 
         public static async Task<string> MintImageNFT(NeblioAccount account, ImageNFT newNFT)
         {
@@ -444,7 +497,7 @@ namespace VEDriversLite.NFT
                 {
                     foreach(var n in account.NFTs)
                     {
-                        if (n.TypeText == "NFT Profile")
+                        if (n.Type == NFTTypes.Profile)
                         {
                             return (ProfileNFT)n;
                         }
@@ -461,7 +514,7 @@ namespace VEDriversLite.NFT
             {
                 foreach (var n in nfts)
                 {
-                    if (n.TypeText == "NFT Profile")
+                    if (n.Type == NFTTypes.Profile)
                     {
                         return (ProfileNFT)n;
                     }
