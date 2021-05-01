@@ -556,50 +556,57 @@ namespace VEDriversLite
                     var transaction = new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
                     List<ICoin> list = new List<ICoin>();
 
-                    int inputIndex = 0;
-                    // there is still some issue in parsing json from api. now need to reparse the hex.
-                    foreach (var utxo in utxos)
+                    try
                     {
-                        //neblUtxo = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(utxo.Txid); // not accessible in NBitcoin nuget now
-                        var neblUtxoHex = await GetTxHex(utxo.Txid);
-
-                        if (!string.IsNullOrEmpty(neblUtxoHex))
+                        int inputIndex = 0;
+                        // there is still some issue in parsing json from api. now need to reparse the hex.
+                        foreach (var utxo in utxos)
                         {
-                            //if (!Transaction.TryParse(neblUtxo.Hex, network, out var txin)) // nebl
-                            if (!Transaction.TryParse(neblUtxoHex, network, out var txin)) // nebl
-                            {
-                                Console.WriteLine("Cannot load previous token transaction!");
-                                Console.WriteLine($"Cannot load previous token transaction!");
-                                return string.Empty;
-                            }
+                            //neblUtxo = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(utxo.Txid); // not accessible in NBitcoin nuget now
+                            var neblUtxoHex = await GetTxHex(utxo.Txid);
 
-                            transaction.Version = 1;
-                            //create new input
-                            //transaction.Inputs.Clear();
-                            transaction.Inputs.Add(txin, (int)utxo.Index); // last output is return
+                            if (!string.IsNullOrEmpty(neblUtxoHex))
+                            {
+                                //if (!Transaction.TryParse(neblUtxo.Hex, network, out var txin)) // nebl
+                                if (!Transaction.TryParse(neblUtxoHex, network, out var txin)) // nebl
+                                {
+                                    Console.WriteLine("Cannot load previous token transaction!");
+                                    Console.WriteLine($"Cannot load previous token transaction!");
+                                    return string.Empty;
+                                }
 
-                            // load list of input coins for the source address
-                            // some of them must be spendable
-                           
-                            foreach (var to in txin.Outputs)
-                            {
-                                if (to.ScriptPubKey == addressForTx.ScriptPubKey)
-                                    if (to.Value.Satoshi != 10000)
-                                        if (utxo.Index == txin.Outputs.IndexOf(to))
-                                            list.Add(new Coin(txin, (uint)txin.Outputs.IndexOf(to)));
-                            }
-                            if (transaction.Inputs.Count > 0)
-                            {
-                                transaction.Inputs[inputIndex].ScriptSig = addressForTx.ScriptPubKey;
-                                transaction.Inputs[inputIndex].PrevOut.N = (uint)(utxo.Index);
-                            }
-                            else
-                            {
-                                throw new Exception("Cannot send transaction, cannot find spendable coin!");
-                            }
+                                transaction.Version = 1;
+                                //create new input
+                                //transaction.Inputs.Clear();
+                                transaction.Inputs.Add(txin, (int)utxo.Index); // last output is return
 
-                            inputIndex++;
+                                // load list of input coins for the source address
+                                // some of them must be spendable
+
+                                foreach (var to in txin.Outputs)
+                                {
+                                    if (to.ScriptPubKey == addressForTx.ScriptPubKey)
+                                        if (to.Value.Satoshi != 10000)
+                                            if (utxo.Index == txin.Outputs.IndexOf(to))
+                                                list.Add(new Coin(txin, (uint)txin.Outputs.IndexOf(to)));
+                                }
+                                if (transaction.Inputs.Count > 0)
+                                {
+                                    transaction.Inputs[inputIndex].ScriptSig = addressForTx.ScriptPubKey;
+                                    // transaction.Inputs[inputIndex].PrevOut.N = (uint)(utxo.Index);
+                                }
+                                else
+                                {
+                                    throw new Exception("Cannot send transaction, cannot find spendable coin!");
+                                }
+
+                                inputIndex++;
+                            }
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Exception during adding input. " + ex.Message);
                     }
 
                     var allNeblCoins = 0.0;
@@ -619,20 +626,34 @@ namespace VEDriversLite
                     // sign tx
                     var txhex = string.Empty;
 
-                    transaction.Sign(keyfromFile, list);
-                    txhex = transaction.ToHex();
-
-                    // broadcast tx
-                    if (!string.IsNullOrEmpty(txhex))
+                    try
                     {
-                        var bdto = new BroadcastTxRequest()
+                        transaction.Sign(keyfromFile, list);
+                        txhex = transaction.ToHex();
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new Exception("Exception during signing. " + ex.Message);
+                    }
+
+                    try
+                    {
+                        // broadcast tx
+                        if (!string.IsNullOrEmpty(txhex))
                         {
-                            TxHex = txhex
-                        };
+                            var bdto = new BroadcastTxRequest()
+                            {
+                                TxHex = txhex
+                            };
 
-                        var txid = await BroadcastNTP1TxAsync(bdto);
+                            var txid = await BroadcastNTP1TxAsync(bdto);
 
-                        res = txid;
+                            res = txid;
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new Exception("Exception durring broadcasting. " + ex.Message);
                     }
                 }
                 catch (Exception ex)

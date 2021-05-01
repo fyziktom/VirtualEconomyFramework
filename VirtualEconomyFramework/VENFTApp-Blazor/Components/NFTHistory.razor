@@ -58,9 +58,18 @@
 
     bool loadingNFTHistory = false;
     List<INFT> nftInDetailsHistory = new List<INFT>();
+    string lastutxo = string.Empty;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (NFT.Utxo != lastutxo)
+            nftInDetailsHistory = new List<INFT>();
+        return base.OnAfterRenderAsync(firstRender);
+    }
 
     private async Task LoadNFTHistory(INFT nft)
     {
+        lastutxo = nft.Utxo;
         loadingNFTHistory = true;
         await Task.Delay(50);
         StateHasChanged();

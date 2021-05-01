@@ -163,6 +163,9 @@
                 await Task.Delay(500);
                 NavManager.NavigateTo("/");
             }
+
+            if (AppData.Account != null)
+                AppData.Account.Refreshed += RefreshedHandler;
         }
         catch(Exception ex)
         {
@@ -170,6 +173,12 @@
             await Task.Delay(500);
             NavManager.NavigateTo("/");
         }
+    }
+
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
     }
 
     private async Task SendTokenTx()
@@ -272,6 +281,7 @@
         sendingTransaction = true;
         txid = "Sending...";
         StateHasChanged();
+        await Task.Delay(50);
 
         // fill input data for sending tx
         var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
