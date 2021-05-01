@@ -28,6 +28,7 @@ namespace VEDriversLite.NFT
         string Utxo { get; set; }
         string SourceTxId { get; set; }
         string NFTOriginTxId { get; set; }
+        DateTime Time { get; set; }
 
         Task ParseOriginData();
     }

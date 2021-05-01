@@ -30,7 +30,7 @@
             <div class="col">
                 <div>
                     <ul class="nav nav-tabs" role="tablist" id="shopTabsHeadings">
-                        @foreach (var tab in Tabs)
+                        @foreach (var tab in AppData.Tabs)
                         {
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab)">
@@ -45,7 +45,7 @@
                     </ul>
                     <div class="tab-content" id="shopTabsContent">
 
-                        @foreach (var tab in Tabs)
+                        @foreach (var tab in AppData.Tabs)
                         {
                             var selected = "";
                             if (tab.Selected)
@@ -103,46 +103,8 @@
                                             </div>
 
                                             <div class="row" style="margin-top:20px">
-                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                    <div>
-                                                        <div class="row">
-                                                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                @if (tab.NFTs.Count == 0)
-                                                                {
-                                                                    <p><em><Spin Tip="Loading...No NFTs found yet"></Spin></em></p>
-                                                                }
-                                                                else
-                                                                {
-                                                                    @foreach (var nft in tab.NFTs)
-                                                                    {
-                                                                        if (nft.TypeText != "NFT Profile" && nft.TypeText != "NFT Settings")
-                                                                        {
-                                                                            <div class="card" style="margin-left:10px; margin-top:10px; max-width:250px; min-width:50px;">
-                                                                                <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:auto; max-width:250px; min-width:50px; width:auto;" />
-                                                                                <div class="card-body">
-                                                                                    <div class="row">
-                                                                                        <div class="col">
-                                                                                            <div class="row">
-                                                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                                                    <VENFTApp_Blazor.Components.NFTThumbnail Name="@nft.Name" Type="@nft.Type" Author="@nft.Author" Description="@nft.Description" />
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div class="row">
-                                                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                                                    <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-info" style="font-size:12px;"></i></button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        }
-                                                                    }
-                                                                }
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
+                                                <div class="col">
+                                                    <VENFTApp_Blazor.Components.NFTList NFTs="tab.NFTs" Address="tab.Address" MainAccount="false" />
                                                 </div>
                                             </div>
                                         </div>
@@ -177,102 +139,6 @@
     </div>
 </Modal>
 
-<Modal Title="@nftInDetails.Name"
-       Visible="@nftDetailsVisible"
-       OnOk="@CloseNFTDetails"
-       OnCancel="@CloseNFTDetails">
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Name: @nftInDetails.Name</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Author: @nftInDetails.Author</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Description: @nftInDetails.Description</span>
-                </div>
-            </div>
-            @if (!string.IsNullOrEmpty(nftInDetails.Link))
-            {
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="@nftInDetails.Link" target="_blank">Connected Link</a>
-                    </div>
-                </div>
-            }
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <a href="https://explorer.nebl.io/tx/@nftInDetails.NFTOriginTxId" target="_blank">Mint Tx In Explorer</a>
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <a href="@nftInDetails.ImageLink" target="_blank"><img src="@nftInDetails.ImageLink" style="min-height:50px; max-height:100px; width:auto;" /></a>
-                </div>
-            </div>
-
-
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <hr />
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <button class="btn btn-primary" @onclick="async () => LoadNFTHistory(nftInDetails)"><i class="oi oi-timer"></i> Load NFT History</button>
-                </div>
-            </div>
-            <div class="row" style="margin-top:30px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Spin Tip="Loading History..." Spinning="@loadingNFTHistory">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Image</th>
-                                </tr>
-                            </thead>
-                            <tbody style="margin-top:10px;">
-                                @if (nftInDetailsHistory != null)
-                                {
-                                    @if (nftInDetailsHistory.Count > 0)
-                                    {
-                                        @foreach (var nft in nftInDetailsHistory)
-                                        {
-                                            <tr>
-                                                <td>@nft.Name</td>
-                                                <td>@nft.Description</td>
-                                                <td>
-                                                    <a href="@nft.ImageLink" target="_blank">
-                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr>
-                                            <td>History Not Loaded</td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                    </Spin>
-                </div>
-            </div>
-        </div>
-    </div>
-</Modal>
-
 <Modal Title="Browse Public Addresses"
        Visible="@browsePublicAddresses"
        OnOk="@closePublicAddresses"
@@ -280,7 +146,7 @@
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
 
-            @if (VENFTOwners.Count == 0)
+            @if (AppData.VENFTOwners.Count == 0)
             {
                 <p><Spin Tip="Loading..."></Spin></p>
             }
@@ -296,7 +162,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var owner in VENFTOwners)
+                        @foreach (var owner in AppData.VENFTOwners)
                         {
                             <tr style="margin-top:10px;">
                                 <td>
@@ -328,18 +194,10 @@
     bool loadingBrowser = false;
     bool browsePublicAddresses = false;
 
-    List<TokenOwnerDto> VENFTOwners = new List<TokenOwnerDto>();
-
-    bool nftDetailsVisible = false;
-    private INFT nftInDetails = new ImageNFT("");
-    bool loadingNFTHistory = false;
-    List<INFT> nftInDetailsHistory = new List<INFT>();
-
     int holdersPage = 0;
 
     private bool openTabVisible = false;
     private string newTabAddress = string.Empty;
-    private List<ActiveTab> Tabs = new List<ActiveTab>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -356,7 +214,7 @@
                 await LoadBookmarksAndState();
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             AppData.Account = new NeblioAccount();
             await Task.Delay(500);
@@ -374,22 +232,11 @@
         browsePublicAddresses = true;
     }
 
-    private async Task CloseNFTDetails(MouseEventArgs e)
-    {
-        nftDetailsVisible = false;
-    }
-
-    private async Task ShowNFTDetails(INFT nft)
-    {
-        nftInDetailsHistory = new List<INFT>();
-        nftInDetails = nft;
-        nftDetailsVisible = true;
-    }
-
     private async Task LoadBookmarksAndState()
     {
         try
         {
+            var setFirst = true;
             loadingBrowser = true;
             var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
             if (!string.IsNullOrEmpty(bookmarks))
@@ -402,48 +249,58 @@
             try
             {
                 if (!string.IsNullOrEmpty(browserTabs))
-                    Tabs = await NFTHelpers.GetTabs(browserTabs);
+                    if (AppData.Tabs.Count == 0)
+                        AppData.Tabs = await NFTHelpers.GetTabs(browserTabs);
+                    else
+                        setFirst = false;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot load tabs history!");
             }
 
-            if (Tabs == null)
-                Tabs = new List<ActiveTab>();
+            if (AppData.Tabs == null)
+                AppData.Tabs = new List<ActiveTab>();
 
-            var setFirst = true;
-            if (Tabs.Count > 0)
+            if (setFirst)
             {
-                foreach (var t in Tabs)
+                if (AppData.Tabs.Count > 0)
                 {
-                    t.Selected = setFirst;
-                    if (setFirst)
+                    foreach (var t in AppData.Tabs)
                     {
-                        setFirst = false;
-                        try
+                        t.Selected = setFirst;
+                        if (setFirst)
                         {
-                            t.NFTs = await NFTHelpers.LoadAddressNFTs(t.Address);
-                        }
-                        catch (Exception ex)
-                        {
-                            // todo
-                        }
-                        StateHasChanged();
-                        try
-                        {
-                            t.Profile = await NFTHelpers.FindProfileNFT(t.NFTs);
-                        }
-                        catch (Exception ex)
-                        {
-                            // todo
+                            setFirst = false;
+                            try
+                            {
+                                if (t.NFTs.Count == 0)
+                                    t.NFTs = await NFTHelpers.LoadAddressNFTs(t.Address);
+                            }
+                            catch (Exception ex)
+                            {
+                                // todo
+                            }
+                            StateHasChanged();
+                            try
+                            {
+                                if (t.NFTs.Count > 0)
+                                    t.Profile = await NFTHelpers.FindProfileNFT(t.NFTs);
+                            }
+                            catch (Exception ex)
+                            {
+                                // todo
+                            }
                         }
                     }
                 }
             }
+
             loadingBrowser = false;
             StateHasChanged();
-            VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
+
+            if (AppData.VENFTOwners.Count == 0)
+                AppData.VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
         }
         catch (Exception ex)
         {
@@ -489,14 +346,14 @@
 
     private async Task addNewTab()
     {
-        if (Tabs.Count > 0)
-            foreach (var t in Tabs)
+        if (AppData.Tabs.Count > 0)
+            foreach (var t in AppData.Tabs)
                 t.Selected = false;
 
         var tab = new ActiveTab(newTabAddress);
         tab.Selected = true;
         openTabVisible = false;
-        Tabs.Add(tab);
+        AppData.Tabs.Add(tab);
         StateHasChanged();
 
         try
@@ -518,7 +375,7 @@
             //todo
         }
 
-        var bst = await NFTHelpers.SerializeTabs(Tabs);
+        var bst = await NFTHelpers.SerializeTabs(AppData.Tabs);
         await localStorage.SetItemAsync("browserTabs", bst);
     }
 
@@ -529,10 +386,10 @@
 
     private async Task selectTab(ActiveTab tab)
     {
-        foreach (var t in Tabs)
+        foreach (var t in AppData.Tabs)
             t.Selected = false;
 
-        Tabs.FirstOrDefault(t => t.Address == tab.Address).Selected = true;
+        AppData.Tabs.FirstOrDefault(t => t.Address == tab.Address).Selected = true;
 
         if (tab.NFTs.Count == 0)
         {
@@ -559,27 +416,16 @@
 
     private async Task removeTab(ActiveTab tab)
     {
-        if (Tabs.Count > 0)
+        if (AppData.Tabs.Count > 0)
         {
-            Tabs.Remove(tab);
+            AppData.Tabs.Remove(tab);
 
-            var t = Tabs.FirstOrDefault();
+            var t = AppData.Tabs.FirstOrDefault();
             if (t != null)
                 t.Selected = true;
 
-            var bst = await NFTHelpers.SerializeTabs(Tabs);
+            var bst = await NFTHelpers.SerializeTabs(AppData.Tabs);
             await localStorage.SetItemAsync("browserTabs", bst);
         }
-    }
-
-    private async Task LoadNFTHistory(INFT nft)
-    {
-        loadingNFTHistory = true;
-        await Task.Delay(50);
-        StateHasChanged();
-        nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(nft.Utxo);
-        loadingNFTHistory = false;
-        await Task.Delay(50);
-        StateHasChanged();
     }
 }

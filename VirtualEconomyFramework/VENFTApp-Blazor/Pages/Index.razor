@@ -9,8 +9,9 @@
 
 @page "/"
 
-<Spin spinning="@creatingAddressSpinner" tip="Creating Address...">
-    <div class="container-fluid">
+
+<div class="container-fluid">
+    <Spin spinning="@creatingAddressSpinner" tip="Creating Address...">
         <div class="row">
             <div class="col">
                 <div class="row">
@@ -35,180 +36,15 @@
                 </div>
             </div>
         </div>
-    </div>
+        <VENFTApp_Blazor.Components.CreateAccount Visible="@createNewAddressModalVisible" AccountCreated="AccountCreated" />
 
-    <Modal Title="Please create new Address"
-           Visible="@createNewAddressModalVisible"
-           OnOk="@HandleOk"
-           OnCancel="@HandleCancel">
-        <div class="row">
-            <div class="col">
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>You dont have any stored address in your browser. This will create your new address.</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Your private key will be stored just in your local browser encrypted with your password.</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>If you have Neblio address and private key you can import it or you can create new address</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <button class="btn btn-secondary" @onclick="showImportAccount">Import address</button>
-                    </div>
-                </div>
-                <div class="row"style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Input Password:</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input password" @bind-Value="@password" style="font-size:12px; min-width:150px; max-width:250px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Confirm Password:</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input password" @bind-Value="@passwordConfirm" style="font-size:12px; min-width:150px; max-width:250px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Please Fill Password longer than 8 characters</span>
-                    </div>
-                </div>
+        <VENFTApp_Blazor.Components.UnlockAccount Visible="@unlockAcocuntModalVisible" AccountUnlocked="AccountUnlocked" />
 
-                @if (!string.IsNullOrEmpty(password))
-                {
-                    if (password.Length > 4)
-                    {
-                        if (!string.IsNullOrEmpty(passwordConfirm))
-                        {
-                            if (passwordConfirm != password)
-                            {
-                                <Alert Type="@AlertType.Warning"
-                                       Message="Warrning"
-                                       Description="Passwords not match!"
-                                       ShowIcon="true" />
-                            }
-                            else
-                            {
-                                <Alert Type="@AlertType.Success"
-                                       Message="Success"
-                                       Description="Passwords Match. Please confirm to create address!"
-                                       ShowIcon="true" />
-                            }
-                        }
-                    }
-                }
+    </Spin>
 
-                @if (mustCreateAddressMessage)
-                {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="You must create new account for continue. There is no account saved in your local browser memory."
-                           ShowIcon="true" />
-                }
-            </div>
-        </div>
-    </Modal>
+</div>
 
-    <Modal Title="Unlock Account"
-           Visible="@unlockAcocuntModalVisible"
-           OnOk="@UnlockAccountConfirm"
-           OnCancel="@UnclockAccountCancel">
-        <div class="row">
-            <div class="col">
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Please Input password</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input password" @bind-Value="@unlockPassword" style="font-size:12px; min-width:150px; max-width:250px;" />
-                    </div>
-                </div>
 
-                @if (unlockOrClearCashMessage)
-                {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Unlock account or clear browser local storage for create new one!"
-                           ShowIcon="true" />
-                }
-                @if (accountUnlockingError)
-                {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Wrong Password"
-                           ShowIcon="true" />
-                }
-            </div>
-        </div>
-    </Modal>
-
-    <Modal Title="Import Account"
-           Visible="@importAccountVisible"
-           OnOk="@importAccountConfirm"
-           OnCancel="@importAccountCancel">
-        <div class="row">
-            <div class="col">
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Please Input password</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Input address" @bind-Value="@importAccountAddress" style="font-size:12px; min-width:150px; max-width:250px;" />
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input encrypted private key" @bind-Value="@importAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Is your key already encrypted with the password or not?</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Checkbox Checked="@importKeyAlreadyEncrypted" CheckedChange="@ToggleChecked">
-                            @($"{(importKeyAlreadyEncrypted ? "Already Encrypted Key" : "Not Encrypted Key")}")
-                        </Checkbox>
-                    </div>
-                </div>
-
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input password" @bind-Value="@importAccountPass" style="font-size:12px; min-width:150px; max-width:250px;" />
-                    </div>
-                </div>
-                @if (accountImportError)
-                {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Wrong Password or private key"
-                           ShowIcon="true" />
-                }
-            </div>
-        </div>
-    </Modal>
-</Spin>
 
 @if (accountCreated)
 {
@@ -218,216 +54,43 @@
            ShowIcon="true" />
 }
 
-@if (accountCreatedError)
+@if (accountUnlocked)
 {
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Description="@errorMessage"
+    <Alert Type="@AlertType.Success"
+           Message="Success"
+           Description="Your Neblio address was successfully unlocked."
            ShowIcon="true" />
 }
 
 @code {
 
-    bool importAccountVisible = false;
-    bool accountImportError = false;
-    string importAccountAddress = string.Empty;
-    string importAccountKey = string.Empty;
-    string importAccountPass = string.Empty;
-
-    bool accountUnlockingError = false;
-    bool accountCreatedError = false;
-    string errorMessage = string.Empty;
     bool accountCreated = false;
-    bool mustCreateAddressMessage = false;
+    bool accountUnlocked = false;
     bool creatingAddressSpinner = false;
     private bool createNewAddressModalVisible = false;
-    private string password = string.Empty;
-    private string passwordConfirm = string.Empty;
-    bool passwordsMatch = false;
     bool unlockAcocuntModalVisible = false;
-    string unlockPassword = string.Empty;
     string key = string.Empty;
     string address = string.Empty;
-    bool unlockOrClearCashMessage = false;
 
-    enum PasswordCheckStates
-    {
-        None,
-        ShortPassword,
-        PasswordsNotMatch,
-        PasswordMatch
-    };
-
-
-    PasswordCheckStates passState = PasswordCheckStates.ShortPassword;
-
-    private async Task CheckPassState()
-    {
-        if (!string.IsNullOrEmpty(password))
-        {
-            if (password.Length > 4)
-            {
-                if (password.Length < 8)
-                {
-                    passState = PasswordCheckStates.ShortPassword;
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(passwordConfirm))
-                    {
-                        if (passwordConfirm.Length >= 8)
-                        {
-                            if (passwordConfirm == password)
-                            {
-                                passState = PasswordCheckStates.PasswordMatch;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (passState != PasswordCheckStates.PasswordsNotMatch)
-                        {
-                            passState = PasswordCheckStates.PasswordsNotMatch;
-
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    bool importKeyAlreadyEncrypted = true;
-    void ToggleChecked(bool value)
-    {
-        importKeyAlreadyEncrypted = !importKeyAlreadyEncrypted;
-    }
-
-    private async Task importAccountConfirm(MouseEventArgs e)
+    protected override async Task OnInitializedAsync()
     {
         try
         {
-            if (string.IsNullOrEmpty(importAccountAddress) || string.IsNullOrEmpty(importAccountKey))
-            {
-                accountImportError = true;
-                return;
-            }
-
-            if (string.IsNullOrEmpty(importAccountPass))
-            {
-                accountImportError = true;
-                return;
-            }
-
-            key = importAccountKey;
-            address = importAccountAddress;
-
-            if (!importKeyAlreadyEncrypted)
-            {
-                key = await SymetricProvider.EncryptString(importAccountPass, key);
-            }
-
-            await AppData.Account.LoadAccount(importAccountPass, key, address); // put here your password
-
-            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
-            if (!string.IsNullOrEmpty(kt))
-            {
-                accountImportError = false;
-                importAccountVisible = false;
-                createNewAddressModalVisible = false;
-                await Task.Delay(50);
-                StateHasChanged();
-
-                await localStorage.SetItemAsync("address", address);
-                await localStorage.SetItemAsync("key", key);
-
-                StateHasChanged();
-                await Task.Delay(50);
-                NavManager.NavigateTo("/account");
-            }
+            await Load();
         }
         catch (Exception ex)
         {
-            accountImportError = true;
-            // todo
-        }
-    }
-
-    private async Task importAccountCancel(MouseEventArgs e)
-    {
-        importAccountVisible = false;
-    }
-
-    private async Task showImportAccount(MouseEventArgs e)
-    {
-        importAccountVisible = true;
-    }
-
-    private async Task UnlockAccountConfirm(MouseEventArgs e)
-    {
-        try
-        {
-            await AppData.Account.LoadAccount(unlockPassword, key, address); // put here your password
-
-            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
-            if (!string.IsNullOrEmpty(kt))
-            {
-                accountUnlockingError = false;
-                unlockOrClearCashMessage = false;
-                unlockAcocuntModalVisible = false;
-                StateHasChanged();
-            }
-        }
-        catch(Exception ex)
-        {
-            accountUnlockingError = true;
-            // todo
-        }
-    }
-
-    private void UnclockAccountCancel(MouseEventArgs e)
-    {
-        unlockAcocuntModalVisible = true;
-        unlockOrClearCashMessage = true;
-    }
-
-    private async Task HandleOk(MouseEventArgs e)
-    {
-        await CheckPassState();
-        if (passState == PasswordCheckStates.PasswordMatch)
-        {
+            Console.WriteLine("Cannot init the page!" + ex.Message);
             try
             {
-                creatingAddressSpinner = true;
-                mustCreateAddressMessage = false;
-                StateHasChanged();
-
-                createNewAddressModalVisible = false;
-
-                await AppData.Account.CreateNewAccount(password, false);
-                address = AppData.Account.Address;
-                key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
-                await localStorage.SetItemAsync("address", address);
-                await localStorage.SetItemAsync("key", key);
-
-                await AppData.Account.LoadAccount(password, key, address); // put here your password
-                creatingAddressSpinner = false;
-                mustCreateAddressMessage = false;
-                accountCreated = true;
-                StateHasChanged();
+                AppData.Account = new NeblioAccount();
+                await Load();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                accountCreated = false;
-                errorMessage = "Your Neblio address was not created." + ex.Message;
-                accountCreatedError = true;
+                Console.WriteLine("Cannot init the page!" + e.Message);
             }
         }
-    }
-
-    private void HandleCancel(MouseEventArgs e)
-    {
-        createNewAddressModalVisible = true;
-        mustCreateAddressMessage = true;
     }
 
     async Task Load()
@@ -445,6 +108,8 @@
                 if (!string.IsNullOrEmpty(key))
                 {
                     unlockAcocuntModalVisible = true;
+                    await Task.Delay(50);
+                    StateHasChanged();
                 }
                 else
                 {
@@ -454,24 +119,28 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    async Task WaitAndRedirect()
     {
-        try
-        {
-            await Load();
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine("Cannot init the page!" + ex.Message);
-            try
-            {
-                AppData.Account = new NeblioAccount();
-                await Load();
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("Cannot init the page!" + e.Message);
-            }
-        }
+        await Task.Delay(2000);
+        NavManager.NavigateTo("/account");
+        StateHasChanged();
+    }
+
+    private void AccountCreated(string msg)
+    {
+        accountCreated = true;
+        createNewAddressModalVisible = false;
+
+        StateHasChanged();
+        WaitAndRedirect();
+    }
+
+    private void AccountUnlocked(string msg)
+    {
+        accountUnlocked = true;
+        unlockAcocuntModalVisible = false;
+
+        StateHasChanged();
+        WaitAndRedirect();
     }
 }

@@ -41,6 +41,17 @@ namespace VEDriversLite
             public bool complete { get; set; }
         }
 
+        
+        public static string ShortenAddress(string address)
+        {
+            var shortaddress = address.Substring(0, 3) + "..." + address.Substring(address.Length - 3);
+            return shortaddress;
+        }
+        public static string ShortenTxId(string txid)
+        {
+            var txids = txid.Remove(5, txid.Length - 5) + "....." + txid.Remove(0, txid.Length - 5);
+            return txids;
+        }
         public static string SendNTP1TokenAPI(SendTokenTxData data, NeblioAccount account, double fee = 20000, bool isItMintNFT = false, bool isNFTtx = false)
         {
             var res = SendNTP1TokenAPIAsync(data, account, fee, isItMintNFT, isNFTtx).GetAwaiter().GetResult();
@@ -95,7 +106,7 @@ namespace VEDriversLite
                             }
 
                             if (voutstate.Item1)
-                                dto.Sendutxo.Add(itt + ":" + voutstate.Item2); // copy received utxos and add item number of vout after validation
+                                dto.Sendutxo.Add(itt + ":" + ((int)voutstate.Item2).ToString()); // copy received utxos and add item number of vout after validation
                         }
                     }
                     else
@@ -115,7 +126,7 @@ namespace VEDriversLite
 
                     foreach (var u in utxs)
                     {
-                        dto.Sendutxo.Add(u.Txid + ":" + u.Index);
+                        dto.Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
                     }
                 }
 
@@ -129,7 +140,7 @@ namespace VEDriversLite
                 // need some neblio too
                 // to be sure to have last tx request it from neblio network
                 // set some minimum amount
-                var utxos = await GetAddressNeblUtxo(data.SenderAddress, 0.0001, 2 * 0.0001); // to be sure find at leas 2 times of expected fee
+                var utxos = await GetAddressNeblUtxo(data.SenderAddress, 0.0001, 2 * (fee / FromSatToMainRatio)); // to be sure find at leas 2 times of expected fee
                                                                                               // create raw Tx with NBitcoin
                 NBitcoin.Altcoins.Neblio.NeblioTransaction neblUtxo = null;
                 if (utxos == null || utxos.Count == 0)
@@ -144,14 +155,13 @@ namespace VEDriversLite
                     {
                         if (u.Txid == data.NeblUtxo)
                         {
-                            dto.Sendutxo.Add(u.Txid + ":" + u.Index);
+                            dto.Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
                             found = true;
                             break;
                         }
                     }
                 }
 
-                
                 if (!found && !data.SendEvenNeblUtxoNotFound && !string.IsNullOrEmpty(data.NeblUtxo))
                     throw new Exception("Input Neblio Utxo is not spendable!");
 
@@ -163,7 +173,7 @@ namespace VEDriversLite
                         {
                             if ((u.Value * FromSatToMainRatio) >= 2 * fee)
                             {
-                                dto.Sendutxo.Add(u.Txid + ":" + u.Index);
+                                dto.Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
                                 break;
                             }
                         }
@@ -266,81 +276,104 @@ namespace VEDriversLite
                             {
                                 if (Transaction.TryParse(hexToSign, network, out var transaction))
                                 {
-                                    //var txrespToken = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[0].PrevOut.Hash.ToString()); // not accessible in NBitcoin nuget now
-                                    //var txrespNebl = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[1].PrevOut.Hash.ToString()); // not accessible in NBitcoin nuget now
-                                    var txrespTokenHex = await GetTxHex(transaction.Inputs[0].PrevOut.Hash.ToString());
-                                    var txrespNeblHex = await GetTxHex(transaction.Inputs[1].PrevOut.Hash.ToString());
-
-                                    // there is still some issue in parsing json from api. now need to reparse the hex.
-
-                                    if (!Transaction.TryParse(txrespTokenHex, network, out var tx1)) // token
-                                    {
-                                        Console.WriteLine("Cannot load previous token transaction!");
-                                        Console.WriteLine($"Cannot load previous token transaction!");
-                                        return string.Empty;
-                                    }
-
-                                    if (!Transaction.TryParse(txrespNeblHex, network, out var tx2)) // nebl
-                                    {
-                                        Console.WriteLine("Cannot load previous token transaction!");
-                                        Console.WriteLine($"Cannot load previous token transaction!");
-                                        return string.Empty;
-                                    }
-
-                                    // load list of input coins for the source address
-                                    // some of them must be spendable
                                     List<ICoin> list = new List<ICoin>();
-                                    foreach (var to in tx1.Outputs)
+                                    try
                                     {
-                                        if (to.ScriptPubKey == addressForTx.ScriptPubKey)
-                                            if (to.Value.Satoshi == 10000) // token tx
-                                                foreach (var d in dto.Sendutxo)
-                                                {
-                                                    if (d.Split(':')[1] == (tx1.Outputs.IndexOf(to).ToString()))
-                                                        list.Add(new Coin(tx1, Convert.ToUInt32(d.Split(':')[1])));
-                                                }
-                                    }
+                                        //var txrespToken = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[0].PrevOut.Hash.ToString()); // not accessible in NBitcoin nuget now
+                                        //var txrespNebl = NBitcoin.Altcoins.Neblio.NeblioTransaction.GetNeblioTransaction(transaction.Inputs[1].PrevOut.Hash.ToString()); // not accessible in NBitcoin nuget now
+                                        var txrespTokenHex = await GetTxHex(transaction.Inputs[0].PrevOut.Hash.ToString());
+                                        var txrespNeblHex = await GetTxHex(transaction.Inputs[1].PrevOut.Hash.ToString());
 
-                                    foreach (var to in tx2.Outputs)
-                                    {
-                                        if (to.ScriptPubKey == addressForTx.ScriptPubKey)
-                                            if (to.Value.Satoshi > 10000) // nebl 10000 is just tokens or fee, everything should be bigger thant this in neblio
-                                                foreach (var d in dto.Sendutxo)
-                                                {
-                                                    if (d.Split(':')[1] == (tx2.Outputs.IndexOf(to).ToString()))
-                                                        list.Add(new Coin(tx2, Convert.ToUInt32(d.Split(':')[1])));
-                                                }
-                                    }
+                                        // there is still some issue in parsing json from api. now need to reparse the hex.
 
-                                    transaction.Inputs[0].ScriptSig = addressForTx.ScriptPubKey;
-                                    transaction.Inputs[1].ScriptSig = addressForTx.ScriptPubKey;
-
-                                    // just for skpping in debug
-                                    var a = false;
-                                    if (a)
-                                        return null;
-
-                                    transaction.Sign(keyfromFile, list);
-
-                                    var txhex = transaction.ToHex();
-
-                                    if (!string.IsNullOrEmpty(txhex))
-                                    {
-                                        var bdto = new BroadcastTxRequest()
+                                        if (!Transaction.TryParse(txrespTokenHex, network, out var tx1)) // token
                                         {
-                                            TxHex = txhex
-                                        };
+                                            Console.WriteLine("Cannot load previous token transaction!");
+                                            Console.WriteLine($"Cannot load previous token transaction!");
+                                            return string.Empty;
+                                        }
 
-                                        var txid = await BroadcastNTP1TxAsync(bdto);
+                                        if (!Transaction.TryParse(txrespNeblHex, network, out var tx2)) // nebl
+                                        {
+                                            Console.WriteLine("Cannot load previous token transaction!");
+                                            Console.WriteLine($"Cannot load previous token transaction!");
+                                            return string.Empty;
+                                        }
 
-                                        res = txid;
+                                        // load list of input coins for the source address
+                                        // some of them must be spendable
+                                        
+                                        foreach (var to in tx1.Outputs)
+                                        {
+                                            if (to.ScriptPubKey == addressForTx.ScriptPubKey)
+                                                if (to.Value.Satoshi == 10000) // token tx
+                                                    foreach (var d in dto.Sendutxo)
+                                                    {
+                                                        if ((d.Split(':')[0] == transaction.Inputs[0].PrevOut.Hash.ToString()) &&
+                                                            (d.Split(':')[1] == (tx1.Outputs.IndexOf(to).ToString())))
+                                                                list.Add(new Coin(tx1, Convert.ToUInt32(d.Split(':')[1])));
+                                                    }
+                                        }
+
+                                        foreach (var to in tx2.Outputs)
+                                        {
+                                            if (to.ScriptPubKey == addressForTx.ScriptPubKey)
+                                                if (to.Value.Satoshi > 10000) // nebl 10000 is just tokens or fee, everything should be bigger thant this in neblio
+                                                    foreach (var d in dto.Sendutxo)
+                                                    {
+                                                        if ((d.Split(':')[0] == transaction.Inputs[1].PrevOut.Hash.ToString()) &&
+                                                            (d.Split(':')[1] == (tx2.Outputs.IndexOf(to).ToString())))
+                                                                list.Add(new Coin(tx2, Convert.ToUInt32(d.Split(':')[1])));
+                                                    }
+                                        }
+                                    }
+                                    catch(Exception ex)
+                                    {
+                                        throw new Exception("Exception during loading inputs");
+                                    }
+
+                                    try
+                                    {
+                                        transaction.Inputs[0].ScriptSig = addressForTx.ScriptPubKey;
+                                        transaction.Inputs[1].ScriptSig = addressForTx.ScriptPubKey;
+
+                                        // just for skpping in debug
+                                        var a = false;
+                                        if (a)
+                                            return null;
+
+                                        transaction.Sign(keyfromFile, list);
+                                    }
+                                    catch( Exception ex)
+                                    {
+                                        throw new Exception("Exception during signing tx!");
+                                    }
+
+                                    try
+                                    {
+                                        var txhex = transaction.ToHex();
+                                        if (!string.IsNullOrEmpty(txhex))
+                                        {
+                                            var bdto = new BroadcastTxRequest()
+                                            {
+                                                TxHex = txhex
+                                            };
+
+                                            var txid = await BroadcastNTP1TxAsync(bdto);
+
+                                            res = txid;
+                                        }
+                                    }
+                                    catch( Exception ex)
+                                    {
+                                        throw new Exception("Exception during broadcasting tx!");
                                     }
                                 }
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"Exception during loading inputs or signing tx: {ex}");
-                                throw new Exception("Exception during loading inputs or signing tx!");
+                                Console.WriteLine($"Exception during loading inputs or signing tx: {ex.Message}");
+                                throw new Exception("Exception during loading inputs or signing tx! " + ex.Message);
                             }
                         }
                         else
@@ -360,7 +393,7 @@ namespace VEDriversLite
                     if (ex.Message.ToString().Contains("Cannot send token transaction. cannot create keys!"))
                         throw new Exception(ex.Message.ToString());
 
-                    Console.WriteLine("Cannot send token transaction!", ex);
+                    Console.WriteLine("Cannot send token transaction!" + ex.Message);
                     throw new Exception(ex.Message);
                 }
             }
@@ -394,7 +427,7 @@ namespace VEDriversLite
 
                         foreach (var u in utxs)
                         {
-                            utxos.Add(u.Txid + ":" + u.Index);
+                            utxos.Add(u.Txid + ":" + ((int)u.Index).ToString());
                         }
                     }
                     else
@@ -511,7 +544,7 @@ namespace VEDriversLite
                     }
 
                     // to be sure to have last tx request it from neblio network
-                    var utxos = await GetAddressNeblUtxo(data.SenderAddress, ((2 * fee) / FromSatToMainRatio), (data.Amount * FromSatToMainRatio));
+                    var utxos = await GetAddressNeblUtxo(data.SenderAddress, ((fee) / FromSatToMainRatio), (data.Amount));
                     // create raw Tx with NBitcoin
                     NBitcoin.Altcoins.Neblio.NeblioTransaction neblUtxo = null;
                     if (utxos == null)
@@ -830,7 +863,7 @@ namespace VEDriversLite
                                         if (tx.Confirmations > 1 && tx.Blockheight > 0)
                                         {
                                             resp.Add(utx);
-                                            founded += (double)utx.Value;
+                                            founded += ((double)utx.Value/FromSatToMainRatio);
                                             if (founded > requiredAmount)
                                                 return resp;
                                         }
@@ -952,17 +985,20 @@ namespace VEDriversLite
                     {
                         if (ut.Blockheight > 0)
                         {
-                            if (ut.Tokens.Count > 0)
+                            if (ut.Tokens != null)
                             {
-                                var toks = ut.Tokens.ToArray();
-                                if (toks[0].Amount == 1)
+                                if (ut.Tokens.Count > 0)
                                 {
-                                    var tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                                    if (tx != null)
+                                    var toks = ut.Tokens.ToArray();
+                                    if (toks[0].Amount == 1)
                                     {
-                                        if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                        var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                                        if (tx != null)
                                         {
-                                            return (true, (double)ut.Index);
+                                            if (tx.Confirmations > 1 && tx.Blockheight > 0)
+                                            {
+                                                return (true, (double)ut.Index);
+                                            }
                                         }
                                     }
                                 }
@@ -1095,6 +1131,7 @@ namespace VEDriversLite
             var resp = new Dictionary<string, string>();
 
             var info = await _client.GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
+            
             if (info.MetadataOfUtxo != null)
             {
                 if (info.MetadataOfUtxo.UserData.Meta.Count > 0)

@@ -12,7 +12,7 @@ namespace VEDriversLite.NFT
             NFTTypes type = NFTTypes.Image;
 
             var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokenId, utxo);
-
+            
             if (meta == null)
             {
                 return null;

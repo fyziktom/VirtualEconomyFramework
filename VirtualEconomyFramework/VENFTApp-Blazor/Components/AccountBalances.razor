@@ -1,0 +1,42 @@
+﻿@inject AppData AppData
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:20px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:12px;">Address: <a href="https://explorer.nebl.io/address/@AppData.Account.Address" style="font-size:12px;" target="_blank">@AppData.Account.Address</a></span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:10px;">Actual Balance: @AppData.Account.TotalBalance NEBL</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:2px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:10px;">Unconfirmed Balance: @AppData.Account.TotalUnconfirmedBalance NEBL</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:2px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:10px;">Source Tokens Balance: @AppData.Account.SourceTokensBalance VENFT</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:2px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:10px;">NFTs: @AppData.Account.AddressNFTCount</span>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}

@@ -1,13 +1,10 @@
-﻿@using System.IO;
-@using VEDriversLite
+﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.NeblioAPI
 @using Tewr.Blazor.FileReader
 @using System.Threading
 @using System.Threading.Tasks
-@using Ipfs.Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject IFileReaderService fileReaderService
 @inject AppData AppData
 @inject HttpClient _client
 @inject NavigationManager NavManager
@@ -32,21 +29,15 @@
                ShowIcon="true" />
     }
 
-    @if (errorUpload)
-    {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description="Cannot upload image."
-               ShowIcon="true" />
-    }
-
-    @if (notEnoughNeblioForBuySourceTokens)
+    <!--
+    @if (!AppData.Account.EnoughBalanceToBuySourceTokens)
     {
         <Alert Type="@AlertType.Error"
                Message="Error"
                Description="Not enough of Neblio to buy the Source tokens. Please transfer at lease 1,0002 NEBL to this address"
                ShowIcon="true" />
     }
+    -->
 
     <Spin spinning="@processingMinting" tip="Sending Minting...">
 
@@ -62,32 +53,15 @@
                         <p>With Address:</p>
                     </div>
                 </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span style="font-size:12px;">Address: <a href="https://explorer.nebl.io/address/@AppData.Account.Address" style="font-size:12px;" target="_blank">@AppData.Account.Address</a></span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;margin-bottom:2px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span style="font-size:10px;">Actual Balance: @addressInfo.Balance NEBL</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:2px;margin-bottom:2px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span style="font-size:10px;">Unconfirmed Balance: @addressInfo.UnconfirmedBalance NEBL</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span style="font-size:10px;">Source Tokens Balance: @availableTokens VENFT</span>
-                    </div>
-                </div>
+
+                <VENFTApp_Blazor.Components.AccountBalances/>
+
                 <!--
-    <div class="row">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
-            <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
-        </div>
-    </div>-->
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
+                        <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
+                    </div>
+                </div>-->
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <p>Name:</p>
@@ -118,53 +92,9 @@
                         <Input Placeholder="Add Description of the NFT" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
                     </div>
                 </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col">
-                        <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
-                            <div class="row">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <p>Select and Upload Image:</p>
-                                </div>
-                            </div>
-                            <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <input type="file" @ref=inputTypeFileElement />
-                                </div>
-                            </div>
-                            <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <button @onclick=ReadFile>Upload Image</button>
-                                </div>
-                            </div>
-                        </Spin>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Image Link" @bind-Value=@newNFT.ImageLink Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Image Preview:</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        @switch (loadingImageStage)
-                        {
-                            case LoadingImageStages.NotStarted:
-                                <p>No image loaded</p>
-                                break;
-                            case LoadingImageStages.Loading:
-                                <Spin Tip="Uploading..." />
-                                break;
-                            case LoadingImageStages.Loaded:
-                                <a href="@newNFT.ImageLink" target="_blank"><img src="@newNFT.ImageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
-                                break;
-                        }
-                    </div>
-                </div>
+
+                <VENFTApp_Blazor.Components.UploadImage ImageLinkChanged="ImageLinkChanged"/>
+
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <RadioGroup @bind-Value="@newNFTType">
@@ -193,6 +123,7 @@
                         <p>New NFT transaction id: @newNFT.NFTOriginTxId</p>
                     </div>
                 </div>
+
             </div>
         </div>
     </Spin>
@@ -243,32 +174,24 @@
 
     private NFTTypes newNFTType = NFTTypes.Image;
 
-    bool notEnoughNeblioForBuySourceTokens = false;
     string orderTxId = string.Empty;
     bool orderSourceTokensVisible = false;
     bool orderingTokens = false;
     bool orderingTokensDone = false;
-    bool errorUpload = false;
     bool uploadingImage = false;
     bool errorDuringSend = false;
     string errorMessage = string.Empty;
     bool confirmVisible = false;
     string confirmTitle = "Mint New NFT?";
     string confirmContent = "Do you realy want to mint this NFT?";
-    private LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
     private string status = string.Empty;
     private string tokentxid = string.Empty;
     private ImageNFT newNFT = new ImageNFT("");
+    private string imageLink = string.Empty;
 
     private CancellationTokenSource cts = new CancellationTokenSource();
-    private ElementReference inputTypeFileElement;
-    private System.Threading.Timer timer;
-    private System.Threading.Timer balanceTimer;
     bool processingMinting = false;
-    private static int attemptsToDisplay = 10;
-    double availableTokens = 0;
     GetTokenMetadataResponse sourceTokensInfo = new GetTokenMetadataResponse();
-    private GetAddressResponse addressInfo = new GetAddressResponse();
 
     protected override async Task OnInitializedAsync()
     {
@@ -280,33 +203,6 @@
                 await Task.Delay(500);
                 NavManager.NavigateTo("/");
             }
-            else
-            {
-                addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
-                var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
-                availableTokens = mintingSupply.Item1;
-                sourceTokensInfo = mintingSupply.Item2;
-                balanceTimer = new System.Threading.Timer(async (object stateInfo) =>
-                {
-                    try
-                    {
-                        addressInfo = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
-                        var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(AppData.Account.Address);
-                        availableTokens = mintingSupply.Item1;
-                        sourceTokensInfo = mintingSupply.Item2;
-                        if (addressInfo.Balance > 1)
-                        {
-                            notEnoughNeblioForBuySourceTokens = false;
-                        }
-
-                        StateHasChanged();
-                    }
-                    catch (Exception ex)
-                    {
-                        //todo
-                    }
-                }, new System.Threading.AutoResetEvent(false), 5000, 5000);
-            }
         }
         catch(Exception ex)
         {
@@ -314,6 +210,11 @@
             await Task.Delay(500);
             NavManager.NavigateTo("/");
         }
+    }
+
+    void ImageLinkChanged(string newLink)
+    {
+        newNFT.ImageLink = newLink;
     }
 
     void ShowMintConfirm()
@@ -335,9 +236,8 @@
 
     private async Task orderSourceTokensConfirm(MouseEventArgs e)
     {
-        if (addressInfo.Balance > 1)
+        if (AppData.Account.EnoughBalanceToBuySourceTokens)
         {
-            notEnoughNeblioForBuySourceTokens = false;
             orderingTokens = true;
             StateHasChanged();
             await Task.Delay(500);
@@ -352,10 +252,6 @@
                 await Task.Delay(2500);
             }
         }
-        else
-        {
-            notEnoughNeblioForBuySourceTokens = true;
-        }
     }
 
     private async Task HandleOk(MouseEventArgs e)
@@ -369,96 +265,6 @@
         confirmVisible = false;
     }
 
-    public async Task ReadFile()
-    {
-        try
-        {
-            errorUpload = false;
-            uploadingImage = true;
-            attemptsToDisplay = 10;
-            StateHasChanged();
-
-            foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
-            {
-                loadingImageStage = LoadingImageStages.Loading;
-                // Read into buffer and act (uses less memory)
-                await using (Stream stream = await file.OpenReadAsync())
-                {
-                    var fileinfo = await file.ReadFileInfoAsync();
-
-                    try
-                    {
-                        var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
-                        newNFT.ImageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
-                    }
-
-                    timer = new System.Threading.Timer(async (object stateInfo) =>
-                    {
-                        try
-                        {
-                            if (!string.IsNullOrEmpty(newNFT.ImageLink))
-                            {
-                                using var httpResponse = await _client.GetAsync(newNFT.ImageLink);
-
-                                if (httpResponse.IsSuccessStatusCode)
-                                {
-                                    loadingImageStage = LoadingImageStages.Loaded;
-                                    uploadingImage = false;
-
-                                    StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
-                                    timer.Dispose();
-                                }
-
-                                attemptsToDisplay--;
-                                if (attemptsToDisplay < 0)
-                                {
-                                    loadingImageStage = LoadingImageStages.Loaded;
-                                    uploadingImage = false;
-                                    StateHasChanged();
-                                    timer.Dispose();
-                                }
-                            }
-                            else
-                            {
-                                loadingImageStage = LoadingImageStages.NotStarted;
-                                uploadingImage = false;
-                                errorUpload = true;
-                                StateHasChanged();
-                                timer.Dispose();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Error during checking uploaded image!" + ex.Message);
-                            //todo
-                            attemptsToDisplay--;
-                            if (attemptsToDisplay < 0)
-                            {
-                                loadingImageStage = LoadingImageStages.NotStarted;
-                                uploadingImage = false;
-                                errorUpload = true;
-                                StateHasChanged();
-                                timer.Dispose();
-                            }
-                        }
-                    }, new System.Threading.AutoResetEvent(false), 4000, 4000);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            loadingImageStage = LoadingImageStages.NotStarted;
-            uploadingImage = false;
-            errorUpload = true;
-            Console.WriteLine("Error during upload." + ex.Message);
-            StateHasChanged();
-        }
-    }
-
     private async Task MintNewNFT()
     {
         errorDuringSend = false;
@@ -470,23 +276,22 @@
             return;
         }
 
-        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, 0.0002);
-        if (nutxos.Count == 0)
+        var nu = await AppData.Account.HasSomeSpendableNeblio();
+        if (!nu.Item1)
         {
             processingMinting = false;
             errorDuringSend = true;
-            errorMessage = "You dont have Neblio on the address!";
+            errorMessage = "You dont have enough Neblio on the address. Probably waiting for more than 1 confirmation.";
             StateHasChanged();
             return;
         }
 
-        var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(AppData.Account.Address, NFTHelpers.TokenId, 1);
-
-        if (tutxos.Count == 0)
+        var tu = await AppData.Account.HasSomeSourceForMinting();
+        if (!tu.Item1)
         {
             processingMinting = false;
             errorDuringSend = true;
-            errorMessage = "You dont have VENFT tokens on the address!";
+            errorMessage = "You dont have VENFT tokens on the address. Probably waiting for more than 1 confirmation.";
             StateHasChanged();
             return;
         }
@@ -494,6 +299,7 @@
         status = "Sending...";
         processingMinting = true;
         StateHasChanged();
+        await Task.Delay(50);
 
         try
         {

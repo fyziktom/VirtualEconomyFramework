@@ -1,0 +1,228 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NeblioAPI
+@using VEDriversLite.Security
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject NavigationManager NavManager
+
+<Modal Title="Please create new Address"
+        Visible="@createNewAddressModalVisible"
+        OnOk="@HandleOk"
+        OnCancel="@HandleCancel">
+    <div class="row">
+        <div class="col">
+            <Spin spinning="@creatingAddressSpinner" tip="Creating Address...">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>You dont have any stored address in your browser. This will create your new address.</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Your private key will be stored just in your local browser encrypted with your password.</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>If you have Neblio address and private key you can import it or you can create new address</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <button class="btn btn-secondary" @onclick="showImportAccount">Import address</button>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Input Password:</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value="@password" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Confirm Password:</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value="@passwordConfirm" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Fill Password longer than 8 characters</span>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(password))
+                {
+                    if (password.Length > 4)
+                    {
+                        if (!string.IsNullOrEmpty(passwordConfirm))
+                        {
+                            if (passwordConfirm != password)
+                            {
+                                <Alert Type="@AlertType.Warning"
+                                        Message="Warrning"
+                                        Description="Passwords not match!"
+                                        ShowIcon="true" />
+                            }
+                            else
+                            {
+                                <Alert Type="@AlertType.Success"
+                                        Message="Success"
+                                        Description="Passwords Match. Please confirm to create address!"
+                                        ShowIcon="true" />
+                            }
+                        }
+                    }
+                }
+
+                @if (mustCreateAddressMessage)
+                {
+                    <Alert Type="@AlertType.Error"
+                            Message="Error"
+                            Description="You must create new account for continue. There is no account saved in your local browser memory."
+                            ShowIcon="true" />
+                }
+            </Spin>
+        </div>
+    </div>
+</Modal>
+
+
+<VENFTApp_Blazor.Components.ImportAccount Visible="@importAccountVisible" AccountImported="AccountImported" />
+
+@if (accountCreatedError)
+{
+    <Alert Type="@AlertType.Error"
+           Message="Error"
+           Description="@errorMessage"
+           ShowIcon="true" />
+}
+
+@code {
+
+    bool createNewAddressModalVisible = false;
+    [Parameter]
+    public bool Visible
+    {
+        get => createNewAddressModalVisible;
+        set => createNewAddressModalVisible = value;
+    }
+
+    [Parameter]
+    public EventCallback<string> AccountCreated { get; set; }
+
+    string key = string.Empty;
+    string address = string.Empty;
+
+    bool accountCreatedError = false;
+    string errorMessage = string.Empty;
+
+    private string password = string.Empty;
+    private string passwordConfirm = string.Empty;
+    bool passwordsMatch = false;
+
+    bool mustCreateAddressMessage = false;
+    bool creatingAddressSpinner = false;
+
+    bool importAccountVisible = false;
+
+    enum PasswordCheckStates
+    {
+        None,
+        ShortPassword,
+        PasswordsNotMatch,
+        PasswordMatch
+    };
+
+    private async Task showImportAccount(MouseEventArgs e)
+    {
+        importAccountVisible = true;
+    }
+
+    PasswordCheckStates passState = PasswordCheckStates.ShortPassword;
+
+    private async Task CheckPassState()
+    {
+        if (!string.IsNullOrEmpty(password))
+        {
+            if (password.Length > 4)
+            {
+                if (password.Length < 8)
+                {
+                    passState = PasswordCheckStates.ShortPassword;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(passwordConfirm))
+                    {
+                        if (passwordConfirm.Length >= 8)
+                        {
+                            if (passwordConfirm == password)
+                            {
+                                passState = PasswordCheckStates.PasswordMatch;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (passState != PasswordCheckStates.PasswordsNotMatch)
+                        {
+                            passState = PasswordCheckStates.PasswordsNotMatch;
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        await CheckPassState();
+        if (passState == PasswordCheckStates.PasswordMatch)
+        {
+            try
+            {
+                creatingAddressSpinner = true;
+                mustCreateAddressMessage = false;
+                StateHasChanged();
+
+                await AppData.Account.CreateNewAccount(password, false);
+                address = AppData.Account.Address;
+                key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                await localStorage.SetItemAsync("address", address);
+                await localStorage.SetItemAsync("key", key);
+
+                await AppData.Account.LoadAccount(password, key, address); // put here your password
+                creatingAddressSpinner = false;
+                mustCreateAddressMessage = false;
+                createNewAddressModalVisible = false;
+                await AccountCreated.InvokeAsync("Created");
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = "Your Neblio address was not created." + ex.Message;
+                accountCreatedError = true;
+            }
+        }
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        createNewAddressModalVisible = true;
+        mustCreateAddressMessage = true;
+    }
+
+    private void AccountImported(string msg)
+    {
+        AccountCreated.InvokeAsync(msg);
+    }
+}

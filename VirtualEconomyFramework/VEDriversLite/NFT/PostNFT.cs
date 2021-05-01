@@ -23,6 +23,7 @@ namespace VEDriversLite.NFT
             Description = nft.Description;
             Author = nft.Author;
             SourceTxId = nft.SourceTxId;
+            NFTOriginTxId = nft.NFTOriginTxId;
             Utxo = nft.Utxo;
         }
 
@@ -37,6 +38,8 @@ namespace VEDriversLite.NFT
                     Name = name;
                 if (nftData.NFTMetadata.TryGetValue("Description", out var description))
                     Description = description;
+                if (nftData.NFTMetadata.TryGetValue("Author", out var author))
+                    Author = author;
                 if (nftData.NFTMetadata.TryGetValue("Link", out var link))
                     Link = link;
                 if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
@@ -60,6 +63,8 @@ namespace VEDriversLite.NFT
                     Name = name;
                 if (nftData.NFTMetadata.TryGetValue("Description", out var description))
                     Description = description;
+                if (nftData.NFTMetadata.TryGetValue("Author", out var author))
+                    Author = author;
                 if (nftData.NFTMetadata.TryGetValue("Link", out var link))
                     Link = link;
                 if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
@@ -82,6 +87,8 @@ namespace VEDriversLite.NFT
                     Name = name;
                 if (metadata.TryGetValue("Description", out var description))
                     Description = description;
+                if (metadata.TryGetValue("Author", out var author))
+                    Author = author;
                 if (metadata.TryGetValue("Link", out var link))
                     Link = link;
                 if (metadata.TryGetValue("Tags", out var tags))
@@ -91,7 +98,16 @@ namespace VEDriversLite.NFT
                 if (metadata.TryGetValue("Type", out var type))
                     TypeText = type;
                 if (metadata.TryGetValue("SourceUtxo", out var su))
+                {
+                    SourceTxId = Utxo;
                     NFTOriginTxId = su;
+                }
+                else
+                {
+                    SourceTxId = Utxo;
+                    NFTOriginTxId = Utxo;
+                }
+
             }
         }
     }

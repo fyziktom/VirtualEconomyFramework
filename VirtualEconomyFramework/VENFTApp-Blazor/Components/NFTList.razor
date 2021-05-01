@@ -1,0 +1,171 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+
+            @if (successSent)
+            {
+                <Alert Type="@AlertType.Success"
+                       Message="Successfully sent"
+                       Description="Your NFT was sent"
+                       ShowIcon="true" />
+            }
+
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-end justify-content-xl-end align-items-xl-end">
+                    <button class="btn btn-primary" @onclick="LoadNFTs"><i class="oi oi-reload"></i></button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    @if (_nfts.Count == 0)
+                    {
+                        <p><em><Spin Tip="Loading...No NFTs found yet"></Spin></em></p>
+                    }
+                    else
+                    {
+                        <div class="card-group">
+                            @foreach (var nft in _nfts)
+                            {
+                                if (nft.TypeText != "NFT Profile" && nft.TypeText != "NFT Settings")
+                                {
+                                    <div class="card" style="margin-left:10px; margin-top:10px; max-width:250px; min-width:100px;">
+                                        <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:auto; max-width:250px; min-width:50px; width:auto;" />
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                            <VENFTApp_Blazor.Components.NFTThumbnail Name="@nft.Name" Type="@nft.Type" Author="@nft.Author" Description="@nft.Description" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                            <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-info" style="font-size:12px;"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    Status: <a href="https://explorer.nebl.io/tx/@tokentxid" target="_blank">@tokentxid</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Title="@nftInDetails.Name"
+       Visible="@nftDetailsVisible"
+       OnOk="@CloseNFTDetails"
+       OnCancel="@CloseNFTDetails">
+    <VENFTApp_Blazor.Components.NFTDetails NFT="@nftInDetails" NFTSent="NFTSent" OwnNFT="MainAccount" />
+</Modal>
+
+@code {
+
+    private List<INFT> _nfts = new List<INFT>();
+    [Parameter]
+    public List<INFT> NFTs {
+        get => _nfts;
+        set
+        {
+            if (value != null)
+            {
+                _nfts = value;
+                if (value.Count == 0)
+                    LoadNFTs();
+            }
+        }
+    }
+    [Parameter]
+    public EventCallback<List<INFT>> NFTsChanged { get; set; }
+
+    private string _address = string.Empty;
+    [Parameter]
+    public string Address
+    {
+        get => _address;
+        set => _address = value;
+    }
+
+    [Parameter]
+    public bool MainAccount { get; set; } = false;
+
+    bool nftDetailsVisible = false;
+    private INFT nftInDetails = new ImageNFT("");
+
+    bool successSent = false;
+    string tokentxid = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!MainAccount)
+        {
+            if (NFTs != null)
+                if (NFTs.Count == 0)
+                    LoadNFTs();
+        }
+
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        if (MainAccount)
+            _nfts = AppData.Account.NFTs;
+
+        StateHasChanged();
+    }
+
+    private async Task LoadNFTs()
+    {
+        if (!string.IsNullOrEmpty(_address))
+        {
+            var nfts = await NFTHelpers.LoadAddressNFTs(_address);
+            _nfts = nfts;
+            var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
+            if (tab != null)
+                tab.NFTs = _nfts;
+
+            await Task.Delay(50);
+            StateHasChanged();
+            //await NFTsChanged.InvokeAsync(nfts);
+        }
+    }
+
+    void NFTSent(string nfttx)
+    {
+        successSent = true;
+        tokentxid = nfttx;
+        nftDetailsVisible = false;
+        LoadNFTs();
+        StateHasChanged();
+    }
+
+    private async Task CloseNFTDetails(MouseEventArgs e)
+    {
+        nftDetailsVisible = false;
+    }
+
+    private async Task ShowNFTDetails(INFT nft)
+    {
+        successSent = false;
+        nftInDetails = nft;
+        nftDetailsVisible = true;
+        StateHasChanged();
+    }
+}

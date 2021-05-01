@@ -1,0 +1,191 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@inject AppData AppData
+
+<div class="row">
+    <div class="col">
+        <Spin Tip="Loading..." Spinning="@txDetailsLoading">
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>Tx Id</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <a href="https://explorer.nebl.io/tx/@txInDetails.Txid" target="_blank">To Neblio Explorer</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>@fromAddress</span>
+                        </div>
+                    </div>
+                    @if (receivedFromAnotherAddress)
+                    {
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <span>Received from Another Address</span>
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>Total Send: @txInDetails.Totalsent NEBL</span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>Time: @txInDetailsTime.ToString()</span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>Confirmations: @txInDetails.Confirmations.ToString()</span>
+                        </div>
+                    </div>
+                    @if (NFTTransaction)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <span>This is NFT Transaction!</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <a href="http://explorer.nebl.io/tx/@nftTxId" target="_blank">Explore NFT</a>
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <a href="http://explorer.nebl.io/tx/@txInDetails.Txid" target="_blank">Explorer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Spin>
+    </div>
+</div>
+
+@code {
+
+    private string txId = string.Empty;
+
+    [Parameter]
+    public string TxId
+    {
+        get => txId;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                txId = value;
+                Load();
+            }
+        }
+    }
+
+    bool txDetailsLoading = false;
+    GetTransactionInfoResponse txInDetails;
+
+    DateTime txInDetailsTime = DateTime.MinValue;
+    Dictionary<string, string> txInDetailsMetadata = new Dictionary<string, string>();
+    bool NFTTransaction = false;
+    string nftTxId = string.Empty;
+    string fromAddress = string.Empty;
+    bool receivedFromAnotherAddress = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+    }
+
+    async Task Load()
+    {
+        try
+        {
+            txInDetails = new GetTransactionInfoResponse();
+            txInDetails.Totalsent = 0.0;
+            txInDetails.Confirmations = 0;
+            txInDetailsTime = DateTime.MinValue;
+
+            txDetailsLoading = true;
+
+            StateHasChanged();
+
+            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txId);
+            var outs = txinfo.Vout.ToList();
+            var toks = false;
+            foreach (var o in outs)
+            {
+                if (o.Tokens.Count > 0)
+                {
+                    toks = true;
+                }
+            }
+
+            var vins = txinfo.Vin.ToList();
+            if (vins != null)
+            {
+                if (vins.Count > 0)
+                {
+                    fromAddress = vins[0].PreviousOutput.Addresses.FirstOrDefault();
+                    if (fromAddress == null)
+                        fromAddress = string.Empty;
+
+                    if (fromAddress != AppData.Account.Address)
+                        receivedFromAnotherAddress = true;
+                    else
+                        receivedFromAnotherAddress = false;
+                }
+            }
+
+            if (toks)
+            {
+                Dictionary<string, string> meta = new Dictionary<string, string>();
+                try
+                {
+                    meta = await NeblioTransactionHelpers.GetTransactionMetadata(NeblioTransactionHelpers.VENFTId, txId);
+
+                    if (meta != null)
+                    {
+                        txInDetailsMetadata = meta;
+
+                        if (meta.TryGetValue("NFT", out var nft))
+                        {
+                            if (nft == "true")
+                            {
+                                NFTTransaction = true;
+                                if (meta.TryGetValue("SourceUtxo", out var nfttxid))
+                                    nftTxId = nfttxid;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    txDetailsLoading = false;
+                    //todo
+                }
+            }
+
+            if (txinfo != null)
+            {
+                txInDetails = txinfo;
+
+                txInDetailsTime = TimeHelpers.UnixTimestampToDateTime((double)txinfo.Time);
+
+                txInDetails.Totalsent = await NeblioTransactionHelpers.GetSendAmount(txinfo, AppData.Account.Address);
+                txDetailsLoading = false;
+                StateHasChanged();
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Error during loading tx details. " + ex.Message);
+        }
+    }
+}

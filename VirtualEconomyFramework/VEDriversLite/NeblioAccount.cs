@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
+using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
 
@@ -24,13 +25,19 @@ namespace VEDriversLite
         public string Address { get; set; } = string.Empty;
         public double NumberOfTransaction { get; set; } = 0;
         public double NumberOfLoadedTransaction { get; } = 0;
-        public double? TotalBalance { get; set; } = 0.0;
-        public double? TotalSpendableBalance { get; set; } = 0.0;
-        public double? TotalUnconfirmedBalance { get; set; } = 0.0;
+        public bool EnoughBalanceToBuySourceTokens { get; set; } = false;
+        public double TotalBalance { get; set; } = 0.0;
+        public double TotalSpendableBalance { get; set; } = 0.0;
+        public double TotalUnconfirmedBalance { get; set; } = 0.0;
+        public double SourceTokensBalance { get; set; } = 0.0;
+        public double AddressNFTCount { get; set; } = 0.0;
         public List<INFT> NFTs { get; set; } = new List<INFT>();
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
         public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; } = new Dictionary<string, TokenSupplyDto>();
         public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
+        public GetAddressResponse AddressInfo { get; set; } = new GetAddressResponse();
+
+        public event EventHandler Refreshed;
 
         [JsonIgnore]
         public EncryptionKey AccountKey { get; set; }
@@ -60,6 +67,54 @@ namespace VEDriversLite
             }
         }
 
+        public async Task<string> StartRefreshingData(int interval = 3000)
+        {
+            try
+            {
+                await ReloadAccountInfo();
+                await ReloadMintingSupply();
+                await ReloadCountOfNFTs();
+                await ReloadTokenSupply();
+                await ReLoadNFTs();
+            }
+            catch (Exception ex)
+            {
+                // todo
+            }
+
+            // todo cancelation token
+            _ = Task.Run(async () =>
+            {
+                var lastNFTcount = AddressNFTCount;
+                while (true)
+                {
+                    try
+                    {
+                        await ReloadAccountInfo();
+                        await ReloadMintingSupply();
+                        await ReloadCountOfNFTs();
+                        await ReloadTokenSupply();
+
+                        if (lastNFTcount != AddressNFTCount)
+                            await ReLoadNFTs();
+
+                        lastNFTcount = AddressNFTCount;
+                        
+                        Refreshed?.Invoke(this, null);
+                    }
+                    catch (Exception ex)
+                    {
+                        // todo
+                    }
+
+                    await Task.Delay(interval);
+                }
+
+            });
+
+            return await Task.FromResult("RUNNING");
+        }
+    
         public async Task<bool> CreateNewAccount(string password, bool saveToFile = false)
         {
             try
@@ -74,7 +129,7 @@ namespace VEDriversLite
                    Address = address.ToString();
 
                     // todo load already encrypted key
-                    AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
+                   AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
                    AccountKey.PublicKey = Address;
 
                    if (!string.IsNullOrEmpty(password))
@@ -92,6 +147,8 @@ namespace VEDriversLite
                        FileHelpers.WriteTextToFile("key.txt", JsonConvert.SerializeObject(kdto));
                    }
                });
+
+                await StartRefreshingData();
 
                 return true;
             }
@@ -117,6 +174,8 @@ namespace VEDriversLite
                     AccountKey.IsEncrypted = true;
 
                     Address = kdto.Address;
+
+                    await StartRefreshingData();
                 }
                 catch(Exception ex)
                 {
@@ -143,6 +202,9 @@ namespace VEDriversLite
 
                     Address = address;
                 });
+
+                await StartRefreshingData();
+
             }
             catch (Exception ex)
             {
@@ -200,6 +262,101 @@ namespace VEDriversLite
         public async Task ReloadTokenSupply()
         {
             TokensSupplies = await NeblioTransactionHelpers.CheckTokensSupplies(Address);
+        }
+
+        public async Task ReloadCountOfNFTs()
+        {
+            var nftsu = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address);
+            if (nftsu != null)
+                AddressNFTCount = nftsu.Count;
+        }
+
+        public async Task ReloadMintingSupply()
+        {
+            var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(Address);
+            SourceTokensBalance = mintingSupply.Item1;
+
+        }
+
+        public async Task ReloadAccountInfo()
+        {
+            AddressInfo = await NeblioTransactionHelpers.AddressInfoAsync(Address);
+            if (AddressInfo != null)
+            {
+                TotalBalance = (double)AddressInfo.Balance;
+                TotalUnconfirmedBalance = (double)AddressInfo.UnconfirmedBalance;
+                AddressInfo.Transactions = AddressInfo.Transactions.Reverse().ToList();
+            }
+            else
+            {
+                AddressInfo = new GetAddressResponse();
+            }
+
+            if (TotalBalance > 1)
+                EnoughBalanceToBuySourceTokens = true;
+        }
+
+        public async Task ReLoadNFTs()
+        {
+            if (!string.IsNullOrEmpty(Address))
+            {
+                NFTs = await NFTHelpers.LoadAddressNFTs(Address);
+            }
+        }
+
+        public async Task<(bool,double)> HasSomeSpendableNeblio(double amount = 0.0002)
+        {
+            var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0001, amount);
+            if (nutxos.Count == 0)
+            {
+                return (false, 0.0);
+            }
+            else
+            {
+                var a = 0.0;
+                foreach (var u in nutxos)
+                    a += ((double)u.Value / NeblioTransactionHelpers.FromSatToMainRatio);
+
+                if (a > amount)
+                    return (true, a);
+                else
+                    return (false, a);
+            }
+        }
+
+        public async Task<(bool, int)> HasSomeSourceForMinting()
+        {
+            var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, NFTHelpers.TokenId, 1);
+
+
+            if (tutxos.Count == 0)
+            {
+                return (false, 0);
+            }
+            else
+            {
+                var a = 0;
+                foreach (var u in tutxos)
+                {
+                    var t = u.Tokens.ToArray()[0];
+                    a += (int)t.Amount;
+                }
+                return (true, a);
+            }
+        }
+
+        public async Task<(bool, string)> ValidateNFTUtxo(string utxo)
+        {
+            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, utxo);
+            if (!u.Item1)
+            {
+                var msg = "Provided source tx transaction is not spendable. Probably waiting for more than 1 confirmation.";
+                return (false, msg);
+            }
+            else
+            {
+                return (true, "OK");
+            }
         }
     }
 }

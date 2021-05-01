@@ -1,0 +1,145 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NeblioAPI
+@using VEDriversLite.Security
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject NavigationManager NavManager
+
+<Modal Title="Import Account"
+       Visible="@importAccountVisible"
+       OnOk="@importAccountConfirm"
+       OnCancel="@importAccountCancel">
+    <div class="row">
+        <div class="col">
+            <Spin spinning="@creatingAddressSpinner" tip="Creating Address...">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Input password</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Input address" @bind-Value="@importAccountAddress" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input encrypted private key" @bind-Value="@importAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Is your key already encrypted with the password or not?</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Checkbox Checked="@importKeyAlreadyEncrypted" CheckedChange="@ToggleChecked">
+                            @($"{(importKeyAlreadyEncrypted ? "Already Encrypted Key" : "Not Encrypted Key")}")
+                        </Checkbox>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value="@importAccountPass" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+                @if (accountImportError)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Wrong Password or private key"
+                           ShowIcon="true" />
+                }
+            </Spin>
+        </div>
+    </div>
+</Modal>
+
+
+@code {
+    bool importAccountVisible = false;
+    [Parameter]
+    public bool Visible
+    {
+        get => importAccountVisible;
+        set => importAccountVisible = value;
+    }
+
+    [Parameter]
+    public EventCallback<string> AccountImported { get; set; }
+
+    string key = string.Empty;
+    string address = string.Empty;
+
+    bool creatingAddressSpinner = false;
+
+    bool accountImportError = false;
+    string importAccountAddress = string.Empty;
+    string importAccountKey = string.Empty;
+    string importAccountPass = string.Empty;
+
+    bool importKeyAlreadyEncrypted = true;
+    void ToggleChecked(bool value)
+    {
+        importKeyAlreadyEncrypted = !importKeyAlreadyEncrypted;
+    }
+
+    private async Task importAccountConfirm(MouseEventArgs e)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(importAccountAddress) || string.IsNullOrEmpty(importAccountKey))
+            {
+                accountImportError = true;
+                return;
+            }
+
+            if (string.IsNullOrEmpty(importAccountPass))
+            {
+                accountImportError = true;
+                return;
+            }
+
+            creatingAddressSpinner = true;
+            StateHasChanged();
+
+            key = importAccountKey;
+            address = importAccountAddress;
+
+            if (!importKeyAlreadyEncrypted)
+            {
+                key = await SymetricProvider.EncryptString(importAccountPass, key);
+            }
+
+            await AppData.Account.LoadAccount(importAccountPass, key, address); // put here your password
+
+            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
+            if (!string.IsNullOrEmpty(kt))
+            {
+                accountImportError = false;
+                importAccountVisible = false;
+                creatingAddressSpinner = true;
+                await Task.Delay(50);
+                StateHasChanged();
+
+                await localStorage.SetItemAsync("address", address);
+                await localStorage.SetItemAsync("key", key);
+
+                StateHasChanged();
+                await AccountImported.InvokeAsync("OK");
+                }
+        }
+        catch (Exception ex)
+        {
+            accountImportError = true;
+            // todo
+        }
+    }
+
+    private async Task importAccountCancel(MouseEventArgs e)
+    {
+        importAccountVisible = false;
+    }
+}

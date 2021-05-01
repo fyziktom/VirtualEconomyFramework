@@ -1,0 +1,129 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NeblioAPI
+@using VEDriversLite.Security
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject NavigationManager NavManager
+
+<Modal Title="Unlock Account"
+       Visible="@unlockAcocuntModalVisible"
+       OnOk="@UnlockAccountConfirm"
+       OnCancel="@UnclockAccountCancel">
+    <div class="row">
+        <div class="col">
+            <Spin Tip="Unlocking..." Spinning="@unlockingAccount">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Input password</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value="@unlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+
+                @if (unlockOrClearCashMessage)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Unlock account or clear browser local storage for create new one!"
+                           ShowIcon="true" />
+                }
+                @if (accountUnlockingError)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Wrong Password"
+                           ShowIcon="true" />
+                }
+            </Spin>
+        </div>
+    </div>
+</Modal>
+
+@code {
+    bool unlockAcocuntModalVisible = false;
+    [Parameter]
+    public bool Visible
+    {
+        get => unlockAcocuntModalVisible;
+        set => unlockAcocuntModalVisible = value;
+    }
+
+    [Parameter]
+    public EventCallback<string> AccountUnlocked { get; set; }
+
+    string key = string.Empty;
+    string address = string.Empty;
+
+    string unlockPassword = string.Empty;
+    bool unlockOrClearCashMessage = false;
+    bool unlockingAccount = false;
+    bool accountUnlockingError = false;
+
+    private async Task UnlockAccountConfirm(MouseEventArgs e)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(unlockPassword))
+                return;
+            if (unlockPassword.Length < 5)
+                return;
+
+            unlockingAccount = true;
+            StateHasChanged();
+
+            address = await localStorage.GetItemAsync<string>("address");
+            key = await localStorage.GetItemAsync<string>("key");
+
+            await Task.Delay(50);
+
+            var pass = unlockPassword;
+            await AppData.Account.LoadAccount(pass, key, address); // put here your password
+
+            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
+            if (!string.IsNullOrEmpty(kt))
+            {
+                unlockAcocuntModalVisible = false;
+                unlockingAccount = false;
+
+                accountUnlockingError = false;
+                unlockOrClearCashMessage = false;
+
+                StateHasChanged();
+                await AccountUnlocked.InvokeAsync("OK");
+
+            }
+            else
+            {
+                unlockingAccount = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            accountUnlockingError = true;
+            unlockingAccount = false;
+            StateHasChanged();
+            // todo
+        }
+    }
+
+    public void UnlockAccountEnter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            StateHasChanged();
+            UnlockAccountConfirm(null);
+        }
+    }
+
+    private void UnclockAccountCancel(MouseEventArgs e)
+    {
+        accountUnlockingError = false;
+        unlockOrClearCashMessage = false;
+        unlockAcocuntModalVisible = true;
+        unlockOrClearCashMessage = true;
+    }
+
+}

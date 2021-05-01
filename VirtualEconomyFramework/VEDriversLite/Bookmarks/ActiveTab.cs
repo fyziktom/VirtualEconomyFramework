@@ -11,7 +11,7 @@ namespace VEDriversLite.Bookmarks
         public ActiveTab(string address)
         {
             Address = address;
-            ShortAddress = Address.Substring(0, 3) + "..." + Address.Substring(Address.Length - 3);
+            ShortAddress = NeblioTransactionHelpers.ShortenAddress(address);
         }
 
         public bool Selected { get; set; } = false;

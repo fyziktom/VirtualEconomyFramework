@@ -2,11 +2,8 @@
 @using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.NeblioAPI
-@using Tewr.Blazor.FileReader
 @using System.Threading
 @using System.Threading.Tasks
-@using Ipfs.Http
-@inject IFileReaderService fileReaderService
 @inject AppData AppData
 @inject HttpClient _client
 
@@ -132,53 +129,9 @@
                     <Input Placeholder="Add Your Webpage link" @bind-Value=@newProfileNFT.Link Style="font-size:12px; min-width:250px; max-width:350px;" />
                 </div>
             </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col">
-                    <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
-                        <div class="row">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <p>Select and Upload Image:</p>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <input type="file" @ref=inputTypeFileElement />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <button @onclick=ReadFile>Upload Image</button>
-                            </div>
-                        </div>
-                    </Spin>
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Image Link" @bind-Value=@newProfileNFT.ImageLink Style="font-size:12px; min-width:250px; max-width:350px;" />
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Image Preview:</p>
-                </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    @switch (loadingImageStage)
-                    {
-                        case LoadingImageStages.NotStarted:
-                            <p>No image loaded</p>
-                            break;
-                        case LoadingImageStages.Loading:
-                            <Spin Tip="Uploading..." />
-                            break;
-                        case LoadingImageStages.Loaded:
-                            <a href="@newProfileNFT.ImageLink" target="_blank"><img src="@newProfileNFT.ImageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
-                            break;
-                    }
-                </div>
-            </div>
+
+            <VENFTApp_Blazor.Components.UploadImage ImageLinkChanged="ImageLinkChanged" />
+
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <p>Status: @tokentxid</p>
@@ -205,33 +158,20 @@
 {
     <Alert Type="@AlertType.Error"
            Message="Error"
+           Style="max-width:100px;"
            Description=@errorMessage
            ShowIcon="true" />
 }
 
-@if (errorUpload)
-{
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Description="Cannot upload image."
-           ShowIcon="true" />
-}
 
 @code {
     bool loadingProfile = true;
-    bool uploadingImage = false;
     bool createNewProfileVisible = false;
     bool createNewProfile = false;
 
     bool processingMinting = false;
-    bool errorUpload = false;
     bool errorDuringSend = false;
     string errorMessage = string.Empty;
-    private static int attemptsToDisplay = 10;
-    LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
-    private System.Threading.Timer timer;
-    private ElementReference inputTypeFileElement;
-    private static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
 
     [Parameter]
     public bool ReadOnlyProfile { get; set; } = true;
@@ -243,6 +183,12 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadProfile();
+    }
+
+
+    void ImageLinkChanged(string newLink)
+    {
+        newProfileNFT.ImageLink = newLink;
     }
 
     private async Task LoadProfile()
@@ -258,7 +204,7 @@
                 {
                     var profile = await NFTHelpers.FindProfileNFT(AppData.Account);
 
-                    if (profile != null)
+                    if (!string.IsNullOrEmpty(profile.Utxo))
                     {
                         loadingProfile = false;
                         await profile.GetLastData();
@@ -272,13 +218,12 @@
                 }
                 else
                 {
-                    var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
-                    AppData.Account.NFTs = nfts;
+                    await AppData.Account.ReLoadNFTs();
                     if (AppData.Account.NFTs.Count > 0)
                     {
                         var profile = await NFTHelpers.FindProfileNFT(AppData.Account);
 
-                        if (profile != null)
+                        if (!string.IsNullOrEmpty(profile.Utxo))
                         {
                             loadingProfile = false;
                             await profile.GetLastData();
@@ -321,7 +266,6 @@
         {
             newProfileNFT = AppData.Account.Profile;
             newProfileNFT.Nickname = AppData.Account.Profile.Nickname;
-            loadingImageStage = LoadingImageStages.Loaded;
             await Task.Delay(100);
             StateHasChanged();
         }
@@ -339,86 +283,6 @@
     private async Task createNewProfileCancel(MouseEventArgs e)
     {
         createNewProfileVisible = false;
-    }
-
-    public async Task ReadFile()
-    {
-        try
-        {
-            errorUpload = false;
-            uploadingImage = true;
-            attemptsToDisplay = 10;
-            StateHasChanged();
-            foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
-            {
-                loadingImageStage = LoadingImageStages.Loading;
-                // Read into buffer and act (uses less memory)
-                await using (Stream stream = await file.OpenReadAsync())
-                {
-                    var fileinfo = await file.ReadFileInfoAsync();
-
-                    var imageLink = await ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
-                    newProfileNFT.ImageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
-
-                    timer = new System.Threading.Timer(async (object stateInfo) =>
-                    {
-                        try
-                        {
-                            if (!string.IsNullOrEmpty(AppData.Account.Profile.ImageLink))
-                            {
-                                using var httpResponse = await _client.GetAsync(AppData.Account.Profile.ImageLink);
-
-                                if (httpResponse.IsSuccessStatusCode)
-                                {
-                                    loadingImageStage = LoadingImageStages.Loaded;
-                                    uploadingImage = false;
-
-                                    StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
-                                    timer.Dispose();
-                                }
-
-                                attemptsToDisplay--;
-                                if (attemptsToDisplay < 0)
-                                {
-                                    loadingImageStage = LoadingImageStages.Loaded;
-                                    uploadingImage = false;
-                                    StateHasChanged();
-                                    timer.Dispose();
-                                }
-                            }
-                            else
-                            {
-                                loadingImageStage = LoadingImageStages.NotStarted;
-                                uploadingImage = false;
-                                errorUpload = true;
-                                StateHasChanged();
-                                timer.Dispose();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            attemptsToDisplay--;
-                            if (attemptsToDisplay < 0)
-                            {
-                                loadingImageStage = LoadingImageStages.NotStarted;
-                                uploadingImage = false;
-                                errorUpload = true;
-                                StateHasChanged();
-                                timer.Dispose();
-                            }
-                            //todo
-                        }
-                    }, new System.Threading.AutoResetEvent(false), 4000, 4000);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            loadingImageStage = LoadingImageStages.NotStarted;
-            uploadingImage = false;
-            errorUpload = true;
-            StateHasChanged();
-        }
     }
 
     private async Task MintNewProfileNFT()
@@ -448,7 +312,7 @@
         {
             processingMinting = false;
             errorDuringSend = true;
-            errorMessage = "You dont have Neblio on the address!";
+            errorMessage = "You dont have Neblio on the address. Probably waiting for more than 1 confirmation.";
             StateHasChanged();
             return;
         }
@@ -460,7 +324,7 @@
             {
                 processingMinting = false;
                 errorDuringSend = true;
-                errorMessage = "You dont have VENFT tokens for minting on the address!";
+                errorMessage = "You dont have VENFT tokens for minting on the address. Probably waiting for more than 1 confirmation.";
                 StateHasChanged();
                 return;
             }
@@ -472,7 +336,7 @@
             {
                 processingMinting = false;
                 errorDuringSend = true;
-                errorMessage = "Provided source tx transaction is not spendable!";
+                errorMessage = "Provided source tx transaction is not spendable. Probably waiting for more than 1 confirmation.";
                 StateHasChanged();
                 return;
             }

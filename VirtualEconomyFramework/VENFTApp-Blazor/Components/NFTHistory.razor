@@ -1,0 +1,72 @@
+﻿@using VEDriversLite.NFT
+
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:20px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <button class="btn btn-primary" @onclick="async () => LoadNFTHistory(NFT)"><i class="oi oi-timer"></i> Load NFT History</button>
+            </div>
+        </div>
+        <div class="row" style="margin-top:20px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <Spin Tip="Loading History..." Spinning="@loadingNFTHistory">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Image</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (nftInDetailsHistory != null)
+                            {
+                                @if (nftInDetailsHistory.Count > 0)
+                                {
+                                    @foreach (var nft in nftInDetailsHistory)
+                                    {
+                                        <tr>
+                                            <td>@nft.Name</td>
+                                            <td>@nft.Description</td>
+                                            <td>
+                                                <a href="@nft.ImageLink" target="_blank">
+                                                    <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>History Not Loaded</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </Spin>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public INFT NFT { get; set; } = new ImageNFT("");
+
+    bool loadingNFTHistory = false;
+    List<INFT> nftInDetailsHistory = new List<INFT>();
+
+    private async Task LoadNFTHistory(INFT nft)
+    {
+        loadingNFTHistory = true;
+        await Task.Delay(50);
+        StateHasChanged();
+        nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(nft.Utxo);
+        loadingNFTHistory = false;
+        await Task.Delay(50);
+        StateHasChanged();
+    }
+}
