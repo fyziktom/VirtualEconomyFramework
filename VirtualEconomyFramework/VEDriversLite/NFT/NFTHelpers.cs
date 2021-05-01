@@ -448,6 +448,9 @@ namespace VEDriversLite.NFT
 
         public static async Task<string> ChangePostNFT(NeblioAccount account, PostNFT postnft, string utxo)
         {
+            if (string.IsNullOrEmpty(utxo))
+                throw new Exception("Wrong token txid input.");
+
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");

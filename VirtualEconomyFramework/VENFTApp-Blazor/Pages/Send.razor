@@ -259,23 +259,12 @@
             return;
         }
 
-        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, 0.0002);
+        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, AmountToSend);
         if (nutxos.Count == 0)
         {
             sendingTransaction = false;
             errorDuringSend = true;
             errorMessage = "You dont have Neblio on the address. Probably waiting for more than 1 confirmation.";
-            StateHasChanged();
-            return;
-        }
-
-        var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(AppData.Account.Address, NFTHelpers.TokenId, 1);
-
-        if (tutxos.Count == 0)
-        {
-            sendingTransaction = false;
-            errorDuringSend = true;
-            errorMessage = "You dont have VENFT tokens on the address. Probably waiting for more than 1 confirmation.";
             StateHasChanged();
             return;
         }

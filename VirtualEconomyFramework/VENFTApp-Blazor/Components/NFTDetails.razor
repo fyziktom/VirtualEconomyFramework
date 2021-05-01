@@ -109,7 +109,7 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Name of the NFT" @bind-Value=@receiverAddress Style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <Input Placeholder="Add Receiver Address" @bind-Value=@receiverAddress Style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
             </div>
@@ -258,6 +258,8 @@
     void ImageLinkChanged(string newLink)
     {
         newPostNFT.ImageLink = newLink;
+        NFT.ImageLink = newLink;
+        StateHasChanged();
     }
 
     private async Task HandleOk(MouseEventArgs e)

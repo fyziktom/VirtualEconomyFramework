@@ -171,7 +171,7 @@ namespace VEDriversLite
                     {
                         foreach (var u in utxos)
                         {
-                            if ((u.Value * FromSatToMainRatio) >= 2 * fee)
+                            if ((u.Value) >= fee)
                             {
                                 dto.Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
                                 break;
@@ -366,7 +366,7 @@ namespace VEDriversLite
                                     }
                                     catch( Exception ex)
                                     {
-                                        throw new Exception("Exception during broadcasting tx!");
+                                        throw new Exception("Exception during broadcasting tx!" + ex.Message);
                                     }
                                 }
                             }
@@ -580,13 +580,13 @@ namespace VEDriversLite
 
                             // load list of input coins for the source address
                             // some of them must be spendable
-
-
+                           
                             foreach (var to in txin.Outputs)
                             {
                                 if (to.ScriptPubKey == addressForTx.ScriptPubKey)
                                     if (to.Value.Satoshi != 10000)
-                                        list.Add(new Coin(txin, (uint)utxo.Index));
+                                        if (utxo.Index == txin.Outputs.IndexOf(to))
+                                            list.Add(new Coin(txin, (uint)txin.Outputs.IndexOf(to)));
                             }
                             if (transaction.Inputs.Count > 0)
                             {

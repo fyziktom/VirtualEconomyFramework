@@ -77,7 +77,7 @@
             if (_imageLink == value) return;
             _imageLink = value;
             loadingImageStage = LoadingImageStages.Loaded;
-            ImageLinkChanged.InvokeAsync(value);
+            StateHasChanged();
         }
     }
     [Parameter]
@@ -94,15 +94,17 @@
             foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
             {
                 loadingImageStage = LoadingImageStages.Loading;
+                StateHasChanged();
+
                 // Read into buffer and act (uses less memory)
                 await using (Stream stream = await file.OpenReadAsync())
                 {
                     var fileinfo = await file.ReadFileInfoAsync();
-
+                    var link = string.Empty;
                     try
                     {
                         var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
-                        _imageLink = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                        link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
                     }
                     catch (Exception ex)
                     {
@@ -113,18 +115,18 @@
                     {
                         try
                         {
-                            if (!string.IsNullOrEmpty(_imageLink))
+                            if (!string.IsNullOrEmpty(link))
                             {
-                                using var httpResponse = await _client.GetAsync(ImageLink);
+                                using var httpResponse = await _client.GetAsync(link);
 
                                 if (httpResponse.IsSuccessStatusCode)
                                 {
                                     loadingImageStage = LoadingImageStages.Loaded;
                                     uploadingImage = false;
 
-                                    ImageLink = _imageLink;
-                                    ImageLinkChanged.InvokeAsync(_imageLink);
+                                    ImageLink = link;
                                     StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+                                    ImageLinkChanged.InvokeAsync(link);
                                     timer.Dispose();
                                 }
 
@@ -133,9 +135,9 @@
                                 {
                                     loadingImageStage = LoadingImageStages.Loaded;
                                     uploadingImage = false;
-                                    ImageLink = _imageLink;
-                                    ImageLinkChanged.InvokeAsync(_imageLink);
+                                    ImageLink = link;
                                     StateHasChanged();
+                                    ImageLinkChanged.InvokeAsync(link);
                                     timer.Dispose();
                                 }
                             }

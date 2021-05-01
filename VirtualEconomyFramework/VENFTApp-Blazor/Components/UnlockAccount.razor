@@ -74,12 +74,13 @@
             unlockingAccount = true;
             StateHasChanged();
 
+            var pass = unlockPassword;
+
             address = await localStorage.GetItemAsync<string>("address");
             key = await localStorage.GetItemAsync<string>("key");
 
-            await Task.Delay(50);
+            await Task.Delay(100);
 
-            var pass = unlockPassword;
             await AppData.Account.LoadAccount(pass, key, address); // put here your password
 
             var kt = await AppData.Account.AccountKey.GetEncryptedKey();

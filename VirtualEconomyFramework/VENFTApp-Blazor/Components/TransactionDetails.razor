@@ -161,6 +161,8 @@
                                 NFTTransaction = true;
                                 if (meta.TryGetValue("SourceUtxo", out var nfttxid))
                                     nftTxId = nfttxid;
+                                else
+                                    nftTxId = txId;
                             }
                         }
                     }
