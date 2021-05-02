@@ -314,7 +314,7 @@ namespace VEDriversLite.NFT
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                throw ex;
             }
         }
 
@@ -355,7 +355,7 @@ namespace VEDriversLite.NFT
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                throw ex;
             }
         }
 
@@ -395,7 +395,7 @@ namespace VEDriversLite.NFT
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                throw ex;
             }
         }
 
@@ -442,7 +442,7 @@ namespace VEDriversLite.NFT
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                throw ex;
             }
         }
 
@@ -488,7 +488,180 @@ namespace VEDriversLite.NFT
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                throw ex;
+            }
+        }
+
+        public static async Task<string> SendOrderedNFT(NeblioAccount account, PaymentNFT payment)
+        {
+            var NFT = account.NFTs.Where(n => n.Utxo == payment.NFTUtxoTxId).FirstOrDefault();
+            if (NFT == null)
+                throw new Exception("Cannot find NFT in the address NFT list.");
+
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            switch (NFT.Type)
+            {
+                case NFTTypes.Image:
+                    metadata.Add("Type", "NFT Image");
+                    break;
+                case NFTTypes.Post:
+                    metadata.Add("Type", "NFT Post");
+                    break;
+            }
+
+            if (NFT.Type == NFTTypes.Post)
+            {
+                metadata.Add("Name", NFT.Name);
+                metadata.Add("Author", NFT.Author);
+                metadata.Add("Description", NFT.Description);
+                metadata.Add("Image", NFT.ImageLink);
+                metadata.Add("Link", NFT.Link);
+            }
+
+            metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
+
+            // fill input data for sending tx
+            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Amount = 1,
+                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Symbol = "VENFT", // symbol of token
+                Metadata = metadata,
+                Password = "", // put here your password,
+                sendUtxo = new List<string>() { payment.NFTUtxoTxId, payment.Utxo },
+                SenderAddress = account.Address,
+                ReceiverAddress = payment.Sender
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SendMultiTokenAPIAsync(dto, account);
+                if (!string.IsNullOrEmpty(rtxid))
+                {
+                    return rtxid;
+                }
+                else
+                {
+                    throw new Exception("Sending Multi Token Transaction was not successfull.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static async Task<string> SendNFTPayment(NeblioAccount account, string receiver, INFT image, string utxo, double price)
+        {
+            if (string.IsNullOrEmpty(utxo))
+                throw new Exception("Wrong token txid input.");
+
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Sender", account.Address);
+            metadata.Add("NFTUtxoTxId", image.Utxo);
+            metadata.Add("Image", image.ImageLink);
+            metadata.Add("Price", price.ToString());
+            metadata.Add("Type", "NFT Payment");
+
+            // fill input data for sending tx
+            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Metadata = metadata,
+                Amount = 1,
+                sendUtxo = new List<string>() { utxo },
+                Password = "", // put here your password
+                SenderAddress = account.Address,
+                ReceiverAddress = receiver
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, account, price, 30000);
+                if (rtxid != null)
+                {
+                    return rtxid;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static async Task<string> SendNFT(NeblioAccount account, INFT NFT, bool priceWrite, double price = 0.0002)
+        {
+            if (price < 0.0002)
+                throw new Exception("Price cannot be lower than 0.0002 NEBL.");
+
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+
+            switch (NFT.Type)
+            {
+                case NFTTypes.Image:
+                    metadata.Add("Type", "NFT Image");
+                    break;
+                case NFTTypes.Post:
+                    metadata.Add("Type", "NFT Post");
+                    break;
+            }
+
+            if (NFT.Type == NFTTypes.Post)
+            {
+                metadata.Add("Name", NFT.Name);
+                metadata.Add("Author", NFT.Author);
+                metadata.Add("Description", NFT.Description);
+                metadata.Add("Image", NFT.ImageLink);
+                metadata.Add("Link", NFT.Link);
+            }
+
+            if (priceWrite)
+                metadata.Add("Price", price.ToString());
+
+            metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
+
+            var utxo = NFT.Utxo;
+
+            // fill input data for sending tx
+            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Metadata = metadata,
+                Amount = 1,
+                sendUtxo = new List<string>() { utxo },
+                Password = "", // put here your password
+                SenderAddress = account.Address,
+                ReceiverAddress = account.Address
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, account, isNFTtx: true, fee: 30000);
+                if (rtxid != null)
+                {
+                    return rtxid;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 

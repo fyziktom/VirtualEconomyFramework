@@ -13,6 +13,13 @@
                        Description="Your NFT was sent"
                        ShowIcon="true" />
             }
+            @if (errorDuringSending)
+            {
+                <Alert Type="@AlertType.Error"
+                       Message="Was not sent"
+                       Description="Your NFT was not sent"
+                       ShowIcon="true" />
+            }
 
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-end justify-content-xl-end align-items-xl-end">
@@ -48,6 +55,24 @@
                                                             <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-info" style="font-size:12px;"></i></button>
                                                         </div>
                                                     </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            @if (nft.Type == NFTTypes.Payment)
+                                                            {
+                                                                <span>This is NFT Payment For NFT:<a href="https://explorer.nebl.io/tx/@nft.NFTOriginTxId" target="_blank">To The Explorer</a></span>
+                                                                <button class="btn btn-primary" @onclick="async () => SendOrderedNFT(nft)" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-info" style="font-size:12px;"></i></button>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            @if (nft.PriceActive && nft.Type != NFTTypes.Payment)
+                                                            {
+                                                                <SendNFTPayment NFT="@nft" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="NFTSent" />
+                                                            }
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -71,7 +96,7 @@
        Visible="@nftDetailsVisible"
        OnOk="@CloseNFTDetails"
        OnCancel="@CloseNFTDetails">
-    <VENFTApp_Blazor.Components.NFTDetails NFT="@nftInDetails" NFTSent="NFTSent" OwnNFT="MainAccount" />
+    <VENFTApp_Blazor.Components.NFTDetails NFT="@nftInDetails" NFTSent="NFTSent" OwnNFT="@MainAccount" />
 </Modal>
 
 @code {
@@ -107,6 +132,7 @@
     bool nftDetailsVisible = false;
     private INFT nftInDetails = new ImageNFT("");
 
+    bool errorDuringSending = false;
     bool successSent = false;
     string tokentxid = string.Empty;
 
@@ -167,5 +193,20 @@
         nftInDetails = nft;
         nftDetailsVisible = true;
         StateHasChanged();
+    }
+
+    private async Task SendOrderedNFT(INFT nft)
+    {
+        try
+        {
+            var payment = nft as PaymentNFT;
+            var res = await NFTHelpers.SendOrderedNFT(AppData.Account, payment);
+            tokentxid = res;
+        }
+        catch (Exception ex)
+        {
+            
+            tokentxid = ex.Message;
+        }
     }
 }

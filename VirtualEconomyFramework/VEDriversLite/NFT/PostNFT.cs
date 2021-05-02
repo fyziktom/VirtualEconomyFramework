@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,6 +26,8 @@ namespace VEDriversLite.NFT
             SourceTxId = nft.SourceTxId;
             NFTOriginTxId = nft.NFTOriginTxId;
             Utxo = nft.Utxo;
+            Price = nft.Price;
+            PriceActive = nft.PriceActive;
         }
 
         public string Surname { get; set; } = string.Empty;
@@ -48,6 +51,22 @@ namespace VEDriversLite.NFT
                     ImageLink = imagelink;
                 if (nftData.NFTMetadata.TryGetValue("Type", out var type))
                     TypeText = type;
+                if (nftData.NFTMetadata.TryGetValue("Price", out var price))
+                {
+                    if (!string.IsNullOrEmpty(price))
+                    {
+                        Price = double.Parse(price, CultureInfo.InvariantCulture);
+                        PriceActive = true;
+                    }
+                    else
+                    {
+                        PriceActive = false;
+                    }
+                }
+                else
+                {
+                    PriceActive = false;
+                }
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
@@ -73,6 +92,22 @@ namespace VEDriversLite.NFT
                     ImageLink = imagelink;
                 if (nftData.NFTMetadata.TryGetValue("Type", out var type))
                     TypeText = type;
+                if (nftData.NFTMetadata.TryGetValue("Price", out var price))
+                {
+                    if (!string.IsNullOrEmpty(price))
+                    {
+                        Price = double.Parse(price, CultureInfo.InvariantCulture);
+                        PriceActive = true;
+                    }
+                    else
+                    {
+                        PriceActive = false;
+                    }
+                }
+                else
+                {
+                    PriceActive = false;
+                }
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
@@ -106,6 +141,22 @@ namespace VEDriversLite.NFT
                 {
                     SourceTxId = Utxo;
                     NFTOriginTxId = Utxo;
+                }
+                if (metadata.TryGetValue("Price", out var price))
+                {
+                    if (!string.IsNullOrEmpty(price))
+                    {
+                        Price = double.Parse(price, CultureInfo.InvariantCulture);
+                        PriceActive = true;
+                    }
+                    else
+                    {
+                        PriceActive = false;
+                    }
+                }
+                else
+                {
+                    PriceActive = false;
                 }
 
             }

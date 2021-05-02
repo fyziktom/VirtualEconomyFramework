@@ -74,7 +74,12 @@
                             <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog(NFT)"><i class="oi oi-location"></i> Send</button>
                         </div>
                     </div>
-                }
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()"><i class="oi oi-location"></i> Set Price</button>
+                        </div>
+                    </div>
+               }
             }
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -115,6 +120,35 @@
             </div>
         </div>
     </p>
+</Modal>
+
+<Modal Title="Set Price of NFT"
+       Visible="@setPriceNFTDialogVisible"
+       OnOk="@setPriceNFTDialogOK"
+       OnCancel="@setPriceNFTDialogCancel">
+    <p>
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        Fill Price in Neblio:
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <input type="number" step="0.0001" min="0.0002" @bind="@priceOfNFT" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </p>
+</Modal>
+
+<Modal Title="Set Price Confirm "
+       Visible="@confirmSetPriceVisible"
+       OnOk="@setPriceNFTDialogConfirm"
+       OnCancel="@setPriceConfirmNFTDialogCancel">
+    <p>Do you really want to set the price of this NFT?</p>
 </Modal>
 
 
@@ -192,14 +226,14 @@
 
 @code {
 
-    [Parameter]
-    public INFT NFT { get; set; }
+        [Parameter]
+        public INFT NFT { get; set; }
 
-    [Parameter]
-    public bool OwnNFT { get; set; } = false;
+        [Parameter]
+        public bool OwnNFT { get; set; } = false;
 
-    [Parameter]
-    public EventCallback<string> NFTSent { get; set; }
+        [Parameter]
+        public EventCallback<string> NFTSent { get; set; }
 
     private GetTransactionInfoResponse nftInDetailsTxInfo = new GetTransactionInfoResponse();
     private System.Threading.Timer nftInDetailsTxInfoRefresh;
@@ -220,6 +254,10 @@
     bool processingMinting = false;
     PostNFT newPostNFT = new PostNFT("");
     bool createNewPostVisible = false;
+
+    bool confirmSetPriceVisible = false;
+    bool setPriceNFTDialogVisible = false;
+    private double priceOfNFT { get; set; } = 0.0002;
 
 
     protected override async Task OnInitializedAsync()
@@ -288,11 +326,65 @@
     private async Task ShowSendNFTDialog(INFT nft)
     {
         sendNFTDialogVisible = true;
-
     }
 
+    private async Task setPriceNFTDialogConfirm(MouseEventArgs e)
+    {
+        if (!await VerifyNFTToSend())
+            return;
 
-    private async Task sendNFT()
+        sendingTransaction = true;
+        tokentxid = "Sending...";
+        StateHasChanged();
+        await Task.Delay(50);
+
+        try
+        {
+            // send tx
+            var rtxid = await NFTHelpers.SendNFT(AppData.Account, NFT, true, priceOfNFT);
+            if (rtxid != null)
+            {
+                sendingTransactionState = "Transaction Send right!";
+                tokentxid = rtxid;
+                await Task.Delay(1000);
+                NFTSent.InvokeAsync(rtxid);
+                AppData.Account.NFTs.Clear();
+                StateHasChanged();
+                sendingTransaction = false;
+                errorMessage = string.Empty;
+                errorDuringSend = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            tokentxid = ex.Message;
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+
+        }
+    }
+
+    private async Task setPriceNFTDialogOK(MouseEventArgs e)
+    {
+        confirmSetPriceVisible = true;
+    }
+
+    private void setPriceConfirmNFTDialogCancel(MouseEventArgs e)
+    {
+        confirmSetPriceVisible = false;
+    }
+
+    private void setPriceNFTDialogCancel(MouseEventArgs e)
+    {
+        setPriceNFTDialogVisible = false;
+    }
+
+    private async Task ShowSetPriceNFTDialog()
+    {
+        setPriceNFTDialogVisible = true;
+    }
+
+    private async Task<bool> VerifyNFTToSend()
     {
         errorDuringSend = false;
 
@@ -300,7 +392,7 @@
         {
             sendingTransaction = false;
             StateHasChanged();
-            return;
+            return false;
         }
 
         var tu = await AppData.Account.HasSomeSpendableNeblio();
@@ -310,7 +402,7 @@
             errorDuringSend = true;
             errorMessage = "You dont have Neblio on the address. Probably waiting for more than 1 confirmation.";
             StateHasChanged();
-            return;
+            return false;
         }
 
         if (!string.IsNullOrEmpty(NFT.Utxo))
@@ -322,9 +414,17 @@
                 errorDuringSend = true;
                 errorMessage = utxo.Item2;
                 StateHasChanged();
-                return;
+                return false;
             }
         }
+
+        return true;
+    }
+
+    private async Task sendNFT()
+    {
+        if (!await VerifyNFTToSend())
+            return;
 
         sendingTransaction = true;
         tokentxid = "Sending...";

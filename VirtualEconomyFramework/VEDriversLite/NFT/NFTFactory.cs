@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,7 +34,14 @@ namespace VEDriversLite.NFT
                         case "NFT Image":
                             type = NFTTypes.Image;
                             break;
+                        case "NFT Payment":
+                            type = NFTTypes.Payment;
+                            break;
                     }
+                }
+                else
+                {
+                    return null;
                 }
             }
             else
@@ -48,11 +56,32 @@ namespace VEDriversLite.NFT
                 }
             }
 
+            var Price = 0.0;
+            var PriceActive = false;
+            if (meta.TryGetValue("Price", out var price))
+            {
+                if (!string.IsNullOrEmpty(price))
+                {
+                    Price = double.Parse(price, CultureInfo.InvariantCulture);
+                    PriceActive = true;
+                }
+                else
+                {
+                    PriceActive = false;
+                }
+            }
+            else
+            {
+                PriceActive = false;
+            }
+
             switch (type)
             {
                 case NFTTypes.Image:
                     var nft = new ImageNFT(utxo);
                     await nft.ParseOriginData();
+                    nft.Price = Price;
+                    nft.PriceActive = PriceActive;
                     if (!string.IsNullOrEmpty(nft.NFTOriginTxId))
                         return nft;
                     else
@@ -67,6 +96,10 @@ namespace VEDriversLite.NFT
                     //await ponft.ParseOriginData();
                     await ponft.LoadLastData(meta);
                     return ponft;
+                case NFTTypes.Payment:
+                    var pmnft = new PaymentNFT(utxo);
+                    await pmnft.LoadLastData(meta);
+                    return pmnft;
             }
 
             return null;

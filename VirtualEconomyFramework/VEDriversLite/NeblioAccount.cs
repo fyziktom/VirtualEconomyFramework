@@ -99,7 +99,23 @@ namespace VEDriversLite
                             await ReLoadNFTs();
 
                         lastNFTcount = AddressNFTCount;
-                        
+
+                        var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+                        if (pnfts.Count > 0)
+                        {
+                            foreach (var p in pnfts)
+                            {
+                                var pn = NFTs.Where(n => n.Utxo == ((PaymentNFT)p).NFTUtxoTxId).FirstOrDefault();
+                                if (pn != null)
+                                {
+                                    var rtxid = await NFTHelpers.SendOrderedNFT(this, (PaymentNFT)p);
+                                    Console.WriteLine(rtxid);
+                                    await Task.Delay(200);
+                                    await ReLoadNFTs();
+                                }
+                            }
+                        }
+
                         Refreshed?.Invoke(this, null);
                     }
                     catch (Exception ex)

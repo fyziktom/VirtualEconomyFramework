@@ -12,7 +12,8 @@ namespace VEDriversLite.NFT
         Profile,
         Music,
         YouTube,
-        Spotify
+        Spotify,
+        Payment
     }
     public interface INFT
     {
@@ -27,6 +28,8 @@ namespace VEDriversLite.NFT
         string Tags { get; set; }
         string Utxo { get; set; }
         string SourceTxId { get; set; }
+        double Price { get; set; }
+        bool PriceActive { get; set; }
         string NFTOriginTxId { get; set; }
         DateTime Time { get; set; }
 

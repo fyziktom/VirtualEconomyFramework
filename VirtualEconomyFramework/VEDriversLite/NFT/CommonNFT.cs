@@ -19,6 +19,8 @@ namespace VEDriversLite.NFT
         public string Utxo { get; set; } = string.Empty;
         public string SourceTxId { get; set; } = string.Empty;
         public string NFTOriginTxId { get; set; } = string.Empty;
+        public double Price { get; set; } = 0.0;
+        public bool PriceActive { get; set; } = false;
         public DateTime Time { get; set; } = DateTime.UtcNow;
 
         public abstract Task ParseOriginData();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,6 +43,22 @@ namespace VEDriversLite.NFT
                     Age = Convert.ToInt32(age);
                 if (nftData.NFTMetadata.TryGetValue("Type", out var type))
                     TypeText = type;
+                if (nftData.NFTMetadata.TryGetValue("Price", out var price))
+                {
+                    if (!string.IsNullOrEmpty(price))
+                    {
+                        Price = double.Parse(price, CultureInfo.InvariantCulture);
+                        PriceActive = true;
+                    }
+                    else
+                    {
+                        PriceActive = false;
+                    }
+                }
+                else
+                {
+                    PriceActive = false;
+                }
 
 
                 SourceTxId = nftData.SourceTxId;
@@ -72,6 +89,22 @@ namespace VEDriversLite.NFT
                     Age = Convert.ToInt32(age);
                 if (nftData.NFTMetadata.TryGetValue("Type", out var type))
                     TypeText = type;
+                if (nftData.NFTMetadata.TryGetValue("Price", out var price))
+                {
+                    if (!string.IsNullOrEmpty(price))
+                    {
+                        Price = double.Parse(price, CultureInfo.InvariantCulture);
+                        PriceActive = true;
+                    }
+                    else
+                    {
+                        PriceActive = false;
+                    }
+                }
+                else
+                {
+                    PriceActive = false;
+                }
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
@@ -102,6 +135,22 @@ namespace VEDriversLite.NFT
                     TypeText = type;
                 if (metadata.TryGetValue("SourceUtxo", out var su))
                     NFTOriginTxId = su;
+                if (metadata.TryGetValue("Price", out var price))
+                {
+                    if (!string.IsNullOrEmpty(price))
+                    {
+                        Price = double.Parse(price, CultureInfo.InvariantCulture);
+                        PriceActive = true;
+                    }
+                    else
+                    {
+                        PriceActive = false;
+                    }
+                }
+                else
+                {
+                    PriceActive = false;
+                }
             }
         }
     }

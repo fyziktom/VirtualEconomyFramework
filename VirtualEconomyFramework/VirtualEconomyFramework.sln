@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-WPF", "VENFTApp-WP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-Blazor", "VENFTApp-Blazor\VENFTApp-Blazor.csproj", "{E3C59C5B-830E-4430-A9A3-C13315A20B08}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,6 +207,18 @@ Global
 		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Release|x64.Build.0 = Release|Any CPU
 		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Release|x86.ActiveCfg = Release|Any CPU
 		{E3C59C5B-830E-4430-A9A3-C13315A20B08}.Release|x86.Build.0 = Release|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Debug|x64.Build.0 = Debug|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Debug|x86.Build.0 = Debug|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Release|x64.ActiveCfg = Release|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Release|x64.Build.0 = Release|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Release|x86.ActiveCfg = Release|Any CPU
+		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

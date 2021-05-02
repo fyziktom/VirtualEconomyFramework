@@ -55,7 +55,7 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add receiver address" @bind-Value=@tokenReceiver Style="font-size:12px; min-width:250px;" />
+                        <Input Placeholder="Add receiver address" @bind-Value=@tokenReceiver Style="font-size:12px; min-width:250px; max-width:350px;" />
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
@@ -65,7 +65,8 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input ShowUpDown="false" TValue="int" @bind-Value=@AmountTokensToSend Style="font-size:12px; min-width:250px;" />
+                        <input type="number" step="1" min="1" max="@AppData.Account.SourceTokensBalance" @bind="@AmountTokensToSend" />
+                        <!--<Input ShowUpDown="false" TValue="int" @bind-Value=@AmountTokensToSend Style="font-size:12px; min-width:250px;" />-->
                     </div>
                 </div>
                 <div class="row" style="margin-top:20px;">
@@ -111,7 +112,7 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add receiver address" @bind-Value=@neblReceiver Style="font-size:12px; min-width:250px;" />
+                        <Input Placeholder="Add receiver address" @bind-Value=@neblReceiver Style="font-size:12px; min-width:250px;max-width:350px;" />
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
@@ -121,7 +122,8 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input ShowUpDown="false" TValue="double" Format="0.000" @bind-Value=@AmountToSend Style="font-size:12px; min-width:250px;" />
+                        <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@AmountToSend" />
+                        <!--<Input ShowUpDown="false" TValue="double" Format="0.000" @bind-Value=@AmountToSend Style="font-size:12px; min-width:250px;" />-->
                     </div>
                 </div>
                 <div class="row" style="margin-top:20px;">
