@@ -89,7 +89,7 @@
     }
 
     bool txDetailsLoading = false;
-    GetTransactionInfoResponse txInDetails;
+    GetTransactionInfoResponse txInDetails = new GetTransactionInfoResponse();
 
     DateTime txInDetailsTime = DateTime.MinValue;
     Dictionary<string, string> txInDetailsMetadata = new Dictionary<string, string>();
@@ -98,9 +98,12 @@
     string fromAddress = string.Empty;
     bool receivedFromAnotherAddress = false;
 
-    protected override async Task OnInitializedAsync()
+    string lasttxid = string.Empty;
+
+    protected override Task OnInitializedAsync()
     {
-        await Load();
+        Load();
+        return base.OnInitializedAsync();
     }
 
     async Task Load()
@@ -111,12 +114,17 @@
             txInDetails.Totalsent = 0.0;
             txInDetails.Confirmations = 0;
             txInDetailsTime = DateTime.MinValue;
+            string nftTxId = string.Empty;
+            string fromAddress = string.Empty;
+
+            if (string.IsNullOrEmpty(txId))
+                return;
 
             txDetailsLoading = true;
-
             StateHasChanged();
 
             var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txId);
+
             var outs = txinfo.Vout.ToList();
             var toks = false;
             foreach (var o in outs)
@@ -127,20 +135,28 @@
                 }
             }
 
-            var vins = txinfo.Vin.ToList();
-            if (vins != null)
+            try
             {
-                if (vins.Count > 0)
+                var vins = txinfo.Vin.ToList();
+                if (vins != null)
                 {
-                    fromAddress = vins[0].PreviousOutput.Addresses.FirstOrDefault();
-                    if (fromAddress == null)
-                        fromAddress = string.Empty;
+                    if (vins.Count > 0)
+                    {
+                        fromAddress = vins[0].PreviousOutput.Addresses.FirstOrDefault();
+                        if (fromAddress == null)
+                            fromAddress = string.Empty;
 
-                    if (fromAddress != AppData.Account.Address)
-                        receivedFromAnotherAddress = true;
-                    else
-                        receivedFromAnotherAddress = false;
+                        if (fromAddress != AppData.Account.Address)
+                            receivedFromAnotherAddress = true;
+                        else
+                            receivedFromAnotherAddress = false;
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error during geting the address. " + ex.Message);
+                txDetailsLoading = false;
             }
 
             if (toks)
@@ -183,11 +199,15 @@
                 txInDetails.Totalsent = await NeblioTransactionHelpers.GetSendAmount(txinfo, AppData.Account.Address);
                 txDetailsLoading = false;
                 StateHasChanged();
+
+                lasttxid = txId;
             }
         }
         catch(Exception ex)
         {
+            txDetailsLoading = false;
             Console.WriteLine("Error during loading tx details. " + ex.Message);
+            StateHasChanged();
         }
     }
 }

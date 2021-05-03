@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -165,14 +166,17 @@ namespace VEDriversLite.NFT
                     {
                         foreach(var t in u.Tokens)
                         {
-                            if (t.Amount == 1)
+                            if (t.TokenId == TokenId)
                             {
-                                var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
-
-                                if (nft != null)
+                                if (t.Amount == 1)
                                 {
-                                    if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
-                                        nfts.Add(nft);
+                                    var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
+
+                                    if (nft != null)
+                                    {
+                                        if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
+                                            nfts.Add(nft);
+                                    }
                                 }
                             }
                         }
@@ -293,10 +297,10 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Id = TokenId, // id of token
                 Metadata = metadata,
                 Password = "", // put here your password
-                SenderAddress = account.Address,
+                SenderAddress = account.Address
             };
 
             try
@@ -334,10 +338,10 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Id = TokenId, // id of token
                 Metadata = metadata,
                 Password = "", // put here your password
-                SenderAddress = account.Address,
+                SenderAddress = account.Address
             };
 
             try
@@ -374,10 +378,10 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Id = TokenId, // id of token
                 Metadata = metadata,
                 Password = "", // put here your password
-                SenderAddress = account.Address,
+                SenderAddress = account.Address
             };
 
             try
@@ -413,15 +417,13 @@ namespace VEDriversLite.NFT
             metadata.Add("Link", profile.Link);
             metadata.Add("Type", "NFT Profile");
 
-            var utxo = account.Profile.Utxo;
-
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Id = TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
-                sendUtxo = new List<string>() { utxo },
+                sendUtxo = new List<string>() { profile.Utxo },
                 Password = "", // put here your password
                 SenderAddress = account.Address,
                 ReceiverAddress = account.Address
@@ -430,7 +432,7 @@ namespace VEDriversLite.NFT
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, account, isNFTtx:true, fee: 30000);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, account, fee: 20000);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -460,11 +462,13 @@ namespace VEDriversLite.NFT
             metadata.Add("Image", postnft.ImageLink);
             metadata.Add("Link", postnft.Link);
             metadata.Add("Type", "NFT Post");
+            if (postnft.PriceActive)
+                metadata.Add("Price", postnft.Price.ToString(CultureInfo.InvariantCulture));
 
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Id = TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
                 sendUtxo = new List<string>() { utxo },
@@ -476,7 +480,7 @@ namespace VEDriversLite.NFT
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, account, isNFTtx: true, fee: 30000);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, account, fee: 20000);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -520,13 +524,15 @@ namespace VEDriversLite.NFT
                 metadata.Add("Link", NFT.Link);
             }
 
+            metadata.Add("SoldPrice", payment.Price.ToString(CultureInfo.InvariantCulture));
+
             metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
 
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
                 Amount = 1,
-                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Id = TokenId, // id of token
                 Symbol = "VENFT", // symbol of token
                 Metadata = metadata,
                 Password = "", // put here your password,
@@ -565,13 +571,13 @@ namespace VEDriversLite.NFT
             metadata.Add("Sender", account.Address);
             metadata.Add("NFTUtxoTxId", image.Utxo);
             metadata.Add("Image", image.ImageLink);
-            metadata.Add("Price", price.ToString());
+            metadata.Add("Price", price.ToString(CultureInfo.InvariantCulture));
             metadata.Add("Type", "NFT Payment");
 
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Id = TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
                 sendUtxo = new List<string>() { utxo },
@@ -583,7 +589,7 @@ namespace VEDriversLite.NFT
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, account, price, 30000);
+                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, account, price, 20000);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -628,7 +634,7 @@ namespace VEDriversLite.NFT
             }
 
             if (priceWrite)
-                metadata.Add("Price", price.ToString());
+                metadata.Add("Price", price.ToString(CultureInfo.InvariantCulture));
 
             metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
 
@@ -637,7 +643,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+                Id = TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
                 sendUtxo = new List<string>() { utxo },
@@ -649,7 +655,7 @@ namespace VEDriversLite.NFT
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, account, isNFTtx: true, fee: 30000);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, account, fee: 20000);
                 if (rtxid != null)
                 {
                     return rtxid;

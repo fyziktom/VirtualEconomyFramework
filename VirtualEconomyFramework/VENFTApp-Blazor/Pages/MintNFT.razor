@@ -212,6 +212,11 @@
         }
     }
 
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
     void ImageLinkChanged(string newLink)
     {
         newNFT.ImageLink = newLink;
@@ -269,6 +274,10 @@
     {
         errorDuringSend = false;
 
+        status = "Sending...";
+        processingMinting = true;
+        StateHasChanged();
+
         if (AppData.Account.IsLocked())
         {
             processingMinting = false;
@@ -281,7 +290,8 @@
         {
             processingMinting = false;
             errorDuringSend = true;
-            errorMessage = "You dont have enough Neblio on the address. Probably waiting for more than 1 confirmation.";
+            status = "Not enought neblio...";
+            errorMessage = "You dont have enough Neblio on the address. Probably waiting for more than 2 confirmation.";
             StateHasChanged();
             return;
         }
@@ -291,14 +301,12 @@
         {
             processingMinting = false;
             errorDuringSend = true;
-            errorMessage = "You dont have VENFT tokens on the address. Probably waiting for more than 1 confirmation.";
+            status = "Not enough VENFT...";
+            errorMessage = "You dont have VENFT tokens on the address. Probably waiting for more than 2 confirmation.";
             StateHasChanged();
             return;
         }
 
-        status = "Sending...";
-        processingMinting = true;
-        StateHasChanged();
         await Task.Delay(50);
 
         try
@@ -335,6 +343,7 @@
         }
         catch (Exception ex)
         {
+            processingMinting = false;
             tokentxid = ex.Message;
             errorDuringSend = true;
             errorMessage = ex.Message;

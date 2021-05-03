@@ -108,10 +108,13 @@ namespace VEDriversLite
                                 var pn = NFTs.Where(n => n.Utxo == ((PaymentNFT)p).NFTUtxoTxId).FirstOrDefault();
                                 if (pn != null)
                                 {
-                                    var rtxid = await NFTHelpers.SendOrderedNFT(this, (PaymentNFT)p);
-                                    Console.WriteLine(rtxid);
-                                    await Task.Delay(200);
-                                    await ReLoadNFTs();
+                                    if (p.Price >= pn.Price)
+                                    {
+                                        var rtxid = await NFTHelpers.SendOrderedNFT(this, (PaymentNFT)p);
+                                        Console.WriteLine(rtxid);
+                                        await Task.Delay(200);
+                                        await ReLoadNFTs();
+                                    }
                                 }
                             }
                         }
@@ -363,7 +366,7 @@ namespace VEDriversLite
 
         public async Task<(bool, string)> ValidateNFTUtxo(string utxo)
         {
-            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, utxo);
+            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo);
             if (!u.Item1)
             {
                 var msg = "Provided source tx transaction is not spendable. Probably waiting for more than 1 confirmation.";

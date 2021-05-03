@@ -33,6 +33,12 @@
                         <h1>Send VENFT Tokens</h1>
                     </div>
                 </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <VENFTApp_Blazor.Components.AccountBalances />
+                    </div>
+                </div>
+                
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <p>Available source tokens on address: @AppData.Account.SourceTokensBalance</p>
@@ -65,7 +71,7 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <input type="number" step="1" min="1" max="@AppData.Account.SourceTokensBalance" @bind="@AmountTokensToSend" />
+                        <input type="number" step="1" min="2" max="@AppData.Account.SourceTokensBalance" @bind="@AmountTokensToSend" />
                         <!--<Input ShowUpDown="false" TValue="int" @bind-Value=@AmountTokensToSend Style="font-size:12px; min-width:250px;" />-->
                     </div>
                 </div>
@@ -76,7 +82,7 @@
                 </div>
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Sent transaction: <a href="https://explorer.nebl.io/tx/@txid" target="_blank">@tokentxid</a></p>
+                        <p>Sent transaction: <a href="https://explorer.nebl.io/tx/@tokentxid" target="_blank">@tokentxid</a></p>
                     </div>
                 </div>
 
@@ -152,7 +158,7 @@
     private string tokentxid = string.Empty;
     private string tokenReceiver = string.Empty;
     private string neblReceiver = string.Empty;
-    private int AmountTokensToSend = 1;
+    private int AmountTokensToSend = 2;
     private double AmountToSend = 0.001;
 
     protected override async Task OnInitializedAsync()
@@ -175,6 +181,9 @@
             await Task.Delay(500);
             NavManager.NavigateTo("/");
         }
+
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
     }
 
 
@@ -185,6 +194,11 @@
 
     private async Task SendTokenTx()
     {
+
+        sendingTransaction = true;
+        tokentxid = "Sending...";
+        StateHasChanged();
+
         errorDuringSend = false;
 
         if (AppData.Account.IsLocked())
@@ -216,10 +230,6 @@
             return;
         }
 
-        sendingTransaction = true;
-        tokentxid = "Sending...";
-        StateHasChanged();
-
         // create token metadata
         var metadata = new Dictionary<string, string>();
         metadata.Add("Data", "Sent with https://ve-nft.com/");
@@ -228,8 +238,6 @@
         var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
         {
             Amount = Convert.ToDouble(AmountTokensToSend),
-            Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
-            Symbol = "VENFT", // symbol of token
             Metadata = metadata,
             Password = "", // put here your password
             SenderAddress = AppData.Account.Address,
@@ -239,7 +247,7 @@
         try
         {
             // send tx
-            var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, AppData.Account);
+            var rtxid = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AppData.Account);
             if (rtxid != null)
             {
                 tokentxid = rtxid;

@@ -157,12 +157,28 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var tx in AppData.Account.AddressInfo.Transactions)
+                                @for (var i = 0; i < AppData.Account.AddressInfo.Transactions.Count; i++)
                                 {
-                                    <tr>
-                                        <td>@NeblioTransactionHelpers.ShortenTxId(tx)</td>
-                                        <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx)"><i class="oi oi-info"></i></button></td>
-                                    </tr>
+                                    @if (i < maxLoadedTxs)
+                                    {
+                                        var tx = AppData.Account.AddressInfo.Transactions.ToArray()[i];
+                                        <tr>
+                                            <td>@NeblioTransactionHelpers.ShortenTxId(tx)</td>
+                                            <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx)"><i class="oi oi-info"></i></button></td>
+                                        </tr>
+                                    }
+                                }
+                                @if (maxLoadedTxs < AppData.Account.AddressInfo.Transactions.Count)
+                                {
+                                    var diff = AppData.Account.AddressInfo.Transactions.Count - maxLoadedTxs;
+                                    @if (diff < 10)
+                                    {
+                                        <tr><td colspan="2"> <button class="btn btn-secondary" @onclick="loadNextTx">Show Next @diff transactions</button></td></tr>
+                                    }
+                                    else
+                                    {
+                                        <tr><td colspan="2"> <button class="btn btn-secondary" @onclick="loadNextTx">Show Next 10 transactions</button></td></tr>
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -211,29 +227,49 @@
     private System.Threading.Timer hideTimer;
     private string accountKey = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    private int maxLoadedTxs = 25;
+
+    protected override Task OnInitializedAsync()
     {
         try
         {
             if (string.IsNullOrEmpty(AppData.Account.Address))
             {
-                AppData.Account = new NeblioAccount();
-                await Task.Delay(500);
-                NavManager.NavigateTo("/");
+                Redirect();
             }
             else
             {
-                var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
-                AppData.Account.NFTs = nfts;
-                AppData.Account.Profile = await NFTHelpers.FindProfileNFT(AppData.Account);
+                Load();
             }
         }
         catch(Exception ex)
         {
-            AppData.Account = new NeblioAccount();
-            await Task.Delay(500);
-            NavManager.NavigateTo("/");
+            Redirect();
         }
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Load()
+    {
+        var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
+        AppData.Account.NFTs = nfts;
+        AppData.Account.Profile = await NFTHelpers.FindProfileNFT(AppData.Account);
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+    }
+
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
     }
 
     async Task CopyToClipboard(MouseEventArgs e)
@@ -246,6 +282,12 @@
         {
             Console.WriteLine("Cannot write text to clipboard" + ex.Message);
         }
+    }
+
+    private async Task loadNextTx()
+    {
+        maxLoadedTxs += 10;
+        StateHasChanged();
     }
 
     private async Task lockWallet()

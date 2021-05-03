@@ -289,14 +289,20 @@
     {
         errorDuringSend = false;
 
+        loadingProfile = true;
+        processingMinting = true;
+        StateHasChanged();
+
         if (ReadOnlyProfile)
         {
+            loadingProfile = false;
             processingMinting = false;
             StateHasChanged();
             return;
         }
         if (AppData.Account.IsLocked())
         {
+            loadingProfile = false;
             processingMinting = false;
             StateHasChanged();
             return;
@@ -310,6 +316,7 @@
         var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, 0.0002);
         if (nutxos.Count == 0)
         {
+            loadingProfile = false;
             processingMinting = false;
             errorDuringSend = true;
             errorMessage = "You dont have Neblio on the address. Probably waiting for more than 1 confirmation.";
@@ -322,6 +329,7 @@
             var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(AppData.Account.Address, NFTHelpers.TokenId, 1);
             if (tutxos.Count == 0)
             {
+                loadingProfile = false;
                 processingMinting = false;
                 errorDuringSend = true;
                 errorMessage = "You dont have VENFT tokens for minting on the address. Probably waiting for more than 1 confirmation.";
@@ -331,9 +339,10 @@
         }
         else
         {
-            var utxo = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(AppData.Account.Address, newProfileNFT.Utxo);
+            var utxo = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(AppData.Account.Address, NFTHelpers.TokenId, newProfileNFT.Utxo);
             if (!utxo.Item1)
             {
+                loadingProfile = false;
                 processingMinting = false;
                 errorDuringSend = true;
                 errorMessage = "Provided source tx transaction is not spendable. Probably waiting for more than 1 confirmation.";
@@ -344,10 +353,6 @@
 
         if (AppData.Account.Profile == null)
             AppData.Account.Profile = new ProfileNFT("");
-
-        loadingProfile = true;
-        processingMinting = true;
-        StateHasChanged();
 
         try
         {

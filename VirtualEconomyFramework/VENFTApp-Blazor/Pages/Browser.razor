@@ -17,6 +17,12 @@
         </div>
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <VENFTApp_Blazor.Components.AccountBalances />
+            </div>
+        </div>
+        
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <h6>Browse All VENFT Holders</h6>
             </div>
         </div>
@@ -57,9 +63,9 @@
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                     <h6>@tab.Address</h6>
                                                     <!--
-                                                        <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
-                                                            <i class="oi oi-star"></i>
-                                                        </a>-->
+                                                <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
+                                                    <i class="oi oi-star"></i>
+                                                </a>-->
                                                 </div>
                                             </div>
 
@@ -164,21 +170,21 @@
                     <tbody>
                         @foreach (var owner in AppData.VENFTOwners)
                         {
-                            <tr style="margin-top:10px;">
+                            <tr style="margin-top:14px;">
                                 <td>
                                     <a target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
                                         @owner.ShortenAddress
                                     </a>
                                 </td>
                                 <td>
-                                    <span style="margin-left:10px;">@owner.AmountOfNFTs NFTs</span>
+                                    <span style="margin-left:12px;">@owner.AmountOfNFTs NFTs</span>
                                 </td>
                                 <td>
-                                    <span style="margin-left:10px;">@owner.AmountOfTokens VENFT</span>
+                                    <span style="margin-left:12px;">@owner.AmountOfTokens VENFT</span>
                                 </td>
                                 <td>
                                     <a style="margin-left:20px;" target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
-                                        <i class="oi oi-browser" style="font-size:16px;"></i>
+                                        <i class="oi oi-browser" style="font-size:25px;"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -199,27 +205,40 @@
     private bool openTabVisible = false;
     private string newTabAddress = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         try
         {
             if (string.IsNullOrEmpty(AppData.Account.Address))
             {
-                AppData.Account = new NeblioAccount();
-                await Task.Delay(500);
-                NavManager.NavigateTo("/");
+                Redirect();
             }
             else
             {
-                await LoadBookmarksAndState();
+                LoadBookmarksAndState();
             }
         }
         catch (Exception ex)
         {
-            AppData.Account = new NeblioAccount();
-            await Task.Delay(500);
-            NavManager.NavigateTo("/");
+            Redirect();
         }
+
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+
+        return base.OnInitializedAsync();
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
     }
 
     private async Task closePublicAddresses(MouseEventArgs e)
@@ -300,7 +319,8 @@
             StateHasChanged();
 
             if (AppData.VENFTOwners.Count == 0)
-                AppData.VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
+                AppData.VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners(NFTHelpers.TokenId);
+
         }
         catch (Exception ex)
         {

@@ -226,14 +226,14 @@
 
 @code {
 
-        [Parameter]
-        public INFT NFT { get; set; }
+    [Parameter]
+    public INFT NFT { get; set; }
 
-        [Parameter]
-        public bool OwnNFT { get; set; } = false;
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
 
-        [Parameter]
-        public EventCallback<string> NFTSent { get; set; }
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
 
     private GetTransactionInfoResponse nftInDetailsTxInfo = new GetTransactionInfoResponse();
     private System.Threading.Timer nftInDetailsTxInfoRefresh;
@@ -259,8 +259,36 @@
     bool setPriceNFTDialogVisible = false;
     private double priceOfNFT { get; set; } = 0.0002;
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        //Reload();
 
-    protected override async Task OnInitializedAsync()
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        Load();
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Reload()
+    {
+        newPostNFT.Fill(NFT);
+
+        if (!string.IsNullOrEmpty(NFT.Utxo))
+        {
+            nftInDetailsTxInfo = await NeblioTransactionHelpers.GetTransactionInfo(NFT.Utxo);
+            if (nftInDetailsTxInfo == null)
+            {
+                nftInDetailsTxInfo = new GetTransactionInfoResponse();
+                nftInDetailsTxInfo.Confirmations = 0;
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task Load()
     {
         newPostNFT.Fill(NFT);
 
@@ -277,6 +305,9 @@
         }
         StateHasChanged();
 
+        if (nftInDetailsTxInfoRefresh != null)
+            nftInDetailsTxInfoRefresh.Dispose();
+
         nftInDetailsTxInfoRefresh = new System.Threading.Timer(async (object stateInfo) =>
         {
             if (!string.IsNullOrEmpty(NFT.Utxo))
@@ -291,6 +322,7 @@
             }
 
         }, new System.Threading.AutoResetEvent(false), 2000, 2000);
+
     }
 
     void ImageLinkChanged(string newLink)
@@ -330,12 +362,16 @@
 
     private async Task setPriceNFTDialogConfirm(MouseEventArgs e)
     {
+        sendingTransaction = true;
+        confirmVisible = false;
+        confirmSetPriceVisible = false;
+        setPriceNFTDialogVisible = false;
+        tokentxid = "Sending...";
+        StateHasChanged();
+
         if (!await VerifyNFTToSend())
             return;
 
-        sendingTransaction = true;
-        tokentxid = "Sending...";
-        StateHasChanged();
         await Task.Delay(50);
 
         try
@@ -348,7 +384,6 @@
                 tokentxid = rtxid;
                 await Task.Delay(1000);
                 NFTSent.InvokeAsync(rtxid);
-                AppData.Account.NFTs.Clear();
                 StateHasChanged();
                 sendingTransaction = false;
                 errorMessage = string.Empty;
@@ -410,6 +445,7 @@
             var utxo = await AppData.Account.ValidateNFTUtxo(NFT.Utxo);
             if (!utxo.Item1)
             {
+                sendingTransaction = false;
                 processingMinting = false;
                 errorDuringSend = true;
                 errorMessage = utxo.Item2;
@@ -423,12 +459,13 @@
 
     private async Task sendNFT()
     {
-        if (!await VerifyNFTToSend())
-            return;
-
         sendingTransaction = true;
         tokentxid = "Sending...";
         StateHasChanged();
+
+        if (!await VerifyNFTToSend())
+            return;
+
         await Task.Delay(50);
 
         // create token metadata
@@ -459,7 +496,7 @@
         var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
         {
             Amount = 1,
-            Id = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", // id of token
+            Id = NFTHelpers.TokenId, // id of token
             Symbol = "VENFT", // symbol of token
             Metadata = metadata,
             Password = "", // put here your password,
@@ -471,13 +508,12 @@
         try
         {
             // send tx
-            var rtxid = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, AppData.Account);
+            var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, AppData.Account);
             if (rtxid != null)
             {
                 sendingTransactionState = "Transaction Send right!";
                 tokentxid = rtxid;
                 NFTSent.InvokeAsync(rtxid);
-                AppData.Account.NFTs.Clear();
                 StateHasChanged();
                 sendingTransaction = false;
                 errorMessage = string.Empty;
@@ -518,6 +554,10 @@
 
     private async Task ChangePostNFT()
     {
+        sendingTransaction = true;
+        processingMinting = true;
+        StateHasChanged();
+
         errorDuringSend = false;
 
         if (AppData.Account.IsLocked())
@@ -549,9 +589,6 @@
             }
         }
 
-        sendingTransaction = true;
-        processingMinting = true;
-        StateHasChanged();
         await Task.Delay(50);
 
         try
@@ -571,10 +608,6 @@
 
                 await Task.Delay(1000);
                 processingMinting = false;
-
-                var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
-                AppData.Account.NFTs = nfts;
-
             }
 
             if (rtxid != null)

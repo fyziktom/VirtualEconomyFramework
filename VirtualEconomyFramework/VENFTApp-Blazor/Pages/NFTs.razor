@@ -28,7 +28,7 @@
 
             <VENFTApp_Blazor.Components.AccountBalances/>
 
-            <VENFTApp_Blazor.Components.NFTList NFTs="AppData.Account.NFTs" Address="AppData.Account.Address" MainAccount="true"/>
+            <VENFTApp_Blazor.Components.NFTList NFTs="@AppData.Account.NFTs" Address="@AppData.Account.Address" MainAccount="true"/>
         </div>
     </div>
 </div>
@@ -52,6 +52,16 @@
             await Task.Delay(500);
             NavManager.NavigateTo("/");
         }
+
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+    }
+
+
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
     }
 
 }

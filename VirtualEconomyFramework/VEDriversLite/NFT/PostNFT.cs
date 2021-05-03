@@ -55,6 +55,7 @@ namespace VEDriversLite.NFT
                 {
                     if (!string.IsNullOrEmpty(price))
                     {
+                        price = price.Replace(',', '.');
                         Price = double.Parse(price, CultureInfo.InvariantCulture);
                         PriceActive = true;
                     }
@@ -96,6 +97,7 @@ namespace VEDriversLite.NFT
                 {
                     if (!string.IsNullOrEmpty(price))
                     {
+                        price = price.Replace(',', '.');
                         Price = double.Parse(price, CultureInfo.InvariantCulture);
                         PriceActive = true;
                     }
@@ -146,6 +148,7 @@ namespace VEDriversLite.NFT
                 {
                     if (!string.IsNullOrEmpty(price))
                     {
+                        price = price.Replace(',', '.');
                         Price = double.Parse(price, CultureInfo.InvariantCulture);
                         PriceActive = true;
                     }
