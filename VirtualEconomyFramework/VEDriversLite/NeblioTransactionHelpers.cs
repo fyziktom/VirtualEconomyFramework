@@ -390,7 +390,7 @@ namespace VEDriversLite
 
             try
             {
-                return await SignAndBroadcast(transaction, keyfromFile);
+                return await SignAndBroadcast(transaction, keyfromFile, addressForTx);
             }
             catch (Exception ex)
             {
@@ -485,7 +485,7 @@ namespace VEDriversLite
 
             try
             {
-                return await SignAndBroadcast(transaction, key);
+                return await SignAndBroadcast(transaction, key, addressForTx);
             }
             catch (Exception ex)
             {
@@ -569,7 +569,7 @@ namespace VEDriversLite
 
             try
             {
-                return await SignAndBroadcast(transaction, keyfromFile);
+                return await SignAndBroadcast(transaction, keyfromFile, addressForTx);
             }
             catch (Exception ex)
             {
@@ -656,7 +656,7 @@ namespace VEDriversLite
 
             try
             {
-                return await SignAndBroadcast(transaction, key);
+                return await SignAndBroadcast(transaction, key, addressForTx);
             }
             catch (Exception ex)
             {
@@ -678,6 +678,9 @@ namespace VEDriversLite
 
             if (account == null)
                 throw new Exception("Account cannot be null!");
+
+            if (string.IsNullOrEmpty(data.SenderAddress))
+                data.SenderAddress = account.Address;
 
             try
             {
@@ -755,7 +758,7 @@ namespace VEDriversLite
 
                 try
                 {
-                    return await SignAndBroadcast(transaction, keyfromFile);
+                    return await SignAndBroadcast(transaction, keyfromFile, addressForTx);
                 }
                 catch (Exception ex)
                 {
@@ -778,12 +781,12 @@ namespace VEDriversLite
                 throw new Exception("Neblio amount cannot be 0 in Token+Nebl transaction.");
 
             // load key and address
-            BitcoinSecret keyfromFile = null;
+            BitcoinSecret key = null;
             BitcoinAddress addressForTx = null;
             try
             {
                 var k = await GetAddressAndKey(account, data.Password);
-                keyfromFile = k.Item2;
+                key = k.Item2;
                 addressForTx = k.Item1;
             }
             catch (Exception ex)
@@ -943,7 +946,7 @@ namespace VEDriversLite
 
             try
             {
-                return await SignAndBroadcast(transaction, keyfromFile);
+                return await SignAndBroadcast(transaction, key, addressForTx);
             }
             catch(Exception ex)
             {
@@ -952,9 +955,8 @@ namespace VEDriversLite
 
         }
 
-        private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key)
+        private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key, BitcoinAddress address)
         {
-            var address = key.GetAddress();
             // add coins
             List<ICoin> coins = new List<ICoin>();
             try
@@ -982,6 +984,9 @@ namespace VEDriversLite
                 transaction.Sign(key, coins);
 
                 var sx = transaction.ToString();
+
+                if (tx == sx)
+                    throw new Exception("Transaction was not signed. Probably not spendable source.");
             }
             catch (Exception ex)
             {
@@ -1083,29 +1088,17 @@ namespace VEDriversLite
                 throw new Exception("This kind of transaction requires Token input utxo list.");
             }
 
-            try
-            {
-                // need some neblio too
-                // to be sure to have last tx request it from neblio network
-                // set some minimum amount
-                var utxos = await GetAddressNeblUtxo(data.SenderAddress, 0.0001, 2 * (fee / FromSatToMainRatio)); // to be sure find at leas 2 times of expected fee
-                                                                                                                  // create raw Tx with NBitcoin
-                if (utxos == null || utxos.Count == 0)
-                    throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+            if (dto.Sendutxo.Count < 2)
+                throw new Exception("This kind of transaction requires Token input utxo list with at least 2 one token utox");
 
-                foreach (var u in utxos)
-                {
-                    if ((u.Value) >= fee)
-                    {
-                        dto.Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
-                        break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot load Neblio Utxo." + ex.Message);
-            }
+            // neblio utxo
+            var nutxos = await GetAddressNeblUtxo(data.SenderAddress, 0.0001, 2 * (fee / FromSatToMainRatio));
+            if (nutxos == null || nutxos.Count == 0)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
+            var nutxo = nutxos.FirstOrDefault();
+            if (nutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+            dto.Sendutxo.Add(nutxo.Txid + ":" + ((int)nutxo.Index).ToString());
 
             // create raw tx
             var hexToSign = string.Empty;
@@ -1127,7 +1120,7 @@ namespace VEDriversLite
 
             try
             {
-                return await SignAndBroadcast(transaction, keyfromFile);
+                return await SignAndBroadcast(transaction, keyfromFile, addressForTx);
             }
             catch (Exception ex)
             {

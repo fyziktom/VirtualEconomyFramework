@@ -215,7 +215,7 @@
         {
             sendingTransaction = false;
             errorDuringSend = true;
-            errorMessage = "You dont have enough Neblio on the address. Probably waiting for more than 1 confirmation.";
+            errorMessage = "You dont have enough Neblio on the address. Probably waiting for more than 2 confirmations.";
             StateHasChanged();
             return;
         }
@@ -225,7 +225,7 @@
         {
             sendingTransaction = false;
             errorDuringSend = true;
-            errorMessage = "You dont have VENFT tokens on the address. Probably waiting for more than 1 confirmation.";
+            errorMessage = "You dont have VENFT tokens on the address. Probably waiting for more than 2 confirmations.";
             StateHasChanged();
             return;
         }
@@ -267,6 +267,10 @@
 
     private async Task SendTx()
     {
+        sendingTransaction = true;
+        txid = "Sending...";
+        StateHasChanged();
+
         errorDuringSend = false;
 
         if (AppData.Account.IsLocked())
@@ -283,14 +287,11 @@
         {
             sendingTransaction = false;
             errorDuringSend = true;
-            errorMessage = "You dont have Neblio on the address. Probably waiting for more than 1 confirmation.";
+            errorMessage = "You dont have Neblio on the address. Probably waiting for more than 2 confirmations.";
             StateHasChanged();
             return;
         }
 
-        sendingTransaction = true;
-        txid = "Sending...";
-        StateHasChanged();
         await Task.Delay(50);
 
         // fill input data for sending tx

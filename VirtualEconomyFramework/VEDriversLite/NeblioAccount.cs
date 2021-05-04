@@ -108,12 +108,22 @@ namespace VEDriversLite
                                 var pn = NFTs.Where(n => n.Utxo == ((PaymentNFT)p).NFTUtxoTxId).FirstOrDefault();
                                 if (pn != null)
                                 {
-                                    if (p.Price >= pn.Price)
+                                    if (pn.Price > 0)
                                     {
-                                        var rtxid = await NFTHelpers.SendOrderedNFT(this, (PaymentNFT)p);
-                                        Console.WriteLine(rtxid);
-                                        await Task.Delay(200);
-                                        await ReLoadNFTs();
+                                        if (p.Price >= pn.Price)
+                                        {
+                                            try
+                                            {
+                                                var rtxid = await NFTHelpers.SendOrderedNFT(this, (PaymentNFT)p);
+                                                Console.WriteLine(rtxid);
+                                                await Task.Delay(200);
+                                                await ReLoadNFTs();
+                                            }
+                                            catch(Exception ex)
+                                            {
+                                                Console.WriteLine("Cannot send ordered NFT, payment txid: " + p.Utxo + " - " + ex.Message);
+                                            }
+                                        }
                                     }
                                 }
                             }
