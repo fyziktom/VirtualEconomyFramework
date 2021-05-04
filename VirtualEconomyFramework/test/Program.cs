@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VEDriversLite;
 using VEDriversLite.NFT;
@@ -15,15 +16,26 @@ namespace test
             {
                 var pass = "";
                 var key = "";
-                var address = "NTYZBARSWkB1rBmzdC3W8NnVyxv9dchtqG";
+                var address = "NWzAr4qG9VnVv9GajWYWJmBVdNU4SACEvn";// "NWzAr4qG9VnVv9GajWYWJmBVdNU4SACEvn";//"NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7";
                 var receiver = "NWzAr4qG9VnVv9GajWYWJmBVdNU4SACEvn";
 
                 NeblioAccount account = new NeblioAccount();
                 await account.LoadAccount(pass, key, address); // put here your password
                                                                //await account.StartRefreshingData();
+                await account.StartRefreshingData();
+                //var r = await account.SendNeblioPayment("NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7", 1);
+                Dictionary<string, string> metadata = new Dictionary<string, string>();
+                metadata.Add("Data", "https://ve-nft.com/");
+                //var r = await account.SendNeblioTokenPayment(NFTHelpers.TokenId, metadata, "NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7", 5);
 
-                var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, "2254f7ebae44a723b072ad95130f99c8732a99a4d5da62e9e2e164cdcc27a735");
+                var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, "c0a92312aa4c9012b293d9827f960695c800e0d7b5e80bf4a52f8d2acddfd63b");
+                //await account.SendNFT(account.Address, NFT, true, 0.33);
+               //await account.SendNFTPayment(receiver, NFT);
 
+                while (true)
+                {
+                    await Task.Delay(100);
+                }
                 /*
                 var NFT = new ProfileNFT("");
                 NFT.Author = "fyziktom";
@@ -37,8 +49,9 @@ namespace test
                 NFT.Description = "Neblio";
                 //var rtxid = await NFTHelpers.ChangeProfileNFT(account, (ProfileNFT)NFT);
                 //var rtxid = await NFTHelpers.MintImageNFT(account, NFT);
-                var rtxid = await NFTHelpers.SendNFTPayment(account, receiver, NFT, NFT.Utxo, NFT.Price);
-                Console.WriteLine(rtxid);
+                //var rtxid = await NFTHelpers.SendNFTPayment(account, receiver, NFT, NFT.Utxo, NFT.Price);
+                //var rtxid = await NFTHelpers.SendOrderedNFT(account, (PaymentNFT)NFT);
+                //Console.WriteLine(rtxid);
             }
             catch (Exception ex)
             {

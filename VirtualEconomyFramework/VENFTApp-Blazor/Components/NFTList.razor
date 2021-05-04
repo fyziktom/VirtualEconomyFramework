@@ -23,7 +23,7 @@
 
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-end justify-content-xl-end align-items-xl-end">
-                    <button class="btn btn-primary" @onclick="LoadNFTs"><i class="oi oi-reload"></i></button>
+                    <button class="btn btn-primary" @onclick="ReloadNFTs"><i class="oi oi-reload"></i></button>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@
                         <div class="card-group">
                             @foreach (var nft in _nfts)
                             {
-                                if (nft.TypeText != "NFT Profile" && nft.TypeText != "NFT Settings")
+                                if (nft.Type != NFTTypes.Profile && nft.TypeText != "NFT Settings")
                                 {
                                     <div class="card" style="margin-left:10px; margin-top:10px; max-width:250px; min-width:200px;">
                                         <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:auto; max-width:250px; min-width:200px; width:auto;" />
@@ -52,25 +52,14 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                            <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft)" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-info" style="font-size:12px;"></i></button>
+                                                            <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-info" style="font-size:12px;"></i></button>
                                                         </div>
                                                     </div>
-                                                    <!--
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            @if (nft.Type == NFTTypes.Payment)
-                                                            {
-                                                                <span>This is NFT Payment For NFT:<a href="https://explorer.nebl.io/tx/@nft.NFTOriginTxId" target="_blank">To The Explorer</a></span>
-                                                                <button class="btn btn-primary" @onclick="async () => SendOrderedNFT(nft)" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-info" style="font-size:12px;"></i></button>
-                                                            }
-                                                        </div>
-                                                    </div>-->
-
                                                     <div class="row">
                                                         <div class="col">
                                                             @if (nft.PriceActive && nft.Type != NFTTypes.Payment)
                                                             {
-                                                                <SendNFTPayment NFT="@nft" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="NFTSent" />
+                                                                <SendNFTPayment Utxo="@nft.Utxo" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="NFTSent" />
                                                             }
                                                         </div>
                                                     </div>
@@ -93,11 +82,11 @@
     </div>
 </div>
 
-<Modal Title="@nftInDetails.Name"
+<Modal Title="NFT Details"
        Visible="@nftDetailsVisible"
        OnOk="@CloseNFTDetails"
        OnCancel="@CloseNFTDetails">
-    <VENFTApp_Blazor.Components.NFTDetails NFT="@nftInDetails" NFTSent="NFTSent" OwnNFT="@MainAccount" />
+    <VENFTApp_Blazor.Components.NFTDetails Utxo="@nftDetailsUtxo" NFTSent="NFTSent" OwnNFT="@MainAccount" />
 </Modal>
 
 @code {
@@ -114,6 +103,7 @@
             }
         }
     }
+
     [Parameter]
     public EventCallback<List<INFT>> NFTsChanged { get; set; }
 
@@ -122,43 +112,39 @@
     public string Address
     {
         get => _address;
-        set => _address = value;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                if (!MainAccount)
+                {
+                    _nfts = new List<INFT>();
+                    _address = value;
+                    LoadNFTs();
+                }
+                else
+                {
+                    _nfts = new List<INFT>();
+                    _address = value;
+                    _nfts = AppData.Account.NFTs;
+                }
+            }
+        }
     }
 
     [Parameter]
     public bool MainAccount { get; set; } = false;
 
     bool nftDetailsVisible = false;
-    private INFT nftInDetails = new ImageNFT("");
+    string nftDetailsUtxo = string.Empty;
 
     bool errorDuringSending = false;
     bool successSent = false;
     string tokentxid = string.Empty;
     string lastAddress = string.Empty;
 
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!MainAccount)
-        {
-            if (NFTs != null)
-                if (NFTs.Count == 0)
-                    LoadNFTs();
-        }
-
-        if (lastAddress != _address)
-            LoadNFTs();
-        return base.OnAfterRenderAsync(firstRender);
-    }
-
     protected override async Task OnInitializedAsync()
     {
-        if (!MainAccount)
-        {
-            if (NFTs != null)
-                if (NFTs.Count == 0)
-                    LoadNFTs();
-        }
-
         if (AppData.Account != null)
             AppData.Account.Refreshed += RefreshedHandler;
     }
@@ -172,20 +158,46 @@
         StateHasChanged();
     }
 
-    private async Task LoadNFTs()
+    private async Task ReloadNFTs()
     {
         if (!string.IsNullOrEmpty(_address))
         {
-            var nfts = await NFTHelpers.LoadAddressNFTs(_address);
-            _nfts = nfts;
-            var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
-            if (tab != null)
-                tab.NFTs = _nfts;
+            if (!MainAccount)
+            {
+                var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
+                if (tab != null)
+                    await tab.Reload();
+
+                _nfts = tab.NFTs;
+            }
+            else
+            {
+                await AppData.Account.ReLoadNFTs();
+                _nfts = AppData.Account.NFTs;
+            }
 
             lastAddress = _address;
             await Task.Delay(50);
             StateHasChanged();
-            //await NFTsChanged.InvokeAsync(nfts);
+        }
+    }
+
+    private async Task LoadNFTs()
+    {
+        if (!string.IsNullOrEmpty(_address))
+        {
+            if (!MainAccount)
+            {
+                var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
+                if (tab != null)
+                    if (tab.NFTs.Count == 0)
+                        await tab.Reload();
+                _nfts = tab.NFTs;
+
+                lastAddress = _address;
+                await Task.Delay(50);
+                StateHasChanged();
+            }
         }
     }
 
@@ -194,8 +206,7 @@
         successSent = true;
         tokentxid = nfttx;
         nftDetailsVisible = false;
-        LoadNFTs();
-        StateHasChanged();
+        ReloadNFTs();
     }
 
     private async Task CloseNFTDetails(MouseEventArgs e)
@@ -203,26 +214,12 @@
         nftDetailsVisible = false;
     }
 
-    private async Task ShowNFTDetails(INFT nft)
+    private async Task ShowNFTDetails(string utxo)
     {
         successSent = false;
-        nftInDetails = nft;
+        nftDetailsUtxo = utxo;
+        StateHasChanged();
         nftDetailsVisible = true;
         StateHasChanged();
-    }
-
-    private async Task SendOrderedNFT(INFT nft)
-    {
-        try
-        {
-            var payment = nft as PaymentNFT;
-            var res = await NFTHelpers.SendOrderedNFT(AppData.Account, payment);
-            tokentxid = res;
-        }
-        catch (Exception ex)
-        {
-
-            tokentxid = ex.Message;
-        }
     }
 }

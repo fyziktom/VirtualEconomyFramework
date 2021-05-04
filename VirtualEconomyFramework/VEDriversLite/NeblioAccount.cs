@@ -38,6 +38,8 @@ namespace VEDriversLite
         public GetAddressResponse AddressInfo { get; set; } = new GetAddressResponse();
 
         public event EventHandler Refreshed;
+        public event EventHandler<string> PaymentSent;
+        public event EventHandler<string> PaymentSentError;
 
         [JsonIgnore]
         public EncryptionKey AccountKey { get; set; }
@@ -75,16 +77,20 @@ namespace VEDriversLite
                 await ReloadMintingSupply();
                 await ReloadCountOfNFTs();
                 await ReloadTokenSupply();
-                await ReLoadNFTs();
             }
             catch (Exception ex)
             {
                 // todo
             }
 
+            var minorRefresh = 20;
+
             // todo cancelation token
             _ = Task.Run(async () =>
             {
+                await ReLoadNFTs();
+                Profile = await NFTHelpers.FindProfileNFT(NFTs);
+                await CheckPayments();
                 var lastNFTcount = AddressNFTCount;
                 while (true)
                 {
@@ -98,36 +104,15 @@ namespace VEDriversLite
                         if (lastNFTcount != AddressNFTCount)
                             await ReLoadNFTs();
 
-                        lastNFTcount = AddressNFTCount;
-
-                        var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
-                        if (pnfts.Count > 0)
+                        minorRefresh--;
+                        if (minorRefresh < 0)
                         {
-                            foreach (var p in pnfts)
-                            {
-                                var pn = NFTs.Where(n => n.Utxo == ((PaymentNFT)p).NFTUtxoTxId).FirstOrDefault();
-                                if (pn != null)
-                                {
-                                    if (pn.Price > 0)
-                                    {
-                                        if (p.Price >= pn.Price)
-                                        {
-                                            try
-                                            {
-                                                var rtxid = await NFTHelpers.SendOrderedNFT(this, (PaymentNFT)p);
-                                                Console.WriteLine(rtxid);
-                                                await Task.Delay(200);
-                                                await ReLoadNFTs();
-                                            }
-                                            catch(Exception ex)
-                                            {
-                                                Console.WriteLine("Cannot send ordered NFT, payment txid: " + p.Utxo + " - " + ex.Message);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            Profile = await NFTHelpers.FindProfileNFT(NFTs);
+                            await CheckPayments();
+                            minorRefresh = 20;
                         }
+
+                        lastNFTcount = AddressNFTCount;
 
                         Refreshed?.Invoke(this, null);
                     }
@@ -333,6 +318,42 @@ namespace VEDriversLite
             }
         }
 
+        public async Task CheckPayments()
+        {
+            var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+            if (pnfts.Count > 0)
+            {
+                foreach (var p in pnfts)
+                {
+                    var pn = NFTs.Where(n => n.Utxo == ((PaymentNFT)p).NFTUtxoTxId).FirstOrDefault();
+                    if (pn != null)
+                    {
+                        if (pn.Price > 0)
+                        {
+                            if (p.Price >= pn.Price)
+                            {
+                                try
+                                {
+                                    var res = await CheckSpendableNeblio(0.001);
+                                    if (res.Item2 != null)
+                                    {
+                                        var rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
+                                        Console.WriteLine(rtxid);
+                                        await Task.Delay(500);
+                                        await ReLoadNFTs();
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Cannot send ordered NFT, payment txid: " + p.Utxo + " - " + ex.Message);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public async Task<(bool,double)> HasSomeSpendableNeblio(double amount = 0.0002)
         {
             var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0001, amount);
@@ -379,13 +400,359 @@ namespace VEDriversLite
             var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo);
             if (!u.Item1)
             {
-                var msg = "Provided source tx transaction is not spendable. Probably waiting for more than 1 confirmation.";
+                var msg = $"Provided source tx transaction is not spendable. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmation.";
                 return (false, msg);
             }
             else
             {
                 return (true, "OK");
             }
+        }
+
+        public async Task<(string, ICollection<Utxos>)> CheckSpendableNeblio(double amount)
+        {
+            try
+            {
+                var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0002, amount);
+                if (nutxos == null || nutxos.Count == 0)
+                    return ($"You dont have Neblio on the address. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
+                else
+                    return ("OK", nutxos);
+            }
+            catch(Exception ex)
+            {
+                return ("Cannot check spendable Neblio. " + ex.Message, null);
+            }
+        }
+
+        public async Task<(string, ICollection<Utxos>)> CheckSpendableNeblioTokens(string id, int amount)
+        {
+            try
+            {
+                var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, id, amount);
+                if (tutxos == null || tutxos.Count == 0)
+                    return ($"You dont have Neblio on the address. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
+                else
+                    return ("OK", tutxos);
+            }
+            catch (Exception ex)
+            {
+                return ("Cannot check spendable Neblio Tokens. " + ex.Message, null);
+            }
+        }
+
+        public async Task<(bool, string)> OrderSourceTokens(double amount)
+        {
+            return await SendNeblioPayment("NRJs13ULX5RPqCDfEofpwxGptg5ePB8Ypw", amount);
+        }
+
+        public async Task<(bool, string)> SendNeblioPayment(string receiver, double amount)
+        {
+            if (IsLocked())
+            {
+                PaymentSentError?.Invoke(this, "Account is locked.");
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(amount);
+            if (res.Item2 == null)
+            {
+                PaymentSentError?.Invoke(this, res.Item1);
+                return (false, res.Item1);
+            }
+            
+
+            // fill input data for sending tx
+            var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Amount = amount,
+                SenderAddress = Address,
+                ReceiverAddress = receiver
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, res.Item2);
+                if (rtxid != null)
+                {
+                    PaymentSent?.Invoke(this, rtxid);
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                PaymentSentError?.Invoke(this, ex.Message);
+                return (false, ex.Message);
+            }
+
+            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            return (false, "Unexpected error during send.");
+        }
+
+        public async Task<(bool, string)> SendNeblioTokenPayment(string tokenId, IDictionary<string,string> metadata, string receiver, int amount)
+        {
+            if (IsLocked())
+            {
+                PaymentSentError?.Invoke(this, "Account is locked.");
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                PaymentSentError?.Invoke(this, res.Item1);
+                return (false, res.Item1);
+            }
+            var tres = await CheckSpendableNeblioTokens(tokenId, amount);
+            if (tres.Item2 == null)
+            {
+                PaymentSentError?.Invoke(this, tres.Item1);
+                return (false, tres.Item1);
+            }
+
+            // fill input data for sending tx
+            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Amount = Convert.ToDouble(amount),
+                SenderAddress = Address,
+                ReceiverAddress = receiver,
+                Metadata = metadata,
+                Id = tokenId
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AccountKey, res.Item2, tres.Item2);
+                if (rtxid != null)
+                {
+                    PaymentSent?.Invoke(this, rtxid);
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                PaymentSentError?.Invoke(this, ex.Message);
+                return (false, ex.Message);
+            }
+
+            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            return (false, "Unexpected error during send.");
+        }
+
+        public async Task<(bool, string)> MintNFT(string tokenId, INFT NFT)
+        {
+            if (IsLocked())
+            {
+                PaymentSentError?.Invoke(this, "Account is locked.");
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                PaymentSentError?.Invoke(this, res.Item1);
+                return (false, res.Item1);
+            }
+            var tres = await CheckSpendableNeblioTokens(tokenId, 2);
+            if (tres.Item2 == null)
+            {
+                PaymentSentError?.Invoke(this, tres.Item1);
+                return (false, tres.Item1);
+            }
+
+            try
+            {
+                var rtxid = string.Empty;
+                switch (NFT.Type)
+                {
+                    case NFTTypes.Image:
+                        rtxid = await NFTHelpers.MintImageNFT(Address, AccountKey, NFT, res.Item2, tres.Item2);
+                        break;
+                    case NFTTypes.Post:
+                        rtxid = await NFTHelpers.MintPostNFT(Address, AccountKey, NFT, res.Item2, tres.Item2);
+                        break;
+                    case NFTTypes.Profile:
+                        rtxid = await NFTHelpers.MintProfileNFT(Address, AccountKey, NFT, res.Item2, tres.Item2);
+                        break;
+                }
+                if (rtxid != null)
+                {
+                    PaymentSent?.Invoke(this, rtxid);
+
+                    if (NFT.Type == NFTTypes.Profile)
+                        Profile = NFT as ProfileNFT;
+
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                PaymentSentError?.Invoke(this, ex.Message);
+                return (false, ex.Message);
+            }
+
+            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            return (false, "Unexpected error during send.");
+        }
+
+        public async Task<(bool, string)> ChangeProfileNFT(INFT NFT)
+        {
+            if (IsLocked())
+            {
+                PaymentSentError?.Invoke(this, "Account is locked.");
+                return (false, "Account is locked.");
+            }
+            if (string.IsNullOrEmpty(NFT.Utxo))
+            {
+                PaymentSentError?.Invoke(this, "Cannot change Profile without provided Utxo TxId.");
+                return (false, "Cannot change Profile without provided Utxo TxId.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                PaymentSentError?.Invoke(this, res.Item1);
+                return (false, res.Item1);
+            }
+
+            try
+            {
+                var rtxid = await NFTHelpers.ChangeProfileNFT(Address, AccountKey, NFT, res.Item2);
+
+                if (rtxid != null)
+                {
+                    Profile = NFT as ProfileNFT;
+                    PaymentSent?.Invoke(this, rtxid);
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                PaymentSentError?.Invoke(this, ex.Message);
+                return (false, ex.Message);
+            }
+
+            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            return (false, "Unexpected error during send.");
+
+        }
+
+        public async Task<(bool, string)> ChangePostNFT(INFT NFT)
+        {
+            if (IsLocked())
+            {
+                PaymentSentError?.Invoke(this, "Account is locked.");
+                return (false, "Account is locked.");
+            }
+            if (string.IsNullOrEmpty(NFT.Utxo))
+            {
+                PaymentSentError?.Invoke(this, "Cannot change NFT without provided Utxo TxId.");
+                return (false, "Cannot change NFT without provided Utxo TxId.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                PaymentSentError?.Invoke(this, res.Item1);
+                return (false, res.Item1);
+            }
+
+            try
+            {
+                var rtxid = await NFTHelpers.ChangePostNFT(Address, AccountKey, NFT, res.Item2);
+
+                if (rtxid != null)
+                {
+                    PaymentSent?.Invoke(this, rtxid);
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                PaymentSentError?.Invoke(this, ex.Message);
+                return (false, ex.Message);
+            }
+
+            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            return (false, "Unexpected error during send.");
+        }
+
+        public async Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite, double price)
+        {
+            if (IsLocked())
+            {
+                PaymentSentError?.Invoke(this, "Account is locked.");
+                return (false, "Account is locked.");
+            }
+            if (string.IsNullOrEmpty(NFT.Utxo))
+            {
+                PaymentSentError?.Invoke(this, "Cannot send NFT without provided Utxo TxId.");
+                return (false, "Cannot send NFT without provided Utxo TxId.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                PaymentSentError?.Invoke(this, res.Item1);
+                return (false, res.Item1);
+            }
+
+            if (string.IsNullOrEmpty(receiver) || priceWrite)
+                receiver = Address;
+
+            try
+            {
+                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, NFT, priceWrite, res.Item2, price);
+
+                if (rtxid != null)
+                {
+                    PaymentSent?.Invoke(this, rtxid);
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                PaymentSentError?.Invoke(this, ex.Message);
+                return (false, ex.Message);
+            }
+
+            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            return (false, "Unexpected error during send.");
+        }
+
+        public async Task<(bool, string)> SendNFTPayment(string receiver, INFT NFT)
+        {
+            if (IsLocked())
+            {
+                PaymentSentError?.Invoke(this, "Account is locked.");
+                return (false, "Account is locked.");
+            }
+            if (string.IsNullOrEmpty(NFT.Utxo))
+            {
+                PaymentSentError?.Invoke(this, "Cannot send NFT without provided Utxo TxId.");
+                return (false, "Cannot send NFT without provided Utxo TxId.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                PaymentSentError?.Invoke(this, res.Item1);
+                return (false, res.Item1);
+            }
+
+            try
+            {
+                var rtxid = await NFTHelpers.SendNFTPayment(Address, AccountKey, receiver, NFT, res.Item2);
+
+                if (rtxid != null)
+                {
+                    PaymentSent?.Invoke(this, rtxid);
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                PaymentSentError?.Invoke(this, ex.Message);
+                return (false, ex.Message);
+            }
+
+            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            return (false, "Unexpected error during send.");
         }
     }
 }

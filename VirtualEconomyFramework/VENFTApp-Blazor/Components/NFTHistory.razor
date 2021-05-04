@@ -4,7 +4,7 @@
     <div class="col">
         <div class="row" style="margin-top:20px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <button class="btn btn-primary" @onclick="async () => LoadNFTHistory(NFT)"><i class="oi oi-timer"></i> Load NFT History</button>
+                <button class="btn btn-primary" @onclick="LoadNFTHistory"><i class="oi oi-timer"></i> Load NFT History</button>
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
@@ -53,27 +53,33 @@
 
 @code {
 
+    private string _utxo = string.Empty;
     [Parameter]
-    public INFT NFT { get; set; } = new ImageNFT("");
+    public string Utxo
+    {
+        get => _utxo;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                _utxo = value;
+                nftInDetailsHistory = new List<INFT>();
+                LoadNFTHistory();
+            }
+        }
+    }
 
     bool loadingNFTHistory = false;
     List<INFT> nftInDetailsHistory = new List<INFT>();
     string lastutxo = string.Empty;
 
-    protected override Task OnAfterRenderAsync(bool firstRender)
+    private async Task LoadNFTHistory()
     {
-        if (NFT.Utxo != lastutxo)
-            nftInDetailsHistory = new List<INFT>();
-        return base.OnAfterRenderAsync(firstRender);
-    }
-
-    private async Task LoadNFTHistory(INFT nft)
-    {
-        lastutxo = nft.Utxo;
+        lastutxo = _utxo;
         loadingNFTHistory = true;
         await Task.Delay(50);
         StateHasChanged();
-        nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(nft.Utxo);
+        nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(_utxo);
         loadingNFTHistory = false;
         await Task.Delay(50);
         StateHasChanged();

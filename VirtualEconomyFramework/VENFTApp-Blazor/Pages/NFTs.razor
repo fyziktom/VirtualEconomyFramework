@@ -28,36 +28,39 @@
 
             <VENFTApp_Blazor.Components.AccountBalances/>
 
-            <VENFTApp_Blazor.Components.NFTList NFTs="@AppData.Account.NFTs" Address="@AppData.Account.Address" MainAccount="true"/>
+            <VENFTApp_Blazor.Components.NFTList Address="@AppData.Account.Address" MainAccount="true"/>
         </div>
     </div>
 </div>
 
 @code {
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         try
         {
             if (string.IsNullOrEmpty(AppData.Account.Address))
             {
-                AppData.Account = new NeblioAccount();
-                await Task.Delay(500);
-                NavManager.NavigateTo("/");
+                Redirect();
             }
         }
         catch(Exception ex)
         {
-            AppData.Account = new NeblioAccount();
-            await Task.Delay(500);
-            NavManager.NavigateTo("/");
+            Redirect();
         }
 
         if (AppData.Account != null)
             AppData.Account.Refreshed += RefreshedHandler;
+
+        return base.OnInitializedAsync();
     }
 
-
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
 
     void RefreshedHandler(object sender, EventArgs e)
     {

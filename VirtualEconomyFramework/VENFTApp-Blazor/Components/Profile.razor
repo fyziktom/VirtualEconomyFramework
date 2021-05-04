@@ -19,29 +19,29 @@
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <div class="row">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <img src="@AppData.Account.Profile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                            <img src="@profileNFT.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                         </div>
                     </div>
                     <div class="row" style="margin-left:20px;">
                         <div class="col">
                             <div class="row">
                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <span>Name: @AppData.Account.Profile.Name @AppData.Account.Profile.Surname</span>
+                                    <span>Name: @profileNFT.Name @profileNFT.Surname</span>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    Nick: @AppData.Account.Profile.Nickname
+                                    Nick: @profileNFT.Nickname
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    Bio: @AppData.Account.Profile.Description
+                                    Bio: @profileNFT.Description
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <a href="@AppData.Account.Profile.Link" target="_blank">Webpage</a>
+                                    <a href="@profileNFT.Link" target="_blank">Webpage</a>
                                 </div>
                             </div>
                         </div>
@@ -176,15 +176,59 @@
     [Parameter]
     public bool ReadOnlyProfile { get; set; } = true;
 
-    ProfileNFT newProfileNFT = new ProfileNFT("");
+    private ProfileNFT newProfileNFT = new ProfileNFT("");
 
+    private ProfileNFT profileNFT = new ProfileNFT("");
+    [Parameter]
+    public ProfileNFT NFT
+    {
+        get => profileNFT;
+        set
+        {
+            if (value != null)
+            {
+                profileNFT = value;
+                if (string.IsNullOrEmpty(profileNFT.Utxo))
+                {
+                    createNewProfile = true;
+                    change = false;
+                }
+                else
+                {
+                    createNewProfile = false;
+                    change = true;
+                }
+                StateHasChanged();
+            }
+        }
+    }
+
+    bool change = false;
     string tokentxid = string.Empty;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (string.IsNullOrEmpty(profileNFT.Utxo))
+            {
+                createNewProfile = true;
+                change = false;
+            }
+            else
+            {
+                createNewProfile = false;
+                change = true;
+            }
+            StateHasChanged();
+        }
+        base.OnAfterRender(firstRender);
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadProfile();
     }
-
 
     void ImageLinkChanged(string newLink)
     {
@@ -193,213 +237,96 @@
 
     private async Task LoadProfile()
     {
-        try
+        loadingProfile = false;
+        StateHasChanged();
+        if (string.IsNullOrEmpty(profileNFT.Utxo))
         {
-            if (AppData.Account.Profile == null)
-                AppData.Account.Profile = new ProfileNFT("");
-
-            if (string.IsNullOrEmpty(AppData.Account.Profile.Utxo))
-            {
-                if (AppData.Account.NFTs.Count > 0)
-                {
-                    var profile = await NFTHelpers.FindProfileNFT(AppData.Account);
-
-                    if (!string.IsNullOrEmpty(profile.Utxo))
-                    {
-                        loadingProfile = false;
-                        await profile.GetLastData();
-                        AppData.Account.Profile = profile;
-                    }
-                    else
-                    {
-                        AppData.Account.Profile = new ProfileNFT("");
-                        createNewProfile = true;
-                    }
-                }
-                else
-                {
-                    await AppData.Account.ReLoadNFTs();
-                    if (AppData.Account.NFTs.Count > 0)
-                    {
-                        var profile = await NFTHelpers.FindProfileNFT(AppData.Account);
-
-                        if (!string.IsNullOrEmpty(profile.Utxo))
-                        {
-                            loadingProfile = false;
-                            await profile.GetLastData();
-                            AppData.Account.Profile = profile;
-                        }
-                        else
-                        {
-                            createNewProfile = true;
-                        }
-                    }
-                    else
-                    {
-                        AppData.Account.Profile = new ProfileNFT("");
-                        createNewProfile = true;
-                    }
-                }
-            }
-            else
-            {
-                loadingProfile = false;
-                await AppData.Account.Profile.GetLastData();
-                createNewProfile = false;
-            }
+            createNewProfile = true;
+            change = false;
         }
-        catch(Exception ex)
+        else
         {
-            // todo
+            createNewProfile = false;
+            change = true;
         }
-
         loadingProfile = false;
         StateHasChanged();
     }
 
     private async Task showNewProfileDialog(MouseEventArgs e)
     {
-        if (AppData.Account.Profile == null)
-            AppData.Account.Profile = new ProfileNFT("");
-
-        if (!string.IsNullOrEmpty(AppData.Account.Profile.Utxo))
+        if (!string.IsNullOrEmpty(profileNFT.Utxo))
         {
-            newProfileNFT = AppData.Account.Profile;
-            newProfileNFT.Nickname = AppData.Account.Profile.Nickname;
-            await Task.Delay(100);
-            StateHasChanged();
-        }
+            try
+            {
+                var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, profileNFT.Utxo);
 
+                newProfileNFT = nft as ProfileNFT;
+                StateHasChanged();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot load last profile. " + ex.Message);
+            }
+        }
         createNewProfileVisible = true;
     }
 
     private async Task createNewProfileConfirm(MouseEventArgs e)
     {
-        createNewProfileVisible = false;
-        await MintNewProfileNFT();
+        await MintNewProfileNFT(newProfileNFT);
     }
-
 
     private async Task createNewProfileCancel(MouseEventArgs e)
     {
         createNewProfileVisible = false;
     }
 
-    private async Task MintNewProfileNFT()
+    private async Task MintNewProfileNFT(ProfileNFT nft)
     {
-        errorDuringSend = false;
-
-        loadingProfile = true;
-        processingMinting = true;
-        StateHasChanged();
-
-        if (ReadOnlyProfile)
-        {
-            loadingProfile = false;
-            processingMinting = false;
-            StateHasChanged();
-            return;
-        }
-        if (AppData.Account.IsLocked())
-        {
-            loadingProfile = false;
-            processingMinting = false;
-            StateHasChanged();
-            return;
-        }
-
-        var change = false;
-
-        if (!string.IsNullOrEmpty(AppData.Account.Profile.Utxo))
-            change = true;
-
-        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, 0.0002);
-        if (nutxos.Count == 0)
-        {
-            loadingProfile = false;
-            processingMinting = false;
-            errorDuringSend = true;
-            errorMessage = "You dont have Neblio on the address. Probably waiting for more than 1 confirmation.";
-            StateHasChanged();
-            return;
-        }
-
-        if (!change)
-        {
-            var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(AppData.Account.Address, NFTHelpers.TokenId, 1);
-            if (tutxos.Count == 0)
-            {
-                loadingProfile = false;
-                processingMinting = false;
-                errorDuringSend = true;
-                errorMessage = "You dont have VENFT tokens for minting on the address. Probably waiting for more than 1 confirmation.";
-                StateHasChanged();
-                return;
-            }
-        }
-        else
-        {
-            var utxo = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(AppData.Account.Address, NFTHelpers.TokenId, newProfileNFT.Utxo);
-            if (!utxo.Item1)
-            {
-                loadingProfile = false;
-                processingMinting = false;
-                errorDuringSend = true;
-                errorMessage = "Provided source tx transaction is not spendable. Probably waiting for more than 1 confirmation.";
-                StateHasChanged();
-                return;
-            }
-        }
-
-        if (AppData.Account.Profile == null)
-            AppData.Account.Profile = new ProfileNFT("");
-
         try
         {
-            string rtxid = string.Empty;
-
-            if (!change)
-                rtxid = await NFTHelpers.MintProfileNFT(AppData.Account, newProfileNFT);
-            else
-                rtxid = await NFTHelpers.ChangeProfileNFT(AppData.Account, newProfileNFT);
-
-            if (!string.IsNullOrEmpty(rtxid))
+            if (ReadOnlyProfile)
             {
-                tokentxid = rtxid;
-
-                await Task.Delay(1000);
+                loadingProfile = false;
                 processingMinting = false;
-
-                // new one
-                if (string.IsNullOrEmpty(AppData.Account.Profile.Utxo))
-                {
-                    var nfts = await NFTHelpers.LoadAddressNFTs(AppData.Account.Address);
-                    AppData.Account.NFTs = nfts;
-                    var profile = await NFTHelpers.FindProfileNFT(AppData.Account);
-                    await profile.GetLastData();
-                    AppData.Account.Profile = profile;
-                }
-                else //change of existing
-                {
-                    await AppData.Account.Profile.GetLastData();
-                }
-
+                StateHasChanged();
+                return;
             }
 
-            if (rtxid != null)
-                tokentxid = rtxid;
-
-            loadingProfile = false;
+            loadingProfile = true;
+            errorDuringSend = false;
+            processingMinting = true;
             StateHasChanged();
+
+            (bool, string) res;
+            if (!change)
+                res = await AppData.Account.MintNFT(NFTHelpers.TokenId, nft);
+            else
+                res = await AppData.Account.ChangeProfileNFT(nft);
+
+            if (res.Item1)
+            {
+                profileNFT = nft;
+            }
+            else
+            {
+                errorDuringSend = true;
+                errorMessage = res.Item2;
+            }
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
-            loadingProfile = false;
-            tokentxid = ex.Message;
+            processingMinting = false;
             errorDuringSend = true;
             errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            createNewProfileVisible = false;
+            processingMinting = false;
             StateHasChanged();
         }
     }
-
 }

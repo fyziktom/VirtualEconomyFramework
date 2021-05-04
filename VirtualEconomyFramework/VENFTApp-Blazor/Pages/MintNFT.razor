@@ -193,23 +193,31 @@
     bool processingMinting = false;
     GetTokenMetadataResponse sourceTokensInfo = new GetTokenMetadataResponse();
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         try
         {
             if (string.IsNullOrEmpty(AppData.Account.Address))
             {
-                AppData.Account = new NeblioAccount();
-                await Task.Delay(500);
-                NavManager.NavigateTo("/");
+                Redirect();
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            AppData.Account = new NeblioAccount();
-            await Task.Delay(500);
-            NavManager.NavigateTo("/");
+            Redirect();
         }
+
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
     }
 
     void RefreshedHandler(object sender, EventArgs e)
@@ -241,21 +249,34 @@
 
     private async Task orderSourceTokensConfirm(MouseEventArgs e)
     {
-        if (AppData.Account.EnoughBalanceToBuySourceTokens)
-        {
+        try {
+            errorDuringSend = false;
             orderingTokens = true;
             StateHasChanged();
-            await Task.Delay(500);
-            var res = await NeblioTransactionHelpers.OrderSourceTokens(AppData.Account);
+            var res = await AppData.Account.OrderSourceTokens(1);
             orderingTokens = false;
-            if (!string.IsNullOrEmpty(res))
+            if (res.Item1)
             {
-                orderTxId = res;
+                orderTxId = res.Item2;
                 orderingTokensDone = true;
-                orderSourceTokensVisible = false;
-                StateHasChanged();
-                await Task.Delay(2500);
             }
+            else
+            {
+                errorDuringSend = true;
+                errorMessage = res.Item2;
+                status = res.Item2;
+            }
+            orderSourceTokensVisible = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            status = ex.Message;
+            orderingTokens = false;
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+            StateHasChanged();
         }
     }
 
@@ -272,81 +293,44 @@
 
     private async Task MintNewNFT()
     {
-        errorDuringSend = false;
-
-        status = "Sending...";
-        processingMinting = true;
-        StateHasChanged();
-
-        if (AppData.Account.IsLocked())
-        {
-            processingMinting = false;
+        try {
+            errorDuringSend = false;
+            status = "Sending...";
+            processingMinting = true;
             StateHasChanged();
-            return;
-        }
 
-        var nu = await AppData.Account.HasSomeSpendableNeblio();
-        if (!nu.Item1)
-        {
-            processingMinting = false;
-            errorDuringSend = true;
-            status = "Not enought neblio...";
-            errorMessage = "You dont have enough Neblio on the address. Probably waiting for more than 2 confirmation.";
-            StateHasChanged();
-            return;
-        }
+            newNFT.Type = newNFTType;
 
-        var tu = await AppData.Account.HasSomeSourceForMinting();
-        if (!tu.Item1)
-        {
-            processingMinting = false;
-            errorDuringSend = true;
-            status = "Not enough VENFT...";
-            errorMessage = "You dont have VENFT tokens on the address. Probably waiting for more than 2 confirmation.";
-            StateHasChanged();
-            return;
-        }
-
-        await Task.Delay(50);
-
-        try
-        {
-            // send tx
-            var rtxid = string.Empty;
-
-            switch (newNFTType)
+            var res = await AppData.Account.MintNFT(NFTHelpers.TokenId, newNFT);
+            if (res.Item1)
             {
-                case NFTTypes.Image:
-                    rtxid = await NFTHelpers.MintImageNFT(AppData.Account, newNFT);
-                    break;
-                case NFTTypes.Post:
-                    var pn = new PostNFT(newNFT.Utxo);
-                    pn.Fill(newNFT);
-                    rtxid = await NFTHelpers.MintPostNFT(AppData.Account, pn);
-                    break;
-            }
-
-            if (!string.IsNullOrEmpty(rtxid))
-            {
-                tokentxid = rtxid;
-                processingMinting = false;
+                orderTxId = res.Item2;
                 StateHasChanged();
+                processingMinting = false;
                 await Task.Delay(500);
                 NavManager.NavigateTo("/nfts");
             }
-
-            if (rtxid != null)
-                tokentxid = rtxid;
+            else
+            {
+                errorDuringSend = true;
+                errorMessage = res.Item2;
+                status = res.Item2;
+            }
 
             processingMinting = false;
-            StateHasChanged();
         }
         catch (Exception ex)
         {
+            status = ex.Message;
             processingMinting = false;
-            tokentxid = ex.Message;
             errorDuringSend = true;
             errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            processingMinting = false;
+            StateHasChanged();
         }
     }
 

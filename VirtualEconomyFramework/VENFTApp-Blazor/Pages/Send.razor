@@ -194,132 +194,72 @@
 
     private async Task SendTokenTx()
     {
-
-        sendingTransaction = true;
-        tokentxid = "Sending...";
-        StateHasChanged();
-
-        errorDuringSend = false;
-
-        if (AppData.Account.IsLocked())
-        {
-            sendingTransaction = false;
-            errorDuringSend = true;
-            errorMessage = "Account is locked!";
+        try {
+            errorDuringSend = false;
+            sendingTransaction = true;
+            tokentxid = "Sending...";
             StateHasChanged();
-            return;
-        }
 
-        var nu = await AppData.Account.HasSomeSpendableNeblio();
-        if (!nu.Item1)
-        {
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("Data", "Sent with https://ve-nft.com/");
+
+            var res = await AppData.Account.SendNeblioTokenPayment(NeblioTransactionHelpers.VENFTId, metadata, tokenReceiver, AmountTokensToSend);
             sendingTransaction = false;
-            errorDuringSend = true;
-            errorMessage = "You dont have enough Neblio on the address. Probably waiting for more than 2 confirmations.";
-            StateHasChanged();
-            return;
-        }
 
-        var tu = await AppData.Account.HasSomeSourceForMinting();
-        if (!tu.Item1)
-        {
-            sendingTransaction = false;
-            errorDuringSend = true;
-            errorMessage = "You dont have VENFT tokens on the address. Probably waiting for more than 2 confirmations.";
-            StateHasChanged();
-            return;
-        }
-
-        // create token metadata
-        var metadata = new Dictionary<string, string>();
-        metadata.Add("Data", "Sent with https://ve-nft.com/");
-
-        // fill input data for sending tx
-        var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
-        {
-            Amount = Convert.ToDouble(AmountTokensToSend),
-            Metadata = metadata,
-            Password = "", // put here your password
-            SenderAddress = AppData.Account.Address,
-            ReceiverAddress = tokenReceiver
-        };
-
-        try
-        {
-            // send tx
-            var rtxid = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AppData.Account);
-            if (rtxid != null)
+            if (res.Item1)
             {
-                tokentxid = rtxid;
-                sendingTransaction = false;
+                tokentxid = res.Item2;
             }
+            else
+            {
+                tokentxid = res.Item2;
+                errorDuringSend = true;
+                errorMessage = res.Item2;
+            }
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             tokentxid = ex.Message;
-            errorDuringSend = true;
             sendingTransaction = false;
+            errorDuringSend = true;
             errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+            StateHasChanged();
         }
-
-        StateHasChanged();
     }
 
     private async Task SendTx()
     {
-        sendingTransaction = true;
-        txid = "Sending...";
-        StateHasChanged();
-
-        errorDuringSend = false;
-
-        if (AppData.Account.IsLocked())
-        {
-            sendingTransaction = false;
-            errorDuringSend = true;
-            errorMessage = "Account is locked!";
+        try {
+            errorDuringSend = false;
+            sendingTransaction = true;
+            txid = "Sending...";
             StateHasChanged();
-            return;
-        }
 
-        var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(AppData.Account.Address, 0.0001, AmountToSend);
-        if (nutxos.Count == 0)
-        {
+            var res = await AppData.Account.SendNeblioPayment(neblReceiver, AmountToSend);
             sendingTransaction = false;
-            errorDuringSend = true;
-            errorMessage = "You dont have Neblio on the address. Probably waiting for more than 2 confirmations.";
-            StateHasChanged();
-            return;
-        }
 
-        await Task.Delay(50);
-
-        // fill input data for sending tx
-        var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
-        {
-            Amount = AmountToSend,
-            Password = "", // put here your password
-            SenderAddress = AppData.Account.Address,
-            ReceiverAddress = neblReceiver
-        };
-
-        try
-        {
-            // send tx
-            var rtxid = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AppData.Account);
-            if (rtxid != null)
+            if (res.Item1)
             {
-                txid = rtxid;
-                sendingTransaction = false;
+                txid = res.Item2;
             }
+            else
+            {
+                txid = res.Item2;
+                errorDuringSend = true;
+                errorMessage = res.Item2;
+            }
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             txid = ex.Message;
-            errorDuringSend = true;
             sendingTransaction = false;
+            errorDuringSend = true;
             errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+            StateHasChanged();
         }
-        StateHasChanged();
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
 {
@@ -32,7 +33,12 @@ namespace VEDriversLite.NFT
         bool PriceActive { get; set; }
         string NFTOriginTxId { get; set; }
         DateTime Time { get; set; }
-
+        List<INFT> History { get; set; }
+        GetTransactionInfoResponse TxDetails { get; set; }
+        event EventHandler<GetTransactionInfoResponse> TxDataRefreshed;
         Task ParseOriginData();
+        Task LoadHistory();
+        Task StopRefreshingData();
+        Task StartRefreshingTxData();
     }
 }

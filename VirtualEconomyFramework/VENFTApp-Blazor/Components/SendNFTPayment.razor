@@ -29,7 +29,7 @@
                     </div>
                     <div class="row">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            Price @NFT.Price
+                            Price @Price
                         </div>
                     </div>
                 </Spin>
@@ -48,7 +48,10 @@
 @code {
 
     [Parameter]
-    public INFT NFT { get; set; }
+    public string Utxo { get; set; }
+    [Parameter]
+    public double Price { get; set; }
+
 
     [Parameter]
     public bool OwnNFT { get; set; } = false;
@@ -69,9 +72,6 @@
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
 
-    [Parameter]
-    public double Price { get; set; }
-
     bool sendingTransaction = false;
     string sendingTransactionState = "Sending Order and Payment...";
     bool sendNFTDialogVisible = false;
@@ -82,19 +82,12 @@
     string confirmTitle = "Buy NFT?";
     string confirmContent = "Do you realy want to buy this NFT?";
 
-    string tokentxid = string.Empty;
-
-    protected override async Task OnInitializedAsync()
-    {
-
-    }
+    string status = string.Empty;
 
     private async Task HandleOk(MouseEventArgs e)
     {
-        confirmVisible = false;
-        sendNFTDialogVisible = false;
-
-        await sendNFT();
+        if (!string.IsNullOrEmpty(Utxo))
+            await sendNFT(Utxo);
     }
 
     private void HandleCancel(MouseEventArgs e)
@@ -117,65 +110,46 @@
         sendNFTDialogVisible = true;
     }
 
-    private async Task sendNFT()
+    private async Task sendNFT(string utxo)
     {
-        errorDuringSend = false;
-
-        if (AppData.Account.IsLocked())
-        {
-            sendingTransaction = false;
-            StateHasChanged();
-            return;
-        }
-
-        var tu = await AppData.Account.HasSomeSpendableNeblio();
-        if (!tu.Item1)
-        {
-            sendingTransaction = false;
-            errorDuringSend = true;
-            errorMessage = "You dont have Neblio on the address. Probably waiting for more than 1 confirmation.";
-            StateHasChanged();
-            return;
-        }
-
-        var mu = await AppData.Account.HasSomeSourceForMinting();
-        if (!mu.Item1)
-        {
-            sendingTransaction = false;
-            errorDuringSend = true;
-            errorMessage = "You dont have VENFT tokens on the address. Probably waiting for more than 1 confirmation.";
-            StateHasChanged();
-            return;
-        }
-
-        sendingTransaction = true;
-        tokentxid = "Sending...";
-        StateHasChanged();
-        await Task.Delay(50);
-
         try
         {
-            // send tx
-            var rtxid = await NFTHelpers.SendNFTPayment(AppData.Account, receiverAddress, NFT, NFT.Utxo, Price);
-            if (rtxid != null)
+            errorDuringSend = false;
+            status = "Sending...";
+            sendingTransaction = true;
+
+            StateHasChanged();
+
+            var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo);
+            var res = await AppData.Account.SendNFTPayment(receiverAddress, NFT);
+            if (res.Item1)
             {
-                sendingTransactionState = "Transaction Sent right!";
-                tokentxid = rtxid;
-                NFTSent.InvokeAsync(rtxid);
-                AppData.Account.NFTs.Clear();
-                StateHasChanged();
-                sendingTransaction = false;
-                errorMessage = string.Empty;
-                errorDuringSend = false;
+                status = res.Item2;
             }
+            else
+            {
+                errorDuringSend = true;
+                errorMessage = res.Item2;
+                status = res.Item2;
+            }
+
+            NFTSent.InvokeAsync(res.Item2);
+            StateHasChanged();
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
-            NFTSent.InvokeAsync(ex.Message);
-            tokentxid = ex.Message;
+            status = ex.Message;
+            sendNFTDialogVisible = false;
             errorDuringSend = true;
             errorMessage = ex.Message;
-
+            Console.WriteLine(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            confirmVisible = false;
+            sendNFTDialogVisible = false;
+            sendingTransaction = false;
         }
     }
 

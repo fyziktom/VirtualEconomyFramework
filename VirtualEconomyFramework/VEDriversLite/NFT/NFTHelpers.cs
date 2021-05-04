@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
 {
@@ -282,16 +283,16 @@ namespace VEDriversLite.NFT
             return JsonConvert.SerializeObject(tabs);
         }
 
-        public static async Task<string> MintImageNFT(NeblioAccount account, ImageNFT newNFT)
+        public static async Task<string> MintImageNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");
-            metadata.Add("Name", newNFT.Name);
-            metadata.Add("Author", newNFT.Author);
-            metadata.Add("Description", newNFT.Description);
-            metadata.Add("Image", newNFT.ImageLink);
-            metadata.Add("Link", newNFT.Link);
+            metadata.Add("Name", NFT.Name);
+            metadata.Add("Author", NFT.Author);
+            metadata.Add("Description", NFT.Description);
+            metadata.Add("Image", NFT.ImageLink);
+            metadata.Add("Link", NFT.Link);
             metadata.Add("Type", "NFT Image");
 
             // fill input data for sending tx
@@ -300,13 +301,13 @@ namespace VEDriversLite.NFT
                 Id = TokenId, // id of token
                 Metadata = metadata,
                 Password = "", // put here your password
-                SenderAddress = account.Address
+                SenderAddress = address
             };
 
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, account);
+                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -322,8 +323,10 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public static async Task<string> MintProfileNFT(NeblioAccount account, ProfileNFT profile)
+        public static async Task<string> MintProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
+            var profile = nft as ProfileNFT;
+
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");
@@ -341,13 +344,13 @@ namespace VEDriversLite.NFT
                 Id = TokenId, // id of token
                 Metadata = metadata,
                 Password = "", // put here your password
-                SenderAddress = account.Address
+                SenderAddress = address
             };
 
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, account);
+                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey,nutxos,tutxos);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -363,16 +366,16 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public static async Task<string> MintPostNFT(NeblioAccount account, PostNFT newNFT)
+        public static async Task<string> MintPostNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");
-            metadata.Add("Name", newNFT.Name);
-            metadata.Add("Author", newNFT.Author);
-            metadata.Add("Description", newNFT.Description);
-            metadata.Add("Image", newNFT.ImageLink);
-            metadata.Add("Link", newNFT.Link);
+            metadata.Add("Name", NFT.Name);
+            metadata.Add("Author", NFT.Author);
+            metadata.Add("Description", NFT.Description);
+            metadata.Add("Image", NFT.ImageLink);
+            metadata.Add("Link", NFT.Link);
             metadata.Add("Type", "NFT Post");
 
             // fill input data for sending tx
@@ -380,14 +383,13 @@ namespace VEDriversLite.NFT
             {
                 Id = TokenId, // id of token
                 Metadata = metadata,
-                Password = "", // put here your password
-                SenderAddress = account.Address
+                SenderAddress = address
             };
 
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, account);
+                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -403,8 +405,9 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public static async Task<string> ChangeProfileNFT(NeblioAccount account, ProfileNFT profile)
+        public static async Task<string> ChangeProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos)
         {
+            var profile = nft as ProfileNFT;
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");
@@ -424,15 +427,14 @@ namespace VEDriversLite.NFT
                 Metadata = metadata,
                 Amount = 1,
                 sendUtxo = new List<string>() { profile.Utxo },
-                Password = "", // put here your password
-                SenderAddress = account.Address,
-                ReceiverAddress = account.Address
+                SenderAddress = address,
+                ReceiverAddress = address
             };
 
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, account, fee: 20000);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos, fee: 30000);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -448,10 +450,9 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public static async Task<string> ChangePostNFT(NeblioAccount account, PostNFT postnft, string utxo)
+        public static async Task<string> ChangePostNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos)
         {
-            if (string.IsNullOrEmpty(utxo))
-                throw new Exception("Wrong token txid input.");
+            var postnft = nft as PostNFT;
 
             // create token metadata
             var metadata = new Dictionary<string, string>();
@@ -471,16 +472,15 @@ namespace VEDriversLite.NFT
                 Id = TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
-                sendUtxo = new List<string>() { utxo },
-                Password = "", // put here your password
-                SenderAddress = account.Address,
-                ReceiverAddress = account.Address
+                sendUtxo = new List<string>() { postnft.Utxo },
+                SenderAddress = address,
+                ReceiverAddress = address
             };
 
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, account, fee: 20000);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos, fee: 30000);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -496,25 +496,16 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public static async Task<string> SendOrderedNFT(NeblioAccount account, PaymentNFT payment)
+        public static async Task<string> SendOrderedNFT(string address, EncryptionKey ekey, PaymentNFT payment, INFT NFT, ICollection<Utxos> nutxos)
         {
-            var NFT = account.NFTs.Where(n => n.Utxo == payment.NFTUtxoTxId).FirstOrDefault();
             if (NFT == null)
                 throw new Exception("Cannot find NFT in the address NFT list.");
 
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");
-            switch (NFT.Type)
-            {
-                case NFTTypes.Image:
-                    metadata.Add("Type", "NFT Image");
-                    break;
-                case NFTTypes.Post:
-                    metadata.Add("Type", "NFT Post");
-                    break;
-            }
-
+            metadata.Add("Type", NFT.TypeText);
+            
             if (NFT.Type == NFTTypes.Post)
             {
                 metadata.Add("Name", NFT.Name);
@@ -537,14 +528,14 @@ namespace VEDriversLite.NFT
                 Metadata = metadata,
                 Password = "", // put here your password,
                 sendUtxo = new List<string>() { payment.NFTUtxoTxId, payment.Utxo },
-                SenderAddress = account.Address,
+                SenderAddress = address,
                 ReceiverAddress = payment.Sender
             };
 
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendMultiTokenAPIAsync(dto, account);
+                var rtxid = await NeblioTransactionHelpers.SendMultiTokenAPIAsync(dto, ekey, nutxos);
                 if (!string.IsNullOrEmpty(rtxid))
                 {
                     return rtxid;
@@ -560,18 +551,21 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public static async Task<string> SendNFTPayment(NeblioAccount account, string receiver, INFT image, string utxo, double price)
+        public static async Task<string> SendNFTPayment(string address, EncryptionKey ekey, string receiver, INFT nft, ICollection<Utxos> nutxos)
         {
-            if (string.IsNullOrEmpty(utxo))
+            if (string.IsNullOrEmpty(nft.Utxo))
                 throw new Exception("Wrong token txid input.");
+
+            if (!nft.PriceActive)
+                throw new Exception("NFT is not for sale.");
 
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");
-            metadata.Add("Sender", account.Address);
-            metadata.Add("NFTUtxoTxId", image.Utxo);
-            metadata.Add("Image", image.ImageLink);
-            metadata.Add("Price", price.ToString(CultureInfo.InvariantCulture));
+            metadata.Add("Sender", address);
+            metadata.Add("NFTUtxoTxId", nft.Utxo);
+            metadata.Add("Image", nft.ImageLink);
+            metadata.Add("Price", nft.Price.ToString(CultureInfo.InvariantCulture));
             metadata.Add("Type", "NFT Payment");
 
             // fill input data for sending tx
@@ -580,16 +574,15 @@ namespace VEDriversLite.NFT
                 Id = TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
-                sendUtxo = new List<string>() { utxo },
-                Password = "", // put here your password
-                SenderAddress = account.Address,
+                sendUtxo = new List<string>() { nft.Utxo },
+                SenderAddress = address,
                 ReceiverAddress = receiver
             };
 
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, account, price, 20000);
+                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, ekey, nft.Price, nutxos);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -605,7 +598,7 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public static async Task<string> SendNFT(NeblioAccount account, INFT NFT, bool priceWrite, double price = 0.0002)
+        public static async Task<string> SendNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, bool priceWrite, ICollection<Utxos> nutxos, double price = 0.0002)
         {
             if (price < 0.0002)
                 throw new Exception("Price cannot be lower than 0.0002 NEBL.");
@@ -613,16 +606,7 @@ namespace VEDriversLite.NFT
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");
-
-            switch (NFT.Type)
-            {
-                case NFTTypes.Image:
-                    metadata.Add("Type", "NFT Image");
-                    break;
-                case NFTTypes.Post:
-                    metadata.Add("Type", "NFT Post");
-                    break;
-            }
+            metadata.Add("Type", NFT.TypeText);
 
             if (NFT.Type == NFTTypes.Post)
             {
@@ -647,15 +631,14 @@ namespace VEDriversLite.NFT
                 Metadata = metadata,
                 Amount = 1,
                 sendUtxo = new List<string>() { utxo },
-                Password = "", // put here your password
-                SenderAddress = account.Address,
-                ReceiverAddress = account.Address
+                SenderAddress = address,
+                ReceiverAddress = receiver
             };
 
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, account, fee: 20000);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos, fee: 20000);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -671,38 +654,12 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public static async Task<ProfileNFT> FindProfileNFT(NeblioAccount account)
-        {
-            if (account != null)
-            {
-                if (account.NFTs != null)
-                {
-                    foreach(var n in account.NFTs)
-                    {
-                        if (n.Type == NFTTypes.Profile)
-                        {
-                            return (ProfileNFT)n;
-                        }
-                    }
-                }
-            }
-
-            return new ProfileNFT("");
-        }
-
-        public static async Task<ProfileNFT> FindProfileNFT(List<INFT> nfts)
+        public static async Task<ProfileNFT> FindProfileNFT(ICollection<INFT> nfts)
         {
             if (nfts != null)
-            {
                 foreach (var n in nfts)
-                {
                     if (n.Type == NFTTypes.Profile)
-                    {
                         return (ProfileNFT)n;
-                    }
-                }
-            }
-
             return new ProfileNFT("");
         }
     }

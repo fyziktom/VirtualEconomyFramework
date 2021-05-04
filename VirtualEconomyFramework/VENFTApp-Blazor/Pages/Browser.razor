@@ -110,7 +110,10 @@
 
                                             <div class="row" style="margin-top:20px">
                                                 <div class="col">
-                                                    <VENFTApp_Blazor.Components.NFTList NFTs="@tab.NFTs" Address="@tab.Address" MainAccount="false" />
+                                                    @if (tab.Selected)
+                                                    {
+                                                        <VENFTApp_Blazor.Components.NFTList Address="@tab.Address" MainAccount="false" />
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -293,22 +296,11 @@
                             setFirst = false;
                             try
                             {
-                                if (t.NFTs.Count == 0)
-                                    t.NFTs = await NFTHelpers.LoadAddressNFTs(t.Address);
+                                await t.Reload();
                             }
                             catch (Exception ex)
                             {
-                                // todo
-                            }
-                            StateHasChanged();
-                            try
-                            {
-                                if (t.NFTs.Count > 0)
-                                    t.Profile = await NFTHelpers.FindProfileNFT(t.NFTs);
-                            }
-                            catch (Exception ex)
-                            {
-                                // todo
+                                Console.WriteLine("Exception during loading NFTs and Profile of the tab. " + ex.Message);
                             }
                         }
                     }
@@ -320,7 +312,6 @@
 
             if (AppData.VENFTOwners.Count == 0)
                 AppData.VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners(NFTHelpers.TokenId);
-
         }
         catch (Exception ex)
         {
@@ -366,6 +357,8 @@
 
     private async Task addNewTab()
     {
+        loadingBrowser = true;
+
         if (AppData.Tabs.Count > 0)
             foreach (var t in AppData.Tabs)
                 t.Selected = false;
@@ -378,22 +371,14 @@
 
         try
         {
-            tab.NFTs = await NFTHelpers.LoadAddressNFTs(newTabAddress);
-            StateHasChanged();
+            await tab.Reload();
         }
         catch (Exception ex)
         {
-            //
+            Console.WriteLine("Exception during loading NFTs and Profile of the tab. " + ex.Message);
         }
-
-        try
-        {
-            tab.Profile = await NFTHelpers.FindProfileNFT(tab.NFTs);
-        }
-        catch (Exception ex)
-        {
-            //todo
-        }
+        loadingBrowser = false;
+        StateHasChanged();
 
         var bst = await NFTHelpers.SerializeTabs(AppData.Tabs);
         await localStorage.SetItemAsync("browserTabs", bst);
@@ -406,6 +391,7 @@
 
     private async Task selectTab(ActiveTab tab)
     {
+        loadingBrowser = true;
         foreach (var t in AppData.Tabs)
             t.Selected = false;
 
@@ -413,25 +399,10 @@
 
         if (tab.NFTs.Count == 0)
         {
-            try
-            {
-                tab.NFTs = await NFTHelpers.LoadAddressNFTs(tab.Address);
-            }
-            catch (Exception ex)
-            {
-                // todo
-            }
-
-            try
-            {
-                tab.Profile = await NFTHelpers.FindProfileNFT(tab.NFTs);
-            }
-            catch (Exception ex)
-            {
-                // todo
-            }
-            StateHasChanged();
+            await tab.Reload();
         }
+        loadingBrowser = false;
+        StateHasChanged();
     }
 
     private async Task removeTab(ActiveTab tab)
