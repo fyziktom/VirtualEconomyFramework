@@ -32,6 +32,7 @@ namespace VEDriversLite.NFT
 
         public abstract Task ParseOriginData();
 
+        public abstract Task Fill(INFT NFT);
         public async Task LoadHistory()
         {
             History = await NFTHelpers.LoadNFTsHistory(Utxo);

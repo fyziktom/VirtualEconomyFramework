@@ -36,6 +36,7 @@ namespace VEDriversLite
         public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; } = new Dictionary<string, TokenSupplyDto>();
         public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
         public GetAddressResponse AddressInfo { get; set; } = new GetAddressResponse();
+        public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
 
         public event EventHandler Refreshed;
         public event EventHandler<string> PaymentSent;
@@ -83,7 +84,7 @@ namespace VEDriversLite
                 // todo
             }
 
-            var minorRefresh = 20;
+            var minorRefresh = 10;
 
             // todo cancelation token
             _ = Task.Run(async () =>
@@ -109,7 +110,7 @@ namespace VEDriversLite
                         {
                             Profile = await NFTHelpers.FindProfileNFT(NFTs);
                             await CheckPayments();
-                            minorRefresh = 20;
+                            minorRefresh = 10;
                         }
 
                         lastNFTcount = AddressNFTCount;
@@ -275,19 +276,19 @@ namespace VEDriversLite
 
         public async Task ReloadTokenSupply()
         {
-            TokensSupplies = await NeblioTransactionHelpers.CheckTokensSupplies(Address);
+            TokensSupplies = await NeblioTransactionHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
         }
 
         public async Task ReloadCountOfNFTs()
         {
-            var nftsu = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address);
+            var nftsu = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, AddressInfoUtxos);
             if (nftsu != null)
                 AddressNFTCount = nftsu.Count;
         }
 
         public async Task ReloadMintingSupply()
         {
-            var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(Address);
+            var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(Address, AddressInfoUtxos);
             SourceTokensBalance = mintingSupply.Item1;
 
         }
@@ -295,6 +296,8 @@ namespace VEDriversLite
         public async Task ReloadAccountInfo()
         {
             AddressInfo = await NeblioTransactionHelpers.AddressInfoAsync(Address);
+            AddressInfoUtxos = await NeblioTransactionHelpers.AddressInfoUtxosAsync(Address);
+
             if (AddressInfo != null)
             {
                 TotalBalance = (double)AddressInfo.Balance;
@@ -431,7 +434,7 @@ namespace VEDriversLite
             {
                 var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, id, amount);
                 if (tutxos == null || tutxos.Count == 0)
-                    return ($"You dont have Neblio on the address. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
+                    return ($"You dont have Tokens on the address. You need at least 5 for minting. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
                     return ("OK", tutxos);
             }
@@ -541,6 +544,8 @@ namespace VEDriversLite
 
         public async Task<(bool, string)> MintNFT(string tokenId, INFT NFT)
         {
+            var nft = await NFTFactory.CloneNFT(NFT);
+
             if (IsLocked())
             {
                 PaymentSentError?.Invoke(this, "Account is locked.");
@@ -565,13 +570,13 @@ namespace VEDriversLite
                 switch (NFT.Type)
                 {
                     case NFTTypes.Image:
-                        rtxid = await NFTHelpers.MintImageNFT(Address, AccountKey, NFT, res.Item2, tres.Item2);
+                        rtxid = await NFTHelpers.MintImageNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
                         break;
                     case NFTTypes.Post:
-                        rtxid = await NFTHelpers.MintPostNFT(Address, AccountKey, NFT, res.Item2, tres.Item2);
+                        rtxid = await NFTHelpers.MintPostNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
                         break;
                     case NFTTypes.Profile:
-                        rtxid = await NFTHelpers.MintProfileNFT(Address, AccountKey, NFT, res.Item2, tres.Item2);
+                        rtxid = await NFTHelpers.MintProfileNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
                         break;
                 }
                 if (rtxid != null)
@@ -596,6 +601,8 @@ namespace VEDriversLite
 
         public async Task<(bool, string)> ChangeProfileNFT(INFT NFT)
         {
+            var nft = await NFTFactory.CloneNFT(NFT);
+
             if (IsLocked())
             {
                 PaymentSentError?.Invoke(this, "Account is locked.");
@@ -615,7 +622,7 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = await NFTHelpers.ChangeProfileNFT(Address, AccountKey, NFT, res.Item2);
+                var rtxid = await NFTHelpers.ChangeProfileNFT(Address, AccountKey, nft, res.Item2);
 
                 if (rtxid != null)
                 {
@@ -637,6 +644,8 @@ namespace VEDriversLite
 
         public async Task<(bool, string)> ChangePostNFT(INFT NFT)
         {
+            var nft = await NFTFactory.CloneNFT(NFT);
+
             if (IsLocked())
             {
                 PaymentSentError?.Invoke(this, "Account is locked.");
@@ -656,7 +665,7 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = await NFTHelpers.ChangePostNFT(Address, AccountKey, NFT, res.Item2);
+                var rtxid = await NFTHelpers.ChangePostNFT(Address, AccountKey, nft, res.Item2);
 
                 if (rtxid != null)
                 {
@@ -676,6 +685,8 @@ namespace VEDriversLite
 
         public async Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite, double price)
         {
+            var nft = await NFTFactory.CloneNFT(NFT);
+
             if (IsLocked())
             {
                 PaymentSentError?.Invoke(this, "Account is locked.");
@@ -698,7 +709,7 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, NFT, priceWrite, res.Item2, price);
+                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, nft, priceWrite, res.Item2, price);
 
                 if (rtxid != null)
                 {
@@ -718,6 +729,8 @@ namespace VEDriversLite
 
         public async Task<(bool, string)> SendNFTPayment(string receiver, INFT NFT)
         {
+            var nft = await NFTFactory.CloneNFT(NFT);
+
             if (IsLocked())
             {
                 PaymentSentError?.Invoke(this, "Account is locked.");
@@ -737,7 +750,7 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = await NFTHelpers.SendNFTPayment(Address, AccountKey, receiver, NFT, res.Item2);
+                var rtxid = await NFTHelpers.SendNFTPayment(Address, AccountKey, receiver, nft, res.Item2);
 
                 if (rtxid != null)
                 {

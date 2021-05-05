@@ -22,33 +22,44 @@ namespace test
                 NeblioAccount account = new NeblioAccount();
                 await account.LoadAccount(pass, key, address); // put here your password
                                                                //await account.StartRefreshingData();
-                await account.StartRefreshingData();
+                
                 //var r = await account.SendNeblioPayment("NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7", 1);
                 Dictionary<string, string> metadata = new Dictionary<string, string>();
                 metadata.Add("Data", "https://ve-nft.com/");
                 //var r = await account.SendNeblioTokenPayment(NFTHelpers.TokenId, metadata, "NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7", 5);
 
-                var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, "c0a92312aa4c9012b293d9827f960695c800e0d7b5e80bf4a52f8d2acddfd63b");
+                //var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, "c0a92312aa4c9012b293d9827f960695c800e0d7b5e80bf4a52f8d2acddfd63b");
                 //await account.SendNFT(account.Address, NFT, true, 0.33);
-               //await account.SendNFTPayment(receiver, NFT);
+                //await account.SendNFTPayment(receiver, NFT);
 
+                /*
+                await account.StartRefreshingData();
                 while (true)
                 {
                     await Task.Delay(100);
-                }
+                }*/
+
                 /*
                 var NFT = new ProfileNFT("");
                 NFT.Author = "fyziktom";
                 NFT.Name = "Tomas";
                 NFT.Surname = "Svoboda";
                 NFT.Nickname = "fyziktom";
+                NFT.Description = "Neblio";
                 NFT.ImageLink = "https://gateway.ipfs.io/ipfs/QmQ5qNNtShVqrZstzWMTZeWXFSnDojks3RWZpja6gJy8MJ";
-                
                 var rtxid = await NFTHelpers.MintProfileNFT(account, NFT);
                 */
-                NFT.Description = "Neblio";
+
+
+                var NFT = new ImageNFT("");
+                NFT.Name = "Sun";
+                NFT.Description = "My Artwork - Sun";
+                NFT.Author = "fyziktom";
+                NFT.ImageLink = "https://gateway.ipfs.io/ipfs/QmWTkVqaWn1ABZ1UMKL91pxxspzXW6yodJ9bjUn6nPLeHX";
+                var rtxid = await account.MintNFT(NFTHelpers.TokenId, NFT);
+
                 //var rtxid = await NFTHelpers.ChangeProfileNFT(account, (ProfileNFT)NFT);
-                //var rtxid = await NFTHelpers.MintImageNFT(account, NFT);
+
                 //var rtxid = await NFTHelpers.SendNFTPayment(account, receiver, NFT, NFT.Utxo, NFT.Price);
                 //var rtxid = await NFTHelpers.SendOrderedNFT(account, (PaymentNFT)NFT);
                 //Console.WriteLine(rtxid);

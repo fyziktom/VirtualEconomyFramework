@@ -40,31 +40,40 @@
                             {
                                 if (nft.Type != NFTTypes.Profile && nft.TypeText != "NFT Settings")
                                 {
-                                    <div class="card" style="margin-left:10px; margin-top:10px; max-width:250px; min-width:200px;">
-                                        <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:auto; max-width:250px; min-width:200px; width:auto;" />
-                                        <div class="card-body">
+                                    <div class="card" style="margin-left:10px; margin-top:10px; max-width:250px; min-width:200px; min-height:400px; max-height:500px;">
+                                        @if (!string.IsNullOrEmpty(nft.ImageLink))
+                                        {
+                                            <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:auto; max-width:250px; min-width:200px; width:auto;" />
+                                        }
+                                        else
+                                        {
+                                            <Spin Tip="Loading...">
+                                                <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:150px; max-width:250px; min-width:200px; width:auto;" />
+                                            </Spin>
+                                        }
+                                        <div class="card-body d-flex justify-content-center align-items-end">
                                             <div class="row">
-                                                <div class="col">
-                                                    <div class="row">
-                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                            <VENFTApp_Blazor.Components.NFTThumbnail Name="@nft.Name" Type="@nft.Type" Author="@nft.Author" Description="@nft.Description" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                            <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-info" style="font-size:12px;"></i></button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            @if (nft.PriceActive && nft.Type != NFTTypes.Payment)
-                                                            {
-                                                                <SendNFTPayment Utxo="@nft.Utxo" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="NFTSent" />
-                                                            }
-                                                        </div>
-                                                    </div>
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                    <VENFTApp_Blazor.Components.NFTThumbnail Name="@nft.Name" Type="@nft.Type" Author="@nft.Author" Description="@nft.Description" />
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-center align-items-center">
+                                            <small class="text-muted">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+                                                            <i class="oi oi-info" style="font-size:12px;"></i>
+                                                        </button>
+                                                    </div>
+                                                    @if (nft.PriceActive && nft.Type != NFTTypes.Payment)
+                                                    {
+                                                    <div class="col" style="margin-left:25px;">
+                                                        <SendNFTPayment Utxo="@nft.Utxo" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
+                                                    </div>
+                                                    }
+                                                </div>
+                                            </small>
                                         </div>
                                     </div>
                                 }
@@ -86,7 +95,7 @@
        Visible="@nftDetailsVisible"
        OnOk="@CloseNFTDetails"
        OnCancel="@CloseNFTDetails">
-    <VENFTApp_Blazor.Components.NFTDetails Utxo="@nftDetailsUtxo" NFTSent="NFTSent" OwnNFT="@MainAccount" />
+    <VENFTApp_Blazor.Components.NFTDetails Utxo="@nftDetailsUtxo" NFTSent="@NFTSent" OwnNFT="@MainAccount" />
 </Modal>
 
 @code {
@@ -116,17 +125,21 @@
         {
             if (!string.IsNullOrEmpty(value))
             {
-                if (!MainAccount)
+                if (_address != value)
                 {
-                    _nfts = new List<INFT>();
-                    _address = value;
-                    LoadNFTs();
-                }
-                else
-                {
-                    _nfts = new List<INFT>();
-                    _address = value;
-                    _nfts = AppData.Account.NFTs;
+                    if (!MainAccount)
+                    {
+                        _nfts = new List<INFT>();
+                        _address = value;
+                        LoadNFTs();
+                    }
+                    else
+                    {
+                        _nfts = new List<INFT>();
+                        _address = value;
+                        _nfts = AppData.Account.NFTs;
+
+                    }
                 }
             }
         }

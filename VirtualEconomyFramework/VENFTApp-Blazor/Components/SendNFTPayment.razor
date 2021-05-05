@@ -5,7 +5,9 @@
 
 <div class="row">
     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-        <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="margin-top:10px; width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;"><i class="oi oi-dollar" style="font-size:12px;"></i></button>
+        <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+            <i class="oi oi-dollar" style="font-size:12px;"></i>
+        </button>
     </div>
 </div>
 
@@ -64,7 +66,8 @@
         {
             if (!string.IsNullOrEmpty(value))
             {
-                receiverAddress = value;
+                if (receiverAddress != value)
+                    receiverAddress = value;
             }
         }
     }

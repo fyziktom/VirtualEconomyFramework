@@ -8,7 +8,7 @@ namespace VEDriversLite.NFT
 {
     public static class NFTFactory
     {
-        public static async Task<INFT> GetNFT(string tokenId, string utxo)
+        public static async Task<INFT> GetNFT(string tokenId, string utxo, bool wait = false)
         {
             NFTTypes type = NFTTypes.Image;
 
@@ -59,48 +59,81 @@ namespace VEDriversLite.NFT
             var Price = 0.0;
             var PriceActive = false;
             if (meta.TryGetValue("Price", out var price))
-            {
                 if (!string.IsNullOrEmpty(price))
                 {
                     price = price.Replace(',', '.');
                     Price = double.Parse(price, CultureInfo.InvariantCulture);
                     PriceActive = true;
                 }
-                else
-                {
-                    PriceActive = false;
-                }
-            }
+
+            if (Price > 0)
+                PriceActive = true;
             else
-            {
                 PriceActive = false;
-            }
 
             switch (type)
             {
                 case NFTTypes.Image:
                     var nft = new ImageNFT(utxo);
-                    await nft.ParseOriginData();
+                    if (wait)
+                        await nft.ParseOriginData();
+                    else
+                        nft.ParseOriginData();
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;
-                    if (!string.IsNullOrEmpty(nft.NFTOriginTxId))
-                        return nft;
-                    else
-                        return null;
+                    return nft;
                 case NFTTypes.Profile:
                     var pnft = new ProfileNFT(utxo);
                     //await pnft.ParseOriginData();
-                    await pnft.LoadLastData(meta);
+                    if (wait)
+                        await pnft.LoadLastData(meta);
+                    else
+                        pnft.LoadLastData(meta);
                     return pnft;
                 case NFTTypes.Post:
                     var ponft = new PostNFT(utxo);
                     //await ponft.ParseOriginData();
-                    await ponft.LoadLastData(meta);
+                    if (wait)
+                        await ponft.LoadLastData(meta);
+                    else
+                        ponft.LoadLastData(meta);
                     return ponft;
                 case NFTTypes.Payment:
                     var pmnft = new PaymentNFT(utxo);
-                    await pmnft.LoadLastData(meta);
+                    if (wait)
+                        await pmnft.LoadLastData(meta);
+                    else
+                        pmnft.LoadLastData(meta);
                     return pmnft;
+            }
+
+            return null;
+        }
+
+        public static async Task<INFT> CloneNFT(INFT NFT, bool asType = false, NFTTypes type = NFTTypes.Image)
+        {
+            if (!asType)
+                type = NFT.Type;
+
+            INFT nft = null;
+            switch (type)
+            {
+                case NFTTypes.Image:
+                    nft = new ImageNFT(NFT.Utxo);
+                    nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Profile:
+                    nft = new ProfileNFT(NFT.Utxo);
+                    nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Post:
+                    nft = new PostNFT(NFT.Utxo);
+                    nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Payment:
+                    nft = new PaymentNFT(NFT.Utxo);
+                    nft.Fill(NFT);
+                    return nft;
             }
 
             return null;

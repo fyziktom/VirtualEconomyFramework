@@ -82,8 +82,11 @@
         {
             if (!string.IsNullOrEmpty(value))
             {
-                txId = value;
-                Load();
+                if (txId != value)
+                {
+                    txId = value;
+                    Load();
+                }
             }
         }
     }

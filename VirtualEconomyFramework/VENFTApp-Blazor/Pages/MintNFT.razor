@@ -201,14 +201,17 @@
             {
                 Redirect();
             }
+            else
+            {
+                if (AppData.Account != null)
+                    AppData.Account.Refreshed += RefreshedHandler;
+            }
         }
         catch (Exception ex)
         {
             Redirect();
         }
 
-        if (AppData.Account != null)
-            AppData.Account.Refreshed += RefreshedHandler;
 
         return base.OnInitializedAsync();
     }
@@ -282,7 +285,6 @@
 
     private async Task HandleOk(MouseEventArgs e)
     {
-        confirmVisible = false;
         await MintNewNFT();
     }
 
@@ -297,10 +299,10 @@
             errorDuringSend = false;
             status = "Sending...";
             processingMinting = true;
+            confirmVisible = false;
             StateHasChanged();
 
             newNFT.Type = newNFTType;
-
             var res = await AppData.Account.MintNFT(NFTHelpers.TokenId, newNFT);
             if (res.Item1)
             {

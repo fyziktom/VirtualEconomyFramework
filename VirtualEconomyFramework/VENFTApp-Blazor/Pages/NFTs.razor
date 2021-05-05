@@ -43,14 +43,16 @@
             {
                 Redirect();
             }
+            else
+            {
+                if (AppData.Account != null)
+                    AppData.Account.Refreshed += RefreshedHandler;
+            }
         }
         catch(Exception ex)
         {
             Redirect();
         }
-
-        if (AppData.Account != null)
-            AppData.Account.Refreshed += RefreshedHandler;
 
         return base.OnInitializedAsync();
     }

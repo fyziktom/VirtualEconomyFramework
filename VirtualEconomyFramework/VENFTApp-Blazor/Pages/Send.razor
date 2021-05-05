@@ -161,31 +161,36 @@
     private int AmountTokensToSend = 2;
     private double AmountToSend = 0.001;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         try
         {
             if (string.IsNullOrEmpty(AppData.Account.Address))
             {
-                AppData.Account = new NeblioAccount();
-                await Task.Delay(500);
-                NavManager.NavigateTo("/");
-            }
+                Redirect();
 
-            if (AppData.Account != null)
-                AppData.Account.Refreshed += RefreshedHandler;
+
+            }
+            else
+            {
+                if (AppData.Account != null)
+                    AppData.Account.Refreshed += RefreshedHandler;
+            }
         }
         catch(Exception ex)
         {
-            AppData.Account = new NeblioAccount();
-            await Task.Delay(500);
-            NavManager.NavigateTo("/");
+            Redirect();
         }
 
-        if (AppData.Account != null)
-            AppData.Account.Refreshed += RefreshedHandler;
+        return base.OnInitializedAsync();
     }
 
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
 
     void RefreshedHandler(object sender, EventArgs e)
     {
@@ -204,7 +209,6 @@
             metadata.Add("Data", "Sent with https://ve-nft.com/");
 
             var res = await AppData.Account.SendNeblioTokenPayment(NeblioTransactionHelpers.VENFTId, metadata, tokenReceiver, AmountTokensToSend);
-            sendingTransaction = false;
 
             if (res.Item1)
             {
@@ -216,29 +220,31 @@
                 errorDuringSend = true;
                 errorMessage = res.Item2;
             }
-            StateHasChanged();
         }
         catch (Exception ex)
         {
             tokentxid = ex.Message;
-            sendingTransaction = false;
             errorDuringSend = true;
             errorMessage = ex.Message;
             Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
             StateHasChanged();
         }
     }
 
     private async Task SendTx()
     {
-        try {
+        try
+        {
             errorDuringSend = false;
             sendingTransaction = true;
             txid = "Sending...";
             StateHasChanged();
 
             var res = await AppData.Account.SendNeblioPayment(neblReceiver, AmountToSend);
-            sendingTransaction = false;
 
             if (res.Item1)
             {
@@ -250,15 +256,17 @@
                 errorDuringSend = true;
                 errorMessage = res.Item2;
             }
-            StateHasChanged();
         }
         catch (Exception ex)
         {
             txid = ex.Message;
-            sendingTransaction = false;
             errorDuringSend = true;
             errorMessage = ex.Message;
             Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
             StateHasChanged();
         }
     }

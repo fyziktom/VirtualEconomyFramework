@@ -1,0 +1,361 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.Builder
+@using VEDriversLite
+@using NBitcoin 
+@inject AppData AppData
+
+<Spin Tip="Creating..." Spinning="@creatingTransaction">
+    <div class="row d-flex justify-content-center align-items-center">
+        <div class="col" style="text-align: center;">
+            <div class="row" style="width: 750px;">
+                <div class="col">
+                    <span>Add Token Source Utxo</span>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary" @onclick="AddUtxoFromList" type="button">Add From List</button>
+                </div>
+            </div>
+            <div class="row" style="width: 750px;">
+                <div class="col">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 450px;">UtxoTxId:Index</th>
+                                    <th>Tokens</th>
+                                    <th style="text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < utxos.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <Input Placeholder="Add utxo:nindex" @bind-Value="utxos[i].Utxo" Style="font-size:12px; width:500px;" />
+                                        </td>
+                                        <td>@utxos[i].Tokens.ToString()</td>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col d-flex justify-content-center align-items-center">
+                                                    <button class="btn btn-secondary" @onclick="async () => await RemoveUtxo(i)" type="button" style="padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;width: 25px;height: 25px;">
+                                                        <i class="oi oi-minus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td colspan="3">
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-secondary" @onclick="AddNewUtxoLine" type="button" style="padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;width: 25px;height: 25px;">
+                                                    <i class="oi oi-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;width: 750px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <h5>Receivers</h5>
+                </div>
+            </div>
+            <div class="row" style="width: 750px;">
+                <div class="col">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="max-width: 200px;width: 200px;">Address</th>
+                                    <th style="width: 200px;">Amount of Tokens</th>
+                                    <th style="width: 50px;text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < receivers.Count; i++)
+                                {
+                                <tr>
+                                    <td>
+                                        <Input Placeholder="Add address" @bind-Value="receivers[i].Address" Style="font-size:12px; width:250px;" />
+                                    </td>
+                                    <td>
+                                        <input type="number" step="1" min="1" @bind-value="@receivers[i].Amount" />
+                                    </td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-secondary" @onclick="async () => await RemoveReceiver(i)" type="button" style="padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;width: 25px;height: 25px;">
+                                                    <i class="oi oi-minus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                                <tr>
+                                    <td colspan="3">
+                                        <div class="row">
+                                            <div class="col d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-secondary" @onclick="AddNewReceivers" type="button" style="padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;width: 25px;height: 25px;">
+                                                    <i class="oi oi-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;width: 750px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <h5>Metadata</h5>
+                </div>
+            </div>
+            <div class="row" style="width: 750px;">
+                <div class="col">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="max-width: 200px;width: 200px;">Key</th>
+                                    <th style="width: 200px;">Value</th>
+                                    <th style="width: 50px;text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < metadata.Count; i++)
+                                {
+                                <tr>
+                                    <td>
+                                        <Input Placeholder="Add key" @bind-Value="metadata[i].Key" Style="font-size:12px; width:250px;" />
+                                    </td>
+                                    <td>
+                                        <Input Placeholder="Add key" @bind-Value="metadata[i].Value" Style="font-size:12px; width:250px;" />
+                                    </td>
+                                    <td style="max-width: 30px;">
+                                        <div class="row">
+                                            <div class="col d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-secondary" @onclick="async () => await RemoveMetadata(i)" type="button" style="padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;width: 25px;height: 25px;">
+                                                    <i class="oi oi-minus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                                <tr>
+                                    <td colspan="3">
+                                        <div class="row">
+                                            <div class="col d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-secondary" @onclick="AddNewMetadata" type="button" style="padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;width: 25px;height: 25px;">
+                                                    <i class="oi oi-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;width: 750px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <h5>Create Raw Transaction</h5>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;width: 750px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <button class="btn btn-primary" @onclick="CreateRawTransaction" type="button">Create</button>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;width: 750px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@result</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</Spin>
+
+<!-- utxos list modal -->
+<Modal Title="Sender Utxos"
+       Width="650"
+       Visible="@senderUtxosVisible"
+       OnOk="@addInputClose"
+       OnCancel="@addInputClose">
+    @if (transaction.Sender != null)
+    {
+        @if (!string.IsNullOrEmpty(transaction.Sender.Address))
+        {
+            <div class="row" style="margin-top:25px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Utxo</th>
+                                <th>Index</th>
+                                <th>Amount</th>
+                                <th>Confirmations</th>
+                                <th>Tokens</th>
+                                <th>Used</th>
+                                <th>Add</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var u in transaction.Sender.Utxos.Values)
+                            {
+                                <tr>
+                                    <td>...@u.Utxo.Txid.Remove(0, u.Utxo.Txid.Length - 5)</td>
+                                    <td>@u.Utxo.Index</td>
+                                    <td>@u.Utxo.Value Sat</td>
+                                    <td style="margin-right:10px;">@u.TxInfo.Confirmations</td>
+                                    @if (u.Utxo.Tokens.Count > 0)
+                                    {
+                                        var tok = u.Utxo.Tokens.FirstOrDefault();
+                                        <td>
+                                            <div class="row">
+                                                <div class="col">
+                                                    @tok?.Amount
+                                                </div>
+                                                <div class="col">
+                                                    <img style="width: 25px;margin-right: 10px;" src="@transaction.GetTokenImageUrl(tok?.TokenId)" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>0</td>
+                                    }
+                                    @if (u.Used)
+                                    {
+                                        <td>Yes</td>
+                                    }
+                                    else
+                                    {
+                                        <td>No</td>
+                                    }
+                                    <td><button class="btn btn-primary" @onclick="async () => addNewUtxoFromList(u.Utxo.Txid, (int)u.Utxo.Index, u.TotalTokens)">Add As Input</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row" style="margin-top:25px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h3>No sender loaded</h3>
+                </div>
+            </div>
+        }
+    }
+</Modal>
+
+@code { 
+
+    string result = string.Empty;
+    bool creatingTransaction = false;
+    bool senderUtxosVisible = false;
+    NeblioBuilderTransaction transaction = new NeblioBuilderTransaction();
+    List<NewTokenTxUtxo> utxos = new List<NewTokenTxUtxo>();
+    List<NewTokenTxReceiver> receivers = new List<NewTokenTxReceiver>();
+    List<NewTokenTxMetaField> metadata = new List<NewTokenTxMetaField>();
+
+    [Parameter]
+    public EventCallback<Transaction> TransactionCreated { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Load();
+        return base.OnInitializedAsync();
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task Load()
+    {
+        //utxos.Add(new NewTokenTxUtxo());
+        //receivers.Add(new NewTokenTxReceiver());
+        //metadata.Add(new NewTokenTxMetaField(){ Key = string.Empty, Value = string.Empty});
+        await transaction.AddSender(AppData.Account.Address);
+        transaction.SenderRefreshed += RefreshedHandler;
+        StateHasChanged();
+    }
+
+    private async Task AddNewUtxoLine(MouseEventArgs e)
+    {
+        utxos.Add(new NewTokenTxUtxo());
+    }
+
+    private async Task AddNewReceivers(MouseEventArgs e)
+    {
+        receivers.Add(new NewTokenTxReceiver());
+    }
+
+    private async Task AddNewMetadata(MouseEventArgs e)
+    {
+        metadata.Add(new NewTokenTxMetaField() { Key = string.Empty, Value = string.Empty });
+    }
+
+    private async Task AddUtxoFromList(MouseEventArgs e)
+    {
+        senderUtxosVisible = true;
+    }
+    private async Task addInputClose(MouseEventArgs e)
+    {
+        senderUtxosVisible = false;
+    }
+    private async Task RemoveUtxo(int index)
+    {
+        utxos.RemoveAt(index);
+        StateHasChanged();
+    }
+    private async Task RemoveReceiver(int index)
+    {
+        receivers.RemoveAt(index);
+        StateHasChanged();
+    }
+    private async Task RemoveMetadata(int index)
+    {
+        metadata.RemoveAt(index);
+        StateHasChanged();
+    }
+
+    private async Task addNewUtxoFromList(string utxo, int index, int amount)
+    {
+        utxos.Add(new NewTokenTxUtxo()
+        {
+            TokenId = NFTHelpers.TokenId,
+            Utxo = utxo + ":" + index.ToString(),
+            Tokens = amount
+        });
+
+        senderUtxosVisible = false;
+    }
+
+    private async Task CreateRawTransaction(MouseEventArgs e)
+    {
+        creatingTransaction = true;
+        StateHasChanged();
+        var res = await transaction.CreateRawTransaction(utxos, receivers, metadata);
+        result = res;
+        await TransactionCreated.InvokeAsync(transaction.NewTransaction.Clone());
+        creatingTransaction = false;
+        StateHasChanged();
+    }
+}

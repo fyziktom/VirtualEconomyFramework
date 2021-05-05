@@ -62,9 +62,16 @@
         {
             if (!string.IsNullOrEmpty(value))
             {
-                _utxo = value;
-                nftInDetailsHistory = new List<INFT>();
-                LoadNFTHistory();
+                if (value != lastutxo)
+                {
+                    nftInDetailsHistory = new List<INFT>();
+                    lastutxo = value;
+                }
+
+                if (_utxo != value)
+                {
+                    _utxo = value;
+                }
             }
         }
     }
@@ -75,13 +82,10 @@
 
     private async Task LoadNFTHistory()
     {
-        lastutxo = _utxo;
         loadingNFTHistory = true;
-        await Task.Delay(50);
         StateHasChanged();
         nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(_utxo);
         loadingNFTHistory = false;
-        await Task.Delay(50);
         StateHasChanged();
     }
 }

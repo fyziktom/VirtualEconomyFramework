@@ -53,7 +53,16 @@
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <a href="@NFT.ImageLink" target="_blank">
-                        <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                        @if (!string.IsNullOrEmpty(NFT.ImageLink))
+                        {
+                            <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                        }
+                        else
+                        {
+                            <Spin Tip="Loading..." Spinning="true">
+                                <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto; min-width:50px; max-width:250px;" />
+                            </Spin>
+                        }
                     </a>
                 </div>
             </div>
@@ -136,7 +145,7 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <input type="number" step="0.0001" min="0.0002" @bind="@priceOfNFT" />
+                        <input type="number" step="0.0001" min="0.0005" @bind="@priceOfNFT" />
                     </div>
                 </div>
             </div>
@@ -237,8 +246,11 @@
         {
             if (!string.IsNullOrEmpty(value))
             {
-                _utxo = value;
-                Load();
+                if (_utxo != value)
+                {
+                    _utxo = value;
+                    Load();
+                }
             }
         }
     }
@@ -266,16 +278,19 @@
 
     bool confirmSetPriceVisible = false;
     bool setPriceNFTDialogVisible = false;
-    private double priceOfNFT { get; set; } = 0.0002;
+    private double priceOfNFT { get; set; } = 0.0005;
 
     protected override Task OnInitializedAsync()
     {
-        Load();
+        if (!string.IsNullOrEmpty(_utxo))
+            Load();
         return base.OnInitializedAsync();
     }
 
     private async Task Load()
     {
+        errorDuringSend = false;
+        errorMessage = string.Empty;
         sendingTransaction = true;
         sendingTransactionState = "Loading...";
         StateHasChanged();
@@ -309,7 +324,7 @@
         confirmVisible = false;
         sendNFTDialogVisible = false;
 
-        await sendNFT(NFT, false, 0.0);
+        await sendNFT(await NFTFactory.CloneNFT(NFT), false, 0.0002);
     }
 
     private void HandleCancel(MouseEventArgs e)
@@ -359,7 +374,7 @@
 
     private async Task ShowUpdatePostNFTDialog()
     {
-        newPostNFT = NFT as PostNFT;
+        newPostNFT = await NFTFactory.CloneNFT(NFT, true, NFTTypes.Post) as PostNFT;
         createNewPostVisible = true;
     }
 

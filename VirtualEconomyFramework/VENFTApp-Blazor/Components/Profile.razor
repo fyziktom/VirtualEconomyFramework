@@ -76,74 +76,76 @@
        Visible="@createNewProfileVisible"
        OnOk="@createNewProfileConfirm"
        OnCancel="@createNewProfileCancel">
-    <div class="row">
-        <div class="col">
+    <Spin Tip="Processing..." Spinning="@processingMinting">
+        <div class="row">
+            <div class="col">
 
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Name:</p>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Name:</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Add Your Name" @bind-Value=@newProfileNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Your Name" @bind-Value=@newProfileNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Surname:</p>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Surname:</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Add Your Surname" @bind-Value=@newProfileNFT.Surname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Your Surname" @bind-Value=@newProfileNFT.Surname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Nickname:</p>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Nickname:</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Add Your Nickname" @bind-Value=@newProfileNFT.Nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Your Nickname" @bind-Value=@newProfileNFT.Nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Bio:</p>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Bio:</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Add Your Bio" @bind-Value=@newProfileNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Your Bio" @bind-Value=@newProfileNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Link:</p>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Link:</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Add Your Webpage link" @bind-Value=@newProfileNFT.Link Style="font-size:12px; min-width:250px; max-width:350px;" />
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Your Webpage link" @bind-Value=@newProfileNFT.Link Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
                 </div>
-            </div>
 
-            <VENFTApp_Blazor.Components.UploadImage ImageLink="@newProfileNFT.ImageLink" ImageLinkChanged="ImageLinkChanged" />
+                <VENFTApp_Blazor.Components.UploadImage ImageLink="@newProfileNFT.ImageLink" ImageLinkChanged="ImageLinkChanged" />
 
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Status: @tokentxid</p>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Status: @tokentxid</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <p>Origin TxId: @newProfileNFT.NFTOriginTxId</p>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Origin TxId: @newProfileNFT.NFTOriginTxId</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </Spin>
 </Modal>
 
 @if (AppData.Account.IsLocked())
@@ -187,18 +189,21 @@
         {
             if (value != null)
             {
-                profileNFT = value;
-                if (string.IsNullOrEmpty(profileNFT.Utxo))
+                if (profileNFT.Utxo != value.Utxo)
                 {
-                    createNewProfile = true;
-                    change = false;
+                    profileNFT = value;
+                    if (string.IsNullOrEmpty(profileNFT.Utxo))
+                    {
+                        createNewProfile = true;
+                        change = false;
+                    }
+                    else
+                    {
+                        createNewProfile = false;
+                        change = true;
+                    }
+                    StateHasChanged();
                 }
-                else
-                {
-                    createNewProfile = false;
-                    change = true;
-                }
-                StateHasChanged();
             }
         }
     }
@@ -259,6 +264,8 @@
         {
             try
             {
+                loadingProfile = true;
+                processingMinting = true;
                 var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, profileNFT.Utxo);
 
                 newProfileNFT = nft as ProfileNFT;
@@ -266,6 +273,10 @@
             }
             catch(Exception ex)
             {
+                loadingProfile = false;
+                processingMinting = false;
+                errorDuringSend = true;
+                errorMessage = "Cannot load last profile. " + ex.Message;
                 Console.WriteLine("Cannot load last profile. " + ex.Message);
             }
         }
@@ -326,6 +337,7 @@
         {
             createNewProfileVisible = false;
             processingMinting = false;
+            loadingProfile = false;
             StateHasChanged();
         }
     }

@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-WPF", "VENFTApp-WP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-Blazor", "VENFTApp-Blazor\VENFTApp-Blazor.csproj", "{E3C59C5B-830E-4430-A9A3-C13315A20B08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", "{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

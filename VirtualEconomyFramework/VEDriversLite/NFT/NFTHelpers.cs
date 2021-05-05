@@ -229,7 +229,7 @@ namespace VEDriversLite.NFT
                                             {
                                                 try
                                                 {
-                                                    var nft = await NFTFactory.GetNFT(TokenId, txinfo.Txid);
+                                                    var nft = await NFTFactory.GetNFT(TokenId, txinfo.Txid, true);
 
                                                     if (nft != null)
                                                     {
@@ -285,6 +285,9 @@ namespace VEDriversLite.NFT
 
         public static async Task<string> MintImageNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
+            if (string.IsNullOrEmpty(NFT.ImageLink))
+                throw new Exception("Cannot create NFT Image without image link.");
+
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");
@@ -300,7 +303,6 @@ namespace VEDriversLite.NFT
             {
                 Id = TokenId, // id of token
                 Metadata = metadata,
-                Password = "", // put here your password
                 SenderAddress = address
             };
 
@@ -343,14 +345,13 @@ namespace VEDriversLite.NFT
             {
                 Id = TokenId, // id of token
                 Metadata = metadata,
-                Password = "", // put here your password
                 SenderAddress = address
             };
 
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey,nutxos,tutxos);
+                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -434,7 +435,7 @@ namespace VEDriversLite.NFT
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos, fee: 30000);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -480,7 +481,7 @@ namespace VEDriversLite.NFT
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos, fee: 30000);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
                 if (rtxid != null)
                 {
                     return rtxid;
@@ -524,9 +525,7 @@ namespace VEDriversLite.NFT
             {
                 Amount = 1,
                 Id = TokenId, // id of token
-                Symbol = "VENFT", // symbol of token
                 Metadata = metadata,
-                Password = "", // put here your password,
                 sendUtxo = new List<string>() { payment.NFTUtxoTxId, payment.Utxo },
                 SenderAddress = address,
                 ReceiverAddress = payment.Sender
@@ -622,15 +621,13 @@ namespace VEDriversLite.NFT
 
             metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
 
-            var utxo = NFT.Utxo;
-
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
                 Id = TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
-                sendUtxo = new List<string>() { utxo },
+                sendUtxo = new List<string>() { NFT.Utxo },
                 SenderAddress = address,
                 ReceiverAddress = receiver
             };
@@ -638,7 +635,7 @@ namespace VEDriversLite.NFT
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos, fee: 20000);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
                 if (rtxid != null)
                 {
                     return rtxid;

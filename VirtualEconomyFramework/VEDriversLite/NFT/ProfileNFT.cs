@@ -20,6 +20,28 @@ namespace VEDriversLite.NFT
         public string Nickname { get; set; } = string.Empty;
         public string RelationshipStatus { get; set; } = string.Empty;
 
+        public override async Task Fill(INFT NFT)
+        {
+            var pnft = NFT as ProfileNFT;
+            IconLink = pnft.IconLink;
+            ImageLink = pnft.ImageLink;
+            Name = pnft.Name;
+            Link = pnft.Link;
+            Description = pnft.Description;
+            Author = pnft.Author;
+            SourceTxId = pnft.SourceTxId;
+            NFTOriginTxId = pnft.NFTOriginTxId;
+            Utxo = pnft.Utxo;
+            Price = pnft.Price;
+            PriceActive = pnft.PriceActive;
+
+            Name = pnft.Name;
+            Surname = pnft.Surname;
+            Nickname = pnft.Nickname;
+            RelationshipStatus = pnft.RelationshipStatus;
+            Age = pnft.Age;
+        }
+
         public override async Task ParseOriginData()
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);

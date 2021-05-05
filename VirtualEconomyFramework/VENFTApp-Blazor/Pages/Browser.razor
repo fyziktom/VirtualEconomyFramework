@@ -41,8 +41,8 @@
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab)">
                                     @tab.ShortAddress
-                                    <button class="btn btn-secondary" @onclick="async () => removeTab(tab)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 0px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
-                                        <i class="oi oi-circle-x"></i>
+                                    <button class="btn btn-light" @onclick="async () => removeTab(tab)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 2px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
+                                        <i class="oi oi-x" style="font-size:7px;"></i>
                                     </button>
                                 </a>
                             </li>
@@ -219,15 +219,15 @@
             else
             {
                 LoadBookmarksAndState();
+
+                if (AppData.Account != null)
+                    AppData.Account.Refreshed += RefreshedHandler;
             }
         }
         catch (Exception ex)
         {
             Redirect();
         }
-
-        if (AppData.Account != null)
-            AppData.Account.Refreshed += RefreshedHandler;
 
         return base.OnInitializedAsync();
     }

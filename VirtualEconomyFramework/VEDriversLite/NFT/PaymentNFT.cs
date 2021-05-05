@@ -18,6 +18,25 @@ namespace VEDriversLite.NFT
         public string NFTUtxoTxId { get; set; } = string.Empty;
         public string Sender { get; set; } = string.Empty;
 
+        public override async Task Fill(INFT NFT)
+        {
+            IconLink = NFT.IconLink;
+            ImageLink = NFT.ImageLink;
+            Name = NFT.Name;
+            Link = NFT.Link;
+            Description = NFT.Description;
+            Author = NFT.Author;
+            SourceTxId = NFT.SourceTxId;
+            NFTOriginTxId = NFT.NFTOriginTxId;
+            Utxo = NFT.Utxo;
+            Price = NFT.Price;
+            PriceActive = NFT.PriceActive;
+
+            var pnft = NFT as PaymentNFT;
+            NFTUtxoTxId = pnft.NFTUtxoTxId;
+            Sender = pnft.Sender;
+        }
+
         public async Task LoadLastData(Dictionary<string, string> metadata)
         {
             if (metadata != null)

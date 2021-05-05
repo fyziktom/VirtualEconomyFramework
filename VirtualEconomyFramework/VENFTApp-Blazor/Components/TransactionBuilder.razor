@@ -1,0 +1,728 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@using NBitcoin 
+@using VEDriversLite.Builder
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject HttpClient _client
+
+<div class="container-fluid">
+    @if (errorDuringSend)
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description=@errorMessage
+               ShowIcon="true" />
+    }
+
+    @if (AppData.Account.IsLocked())
+    {
+        <Alert Type="@AlertType.Error"
+               Message="Error"
+               Description="Account Is Locked. Please unlock account first."
+               ShowIcon="true" />
+    }
+
+    <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
+
+        <div class="row">
+            <div class="col">
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h1>Neblio Transaction Builder</h1>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h5>Load Sender</h5>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add sender address" readonly="readonly" @bind-Value=@sender Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:25px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <button class="btn btn-primary" @onclick="AddSender">Load Main Address as Sender</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-sm-flex justify-content-sm-center align-items-sm-center">
+                        <h5>Create Transaction</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-sm-flex justify-content-sm-center align-items-sm-center" style="margin-top: 5px;margin-bottom: 5px;">
+                        <button class="btn btn-primary" type="button" @onclick="CreateNewTokenTransaction">Create base for token transaction<br /></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-sm-flex justify-content-sm-center align-items-sm-center">
+                        <h5>Inputs</h5>
+                    </div>
+                    <div class="col d-sm-flex justify-content-sm-center align-items-sm-center">
+                        <h5>Outputs</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-sm-flex justify-content-sm-center align-items-sm-center">
+                        <button class="btn btn-primary" type="button" @onclick="@addNewInputDialog">
+                            <i class="oi oi-plus"></i>
+                        </button>
+                    </div>
+                    <div class="col d-sm-flex justify-content-sm-center align-items-sm-center">
+                        <button class="btn btn-primary" type="button" @onclick="@addNeOutputDialog">
+                            <i class="oi oi-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col"><span>Total Neblio</span></div>
+                            <div class="col"><span>@transaction.InputSummary.TotalNeblioAmount NEBL</span></div>
+                        </div>
+                        @foreach (var t in transaction.InputSummary.Tokens)
+                        {
+                            var k = t.Key;
+                            <div class="row">
+                                <div class="col d-sm-flex justify-content-sm-start align-items-sm-center" style="max-width:200px;"><span>Total Tokens</span></div>
+                                <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-start w-auto"><span>@t.Value</span></div>
+                                <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-start w-auto"><img style="width: 25px;max-height: 25px;" src="@transaction.GetTokenImageUrl(k.TokenId)" /></div>
+                            </div>
+                        }
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col"><span>Total Neblio</span></div>
+                            <div class="col"><span>@transaction.InputSummary.TotalNeblioAmount NEBL</span></div>
+                        </div>
+                        @foreach (var t in transaction.OutputSummary.Tokens)
+                        {
+                            var k = t.Key;
+                            <div class="row">
+                                <div class="col d-sm-flex justify-content-sm-start align-items-sm-center" style="max-width:200px;"><span>Total Tokens</span></div>
+                                <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-start w-auto"><span>@t.Value</span></div>
+                                <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-start w-auto"><img style="width: 25px;max-height: 25px;" src="@transaction.GetTokenImageUrl(k.TokenId)" /></div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">
+                                @if (transaction.Inputs.Count > 0)
+                                {
+                                    @foreach (var input in transaction.Inputs)
+                                    {
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="card" style="max-height: 250px;max-width: 350px;">
+                                                    <div class="card-header d-flex justify-content-center align-items-center" style="padding-top: 5px;padding-left: 5px;">
+                                                        <h6>...@input.Key.Remove(0, input.Key.Length - 5)</h6>
+                                                    </div>
+                                                    <div class="card-body" style="padding-top: 5px;padding-bottom: 5px;">
+                                                        <div class="row">
+                                                            <div class="col d-sm-flex justify-content-sm-start align-items-sm-center"><span>Amount:</span></div>
+                                                            <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-center"><span>@input.Value.Utxo.Value Sat</span></div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col d-sm-flex justify-content-sm-start align-items-sm-center"><span>Tokens</span></div>
+                                                            <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-center"><span>@input.Value.TotalTokens</span></div>
+                                                            <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-center"><img style="width: 25px;max-height: 25px;" /></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer d-sm-flex justify-content-sm-center align-items-sm-center" style="padding-top: 5px;padding-bottom: 5px;">
+                                                        <button class="btn btn-danger" @onclick="() => RemoveInput(input.Value.Utxo.Txid, (int)input.Value.Utxo.Index)" type="button" style="width: 25px;height: 25px;padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;">
+                                                            <i class="oi oi-x"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col" style="width: 25%;">
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col">
+                                @if (transaction.Outputs.Count > 0)
+                                {
+                                    @foreach (var output in transaction.Outputs)
+                                    {
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="card" style="max-height: 250px;max-width: 350px;">
+                                                    <div class="card-header d-flex justify-content-center align-items-center" style="padding-top: 5px;padding-left: 5px;">
+                                                        <h6>Output </h6>
+                                                    </div>
+                                                    <div class="card-body" style="padding-top: 5px;padding-bottom: 5px;">
+                                                        <div class="row">
+                                                            <div class="col d-sm-flex justify-content-sm-start align-items-sm-center"><span>Amount:</span></div>
+                                                            <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-center"><span>Amount @output.Amount NEBL</span></div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col d-sm-flex justify-content-sm-start align-items-sm-center"><span>Tokens</span></div>
+                                                            <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-center"><span>@output.TokenAmount</span></div>
+                                                            <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-center"><img style="width: 25px;max-height: 25px;" /></div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col d-sm-flex justify-content-sm-start align-items-sm-center"><span>Receiver</span></div>
+                                                            <div class="col-auto d-sm-flex justify-content-sm-center align-items-sm-center"><span>@output.Address</span></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer d-sm-flex justify-content-sm-center align-items-sm-center" style="padding-top: 5px;padding-bottom: 5px;">
+                                                        <button class="btn btn-primary" @onclick="() => addReceiverVisible(transaction.Outputs.IndexOf(output))" type="button" style="width: 25px;height: 25px;padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;">
+                                                            <i class="oi oi-person"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger" @onclick="() => RemoveOutput(transaction.Outputs.IndexOf(output))" type="button" style="width: 25px;height: 25px;padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;margin-left: 50px;">
+                                                            <i class="oi oi-x"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h5>String output</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <textarea style="min-width: 800px;min-height: 400px;">@transaction.TxString</textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" type="button" @onclick="Sign">Sign</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h5>Signed string output</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <textarea style="min-width: 800px;min-height: 400px;">@transaction.TxStringSigned</textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h5>Hex output</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <textarea style="min-width: 800px;min-height: 150px;">@transaction.TxHex</textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h5>Signed Hex output</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <textarea style="min-width: 800px;min-height: 150px;">@transaction.TxHexSigned</textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" type="button">Broadcast</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h5>New TxId</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@txid</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Spin>
+
+    <!-- add token tx -->
+    <Modal Title="Add Token Tx"
+           Visible="@addTokensVisible"
+           OnOk="@addTokenTxConfirm"
+           OnCancel="@addTokenTxCancel">
+    </Modal>
+
+    <!-- add neblio output -->
+    <Modal Title="Add Neblio To Output"
+           Visible="@addNeblioToOutputVisible"
+           OnOk="@addNeblioToOutputConfirm"
+           OnCancel="@addNeblioToOutputCancel">
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Add New Neblio Output</p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <input type="number" step="10000" min="10000" @bind="@newNeblioAmount" />
+                    </div>
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <button class="btn btn-primary" @onclick="AddNeblioOutput">Add Neblio</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Modal>
+
+    <!-- add receiver to output -->
+    <Modal Title="Add Receiver To Output"
+           Visible="@addReceiverToOutputVisible"
+           OnOk="@addReceiverToOutputConfirm"
+           OnCancel="@addReceiverToOutputCancel">
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <p>Add Receiver To Output</p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <Input Placeholder="Add receiver address" @bind-Value=@newReceiver Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Modal>
+
+    <!-- utxos list modal -->
+    <Modal Title="Sender Utxos"
+           Width="650"
+           Visible="@senderUtxosVisible"
+           OnOk="@addInputConfirm"
+           OnCancel="@addInputCancel">
+
+        @if (transaction.Sender != null)
+        {
+            @if (!string.IsNullOrEmpty(transaction.Sender.Address))
+            {
+                <div class="row" style="margin-top:25px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Utxo</th>
+                                    <th>Index</th>
+                                    <th>Amount</th>
+                                    <th>Confirmations</th>
+                                    <th>Tokens</th>
+                                    <th>Used</th>
+                                    <th>Add</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var u in transaction.Sender.Utxos.Values)
+                                {
+                                    <tr>
+                                        <td>...@u.Utxo.Txid.Remove(0, u.Utxo.Txid.Length - 5)</td>
+                                        <td>@u.Utxo.Index</td>
+                                        <td>@u.Utxo.Value Sat</td>
+                                        <td style="margin-right:10px;">@u.TxInfo.Confirmations</td>
+                                        @if (u.Utxo.Tokens.Count > 0)
+                                        {
+                                            var tok = u.Utxo.Tokens.FirstOrDefault();
+                                            <td>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        @tok?.Amount
+                                                    </div>
+                                                    <div class="col">
+                                                        <img style="width: 25px;margin-right: 10px;" src="@transaction.GetTokenImageUrl(tok?.TokenId)" />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>0</td>
+                                        }
+                                        @if (u.Used)
+                                        {
+                                            <td>Yes</td>
+                                        }
+                                        else
+                                        {
+                                            <td>No</td>
+                                        }
+                                        <td><button class="btn btn-primary" @onclick="async () => AddInput(u.Utxo.Txid, (int)u.Utxo.Index)">Add As Input</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row" style="margin-top:25px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h3>No sender loaded</h3>
+                    </div>
+                </div>
+            }
+        }
+    </Modal>
+
+
+    <!-- Token Tx base Modal-->
+    <Modal Title="Create Token Transaction"
+            Width="750"
+           Visible="@createTokenBasedTransactionVisible"
+           OnOk="@CloseCreateTokenTranactionModal"
+           OnCancel="@CloseCreateTokenTranactionModal">
+        <VENFTApp_Blazor.Components.CreateTokenTransaction TransactionCreated="(e) => TokenTransactionCreated(e)" />
+    </Modal>
+</div>
+
+
+@code {
+
+    bool createTokenBasedTransactionVisible = false;
+    string txid = string.Empty;
+    bool senderUtxosVisible = false;
+    bool addNeblioToOutputVisible = false;
+    bool addTokensVisible = false;
+    bool addReceiverToOutputVisible = false;
+
+    bool errorDuringSend = false;
+    string errorMessage = string.Empty;
+    bool sendingTransaction = false;
+
+    string sender = string.Empty;
+    string newReceiver = string.Empty;
+    int newReceiverOutputIndex = 0;
+    string newInputUtxoTxId = string.Empty;
+    int newInputUtxoNIndex = 0;
+    int newNeblioAmount = 10000;
+    int newTokenOutputNIndex = 0;
+    int newTokenAmount = 1;
+    string newTokenId = string.Empty;
+    int removeReceiverOutputIndex = 0;
+    int removeTokensOutputIndex = 0;
+    int removeOutputIndex = 0;
+
+    NeblioBuilderTransaction transaction = new NeblioBuilderTransaction();
+
+    protected override Task OnInitializedAsync()
+    {
+        transaction.SenderRefreshed += RefreshedHandler;
+        return base.OnInitializedAsync();
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task addInputConfirm(MouseEventArgs e)
+    {
+        senderUtxosVisible = false;
+    }
+    private async Task addInputCancel(MouseEventArgs e)
+    {
+        senderUtxosVisible = false;
+    }
+    private async Task addNewInputDialog(MouseEventArgs e)
+    {
+        senderUtxosVisible = true;
+    }
+    private async Task addNeOutputDialog(MouseEventArgs e)
+    {
+        if (transaction.ActualDifference > 10000)
+        {
+            newNeblioAmount = (int)transaction.ActualDifference;
+        }
+
+        addNeblioToOutputVisible = true;
+    }
+
+    private async Task addTokenTxConfirm(MouseEventArgs e)
+    {
+        addTokensVisible = false;
+        await AddNeblioTokensToOutput();
+    }
+    private async Task addTokenTxCancel(MouseEventArgs e)
+    {
+        addTokensVisible = false;
+    }
+    private async Task addNeblioToOutputConfirm(MouseEventArgs e)
+    {
+        addNeblioToOutputVisible = false;
+        await AddNeblioOutput();
+    }
+    private async Task addNeblioToOutputCancel(MouseEventArgs e)
+    {
+        addNeblioToOutputVisible = false;
+    }
+    private async Task addReceiverVisible(int index)
+    {
+        newReceiverOutputIndex = index;
+        addReceiverToOutputVisible = true;
+    }
+    private async Task addReceiverToOutputConfirm(MouseEventArgs e)
+    {
+        addReceiverToOutputVisible = false;
+        await AddReceiver();
+    }
+    private async Task addReceiverToOutputCancel(MouseEventArgs e)
+    {
+        addReceiverToOutputVisible = false;
+    }
+
+    private async Task AddSender()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(sender))
+                sender = AppData.Account.Address;
+
+            await transaction.AddSender(sender);
+            transaction.SenderRefreshed += RefreshedHandler;
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AddInput(string txid, int index)
+    {
+        try
+        {
+            await transaction.AddInput(txid, index);
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveInput(string utxo, int index)
+    {
+        try
+        {
+            await transaction.RemoveInput(utxo, index);
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AddReceiver()
+    {
+        try
+        {
+            await transaction.AddReceiver(newReceiver);
+            await transaction.AddReceiverToOutput(newReceiver, newReceiverOutputIndex);
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AddNeblioOutput()
+    {
+        try
+        {
+            await transaction.AddNeblioOutput(newNeblioAmount);
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveOutput(int index)
+    {
+        try
+        {
+            await transaction.RemoveOutput(index);
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AddNeblioTokensToOutput()
+    {
+        try
+        {
+            await transaction.AddNeblioTokensToOutput(newTokenId, newTokenOutputNIndex, newTokenAmount);
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveTokensFromOutput()
+    {
+        try
+        {
+            await transaction.RemoveNeblioTokensFromOutput(removeTokensOutputIndex);
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveReceiverFromOutput()
+    {
+        try
+        {
+            await transaction.RemoveReceiverFromOutput(removeReceiverOutputIndex);
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task Sign()
+    {
+        try
+        {
+            await transaction.Sign(await AppData.Account.AccountKey.GetEncryptedKey());
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task Broadcast()
+    {
+        try
+        {
+            txid = await transaction.Broadcast();
+        }
+        catch (Exception ex)
+        {
+            errorDuringSend = true;
+            errorMessage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CloseCreateTokenTranactionModal(MouseEventArgs e)
+    {
+        createTokenBasedTransactionVisible = false;
+    }
+
+    private async Task CreateNewTokenTransaction()
+    {
+        createTokenBasedTransactionVisible = true;
+    }
+
+    void TokenTransactionCreated(Transaction tx)
+    {
+        transaction.LoadTransaction(tx.Clone()).Wait();
+    }
+}
