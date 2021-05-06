@@ -9,28 +9,13 @@
 @page "/send"
 
 <div class="container-fluid">
-    @if (errorDuringSend)
-    {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description=@errorMessage
-               ShowIcon="true" />
-    }
-
-    @if (AppData.Account.IsLocked())
-    {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description="Account Is Locked. Please unlock account first."
-               ShowIcon="true" />
-    }
 
     <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
         <div class="row">
             <div class="col">
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <h1>Send VENFT Tokens</h1>
+                        <h3>Send Payment</h3>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
@@ -38,128 +23,88 @@
                         <VENFTApp_Blazor.Components.AccountBalances />
                     </div>
                 </div>
-                
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Available source tokens on address: @AppData.Account.SourceTokensBalance</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>From:</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>@AppData.Account.Address</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>To:</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add receiver address" @bind-Value=@tokenReceiver Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Amount of tokens:</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <input type="number" step="1" min="2" max="@AppData.Account.SourceTokensBalance" @bind="@AmountTokensToSend" />
-                        <!--<Input ShowUpDown="false" TValue="int" @bind-Value=@AmountTokensToSend Style="font-size:12px; min-width:250px;" />-->
-                    </div>
-                </div>
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <button class="btn btn-primary" @onclick="SendTokenTx">Send</button>
+                        <RadioGroup @bind-Value="@txType" @onselectionchange="txTypeChangedHandler">
+                            <Radio Value="TxType.Neblio">Neblio</Radio>
+                            <Radio Value="TxType.Tokens">Tokens</Radio>
+                        </RadioGroup>
                     </div>
                 </div>
-                <div class="row" style="margin-top:20px;">
+                <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Sent transaction: <a href="https://explorer.nebl.io/tx/@tokentxid" target="_blank">@tokentxid</a></p>
+                        <p>To Address:</p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add receiver address" @bind-Value=@Receiver Style="font-size:12px; min-width:250px;max-width:350px;" />
                     </div>
                 </div>
 
-                <div class="row" style="margin-top:40px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <h1>Send Neblio</h1>
+                @if (txType == TxType.Neblio)
+                {
+                    <div class="row" style="margin-top:30px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <p>Amount of Nebl:</p>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Actual Balance: @AppData.Account.TotalBalance NEBL</p>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@AmountToSend" />
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Unconfirmed Balance: @AppData.Account.TotalUnconfirmedBalance NEBL</p>
+                }
+                else
+                {
+                    <div class="row" style="margin-top:30px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <p>Amount of tokens:</p>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>From:</p>
+                    <div class="row" style="margin-top:30px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small>Available source tokens on address: @AppData.Account.SourceTokensBalance VENFT</small>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>@AppData.Account.Address</p>
+                    <div class="row" style="margin-top:2px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <input type="number" step="1" min="2" max="@AppData.Account.SourceTokensBalance" @bind="@AmountTokensToSend" />
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>To:</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add receiver address" @bind-Value=@neblReceiver Style="font-size:12px; min-width:250px;max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Amount of Nebl:</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@AmountToSend" />
-                        <!--<Input ShowUpDown="false" TValue="double" Format="0.000" @bind-Value=@AmountToSend Style="font-size:12px; min-width:250px;" />-->
-                    </div>
-                </div>
+                }
+
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <button class="btn btn-primary" @onclick="SendTx">Send</button>
+                        <button class="btn btn-primary" @onclick="SendTransaction">Send</button>
                     </div>
                 </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Sent transaction: <a href="https://explorer.nebl.io/tx/@txid" target="_blank">@txid</a></p>
-                    </div>
-                </div>
+            </div>
+            <div class="col w-25">
+                <VENFTApp_Blazor.Components.TransactionsList @bind-MaxLoadedTx="maxLoadedTransaction" />
             </div>
         </div>
 
     </Spin>
-
+    <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
 
 @code {
-    bool errorDuringSend = false;
-    string errorMessage = string.Empty;
+    private enum TxType
+    {
+        Neblio,
+        Tokens
+    }
+
+    TxType txType = TxType.Neblio;
+
     bool sendingTransaction = false;
     private string txid = string.Empty;
-    private string tokentxid = string.Empty;
-    private string tokenReceiver = string.Empty;
-    private string neblReceiver = string.Empty;
+    private string Receiver = string.Empty;
     private int AmountTokensToSend = 2;
     private double AmountToSend = 0.001;
+    private int maxLoadedTransaction = 10;
 
     protected override Task OnInitializedAsync()
     {
@@ -168,8 +113,6 @@
             if (string.IsNullOrEmpty(AppData.Account.Address))
             {
                 Redirect();
-
-
             }
             else
             {
@@ -197,35 +140,38 @@
         StateHasChanged();
     }
 
+    private void txTypeChangedHandler(EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task SendTransaction()
+    {
+        switch (txType)
+        {
+            case TxType.Neblio:
+                await SendTx();
+                break;
+            case TxType.Tokens:
+                await SendTokenTx();
+                break;
+        }
+    }
+
     private async Task SendTokenTx()
     {
         try {
-            errorDuringSend = false;
             sendingTransaction = true;
-            tokentxid = "Sending...";
             StateHasChanged();
 
             var metadata = new Dictionary<string, string>();
             metadata.Add("Data", "Sent with https://ve-nft.com/");
 
-            var res = await AppData.Account.SendNeblioTokenPayment(NeblioTransactionHelpers.VENFTId, metadata, tokenReceiver, AmountTokensToSend);
-
-            if (res.Item1)
-            {
-                tokentxid = res.Item2;
-            }
-            else
-            {
-                tokentxid = res.Item2;
-                errorDuringSend = true;
-                errorMessage = res.Item2;
-            }
+            var res = await AppData.Account.SendNeblioTokenPayment(NeblioTransactionHelpers.VENFTId, metadata, Receiver, AmountTokensToSend);
+            Console.WriteLine("Tx send result: " + res);
         }
         catch (Exception ex)
         {
-            tokentxid = ex.Message;
-            errorDuringSend = true;
-            errorMessage = ex.Message;
             Console.WriteLine(ex.Message);
         }
         finally
@@ -239,29 +185,14 @@
     {
         try
         {
-            errorDuringSend = false;
             sendingTransaction = true;
-            txid = "Sending...";
             StateHasChanged();
 
-            var res = await AppData.Account.SendNeblioPayment(neblReceiver, AmountToSend);
-
-            if (res.Item1)
-            {
-                txid = res.Item2;
-            }
-            else
-            {
-                txid = res.Item2;
-                errorDuringSend = true;
-                errorMessage = res.Item2;
-            }
+            var res = await AppData.Account.SendNeblioPayment(Receiver, AmountToSend);
+            Console.WriteLine("Tx send result: " + res);
         }
         catch (Exception ex)
         {
-            txid = ex.Message;
-            errorDuringSend = true;
-            errorMessage = ex.Message;
             Console.WriteLine(ex.Message);
         }
         finally

@@ -1,0 +1,65 @@
+﻿@inject AppData AppData
+ 
+<div class="row" style="margin-top:10px;">
+    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+        <span>If your account is unlocked now you can display not encrypted private key. If account is locked the key is encrypted with your password.</span>
+    </div>
+</div>
+<div class="row" style="margin-top:10px;">
+    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+        <button class="btn btn-primary" @onclick="downloadAccountKey">Show Private Key</button>
+    </div>
+</div>
+
+<Modal Title="Your Private Key"
+       Visible="@privateKeyDialogVisible"
+       OnOk="@privateKeyDialogClose"
+       OnCancel="@privateKeyDialogClose">
+    <p>Your Key: @accountKey</p>
+</Modal>
+
+@code {
+
+    private bool privateKeyDialogVisible = false;
+    private System.Threading.Timer hideTimer;
+    private string accountKey = string.Empty;
+
+    private async Task downloadAccountKey()
+    {
+        if (!string.IsNullOrEmpty(AppData.Account.Address))
+        {
+            if (AppData.Account.IsLocked())
+            {
+                accountKey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                privateKeyDialogVisible = true;
+            }
+            else
+            {
+                try
+                {
+                    accountKey = await AppData.Account.AccountKey.GetEncryptedKey();
+                    privateKeyDialogVisible = true;
+                }
+                catch (Exception ex)
+                {
+                    accountKey = "Exception during display key. " + ex.Message;
+                }
+            }
+
+            hideTimer = new System.Threading.Timer(async (object stateInfo) =>
+            {
+                accountKey = string.Empty;
+                privateKeyDialogVisible = false;
+                StateHasChanged();
+                hideTimer.Dispose();
+            }, new System.Threading.AutoResetEvent(false), 10000, 10000);
+        }
+    }
+
+    private async Task privateKeyDialogClose(MouseEventArgs e)
+    {
+        accountKey = string.Empty;
+        privateKeyDialogVisible = false;
+    }
+
+}

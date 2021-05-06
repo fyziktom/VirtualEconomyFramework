@@ -37,6 +37,7 @@ namespace VEDriversLite.NFT
         GetTransactionInfoResponse TxDetails { get; set; }
         event EventHandler<GetTransactionInfoResponse> TxDataRefreshed;
 
+        Task FillCommon(INFT nft);
         Task Fill(INFT NFT);
         Task ParseOriginData();
         Task LoadHistory();

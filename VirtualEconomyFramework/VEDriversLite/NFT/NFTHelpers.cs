@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
+using VEDriversLite.Events;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.Security;
 
@@ -35,6 +36,22 @@ namespace VEDriversLite.NFT
         public static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         private static string TokenSymbol = "VENFT";
         public static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
+
+        public static event EventHandler<IEventInfo> NewEventInfo;
+
+        public static void InitHandlers()
+        {
+            NeblioTransactionHelpers.NewEventInfo += NeblioTransactionHelpers_NewEventInfo;
+        }
+        public static void DeInitHandlers()
+        {
+            NeblioTransactionHelpers.NewEventInfo -= NeblioTransactionHelpers_NewEventInfo;
+        }
+
+        private static void NeblioTransactionHelpers_NewEventInfo(object sender, IEventInfo e)
+        {
+            NewEventInfo?.Invoke(null, e);
+        }
 
         public static async Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo)
         {

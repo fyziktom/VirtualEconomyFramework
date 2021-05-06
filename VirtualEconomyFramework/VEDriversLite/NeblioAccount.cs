@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
+using VEDriversLite.Events;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
@@ -20,6 +21,7 @@ namespace VEDriversLite
             Profile = new ProfileNFT("");
             NFTs = new List<INFT>();
             Bookmarks = new List<Bookmark>();
+            InitHandlers();
         }
         public Guid Id { get; set; }
         public string Address { get; set; } = string.Empty;
@@ -32,6 +34,7 @@ namespace VEDriversLite
         public double SourceTokensBalance { get; set; } = 0.0;
         public double AddressNFTCount { get; set; } = 0.0;
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
         public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; } = new Dictionary<string, TokenSupplyDto>();
         public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
@@ -39,6 +42,7 @@ namespace VEDriversLite
         public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
 
         public event EventHandler Refreshed;
+        public event EventHandler<IEventInfo> NewEventInfo;
         public event EventHandler<string> PaymentSent;
         public event EventHandler<string> PaymentSentError;
 
@@ -70,6 +74,63 @@ namespace VEDriversLite
             }
         }
 
+        private void InitHandlers()
+        {
+            NeblioTransactionHelpers.NewEventInfo += NeblioTransactionHelpers_NewEventInfo;
+        }
+        private void DeInitHandlers()
+        {
+            NeblioTransactionHelpers.NewEventInfo -= NeblioTransactionHelpers_NewEventInfo;
+        }
+
+        private void NeblioTransactionHelpers_NewEventInfo(object sender, IEventInfo e)
+        {
+            e.Address = Address;
+            EventInfoProvider.StoreEventInfo(e);
+        }
+
+        private async Task InvokeSendPaymentSuccessEvent(string txid, string title = "Neblio Payment Sent")
+        {
+            NewEventInfo?.Invoke(this,
+                        await EventFactory.GetEvent(EventType.Info,
+                                                    title,
+                                                    $"Successfull send. Please wait a while for enough confirmations.",
+                                                    Address,
+                                                    txid,
+                                                    100));
+        }
+
+        private async Task InvokeAccountLockedEvent(string title = "Cannot send transaction")
+        {
+            NewEventInfo?.Invoke(this,
+                        await EventFactory.GetEvent(EventType.Error,
+                                                    title,
+                                                    "Account is Locked. Please unlock it in account page.",
+                                                    Address,
+                                                    string.Empty,
+                                                    100));
+        }
+        private async Task InvokeErrorDuringSendEvent(string errorMessage, string title = "Cannot send transaction")
+        {
+            NewEventInfo?.Invoke(this,
+                        await EventFactory.GetEvent(EventType.Error,
+                                                    title,
+                                                    errorMessage,
+                                                    Address,
+                                                    string.Empty,
+                                                    100));
+        }
+        private async Task InvokeErrorEvent(string errorMessage, string title = "Error")
+        {
+            NewEventInfo?.Invoke(this,
+                        await EventFactory.GetEvent(EventType.Error,
+                                                    title,
+                                                    errorMessage,
+                                                    Address,
+                                                    string.Empty,
+                                                    100));
+        }
+
         public async Task<string> StartRefreshingData(int interval = 3000)
         {
             try
@@ -84,14 +145,23 @@ namespace VEDriversLite
                 // todo
             }
 
-            var minorRefresh = 10;
+            var minorRefresh = 5;
 
             // todo cancelation token
             _ = Task.Run(async () =>
             {
-                await ReLoadNFTs();
-                Profile = await NFTHelpers.FindProfileNFT(NFTs);
-                await CheckPayments();
+                try
+                {
+                    await ReLoadNFTs();
+                    Profile = await NFTHelpers.FindProfileNFT(NFTs);
+                    await CheckPayments();
+                    await RefreshAddressReceivedPayments();
+                    
+                }
+                catch(Exception ex)
+                {
+                    // todo
+                }
                 var lastNFTcount = AddressNFTCount;
                 while (true)
                 {
@@ -110,6 +180,7 @@ namespace VEDriversLite
                         {
                             Profile = await NFTHelpers.FindProfileNFT(NFTs);
                             await CheckPayments();
+                            await RefreshAddressReceivedPayments();
                             minorRefresh = 10;
                         }
 
@@ -119,7 +190,7 @@ namespace VEDriversLite
                     }
                     catch (Exception ex)
                     {
-                        // todo
+                        await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
                     }
 
                     await Task.Delay(interval);
@@ -129,7 +200,7 @@ namespace VEDriversLite
 
             return await Task.FromResult("RUNNING");
         }
-    
+
         public async Task<bool> CreateNewAccount(string password, bool saveToFile = false)
         {
             try
@@ -169,7 +240,7 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Cannot create account! " + ex.Message);
+                await InvokeErrorEvent(ex.Message, "Cannot Create Account");
             }
 
             return false;
@@ -223,7 +294,8 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
+                await InvokeErrorEvent(ex.Message, "Cannot Load Account");
+                //throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
             }
 
             return false;
@@ -239,7 +311,7 @@ namespace VEDriversLite
             }
             catch(Exception ex)
             {
-                Console.WriteLine("Cannot deserialize the bookmarks.");
+                await InvokeErrorEvent(ex.Message, "Cannot deserialize the bookmarks.");
             }
         }
 
@@ -253,7 +325,10 @@ namespace VEDriversLite
                     Note = note
                 });
             else
-                return (false,"Already Exists!");
+            {
+                await InvokeErrorEvent("Bookmark Already Exists", "Already Exists");
+                return (false, "Already Exists.");
+            }
 
             return (true,JsonConvert.SerializeObject(Bookmarks));
         }
@@ -264,7 +339,10 @@ namespace VEDriversLite
             if (bk != null)
                 Bookmarks.Remove(bk);
             else
-                return (false,"Not Found!");
+            {
+                await InvokeErrorEvent("Bookmark Not Found.", "Not Found");
+                return (false, "Not Found.");
+            }
 
             return (true,JsonConvert.SerializeObject(Bookmarks));
         }
@@ -321,6 +399,19 @@ namespace VEDriversLite
             }
         }
 
+        public async Task RefreshAddressReceivedPayments()
+        {
+            ReceivedPayments.Clear();
+            var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+            if (pnfts.Count > 0)
+            {
+                foreach (var p in pnfts)
+                {
+                    ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+                }
+            }
+        }
+
         public async Task CheckPayments()
         {
             var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
@@ -348,6 +439,7 @@ namespace VEDriversLite
                                 }
                                 catch (Exception ex)
                                 {
+                                    //await InvokeErrorDuringSendEvent($"Cannot send ordered NFT. Payment TxId: {p.Utxo}, NFT TxId: {pn.Utxo}, error message: {ex.Message}", "Cannot send ordered NFT");
                                     Console.WriteLine("Cannot send ordered NFT, payment txid: " + p.Utxo + " - " + ex.Message);
                                 }
                             }
@@ -453,16 +545,15 @@ namespace VEDriversLite
         {
             if (IsLocked())
             {
-                PaymentSentError?.Invoke(this, "Account is locked.");
+                await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
             var res = await CheckSpendableNeblio(amount);
             if (res.Item2 == null)
             {
-                PaymentSentError?.Invoke(this, res.Item1);
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
                 return (false, res.Item1);
-            }
-            
+            }            
 
             // fill input data for sending tx
             var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
@@ -478,17 +569,17 @@ namespace VEDriversLite
                 var rtxid = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, res.Item2);
                 if (rtxid != null)
                 {
-                    PaymentSent?.Invoke(this, rtxid);
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Payment Sent");
                     return (true, rtxid);
                 }
             }
             catch (Exception ex)
             {
-                PaymentSentError?.Invoke(this, ex.Message);
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
                 return (false, ex.Message);
             }
 
-            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
         }
 
@@ -496,19 +587,19 @@ namespace VEDriversLite
         {
             if (IsLocked())
             {
-                PaymentSentError?.Invoke(this, "Account is locked.");
+                await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                PaymentSentError?.Invoke(this, res.Item1);
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
                 return (false, res.Item1);
             }
             var tres = await CheckSpendableNeblioTokens(tokenId, amount);
             if (tres.Item2 == null)
             {
-                PaymentSentError?.Invoke(this, tres.Item1);
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable token inputs");
                 return (false, tres.Item1);
             }
 
@@ -528,17 +619,17 @@ namespace VEDriversLite
                 var rtxid = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AccountKey, res.Item2, tres.Item2);
                 if (rtxid != null)
                 {
-                    PaymentSent?.Invoke(this, rtxid);
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Token Payment Sent");
                     return (true, rtxid);
                 }
             }
             catch (Exception ex)
             {
-                PaymentSentError?.Invoke(this, ex.Message);
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
                 return (false, ex.Message);
             }
 
-            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
         }
 
@@ -548,19 +639,19 @@ namespace VEDriversLite
 
             if (IsLocked())
             {
-                PaymentSentError?.Invoke(this, "Account is locked.");
+                await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                PaymentSentError?.Invoke(this, res.Item1);
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
                 return (false, res.Item1);
             }
             var tres = await CheckSpendableNeblioTokens(tokenId, 2);
             if (tres.Item2 == null)
             {
-                PaymentSentError?.Invoke(this, tres.Item1);
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
                 return (false, tres.Item1);
             }
 
@@ -581,8 +672,7 @@ namespace VEDriversLite
                 }
                 if (rtxid != null)
                 {
-                    PaymentSent?.Invoke(this, rtxid);
-
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio NFT Sent");
                     if (NFT.Type == NFTTypes.Profile)
                         Profile = NFT as ProfileNFT;
 
@@ -591,11 +681,11 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                PaymentSentError?.Invoke(this, ex.Message);
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
                 return (false, ex.Message);
             }
 
-            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
         }
 
@@ -605,18 +695,18 @@ namespace VEDriversLite
 
             if (IsLocked())
             {
-                PaymentSentError?.Invoke(this, "Account is locked.");
+                await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
             if (string.IsNullOrEmpty(NFT.Utxo))
             {
-                PaymentSentError?.Invoke(this, "Cannot change Profile without provided Utxo TxId.");
+                await InvokeErrorDuringSendEvent("Cannot change profile without providen Utxo TxId.", "Cannot change the profile.");
                 return (false, "Cannot change Profile without provided Utxo TxId.");
             }
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                PaymentSentError?.Invoke(this, res.Item1);
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -626,18 +716,18 @@ namespace VEDriversLite
 
                 if (rtxid != null)
                 {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Profile Changed");
                     Profile = NFT as ProfileNFT;
-                    PaymentSent?.Invoke(this, rtxid);
                     return (true, rtxid);
                 }
             }
             catch (Exception ex)
             {
-                PaymentSentError?.Invoke(this, ex.Message);
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
                 return (false, ex.Message);
             }
 
-            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
 
         }
@@ -648,18 +738,18 @@ namespace VEDriversLite
 
             if (IsLocked())
             {
-                PaymentSentError?.Invoke(this, "Account is locked.");
+                await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
             if (string.IsNullOrEmpty(NFT.Utxo))
             {
-                PaymentSentError?.Invoke(this, "Cannot change NFT without provided Utxo TxId.");
+                await InvokeErrorDuringSendEvent("Cannot change Post NFT without provided Utxo TxId.", "Cannot change the Post NFT");
                 return (false, "Cannot change NFT without provided Utxo TxId.");
             }
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                PaymentSentError?.Invoke(this, res.Item1);
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -669,17 +759,17 @@ namespace VEDriversLite
 
                 if (rtxid != null)
                 {
-                    PaymentSent?.Invoke(this, rtxid);
+                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Post Changed");
                     return (true, rtxid);
                 }
             }
             catch (Exception ex)
             {
-                PaymentSentError?.Invoke(this, ex.Message);
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
                 return (false, ex.Message);
             }
 
-            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
         }
 
@@ -689,18 +779,18 @@ namespace VEDriversLite
 
             if (IsLocked())
             {
-                PaymentSentError?.Invoke(this, "Account is locked.");
+                await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
             if (string.IsNullOrEmpty(NFT.Utxo))
             {
-                PaymentSentError?.Invoke(this, "Cannot send NFT without provided Utxo TxId.");
+                await InvokeErrorDuringSendEvent("Cannot snd NFT without provided Utxo TxId.", "Cannot send NFT");
                 return (false, "Cannot send NFT without provided Utxo TxId.");
             }
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                PaymentSentError?.Invoke(this, res.Item1);
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -713,17 +803,20 @@ namespace VEDriversLite
 
                 if (rtxid != null)
                 {
-                    PaymentSent?.Invoke(this, rtxid);
+                    if (!priceWrite)
+                        await InvokeSendPaymentSuccessEvent(rtxid, "NFT Sent");
+                    else
+                        await InvokeSendPaymentSuccessEvent(rtxid, "Price written to NFT");
                     return (true, rtxid);
                 }
             }
             catch (Exception ex)
             {
-                PaymentSentError?.Invoke(this, ex.Message);
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
                 return (false, ex.Message);
             }
 
-            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
         }
 
@@ -733,18 +826,18 @@ namespace VEDriversLite
 
             if (IsLocked())
             {
-                PaymentSentError?.Invoke(this, "Account is locked.");
+                await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
             if (string.IsNullOrEmpty(NFT.Utxo))
             {
-                PaymentSentError?.Invoke(this, "Cannot send NFT without provided Utxo TxId.");
+                await InvokeErrorDuringSendEvent("Cannot send NFT Payment without provided Utxo TxId of this NFT", "Cannot send Payment for NFT");
                 return (false, "Cannot send NFT without provided Utxo TxId.");
             }
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                PaymentSentError?.Invoke(this, res.Item1);
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -754,17 +847,17 @@ namespace VEDriversLite
 
                 if (rtxid != null)
                 {
-                    PaymentSent?.Invoke(this, rtxid);
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Payment for NFT Sent");
                     return (true, rtxid);
                 }
             }
             catch (Exception ex)
             {
-                PaymentSentError?.Invoke(this, ex.Message);
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
                 return (false, ex.Message);
             }
 
-            PaymentSentError?.Invoke(this, "Unexpected error during send.");
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
         }
     }

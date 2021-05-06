@@ -1,0 +1,237 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inject NavigationManager NavManager
+
+<div class="row">
+    <div class="col">
+        <Spin spinning="@processingMinting" tip="Sending...">
+
+            <div class="row">
+                <div class="col">
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <p>Name:</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            @if (nftType == NFTTypes.Profile)
+                            {
+                                <Input Placeholder="Type your Name" @bind-Value=@newProfileNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            }
+                            else
+                            {
+                                <Input Placeholder="Add Name of the NFT" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            }
+                        </div>
+                    </div>
+                    @if (nftType == NFTTypes.Profile)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <p>Surname:</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <Input Placeholder="Type your surname" @bind-Value=@newProfileNFT.Surname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <p>Nickname:</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <Input Placeholder="Type your nickname" @bind-Value=@newProfileNFT.Nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <p>Author:</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <Input Placeholder="Add Author of the NFT" @bind-Value=@newNFT.Author Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                    }
+                    @if (nftType != NFTTypes.Profile)
+                    {
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <p>Description:</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <Input Placeholder="Add Description of the NFT" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <p>Bio:</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <Input Placeholder="Type your Bio" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                    }
+
+                    <VENFTApp_Blazor.Components.UploadImage ImageLink="@newNFT.ImageLink" ImageLinkChanged="ImageLinkChanged" />
+
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small class="text-center">Minting costs 0.0002 NEBL (fee) and 1 VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Spin>
+
+        <Modal Title="Mint New NFT"
+               Visible="@confirmVisible"
+               OnOk="@HandleOk"
+               OnCancel="@HandleCancel">
+            <p>"Do you realy want to mint this NFT?"</p>
+        </Modal>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public bool RedirectToNFTsAfterMint { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<string> NFTMinted { get; set; }
+
+    private NFTTypes nftType = NFTTypes.Image;
+    [Parameter]
+    public NFTTypes NFTType
+    {
+        get => nftType;
+        set => nftType = value;
+    }
+
+    private INFT sourceNFT = new ImageNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => sourceNFT;
+        set
+        {
+            if (value != null)
+            {
+                if (!string.IsNullOrEmpty(value.Utxo))
+                {
+                    if (value.Utxo != newNFT.Utxo)
+                    {
+                        sourceNFT = value;
+                        if (value.Type == NFTTypes.Profile)
+                        {
+                            newNFT.FillCommon(value);
+                            newProfileNFT.Fill(value).Wait();
+                        }
+                        else
+                        {
+                            newNFT.Fill(value);
+                        }
+                        StateHasChanged();
+                    }
+                }
+            }
+        }
+    }
+
+    INFT newNFT = new ImageNFT("");
+    ProfileNFT newProfileNFT = new ProfileNFT("");
+    bool uploadingImage = false;
+    bool confirmVisible = false;
+    bool processingMinting = false;
+
+    void ImageLinkChanged(string newLink)
+    {
+        newNFT.ImageLink = newLink;
+        newProfileNFT.ImageLink = newLink;
+    }
+
+    void ShowMintConfirm()
+    {
+        confirmVisible = true;
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        await MintNewNFT();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    private async Task MintNewNFT()
+    {
+        try
+        {
+            processingMinting = true;
+            confirmVisible = false;
+            StateHasChanged();
+
+            newNFT.Type = nftType;
+
+            if (nftType == NFTTypes.Profile)
+            {
+                await newProfileNFT.FillCommon(newNFT);
+                newNFT = newProfileNFT;
+            }
+
+            (bool, string) res;
+            if (nftType == NFTTypes.Post && !string.IsNullOrEmpty(newNFT.Utxo))
+                res = await AppData.Account.ChangePostNFT(newNFT);
+            else if (nftType == NFTTypes.Profile && !string.IsNullOrEmpty(newNFT.Utxo))
+                res = await AppData.Account.ChangeProfileNFT(newNFT);
+            else
+                res = await AppData.Account.MintNFT(NFTHelpers.TokenId, newNFT);
+
+            if (res.Item1)
+            {
+                NFTMinted.InvokeAsync(res.Item2);
+
+                if (RedirectToNFTsAfterMint)
+                {
+                    processingMinting = false;
+                    StateHasChanged();
+                    await Task.Delay(500);
+                    NavManager.NavigateTo("/nfts");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            processingMinting = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,59 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+
+<div class="row">
+    <div class="col">
+        <table style="min-width:250px;">
+            <thead>
+                <tr>
+                    <th>Sender</th>
+                    <th>NFT</th>
+                    <th>Price</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (AppData.Account.ReceivedPayments.Count > 0)
+                {
+                    @foreach (var p in AppData.Account.ReceivedPayments.Values)
+                    {
+                        var pnft = new PaymentNFT(p.Utxo);
+                        pnft.Fill(p).Wait();
+                        <tr style="margin-top:10px;">
+                            <td><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioTransactionHelpers.ShortenAddress(pnft.Sender)</a></td>
+                            <td style="margin-left:10px;"><a href="https://explorer.nebl.io/tx/@pnft.NFTUtxoTxId" target="_blank"><img class="img-thumbnail" style="max-height:80px; max-width:80px;" src="@pnft.ImageLink" /></a></td>
+                            <td>@pnft.Price NEBL</td>
+                            <td style="margin-left:5px;"><a href="https://explorer.nebl.io/tx/@pnft.Utxo" target="_blank"><i class="oi oi-info"></i></a></td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5">
+                            <div class="row">
+                                <div class="col d-flex align-content-center justify-content-center">
+                                    <span>You dont have any received payments now.</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+}

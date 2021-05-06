@@ -9,28 +9,20 @@
 @page "/nfts"
 
 <div class="container-fluid">
-
-    @if (AppData.Account.IsLocked())
-    {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description="Account Is Locked. Please unlock account first."
-               ShowIcon="true" />
-    }
-
     <div class="row">
         <div class="col">
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h1>My NFTs</h1>
+                    <h3>My NFTs</h3>
                 </div>
             </div>
 
-            <VENFTApp_Blazor.Components.AccountBalances/>
+            <VENFTApp_Blazor.Components.AccountBalances />
 
-            <VENFTApp_Blazor.Components.NFTList Address="@AppData.Account.Address" MainAccount="true"/>
+            <VENFTApp_Blazor.Components.NFTList Address="@AppData.Account.Address" MainAccount="@true" />
         </div>
     </div>
+    <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
 @code {

@@ -26,6 +26,7 @@ namespace VEDriversLite.NFT
             NFTOriginTxId = NFT.NFTOriginTxId;
             Utxo = NFT.Utxo;
             Price = NFT.Price;
+            TypeText = NFT.TypeText;
             if (Price > 0)
                 PriceActive = true;
             else

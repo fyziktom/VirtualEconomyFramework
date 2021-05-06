@@ -12,23 +12,6 @@
 
 <div class="container-fluid">
 
-    @if (AppData.Account.IsLocked())
-    {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description="Account Is Locked. Please unlock account first."
-               Closable
-               ShowIcon="true" />
-    }
-
-    @if (errorDuringSend)
-    {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description=@errorMessage
-               ShowIcon="true" />
-    }
-
     <!--
     @if (!AppData.Account.EnoughBalanceToBuySourceTokens)
     {
@@ -39,101 +22,45 @@
     }
     -->
 
-    <Spin spinning="@processingMinting" tip="Sending Minting...">
+  
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h3>Mint New NFT</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <p>With Address:</p>
+                </div>
+            </div>
 
-        <div class="row">
-            <div class="col">
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <h1>Mint New NFT</h1>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>With Address:</p>
-                    </div>
-                </div>
+            <VENFTApp_Blazor.Components.AccountBalances />
 
-                <VENFTApp_Blazor.Components.AccountBalances/>
+            <!--
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
+                    <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
+                </div>
+            </div>-->
 
-                <!--
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
-                        <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
-                    </div>
-                </div>-->
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Name:</p>
-                    </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <RadioGroup @bind-Value="@NFTType" @onselectionchange="nftTypeChangedHandler">
+                        <Radio Value="NFTTypes.Image">Image - Original</Radio>
+                        <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
+                    </RadioGroup>
                 </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Name of the NFT" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Author:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Author of the NFT" @bind-Value=@newNFT.Author Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Description:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Description of the NFT" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
+            </div>
 
-                <VENFTApp_Blazor.Components.UploadImage ImageLinkChanged="ImageLinkChanged"/>
-
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <RadioGroup @bind-Value="@newNFTType">
-                            <Radio Value="NFTTypes.Image">Image - Original</Radio>
-                            <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
-                        </RadioGroup>
-                    </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <VENFTApp_Blazor.Components.MintNFTForm NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
                 </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span style="font-size:8px;">Minting costs 0.0004 NEBL (fee) and 1 VENFT (carrier). The VENFT token will stay on your address as NFT. </span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Status: @status</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>New NFT transaction id: @newNFT.NFTOriginTxId</p>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </Spin>
-
-    <Modal Title="@confirmTitle"
-           Visible="@confirmVisible"
-           OnOk="@HandleOk"
-           OnCancel="@HandleCancel">
-        <p>@confirmContent</p>
-    </Modal>
+    </div>
 
     <Modal Title="Buy Source tokens"
            Visible="@orderSourceTokensVisible"
@@ -168,29 +95,20 @@
             </div>
         </div>
     </Modal>
+
+    <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
 @code {
 
-    private NFTTypes newNFTType = NFTTypes.Image;
+    NFTTypes NFTType = NFTTypes.Image;
 
     string orderTxId = string.Empty;
     bool orderSourceTokensVisible = false;
     bool orderingTokens = false;
     bool orderingTokensDone = false;
-    bool uploadingImage = false;
-    bool errorDuringSend = false;
-    string errorMessage = string.Empty;
-    bool confirmVisible = false;
-    string confirmTitle = "Mint New NFT?";
-    string confirmContent = "Do you realy want to mint this NFT?";
-    private string status = string.Empty;
-    private string tokentxid = string.Empty;
-    private ImageNFT newNFT = new ImageNFT("");
-    private string imageLink = string.Empty;
 
     private CancellationTokenSource cts = new CancellationTokenSource();
-    bool processingMinting = false;
     GetTokenMetadataResponse sourceTokensInfo = new GetTokenMetadataResponse();
 
     protected override Task OnInitializedAsync()
@@ -212,7 +130,6 @@
             Redirect();
         }
 
-
         return base.OnInitializedAsync();
     }
 
@@ -228,16 +145,9 @@
         StateHasChanged();
     }
 
-    void ImageLinkChanged(string newLink)
+    private void nftTypeChangedHandler(EventArgs e)
     {
-        newNFT.ImageLink = newLink;
-    }
-
-    void ShowMintConfirm()
-    {
-        confirmTitle = "Mint New NFT?";
-        confirmContent = "Do you realy want to mint this NFT?";
-        confirmVisible = true;
+        StateHasChanged();
     }
 
     private async Task orderSourceTokensCancel(MouseEventArgs e)
@@ -253,7 +163,6 @@
     private async Task orderSourceTokensConfirm(MouseEventArgs e)
     {
         try {
-            errorDuringSend = false;
             orderingTokens = true;
             StateHasChanged();
             var res = await AppData.Account.OrderSourceTokens(1);
@@ -265,75 +174,17 @@
             }
             else
             {
-                errorDuringSend = true;
-                errorMessage = res.Item2;
-                status = res.Item2;
+                orderTxId = res.Item2;
             }
             orderSourceTokensVisible = false;
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            status = ex.Message;
+            orderTxId = ex.Message;
             orderingTokens = false;
-            errorDuringSend = true;
-            errorMessage = ex.Message;
             Console.WriteLine(ex.Message);
             StateHasChanged();
         }
     }
-
-    private async Task HandleOk(MouseEventArgs e)
-    {
-        await MintNewNFT();
-    }
-
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
-    }
-
-    private async Task MintNewNFT()
-    {
-        try {
-            errorDuringSend = false;
-            status = "Sending...";
-            processingMinting = true;
-            confirmVisible = false;
-            StateHasChanged();
-
-            newNFT.Type = newNFTType;
-            var res = await AppData.Account.MintNFT(NFTHelpers.TokenId, newNFT);
-            if (res.Item1)
-            {
-                orderTxId = res.Item2;
-                StateHasChanged();
-                processingMinting = false;
-                await Task.Delay(500);
-                NavManager.NavigateTo("/nfts");
-            }
-            else
-            {
-                errorDuringSend = true;
-                errorMessage = res.Item2;
-                status = res.Item2;
-            }
-
-            processingMinting = false;
-        }
-        catch (Exception ex)
-        {
-            status = ex.Message;
-            processingMinting = false;
-            errorDuringSend = true;
-            errorMessage = ex.Message;
-            Console.WriteLine(ex.Message);
-        }
-        finally
-        {
-            processingMinting = false;
-            StateHasChanged();
-        }
-    }
-
 }

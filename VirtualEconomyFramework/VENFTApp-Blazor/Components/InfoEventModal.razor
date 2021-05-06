@@ -1,0 +1,120 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@using VEDriversLite.Events
+@inject AppData AppData
+
+<Modal Title="Event Info"
+       Visible="@infoEventModalVisible"
+       OnOk="@CloseInfoEventModal"
+       OnCancel="@CloseInfoEventModal" ZIndex="10">
+        <div class="row">
+            <div class="col">
+                @if (eventInfo != null)
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            @switch (eventInfo.Type)
+                            {
+                                case EventType.Info:
+                                    <span>Info Message</span>
+                                    break;
+                                case EventType.Error:
+                                    <span>Error Message</span>
+                                    break;
+                                case EventType.Warning:
+                                    <span>Warning Message</span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <h5>Address</h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>@eventInfo.Address</span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <h5>@eventInfo.Title</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <h5>Message</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>@eventInfo.Message</span>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(eventInfo.TxId))
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <h5>TxId</h5>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <span><a href="https://explorer.nebl.io/tx/@eventInfo.TxId" target="_blank">Show in explorer</a></span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <small>It takes about one minute before explorer load new tx.</small>
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <h5>Progress</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>@eventInfo.Progress %</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+</Modal>
+
+@code {
+
+    IEventInfo eventInfo;
+    bool infoEventModalVisible = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            AppData.Account.NewEventInfo += NewEventInfoHandler;
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Cannot register event handler for events info. " + ex.Message);
+        }
+        return base.OnInitializedAsync();
+    }
+
+    private void NewEventInfoHandler(object sender, IEventInfo e)
+    {
+        // todo dequeue from buffer and offer as OK close next message if there is some in the buffer.
+        eventInfo = e;
+        infoEventModalVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task CloseInfoEventModal(MouseEventArgs e)
+    {
+        infoEventModalVisible = false;
+        StateHasChanged();
+    }
+}

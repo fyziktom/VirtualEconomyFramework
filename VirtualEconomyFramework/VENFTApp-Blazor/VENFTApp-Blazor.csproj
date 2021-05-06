@@ -21,4 +21,13 @@
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\neblio-coingecko.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\neblio-price-conversion.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

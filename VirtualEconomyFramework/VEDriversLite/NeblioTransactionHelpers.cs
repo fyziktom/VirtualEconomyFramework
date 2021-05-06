@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Events;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.Security;
 
@@ -47,6 +48,8 @@ namespace VEDriversLite
         private static Network network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
         public static string VENFTId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         public static int MinimumConfirmations = 4;
+
+        public static event EventHandler<IEventInfo> NewEventInfo;
         private class SignResultDto
         {
             public string hex { get; set; }

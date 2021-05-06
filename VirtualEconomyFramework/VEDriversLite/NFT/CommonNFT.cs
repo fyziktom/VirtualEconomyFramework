@@ -38,6 +38,22 @@ namespace VEDriversLite.NFT
             History = await NFTHelpers.LoadNFTsHistory(Utxo);
         }
 
+        public async Task FillCommon(INFT nft)
+        {
+            IconLink = nft.IconLink;
+            ImageLink = nft.ImageLink;
+            Name = nft.Name;
+            Link = nft.Link;
+            Description = nft.Description;
+            Author = nft.Author;
+            SourceTxId = nft.SourceTxId;
+            NFTOriginTxId = nft.NFTOriginTxId;
+            TypeText = nft.TypeText;
+            Utxo = nft.Utxo;
+            Price = nft.Price;
+            PriceActive = nft.PriceActive;
+        }
+
         public async Task StopRefreshingData()
         {
             if (txdetailsTimer != null)

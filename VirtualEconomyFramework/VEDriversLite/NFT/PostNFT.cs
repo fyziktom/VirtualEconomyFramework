@@ -25,6 +25,7 @@ namespace VEDriversLite.NFT
             Author = NFT.Author;
             SourceTxId = NFT.SourceTxId;
             NFTOriginTxId = NFT.NFTOriginTxId;
+            TypeText = NFT.TypeText;
             Utxo = NFT.Utxo;
             Price = NFT.Price;
             PriceActive = NFT.PriceActive;

@@ -3,19 +3,19 @@
 @using VEDriversLite.NeblioAPI
 @inject AppData AppData
 
-<div class="row">
-    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-        <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
-            <i class="oi oi-dollar" style="font-size:12px;"></i>
-        </button>
+<Spin Tip="Sending..." Spinning="@sendingTransaction">
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+                <i class="oi oi-dollar" style="font-size:12px;"></i>
+            </button>
+        </div>
     </div>
-</div>
-
+</Spin>
 <Modal Title="Buy this NFT"
        Visible="@sendNFTDialogVisible"
        OnOk="@sendNFTDialogOK"
        OnCancel="@sendNFTDialogCancel">
-    <p>
         <div class="row">
             <div class="col">
                 <Spin Tip="Sending..." Spinning="@sendingTransaction">
@@ -37,7 +37,6 @@
                 </Spin>
             </div>
         </div>
-    </p>
 </Modal>
 
 <Modal Title="@confirmTitle"
@@ -78,8 +77,6 @@
     bool sendingTransaction = false;
     string sendingTransactionState = "Sending Order and Payment...";
     bool sendNFTDialogVisible = false;
-    bool errorDuringSend = false;
-    string errorMessage = string.Empty;
 
     bool confirmVisible = false;
     string confirmTitle = "Buy NFT?";
@@ -90,7 +87,7 @@
     private async Task HandleOk(MouseEventArgs e)
     {
         if (!string.IsNullOrEmpty(Utxo))
-            await sendNFT(Utxo);
+            sendNFT(Utxo);
     }
 
     private void HandleCancel(MouseEventArgs e)
@@ -117,43 +114,30 @@
     {
         try
         {
-            errorDuringSend = false;
             status = "Sending...";
+            confirmVisible = false;
             sendingTransaction = true;
-
             StateHasChanged();
 
-            var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo);
+            var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, true);
+
             var res = await AppData.Account.SendNFTPayment(receiverAddress, NFT);
             if (res.Item1)
-            {
                 status = res.Item2;
-            }
-            else
-            {
-                errorDuringSend = true;
-                errorMessage = res.Item2;
-                status = res.Item2;
-            }
 
             NFTSent.InvokeAsync(res.Item2);
-            StateHasChanged();
         }
         catch(Exception ex)
         {
             status = ex.Message;
-            sendNFTDialogVisible = false;
-            errorDuringSend = true;
-            errorMessage = ex.Message;
             Console.WriteLine(ex.Message);
-            StateHasChanged();
+
         }
         finally
         {
-            confirmVisible = false;
             sendNFTDialogVisible = false;
             sendingTransaction = false;
+            StateHasChanged();
         }
     }
-
 }

@@ -1,0 +1,152 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+
+<div class="card" style="margin-left:10px; margin-top:10px; max-width:250px; min-width:200px; min-height:400px; max-height:500px;">
+    @if (!string.IsNullOrEmpty(nft.ImageLink))
+    {
+        <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:auto; max-width:250px; min-width:200px; width:auto;" />
+    }
+    else
+    {
+        <Spin Tip="Loading...">
+            <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:150px; max-width:250px; min-width:200px; width:auto;" />
+        </Spin>
+    }
+    <div class="card-body d-flex justify-content-center align-items-end">
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <VENFTApp_Blazor.Components.NFTThumbnail Name="@nft.Name" Type="@nft.Type" Author="@nft.Author" Description="@nft.Description" />
+            </div>
+        </div>
+    </div>
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <small class="text-muted">
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+                        <i class="oi oi-info" style="font-size:12px;"></i>
+                    </button>
+                </div>
+                @if (!IsInThePayments(nft.Utxo))
+                {
+                    @if (!OwnNFT)
+                    {
+                        @if (nft.PriceActive && nft.Type != NFTTypes.Payment)
+                        {
+                            <div class="col d-flex justify-content-center align-items-center" style="margin-left:25px;">
+                                <SendNFTPayment Utxo="@nft.Utxo" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
+                            </div>
+                        }
+                    }
+                }
+            </div>
+            <div class="row d-flex justify-content-center align-items-center">
+
+                @if (!IsInThePayments(nft.Utxo))
+                {
+                    @if (OwnNFT)
+                    {
+                        @if (nft.PriceActive)
+                        {
+                            <div class="col">
+                                <small class="text-muted">Setted Price: @nft.Price NEBL</small>
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <div class="col">
+                        <small class="text-muted">Sold. Waiting for processing.</small>
+                    </div>
+                }
+            </div>
+        </small>
+    </div>
+</div>
+
+
+<Modal Title="NFT Details"
+       Visible="@nftDetailsVisible"
+       OnOk="@CloseNFTDetails"
+       OnCancel="@CloseNFTDetails">
+    <VENFTApp_Blazor.Components.NFTDetails Utxo="@nftDetailsUtxo" NFTSent="@NFTSentHandler" OwnNFT="@OwnNFT" />
+</Modal>
+
+@code {
+
+    string nftDetailsUtxo = string.Empty;
+    bool nftDetailsVisible = false;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    private INFT nft = new ImageNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => nft;
+        set
+        {
+            if (value != null)
+            {
+                nft = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    string _address = string.Empty;
+    [Parameter]
+    public string Address {
+        get => _address;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                _address = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    void NFTSentHandler(string nfttx)
+    {
+        nftDetailsVisible = false;
+        NFTSent.InvokeAsync(nfttx);
+    }
+
+    private bool IsInThePayments(string utxo)
+    {
+        if (OwnNFT)
+        {
+            return AppData.Account.ReceivedPayments.ContainsKey(utxo);
+        }
+        else
+        {
+            var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
+            if (tab != null)
+                return tab.ReceivedPayments.ContainsKey(utxo);
+        }
+
+        return false;
+    }
+
+    private async Task CloseNFTDetails(MouseEventArgs e)
+    {
+        nftDetailsVisible = false;
+    }
+
+    private async Task ShowNFTDetails(string utxo)
+    {
+        nftDetailsUtxo = utxo;
+        StateHasChanged();
+        nftDetailsVisible = true;
+        StateHasChanged();
+    }
+
+}

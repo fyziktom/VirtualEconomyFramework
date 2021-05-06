@@ -1,0 +1,116 @@
+﻿@using VEDriversLite
+@inject AppData AppData
+
+<div class="row w-100">
+    <div class="col">
+        <div class="row w-100">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <small>Number Of Transactions: @AppData.Account.AddressInfo.Transactions.Count</small>
+            </div>
+        </div>
+        <div class="row w-100" style="margin-top:30px; min-width:300px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                @if (AppData.Account.AddressInfo.Transactions == null)
+                {
+                    <p><em><Spin Tip="Loading..." /></em></p>
+                }
+                else
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>TxId</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < AppData.Account.AddressInfo.Transactions.Count; i++)
+                            {
+                                @if (i < maxLoadedTxs)
+                                {
+                                    var tx = AppData.Account.AddressInfo.Transactions.ToArray()[i];
+                                    <tr>
+                                        <td>@NeblioTransactionHelpers.ShortenTxId(tx)</td>
+                                        <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx)"><i class="oi oi-info"></i></button></td>
+                                    </tr>
+                                }
+                            }
+                            @if (maxLoadedTxs < AppData.Account.AddressInfo.Transactions.Count)
+                            {
+                                var diff = AppData.Account.AddressInfo.Transactions.Count - maxLoadedTxs;
+                                @if (diff < 10)
+                                {
+                                    <tr><td colspan="2"> <button class="btn btn-secondary" @onclick="loadNextTx">Show Next @diff transactions</button></td></tr>
+                                }
+                                else
+                                {
+                                    <tr><td colspan="2"> <button class="btn btn-secondary" @onclick="loadNextTx">Show Next 10 transactions</button></td></tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Title="Transaction Details"
+        Visible="@txDetailsVisible"
+        OnOk="@CloseTxDetails"
+        OnCancel="@CloseTxDetails">
+    <VENFTApp_Blazor.Components.TransactionDetails TxId="@txDetailsTxId" />
+</Modal>
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        Load();
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Load()
+    {
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private int maxLoadedTxs = 25;
+    [Parameter]
+    public int MaxLoadedTx
+    {
+        get => maxLoadedTxs;
+        set => maxLoadedTxs = value;
+    }
+    [Parameter]
+    public EventCallback<int> MaxLoadedTxChanged { get; set; }
+
+    string txDetailsTxId = string.Empty;
+    bool txDetailsVisible = false;
+
+    private async Task loadNextTx()
+    {
+        maxLoadedTxs += 10;
+        await MaxLoadedTxChanged.InvokeAsync(maxLoadedTxs);
+        StateHasChanged();
+    }
+
+    private async Task CloseTxDetails(MouseEventArgs e)
+    {
+        txDetailsVisible = false;
+    }
+
+    private async Task ShowTxDetails(string txId)
+    {
+        txDetailsTxId = txId;
+        StateHasChanged();
+        txDetailsVisible = true;
+        StateHasChanged();
+    }
+
+}

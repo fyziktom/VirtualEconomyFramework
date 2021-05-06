@@ -12,7 +12,7 @@
     <div class="container-fluid">
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <h1>NFT Browser</h1>
+                <h3>NFT Browser</h3>
             </div>
         </div>
         <div class="row" style="margin-top:10px;">
@@ -20,7 +20,7 @@
                 <VENFTApp_Blazor.Components.AccountBalances />
             </div>
         </div>
-        
+
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <h6>Browse All VENFT Holders</h6>
@@ -38,14 +38,14 @@
                     <ul class="nav nav-tabs" role="tablist" id="shopTabsHeadings">
                         @foreach (var tab in AppData.Tabs)
                         {
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab)">
-                                    @tab.ShortAddress
-                                    <button class="btn btn-light" @onclick="async () => removeTab(tab)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 2px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
-                                        <i class="oi oi-x" style="font-size:7px;"></i>
-                                    </button>
-                                </a>
-                            </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab)">
+                                @tab.ShortAddress
+                                <button class="btn btn-light" @onclick="async () => removeTab(tab)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 2px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
+                                    <i class="oi oi-x" style="font-size:7px;"></i>
+                                </button>
+                            </a>
+                        </li>
                         }
                         <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => addNewTabModal()"><i class="oi oi-plus" style="font-size: 20px;"></i></a></li>
                     </ul>
@@ -56,75 +56,76 @@
                             var selected = "";
                             if (tab.Selected)
                             {
-                                <div role="tabpanel" class="tab-pane active" style="min-height: 200px;">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="row" style="margin-top: 10px;">
-                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                    <h6>@tab.Address</h6>
-                                                    <!--
-                                                <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
-                                                    <i class="oi oi-star"></i>
-                                                </a>-->
-                                                </div>
-                                            </div>
+                        <div role="tabpanel" class="tab-pane active" style="min-height: 200px;">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="row" style="margin-top: 10px;">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                            <h6>@tab.Address</h6>
+                                            <!--
+                                        <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
+                                            <i class="oi oi-star"></i>
+                                        </a>-->
+                                        </div>
+                                    </div>
 
+                                    <div class="row">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                            <h3>Profile</h3>
+                                        </div>
+                                    </div>
+                                    <div class="row bg-light">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                             <div class="row">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                    <h3>Profile</h3>
+                                                    <img src="@tab.Profile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                                                 </div>
                                             </div>
-                                            <div class="row bg-light">
-                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                            <div class="row" style="margin-left:20px;">
+                                                <div class="col">
                                                     <div class="row">
                                                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                            <img src="@tab.Profile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                            <span>Name: @tab.Profile.Name @tab.Profile.Surname</span>
                                                         </div>
                                                     </div>
-                                                    <div class="row" style="margin-left:20px;">
-                                                        <div class="col">
-                                                            <div class="row">
-                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                    <span>Name: @tab.Profile.Name @tab.Profile.Surname</span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                    Nick: @tab.Profile.Nickname
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                    Bio: @tab.Profile.Description
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                    <a href="@tab.Profile.Link" target="_blank">Webpage</a>
-                                                                </div>
-                                                            </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                            Nick: @tab.Profile.Nickname
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row" style="margin-top:20px">
-                                                <div class="col">
-                                                    @if (tab.Selected)
-                                                    {
-                                                        <VENFTApp_Blazor.Components.NFTList Address="@tab.Address" MainAccount="false" />
-                                                    }
+                                                    <div class="row">
+                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                            Bio: @tab.Profile.Description
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                            <a href="@tab.Profile.Link" target="_blank">Webpage</a>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row" style="margin-top:20px">
+                                        <div class="col">
+                                            @if (tab.Selected)
+                                                    {
+                                                        <VENFTApp_Blazor.Components.NFTList Address="@tab.Address" MainAccount="@false" />
+                                                    }
+                                        </div>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
                             }
                         }
                     </div>
                 </div>
             </div>
         </div>
+        <VENFTApp_Blazor.Components.InfoEventModal />
     </div>
 </Spin>
 

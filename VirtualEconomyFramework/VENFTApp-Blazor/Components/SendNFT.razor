@@ -1,0 +1,137 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+
+<Modal Title="Send NFT"
+       Visible="@SendNFTDialogVisible"
+       OnOk="@sendNFTDialogOK"
+       OnCancel="@sendNFTDialogCancel">
+    <div class="row">
+        <div class="col">
+            <Spin Tip="Sending..." Spinning="@sendingTransaction">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        Fill Receiver Address:
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Add Receiver Address" @bind-Value=@receiverAddress Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+            </Spin>
+        </div>
+    </div>
+</Modal>
+
+<Modal Title="Send NFT"
+       Visible="@confirmVisible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+    <p>Do you really want to send this NFT?</p>
+</Modal>
+
+@code {
+
+    string receiverAddress = string.Empty;
+    bool confirmVisible = false;
+
+    bool sendingTransaction = false;
+    string status = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    [Parameter]
+    public bool SendNFTDialogVisible { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> SendNFTDialogVisibleChanged { get; set; }
+
+
+    private INFT sourceNFT = new ImageNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => sourceNFT;
+        set
+        {
+            if (value != null)
+            {
+                if (!string.IsNullOrEmpty(value.Utxo))
+                {
+                    if (value.Utxo != sourceNFT.Utxo)
+                    {
+                        sourceNFT = value;
+                        StateHasChanged();
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        confirmVisible = false;
+        await sendNFT(await NFTFactory.CloneNFT(NFT), false, 0.0002);
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    private async Task sendNFTDialogOK(MouseEventArgs e)
+    {
+        confirmVisible = true;
+    }
+
+    private void sendNFTDialogCancel(MouseEventArgs e)
+    {
+        SendNFTDialogVisible = false;
+        StateHasChanged();
+        SendNFTDialogVisibleChanged.InvokeAsync(SendNFTDialogVisible);
+    }
+
+    private async Task sendNFT(INFT nft, bool priceWrite, double price)
+    {
+        try
+        {
+            if (nft == null)
+                return;
+
+            sendingTransaction = true;
+
+            if (priceWrite)
+            {
+                receiverAddress = AppData.Account.Address;
+            }
+
+            status = "Sending...";
+
+            StateHasChanged();
+
+            var res = await AppData.Account.SendNFT(receiverAddress, nft, priceWrite, price);
+            if (res.Item1)
+            {
+                status = res.Item2;
+            }
+            else
+            {
+                status = res.Item2;
+            }
+        }
+        catch (Exception ex)
+        {
+            status = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            SendNFTDialogVisibleChanged.InvokeAsync(SendNFTDialogVisible);
+            NFTSent.InvokeAsync(status);
+            StateHasChanged();
+        }
+    }
+
+}

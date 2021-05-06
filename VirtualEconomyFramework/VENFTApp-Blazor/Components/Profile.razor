@@ -36,7 +36,7 @@
                             </div>
                             <div class="row">
                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    Bio: @profileNFT.Description
+                                    <span class="text-center" style="max-width:100px;">Bio: @profileNFT.Description</span>
                                 </div>
                             </div>
                             <div class="row">
@@ -71,100 +71,12 @@
     </div>
 </Spin>
 
-
 <Modal Title="Create new profile NFT"
        Visible="@createNewProfileVisible"
        OnOk="@createNewProfileConfirm"
        OnCancel="@createNewProfileCancel">
-    <Spin Tip="Processing..." Spinning="@processingMinting">
-        <div class="row">
-            <div class="col">
-
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Name:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Your Name" @bind-Value=@newProfileNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Surname:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Your Surname" @bind-Value=@newProfileNFT.Surname Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Nickname:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Your Nickname" @bind-Value=@newProfileNFT.Nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Bio:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Your Bio" @bind-Value=@newProfileNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Link:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Your Webpage link" @bind-Value=@newProfileNFT.Link Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-
-                <VENFTApp_Blazor.Components.UploadImage ImageLink="@newProfileNFT.ImageLink" ImageLinkChanged="ImageLinkChanged" />
-
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Status: @tokentxid</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Origin TxId: @newProfileNFT.NFTOriginTxId</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </Spin>
+        <MintNFTForm NFTType="NFTTypes.Profile" NFT="@profileNFT" RedirectToNFTsAfterMint="false" NFTMinted="ProfileChanged" />
 </Modal>
-
-@if (AppData.Account.IsLocked())
-{
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Description="Account Is Locked. Please unlock account first."
-           ShowIcon="true" />
-}
-
-@if (errorDuringSend)
-{
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Style="max-width:100px;"
-           Description=@errorMessage
-           ShowIcon="true" />
-}
-
 
 @code {
     bool loadingProfile = true;
@@ -172,8 +84,6 @@
     bool createNewProfile = false;
 
     bool processingMinting = false;
-    bool errorDuringSend = false;
-    string errorMessage = string.Empty;
 
     [Parameter]
     public bool ReadOnlyProfile { get; set; } = true;
@@ -209,7 +119,6 @@
     }
 
     bool change = false;
-    string tokentxid = string.Empty;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -232,12 +141,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
         await LoadProfile();
     }
 
-    void ImageLinkChanged(string newLink)
+    void RefreshedHandler(object sender, EventArgs e)
     {
-        newProfileNFT.ImageLink = newLink;
+        StateHasChanged();
     }
 
     private async Task LoadProfile()
@@ -264,10 +175,7 @@
         {
             try
             {
-                loadingProfile = true;
-                processingMinting = true;
                 var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, profileNFT.Utxo);
-
                 newProfileNFT = nft as ProfileNFT;
                 StateHasChanged();
             }
@@ -275,8 +183,6 @@
             {
                 loadingProfile = false;
                 processingMinting = false;
-                errorDuringSend = true;
-                errorMessage = "Cannot load last profile. " + ex.Message;
                 Console.WriteLine("Cannot load last profile. " + ex.Message);
             }
         }
@@ -285,7 +191,7 @@
 
     private async Task createNewProfileConfirm(MouseEventArgs e)
     {
-        await MintNewProfileNFT(newProfileNFT);
+        createNewProfileVisible = false;
     }
 
     private async Task createNewProfileCancel(MouseEventArgs e)
@@ -293,52 +199,10 @@
         createNewProfileVisible = false;
     }
 
-    private async Task MintNewProfileNFT(ProfileNFT nft)
+    void ProfileChanged(string txid)
     {
-        try
-        {
-            if (ReadOnlyProfile)
-            {
-                loadingProfile = false;
-                processingMinting = false;
-                StateHasChanged();
-                return;
-            }
-
-            loadingProfile = true;
-            errorDuringSend = false;
-            processingMinting = true;
-            StateHasChanged();
-
-            (bool, string) res;
-            if (!change)
-                res = await AppData.Account.MintNFT(NFTHelpers.TokenId, nft);
-            else
-                res = await AppData.Account.ChangeProfileNFT(nft);
-
-            if (res.Item1)
-            {
-                profileNFT = nft;
-            }
-            else
-            {
-                errorDuringSend = true;
-                errorMessage = res.Item2;
-            }
-        }
-        catch(Exception ex)
-        {
-            processingMinting = false;
-            errorDuringSend = true;
-            errorMessage = ex.Message;
-            Console.WriteLine(ex.Message);
-        }
-        finally
-        {
-            createNewProfileVisible = false;
-            processingMinting = false;
-            loadingProfile = false;
-            StateHasChanged();
-        }
+        loadingProfile = false;
+        createNewProfileVisible = false;
+        StateHasChanged();
     }
 }

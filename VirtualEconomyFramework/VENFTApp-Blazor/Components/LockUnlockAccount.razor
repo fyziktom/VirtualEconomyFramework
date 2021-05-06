@@ -1,0 +1,90 @@
+﻿@inject AppData AppData
+
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                @if (AppData.Account.IsLocked())
+                {
+                    <span>Wallet is Locked</span>
+                }
+                else
+                {
+                    <span>Wallet is Unlocked</span>
+                }
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                @if (AppData.Account.IsLocked())
+                {
+                    <button class="btn btn-primary" @onclick="unlockWallet">Unlock Wallet</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary" @onclick="lockWallet">Lock Wallet</button>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Title="Unlock Account"
+       Visible="@unlockAcocuntModalVisible"
+       OnOk="@UnlockAccountConfirm"
+       OnCancel="@UnclockAccountCancel">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Please Input password</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <InputPassword Placeholder="Input password" @bind-Value=@password @onkeydown="@UnlockAccountEnter" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    string password = string.Empty;
+    bool unlockAcocuntModalVisible = false;
+
+    private async Task lockWallet()
+    {
+        AppData.Account.AccountKey.Lock();
+        StateHasChanged();
+    }
+
+    private async Task unlockWallet()
+    {
+        unlockAcocuntModalVisible = true;
+    }
+
+    private async Task UnlockAccountConfirm(MouseEventArgs e)
+    {
+        unlockAcocuntModalVisible = false;
+
+        await AppData.Account.AccountKey.LoadPassword(password); // put here your password
+        StateHasChanged();
+    }
+
+    private void UnclockAccountCancel(MouseEventArgs e)
+    {
+        unlockAcocuntModalVisible = false;
+    }
+
+    public void UnlockAccountEnter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            StateHasChanged();
+            UnlockAccountConfirm(null);
+        }
+    }
+}

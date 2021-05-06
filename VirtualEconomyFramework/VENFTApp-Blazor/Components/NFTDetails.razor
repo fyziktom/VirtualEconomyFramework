@@ -5,7 +5,7 @@
 
 <div class="row">
     <div class="col">
-        <Spin spinning="@sendingTransaction" tip="@sendingTransactionState">
+        <Spin Tip="Loading..." Spinning="@loading">
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <span>Name: @NFT.Name</span>
@@ -55,182 +55,112 @@
                     <a href="@NFT.ImageLink" target="_blank">
                         @if (!string.IsNullOrEmpty(NFT.ImageLink))
                         {
-                            <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                            <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto;" />
                         }
                         else
                         {
                             <Spin Tip="Loading..." Spinning="true">
-                                <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto; min-width:50px; max-width:250px;" />
+                                <img src="@NFT.ImageLink" style="min-height:100px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
                             </Spin>
                         }
                     </a>
                 </div>
             </div>
+            <div class="row" style="margin-top:20px;">
+                @if (!AppData.Account.ReceivedPayments.ContainsKey(NFT.Utxo))
+                {
+                    @if (OwnNFT)
+                    {
+                        @if (NFT.PriceActive)
+                        {
+                            <div class="col w-100 d-flex justify-content-center align-items-center">
+                                <small class="text-muted">Setted Price: @NFT.Price NEBL</small>
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <div class="col w-100 d-flex justify-content-center align-items-center">
+                        <small class="text-muted">Sold. Waiting for processing.</small>
+                    </div>
+                }
+            </div>
             @if (OwnNFT)
             {
                 @if (NFT.TxDetails.Confirmations > 1)
                 {
-                    @if (NFT.Type == NFTTypes.Post)
-                    {
-                        <div class="row" style="margin-top:20px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()"><i class="oi oi-location"></i> Update</button>
-                            </div>
-                        </div>
-                    }
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog()"><i class="oi oi-location"></i> Send</button>
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            @if (NFT.Type == NFTTypes.Post)
+                            {
+                            <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="width:65px; height:65px; margin-right:20px;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <i class="oi oi-pencil"></i>
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <span style="font-size: 12px;">Edit</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                            }
+                            <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog()" style="width:65px; height:65px;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <i class="oi oi-location"></i>
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <span style="font-size: 12px;">Send</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                            <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()" style="width:65px; height:65px; margin-left:20px;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <i class="oi oi-dollar"></i>
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <span style="font-size: 12px;">Sell</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
                         </div>
                     </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()"><i class="oi oi-location"></i> Set Price</button>
-                        </div>
-                    </div>
-               }
+                }
             }
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <hr />
-                </div>
-            </div>
 
             <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" />
-
-            @if (errorDuringSend)
-            {
-                <Alert Type="@AlertType.Error"
-                       Message="Error"
-                       Description=@errorMessage
-                       ShowIcon="true" />
-            }
         </Spin>
     </div>
 </div>
 
-<Modal Title="Send NFT"
-       Visible="@sendNFTDialogVisible"
-       OnOk="@sendNFTDialogOK"
-       OnCancel="@sendNFTDialogCancel">
-    <p>
-        <div class="row">
-            <div class="col">
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        Fill Receiver Address:
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Receiver Address" @bind-Value=@receiverAddress Style="font-size:12px; min-width:150px; max-width:250px;" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </p>
-</Modal>
-
-<Modal Title="Set Price of NFT"
-       Visible="@setPriceNFTDialogVisible"
-       OnOk="@setPriceNFTDialogOK"
-       OnCancel="@setPriceNFTDialogCancel">
-    <p>
-        <div class="row">
-            <div class="col">
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        Fill Price in Neblio:
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <input type="number" step="0.0001" min="0.0005" @bind="@priceOfNFT" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </p>
-</Modal>
-
-<Modal Title="Set Price Confirm "
-       Visible="@confirmSetPriceVisible"
-       OnOk="@setPriceNFTDialogConfirm"
-       OnCancel="@setPriceConfirmNFTDialogCancel">
-    <p>Do you really want to set the price of this NFT?</p>
-</Modal>
-
+<SendNFT NFT="@NFT" NFTSent="@NFTSentHandler" @bind-SendNFTDialogVisible="sendNFTDialogVisible"/>
+<SetNFTPrice NFT="@NFT" NFTSent="@NFTSentHandler" @bind-SetPriceNFTDialogVisible="setPriceNFTDialogVisible"/>
 
 <Modal Title="Create or edit post NFT"
        Visible="@createNewPostVisible"
        OnOk="@createNewPostConfirm"
        OnCancel="@createNewPostCancel">
-    <div class="row">
-        <div class="col">
-            <Spin spinning="@sendingTransaction" tip="@sendingTransactionState">
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Name:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Name of the post" @bind-Value=@newPostNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Author:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Your Name" @bind-Value=@newPostNFT.Author Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Description:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Text of the post" @bind-Value=@newPostNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Link:</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add any Webpage link" @bind-Value=@newPostNFT.Link Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-
-                <VENFTApp_Blazor.Components.UploadImage ImageLink="@newPostNFT.ImageLink" ImageLinkChanged="ImageLinkChanged" />
-
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Status: @status</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <p>Origin TxId: @newPostNFT.NFTOriginTxId</p>
-                    </div>
-                </div>
-            </Spin>
-        </div>
-    </div>
-</Modal>
-
-<Modal Title="@confirmTitle"
-       Visible="@confirmVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <p>@confirmContent</p>
+        <MintNFTForm NFTType="NFTTypes.Post" NFT="@NFT" RedirectToNFTsAfterMint="false" NFTMinted="@NFTMinted" />
 </Modal>
 
 @code {
@@ -261,24 +191,12 @@
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
 
-    bool sendingTransaction = false;
-    string sendingTransactionState = "Sending NFT...";
-    bool sendNFTDialogVisible = false;
-    bool errorDuringSend = false;
-    string errorMessage = string.Empty;
-
-    string receiverAddress = string.Empty;
-    bool confirmVisible = false;
-    string confirmTitle = "Send NFT?";
-    string confirmContent = "Do you realy want to send this NFT?";
-    string status = string.Empty;
-
-    PostNFT newPostNFT = new PostNFT("");
     bool createNewPostVisible = false;
-
-    bool confirmSetPriceVisible = false;
+    bool sendNFTDialogVisible = false;
     bool setPriceNFTDialogVisible = false;
-    private double priceOfNFT { get; set; } = 0.0005;
+    bool loading = false;
+
+    string status = string.Empty;
 
     protected override Task OnInitializedAsync()
     {
@@ -289,10 +207,7 @@
 
     private async Task Load()
     {
-        errorDuringSend = false;
-        errorMessage = string.Empty;
-        sendingTransaction = true;
-        sendingTransactionState = "Loading...";
+        loading = true;
         StateHasChanged();
         NFT.TxDataRefreshed -= TxDataRefreshedHandler;
         await NFT.StopRefreshingData();
@@ -303,7 +218,7 @@
 
         await NFT.StartRefreshingTxData();
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
-        sendingTransaction = false;
+        loading = false;
         StateHasChanged();
     }
 
@@ -312,75 +227,28 @@
         StateHasChanged();
     }
 
-    void ImageLinkChanged(string newLink)
-    {
-        newPostNFT.ImageLink = newLink;
-        NFT.ImageLink = newLink;
-        StateHasChanged();
-    }
-
-    private async Task HandleOk(MouseEventArgs e)
-    {
-        confirmVisible = false;
-        sendNFTDialogVisible = false;
-
-        await sendNFT(await NFTFactory.CloneNFT(NFT), false, 0.0002);
-    }
-
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
-    }
-
-    private async Task sendNFTDialogOK(MouseEventArgs e)
-    {
-        confirmVisible = true;
-    }
-
-    private void sendNFTDialogCancel(MouseEventArgs e)
-    {
-        sendNFTDialogVisible = false;
-    }
-
     private async Task ShowSendNFTDialog()
     {
         sendNFTDialogVisible = true;
-    }
-
-    private async Task setPriceNFTDialogConfirm(MouseEventArgs e)
-    {
-        await sendNFT(NFT, true, priceOfNFT);
-    }
-
-    private async Task setPriceNFTDialogOK(MouseEventArgs e)
-    {
-        confirmSetPriceVisible = true;
-    }
-
-    private void setPriceConfirmNFTDialogCancel(MouseEventArgs e)
-    {
-        confirmSetPriceVisible = false;
-    }
-
-    private void setPriceNFTDialogCancel(MouseEventArgs e)
-    {
-        setPriceNFTDialogVisible = false;
+        StateHasChanged();
     }
 
     private async Task ShowSetPriceNFTDialog()
     {
         setPriceNFTDialogVisible = true;
+        StateHasChanged();
     }
 
     private async Task ShowUpdatePostNFTDialog()
     {
-        newPostNFT = await NFTFactory.CloneNFT(NFT, true, NFTTypes.Post) as PostNFT;
         createNewPostVisible = true;
+        StateHasChanged();
     }
 
     private async Task createNewPostConfirm(MouseEventArgs e)
     {
-        await ChangePostNFT(newPostNFT);
+        createNewPostVisible = false;
+        StateHasChanged();
     }
 
     private async Task createNewPostCancel(MouseEventArgs e)
@@ -388,90 +256,15 @@
         createNewPostVisible = false;
     }
 
-    private async Task sendNFT(INFT nft, bool priceWrite, double price)
+    void NFTSentHandler(string e)
     {
-        try {
-            if (nft == null)
-                return;
-
-            if (priceWrite)
-            {
-                confirmSetPriceVisible = false;
-                setPriceNFTDialogVisible = false;
-                receiverAddress = AppData.Account.Address;
-            }
-
-            errorDuringSend = false;
-            sendingTransaction = true;
-            status = "Sending...";
-            sendingTransactionState = "Sending...!";
-
-            StateHasChanged();
-
-            var res = await AppData.Account.SendNFT(receiverAddress, nft, priceWrite, price);
-            if (res.Item1)
-            {
-                sendingTransactionState = "Transaction Sent right!";
-                status = res.Item2;
-            }
-            else
-            {
-                status = res.Item2;
-                errorDuringSend = true;
-                errorMessage = res.Item2;
-            }
-        }
-        catch (Exception ex)
-        {
-            status = ex.Message;
-            errorDuringSend = true;
-            errorMessage = ex.Message;
-            Console.WriteLine(ex.Message);
-        }
-        finally
-        {
-            sendingTransaction = false;
-            StateHasChanged();
-        }
+        sendNFTDialogVisible = false;
+        StateHasChanged();
     }
 
-    private async Task ChangePostNFT(INFT nft)
+    void NFTMinted(string e)
     {
-        try
-        {
-            if (newPostNFT == null)
-                return;
-
-            errorDuringSend = false;
-            status = "Sending...";
-            sendingTransaction = true;
-            StateHasChanged();
-
-            var res = await AppData.Account.ChangePostNFT(nft);
-            if (res.Item1)
-            {
-                status = res.Item2;
-            }
-            else
-            {
-                errorDuringSend = true;
-                errorMessage = res.Item2;
-                status = res.Item2;
-            }
-        }
-        catch(Exception ex)
-        {
-            status = ex.Message;
-            errorDuringSend = true;
-            errorMessage = ex.Message;
-            Console.WriteLine(ex.Message);
-        }
-        finally
-        {
-            sendingTransaction = false;
-            createNewPostVisible = false;
-            StateHasChanged();
-        }
+        createNewPostVisible = false;
+        StateHasChanged();
     }
-
 }

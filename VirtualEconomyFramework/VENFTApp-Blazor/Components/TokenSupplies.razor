@@ -1,0 +1,45 @@
+﻿@inject AppData AppData
+
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+
+                @if (AppData.Account != null)
+                {
+                    @if (AppData.Account.TokensSupplies.Count > 0)
+                    {
+
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <table class="table" style="max-width:300px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Image</th>
+                                            <th>Symbol</th>
+                                            <th>Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var tok in AppData.Account.TokensSupplies.Values)
+                                        {
+                                            <tr>
+                                                <td><img style="width: 25px;margin-right: 10px;;" src="@tok.ImageUrl" /></td>
+                                                <td>@tok.TokenSymbol</td>
+                                                <td>@tok.Amount.ToString()</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+}

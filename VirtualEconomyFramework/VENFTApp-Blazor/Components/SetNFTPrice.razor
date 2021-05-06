@@ -1,0 +1,136 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+<Modal Title="Set Price of NFT"
+       Visible="@SetPriceNFTDialogVisible"
+       OnOk="@setPriceNFTDialogOK"
+       OnCancel="@setPriceNFTDialogCancel">
+    <div class="row">
+        <div class="col">
+            <Spin Tip="Sending..." Spinning="@sendingTransaction">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        Fill Price in Neblio:
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <input type="number" step="0.0001" min="0.0005" @bind="@priceOfNFT" />
+                    </div>
+                </div>
+            </Spin>
+        </div>
+    </div>
+</Modal>
+<Modal Title="Set Price Confirm"
+       Visible="@confirmSetPriceVisible"
+       OnOk="@setPriceNFTDialogConfirm"
+       OnCancel="@setPriceConfirmNFTDialogCancel">
+    <p>Do you really want to set the price of this NFT?</p>
+</Modal>
+
+@code {
+    string receiverAddress = string.Empty;
+    bool confirmSetPriceVisible = false;
+    private double priceOfNFT { get; set; } = 0.0005;
+
+    bool sendingTransaction = false;
+    string status = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    [Parameter]
+    public bool SetPriceNFTDialogVisible { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> SetPriceNFTDialogVisibleChanged { get; set; }
+
+    private INFT sourceNFT = new ImageNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => sourceNFT;
+        set
+        {
+            if (value != null)
+            {
+                if (!string.IsNullOrEmpty(value.Utxo))
+                {
+                    if (value.Utxo != sourceNFT.Utxo)
+                    {
+                        sourceNFT = value;
+                        StateHasChanged();
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task setPriceNFTDialogConfirm(MouseEventArgs e)
+    {
+        confirmSetPriceVisible = false;
+        await sendNFT(NFT, true, priceOfNFT);
+    }
+
+    private async Task setPriceNFTDialogOK(MouseEventArgs e)
+    {
+        confirmSetPriceVisible = true;
+    }
+
+    private void setPriceNFTDialogCancel(MouseEventArgs e)
+    {
+        SetPriceNFTDialogVisible = false;
+        StateHasChanged();
+        SetPriceNFTDialogVisibleChanged.InvokeAsync(SetPriceNFTDialogVisible);
+    }
+
+    private void setPriceConfirmNFTDialogCancel(MouseEventArgs e)
+    {
+        confirmSetPriceVisible = false;
+    }
+
+    private async Task sendNFT(INFT nft, bool priceWrite, double price)
+    {
+        try
+        {
+            if (nft == null)
+                return;
+
+            sendingTransaction = true;
+
+            if (priceWrite)
+            {
+                confirmSetPriceVisible = false;
+                receiverAddress = AppData.Account.Address;
+            }
+
+            status = "Sending...";
+
+            StateHasChanged();
+
+            var res = await AppData.Account.SendNFT(receiverAddress, nft, priceWrite, price);
+            if (res.Item1)
+            {
+                status = res.Item2;
+            }
+            else
+            {
+                status = res.Item2;
+            }
+        }
+        catch (Exception ex)
+        {
+            status = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            NFTSent.InvokeAsync(status);
+            SetPriceNFTDialogVisible = false;
+            SetPriceNFTDialogVisibleChanged.InvokeAsync(SetPriceNFTDialogVisible);
+            StateHasChanged();
+        }
+    }
+
+}

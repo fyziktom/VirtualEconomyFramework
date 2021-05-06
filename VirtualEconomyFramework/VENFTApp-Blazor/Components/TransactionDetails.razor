@@ -82,11 +82,7 @@
         {
             if (!string.IsNullOrEmpty(value))
             {
-                if (txId != value)
-                {
-                    txId = value;
-                    Load();
-                }
+                txId = value;
             }
         }
     }
@@ -100,13 +96,35 @@
     string nftTxId = string.Empty;
     string fromAddress = string.Empty;
     bool receivedFromAnotherAddress = false;
+    private System.Threading.Timer txdetailsTimer;
+
 
     string lasttxid = string.Empty;
 
     protected override Task OnInitializedAsync()
     {
-        Load();
+        StartRefreshing();
         return base.OnInitializedAsync();
+    }
+
+    async Task StartRefreshing()
+    {
+        await Load();
+        txdetailsTimer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            if (!string.IsNullOrEmpty(txId))
+            {
+                try
+                {
+                    await Load();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot read tx details. " + ex.Message);
+                }
+            }
+
+        }, new System.Threading.AutoResetEvent(false), 10000, 10000);
     }
 
     async Task Load()

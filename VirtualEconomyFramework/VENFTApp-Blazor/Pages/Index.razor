@@ -16,7 +16,7 @@
             <div class="col">
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <h1>Neblio NFT Web Wallet</h1>
+                        <h3>Neblio NFT Web Wallet</h3>
                     </div>
                 </div>
                 <div class="row" style="margin-top:50px;">
@@ -41,10 +41,8 @@
         <VENFTApp_Blazor.Components.UnlockAccount Visible="@unlockAcocuntModalVisible" AccountUnlocked="AccountUnlocked" />
 
     </Spin>
-
+    <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
-
-
 
 @if (accountCreated)
 {
@@ -102,6 +100,7 @@
             if (string.IsNullOrEmpty(address))
             {
                 createNewAddressModalVisible = true;
+                StateHasChanged();
             }
             else
             {
@@ -115,6 +114,7 @@
                 else
                 {
                     createNewAddressModalVisible = true;
+                    StateHasChanged();
                 }
             }
         }
