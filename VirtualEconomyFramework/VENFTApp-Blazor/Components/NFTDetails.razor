@@ -4,6 +4,7 @@
 @using Newtonsoft.Json
 @inject AppData AppData
 @inject HttpClient _client
+@inject IJSRuntime JSRuntime
 
 <div class="row">
     <div class="col">
@@ -203,7 +204,21 @@
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <img src="@ownershipDialogQRCodeImage" style="max-width:250px;" />
+                    <!--<img src="@ownershipDialogQRCodeImage" style="max-width:250px;" />-->
+                    <!--<div id="qrCodeRef"></div>-->
+                    <div @ref=qrCodeRef></div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    @if (!copyTextButtonCoppied)
+                    {
+                        <button class="btn btn-light" @onclick="copyCodeToClipboard">Copy <i class="oi oi-share"></i></button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-light" @onclick="copyCodeToClipboard">Copied <i class="oi oi-check"></i></button>
+                    }
                 </div>
             </div>
         </Spin>
@@ -246,6 +261,7 @@
     bool showOwnershipDialogLoading = false;
     bool setPriceNFTDialogVisible = false;
     bool loading = false;
+    bool copyTextButtonCoppied = false;
 
     private System.Threading.Timer qrCodeRefreshTimer;
     private int qrCodeRefreshCounter = 30;
@@ -255,6 +271,7 @@
     string ownershipDialogCode = string.Empty;
     string status = string.Empty;
     bool qrrefreshed = false;
+    private ElementReference qrCodeRef;
 
     protected override Task OnInitializedAsync()
     {
@@ -291,6 +308,26 @@
         StateHasChanged();
     }
 
+    private async Task copyCodeToClipboard(MouseEventArgs e)
+    {
+        var dto = new OwnershipVerificationCodeDto()
+        {
+            TxId = NFT.Utxo,
+            Signature = ownershipDialogCode
+        };
+        await JSRuntime.InvokeVoidAsync("jsFunctions.copyToClipboard", JsonConvert.SerializeObject(dto));
+        await copyCodeToClipboardButtonTextEfect();
+    }
+
+    private async Task copyCodeToClipboardButtonTextEfect()
+    {
+        copyTextButtonCoppied = true;
+        StateHasChanged();
+        await Task.Delay(1000);
+        copyTextButtonCoppied = false;
+        StateHasChanged();
+    }
+
     private async Task RefreshQRCode()
     {
         showOwnershipDialogLoading = true;
@@ -309,12 +346,15 @@
         //byte[] byteArrayPhoto = await responsePhoto.Content.ReadAsByteArrayAsync();
         //var base64 = Convert.ToBase64String(byteArrayPhoto);
         //imgSrc = String.Format("data:image;base64,{0}", base64);
-        var sdto = JsonConvert.SerializeObject(res.Item1);
+        /*
+
         var imgSrc = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + sdto;
 
         if (!string.IsNullOrEmpty(imgSrc))
             ownershipDialogQRCodeImage = imgSrc;
-
+        */
+        var sdto = JsonConvert.SerializeObject(res.Item1);
+        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { sdto, qrCodeRef });
         creatingOwnerQRCodeState = "Refreshing Key...";
         showOwnershipDialogLoading = false;
         StateHasChanged();

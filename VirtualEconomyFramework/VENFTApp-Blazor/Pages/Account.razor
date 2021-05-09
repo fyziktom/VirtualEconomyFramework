@@ -166,6 +166,15 @@
     {
         if (AppData.Account != null)
             AppData.Account.Refreshed += RefreshedHandler;
+
+        try
+        {
+            await AppData.Account.ReloadAccountInfo();
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Cannot refresh account tx list" + ex.Message);
+        }
     }
 
     void RefreshedHandler(object sender, EventArgs e)

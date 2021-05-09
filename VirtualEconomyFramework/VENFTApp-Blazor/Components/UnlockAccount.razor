@@ -4,6 +4,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 
 <Modal Title="Unlock Account"
        Visible="@unlockAcocuntModalVisible"
@@ -19,7 +20,7 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input password" @bind-Value="@unlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@unlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
 

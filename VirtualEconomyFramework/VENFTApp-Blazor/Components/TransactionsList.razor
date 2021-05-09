@@ -14,6 +14,10 @@
                 {
                     <p><em><Spin Tip="Loading..." /></em></p>
                 }
+                else if (AppData.Account.AddressInfo.Transactions.Count == 0)
+                {
+                    <span>0 Transactions or cannot load now.</span>
+                }
                 else
                 {
                     <table class="table">

@@ -1,9 +1,24 @@
 ﻿@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
 <div class="row">
     <div class="col">
         <div class="row" style="margin-top:20px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <span style="font-size:12px;">Address: <a href="https://explorer.nebl.io/address/@AppData.Account.Address" style="font-size:12px;" target="_blank">@AppData.Account.Address</a></span>
+                <span style="font-size:12px;">
+                    Address: <a href="https://explorer.nebl.io/address/@AppData.Account.Address" style="font-size:12px;" target="_blank">@AppData.Account.Address</a>
+                </span>
+                @if (!copyTextButtonCoppied)
+                {
+                    <i class="oi oi-share-boxed" style="margin-left:10px; font-size:12px;" @onclick="copyCodeToClipboard"></i>
+                }
+                else
+                {
+                    <i class="oi oi-check" style="margin-left:10px; font-size:12px;"></i>
+                }
+
+                <i class="oi oi-grid-four-up" style="margin-left:10px; font-size:12px;" @onclick="showQRDialogOpen"></i>
+                
             </div>
         </div>
         <div class="row" style="margin-top:10px;margin-bottom:2px;">
@@ -28,7 +43,41 @@
         </div>
     </div>
 </div>
+
+<Modal Title="Address"
+       Visible="@showQRDialogVisible"
+       OnOk="@showQRDialogCancel"
+       Style="width:auto; max-width:300px;"
+       OnCancel="@showQRDialogCancel">
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span>@AppData.Account.Address</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <div @ref=qrCodeRef></div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                @if (!copyTextButtonCoppied)
+                {
+                    <button class="btn btn-light" @onclick="copyCodeToClipboard">Copy <i class="oi oi-share"></i></button>
+                }
+                else
+                {
+                    <button class="btn btn-light" @onclick="copyCodeToClipboard">Copied <i class="oi oi-check"></i></button>
+                }
+            </div>
+        </div>
+</Modal>
 @code {
+
+    bool showQRDialogVisible = false;
+    bool copyTextButtonCoppied = false;
+    private ElementReference qrCodeRef;
+
     protected override async Task OnInitializedAsync()
     {
         if (AppData.Account != null)
@@ -37,6 +86,35 @@
 
     void RefreshedHandler(object sender, EventArgs e)
     {
+        StateHasChanged();
+    }
+
+    private async Task showQRDialogOpen(MouseEventArgs e)
+    {
+        showQRDialogVisible = true;
+        StateHasChanged();
+        await Task.Delay(50);
+        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { AppData.Account.Address, qrCodeRef });
+        StateHasChanged();
+    }
+
+    private async Task showQRDialogCancel(MouseEventArgs e)
+    {
+        showQRDialogVisible = false;
+    }
+
+    private async Task copyCodeToClipboard(MouseEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("jsFunctions.copyToClipboard", AppData.Account.Address);
+        await copyCodeToClipboardButtonTextEfect();
+    }
+
+    private async Task copyCodeToClipboardButtonTextEfect()
+    {
+        copyTextButtonCoppied = true;
+        StateHasChanged();
+        await Task.Delay(1000);
+        copyTextButtonCoppied = false;
         StateHasChanged();
     }
 }

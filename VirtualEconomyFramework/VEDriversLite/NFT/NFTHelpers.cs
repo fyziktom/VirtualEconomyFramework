@@ -1,4 +1,5 @@
 ﻿using Ipfs.Http;
+using NBitcoin;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -173,6 +174,63 @@ namespace VEDriversLite.NFT
             return (false, string.Empty);
         }
 
+        public static async Task<INFT> FindProfileOfAddress(string address, ICollection<Utxos> utxos = null)
+        {
+            if (utxos == null)
+                utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
+            INFT profile = null;
+
+            foreach (var u in utxos)
+                if (u.Tokens != null && u.Tokens.Count > 0)
+                    foreach (var t in u.Tokens)
+                        if (t.TokenId == TokenId && t.Amount == 1)
+                        {
+                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
+                            if (nft != null)
+                                if (nft.Type == NFTTypes.Profile && profile == null)
+                                    profile = nft;
+                        }
+             
+            return profile;
+        }
+
+        public static async Task<(INFT, List<INFT>)> LoadAddressNFTsWithProfile(string address)
+        {
+            List<INFT> nfts = new List<INFT>();
+            var utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
+            INFT profile = null;
+
+            foreach (var u in utxos)
+            {
+                if (u.Tokens != null)
+                {
+                    if (u.Tokens.Count > 0)
+                    {
+                        foreach (var t in u.Tokens)
+                        {
+                            if (t.TokenId == TokenId)
+                            {
+                                if (t.Amount == 1)
+                                {
+                                    var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
+
+                                    if (nft != null)
+                                    {
+                                        if (nft.Type == NFTTypes.Profile && profile == null)
+                                            profile = nft;
+
+                                        if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
+                                            nfts.Add(nft);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return (profile, nfts);
+        }
         public static async Task<List<INFT>> LoadAddressNFTs(string address)
         {
             List<INFT> nfts = new List<INFT>();
@@ -679,47 +737,77 @@ namespace VEDriversLite.NFT
             return new ProfileNFT("");
         }
 
+        public static async Task<(bool, PubKey)> GetPubKeyFromProfileNFTTx(string address)
+        {
+            var profile = await FindProfileOfAddress(address);
+            //var profile = await FindProfileNFT(nfts);
+            if (profile == null)
+                return (false, null);
+            var txhex = await NeblioTransactionHelpers.GetTxHex(profile.Utxo);
+            if (string.IsNullOrEmpty(txhex))
+                return (false, null);
+            var tx = Transaction.Parse(txhex, NeblioTransactionHelpers.Network);
+            if (tx == null)
+                return (false, null);
+            var pubkey = tx.Inputs[0].ScriptSig.GetAllPubKeys();
+            if (pubkey == null || pubkey.Count() == 0)
+                return (false, null);
+            else
+                return (true, pubkey[0]);
+        }
+
+        public static async Task<(bool, PubKey)> GetPubKeyFromLastFoundTx(string address)
+        {
+            var tx = await NeblioTransactionHelpers.GetLastSentTransaction(address);
+            //var profile = await FindProfileNFT(nfts);
+            if (tx == null)
+                return (false, null);
+            var pubkey = tx.Inputs[0].ScriptSig.GetAllPubKeys();
+            if (pubkey == null || pubkey.Count() == 0)
+                return (false, null);
+            else
+                return (true, pubkey[0]);
+        }
+
         public static async Task<(bool, GetNFTOwnerDto)> GetNFTWithOwner(string txid)
         {
-            var nft = await NFTFactory.GetNFT(TokenId, txid);
+            var nft = await NFTFactory.GetNFT(TokenId, txid, true);
             if (nft != null && txid == nft.Utxo)
             {
-                var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txid);
-                var tx = NBitcoin.Transaction.Parse(txinfo.Hex, NeblioTransactionHelpers.Network);
-                if (tx != null)
-                {
-                    if (tx.Outputs.Count > 0 && tx.Inputs.Count > 0)
-                    {
-                        var outp = tx.Outputs[0];
-                        var inpt = tx.Inputs[0];
-                        if (outp != null && inpt != null)
-                        {
-                            var scr = outp.ScriptPubKey;
-                            var add = scr.GetDestinationAddress(NeblioTransactionHelpers.Network);
-                            var utxos = await NFTHelpers.LoadAddressNFTs(add.ToString());
-                            var addi = inpt.ScriptSig.GetSignerAddress(NeblioTransactionHelpers.Network);
-                            if (utxos.FirstOrDefault(u => u.Utxo == txid) != null)
-                            {
-                                return (true, new GetNFTOwnerDto()
-                                {
-                                    NFT = nft,
-                                    TxId = txid,
-                                    Owner = add.ToString(),
-                                    Sender = addi.ToString()
-                                });
-                            }
-                            else
-                            {
-                                return (false, new GetNFTOwnerDto()
-                                {
-                                    NFT = nft,
-                                    TxId = txid,
-                                    Owner = add.ToString(),
-                                    Sender = addi.ToString(),
-                                });
-                            }
+                var txhex = await NeblioTransactionHelpers.GetTxHex(txid);
+                var tx = NBitcoin.Transaction.Parse(txhex, NeblioTransactionHelpers.Network);
 
+                if (tx != null && tx.Outputs.Count > 0 && tx.Inputs.Count > 0)
+                {
+                    var outp = tx.Outputs[0];
+                    var inpt = tx.Inputs[0];
+                    if (outp != null && inpt != null)
+                    {
+                        var scr = outp.ScriptPubKey;
+                        var add = scr.GetDestinationAddress(NeblioTransactionHelpers.Network);
+                        var utxos = await NeblioTransactionHelpers.GetAddressUtxosObjects(add.ToString());
+                        var addi = inpt.ScriptSig.GetSignerAddress(NeblioTransactionHelpers.Network);
+                        if (utxos.FirstOrDefault(u => (u.Txid == txid && u.Value == 10000 && u.Tokens.Count > 0 && u.Tokens.FirstOrDefault()?.Amount == 1)) != null)
+                        {
+                            return (true, new GetNFTOwnerDto()
+                            {
+                                NFT = nft,
+                                TxId = txid,
+                                Owner = add.ToString(),
+                                Sender = addi.ToString()
+                            });
                         }
+                        else
+                        {
+                            return (false, new GetNFTOwnerDto()
+                            {
+                                NFT = nft,
+                                TxId = txid,
+                                Owner = add.ToString(),
+                                Sender = addi.ToString(),
+                            });
+                        }
+
                     }
                 }
             }

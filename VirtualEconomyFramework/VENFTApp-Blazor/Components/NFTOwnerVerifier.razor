@@ -38,26 +38,38 @@
                     <h6>Read: @readresult</h6>
                 </div>
             </div>
+            <!--
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <textarea>@message</textarea>
+        </div>
+    </div>
+    -->
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h6>Result: @result</h6>
+                    <h6>Result</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:2px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>@result</span>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h6>Owner: @ownerAddress</h6>
+                    <small>Owner: @ownerAddress</small>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h6>Sender: @senderAddress</h6>
+                    <small>Sender: @senderAddress</small>
                 </div>
             </div>
             <div class="row">
-                <div class="col">
+                <div class="col d-flex justify-content-center align-items-center">
                     @if (!string.IsNullOrEmpty(NFT.Utxo))
                     {
-                        <NFT InputNFT="@NFT" OwnNFT="false" Address="@ownerAddress" />
+                        <NFT InputNFT="@NFT" OwnNFT="false"/>
                     }
                 </div>
             </div>
@@ -75,6 +87,7 @@
     private static String result = string.Empty;
     string dtores = string.Empty;
     string readresult = string.Empty;
+    string message = string.Empty;
     bool processing = false;
 
     protected override void OnInitialized()
@@ -91,15 +104,12 @@
     [JSInvokable]
     public void ReturnBarcodeResultsAsync(String text)
     {
-
-        //result = text;
-        //if (dtores != text)
+        if (dtores != text)
         {
             processing = true;
             dtores = text;
             this.StateHasChanged();
-            VerifyFromText(text).Wait();
-
+            VerifyFromText(text);
         }
 
         this.StateHasChanged();
@@ -115,14 +125,13 @@
                 readresult = "Reading Correct.";
                 var dto = await OwnershipVerifier.VerifyOwner(d);
 
-                var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, dto.TxId);
-                if (nft != null)
-                    NFT = await NFTFactory.CloneNFT(nft);
+                if (dto.NFT != null && !string.IsNullOrEmpty(dto.NFT.Utxo) && dto.NFT.Utxo != NFT.Utxo)
+                    NFT = await NFTFactory.CloneNFT(dto.NFT);
 
                 result = dto.VerifyResult;
+                message = dto.Message;
                 ownerAddress = dto.Owner;
                 senderAddress = dto.Sender;
-                processing = false;
             }
             else
             {
@@ -134,8 +143,12 @@
         {
             result = text;
         }
-
-        this.StateHasChanged();
+        finally
+        {
+            processing = false;
+            dtores = string.Empty;
+            this.StateHasChanged();
+        }
     }
 
     public async Task Verify()

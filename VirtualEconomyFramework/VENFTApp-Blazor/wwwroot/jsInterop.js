@@ -9,6 +9,21 @@ window.jsFunctions = {
     init: function (obj) {
         dotnetRef = obj;
     },
+    copyToClipboard: function (text) {
+        navigator.clipboard.writeText(text);
+    },
+    focusElement: function (element) {
+        try {
+            element.focus();
+        }
+        catch {
+
+        }
+    },
+    getQRCode: function (text, codediv) {
+        codediv.innerHTML = '';
+        new QRCode(codediv, text);
+    },
     startScanning: function () {
         const html5QrCode = new Html5Qrcode("CameraStream");
 

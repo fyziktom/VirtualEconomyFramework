@@ -29,6 +29,27 @@ namespace VEDriversLite.Security
                 return (false, "Wrong input. Cannot verify the message signature.");
             }
         }
+        public static async Task<(bool, string)> VerifyMessage(string message, string signature, PubKey pubkey)
+        {
+            //if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))
+            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || pubkey == null)
+                return (false, "Input parameters cannot be empty or null.");
+
+            try
+            {
+                //var add = BitcoinAddress.Create(address, NeblioTransactionHelpers.Network);
+                //var vadd = (add as IPubkeyHashUsable);
+
+                if (pubkey.VerifyMessage(message, signature))
+                    return (true, "Verified.");
+                else
+                    return (false, "Not verified.");
+            }
+            catch (Exception ex)
+            {
+                return (false, "Wrong input. Cannot verify the message signature.");
+            }
+        }
 
         public static async Task<(bool, string)> SignMessage(string message, string privateKey)
         {

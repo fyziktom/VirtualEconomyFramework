@@ -38,6 +38,7 @@ namespace VEDriversLite
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
         public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; } = new Dictionary<string, TokenSupplyDto>();
+        public Dictionary<string, Utxos> Utxos { get; set; } = new Dictionary<string, Utxos>();
         public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
         public GetAddressResponse AddressInfo { get; set; } = new GetAddressResponse();
         public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
@@ -136,7 +137,10 @@ namespace VEDriversLite
         {
             try
             {
-                await ReloadAccountInfo();
+                AddressInfo = new GetAddressResponse();
+                AddressInfo.Transactions = new List<string>();
+                //await ReloadAccountInfo();
+                await ReloadUtxos();
                 await ReloadMintingSupply();
                 await ReloadCountOfNFTs();
                 await ReloadTokenSupply();
@@ -168,7 +172,8 @@ namespace VEDriversLite
                 {
                     try
                     {
-                        await ReloadAccountInfo();
+                        //await ReloadAccountInfo();
+                        await ReloadUtxos();
                         await ReloadMintingSupply();
                         await ReloadCountOfNFTs();
                         await ReloadTokenSupply();
@@ -374,6 +379,34 @@ namespace VEDriversLite
 
         }
 
+        public async Task ReloadUtxos()
+        {
+            var ux = await NeblioTransactionHelpers.GetAddressUtxosObjects(Address);
+            AddressInfoUtxos = new GetAddressInfoResponse()
+            {
+                Utxos = ux
+            };
+
+            if (ux.Count > 0)
+            {
+                Utxos.Clear();
+                TotalBalance = 0.0;
+                TotalUnconfirmedBalance = 0.0;
+                TotalSpendableBalance = 0.0;
+                // add new ones
+                foreach (var u in ux)
+                {
+                    Utxos.TryAdd(u.Txid, u);
+
+                    if (u.Blockheight <= 0)
+                        TotalUnconfirmedBalance += ((double)u.Value / NeblioTransactionHelpers.FromSatToMainRatio);
+                    else
+                        TotalSpendableBalance += ((double)u.Value / NeblioTransactionHelpers.FromSatToMainRatio);
+                }
+
+                TotalBalance = TotalSpendableBalance + TotalUnconfirmedBalance;
+            }
+        }
         public async Task ReloadAccountInfo()
         {
             AddressInfo = await NeblioTransactionHelpers.AddressInfoAsync(Address);
@@ -877,7 +910,11 @@ namespace VEDriversLite
 
         public async Task<(bool, string)> VerifyMessage(string message, string signature, string address)
         {
-            return await ECDSAProvider.VerifyMessage(message, signature, address);
+            var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(address);
+            if (!ownerpubkey.Item1)
+                return (false, "Owner did not activate the function. He must have filled the profile.");
+            else
+                return await ECDSAProvider.VerifyMessage(message, signature, ownerpubkey.Item2);
         }
 
         public async Task<OwnershipVerificationCodeDto> GetNFTVerifyCode(string txid)

@@ -1682,6 +1682,35 @@ namespace VEDriversLite
             return resp;
         }
 
+        public static async Task<Transaction> GetLastSentTransaction(string address)
+        {
+            try
+            {
+                if (_client == null)
+                    _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
+
+                var addinfo = await _client.GetAddressAsync(address);
+                if (addinfo == null || addinfo.Transactions.Count == 0)
+                    return null;
+
+                foreach (var t in addinfo.Transactions)
+                {
+                    var th = await GetTxHex(t);
+                    var ti = Transaction.Parse(th, Network);
+                    if (ti != null)
+                        if (ti.Inputs[0].ScriptSig.GetSignerAddress(Network).ToString() == address)
+                            return ti;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load tx info. " + ex.Message);
+                return null;
+            }
+        }
+
         public static async Task<GetTransactionInfoResponse> GetTransactionInfo(string txid)
         {
             try
@@ -1690,8 +1719,7 @@ namespace VEDriversLite
                 {
                     _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
                 }
-                var resp = new Dictionary<string, string>();
-
+                
                 var info = await _client.GetTransactionInfoAsync(txid);
 
                 return info;

@@ -6,6 +6,7 @@
 @inject HttpClient _client
 @inject AppData AppData
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 @page "/browser"
 
 <Spin Tip="Loading Browser..." Spinning="@loadingBrowser">
@@ -38,14 +39,14 @@
                     <ul class="nav nav-tabs" role="tablist" id="shopTabsHeadings">
                         @foreach (var tab in AppData.Tabs)
                         {
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab)">
-                                @tab.ShortAddress
-                                <button class="btn btn-light" @onclick="async () => removeTab(tab)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 2px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
-                                    <i class="oi oi-x" style="font-size:7px;"></i>
-                                </button>
-                            </a>
-                        </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab)">
+                                    @tab.ShortAddress
+                                    <button class="btn btn-light" @onclick="async () => removeTab(tab)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 2px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
+                                        <i class="oi oi-x" style="font-size:7px;"></i>
+                                    </button>
+                                </a>
+                            </li>
                         }
                         <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => addNewTabModal()"><i class="oi oi-plus" style="font-size: 20px;"></i></a></li>
                     </ul>
@@ -56,69 +57,79 @@
                             var selected = "";
                             if (tab.Selected)
                             {
-                        <div role="tabpanel" class="tab-pane active" style="min-height: 200px;">
-                            <div class="row">
-                                <div class="col">
-                                    <div class="row" style="margin-top: 10px;">
-                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                            <h6>@tab.Address</h6>
-                                            <!--
-                                        <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
-                                            <i class="oi oi-star"></i>
-                                        </a>-->
-                                        </div>
-                                    </div>
-
+                                <div role="tabpanel" class="tab-pane active" style="min-height: 200px;">
                                     <div class="row">
-                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                            <h3>Profile</h3>
-                                        </div>
-                                    </div>
-                                    <div class="row bg-light">
-                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                        <div class="col">
+                                            <div class="row" style="margin-top: 10px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                    <h6>@tab.Address</h6>
+                                                    @if (!copyTextButtonCoppied)
+                                                    {
+                                                        <i class="oi oi-share-boxed" style="margin-left:10px; font-size:12px;" @onclick="async () => copyCodeToClipboard(tab.Address)"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="oi oi-check" style="margin-left:10px; font-size:12px;"></i>
+                                                    }
+                                                    <i class="oi oi-grid-four-up" style="margin-left:10px; font-size:12px;" @onclick="showQRDialogOpen"></i>
+                
+                                                    <!--
+                                                    <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
+                                                        <i class="oi oi-star"></i>
+                                                    </a>-->
+                                                </div>
+                                            </div>
+
                                             <div class="row">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                    <img src="@tab.Profile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    <h3>Profile</h3>
                                                 </div>
                                             </div>
-                                            <div class="row" style="margin-left:20px;">
-                                                <div class="col">
+                                            <div class="row bg-light">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                     <div class="row">
                                                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                            <span>Name: @tab.Profile.Name @tab.Profile.Surname</span>
+                                                            <img src="@tab.Profile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                                                         </div>
                                                     </div>
-                                                    <div class="row">
-                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                            Nick: @tab.Profile.Nickname
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                            Bio: @tab.Profile.Description
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                            <a href="@tab.Profile.Link" target="_blank">Webpage</a>
+                                                    <div class="row" style="margin-left:20px;">
+                                                        <div class="col">
+                                                            <div class="row">
+                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                    <span>Name: @tab.Profile.Name @tab.Profile.Surname</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                    Nick: @tab.Profile.Nickname
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                    Bio: @tab.Profile.Description
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                    <a href="@tab.Profile.Link" target="_blank">Webpage</a>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="row" style="margin-top:20px">
-                                        <div class="col">
-                                            @if (tab.Selected)
+                                            <div class="row" style="margin-top:20px">
+                                                <div class="col">
+                                                    @if (tab.Selected)
                                                     {
                                                         <VENFTApp_Blazor.Components.NFTList Address="@tab.Address" MainAccount="@false" />
                                                     }
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
                             }
                         }
                     </div>
@@ -200,13 +211,46 @@
     </div>
 </Modal>
 
+<Modal Title="Address"
+       Visible="@showQRDialogVisible"
+       OnOk="@showQRDialogCancel"
+       Style="width:auto; max-width:300px;"
+       OnCancel="@showQRDialogCancel">
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <span>@addressInOpenTab</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <div @ref=qrCodeRef></div>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex justify-content-center align-items-center">
+            @if (!copyTextButtonCoppied)
+            {
+                <button class="btn btn-light" @onclick="async () => copyCodeToClipboard(addressInOpenTab)">Copy <i class="oi oi-share"></i></button>
+            }
+            else
+            {
+                <button class="btn btn-light" @onclick="async () => copyCodeToClipboard(addressInOpenTab)">Copied <i class="oi oi-check"></i></button>
+            }
+        </div>
+    </div>
+</Modal>
+
 @code {
     bool loadingBrowser = false;
     bool browsePublicAddresses = false;
-
+    bool copyTextButtonCoppied = false;
     int holdersPage = 0;
 
+    bool showQRDialogVisible = false;
+    private ElementReference qrCodeRef;
+
     private bool openTabVisible = false;
+    string addressInOpenTab = string.Empty;
     private string newTabAddress = string.Empty;
 
     protected override Task OnInitializedAsync()
@@ -243,6 +287,35 @@
         AppData.Account = new NeblioAccount();
         await Task.Delay(500);
         NavManager.NavigateTo("/");
+    }
+
+    private async Task showQRDialogOpen(MouseEventArgs e)
+    {
+        showQRDialogVisible = true;
+        StateHasChanged();
+        await Task.Delay(50);
+        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { addressInOpenTab, qrCodeRef });
+        StateHasChanged();
+    }
+
+    private async Task showQRDialogCancel(MouseEventArgs e)
+    {
+        showQRDialogVisible = false;
+    }
+
+    private async Task copyCodeToClipboard(string text)
+    {
+        await JSRuntime.InvokeVoidAsync("jsFunctions.copyToClipboard", text);
+        await copyCodeToClipboardButtonTextEfect();
+    }
+
+    private async Task copyCodeToClipboardButtonTextEfect()
+    {
+        copyTextButtonCoppied = true;
+        StateHasChanged();
+        await Task.Delay(1000);
+        copyTextButtonCoppied = false;
+        StateHasChanged();
     }
 
     private async Task closePublicAddresses(MouseEventArgs e)
@@ -368,6 +441,7 @@
         tab.Selected = true;
         openTabVisible = false;
         AppData.Tabs.Add(tab);
+        addressInOpenTab = tab.Address;
         StateHasChanged();
 
         try
@@ -397,6 +471,8 @@
             t.Selected = false;
 
         AppData.Tabs.FirstOrDefault(t => t.Address == tab.Address).Selected = true;
+
+        addressInOpenTab = tab.Address;
 
         if (tab.NFTs.Count == 0)
         {

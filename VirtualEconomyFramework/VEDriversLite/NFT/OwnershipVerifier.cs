@@ -56,7 +56,7 @@ namespace VEDriversLite.NFT
         {
             var time = DateTime.UtcNow.ToString("dd MM yyyy hh:mm");
             var combo = txid + time;//ComputeSha256Hash(txid + time);
-            var msg = combo;// String.Format("{0:X}", combo.GetHashCode());
+            var msg = String.Format("{0:X}", combo.GetHashCode());
             return msg;
         }
         public static async Task<(bool, string)> GetCode(string txid, EncryptionKey key)
@@ -129,10 +129,22 @@ namespace VEDriversLite.NFT
 
         public static async Task<OwnershipVerificationResult> VerifyOwner(OwnershipVerificationCodeDto dto)
         {
+            var msg = CreateMessage(dto.TxId);
             var res = await NFTHelpers.GetNFTWithOwner(dto.TxId);
             if (res.Item1)
             {
-                var msg = CreateMessage(dto.TxId);
+                //var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(res.Item2.Owner);
+                /*var ownerpubkey = await NFTHelpers.GetPubKeyFromLastFoundTx(res.Item2.Owner);
+                if (!ownerpubkey.Item1)
+                    return new OwnershipVerificationResult()
+                    {
+                        Owner = res.Item2.Owner,
+                        Sender = res.Item2.Sender,
+                        NFT = res.Item2.NFT,
+                        Message = msg,
+                        VerifyResult = "Cannot get owner pubkey. He probably did not allow this function."
+                    };*/
+
                 var r = await ECDSAProvider.VerifyMessage(msg, dto.Signature, res.Item2.Owner);
                 if (r.Item1)
                 {
@@ -175,10 +187,22 @@ namespace VEDriversLite.NFT
             Result result = new MultiFormatReader().decode(binaryBitmap);
 
             var r = JsonConvert.DeserializeObject<OwnershipVerificationCodeDto>(result.Text);
-            var res = await NFTHelpers.GetNFTWithOwner(r.TxId);
-
             var msg = CreateMessage(r.TxId);
-            var vmsg = await ECDSAProvider.VerifyMessage(msg, r.Signature, res.Item2.Owner);
+            var res = await NFTHelpers.GetNFTWithOwner(r.TxId);
+            //var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(res.Item2.Owner);
+            var ownerpubkey = await NFTHelpers.GetPubKeyFromLastFoundTx(res.Item2.Owner);
+            if (!ownerpubkey.Item1)
+                return new OwnershipVerificationResult()
+                    {
+                        Owner = res.Item2.Owner,
+                        Sender = res.Item2.Sender,
+                        NFT = res.Item2.NFT,
+                        Message = msg,
+                        VerifyResult = "Cannot get owner pubkey. He probably didn activate the function."
+                    };
+
+            
+            var vmsg = await ECDSAProvider.VerifyMessage(msg, r.Signature, ownerpubkey.Item2);
 
             if (vmsg.Item1)
             {

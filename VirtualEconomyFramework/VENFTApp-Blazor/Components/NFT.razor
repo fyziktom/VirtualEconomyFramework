@@ -35,7 +35,7 @@
                     {
                         @if (!OwnNFT)
                         {
-                            @if (nft.PriceActive && nft.Type != NFTTypes.Payment)
+                            @if (nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
                             {
                                 <div class="col d-flex justify-content-center align-items-center" style="margin-left:25px;">
                                     <SendNFTPayment Utxo="@nft.Utxo" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
@@ -112,8 +112,11 @@
         {
             if (value != null)
             {
-                nft = value;
-                StateHasChanged();
+                if (value.Utxo != nft.Utxo)
+                { 
+                    nft = value;
+                    StateHasChanged();
+                }
             }
         }
     }
@@ -150,9 +153,12 @@
         }
         else
         {
-            var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
-            if (tab != null)
-                return tab.ReceivedPayments.ContainsKey(utxo);
+            if (!string.IsNullOrEmpty(_address))
+            {
+                var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
+                if (tab != null)
+                    return tab.ReceivedPayments.ContainsKey(utxo);
+            }
         }
 
         return false;
