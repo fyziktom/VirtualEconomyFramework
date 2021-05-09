@@ -25,6 +25,7 @@ namespace VEDriversLite
         }
         public Guid Id { get; set; }
         public string Address { get; set; } = string.Empty;
+        public BitcoinSecret Secret { get; set; }
         public double NumberOfTransaction { get; set; } = 0;
         public double NumberOfLoadedTransaction { get; } = 0;
         public bool EnoughBalanceToBuySourceTokens { get; set; } = false;
@@ -40,7 +41,7 @@ namespace VEDriversLite
         public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
         public GetAddressResponse AddressInfo { get; set; } = new GetAddressResponse();
         public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
-
+        
         public event EventHandler Refreshed;
         public event EventHandler<IEventInfo> NewEventInfo;
         public event EventHandler<string> PaymentSent;
@@ -190,7 +191,7 @@ namespace VEDriversLite
                     }
                     catch (Exception ex)
                     {
-                        await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
+                        //await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
                     }
 
                     await Task.Delay(interval);
@@ -207,17 +208,16 @@ namespace VEDriversLite
             {
                await Task.Run(async () =>
                {
-                   var network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
                    Key privateKey = new Key(); // generate a random private key
                     PubKey publicKey = privateKey.PubKey;
-                   BitcoinSecret privateKeyFromNetwork = privateKey.GetBitcoinSecret(network);
-                   var address = publicKey.GetAddress(ScriptPubKeyType.Legacy, network);
+                   BitcoinSecret privateKeyFromNetwork = privateKey.GetBitcoinSecret(NeblioTransactionHelpers.Network);
+                   var address = publicKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
                    Address = address.ToString();
 
                     // todo load already encrypted key
                    AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
                    AccountKey.PublicKey = Address;
-
+                   Secret = privateKeyFromNetwork;
                    if (!string.IsNullOrEmpty(password))
                        AccountKey.PasswordHash = await Security.SecurityUtil.HashPassword(password);
 
@@ -259,6 +259,8 @@ namespace VEDriversLite
                     await AccountKey.LoadPassword(password);
                     AccountKey.IsEncrypted = true;
 
+                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+                   
                     Address = kdto.Address;
 
                     await StartRefreshingData();
@@ -285,7 +287,8 @@ namespace VEDriversLite
                     AccountKey = new EncryptionKey(encryptedKey, fromDb: true);
                     await AccountKey.LoadPassword(password);
                     AccountKey.IsEncrypted = true;
-
+                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+                    await SignMessage("init");
                     Address = address;
                 });
 
@@ -860,5 +863,39 @@ namespace VEDriversLite
             await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
         }
+
+        public async Task<(bool, string)> SignMessage(string message)
+        {
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var key = await AccountKey.GetEncryptedKey();
+            return await ECDSAProvider.SignMessage(message, key); ;
+        }
+
+        public async Task<(bool, string)> VerifyMessage(string message, string signature, string address)
+        {
+            return await ECDSAProvider.VerifyMessage(message, signature, address);
+        }
+
+        public async Task<OwnershipVerificationCodeDto> GetNFTVerifyCode(string txid)
+        {
+            var res = await OwnershipVerifier.GetCodeInDto(txid, Secret);
+            if (res != null)
+                return res;
+            else
+                return new OwnershipVerificationCodeDto();
+        }
+        public async Task<(OwnershipVerificationCodeDto, byte[])> GetNFTVerifyQRCode(string txid)
+        {
+            var res = await OwnershipVerifier.GetQRCode(txid, Secret);
+            if (res.Item1)
+                return (res.Item2.Item1, res.Item2.Item2);
+            else
+                return (new OwnershipVerificationCodeDto(), new byte[0]);
+        }
+
     }
 }

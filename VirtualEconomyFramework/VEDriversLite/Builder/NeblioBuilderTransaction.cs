@@ -178,12 +178,10 @@ namespace VEDriversLite.Builder
 
         public async Task<string> Sign(string inpkey)
         {
-            var network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
             BitcoinSecret key = null;
-
             try
             {
-                key = network.CreateBitcoinSecret(inpkey);
+                key = NeblioTransactionBuilder.NeblioNetwork.CreateBitcoinSecret(inpkey);
             }
             catch (Exception ex)
             {

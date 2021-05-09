@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Builder;
 using VEDriversLite.Events;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.Security;
@@ -45,7 +46,7 @@ namespace VEDriversLite
         private static IClient _client;
         private static string BaseURL = "https://ntp1node.nebl.io/";
         public static double FromSatToMainRatio = 100000000;
-        private static Network network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
+        public static Network Network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
         public static string VENFTId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         public static int MinimumConfirmations = 4;
 
@@ -98,15 +99,13 @@ namespace VEDriversLite
                 }
             }
 
-            var network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
             BitcoinSecret loadedkey = null;
             BitcoinAddress addressForTx = null;
-
             if (!string.IsNullOrEmpty(key))
             {
                 try
                 {
-                    loadedkey = network.CreateBitcoinSecret(key);
+                    loadedkey = NeblioTransactionHelpers.Network.CreateBitcoinSecret(key);
                     addressForTx = loadedkey.GetAddress(ScriptPubKeyType.Legacy);
 
                     return (addressForTx, loadedkey);
@@ -390,7 +389,7 @@ namespace VEDriversLite
             }
 
             // parse raw hex to NBitcoin transaction object
-            if (!Transaction.TryParse(hexToSign, network, out var transaction))
+            if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
 
             try
@@ -492,7 +491,7 @@ namespace VEDriversLite
             }
 
             // parse raw hex to NBitcoin transaction object
-            if (!Transaction.TryParse(hexToSign, network, out var transaction))
+            if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
 
             /*
@@ -590,7 +589,7 @@ namespace VEDriversLite
             }
 
             // parse raw hex to NBitcoin transaction object
-            if (!Transaction.TryParse(hexToSign, network, out var transaction))
+            if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
 
             try
@@ -671,7 +670,7 @@ namespace VEDriversLite
             }
 
             // parse raw hex to NBitcoin transaction object
-            if (!Transaction.TryParse(hexToSign, network, out var transaction))
+            if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
 
             try
@@ -703,7 +702,7 @@ namespace VEDriversLite
             BitcoinAddress recaddr = null;
             try
             {
-                recaddr = BitcoinAddress.Create(data.ReceiverAddress, network);
+                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
             catch (Exception ex)
             {
@@ -725,7 +724,7 @@ namespace VEDriversLite
             }
 
             // create template for new tx from last one
-            var transaction = Transaction.Create(network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
+            var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
 
             try
             {
@@ -733,7 +732,7 @@ namespace VEDriversLite
                 foreach (var utxo in nutxos)
                 {
                     var txh = await GetTxHex(utxo.Txid);
-                    if (Transaction.TryParse(txh, network, out var txin))
+                    if (Transaction.TryParse(txh, Network, out var txin))
                     {
                         transaction.Inputs.Add(txin, (int)utxo.Index);
                         transaction.Inputs.Last().ScriptSig = addressForTx.ScriptPubKey;
@@ -802,7 +801,7 @@ namespace VEDriversLite
             BitcoinAddress recaddr = null;
             try
             {
-                recaddr = BitcoinAddress.Create(data.ReceiverAddress, network);
+                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
             catch (Exception ex)
             {
@@ -864,7 +863,7 @@ namespace VEDriversLite
             }
 
             // parse raw hex to NBitcoin transaction object
-            if (!Transaction.TryParse(hexToSign, network, out var transaction))
+            if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
 
             ////
@@ -890,7 +889,7 @@ namespace VEDriversLite
                 foreach(var u in dto.Sendutxo)
                 {
                     var txh = await GetTxHex(u.Split(':')[0]);
-                    if (Transaction.TryParse(txh, network, out var txin))
+                    if (Transaction.TryParse(txh, Network, out var txin))
                     {
                         transaction.Inputs.Add(txin, Convert.ToInt32(u.Split(':')[1]));
                     }
@@ -905,7 +904,7 @@ namespace VEDriversLite
                     if (!dto.Sendutxo.Any(ut => ((ut.Split(':')[0] == u.Txid) && ut.Split(':')[1] == ((int)u.Index).ToString())))
                     {
                         var txh = await GetTxHex(u.Txid);
-                        if (Transaction.TryParse(txh, network, out var txin))
+                        if (Transaction.TryParse(txh, Network, out var txin))
                         {
                             transaction.Inputs.Add(txin, (int)u.Index);
                         }
@@ -1033,7 +1032,7 @@ namespace VEDriversLite
             BitcoinAddress recaddr = null;
             try
             {
-                recaddr = BitcoinAddress.Create(data.ReceiverAddress, network);
+                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
             catch (Exception ex)
             {
@@ -1123,7 +1122,7 @@ namespace VEDriversLite
             }
 
             // parse raw hex to NBitcoin transaction object
-            if (!Transaction.TryParse(hexToSign, network, out var transaction))
+            if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
 
             try
@@ -1317,7 +1316,7 @@ namespace VEDriversLite
             BitcoinAddress addr = null;
             try
             {
-                addr = BitcoinAddress.Create(address, network);
+                addr = BitcoinAddress.Create(address, Network);
             }
             catch (Exception ex)
             {

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>QR Scan</title>
+</head>
+<body>
+    <div id="reader"></div>
+    <script src="html5-qrcode.min.js"></script>
+
+    <script type="text/javascript">
+        //var cameraId = null;
+        const html5QrCode = new Html5Qrcode("reader");
+
+        Html5Qrcode.getCameras().then(devices => {
+            /**
+             * devices would be an array of objects of type:
+             * { id: "id", label: "label" }
+             */
+            if (devices && devices.length) {
+                var cameraId = devices[0].id;
+                // .. use this to start scanning.
+
+                html5QrCode.start(
+                    cameraId,     // retreived in the previous step.
+                    {
+                        fps: 10,    // sets the framerate to 10 frame per second
+                        qrbox: 850  // sets only 250 X 250 region of viewfinder to
+                        // scannable, rest shaded.
+                    },
+                    qrCodeMessage => {
+                        // do something when code is read. For example:
+                        console.log(`QR Code detected: ${qrCodeMessage}`);
+                    },
+                    errorMessage => {
+                        // parse error, ideally ignore it. For example:
+                        console.log(`QR Code no longer in front of camera.`);
+                    })
+                    .catch(err => {
+                        // Start failed, handle it. For example,
+                        console.log(`Unable to start scanning, error: ${err}`);
+                    });
+            }
+        }).catch(err => {
+            // handle err
+        });
+
+        
+        /*
+        html5QrCode.scanFile(file, true)
+            .then(qrCodeMessage => {
+                // success, use qrCodeMessage
+                console.log(qrCodeMessage);
+                if (dotnetRef) {
+                    dotnetRef.invokeMethodAsync('ReturnBarcodeResultsAsync', qrCodeMessage);
+                }
+
+                html5QrCode.stop().then(ignore => {
+                    // QR Code scanning is stopped.
+                    console.log("QR Code scanning stopped.");
+                }).catch(err => {
+                    // Stop failed, handle it.
+                    console.log("Unable to stop scanning.");
+                });
+            })
+            .catch(err => {
+                // failure, handle it.
+                console.log(`Error scanning file. Reason: ${err}`);
+                if (dotnetRef) {
+                    dotnetRef.invokeMethodAsync('ReturnBarcodeResultsAsync', `Cannot Load QR Code ${err}!`);
+                }
+                console.log("No code found");
+            });*/
+    </script>
+</body>
+</html>

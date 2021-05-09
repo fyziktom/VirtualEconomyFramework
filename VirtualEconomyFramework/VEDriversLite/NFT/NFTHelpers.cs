@@ -8,8 +8,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
+using VEDriversLite.Builder;
 using VEDriversLite.Events;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
@@ -675,6 +677,53 @@ namespace VEDriversLite.NFT
                     if (n.Type == NFTTypes.Profile)
                         return (ProfileNFT)n;
             return new ProfileNFT("");
+        }
+
+        public static async Task<(bool, GetNFTOwnerDto)> GetNFTWithOwner(string txid)
+        {
+            var nft = await NFTFactory.GetNFT(TokenId, txid);
+            if (nft != null && txid == nft.Utxo)
+            {
+                var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txid);
+                var tx = NBitcoin.Transaction.Parse(txinfo.Hex, NeblioTransactionHelpers.Network);
+                if (tx != null)
+                {
+                    if (tx.Outputs.Count > 0 && tx.Inputs.Count > 0)
+                    {
+                        var outp = tx.Outputs[0];
+                        var inpt = tx.Inputs[0];
+                        if (outp != null && inpt != null)
+                        {
+                            var scr = outp.ScriptPubKey;
+                            var add = scr.GetDestinationAddress(NeblioTransactionHelpers.Network);
+                            var utxos = await NFTHelpers.LoadAddressNFTs(add.ToString());
+                            var addi = inpt.ScriptSig.GetSignerAddress(NeblioTransactionHelpers.Network);
+                            if (utxos.FirstOrDefault(u => u.Utxo == txid) != null)
+                            {
+                                return (true, new GetNFTOwnerDto()
+                                {
+                                    NFT = nft,
+                                    TxId = txid,
+                                    Owner = add.ToString(),
+                                    Sender = addi.ToString()
+                                });
+                            }
+                            else
+                            {
+                                return (false, new GetNFTOwnerDto()
+                                {
+                                    NFT = nft,
+                                    TxId = txid,
+                                    Owner = add.ToString(),
+                                    Sender = addi.ToString(),
+                                });
+                            }
+
+                        }
+                    }
+                }
+            }
+            return (false, null);
         }
     }
 }

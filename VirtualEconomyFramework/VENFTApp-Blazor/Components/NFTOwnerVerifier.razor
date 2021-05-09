@@ -1,0 +1,182 @@
+﻿@using System.IO;
+@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Security
+@using Newtonsoft.Json
+@using Tewr.Blazor.FileReader
+@inject IFileReaderService fileReaderService
+@inject IJSRuntime JSRuntime
+@inject AppData AppData
+
+<div class="row">
+    <div class="col">
+        <!--
+    <div class="row">
+        <div class="col">
+            <input type="file" @ref=inputTypeFileElement accept="image/*" capture/>
+        </div>
+    </div>
+    -->
+        <Spin Tip="Processing..." Spinning="@processing">
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <button @onclick=ReadCode>Verify</button>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div id="CameraStream"></div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h4>Results</h4>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h6>Read: @readresult</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h6>Result: @result</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h6>Owner: @ownerAddress</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h6>Sender: @senderAddress</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    @if (!string.IsNullOrEmpty(NFT.Utxo))
+                    {
+                        <NFT InputNFT="@NFT" OwnNFT="false" Address="@ownerAddress" />
+                    }
+                </div>
+            </div>
+        </Spin>
+    </div>
+</div>
+
+
+@code {
+    INFT NFT = new ImageNFT("");
+    string ownerAddress = string.Empty;
+    string senderAddress = string.Empty;
+    private ElementReference inputTypeFileElement;
+    private ElementReference CameraStream;
+    private static String result = string.Empty;
+    string dtores = string.Empty;
+    string readresult = string.Empty;
+    bool processing = false;
+
+    protected override void OnInitialized()
+    {
+        result = string.Empty;
+        JSRuntime.InvokeVoidAsync("jsFunctions.init", DotNetObjectReference.Create(this));
+    }
+
+    public async Task ReadCode()
+    {
+        await JSRuntime.InvokeVoidAsync("jsFunctions.startScanning");
+    }
+
+    [JSInvokable]
+    public void ReturnBarcodeResultsAsync(String text)
+    {
+
+        //result = text;
+        //if (dtores != text)
+        {
+            processing = true;
+            dtores = text;
+            this.StateHasChanged();
+            VerifyFromText(text).Wait();
+
+        }
+
+        this.StateHasChanged();
+    }
+
+    public async Task VerifyFromText(string text)
+    {
+        try
+        {
+            var d = JsonConvert.DeserializeObject<OwnershipVerificationCodeDto>(text);
+            if (d != null)
+            {
+                readresult = "Reading Correct.";
+                var dto = await OwnershipVerifier.VerifyOwner(d);
+
+                var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, dto.TxId);
+                if (nft != null)
+                    NFT = await NFTFactory.CloneNFT(nft);
+
+                result = dto.VerifyResult;
+                ownerAddress = dto.Owner;
+                senderAddress = dto.Sender;
+                processing = false;
+            }
+            else
+            {
+                readresult = "Reading Wrong.";
+                result = "Cannot deserialize data.";
+            }
+        }
+        catch (Exception ex)
+        {
+            result = text;
+        }
+
+        this.StateHasChanged();
+    }
+
+    public async Task Verify()
+    {
+        try
+        {
+            //StateHasChanged();
+            foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
+            {
+                // Read into buffer and act (uses less memory)
+                //await using (Stream stream = await file.OpenReadAsync())
+
+                await using (MemoryStream memoryStream = await file.CreateMemoryStreamAsync(4096))
+                {
+                    var fileinfo = await file.ReadFileInfoAsync();
+
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    // drawing doesnt work in blazor webassebmly :(
+                    System.Drawing.Image image = null;
+                    await Task.Run(() => { image = System.Drawing.Image.FromStream(memoryStream); });
+
+                    var dto = await OwnershipVerifier.VerifyFromImage(image);
+
+                    var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, dto.TxId);
+                    if (nft != null)
+                        NFT = await NFTFactory.CloneNFT(nft);
+
+                    result = dto.VerifyResult;
+                    ownerAddress = dto.Owner;
+                    senderAddress = dto.Sender;
+
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            result = ex.Message;
+            StateHasChanged();
+        }
+    }
+
+
+}

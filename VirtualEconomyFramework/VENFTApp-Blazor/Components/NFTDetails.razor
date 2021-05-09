@@ -1,7 +1,9 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.NeblioAPI
+@using Newtonsoft.Json
 @inject AppData AppData
+@inject HttpClient _client
 
 <div class="row">
     <div class="col">
@@ -94,22 +96,22 @@
                         <div class="col d-flex justify-content-center align-items-center w-auto">
                             @if (NFT.Type == NFTTypes.Post)
                             {
-                            <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="width:65px; height:65px; margin-right:20px;">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <i class="oi oi-pencil"></i>
+                                <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="width:65px; height:65px; margin-right:20px;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row d-flex justify-content-center align-items-center">
+                                                <div class="col">
+                                                    <i class="oi oi-pencil"></i>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <span style="font-size: 12px;">Edit</span>
+                                            <div class="row d-flex justify-content-center align-items-center">
+                                                <div class="col">
+                                                    <span style="font-size: 12px;">Edit</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </button>
+                                </button>
                             }
                             <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog()" style="width:65px; height:65px;">
                                 <div class="row">
@@ -143,6 +145,22 @@
                                     </div>
                                 </div>
                             </button>
+                            <button class="btn btn-primary" @onclick="async () => await ShowOwnershipQRCode()" style="width:65px; height:65px; margin-left:20px;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <i class="oi oi-grid-four-up"></i>
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <span style="font-size: 12px;">QR</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 }
@@ -151,17 +169,48 @@
             <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" />
         </Spin>
     </div>
+
+    <SendNFT NFT="@NFT" NFTSent="@NFTSentHandler" @bind-SendNFTDialogVisible="sendNFTDialogVisible" />
+    <SetNFTPrice NFT="@NFT" NFTSent="@NFTSentHandler" @bind-SetPriceNFTDialogVisible="setPriceNFTDialogVisible" />
+
+    <Modal Title="Create or edit post NFT"
+           Visible="@createNewPostVisible"
+           OnOk="@createNewPostConfirm"
+           OnCancel="@createNewPostCancel">
+        <MintNFTForm NFTType="NFTTypes.Post" NFT="@NFT" RedirectToNFTsAfterMint="false" NFTMinted="@NFTMinted" />
+    </Modal>
+
+    <Modal Title="Ownership QR Code"
+           Visible="@showOwnershipDialogVisible"
+           OnOk="@showOwnershipDialogCancel"
+           Style="width:auto; max-width:300px;"
+           OnCancel="@showOwnershipDialogCancel">
+        <Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span class="text-center">Code is valid for: @qrCodeRefreshCounter s</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small>Signature</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h6 class="text-center">@ownershipDialogCode</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <img src="@ownershipDialogQRCodeImage" style="max-width:250px;" />
+                </div>
+            </div>
+        </Spin>
+    </Modal>
 </div>
 
-<SendNFT NFT="@NFT" NFTSent="@NFTSentHandler" @bind-SendNFTDialogVisible="sendNFTDialogVisible"/>
-<SetNFTPrice NFT="@NFT" NFTSent="@NFTSentHandler" @bind-SetPriceNFTDialogVisible="setPriceNFTDialogVisible"/>
 
-<Modal Title="Create or edit post NFT"
-       Visible="@createNewPostVisible"
-       OnOk="@createNewPostConfirm"
-       OnCancel="@createNewPostCancel">
-        <MintNFTForm NFTType="NFTTypes.Post" NFT="@NFT" RedirectToNFTsAfterMint="false" NFTMinted="@NFTMinted" />
-</Modal>
 
 @code {
 
@@ -193,10 +242,19 @@
 
     bool createNewPostVisible = false;
     bool sendNFTDialogVisible = false;
+    bool showOwnershipDialogVisible = false;
+    bool showOwnershipDialogLoading = false;
     bool setPriceNFTDialogVisible = false;
     bool loading = false;
 
+    private System.Threading.Timer qrCodeRefreshTimer;
+    private int qrCodeRefreshCounter = 30;
+
+    string creatingOwnerQRCodeState = string.Empty;
+    string ownershipDialogQRCodeImage = string.Empty;
+    string ownershipDialogCode = string.Empty;
     string status = string.Empty;
+    bool qrrefreshed = false;
 
     protected override Task OnInitializedAsync()
     {
@@ -230,6 +288,83 @@
     private async Task ShowSendNFTDialog()
     {
         sendNFTDialogVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task RefreshQRCode()
+    {
+        showOwnershipDialogLoading = true;
+        StateHasChanged();
+        await Task.Delay(100);
+        //var res = await AppData.Account.GetNFTVerifyCode(NFT.Utxo);
+        //var res = await OwnershipVerifier.GetCodeInDto(NFT.Utxo, AppData.Account.Secret);
+        //ownershipDialogCode = res.Signature;
+        var res = await AppData.Account.GetNFTVerifyQRCode(_utxo);
+        ownershipDialogCode = res.Item1.Signature;
+        //var base64 = Convert.ToBase64String(res.Item2);
+        //var imgSrc = String.Format("data:image;base64,{0}", base64);
+
+        // direct request to get qr code image data
+        //HttpResponseMessage responsePhoto = await _client.GetAsync(imgSrc);
+        //byte[] byteArrayPhoto = await responsePhoto.Content.ReadAsByteArrayAsync();
+        //var base64 = Convert.ToBase64String(byteArrayPhoto);
+        //imgSrc = String.Format("data:image;base64,{0}", base64);
+        var sdto = JsonConvert.SerializeObject(res.Item1);
+        var imgSrc = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + sdto;
+
+        if (!string.IsNullOrEmpty(imgSrc))
+            ownershipDialogQRCodeImage = imgSrc;
+
+        creatingOwnerQRCodeState = "Refreshing Key...";
+        showOwnershipDialogLoading = false;
+        StateHasChanged();
+    }
+    private async Task ShowOwnershipQRCode()
+    {
+        creatingOwnerQRCodeState = "Initializing Verification Module...";
+        showOwnershipDialogVisible = true;
+        StateHasChanged();
+        await Task.Delay(50);
+        await RefreshQRCode();
+
+        if (qrCodeRefreshTimer != null)
+        {
+            qrCodeRefreshTimer.Dispose();
+        }
+
+        qrCodeRefreshTimer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            try
+            {
+                var utc = DateTime.UtcNow;
+                if ((utc.Second >= 0 && utc.Second < 50) && !qrrefreshed)
+                {
+                    await RefreshQRCode();
+                    qrCodeRefreshCounter = 60 - utc.Second;
+                    qrrefreshed = true;
+                }
+                else if (utc.Second > 50 && utc.Second < 55)
+                {
+                    qrrefreshed = false;
+                    qrCodeRefreshCounter--;
+                }
+                else
+                {
+                    qrCodeRefreshCounter--;
+                }
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot read tx details. " + ex.Message);
+            }
+        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
+    }
+
+    private async Task showOwnershipDialogCancel(MouseEventArgs e)
+    {
+        showOwnershipDialogVisible = false;
         StateHasChanged();
     }
 

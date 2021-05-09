@@ -29,7 +29,7 @@
                                             <td>@nft.Name</td>
                                             <td>@nft.Description</td>
                                             <td>
-                                                <a href="@nft.ImageLink" target="_blank">
+                                                <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
                                                     <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                                                 </a>
                                             </td>
@@ -51,7 +51,20 @@
     </div>
 </div>
 
+<Modal Title="NFT History Detail"
+       Visible="@nftHistoryDetailsVisible"
+       OnOk="@nftHistoryDetailsClose"
+       OnCancel="@nftHistoryDetailsClose">
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center" style="260px;">
+            <NFT InputNFT="@selectedHistoryNFT" Address="" OwnNFT="false" HideButtons="true" />
+        </div>
+    </div>
+</Modal>
+
 @code {
+
+    bool nftHistoryDetailsVisible = false;
 
     private string _utxo = string.Empty;
     [Parameter]
@@ -78,6 +91,7 @@
 
     bool loadingNFTHistory = false;
     List<INFT> nftInDetailsHistory = new List<INFT>();
+    INFT selectedHistoryNFT = new ImageNFT("");
     string lastutxo = string.Empty;
 
     private async Task LoadNFTHistory()
@@ -88,4 +102,18 @@
         loadingNFTHistory = false;
         StateHasChanged();
     }
+
+    private async Task nftHistoryDetailsOpen(INFT nft)
+    {
+        selectedHistoryNFT = await NFTFactory.CloneNFT(nft);
+        nftHistoryDetailsVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task nftHistoryDetailsClose(MouseEventArgs e)
+    {
+        nftHistoryDetailsVisible = false;
+        StateHasChanged();
+    }
+
 }

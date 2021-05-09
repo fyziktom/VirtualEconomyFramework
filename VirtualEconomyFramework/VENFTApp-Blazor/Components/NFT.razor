@@ -1,11 +1,12 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @inject AppData AppData
+@inject IJSRuntime jsRuntime
 
 <div class="card" style="margin-left:10px; margin-top:10px; max-width:250px; min-width:200px; min-height:400px; max-height:500px;">
     @if (!string.IsNullOrEmpty(nft.ImageLink))
     {
-        <img class="card-img-top" src="@nft.ImageLink" style="min-height:50px; max-height:250px; height:auto; max-width:250px; min-width:200px; width:auto;" />
+        <img class="card-img-top" src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="min-height:50px; max-height:250px; height:auto; max-width:250px; min-width:200px; width:auto;" />
     }
     else
     {
@@ -20,52 +21,54 @@
             </div>
         </div>
     </div>
-    <div class="card-footer d-flex justify-content-center align-items-center">
-        <small class="text-muted">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
-                        <i class="oi oi-info" style="font-size:12px;"></i>
-                    </button>
-                </div>
-                @if (!IsInThePayments(nft.Utxo))
-                {
-                    @if (!OwnNFT)
-                    {
-                        @if (nft.PriceActive && nft.Type != NFTTypes.Payment)
-                        {
-                            <div class="col d-flex justify-content-center align-items-center" style="margin-left:25px;">
-                                <SendNFTPayment Utxo="@nft.Utxo" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
-                            </div>
-                        }
-                    }
-                }
-            </div>
-            <div class="row d-flex justify-content-center align-items-center">
-
-                @if (!IsInThePayments(nft.Utxo))
-                {
-                    @if (OwnNFT)
-                    {
-                        @if (nft.PriceActive)
-                        {
-                            <div class="col">
-                                <small class="text-muted">Setted Price: @nft.Price NEBL</small>
-                            </div>
-                        }
-                    }
-                }
-                else
-                {
-                    <div class="col">
-                        <small class="text-muted">Sold. Waiting for processing.</small>
+    @if (!HideButtons)
+    {
+        <div class="card-footer d-flex justify-content-center align-items-center">
+            <small class="text-muted">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+                            <i class="oi oi-info" style="font-size:12px;"></i>
+                        </button>
                     </div>
-                }
-            </div>
-        </small>
-    </div>
-</div>
+                    @if (!IsInThePayments(nft.Utxo))
+                    {
+                        @if (!OwnNFT)
+                        {
+                            @if (nft.PriceActive && nft.Type != NFTTypes.Payment)
+                            {
+                                <div class="col d-flex justify-content-center align-items-center" style="margin-left:25px;">
+                                    <SendNFTPayment Utxo="@nft.Utxo" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+                <div class="row d-flex justify-content-center align-items-center">
 
+                    @if (!IsInThePayments(nft.Utxo))
+                    {
+                        @if (OwnNFT)
+                        {
+                            @if (nft.PriceActive)
+                            {
+                                <div class="col">
+                                    <small class="text-muted">Setted Price: @nft.Price NEBL</small>
+                                </div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <div class="col">
+                            <small class="text-muted">Sold. Waiting for processing.</small>
+                        </div>
+                    }
+                </div>
+            </small>
+        </div>
+    }
+</div>
 
 <Modal Title="NFT Details"
        Visible="@nftDetailsVisible"
@@ -74,10 +77,28 @@
     <VENFTApp_Blazor.Components.NFTDetails Utxo="@nftDetailsUtxo" NFTSent="@NFTSentHandler" OwnNFT="@OwnNFT" />
 </Modal>
 
+<Modal Title="NFT Image"
+       Style="min-height:200px; min-width:200px;"
+       Visible="@modalWithImageVisible"
+       OnOk="@modalWithImageClose"
+       OnCancel="@modalWithImageClose">
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <img class="card-img-top" src="@modalWithImageLink" style="min-height:100px; height:auto; min-width:200px; width:auto;" />
+        </div>
+    </div>
+</Modal>
+
 @code {
 
     string nftDetailsUtxo = string.Empty;
     bool nftDetailsVisible = false;
+
+    string modalWithImageLink = string.Empty;
+    bool modalWithImageVisible = false;
+
+    [Parameter]
+    public bool HideButtons { get; set; } = false;
 
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
@@ -99,7 +120,8 @@
 
     string _address = string.Empty;
     [Parameter]
-    public string Address {
+    public string Address
+    {
         get => _address;
         set
         {
@@ -149,4 +171,16 @@
         StateHasChanged();
     }
 
+    public async Task OpenModalWithImage(string url)
+    {
+        modalWithImageVisible = true;
+        modalWithImageLink = url;
+        StateHasChanged();
+    }
+
+    public async Task modalWithImageClose(MouseEventArgs e)
+    {
+        modalWithImageVisible = false;
+        StateHasChanged();
+    }
 }
