@@ -22,7 +22,9 @@ namespace VEDriversLite.Bookmarks
         public string ShortAddress { get; set; } = string.Empty;
         [JsonIgnore]
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        [JsonIgnore]
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
+        [JsonIgnore]
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
 
         public async Task Reload()

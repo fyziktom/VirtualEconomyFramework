@@ -34,28 +34,10 @@ namespace VEDriversLite.NFT
     {
         private static QRCodeGenerator qrGenerator = new QRCodeGenerator();
 
-        private static string ComputeSha256Hash(string rawData)
-        {
-            // Create a SHA256   
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                // ComputeHash - returns byte array  
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-
-                // Convert byte array to a string   
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
-            }
-        }
-
         public static string CreateMessage(string txid)
         {
             var time = DateTime.UtcNow.ToString("dd MM yyyy hh:mm");
-            var combo = txid + time;//ComputeSha256Hash(txid + time);
+            var combo = txid + time;//SecurityUtils.ComputeSha256Hash(txid + time);
             var msg = String.Format("{0:X}", combo.GetHashCode());
             return msg;
         }

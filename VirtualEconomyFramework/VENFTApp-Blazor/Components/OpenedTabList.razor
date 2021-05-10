@@ -1,0 +1,204 @@
+﻿@using VEDriversLite.Bookmarks
+@using VEDriversLite.NFT
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+
+<!--<i class="oi oi-browser" style="font-size:20px;" @onclick="showBrowseTabsOpen"></i>-->
+
+<Modal Title="Opened Tabs"
+       Visible="@showBrowseTabsVisible"
+       OnOk="@showBrowseTabsCancel"
+       Style="width:auto; max-width:600px;"
+       OnCancel="@showBrowseTabsCancel">
+    <Spin Tip="@status" Spinning="@statusVisible">
+        <div class="row d-flex justify-content-center align-items-center">
+            <div class="col">
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h6>Opened Tabs</h6>
+                    </div>
+                </div>
+                <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px; max-width:600px;">
+                    <div class="col d-flex justify-content-center align-items-center" style="max-width:600px;">
+                        <div class="card-group">
+
+                            @foreach (var tab in AppData.Tabs)
+                            {
+                                <VENFTApp_Blazor.Components.TabThumbnail Address="@tab.Address" Selected="@tab.Selected" ImageLink="@tab.Profile.ImageLink" Bio="@tab.Profile.Description" Nick="@tab.Profile.Nickname" TabClosed="@closeTab" TabSelected="@selectTab" />
+                            }
+
+                            <div class="card" style="margin:10px; max-width:160px;width:160px;">
+                                <div class="card-body d-flex justify-content-center align-items-center" style="width:150px;max-width:150px;height:150px;" @onclick="AddNewTab">
+                                    <i class="oi oi-plus" style="font-size:40px;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Spin>
+</Modal>
+
+<Modal Title="Open Tab"
+       Visible="@openTabVisible"
+       OnOk="@addNewTab"
+       OnCancel="@addNewTabCancel">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Please Input Neblio Address</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" Name="OpenNewTabCameraStream" />-->
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    private bool openTabVisible = false;
+    private string newTabAddress = string.Empty;
+
+    bool statusVisible = false;
+    bool showBrowseTabsVisible = false;
+    private ElementReference qrCodeRef;
+    private string status = "Loading Tabs...";
+    private string selectedTabList = string.Empty;
+    [Parameter]
+    public string SelectedTabList
+    {
+        get => selectedTabList;
+        set => selectedTabList = value;
+    }
+    [Parameter]
+    public EventCallback<string> TabSelected { get; set; }
+    [Parameter]
+    public EventCallback<string> TabClosed { get; set; }
+    [Parameter]
+    public EventCallback<string> NewTabOpened { get; set; }
+    [Parameter]
+    public EventCallback<bool> BrowseTabsClosed { get; set; }
+
+    private string name = string.Empty;
+    [Parameter]
+    public string Name
+    {
+        get => name;
+        set
+        {
+            name = value;
+            StateHasChanged();
+        }
+    }
+
+    [Parameter]
+    public bool Open
+    {
+        set
+        {
+            showBrowseTabsVisible = value;
+            StateHasChanged();
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private void selectTab(string addr)
+    {
+        foreach (var t in AppData.Tabs)
+            t.Selected = false;
+
+        var tab = AppData.Tabs.FirstOrDefault(t => t.Address == addr);
+        tab.Selected = true;
+
+        if (tab.NFTs.Count == 0)
+        {
+            tab.Reload().Wait();
+        }
+        TabSelected.InvokeAsync(addr);
+        showBrowseTabsVisible = false;
+        StateHasChanged();
+    }
+
+    private void closeTab(string addr)
+    {
+        if (AppData.Tabs.Count > 0)
+        {
+            var tab = AppData.Tabs.FirstOrDefault(t => t.Address == addr);
+            AppData.Tabs.Remove(tab);
+
+            var t = AppData.Tabs.FirstOrDefault();
+            if (t != null)
+                t.Selected = true;
+
+            var bst = NFTHelpers.SerializeTabs(AppData.Tabs).GetAwaiter().GetResult();
+            localStorage.SetItemAsync("browserTabs", bst).GetAwaiter().GetResult();
+        }
+
+        TabClosed.InvokeAsync(addr);
+        StateHasChanged();
+    }
+
+    private async Task showBrowseTabsOpen(MouseEventArgs e)
+    {
+        showBrowseTabsVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task showBrowseTabsCancel(MouseEventArgs e)
+    {
+        BrowseTabsClosed.InvokeAsync(false);
+        showBrowseTabsVisible = false;
+        statusVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task AddNewTab(MouseEventArgs e)
+    {
+        openTabVisible = true;
+    }
+
+    private async Task addNewTab()
+    {
+        if (AppData.Tabs.Count > 0)
+            foreach (var t in AppData.Tabs)
+                t.Selected = false;
+
+        var tab = new ActiveTab(newTabAddress);
+        tab.Selected = true;
+        openTabVisible = false;
+        AppData.Tabs.Add(tab);
+        await NewTabOpened.InvokeAsync(tab.Address);
+        StateHasChanged();
+
+        try
+        {
+            await tab.Reload();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Exception during loading NFTs and Profile of the tab. " + ex.Message);
+        }
+        openTabVisible = false;
+        StateHasChanged();
+
+        var bst = await NFTHelpers.SerializeTabs(AppData.Tabs);
+        await localStorage.SetItemAsync("browserTabs", bst);
+    }
+
+    private async Task addNewTabCancel()
+    {
+        openTabVisible = false;
+    }
+}
+

@@ -78,20 +78,14 @@ namespace VEDriversLite
                 if (ekey.IsLoaded)
                 {
                     if (ekey.IsEncrypted && string.IsNullOrEmpty(password) && !ekey.IsPassLoaded)
-                    {
                         throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
-                    }
                     else if (!ekey.IsEncrypted)
-                    {
                         key = await ekey.GetEncryptedKey();
-                    }
                     else if (ekey.IsEncrypted && (!string.IsNullOrEmpty(password) || ekey.IsPassLoaded))
-                    {
                         if (ekey.IsPassLoaded)
                             key = await ekey.GetEncryptedKey(string.Empty);
                         else
                             key = await ekey.GetEncryptedKey(password);
-                    }
 
                     if (string.IsNullOrEmpty(key))
                         throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
@@ -118,9 +112,7 @@ namespace VEDriversLite
                 }
             }
             else
-            {
                 throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
-            }
         }
 
         public static async Task<string> BroadcastSignedTransaction(string txhex)
@@ -142,9 +134,7 @@ namespace VEDriversLite
                         throw new Exception("Cannot broadcast transaction.");
                 }
                 else
-                {
                     throw new Exception("Wrong input transaction for broadcast.");
-                }
             }
             catch (Exception ex)
             {
@@ -221,13 +211,9 @@ namespace VEDriversLite
                         (bool, double) voutstate;
 
                         if (!isNFTtx)
-                        {
                             voutstate = await ValidateNeblioTokenUtxo(address, tokenId, itt);
-                        }
                         else
-                        {
                             voutstate = await ValidateOneTokenNFTUtxo(address, tokenId, itt);
-                        }
 
                         if (voutstate.Item1)
                             Sendutxo.Add(itt + ":" + ((int)voutstate.Item2).ToString()); // copy received utxos and add item number of vout after validation
@@ -253,7 +239,6 @@ namespace VEDriversLite
             else
             {
                 // if not utxo provided, check the un NFT tokens sources. These with more than 1 token
-
                 var utxs = await FindUtxoForMintNFT(address, tokenId, (int)amount);
                 var ut = utxs.FirstOrDefault();
                 if (ut != null)
@@ -272,9 +257,7 @@ namespace VEDriversLite
                                                                                                               // create raw Tx with NBitcoin
 
             if (utxos == null || utxos.Count == 0)
-            {
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
-            }
 
             var found = false;
             if (!string.IsNullOrEmpty(inputNeblUtxo))
@@ -293,17 +276,14 @@ namespace VEDriversLite
             if (!found && !sendEvenNeblUtxoNotFound && !string.IsNullOrEmpty(inputNeblUtxo))
                 throw new Exception("Input Neblio Utxo is not spendable!");
 
-            if (!found)
+            if (!found && string.IsNullOrEmpty(inputNeblUtxo))
             {
-                if (string.IsNullOrEmpty(inputNeblUtxo))
+                foreach (var u in utxos)
                 {
-                    foreach (var u in utxos)
+                    if ((u.Value) >= fee)
                     {
-                        if ((u.Value) >= fee)
-                        {
-                            Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
-                            break;
-                        }
+                        Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
+                        break;
                     }
                 }
             }
@@ -494,13 +474,132 @@ namespace VEDriversLite
             if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
 
-            /*
-            transaction.Inputs.RemoveAt(0);
-            var inp = transaction.Inputs.FirstOrDefault();//save neblio input
-            transaction.Inputs.Clear();
-            transaction.Inputs.Add(new OutPoint(uint256.Parse(tutxo.Txid), (int)tutxo.Index));
-            transaction.Inputs.Add(inp);
-            */
+            try
+            {
+                return await SignAndBroadcast(transaction, key, addressForTx);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static string MintMultiNFTToken(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
+        {
+            var res = MintMultiNFTTokenAsync(data, coppies, ekey, nutxos, tutxos, fee).GetAwaiter().GetResult();
+            return res;
+        }
+        public static async Task<string> MintMultiNFTTokenAsync(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
+        {
+            var res = "ERROR";
+
+            if (data.Metadata == null || data.Metadata.Count == 0)
+                throw new Exception("Cannot send without metadata!");
+
+            // load key and address
+            BitcoinSecret key = null;
+            BitcoinAddress addressForTx = null;
+            try
+            {
+                var k = await GetAddressAndKey(ekey);
+                key = k.Item2;
+                addressForTx = k.Item1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            if (tutxos == null || tutxos.Count == 0)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
+
+            var tutxo = tutxos.FirstOrDefault();
+            if (tutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            if (nutxos == null || nutxos.Count == 0)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
+
+            var nutxo = nutxos.FirstOrDefault();
+            if (nutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", tutxo.Txid));
+            data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
+
+            // create and init send token request dto for Neblio API
+            var dto = new SendTokenRequest();
+            try
+            {
+                dto = GetSendTokenObject(1, fee, data.SenderAddress, VENFTId);
+
+                if (data.Metadata != null)
+                    foreach (var d in data.Metadata)
+                    {
+                        var obj = new JObject();
+                        obj[d.Key] = d.Value;
+                        dto.Metadata.UserData.Meta.Add(obj);
+                    }
+
+                if (coppies > 1)
+                {
+                    for (int i = 0; i < coppies; i++)
+                    {
+                        var dummykey = new Key();
+                        var dummyadd = dummykey.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+                        dto.To.Add(
+                        new To()
+                        {
+                            Address = dummyadd.ToString(),
+                            Amount = 1,
+                            TokenId = data.Id
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            if (dto.Metadata.UserData.Meta.Count == 0)
+                throw new Exception("Cannot mint NFT without any metadata");
+
+            //dto.Sendutxo = null;
+            //dto.From = new List<string>() { data.SenderAddress }; //null;
+            dto.From = null;
+
+            if (tutxo.Txid == nutxo.Txid && tutxo.Index == nutxo.Index)
+                throw new Exception("Same input for token and neblio. Wrong input.");
+
+            dto.Sendutxo.Add(tutxo.Txid + ":" + ((int)tutxo.Index).ToString());
+            dto.Sendutxo.Add(nutxo.Txid + ":" + ((int)nutxo.Index).ToString());
+
+            // create raw tx
+            var hexToSign = string.Empty;
+            try
+            {
+                hexToSign = await SendRawNTP1TxAsync(dto);
+                if (string.IsNullOrEmpty(hexToSign))
+                    throw new Exception("Cannot get correct raw token hex.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during sending raw token tx" + ex.Message);
+            }
+
+            // parse raw hex to NBitcoin transaction object
+            if (!Transaction.TryParse(hexToSign, Network, out var transaction))
+                throw new Exception("Cannot parse token tx raw hex.");
+
+            foreach(var output in transaction.Outputs)
+            {
+                if (!output.ScriptPubKey.ToString().Contains("RETURN"))
+                    output.ScriptPubKey = addressForTx.ScriptPubKey;
+                else
+                    break;
+            }
+
             try
             {
                 return await SignAndBroadcast(transaction, key, addressForTx);
@@ -1144,9 +1243,7 @@ namespace VEDriversLite
         {
 
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             try
             {
@@ -1163,9 +1260,7 @@ namespace VEDriversLite
         {
 
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var info = await _client.BroadcastTxAsync(data);
 
@@ -1175,9 +1270,7 @@ namespace VEDriversLite
         public static async Task<GetAddressResponse> AddressInfoAsync(string addr)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var address = await _client.GetAddressAsync(addr);
 
@@ -1187,9 +1280,7 @@ namespace VEDriversLite
         public static async Task<GetAddressInfoResponse> AddressInfoUtxosAsync(string addr)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var address = await _client.GetAddressInfoAsync(addr);
 
@@ -1199,9 +1290,7 @@ namespace VEDriversLite
         public static async Task<ICollection<Anonymous>> GetAddressUtxos(string addr)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var utxos = await _client.GetAddressUtxosAsync(addr);
 
@@ -1213,9 +1302,7 @@ namespace VEDriversLite
             try
             {
                 if (_client == null)
-                {
                     _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-                }
 
                 var addinfo = await _client.GetAddressInfoAsync(addr);
 
@@ -1233,9 +1320,7 @@ namespace VEDriversLite
             if (addressinfo == null)
             {
                 if (_client == null)
-                {
                     _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-                }
 
                 addressinfo = await _client.GetAddressInfoAsync(addr);
             }
@@ -1243,15 +1328,9 @@ namespace VEDriversLite
             var utxos = new List<Utxos>();
 
             if (addressinfo?.Utxos != null)
-            {
                 foreach (var u in addressinfo.Utxos)
-                {
                     if (u.Tokens.Count > 0)
-                    {
                         utxos.Add(u);
-                    }
-                }
-            }
 
             return utxos;
         }
@@ -1259,9 +1338,7 @@ namespace VEDriversLite
         public static async Task<string> GetTxHex(string txid)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var tx = await _client.GetTransactionInfoAsync(txid);
 
@@ -1276,35 +1353,25 @@ namespace VEDriversLite
             if (addressinfo == null)
             {
                 if (_client == null)
-                {
                     _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-                }
 
                 addressinfo = await _client.GetAddressInfoAsync(addr);
             }
             var utxos = new List<Utxos>();
 
             if (addressinfo?.Utxos != null)
-            {
                 foreach (var u in addressinfo.Utxos)
-                {
-                    if (u.Tokens.Count > 0)
-                    {
-                        if (u.Tokens.ToArray()[0]?.Amount == 1)
+                    foreach(var tok in u.Tokens)
+                        if (tok.Amount == 1)
                             utxos.Add(u);
-                    }
-                }
-            }
-
+            
             return utxos;
         }
 
         public static async Task<string> BroadcastNeblTxAsync(BroadcastTxRequest dto)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var resp = await _client.SendTxAsync(dto);
 
@@ -1325,21 +1392,13 @@ namespace VEDriversLite
 
             var vinamount = 0.0;
             foreach (var vin in tx.Vin)
-            {
                 if (vin.Addr == address)
-                {
                     vinamount += ((double)vin.Value / FromSatToMainRatio);
-                }
-            }
 
             var amount = 0.0;
             foreach(var vout in tx.Vout)
-            {
                 if (vout.ScriptPubKey.Hex == addr.ScriptPubKey.ToHex())
-                {
                     amount += ((double)vout.Value / FromSatToMainRatio);
-                }
-            }
 
             amount -= vinamount;
 
@@ -1349,136 +1408,99 @@ namespace VEDriversLite
         public static async Task<ICollection<Utxos>> GetAddressNeblUtxo(string addr, double minAmount = 0.0001, double requiredAmount = 0.0001)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
+            GetAddressInfoResponse addinfo = null;
 
-            var addinfo = await _client.GetAddressInfoAsync(addr);
+            addinfo = await _client.GetAddressInfoAsync(addr);
+
             var utxos = addinfo.Utxos;
 
             var resp = new List<Utxos>();
-
             var founded = 0.0;
 
             utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
 
-            if (utxos != null)
-            {
-                foreach (var utx in utxos)
-                {
-                    if (utx.Blockheight > 0)
-                    {
-                        if (utx.Tokens?.Count == 0)
-                        {
-                            if (utx.Value > 10000)
-                            {
-                                if (((double)utx.Value) > (minAmount * FromSatToMainRatio))
-                                {
-                                    try
-                                    {
-                                        var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+            if (utxos == null)
+                return resp;
 
-                                        if (tx != null)
-                                        {
-                                            if (tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                                            {
-                                                resp.Add(utx);
-                                                founded += ((double)utx.Value / FromSatToMainRatio);
-                                                if (founded > requiredAmount)
-                                                    return resp;
-                                            }
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        ;
-                                    }
-                                }
+            foreach (var utx in utxos)
+            {
+                if (utx.Blockheight > 0 && utx.Value > 10000 && utx.Tokens?.Count == 0)
+                {
+                    if (((double)utx.Value) > (minAmount * FromSatToMainRatio))
+                    {
+                        try
+                        {
+                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                            if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
+                            {
+                                resp.Add(utx);
+                                founded += ((double)utx.Value / FromSatToMainRatio);
+                                if (founded > requiredAmount)
+                                    return resp;
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            ;
                         }
                     }
                 }
             }
-
+            
             return resp;
         }
 
         public static async Task<(bool, double)> ValidateNeblioUtxo(string address, string txid)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var info = await _client.GetAddressInfoAsync(address);
+            if (info == null)
+                return (false, 0);
 
-            if (info != null)
+            var uts = info.Utxos.Where(u => u.Txid == txid);
+            if (uts == null)
+                return (false, 0);
+
+            foreach (var ut in uts)
             {
-                var uts = info.Utxos.Where(u => u.Txid == txid);
-                if (uts != null)
+                if (ut != null && ut.Blockheight > 0)
                 {
-                    foreach (var ut in uts)
-                    {
-                        if (ut.Blockheight > 0)
-                        {
-                            if (ut != null)
-                            {
-                                var tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                                if (tx != null)
-                                {
-                                    if (tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                                    {
-                                        return (true, (double)ut.Index);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                    if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
+                        return (true, (double)ut.Index);
                 }
             }
-
+            
             return (false, 0);
         }
 
         public static async Task<(bool, double)> ValidateNeblioTokenUtxo(string address, string txid, string tokenId, bool isMint = false)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var addinfo = await _client.GetAddressInfoAsync(address);
             var utxos = addinfo.Utxos;
 
             var resp = new List<Utxos>();
-
-            if (utxos != null)
+            
+            if (utxos == null)
+                return (false, 0);
+            foreach (var ut in utxos)
             {
-                foreach (var ut in utxos)
+                if (ut != null && ut.Blockheight > 0 && ut.Tokens.Count > 0)
                 {
-                    if (ut != null)
+                    var toks = ut.Tokens.ToArray();
+                    if (toks[0].TokenId == tokenId)
                     {
-                        if (ut.Blockheight > 0)
+                        if ((toks[0].Amount > 0 && !isMint) || (toks[0].Amount > 1 && isMint))
                         {
-                            if (ut.Tokens.Count > 0)
-                            {
-                                var toks = ut.Tokens.ToArray();
-                                if (toks[0].TokenId == tokenId)
-                                {
-                                    if ((toks[0].Amount > 0 && !isMint) || (toks[0].Amount > 1 && isMint))
-                                    {
-                                        var tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                                        if (tx != null)
-                                        {
-                                            if (tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                                            {
-                                                return (true, (double)ut.Index);
-
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                            if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
+                                return (true, (double)ut.Index);
                         }
                     }
                 }
@@ -1490,60 +1512,41 @@ namespace VEDriversLite
         public static async Task<(bool, double)> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var addinfo = await _client.GetAddressInfoAsync(address);
             var utxos = addinfo.Utxos;
 
             var resp = new List<Utxos>();
 
-            if (utxos != null)
-            {
-                var uts = utxos.Where(u => u.Txid == txid); // you can have multiple utxos with same txid but different amount of tokens
+            if (utxos == null)
+                return (false, 0);
+            
+            var uts = utxos.Where(u => u.Txid == txid); // you can have multiple utxos with same txid but different amount of tokens
 
-                if (uts != null)
+            if (uts == null)
+                return (false, 0);
+
+            foreach (var ut in uts)
+            {
+                if (ut.Blockheight > 0 && ut.Tokens != null && ut.Tokens.Count > 0)
                 {
-                    foreach (var ut in uts)
+                    var toks = ut.Tokens.ToArray();
+                    if (toks[0].TokenId == tokenId && toks[0].Amount == 1)
                     {
-                        if (ut.Blockheight > 0)
-                        {
-                            if (ut.Tokens != null)
-                            {
-                                if (ut.Tokens.Count > 0)
-                                {
-                                    var toks = ut.Tokens.ToArray();
-                                    if (toks[0].TokenId == tokenId)
-                                    {
-                                        if (toks[0].Amount == 1)
-                                        {
-                                            var tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                                            if (tx != null)
-                                            {
-                                                if (tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                                                {
-                                                    return (true, (double)ut.Index);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                        if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
+                            return (true, (double)ut.Index);
                     }
                 }
             }
-
             return (false, 0);
         }
 
         public static async Task<List<Utxos>> FindUtxoForMintNFT(string addr, string tokenId, int numberToMint = 1, double oneTokenSat = 10000)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var addinfo = await _client.GetAddressInfoAsync(addr);
             var utxos = addinfo.Utxos;
@@ -1551,55 +1554,39 @@ namespace VEDriversLite
             var resp = new List<Utxos>();
             var founded = 0.0;
 
-            if (utxos != null)
+            if (utxos == null)
+                return resp;
+            
+            utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
+            foreach (var utx in utxos)
             {
-                utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
-
-                foreach (var utx in utxos)
+                if (utx.Blockheight > 0 && utx.Tokens.Count > 0)
                 {
-                    if (utx.Blockheight > 0)
+                    //if (utx.Value == oneTokenSat)
                     {
-                        if (utx.Tokens.Count > 0)
+                        var tok = utx.Tokens.ToArray()?[0];
+                        if (tok != null && tok.TokenId == tokenId && tok?.Amount > 1)
                         {
-                            //if (utx.Value == oneTokenSat)
+                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                            if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                             {
-                                var tok = utx.Tokens.ToArray()?[0];
-                                if (tok != null)
-                                {
-                                    if (tok.TokenId == tokenId)
-                                    {
-                                        if (tok?.Amount > 1)
-                                        {
-                                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
-                                            if (tx != null)
-                                            {
-                                                if (tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                                                {
-                                                    founded += (double)tok.Amount;
-                                                    resp.Add(utx);
+                                founded += (double)tok.Amount;
+                                resp.Add(utx);
 
-                                                    if (founded > numberToMint)
-                                                        return resp;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                if (founded > numberToMint)
+                                    return resp;
                             }
                         }
                     }
                 }
             }
-
             return resp;
         }
 
         public static async Task<Utxos> FindUtxoToSplit(string addr, string tokenId, int lotAmount = 100, double oneTokenSat = 10000)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             var addinfo = await _client.GetAddressInfoAsync(addr);
             var utxos = addinfo.Utxos;
@@ -1607,75 +1594,52 @@ namespace VEDriversLite
             var resp = new List<Utxos>();
             var founded = 0.0;
 
-            if (utxos != null)
+            if (utxos == null)
+                return null;
+            
+            utxos = utxos.OrderBy(u => u.Value).ToList();
+
+            foreach (var utx in utxos)
             {
-
-                utxos = utxos.OrderBy(u => u.Value).ToList();
-
-                foreach (var utx in utxos)
+                if (utx.Blockheight > 0 && utx.Tokens.Count > 0 && utx.Value == oneTokenSat)
                 {
-                    if (utx.Blockheight > 0)
+                    var tok = utx.Tokens.ToArray()?[0];
+                    if (tok != null && tok.TokenId == tokenId && tok?.Amount > lotAmount)
                     {
-                        if (utx.Tokens.Count > 0)
+                        var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                        if (tx != null)
                         {
-                            if (utx.Value == oneTokenSat)
+                            if (tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                             {
-                                var tok = utx.Tokens.ToArray()?[0];
-                                if (tok != null)
-                                {
-                                    if (tok.TokenId == tokenId)
-                                    {
-                                        if (tok?.Amount > lotAmount)
-                                        {
-                                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
-                                            if (tx != null)
-                                            {
-                                                if (tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                                                {
-                                                    founded += (double)tok.Amount;
-
-                                                    return utx;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                founded += (double)tok.Amount;
+                                return utx;
                             }
                         }
                     }
                 }
             }
-
+            
             return null;
         }
 
         public static async Task<Dictionary<string, string>> GetTransactionMetadata(string tokenid, string txid)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
-            var resp = new Dictionary<string, string>();
 
+            var resp = new Dictionary<string, string>();
             var info = await _client.GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
             
-            if (info.MetadataOfUtxo != null)
+            if (info.MetadataOfUtxo != null && info.MetadataOfUtxo.UserData.Meta.Count > 0)
             {
-                if (info.MetadataOfUtxo.UserData.Meta.Count > 0)
+                foreach (var o in info.MetadataOfUtxo.UserData.Meta)
                 {
-                    foreach (var o in info.MetadataOfUtxo.UserData.Meta)
+                    var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
+                    if (od != null && od.Count > 0)
                     {
-                        var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
-
-                        if (od != null)
-                        {
-                            if (od.Count > 0)
-                            {
-                                var of = od.First();
-                                if (!resp.ContainsKey(of.Key))
-                                    resp.Add(of.Key, of.Value);
-                            }
-                        }
+                        var of = od.First();
+                        if (!resp.ContainsKey(of.Key))
+                            resp.Add(of.Key, of.Value);
                     }
                 }
             }
@@ -1716,12 +1680,9 @@ namespace VEDriversLite
             try
             {
                 if (_client == null)
-                {
                     _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-                }
                 
                 var info = await _client.GetTransactionInfoAsync(txid);
-
                 return info;
             }
             catch(Exception ex)
@@ -1821,13 +1782,10 @@ namespace VEDriversLite
             try
             {
                 if (_client == null)
-                {
                     _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-                }
 
                 GetTokenMetadataResponse tokeninfo = new GetTokenMetadataResponse();
                 tokeninfo = await _client.GetTokenMetadataAsync(tokenId, 0);
-
                 return tokeninfo;
             }
             catch(Exception ex)
@@ -1839,11 +1797,8 @@ namespace VEDriversLite
 
         public static async Task<(double, GetTokenMetadataResponse)> GetActualMintingSupply(string address, GetAddressInfoResponse addressinfo = null)
         {
-
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             GetTokenMetadataResponse tokeninfo = new GetTokenMetadataResponse();
             tokeninfo = await _client.GetTokenMetadataAsync(VENFTId, 0);
@@ -1853,14 +1808,9 @@ namespace VEDriversLite
             foreach (var r in res)
             {
                 var toks = r.Tokens.ToArray()?[0];
-                if (toks != null)
-                {
-                    if (toks.Amount > 1)
-                    {
-                        if (toks.TokenId == "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
-                            utxos.Add(r);
-                    }
-                }
+                if (toks != null && toks.Amount > 1)
+                    if (toks.TokenId == "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
+                        utxos.Add(r);
             }
 
             var totalAmount = 0.0;
@@ -1885,35 +1835,30 @@ namespace VEDriversLite
             foreach (var r in res)
             {
                 var toks = r.Tokens.ToArray()?[0];
-                if (toks != null)
+
+                if (toks != null && toks.Amount > 1)
                 {
-                    if (toks.Amount > 1)
+                    GetTokenMetadataResponse tokeninfo = new GetTokenMetadataResponse();
+                    tokeninfo = await _client.GetTokenMetadataAsync(toks.TokenId, 0);
+
+                    if (!resp.TryGetValue(tokeninfo.MetadataOfIssuance.Data.TokenName, out var tk))
                     {
-                        GetTokenMetadataResponse tokeninfo = new GetTokenMetadataResponse();
-                        tokeninfo = await _client.GetTokenMetadataAsync(toks.TokenId, 0);
+                        var t = new TokenSupplyDto();
+                        t.TokenSymbol = tokeninfo.MetadataOfIssuance.Data.TokenName;
+                        var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tokeninfo.MetadataOfIssuance.Data.Urls));
 
-                        if (!resp.TryGetValue(tokeninfo.MetadataOfIssuance.Data.TokenName, out var tk))
-                        {
+                        var tu = tus.FirstOrDefault();
+                        if (tu != null)
+                            t.ImageUrl = tu.url;
 
-                            var t = new TokenSupplyDto();
-                            t.TokenSymbol = tokeninfo.MetadataOfIssuance.Data.TokenName;
-                            var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tokeninfo.MetadataOfIssuance.Data.Urls));
+                        t.TokenId = toks.TokenId;
+                        t.Amount += (double)toks.Amount;
 
-                            var tu = tus.FirstOrDefault();
-                            if (tu != null)
-                            {
-                                t.ImageUrl = tu.url;
-                            }
-
-                            t.TokenId = toks.TokenId;
-                            t.Amount += (double)toks.Amount;
-
-                            resp.TryAdd(t.TokenSymbol, t);
-                        }
-                        else
-                        {
-                            tk.Amount += (double)toks.Amount;
-                        }
+                        resp.TryAdd(t.TokenSymbol, t);
+                    }
+                    else
+                    {
+                        tk.Amount += (double)toks.Amount;
                     }
                 }
             }
@@ -1924,9 +1869,7 @@ namespace VEDriversLite
         public static async Task<List<TokenOwnerDto>> GetTokenOwners(string tokenId)
         {
             if (_client == null)
-            {
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-            }
 
             GetTokenHoldersResponse tokenholders = new GetTokenHoldersResponse();
             tokenholders = await _client.GetTokenHoldersAsync("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
@@ -1954,7 +1897,6 @@ namespace VEDriversLite
                             if (utxs.Count > 0)
                             {
                                 var us = utxs.ToList();
-
                                 resp.Add(new TokenOwnerDto()
                                 {
                                     Address = h.Address,
@@ -1978,9 +1920,7 @@ namespace VEDriversLite
             resp = resp.OrderBy(r => r.AmountOfNFTs).Reverse().ToList();
 
             if (resp.Count > 50)
-            {
                 resp.RemoveRange(49, resp.Count - 50 - 1);
-            }
 
             return resp;
         }

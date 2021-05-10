@@ -1,0 +1,97 @@
+﻿@inject IJSRuntime JSRuntime
+
+<i class="oi oi-grid-four-up" style="margin-left:@marginleft; padding-top:@padding; padding-left:@padding; font-size:@fontsize;" @onclick="showQRDialogOpen"></i>
+
+<Modal Title="Address"
+       Visible="@showQRDialogVisible"
+       OnOk="@showQRDialogCancel"
+       Style="width:auto; max-width:300px;"
+       OnCancel="@showQRDialogCancel">
+    <div class="row">
+        <div class="col">
+            <div class="row d-flex justify-content-center align-items-center text-wrap">
+                <div class="col">
+                    <h6 class="text-center text-wrap">@textToCopy</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:5px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div @ref=qrCodeRef></div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <CopyButton TextToCopy="@textToCopy" />
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    bool showQRDialogVisible = false;
+    private ElementReference qrCodeRef;
+    private string padding = "0px";
+
+    private string textToCopy = string.Empty;
+    [Parameter]
+    public string TextToCopy
+    {
+        get => textToCopy;
+        set
+        {
+            textToCopy = value;
+            if (string.IsNullOrEmpty(textToCopy))
+            {
+                showQRDialogVisible = false;
+                StateHasChanged();
+            }
+        }
+    }
+    private string marginleft = "0px";
+    [Parameter]
+    public int MarginLeft
+    {
+        get => Convert.ToInt32(marginleft);
+        set => marginleft = value.ToString() + "px";
+    }
+    private string fontsize = "14px";
+    [Parameter]
+    public int FontSize
+    {
+        get => Convert.ToInt32(FontSize);
+        set => fontsize = value.ToString() + "px";
+    }
+
+    [Parameter]
+    public bool Close
+    {
+        set
+        {
+            if (value)
+            {
+                showQRDialogVisible = false;
+                StateHasChanged();
+                Task.Delay(50).Wait();
+            }
+        }
+    }
+
+    private async Task showQRDialogOpen(MouseEventArgs e)
+    {
+        showQRDialogVisible = true;
+        padding = "3px";
+        StateHasChanged();
+        await Task.Delay(50);
+        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { textToCopy, qrCodeRef });
+        StateHasChanged();
+        padding = "0px";
+    }
+
+    private async Task showQRDialogCancel(MouseEventArgs e)
+    {
+        showQRDialogVisible = false;
+    }
+}
+

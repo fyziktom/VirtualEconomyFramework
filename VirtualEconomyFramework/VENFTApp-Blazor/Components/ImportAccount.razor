@@ -19,12 +19,14 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Input address" @bind-Value="@importAccountAddress" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <Input Placeholder="Input address" @bind-Value="@importAccountAddress" style="font-size:12px;min-width:150px; max-width:250px;" />
+                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <InputPassword Placeholder="Input encrypted private key" @bind-Value="@importAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
@@ -45,6 +47,48 @@
                         <InputPassword Placeholder="Input password" @bind-Value="@importAccountPass" style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Confirm Password:</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input password" @bind-Value="@passwordConfirm" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(importAccountPass))
+                {
+                    if (importAccountPass.Length > 4)
+                    {
+                        if (!string.IsNullOrEmpty(passwordConfirm))
+                        {
+                            if (passwordConfirm != importAccountPass)
+                            {
+                                <Alert Type="@AlertType.Warning"
+                                       Message="Warrning"
+                                       Description="Passwords not match!"
+                                       ShowIcon="true" />
+                            }
+                            else
+                            {
+                                <Alert Type="@AlertType.Success"
+                                       Message="Success"
+                                       Description="Passwords Match. Please confirm to create address!"
+                                       ShowIcon="true" />
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <Alert Type="@AlertType.Warning"
+                               Message="Warrning"
+                               Description="Passwords minimal lenght is 8 characters!"
+                               ShowIcon="true" />
+                    }
+                }
+
                 @if (accountImportError)
                 {
                     <Alert Type="@AlertType.Error"
@@ -79,6 +123,9 @@
     string importAccountAddress = string.Empty;
     string importAccountKey = string.Empty;
     string importAccountPass = string.Empty;
+    private string passwordConfirm = string.Empty;
+    bool passwordsMatch = false;
+    bool readingQROfKey = false;
 
     bool importKeyAlreadyEncrypted = true;
     void ToggleChecked(bool value)
@@ -86,8 +133,33 @@
         importKeyAlreadyEncrypted = !importKeyAlreadyEncrypted;
     }
 
+    private async Task QRTextReaded(string text)
+    {
+        if (!readingQROfKey)
+            importAccountAddress = text;
+        else
+            importAccountKey = text;
+        StateHasChanged();
+    }
+    private async Task QRReadAddressClick(MouseEventArgs e)
+    {
+        readingQROfKey = false;
+        StateHasChanged();
+    }
+    private async Task QRReadKeyClick(MouseEventArgs e)
+    {
+        readingQROfKey = true;
+        StateHasChanged();
+    }
+
     private async Task importAccountConfirm(MouseEventArgs e)
     {
+        if (passwordConfirm != importAccountPass)
+            return;
+
+        if (importAccountPass.Length < 8)
+            return;
+
         try
         {
             if (string.IsNullOrEmpty(importAccountAddress) || string.IsNullOrEmpty(importAccountKey))
@@ -129,7 +201,7 @@
 
                 StateHasChanged();
                 await AccountImported.InvokeAsync("OK");
-                }
+            }
         }
         catch (Exception ex)
         {

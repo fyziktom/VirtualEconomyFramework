@@ -15,11 +15,38 @@
        Visible="@privateKeyDialogVisible"
        OnOk="@privateKeyDialogClose"
        OnCancel="@privateKeyDialogClose">
-    <p>Your Key: @accountKey</p>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Your Private Key</span>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center text-wrap">
+                <div class="col">
+                    <h6 class="text-center text-wrap">@accountKey</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@accountKey" />
+                    @try
+                    {
+                    <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="@accountKey" Close="@closeQRModal" />
+                    }
+                    catch (Exception ex)
+                    {
+                        //todo
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </Modal>
 
 @code {
 
+    private bool closeQRModal = false;
     private bool privateKeyDialogVisible = false;
     private System.Threading.Timer hideTimer;
     private string accountKey = string.Empty;
@@ -28,6 +55,8 @@
     {
         if (!string.IsNullOrEmpty(AppData.Account.Address))
         {
+            closeQRModal = false;
+            StateHasChanged();
             if (AppData.Account.IsLocked())
             {
                 accountKey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
@@ -58,6 +87,9 @@
 
     private async Task privateKeyDialogClose(MouseEventArgs e)
     {
+        closeQRModal = true;
+        StateHasChanged();
+        await Task.Delay(50);
         accountKey = string.Empty;
         privateKeyDialogVisible = false;
     }

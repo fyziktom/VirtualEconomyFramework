@@ -26,6 +26,7 @@ namespace VEDriversLite
         public Guid Id { get; set; }
         public string Address { get; set; } = string.Empty;
         public BitcoinSecret Secret { get; set; }
+        public string MetadataKey { get; set; } = string.Empty;
         public double NumberOfTransaction { get; set; } = 0;
         public double NumberOfLoadedTransaction { get; } = 0;
         public bool EnoughBalanceToBuySourceTokens { get; set; } = false;
@@ -224,7 +225,11 @@ namespace VEDriversLite
                    AccountKey.PublicKey = Address;
                    Secret = privateKeyFromNetwork;
                    if (!string.IsNullOrEmpty(password))
-                       AccountKey.PasswordHash = await Security.SecurityUtil.HashPassword(password);
+                       AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(password);
+                   await SignMessage("init");
+                   var mk = await ECDSAProvider.GetSharedSecret(Address, Secret);
+                   if (mk.Item1)
+                       MetadataKey = mk.Item2;
 
                    if (saveToFile)
                    {
@@ -234,7 +239,6 @@ namespace VEDriversLite
                            Address = Address,
                            Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
                        };
-
                        FileHelpers.WriteTextToFile("key.txt", JsonConvert.SerializeObject(kdto));
                    }
                });
@@ -263,11 +267,15 @@ namespace VEDriversLite
                     AccountKey = new EncryptionKey(kdto.Key, fromDb: true);
                     await AccountKey.LoadPassword(password);
                     AccountKey.IsEncrypted = true;
-
-                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
-                   
                     Address = kdto.Address;
 
+                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+                    await SignMessage("init");
+                    var mk = await ECDSAProvider.GetSharedSecret(Address, Secret);
+                    if (mk.Item1)
+                        MetadataKey = mk.Item2;
+
+                    
                     await StartRefreshingData();
                 }
                 catch(Exception ex)
@@ -294,6 +302,9 @@ namespace VEDriversLite
                     AccountKey.IsEncrypted = true;
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
                     await SignMessage("init");
+                    var mk = await ECDSAProvider.GetSharedSecret(address, Secret);
+                    if (mk.Item1)
+                        MetadataKey = mk.Item2;
                     Address = address;
                 });
 
@@ -704,6 +715,59 @@ namespace VEDriversLite
                         break;
                     case NFTTypes.Profile:
                         rtxid = await NFTHelpers.MintProfileNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
+                        break;
+                }
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio NFT Sent");
+                    if (NFT.Type == NFTTypes.Profile)
+                        Profile = NFT as ProfileNFT;
+
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        public async Task<(bool, string)> MintMultiNFT(string tokenId, INFT NFT, int coppies)
+        {
+            var nft = await NFTFactory.CloneNFT(NFT);
+
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                return (false, res.Item1);
+            }
+            var tres = await CheckSpendableNeblioTokens(tokenId, 2 + coppies);
+            if (tres.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
+                return (false, tres.Item1);
+            }
+
+            try
+            {
+                var rtxid = string.Empty;
+                switch (NFT.Type)
+                {
+                    case NFTTypes.Image:
+                        rtxid = await NFTHelpers.MintMultiImageNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2);
+                        break;
+                    case NFTTypes.Post:
+                        rtxid = await NFTHelpers.MintMultiPostNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2);
                         break;
                 }
                 if (rtxid != null)

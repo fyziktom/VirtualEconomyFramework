@@ -25,7 +25,7 @@
             </div>
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <div id="CameraStream"></div>
+                    <div id="@name" @ref=qrCodeRef></div>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
@@ -83,12 +83,20 @@
     string ownerAddress = string.Empty;
     string senderAddress = string.Empty;
     private ElementReference inputTypeFileElement;
-    private ElementReference CameraStream;
+    private ElementReference qrCodeRef;
     private static String result = string.Empty;
     string dtores = string.Empty;
     string readresult = string.Empty;
     string message = string.Empty;
     bool processing = false;
+
+    private string name = "NFTVerifierCameraStream";
+    [Parameter]
+    public string Name
+    {
+        get => name;
+        set => name = value;
+    }
 
     protected override void OnInitialized()
     {
@@ -98,7 +106,7 @@
 
     public async Task ReadCode()
     {
-        await JSRuntime.InvokeVoidAsync("jsFunctions.startScanning");
+        await JSRuntime.InvokeVoidAsync("jsFunctions.startScanning", name);
     }
 
     [JSInvokable]

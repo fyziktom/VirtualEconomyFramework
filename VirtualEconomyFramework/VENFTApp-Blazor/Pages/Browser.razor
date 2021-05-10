@@ -31,8 +31,14 @@
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <button @onclick="openPublicAddresses" class="btn btn-secondary" type="button">Browse Public Addresses</button>
             </div>
+        </div><!--
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <button @onclick="browseTabs" class="btn btn-secondary" type="button">Browse Tabs</button>
+                <VENFTApp_Blazor.Components.OpenedTabList Open="@openTabBrowser" BrowseTabsClosed="@browseTabsClosed" TabSelected="@TabSelectedHandler" NewTabOpened="@TabAddedHandler" TabClosed="@TabClosedHandler" />
+            </div>
         </div>
-
+        -->
         <div class="row d-flex justify-content-center align-items-center" style="margin-top:50px;">
             <div class="col">
                 <div>
@@ -54,7 +60,6 @@
 
                         @foreach (var tab in AppData.Tabs)
                         {
-                            var selected = "";
                             if (tab.Selected)
                             {
                                 <div role="tabpanel" class="tab-pane active" style="min-height: 200px;">
@@ -62,21 +67,13 @@
                                         <div class="col">
                                             <div class="row" style="margin-top: 10px;">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                    <h6>@tab.Address</h6>
-                                                    @if (!copyTextButtonCoppied)
-                                                    {
-                                                        <i class="oi oi-share-boxed" style="margin-left:10px; font-size:12px;" @onclick="async () => copyCodeToClipboard(tab.Address)"></i>
-                                                    }
-                                                    else
-                                                    {
-                                                        <i class="oi oi-check" style="margin-left:10px; font-size:12px;"></i>
-                                                    }
-                                                    <i class="oi oi-grid-four-up" style="margin-left:10px; font-size:12px;" @onclick="showQRDialogOpen"></i>
-                
+                                                    <span>@tab.Address</span>
+                                                    <VENFTApp_Blazor.Components.CopyIcon MarginLeft="15" TextToCopy="@tab.Address" />
+                                                    <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="@tab.Address" />
                                                     <!--
-                                                    <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
-                                                        <i class="oi oi-star"></i>
-                                                    </a>-->
+                                                <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
+                                                    <i class="oi oi-star"></i>
+                                                </a>-->
                                                 </div>
                                             </div>
 
@@ -154,6 +151,7 @@
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" Name="OpenNewTabCameraStream" />-->
                 </div>
             </div>
         </div>
@@ -211,43 +209,12 @@
     </div>
 </Modal>
 
-<Modal Title="Address"
-       Visible="@showQRDialogVisible"
-       OnOk="@showQRDialogCancel"
-       Style="width:auto; max-width:300px;"
-       OnCancel="@showQRDialogCancel">
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <span>@addressInOpenTab</span>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <div @ref=qrCodeRef></div>
-        </div>
-    </div>
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex justify-content-center align-items-center">
-            @if (!copyTextButtonCoppied)
-            {
-                <button class="btn btn-light" @onclick="async () => copyCodeToClipboard(addressInOpenTab)">Copy <i class="oi oi-share"></i></button>
-            }
-            else
-            {
-                <button class="btn btn-light" @onclick="async () => copyCodeToClipboard(addressInOpenTab)">Copied <i class="oi oi-check"></i></button>
-            }
-        </div>
-    </div>
-</Modal>
-
 @code {
+    bool openTabBrowser = false;
     bool loadingBrowser = false;
     bool browsePublicAddresses = false;
     bool copyTextButtonCoppied = false;
     int holdersPage = 0;
-
-    bool showQRDialogVisible = false;
-    private ElementReference qrCodeRef;
 
     private bool openTabVisible = false;
     string addressInOpenTab = string.Empty;
@@ -282,40 +249,40 @@
         StateHasChanged();
     }
 
+    private async Task browseTabs(MouseEventArgs e)
+    {
+        openTabBrowser = true;
+        StateHasChanged();
+    }
+
+    private void browseTabsClosed(bool e)
+    {
+        openTabBrowser = e;
+        StateHasChanged();
+    }
+    private void TabClosedHandler(string addr)
+    {
+        StateHasChanged();
+    }
+    private void TabSelectedHandler(string addr)
+    {
+        StateHasChanged();
+    }
+    private void TabAddedHandler(string addr)
+    {
+        StateHasChanged();
+    }
+
+    private async Task QRTextReaded(string text)
+    {
+        newTabAddress = text;
+    }
+
     private async Task Redirect()
     {
         AppData.Account = new NeblioAccount();
         await Task.Delay(500);
         NavManager.NavigateTo("/");
-    }
-
-    private async Task showQRDialogOpen(MouseEventArgs e)
-    {
-        showQRDialogVisible = true;
-        StateHasChanged();
-        await Task.Delay(50);
-        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { addressInOpenTab, qrCodeRef });
-        StateHasChanged();
-    }
-
-    private async Task showQRDialogCancel(MouseEventArgs e)
-    {
-        showQRDialogVisible = false;
-    }
-
-    private async Task copyCodeToClipboard(string text)
-    {
-        await JSRuntime.InvokeVoidAsync("jsFunctions.copyToClipboard", text);
-        await copyCodeToClipboardButtonTextEfect();
-    }
-
-    private async Task copyCodeToClipboardButtonTextEfect()
-    {
-        copyTextButtonCoppied = true;
-        StateHasChanged();
-        await Task.Delay(1000);
-        copyTextButtonCoppied = false;
-        StateHasChanged();
     }
 
     private async Task closePublicAddresses(MouseEventArgs e)
@@ -352,7 +319,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Cannot load tabs history!");
+                Console.WriteLine("Cannot load tabs history!" + ex.Message);
             }
 
             if (AppData.Tabs == null)

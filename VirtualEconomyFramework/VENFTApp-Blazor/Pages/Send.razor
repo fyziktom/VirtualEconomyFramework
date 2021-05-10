@@ -39,6 +39,7 @@
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <Input Placeholder="Add receiver address" @bind-Value=@Receiver Style="font-size:12px; min-width:250px;max-width:350px;" />
+                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" Name="LoadSenderAddressFromQRCameraStream" />-->
                     </div>
                 </div>
 
@@ -74,7 +75,7 @@
                     </div>
                 }
 
-                <div class="row" style="margin-top:20px;">
+                <div class="row" style="margin-top:20px; margin-bottom:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <button class="btn btn-primary" @onclick="SendTransaction">Send</button>
                     </div>
@@ -101,10 +102,23 @@
 
     bool sendingTransaction = false;
     private string txid = string.Empty;
-    private string Receiver = string.Empty;
+
     private int AmountTokensToSend = 2;
     private double AmountToSend = 0.001;
     private int maxLoadedTransaction = 10;
+    private string receiver = string.Empty;
+    public string Receiver
+    {
+        get => receiver;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                receiver = value;
+                StateHasChanged();
+            }
+        }
+    }
 
     protected override Task OnInitializedAsync()
     {
@@ -133,6 +147,11 @@
         AppData.Account = new NeblioAccount();
         await Task.Delay(500);
         NavManager.NavigateTo("/");
+    }
+
+    private async Task QRTextReaded(string text)
+    {
+        Receiver = text;
     }
 
     void RefreshedHandler(object sender, EventArgs e)

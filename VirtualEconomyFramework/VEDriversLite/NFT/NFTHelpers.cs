@@ -238,25 +238,16 @@ namespace VEDriversLite.NFT
 
             foreach (var u in utxos)
             {
-                if (u.Tokens != null)
+                if (u.Tokens != null && u.Tokens.Count > 0)
                 {
-                    if (u.Tokens.Count > 0)
+                    foreach (var t in u.Tokens)
                     {
-                        foreach(var t in u.Tokens)
+                        if (t.TokenId == TokenId && t.Amount == 1)
                         {
-                            if (t.TokenId == TokenId)
-                            {
-                                if (t.Amount == 1)
-                                {
-                                    var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
-
-                                    if (nft != null)
-                                    {
-                                        if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
-                                            nfts.Add(nft);
-                                    }
-                                }
-                            }
+                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
+                            if (nft != null)
+                                //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
+                                    nfts.Add(nft);
                         }
                     }
                 }
@@ -360,6 +351,50 @@ namespace VEDriversLite.NFT
             return JsonConvert.SerializeObject(tabs);
         }
 
+        public static async Task<string> MintMultiImageNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        {
+            if (string.IsNullOrEmpty(NFT.ImageLink))
+                throw new Exception("Cannot create NFT Image without image link.");
+
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Name", NFT.Name);
+            metadata.Add("Author", NFT.Author);
+            metadata.Add("Description", NFT.Description);
+            metadata.Add("Image", NFT.ImageLink);
+            metadata.Add("Link", NFT.Link);
+            if (NFT.Price > 0)
+                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
+            metadata.Add("Type", "NFT Image");
+
+            // fill input data for sending tx
+            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Id = TokenId, // id of token
+                Metadata = metadata,
+                SenderAddress = address
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
+                if (rtxid != null)
+                {
+                    return rtxid;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public static async Task<string> MintImageNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             if (string.IsNullOrEmpty(NFT.ImageLink))
@@ -373,6 +408,8 @@ namespace VEDriversLite.NFT
             metadata.Add("Description", NFT.Description);
             metadata.Add("Image", NFT.ImageLink);
             metadata.Add("Link", NFT.Link);
+            if (NFT.Price > 0)
+                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
             metadata.Add("Type", "NFT Image");
 
             // fill input data for sending tx
@@ -454,6 +491,8 @@ namespace VEDriversLite.NFT
             metadata.Add("Description", NFT.Description);
             metadata.Add("Image", NFT.ImageLink);
             metadata.Add("Link", NFT.Link);
+            if (NFT.Price > 0)
+                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
             metadata.Add("Type", "NFT Post");
 
             // fill input data for sending tx
@@ -468,6 +507,47 @@ namespace VEDriversLite.NFT
             {
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
+                if (rtxid != null)
+                {
+                    return rtxid;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static async Task<string> MintMultiPostNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        {
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Name", NFT.Name);
+            metadata.Add("Author", NFT.Author);
+            metadata.Add("Description", NFT.Description);
+            metadata.Add("Image", NFT.ImageLink);
+            metadata.Add("Link", NFT.Link);
+            if (NFT.Price > 0)
+                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
+            metadata.Add("Type", "NFT Post");
+
+            // fill input data for sending tx
+            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Id = TokenId, // id of token
+                Metadata = metadata,
+                SenderAddress = address
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
                 if (rtxid != null)
                 {
                     return rtxid;

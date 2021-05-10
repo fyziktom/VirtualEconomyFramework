@@ -1,0 +1,126 @@
+﻿@inject IJSRuntime JSRuntime
+
+<i class="oi oi-aperture" style="margin-left:@marginleft; padding-top:@paddingtop; padding-left:@padding; font-size:@fontsize;" @onclick="showQRDialogOpen"></i>
+
+<Modal Title="Load Data From QR"
+       Visible="@showQRDialogVisible"
+       OnOk="@showQRDialogCancel"
+       Style="width:auto; max-width:300px;"
+       OnCancel="@showQRDialogCancel">
+    <Spin Tip="@status" Spinning="@doneVisible">
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div id="@name" @ref="qrCodeRef"></div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <CopyButton TextToCopy="@readedText" />
+            </div>
+        </div>
+    </Spin>
+</Modal>
+
+@code {
+
+    bool doneVisible = false;
+    bool showQRDialogVisible = false;
+    private ElementReference qrCodeRef;
+    private string paddingtop = "2px";
+    private string padding = "0px";
+    private string status = "Loading Camera...";
+    private string readedText = string.Empty;
+    [Parameter]
+    public string ReadedText
+    {
+        get => readedText;
+        set => readedText = value;
+    }
+    [Parameter]
+    public EventCallback<string> ReadedTextChanged { get; set; }
+
+    private string marginleft = "0px";
+    [Parameter]
+    public int MarginLeft
+    {
+        get => Convert.ToInt32(marginleft);
+        set => marginleft = value.ToString() + "px";
+    }
+    private string fontsize = "12px";
+    [Parameter]
+    public int FontSize
+    {
+        get => Convert.ToInt32(FontSize);
+        set => fontsize = value.ToString() + "px";
+    }
+    private string name = "LoadQRDataCameraStream";
+    [Parameter]
+    public string Name
+    {
+        get => name;
+        set
+        {
+            name = value;
+            StateHasChanged();
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        JSRuntime.InvokeVoidAsync("jsFunctions.init", DotNetObjectReference.Create(this));
+        return base.OnInitializedAsync();
+    }
+
+    [JSInvokable]
+    public void ReturnBarcodeResultsAsync(String text)
+    {
+        TextReadHandler(text);
+    }
+
+    private async Task TextReadHandler(String text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return;
+
+        //if (text != readedText)
+        {
+            status = "Done :)";
+            doneVisible = true;
+            StateHasChanged();
+            await Task.Delay(150);
+            readedText = text;
+            await JSRuntime.InvokeVoidAsync("jsFunctions.stopScanning");
+            await Task.Delay(150);
+            doneVisible = false;
+            await ReadedTextChanged.InvokeAsync(text);
+            showQRDialogVisible = false;
+            this.StateHasChanged();
+        }
+    }
+
+    private async Task showQRDialogOpen(MouseEventArgs e)
+    {
+        status = "Initializing Camera...";
+        doneVisible = true;
+        showQRDialogVisible = true;
+        paddingtop = "5px";
+        padding = "3px";
+        StateHasChanged();
+        await Task.Delay(50);
+        await JSRuntime.InvokeVoidAsync("jsFunctions.startScanning", name);
+        await Task.Delay(50);
+        doneVisible = false;
+        StateHasChanged();
+        paddingtop = "2px";
+        padding = "0px";
+    }
+
+    private async Task showQRDialogCancel(MouseEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("jsFunctions.stopScanning");
+        await Task.Delay(50);
+        showQRDialogVisible = false;
+        StateHasChanged();
+    }
+}
+

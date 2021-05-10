@@ -1,6 +1,7 @@
 ﻿var barcodereader = null;
 var dotnetRef = null;
 var loadedImage = null;
+var html5QrCode = null;
 (async () => {
     //global init
 })();
@@ -24,16 +25,26 @@ window.jsFunctions = {
         codediv.innerHTML = '';
         new QRCode(codediv, text);
     },
-    startScanning: function () {
-        const html5QrCode = new Html5Qrcode("CameraStream");
+    stopScanning: function () {
+        html5QrCode.stop().then(ignore => {
+            // QR Code scanning is stopped.
+            console.log("QR Code scanning stopped.");
+        }).catch(err => {
+            // Stop failed, handle it.
+            console.log("Unable to stop scanning.");
+        });
+    },
+    startScanning: function (qrCodeRef) {
+        html5QrCode = new Html5Qrcode(qrCodeRef);
 
-        Html5Qrcode.getCameras({ facingMode: { exact: "environment" } }).then(devices => {
+        Html5Qrcode.getCameras({ facingMode: "environment" }).then(devices => {
             /**{ facingMode: "environment" }
              * devices would be an array of objects of type:
              * { id: "id", label: "label" }
              */
             if (devices && devices.length > 0) {
                 var cameraId = devices[0].id;
+                var tryread = 200;
 
                 html5QrCode.start(
                     cameraId,     // retreived in the previous step.
@@ -52,6 +63,16 @@ window.jsFunctions = {
                     errorMessage => {
                         // parse error, ideally ignore it. For example:
                         console.log(`QR Code no longer in front of camera.`);
+                        tryread--;
+                        if (tryread < 0) {
+                            html5QrCode.stop().then(ignore => {
+                                // QR Code scanning is stopped.
+                                console.log("QR Code scanning stopped.");
+                            }).catch(err => {
+                                // Stop failed, handle it.
+                                console.log("Unable to stop scanning.");
+                            });
+                        }
                     })
                     .catch(err => {
                         // Start failed, handle it. For example,

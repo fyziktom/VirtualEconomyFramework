@@ -1,0 +1,64 @@
+﻿@inject IJSRuntime JSRuntime
+
+@if (!copyTextButtonCoppied)
+{
+    <i class="oi oi-share-boxed" style="margin-left:@marginleft; margin-top:@margintop; font-size:@fontsize;" @onclick="copyCodeToClipboard"></i>
+}
+else
+{
+    <i class="oi oi-check" style="margin-left:@marginleft; margin-top:@margintop; font-size:@fontsize;"></i>
+}
+
+@code {
+
+    private string textToCopy = string.Empty;
+    [Parameter]
+    public string TextToCopy
+    {
+        get => textToCopy;
+        set => textToCopy = value;
+    }
+
+    private string margintop = "0px";
+    [Parameter]
+    public int MarginTop
+    {
+        get => Convert.ToInt32(margintop);
+        set => margintop = value.ToString() + "px";
+    }
+
+    private string marginleft = "0px";
+    [Parameter]
+    public int MarginLeft
+    {
+        get => Convert.ToInt32(marginleft);
+        set => marginleft = value.ToString() + "px";
+    }
+    private string fontsize = "14px";
+    [Parameter]
+    public int FontSize
+    {
+        get => Convert.ToInt32(FontSize);
+        set => fontsize = value.ToString() + "px";
+    }
+
+    bool copyTextButtonCoppied = false;
+
+    private async Task copyCodeToClipboard(MouseEventArgs e)
+    {
+        if (string.IsNullOrEmpty(textToCopy))
+            return;
+
+        await JSRuntime.InvokeVoidAsync("jsFunctions.copyToClipboard", textToCopy);
+        await copyCodeToClipboardButtonTextEfect();
+    }
+
+    private async Task copyCodeToClipboardButtonTextEfect()
+    {
+        copyTextButtonCoppied = true;
+        StateHasChanged();
+        await Task.Delay(1000);
+        copyTextButtonCoppied = false;
+        StateHasChanged();
+    }
+}

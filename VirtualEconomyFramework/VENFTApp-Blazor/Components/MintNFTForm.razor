@@ -6,15 +6,14 @@
 <div class="row">
     <div class="col">
         <Spin spinning="@processingMinting" tip="Sending...">
-
             <div class="row">
                 <div class="col">
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <p>Name:</p>
+                            <small>Name</small>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" style="margin-top:5px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             @if (nftType == NFTTypes.Profile)
                             {
@@ -30,20 +29,20 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <p>Surname:</p>
+                                <small>Surname</small>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                 <Input Placeholder="Type your surname" @bind-Value=@newProfileNFT.Surname Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <p>Nickname:</p>
+                                <small>Nickname</small>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                 <Input Placeholder="Type your nickname" @bind-Value=@newProfileNFT.Nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
@@ -51,12 +50,12 @@
                     }
                     else
                     {
-                        <div class="row">
+                        <div class="row" style="margin-top:10px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <p>Author:</p>
+                                <small>Author</small>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                 <Input Placeholder="Add Author of the NFT" @bind-Value=@newNFT.Author Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
@@ -64,12 +63,12 @@
                     }
                     @if (nftType != NFTTypes.Profile)
                     {
-                        <div class="row">
+                        <div class="row" style="margin-top:10px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <p>Description:</p>
+                                <small>Description</small>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                 <Input Placeholder="Add Description of the NFT" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
@@ -77,23 +76,61 @@
                     }
                     else
                     {
-                        <div class="row">
+                        <div class="row" style="margin-top:10px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <p>Bio:</p>
+                                <small>Bio</small>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                 <Input Placeholder="Type your Bio" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
                     }
 
-                    <VENFTApp_Blazor.Components.UploadImage ImageLink="@newNFT.ImageLink" ImageLinkChanged="ImageLinkChanged" />
+                    <VENFTApp_Blazor.Components.UploadImage ImageLink="@newNFT.ImageLink" ImageLinkChanged="@ImageLinkChanged" />
 
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <small class="text-center">Minting costs 0.0002 NEBL (fee) and 1 VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
+                            <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
+                        </div>
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
+                        </div>
+                    </div>
+
+                    @if (withPrice)
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <small>Price in Neblio</small>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@newNFT.Price" />
+                            </div>
+                        </div>
+                    }
+
+                    @if (withCoppies)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <small>Coppies</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <input type="number" step="1" min="0" max="@(AppData.Account.SourceTokensBalance-1)" @bind="@NumberOfCoppies" />
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
                         </div>
                     </div>
                     <div class="row" style="margin-top:20px;">
@@ -116,6 +153,10 @@
 
 @code {
 
+
+    bool withPrice = false;
+    bool withCoppies = false;
+
     [Parameter]
     public bool RedirectToNFTsAfterMint { get; set; } = false;
 
@@ -137,28 +178,24 @@
         get => sourceNFT;
         set
         {
-            if (value != null)
+            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != newNFT.Utxo)
             {
-                if (!string.IsNullOrEmpty(value.Utxo))
+                sourceNFT = value;
+                if (value.Type == NFTTypes.Profile)
                 {
-                    if (value.Utxo != newNFT.Utxo)
-                    {
-                        sourceNFT = value;
-                        if (value.Type == NFTTypes.Profile)
-                        {
-                            newNFT.FillCommon(value);
-                            newProfileNFT.Fill(value).Wait();
-                        }
-                        else
-                        {
-                            newNFT.Fill(value);
-                        }
-                        StateHasChanged();
-                    }
+                    newNFT.FillCommon(value);
+                    newProfileNFT.Fill(value).Wait();
                 }
+                else
+                {
+                    newNFT.Fill(value);
+                }
+                StateHasChanged();
             }
         }
     }
+
+    private int NumberOfCoppies = 0;
 
     INFT newNFT = new ImageNFT("");
     ProfileNFT newProfileNFT = new ProfileNFT("");
@@ -170,6 +207,21 @@
     {
         newNFT.ImageLink = newLink;
         newProfileNFT.ImageLink = newLink;
+    }
+
+    private async Task withPriceChanged(object e)
+    {
+        withPrice = (bool)e;
+        if (withPrice)
+            newNFT.Price = 0.0005;
+        else
+            newNFT.Price = 0;
+        StateHasChanged();
+    }
+    private async Task withCoppiesChanged(object e)
+    {
+        withCoppies = (bool)e;
+        StateHasChanged();
     }
 
     void ShowMintConfirm()
@@ -197,6 +249,9 @@
 
             newNFT.Type = nftType;
 
+            if (!withPrice)
+                newNFT.Price = 0.0;
+
             if (nftType == NFTTypes.Profile)
             {
                 await newProfileNFT.FillCommon(newNFT);
@@ -208,12 +263,14 @@
                 res = await AppData.Account.ChangePostNFT(newNFT);
             else if (nftType == NFTTypes.Profile && !string.IsNullOrEmpty(newNFT.Utxo))
                 res = await AppData.Account.ChangeProfileNFT(newNFT);
+            else if (NumberOfCoppies > 0 && nftType != NFTTypes.Profile)
+                res = await AppData.Account.MintMultiNFT(NFTHelpers.TokenId, newNFT, NumberOfCoppies);
             else
                 res = await AppData.Account.MintNFT(NFTHelpers.TokenId, newNFT);
 
             if (res.Item1)
             {
-                NFTMinted.InvokeAsync(res.Item2);
+                await NFTMinted.InvokeAsync(res.Item2);
 
                 if (RedirectToNFTsAfterMint)
                 {

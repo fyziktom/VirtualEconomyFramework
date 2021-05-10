@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
 using VEDriversLite.Builder;
+using VEDriversLite.NFT;
 
 namespace VEDriversLite.Security
 {
@@ -116,6 +117,147 @@ namespace VEDriversLite.Security
             catch (Exception ex)
             {
                 return (false, "Wrong input. Cannot sign the message.");
+            }
+        }
+
+        public static async Task<(bool, string)> GetSharedSecret(string bobAddress, string key)
+        {
+            try
+            {
+               var secret =  new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+                return await GetSharedSecret(bobAddress, secret);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Wrong input key for creation of shared secret.");
+            }
+            return (false, "Wrong input Key.");
+        }
+        public static async Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret)
+        {
+            var bobPubKey = await NFTHelpers.GetPubKeyFromLastFoundTx(bobAddress);
+            if (!bobPubKey.Item1)
+                return (false, "Cannot find public key, input address did not have any spent transations for key extraction.");
+
+            var sharedKey = bobPubKey.Item2.GetSharedPubkey(secret.PrivateKey);
+            if (sharedKey == null || string.IsNullOrEmpty(sharedKey.Hash.ToString()))
+                return (false, "Cannot create shared secret from keys.");
+            else
+                return (true, SecurityUtils.ComputeSha256Hash(sharedKey.Hash.ToString()));
+        }
+        public static async Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, string key)
+        {
+            try
+            {
+                var secret = new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+                return await EncryptStringWithSharedSecret(message, bobAddress, secret);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Wrong input key for creation of shared secret.");
+            }
+            return (false, "Wrong input Key.");
+        }
+        public static async Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, BitcoinSecret secret)
+        {
+            if (string.IsNullOrEmpty(message))
+                return (false, "Message cannot be empty or null.");
+            if (string.IsNullOrEmpty(bobAddress))
+                return (false, "Partner Address cannot be empty or null.");
+            if (secret == null)
+                return (false, "Input secret cannot null.");
+
+            var key = await GetSharedSecret(bobAddress, secret);
+            if (!key.Item1)
+                return key;
+
+            try
+            {
+                var emesage = await SymetricProvider.EncryptString(key.Item2, message);
+                return (true, emesage);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot encrypt message. " + ex.Message);
+                return (false, "Cannot encrypt message. " + ex.Message);
+            }
+        }
+        public static async Task<(bool, string)> EncryptStringWithSharedSecretWithKey(string message, string bobAddress, string key)
+        {
+            if (string.IsNullOrEmpty(message))
+                return (false, "Message cannot be empty or null.");
+            if (string.IsNullOrEmpty(bobAddress))
+                return (false, "Partner Address cannot be empty or null.");
+            if (string.IsNullOrEmpty(key))
+                return (false, "Input secret cannot null.");
+
+            try
+            {
+                var emesage = await SymetricProvider.EncryptString(key, message);
+                return (true, emesage);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot encrypt message. " + ex.Message);
+                return (false, "Cannot encrypt message. " + ex.Message);
+            }
+        }
+
+        public static async Task<(bool, string)> DecryptStringWithSharedSecret(string emessage, string bobAddress, string key)
+        {
+            try
+            {
+                var secret = new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+                return await DecryptStringWithSharedSecret(emessage, bobAddress, secret);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Wrong input key for creation of shared secret.");
+            }
+            return (false, "Wrong input Key.");
+        }
+        public static async Task<(bool, string)> DecryptStringWithSharedSecret(string emessage, string bobAddress, BitcoinSecret secret)
+        {
+            if (string.IsNullOrEmpty(emessage))
+                return (false, "Message cannot be empty or null.");
+            if (string.IsNullOrEmpty(bobAddress))
+                return (false, "Partner Address cannot be empty or null.");
+            if (secret == null)
+                return (false, "Input secret cannot null.");
+
+            var key = await GetSharedSecret(bobAddress, secret);
+            if (!key.Item1)
+                return key;
+
+            try
+            {
+                var mesage = await SymetricProvider.DecryptString(key.Item2, emessage);
+                return (true, mesage);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot decrypt message. " + ex.Message);
+                return (false, "Cannot decrypt message. " + ex.Message);
+            }
+        }
+        public static async Task<(bool, string)> DecryptStringWithSharedSecretWithKey(string emessage, string bobAddress, string key)
+        {
+            if (string.IsNullOrEmpty(emessage))
+                return (false, "Message cannot be empty or null.");
+            if (string.IsNullOrEmpty(bobAddress))
+                return (false, "Partner Address cannot be empty or null.");
+            if (string.IsNullOrEmpty(key))
+                return (false, "Input secret cannot null.");
+
+            try
+            {
+                var mesage = await SymetricProvider.DecryptString(key, emessage);
+                return (true, mesage);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot decrypt message. " + ex.Message);
+                return (false, "Cannot decrypt message. " + ex.Message);
             }
         }
     }
