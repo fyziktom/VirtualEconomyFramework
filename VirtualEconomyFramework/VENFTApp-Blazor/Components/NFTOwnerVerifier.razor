@@ -13,7 +13,7 @@
         <!--
     <div class="row">
         <div class="col">
-            <input type="file" @ref=inputTypeFileElement accept="image/*" capture/>
+            <input type="file" ref=inputTypeFileElement accept="image/*" capture/>
         </div>
     </div>
     -->
@@ -25,7 +25,7 @@
             </div>
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <div id="@name" @ref=qrCodeRef></div>
+                    <div id="CameraStream" @ref=qrCodeRef></div>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
@@ -41,7 +41,7 @@
             <!--
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <textarea>@message</textarea>
+            <textarea>message</textarea>
         </div>
     </div>
     -->
@@ -79,9 +79,9 @@
 
 
 @code {
-    INFT NFT = new ImageNFT("");
-    string ownerAddress = string.Empty;
-    string senderAddress = string.Empty;
+        INFT NFT = new ImageNFT("");
+        string ownerAddress = string.Empty;
+        string senderAddress = string.Empty;
     private ElementReference inputTypeFileElement;
     private ElementReference qrCodeRef;
     private static String result = string.Empty;
@@ -95,7 +95,11 @@
     public string Name
     {
         get => name;
-        set => name = value;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+                name = value;
+        }
     }
 
     protected override void OnInitialized()
@@ -106,7 +110,7 @@
 
     public async Task ReadCode()
     {
-        await JSRuntime.InvokeVoidAsync("jsFunctions.startScanning", name);
+        await JSRuntime.InvokeVoidAsync("jsFunctions.startScanning", "CameraStream");
     }
 
     [JSInvokable]

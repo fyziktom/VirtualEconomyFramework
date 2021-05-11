@@ -10,7 +10,7 @@
     <Spin Tip="@status" Spinning="@doneVisible">
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <div id="@name" @ref="qrCodeRef"></div>
+                <div id="CameraStream"></div>
             </div>
         </div>
         <div class="row" style="margin-top:10px;">
@@ -25,7 +25,7 @@
 
     bool doneVisible = false;
     bool showQRDialogVisible = false;
-    private ElementReference qrCodeRef;
+    ElementReference qrCodeRef;
     private string paddingtop = "2px";
     private string padding = "0px";
     private string status = "Loading Camera...";
@@ -60,14 +60,26 @@
         get => name;
         set
         {
-            name = value;
-            StateHasChanged();
+            if (!string.IsNullOrEmpty(value) && name != value)
+            {
+                name = value;
+                //StateHasChanged();
+            }
         }
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            JSRuntime.InvokeVoidAsync("jsFunctions.init", DotNetObjectReference.Create(this));
+        }
+        return base.OnAfterRenderAsync(firstRender);
     }
 
     protected override Task OnInitializedAsync()
     {
-        JSRuntime.InvokeVoidAsync("jsFunctions.init", DotNetObjectReference.Create(this));
+        //JSRuntime.InvokeVoidAsync("jsFunctions.init", DotNetObjectReference.Create(this));
         return base.OnInitializedAsync();
     }
 
@@ -75,6 +87,20 @@
     public void ReturnBarcodeResultsAsync(String text)
     {
         TextReadHandler(text);
+    }
+
+    [JSInvokable]
+    public void CameraStoppedAsync(String text)
+    {
+        doneVisible = false;
+        showQRDialogVisible = false;
+        this.StateHasChanged();
+    }
+    [JSInvokable]
+    public void CameraStartedAsync(String text)
+    {
+        doneVisible = false;
+        this.StateHasChanged();
     }
 
     private async Task TextReadHandler(String text)
@@ -89,12 +115,8 @@
             StateHasChanged();
             await Task.Delay(150);
             readedText = text;
-            await JSRuntime.InvokeVoidAsync("jsFunctions.stopScanning");
-            await Task.Delay(150);
-            doneVisible = false;
             await ReadedTextChanged.InvokeAsync(text);
-            showQRDialogVisible = false;
-            this.StateHasChanged();
+            JSRuntime.InvokeVoidAsync("jsFunctions.stopScanning");
         }
     }
 
@@ -107,20 +129,18 @@
         padding = "3px";
         StateHasChanged();
         await Task.Delay(50);
-        await JSRuntime.InvokeVoidAsync("jsFunctions.startScanning", name);
-        await Task.Delay(50);
-        doneVisible = false;
-        StateHasChanged();
+        JSRuntime.InvokeVoidAsync("jsFunctions.startScanning", "CameraStream");
         paddingtop = "2px";
         padding = "0px";
     }
 
     private async Task showQRDialogCancel(MouseEventArgs e)
     {
-        await JSRuntime.InvokeVoidAsync("jsFunctions.stopScanning");
-        await Task.Delay(50);
-        showQRDialogVisible = false;
+        status = "Stopping Cammera...";
+        doneVisible = true;
         StateHasChanged();
+        await Task.Delay(50);
+        JSRuntime.InvokeVoidAsync("jsFunctions.stopScanning");
     }
 }
 

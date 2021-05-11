@@ -26,6 +26,20 @@ app {
     align-items: center;
 }
 
+#ipfsImageUpload {
+    border: 5px dashed #ccc;
+    width: auto;
+    height: 150px;
+}
+
+#ipfsImageUpload:hover {
+    border: 5px dashed #333;
+}
+
+#holder:hover {
+    border: 5px dashed #333;
+}
+
 .main {
     flex: 1;
 }

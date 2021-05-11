@@ -4,28 +4,33 @@
 @using Tewr.Blazor.FileReader
 @inject IFileReaderService fileReaderService
 @inject AppData AppData
+@inject IJSRuntime JSRuntime
 @inject HttpClient _client
 
 <div class="row">
     <div class="col">
+        <!--<div class="row" id="ipfsImageUpload" style="margin-top:20px;">-->
         <div class="row" style="margin-top:20px;">
             <div class="col">
                 <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
                     <div class="row">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <p>Select and Upload Image:</p>
+                            <span>Upload Image</span>
                         </div>
                     </div>
+                    
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             <input type="file" @ref=inputTypeFileElement />
                         </div>
                     </div>
+                    <!--
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <button @onclick=ReadFile>Upload Image</button>
+                            <button onclick=UploadToIpfsWithButton>Upload Image</button>
                         </div>
                     </div>
+                    -->
                 </Spin>
             </div>
         </div>
@@ -47,7 +52,7 @@
                         <p>No image loaded</p>
                         break;
                     case LoadingImageStages.Loading:
-                        <Spin Tip="Uploading..." />
+                        <Spin Tip="Reloading..." />
                         break;
                     case LoadingImageStages.Loaded:
                         <a href="@_imageLink" target="_blank"><img src="@_imageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
@@ -83,6 +88,93 @@
     [Parameter]
     public EventCallback<string> ImageLinkChanged { get; set; }
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if (firstRender)
+        //    JSRuntime.InvokeVoidAsync("jsFunctions.initUpload", DotNetObjectReference.Create(this));
+
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    [JSInvokable]
+    public void UploadImageResultsAsync(String imageLink)
+    {
+        //loadingImageStage = LoadingImageStages.Loaded;
+        uploadingImage = false;
+        //ImageLinkChanged.InvokeAsync(imageLink);
+        CheckFile(imageLink);
+        this.StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void UploadStartedAsync(String filename)
+    {
+        uploadingImage = true;
+        this.StateHasChanged();
+    }
+
+    public async Task UploadToIpfsWithButton(MouseEventArgs e)
+    {
+        JSRuntime.InvokeVoidAsync("jsFunctions.uploadToIpfsWithButton", DotNetObjectReference.Create(this));
+    }
+
+    public async Task CheckFile(string imageLink)
+    {
+        loadingImageStage = LoadingImageStages.Loading;
+        StateHasChanged();
+        var finished = false;
+        timer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(imageLink))
+                {
+                    using var httpResponse = await _client.GetAsync(imageLink);
+
+                    if (httpResponse.IsSuccessStatusCode)
+                    {
+                        ImageLink = imageLink;
+                        await ImageLinkChanged.InvokeAsync(imageLink);
+                        finished = true;
+                    }
+
+                    attemptsToDisplay--;
+                    if (attemptsToDisplay < 0)
+                    {
+                        loadingImageStage = LoadingImageStages.Loaded;
+                        await ImageLinkChanged.InvokeAsync(imageLink);
+                        finished = true;
+                    }
+                }
+                else
+                {
+                    finished = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during checking uploaded image!" + ex.Message);
+                attemptsToDisplay--;
+                if (attemptsToDisplay < 0)
+                {
+                    finished = true;
+                }
+            }
+
+            if (finished)
+            {
+                if (loadingImageStage != LoadingImageStages.Loaded)
+                {
+                    loadingImageStage = LoadingImageStages.NotStarted;
+                    errorUpload = true;
+                }
+                uploadingImage = false;
+                StateHasChanged();
+                timer.Dispose();
+            }
+        }, new System.Threading.AutoResetEvent(false), 4000, 4000);
+    }
+
     public async Task ReadFile()
     {
         try
@@ -100,70 +192,16 @@
                 await using (Stream stream = await file.OpenReadAsync())
                 {
                     var fileinfo = await file.ReadFileInfoAsync();
-                    var link = string.Empty;
                     try
                     {
                         var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
-                        link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                        var link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                        await CheckFile(link);
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
                     }
-
-                    timer = new System.Threading.Timer(async (object stateInfo) =>
-                    {
-                        try
-                        {
-                            if (!string.IsNullOrEmpty(link))
-                            {
-                                using var httpResponse = await _client.GetAsync(link);
-
-                                if (httpResponse.IsSuccessStatusCode)
-                                {
-                                    loadingImageStage = LoadingImageStages.Loaded;
-                                    uploadingImage = false;
-
-                                    ImageLink = link;
-                                    StateHasChanged(); // MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
-                                    ImageLinkChanged.InvokeAsync(link);
-                                    timer.Dispose();
-                                }
-
-                                attemptsToDisplay--;
-                                if (attemptsToDisplay < 0)
-                                {
-                                    loadingImageStage = LoadingImageStages.Loaded;
-                                    uploadingImage = false;
-                                    ImageLink = link;
-                                    StateHasChanged();
-                                    ImageLinkChanged.InvokeAsync(link);
-                                    timer.Dispose();
-                                }
-                            }
-                            else
-                            {
-                                loadingImageStage = LoadingImageStages.NotStarted;
-                                uploadingImage = false;
-                                errorUpload = true;
-                                StateHasChanged();
-                                timer.Dispose();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Error during checking uploaded image!" + ex.Message);
-                            attemptsToDisplay--;
-                            if (attemptsToDisplay < 0)
-                            {
-                                loadingImageStage = LoadingImageStages.NotStarted;
-                                uploadingImage = false;
-                                errorUpload = true;
-                                StateHasChanged();
-                                timer.Dispose();
-                            }
-                        }
-                    }, new System.Threading.AutoResetEvent(false), 4000, 4000);
                 }
             }
         }
@@ -172,7 +210,7 @@
             loadingImageStage = LoadingImageStages.NotStarted;
             uploadingImage = false;
             errorUpload = true;
-            //StateHasChanged();
+            StateHasChanged();
         }
     }
 }

@@ -226,11 +226,8 @@ namespace VEDriversLite
                    Secret = privateKeyFromNetwork;
                    if (!string.IsNullOrEmpty(password))
                        AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(password);
-                   await SignMessage("init");
-                   var mk = await ECDSAProvider.GetSharedSecret(Address, Secret);
-                   if (mk.Item1)
-                       MetadataKey = mk.Item2;
-
+                   SignMessage("init");
+                   
                    if (saveToFile)
                    {
                         // save to file
@@ -270,12 +267,8 @@ namespace VEDriversLite
                     Address = kdto.Address;
 
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
-                    await SignMessage("init");
-                    var mk = await ECDSAProvider.GetSharedSecret(Address, Secret);
-                    if (mk.Item1)
-                        MetadataKey = mk.Item2;
-
-                    
+                    SignMessage("init");
+                   
                     await StartRefreshingData();
                 }
                 catch(Exception ex)
@@ -301,10 +294,7 @@ namespace VEDriversLite
                     await AccountKey.LoadPassword(password);
                     AccountKey.IsEncrypted = true;
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
-                    await SignMessage("init");
-                    var mk = await ECDSAProvider.GetSharedSecret(address, Secret);
-                    if (mk.Item1)
-                        MetadataKey = mk.Item2;
+                    SignMessage("init");
                     Address = address;
                 });
 

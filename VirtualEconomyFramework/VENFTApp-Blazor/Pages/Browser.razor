@@ -34,8 +34,8 @@
         </div><!--
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <button @onclick="browseTabs" class="btn btn-secondary" type="button">Browse Tabs</button>
-                <VENFTApp_Blazor.Components.OpenedTabList Open="@openTabBrowser" BrowseTabsClosed="@browseTabsClosed" TabSelected="@TabSelectedHandler" NewTabOpened="@TabAddedHandler" TabClosed="@TabClosedHandler" />
+                <button onclick="browseTabs" class="btn btn-secondary" type="button">Browse Tabs</button>
+                <VENFTApp_Blazor.Components.OpenedTabList Open="openTabBrowser" BrowseTabsClosed="browseTabsClosed" TabSelected="TabSelectedHandler" NewTabOpened="TabAddedHandler" TabClosed="TabClosedHandler" />
             </div>
         </div>
         -->
@@ -151,7 +151,7 @@
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
-                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" Name="OpenNewTabCameraStream" />-->
+                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
                 </div>
             </div>
         </div>
