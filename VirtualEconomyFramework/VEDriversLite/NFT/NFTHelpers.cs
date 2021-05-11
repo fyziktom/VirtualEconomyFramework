@@ -287,44 +287,32 @@ namespace VEDriversLite.NFT
                             if (vin.Tokens != null)
                             {
                                 var toks = vin.Tokens.ToList();
-                                if (toks != null)
+
+                                if (toks != null && toks.Count > 0 && toks[0] != null && toks[0].Amount > 0)
                                 {
-                                    if (toks.Count > 0)
+                                    try
                                     {
-                                        if (toks[0] != null)
+                                        var nft = await NFTFactory.GetNFT(TokenId, txinfo.Txid, true);
+
+                                        if (nft != null)
                                         {
-                                            if (toks[0].Amount > 0) // this is still nft so load the state in the moment of history
+                                            if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
                                             {
-                                                try
-                                                {
-                                                    var nft = await NFTFactory.GetNFT(TokenId, txinfo.Txid, true);
-
-                                                    if (nft != null)
-                                                    {
-                                                        if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
-                                                        {
-                                                            nfts.Add(nft);
-                                                        }
-                                                        // go to previous tx
-                                                        txid = vin.Txid;
-                                                    }
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    Console.WriteLine("Error while loading NFT history step" + ex.Message);
-                                                }
-
-                                                if (toks[0].Amount > 1)
-                                                {
-                                                    end = true;
-                                                }
-                                                else if (toks[0].Amount == 1)
-                                                {
-                                                    end = false;
-                                                }
+                                                nfts.Add(nft);
                                             }
+                                            // go to previous tx
+                                            txid = vin.Txid;
                                         }
                                     }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("Error while loading NFT history step" + ex.Message);
+                                    }
+
+                                    if (toks[0].Amount > 1)
+                                        end = true;
+                                    else if (toks[0].Amount == 1)
+                                        end = false;
                                 }
                             }
                         }
@@ -522,6 +510,47 @@ namespace VEDriversLite.NFT
             }
         }
 
+        public static async Task<string> MintMusicNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        {
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Name", NFT.Name);
+            metadata.Add("Author", NFT.Author);
+            metadata.Add("Description", NFT.Description);
+            metadata.Add("Image", NFT.ImageLink);
+            metadata.Add("Link", NFT.Link);
+            if (NFT.Price > 0)
+                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
+            metadata.Add("Type", "NFT Music");
+
+            // fill input data for sending tx
+            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Id = TokenId, // id of token
+                Metadata = metadata,
+                SenderAddress = address
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
+                if (rtxid != null)
+                {
+                    return rtxid;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public static async Task<string> MintMultiPostNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             // create token metadata
@@ -535,6 +564,47 @@ namespace VEDriversLite.NFT
             if (NFT.Price > 0)
                 metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
             metadata.Add("Type", "NFT Post");
+
+            // fill input data for sending tx
+            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Id = TokenId, // id of token
+                Metadata = metadata,
+                SenderAddress = address
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
+                if (rtxid != null)
+                {
+                    return rtxid;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static async Task<string> MintMultiMusicNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        {
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Name", NFT.Name);
+            metadata.Add("Author", NFT.Author);
+            metadata.Add("Description", NFT.Description);
+            metadata.Add("Image", NFT.ImageLink);
+            metadata.Add("Link", NFT.Link);
+            if (NFT.Price > 0)
+                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
+            metadata.Add("Type", "NFT Music");
 
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs

@@ -15,33 +15,70 @@
                 <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
                     <div class="row">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <span>Upload Image</span>
+                            @if (NFTType == NFTTypes.Music)
+                            {
+                                <span>Upload Music</span>
+                            }
+                            else
+                            {
+                                <span>Upload Image</span>
+                            }
+                            
                         </div>
                     </div>
                     
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <input type="file" @ref=inputTypeFileElement />
+                            @if (NFTType == NFTTypes.Music)
+                            {
+                            <input type="file" @ref=inputTypeFileElement accept="audio/*" />
+                            }
+                            else
+                            {
+                            <input type="file" @ref=inputTypeFileElement accept="image/*" />
+                            }
+                            
                         </div>
                     </div>
-                    <!--
+                    
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <button onclick=UploadToIpfsWithButton>Upload Image</button>
+                            @if (NFTType == NFTTypes.Music)
+                            {
+                                <button @onclick=ReadFile>Upload Music</button>
+                            }
+                            else
+                            {
+                                <button @onclick=ReadFile>Upload Image</button>
+                            }
                         </div>
                     </div>
-                    -->
+                    
                 </Spin>
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <Input Placeholder="Image Link" @bind-Value=@_imageLink Style="font-size:12px; min-width:250px; max-width:350px;" />
+                @if (NFTType == NFTTypes.Music)
+                {
+                    <Input Placeholder="Music Link" @bind-Value=@_imageLink Style="font-size:12px; min-width:250px; max-width:350px;" />
+                }
+                else
+                {
+                    <Input Placeholder="Image Link" @bind-Value=@_imageLink Style="font-size:12px; min-width:250px; max-width:350px;" />
+                }
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                @if (NFTType == NFTTypes.Music)
+                {
+                <p>Audio Preview:</p>
+                }
+                else
+                {
                 <p>Image Preview:</p>
+                }
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
@@ -55,7 +92,17 @@
                         <Spin Tip="Reloading..." />
                         break;
                     case LoadingImageStages.Loaded:
+                        @if (NFTType == NFTTypes.Image || NFTType == NFTTypes.Post)
+                        { 
                         <a href="@_imageLink" target="_blank"><img src="@_imageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
+                        }
+                        else if (NFTType == NFTTypes.Music)
+                        {
+                           <!-- <a href="@_imageLink" target="_blank"><audio src="@_imageLink" style="max-height:200px;  max-width:250px;"></audio></a>-->
+                            <video controls="" autoplay=""style="margin-bottom:50px; max-width:350px;" name="media">
+                                <source src="@_imageLink" type="audio/mpeg">
+                            </video>
+                        }
                         break;
                 }
             </div>
@@ -71,6 +118,9 @@
     private System.Threading.Timer timer;
     private ElementReference inputTypeFileElement;
     private static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
+
+    [Parameter]
+    public NFTTypes NFTType { get; set; } = NFTTypes.Image;
 
     private string _imageLink = string.Empty;
     [Parameter]

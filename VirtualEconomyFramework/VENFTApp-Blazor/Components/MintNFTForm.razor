@@ -17,11 +17,11 @@
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             @if (nftType == NFTTypes.Profile)
                             {
-                                <Input Placeholder="Type your Name" @bind-Value=@newProfileNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                <Input Placeholder="Type your Name" MaxLength="50" @bind-Value=@newProfileNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
                             }
                             else
                             {
-                                <Input Placeholder="Add Name of the NFT" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                <Input Placeholder="Add Name of the NFT" MaxLength="50" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
                             }
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <Input Placeholder="Type your surname" @bind-Value=@newProfileNFT.Surname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                <Input Placeholder="Type your surname" MaxLength="50" @bind-Value=@newProfileNFT.Surname Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
                         <div class="row" style="margin-top:10px;">
@@ -44,7 +44,7 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <Input Placeholder="Type your nickname" @bind-Value=@newProfileNFT.Nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                <Input MaxLength="50" Placeholder="Type your nickname" @bind-Value=@newProfileNFT.Nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
                     }
@@ -57,7 +57,7 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <Input Placeholder="Add Author of the NFT" @bind-Value=@newNFT.Author Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                <Input Placeholder="Add Author of the NFT" MaxLength="50" @bind-Value=@newNFT.Author Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
                     }
@@ -70,7 +70,7 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <Input Placeholder="Add Description of the NFT" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                <Input Placeholder="Add Description of the NFT" MaxLength="160" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
                     }
@@ -83,12 +83,28 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <Input Placeholder="Type your Bio" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                <Input Placeholder="Type your Bio" MaxLength="160" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
                     }
 
-                    <VENFTApp_Blazor.Components.UploadImage ImageLink="@newNFT.ImageLink" ImageLinkChanged="@ImageLinkChanged" />
+                    @if (newNFT.Description.Length >= 159)
+                    {
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <small>Maximum length is 160 characters</small>
+                            </div>
+                        </div>
+                    }
+
+                    @if (nftType == NFTTypes.Music)
+                    {
+                        <VENFTApp_Blazor.Components.UploadImage NFTType="@nftType" ImageLink="@newNFT.Link" ImageLinkChanged="@ImageLinkChanged" />
+                    }
+                    else
+                    {
+                        <VENFTApp_Blazor.Components.UploadImage NFTType="@nftType" ImageLink="@newNFT.ImageLink" ImageLinkChanged="@ImageLinkChanged" />
+                    }
 
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -154,14 +170,14 @@
 @code {
 
 
-    bool withPrice = false;
-    bool withCoppies = false;
+        bool withPrice = false;
+        bool withCoppies = false;
 
-    [Parameter]
-    public bool RedirectToNFTsAfterMint { get; set; } = false;
+        [Parameter]
+        public bool RedirectToNFTsAfterMint { get; set; } = false;
 
-    [Parameter]
-    public EventCallback<string> NFTMinted { get; set; }
+        [Parameter]
+        public EventCallback<string> NFTMinted { get; set; }
 
     private NFTTypes nftType = NFTTypes.Image;
     [Parameter]
@@ -205,8 +221,16 @@
 
     void ImageLinkChanged(string newLink)
     {
-        newNFT.ImageLink = newLink;
-        newProfileNFT.ImageLink = newLink;
+        if (nftType == NFTTypes.Music)
+        {
+            newNFT.Link = newLink;
+            newNFT.ImageLink = newLink;
+        }
+        else
+        {
+            newNFT.ImageLink = newLink;
+            newProfileNFT.ImageLink = newLink;
+        }
     }
 
     private async Task withPriceChanged(object e)
@@ -256,6 +280,12 @@
             {
                 await newProfileNFT.FillCommon(newNFT);
                 newNFT = newProfileNFT;
+            }
+
+            if (nftType == NFTTypes.Music)
+            {
+                var nft = await NFTFactory.CloneNFT(newNFT, true, NFTTypes.Music);
+                newNFT = nft; // hotfix
             }
 
             (bool, string) res;

@@ -24,7 +24,7 @@
                     <span>Description: @NFT.Description</span>
                 </div>
             </div>
-            @if (!string.IsNullOrEmpty(NFT.Link))
+            @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music)
             {
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -56,15 +56,24 @@
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <a href="@NFT.ImageLink" target="_blank">
-                        @if (!string.IsNullOrEmpty(NFT.ImageLink))
+                        @if (NFT.Type == NFTTypes.Music)
                         {
-                            <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto;" />
+                            <video controls="" autoplay="" name="media">
+                                <source src="@NFT.Link" type="audio/mpeg">
+                            </video>
                         }
                         else
                         {
-                            <Spin Tip="Loading..." Spinning="true">
-                                <img src="@NFT.ImageLink" style="min-height:100px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
-                            </Spin>
+                            @if (!string.IsNullOrEmpty(NFT.ImageLink))
+                            {
+                                <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto;" />
+                            }
+                            else
+                            {
+                                <Spin Tip="Loading..." Spinning="true">
+                                    <img src="@NFT.ImageLink" style="min-height:100px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
+                                </Spin>
+                            }
                         }
                     </a>
                 </div>

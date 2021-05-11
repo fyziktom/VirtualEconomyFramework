@@ -703,6 +703,9 @@ namespace VEDriversLite
                     case NFTTypes.Post:
                         rtxid = await NFTHelpers.MintPostNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
                         break;
+                    case NFTTypes.Music:
+                        rtxid = await NFTHelpers.MintMusicNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
+                        break;
                     case NFTTypes.Profile:
                         rtxid = await NFTHelpers.MintProfileNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
                         break;
@@ -758,6 +761,9 @@ namespace VEDriversLite
                         break;
                     case NFTTypes.Post:
                         rtxid = await NFTHelpers.MintMultiPostNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2);
+                        break;
+                    case NFTTypes.Music:
+                        rtxid = await NFTHelpers.MintMultiMusicNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2);
                         break;
                 }
                 if (rtxid != null)
