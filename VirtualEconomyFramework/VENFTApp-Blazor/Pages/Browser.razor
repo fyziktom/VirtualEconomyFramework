@@ -10,7 +10,7 @@
 @page "/browser"
 
 <Spin Tip="Loading Browser..." Spinning="@loadingBrowser">
-    <div class="container-fluid">
+    <div class="container-fluid overflow-auto">
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <h3>NFT Browser</h3>
@@ -31,11 +31,16 @@
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <button @onclick="openPublicAddresses" class="btn btn-secondary" type="button">Browse Public Addresses</button>
             </div>
-        </div><!--
+        </div>
+        <!--
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <button onclick="browseTabs" class="btn btn-secondary" type="button">Browse Tabs</button>
-                <VENFTApp_Blazor.Components.OpenedTabList Open="openTabBrowser" BrowseTabsClosed="browseTabsClosed" TabSelected="TabSelectedHandler" NewTabOpened="TabAddedHandler" TabClosed="TabClosedHandler" />
+                <VENFTApp_Blazor.Components.OpenedTabList Open="openTabBrowser" 
+                                                          BrowseTabsClosed="browseTabsClosed" 
+                                                          TabSelected="TabSelectedHandler" 
+                                                          NewTabOpened="TabAddedHandler" 
+                                                          TabClosed="TabClosedHandler" />
             </div>
         </div>
         -->
@@ -43,12 +48,26 @@
             <div class="col">
                 <div>
                     <ul class="nav nav-tabs" role="tablist" id="shopTabsHeadings">
-                        @foreach (var tab in AppData.Tabs)
+                        @foreach (var tab in AppData.Account.Tabs)
                         {
                             <li class="nav-item" role="presentation">
-                                <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab)">
-                                    @tab.ShortAddress
-                                    <button class="btn btn-light" @onclick="async () => removeTab(tab)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 2px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
+                                <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab.Address)">
+                                    @if (!string.IsNullOrEmpty(tab.BookmarkFromAccount.Name))
+                                    {
+                                        if (tab.BookmarkFromAccount.Name.Length < 10)
+                                        {
+                                        @tab.BookmarkFromAccount.Name
+                                        }
+                                        else
+                                        {
+                                            @tab.BookmarkFromAccount.Name.Substring(0, 9)
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @tab.ShortAddress
+                                    }
+                                    <button class="btn btn-light" @onclick="async () => removeTab(tab.Address)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 2px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
                                         <i class="oi oi-x" style="font-size:7px;"></i>
                                     </button>
                                 </a>
@@ -58,7 +77,7 @@
                     </ul>
                     <div class="tab-content" id="shopTabsContent">
 
-                        @foreach (var tab in AppData.Tabs)
+                        @foreach (var tab in AppData.Account.Tabs)
                         {
                             if (tab.Selected)
                             {
@@ -67,13 +86,18 @@
                                         <div class="col">
                                             <div class="row" style="margin-top: 10px;">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                    <span>@tab.Address</span>
+                                                    @if (!string.IsNullOrEmpty(tab.BookmarkFromAccount.Name))
+                                                    {
+                                                        <span>@tab.BookmarkFromAccount.Name - @NeblioTransactionHelpers.ShortenAddress(tab.Address)</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>@tab.Address</span>
+                                                    }
+
                                                     <VENFTApp_Blazor.Components.CopyIcon MarginLeft="15" TextToCopy="@tab.Address" />
                                                     <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="@tab.Address" />
-                                                    <!--
-                                                <a style="font-size: 20px; margin-left:15px; margin-bottom: 10px">
-                                                    <i class="oi oi-star"></i>
-                                                </a>-->
+                                                    <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@tab.IsInBookmark" TabBookmark="@tab.BookmarkFromAccount" Address="@tab.Address" BookmarkRefreshed="@BookmarkRefreshedHandler" />
                                                 </div>
                                             </div>
 
@@ -176,7 +200,6 @@
                         <tr>
                             <th>Address</th>
                             <th>Number Of NFTs</th>
-                            <th>Balance of VENFT</th>
                             <th>Open In Tab</th>
                         </tr>
                     </thead>
@@ -186,14 +209,11 @@
                             <tr style="margin-top:14px;">
                                 <td>
                                     <a target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
-                                        @owner.ShortenAddress
+                                        @PublicNameInBookmarks(owner.Address, owner.ShortenAddress)
                                     </a>
                                 </td>
                                 <td>
                                     <span style="margin-left:12px;">@owner.AmountOfNFTs NFTs</span>
-                                </td>
-                                <td>
-                                    <span style="margin-left:12px;">@owner.AmountOfTokens VENFT</span>
                                 </td>
                                 <td>
                                     <a style="margin-left:20px;" target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
@@ -255,6 +275,15 @@
         StateHasChanged();
     }
 
+    private string PublicNameInBookmarks(string address, string shortaddress)
+    {
+        var res = AppData.Account.IsInTheBookmarks(address).GetAwaiter().GetResult();
+        if (res.Item1)
+            if (!string.IsNullOrEmpty(res.Item2.Name))
+                return res.Item2.Name;
+        return shortaddress;
+    }
+
     private void browseTabsClosed(bool e)
     {
         openTabBrowser = e;
@@ -301,53 +330,29 @@
         {
             var setFirst = true;
             loadingBrowser = true;
-            var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
-            if (!string.IsNullOrEmpty(bookmarks))
-            {
-                await AppData.Account.LoadBookmarks(bookmarks);
-            }
-
-            var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
-
             try
             {
+                var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+                if (bookmarks == "{}" || bookmarks == "[]")
+                    bookmarks = string.Empty;
+
+                if (!string.IsNullOrEmpty(bookmarks))
+                    await AppData.Account.LoadBookmarks(bookmarks);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot load bookmarks!" + ex.Message);
+            }
+            try
+            {
+                var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
                 if (!string.IsNullOrEmpty(browserTabs))
-                    if (AppData.Tabs.Count == 0)
-                        AppData.Tabs = await NFTHelpers.GetTabs(browserTabs);
-                    else
-                        setFirst = false;
+                    await AppData.Account.LoadTabs(browserTabs);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot load tabs history!" + ex.Message);
             }
-
-            if (AppData.Tabs == null)
-                AppData.Tabs = new List<ActiveTab>();
-
-            if (setFirst)
-            {
-                if (AppData.Tabs.Count > 0)
-                {
-                    foreach (var t in AppData.Tabs)
-                    {
-                        t.Selected = setFirst;
-                        if (setFirst)
-                        {
-                            setFirst = false;
-                            try
-                            {
-                                await t.Reload();
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("Exception during loading NFTs and Profile of the tab. " + ex.Message);
-                            }
-                        }
-                    }
-                }
-            }
-
             loadingBrowser = false;
             StateHasChanged();
 
@@ -362,31 +367,9 @@
         }
     }
 
-    private async Task AddBookmark(string name, string address, string note)
+    private void BookmarkRefreshedHandler(VEDriversLite.Bookmarks.Bookmark bookmark)
     {
-        if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(address))
-        {
-            if (string.IsNullOrEmpty(note))
-                note = string.Empty;
-
-            var bks = await AppData.Account.AddBookmark(name, address, note);
-            if (bks.Item1)
-                await localStorage.SetItemAsync("bookmarks", bks.Item2);
-        }
-    }
-
-    private async Task RemoveBookmark(string address)
-    {
-        if (!string.IsNullOrEmpty(address))
-        {
-            var bks = await AppData.Account.RemoveBookmark(address);
-            await localStorage.SetItemAsync("bookmarks", bks);
-        }
-    }
-
-    private async Task addNewTabModal()
-    {
-        openTabVisible = true;
+        StateHasChanged();
     }
 
     private async Task addNewPublicTabModal(string address)
@@ -396,34 +379,22 @@
         openTabVisible = true;
     }
 
+    private async Task addNewTabModal()
+    {
+        openTabVisible = true;
+    }
+
     private async Task addNewTab()
     {
         loadingBrowser = true;
-
-        if (AppData.Tabs.Count > 0)
-            foreach (var t in AppData.Tabs)
-                t.Selected = false;
-
-        var tab = new ActiveTab(newTabAddress);
-        tab.Selected = true;
         openTabVisible = false;
-        AppData.Tabs.Add(tab);
-        addressInOpenTab = tab.Address;
         StateHasChanged();
-
-        try
-        {
-            await tab.Reload();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Exception during loading NFTs and Profile of the tab. " + ex.Message);
-        }
+        var res = await AppData.Account.AddTab(newTabAddress);
+        if (res.Item1)
+            await localStorage.SetItemAsync("browserTabs", res.Item2);
+        addressInOpenTab = newTabAddress;
         loadingBrowser = false;
         StateHasChanged();
-
-        var bst = await NFTHelpers.SerializeTabs(AppData.Tabs);
-        await localStorage.SetItemAsync("browserTabs", bst);
     }
 
     private async Task addNewTabCancel()
@@ -431,36 +402,20 @@
         openTabVisible = false;
     }
 
-    private async Task selectTab(ActiveTab tab)
+    private async Task selectTab(string address)
     {
         loadingBrowser = true;
-        foreach (var t in AppData.Tabs)
-            t.Selected = false;
-
-        AppData.Tabs.FirstOrDefault(t => t.Address == tab.Address).Selected = true;
-
-        addressInOpenTab = tab.Address;
-
-        if (tab.NFTs.Count == 0)
-        {
-            await tab.Reload();
-        }
+        StateHasChanged();
+        await AppData.Account.SelectTab(address);
+        addressInOpenTab = address;
         loadingBrowser = false;
         StateHasChanged();
     }
 
-    private async Task removeTab(ActiveTab tab)
+    private async Task removeTab(string address)
     {
-        if (AppData.Tabs.Count > 0)
-        {
-            AppData.Tabs.Remove(tab);
-
-            var t = AppData.Tabs.FirstOrDefault();
-            if (t != null)
-                t.Selected = true;
-
-            var bst = await NFTHelpers.SerializeTabs(AppData.Tabs);
-            await localStorage.SetItemAsync("browserTabs", bst);
-        }
+        var tbs = await AppData.Account.RemoveTab(address);
+        if (tbs.Item1)
+            await localStorage.SetItemAsync("browserTabs", tbs.Item2);
     }
 }

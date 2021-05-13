@@ -58,9 +58,18 @@
                     <a href="@NFT.ImageLink" target="_blank">
                         @if (NFT.Type == NFTTypes.Music)
                         {
-                            <video controls="" autoplay="" name="media">
-                                <source src="@NFT.Link" type="audio/mpeg">
-                            </video>
+                            @if (!string.IsNullOrEmpty(NFT.Link))
+                            { 
+                                <video controls="" autoplay="" name="media" title="@NFT.Name" @onplay="VideoStartedPlay">
+                                    <source src="@NFT.Link" type="audio/mpeg">
+                                </video>
+                            }
+                            else
+                            {
+                                <Spin Tip="Loading..." Spinning="true" >
+                                    <div style="width:100px; height:50px;"></div>
+                                </Spin>
+                            }
                         }
                         else
                         {
@@ -247,13 +256,10 @@
         get => _utxo;
         set
         {
-            if (!string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(value) && _utxo != value)
             {
-                if (_utxo != value)
-                {
-                    _utxo = value;
-                    Load();
-                }
+                _utxo = value;
+                Load();
             }
         }
     }
@@ -304,6 +310,11 @@
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
         loading = false;
         StateHasChanged();
+    }
+
+    private void VideoStartedPlay(EventArgs e)
+    {
+        JSRuntime.InvokeVoidAsync("jsFunctions.setMusicInfo", new object[] { NFT.Name, NFT.Author, NFT.Description });
     }
 
     private void TxDataRefreshedHandler(object sender, GetTransactionInfoResponse info)

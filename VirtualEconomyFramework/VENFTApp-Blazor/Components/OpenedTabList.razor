@@ -22,9 +22,15 @@
                     <div class="col d-flex justify-content-center align-items-center" style="max-width:600px;">
                         <div class="card-group">
 
-                            @foreach (var tab in AppData.Tabs)
+                            @foreach (var tab in AppData.Account.Tabs)
                             {
-                                <VENFTApp_Blazor.Components.TabThumbnail Address="@tab.Address" Selected="@tab.Selected" ImageLink="@tab.Profile.ImageLink" Bio="@tab.Profile.Description" Nick="@tab.Profile.Nickname" TabClosed="@closeTab" TabSelected="@selectTab" />
+                                <VENFTApp_Blazor.Components.TabThumbnail Address="@tab.Address" 
+                                                                         Selected="@tab.Selected" 
+                                                                         ImageLink="@tab.Profile.ImageLink" 
+                                                                         Bio="@tab.Profile.Description" 
+                                                                         Nick="@tab.Profile.Nickname" 
+                                                                         TabClosed="@closeTab" 
+                                                                         TabSelected="@selectTab"/>
                             }
 
                             <div class="card" style="margin:10px; max-width:160px;width:160px;">
@@ -54,7 +60,7 @@
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
-                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" Name="OpenNewTabCameraStream" />-->
+                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" Name="OpenNewTabCameraStream" />-->
                 </div>
             </div>
         </div>
@@ -115,36 +121,21 @@
 
     private void selectTab(string addr)
     {
-        foreach (var t in AppData.Tabs)
-            t.Selected = false;
-
-        var tab = AppData.Tabs.FirstOrDefault(t => t.Address == addr);
-        tab.Selected = true;
-
-        if (tab.NFTs.Count == 0)
-        {
-            tab.Reload().Wait();
-        }
-        TabSelected.InvokeAsync(addr);
+        SelectTabAsync(addr);
+    }
+    private async Task SelectTabAsync(string addr)
+    {
+        await AppData.Account.SelectTab(addr);
+        await TabSelected.InvokeAsync(addr);
         showBrowseTabsVisible = false;
         StateHasChanged();
     }
 
     private void closeTab(string addr)
     {
-        if (AppData.Tabs.Count > 0)
-        {
-            var tab = AppData.Tabs.FirstOrDefault(t => t.Address == addr);
-            AppData.Tabs.Remove(tab);
-
-            var t = AppData.Tabs.FirstOrDefault();
-            if (t != null)
-                t.Selected = true;
-
-            var bst = NFTHelpers.SerializeTabs(AppData.Tabs).GetAwaiter().GetResult();
-            localStorage.SetItemAsync("browserTabs", bst).GetAwaiter().GetResult();
-        }
-
+        var res = AppData.Account.RemoveTab(addr).GetAwaiter().GetResult();
+        if(res.Item1)
+            localStorage.SetItemAsync("browserTabs", res.Item2).GetAwaiter().GetResult();
         TabClosed.InvokeAsync(addr);
         StateHasChanged();
     }
@@ -170,30 +161,14 @@
 
     private async Task addNewTab()
     {
-        if (AppData.Tabs.Count > 0)
-            foreach (var t in AppData.Tabs)
-                t.Selected = false;
-
-        var tab = new ActiveTab(newTabAddress);
-        tab.Selected = true;
-        openTabVisible = false;
-        AppData.Tabs.Add(tab);
-        await NewTabOpened.InvokeAsync(tab.Address);
-        StateHasChanged();
-
-        try
+        var res = await AppData.Account.AddTab(newTabAddress);
+        if (res.Item1)
         {
-            await tab.Reload();
+            await localStorage.SetItemAsync("browserTabs", res.Item2);
+            await NewTabOpened.InvokeAsync(newTabAddress);
+            openTabVisible = false;
+            StateHasChanged();
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Exception during loading NFTs and Profile of the tab. " + ex.Message);
-        }
-        openTabVisible = false;
-        StateHasChanged();
-
-        var bst = await NFTHelpers.SerializeTabs(AppData.Tabs);
-        await localStorage.SetItemAsync("browserTabs", bst);
     }
 
     private async Task addNewTabCancel()

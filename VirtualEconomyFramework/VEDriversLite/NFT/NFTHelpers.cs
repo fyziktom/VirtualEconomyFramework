@@ -102,20 +102,14 @@ namespace VEDriversLite.NFT
             {
                 var meta = await NeblioTransactionHelpers.GetTransactionMetadata(TokenId, utxo);
                 if (meta.TryGetValue("NFT", out var value))
-                {
-                    if (!string.IsNullOrEmpty(value))
+                    if (!string.IsNullOrEmpty(value) && value == "true")
                     {
-                        if (value == "true")
-                        {
-                            result.NFTMetadata = meta;
+                        result.NFTMetadata = meta;
+                        if (meta.TryGetValue("SourceUtxo", out var sourceTxId))
+                            result.NFTOriginTxId = sourceTxId;
 
-                            if (meta.TryGetValue("SourceUtxo", out var sourceTxId))
-                                result.NFTOriginTxId = sourceTxId;
-
-                            return result;
-                        }
+                        return result;
                     }
-                }
             }
             catch (Exception ex)
             {
@@ -130,15 +124,8 @@ namespace VEDriversLite.NFT
             var meta = await NeblioTransactionHelpers.GetTransactionMetadata(TokenId, utxo);
 
             if (meta.TryGetValue("NFT", out var value))
-            {
-                if (!string.IsNullOrEmpty(value))
-                {
-                    if (value == "true")
-                    {
-                        return meta;
-                    }
-                }
-            }
+                if (!string.IsNullOrEmpty(value) && value == "true")
+                    return meta;
 
             return null;
         }
@@ -148,29 +135,22 @@ namespace VEDriversLite.NFT
             var info = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
 
             if (info != null) {
-                if (info.Vin != null)
+                if (info.Vin != null && info.Vin.Count > 0)
                 {
-                    if (info.Vin.Count > 0)
+                    var vin = info.Vin.ToArray()?[0];
+                    if (vin.Tokens != null && vin.Tokens.Count > 0)
                     {
-                        var vin = info.Vin.ToArray()?[0];
-                        if (vin.Tokens != null)
+                        var vintok = vin.Tokens.ToArray()?[0];
+                        if (vintok != null)
                         {
-                            if (vin.Tokens.Count > 0)
-                            {
-                                var vintok = vin.Tokens.ToArray()?[0];
-                                if (vintok != null)
-                                {
-                                    if (vintok.Amount > 1)
-                                        return (true, vin.Txid);
-                                    else if (vintok.Amount == 1)
-                                        return (false, vin.Txid);
-                                }
-                            }
+                            if (vintok.Amount > 1)
+                                return (true, vin.Txid);
+                            else if (vintok.Amount == 1)
+                                return (false, vin.Txid);
                         }
                     }
                 }
             }
-            
             return (false, string.Empty);
         }
 
@@ -234,7 +214,8 @@ namespace VEDriversLite.NFT
         public static async Task<List<INFT>> LoadAddressNFTs(string address)
         {
             List<INFT> nfts = new List<INFT>();
-            var utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
+            var uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
+            var utxos = uts.OrderBy(u => u.Blocktime).Reverse().ToList();
 
             foreach (var u in utxos)
             {
@@ -327,16 +308,6 @@ namespace VEDriversLite.NFT
                 Console.WriteLine("Exception during loading NFT history: " + msg);
                 return new List<INFT>();
             }
-        }
-
-        public static async Task<List<ActiveTab>> GetTabs(string tabs)
-        {
-            return JsonConvert.DeserializeObject<List<ActiveTab>>(tabs);
-        }
-
-        public static async Task<string> SerializeTabs(List<ActiveTab> tabs)
-        {
-            return JsonConvert.SerializeObject(tabs);
         }
 
         public static async Task<string> MintMultiImageNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
@@ -791,6 +762,7 @@ namespace VEDriversLite.NFT
             metadata.Add("Sender", address);
             metadata.Add("NFTUtxoTxId", nft.Utxo);
             metadata.Add("Image", nft.ImageLink);
+            metadata.Add("Link", nft.Link);
             metadata.Add("Price", nft.Price.ToString(CultureInfo.InvariantCulture));
             metadata.Add("Type", "NFT Payment");
 
@@ -834,7 +806,7 @@ namespace VEDriversLite.NFT
             metadata.Add("NFT", "true");
             metadata.Add("Type", NFT.TypeText);
 
-            if (NFT.Type == NFTTypes.Post)
+            if (NFT.Type == NFTTypes.Post || NFT.Type == NFTTypes.Music)
             {
                 metadata.Add("Name", NFT.Name);
                 metadata.Add("Author", NFT.Author);

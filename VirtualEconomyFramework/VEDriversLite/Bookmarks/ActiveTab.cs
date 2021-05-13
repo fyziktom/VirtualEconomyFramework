@@ -20,8 +20,11 @@ namespace VEDriversLite.Bookmarks
         public bool Selected { get; set; } = false;
         public string Address { get; set; } = string.Empty;
         public string ShortAddress { get; set; } = string.Empty;
+        public bool IsInBookmark { get; set; } = false;
         [JsonIgnore]
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        [JsonIgnore]
+        public Bookmark BookmarkFromAccount { get; set; } = new Bookmark();
         [JsonIgnore]
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         [JsonIgnore]
@@ -51,6 +54,24 @@ namespace VEDriversLite.Bookmarks
                     ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
                 }
             }
+        }
+
+        public void LoadBookmark(Bookmark bkm)
+        {
+            if (!string.IsNullOrEmpty(bkm.Address) && !string.IsNullOrEmpty(bkm.Name))
+            {
+                IsInBookmark = true;
+                BookmarkFromAccount = bkm;
+            }
+            else
+            {
+                ClearBookmark();
+            }
+        }
+        public void ClearBookmark()
+        {
+            IsInBookmark = false;
+            BookmarkFromAccount = new Bookmark();
         }
     }
 }

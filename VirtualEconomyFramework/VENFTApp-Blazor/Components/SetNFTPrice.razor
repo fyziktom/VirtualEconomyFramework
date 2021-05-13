@@ -30,8 +30,8 @@
 </Modal>
 
 @code {
-    string receiverAddress = string.Empty;
-    bool confirmSetPriceVisible = false;
+        string receiverAddress = string.Empty;
+        bool confirmSetPriceVisible = false;
     private double priceOfNFT { get; set; } = 0.0005;
 
     bool sendingTransaction = false;
@@ -52,16 +52,10 @@
         get => sourceNFT;
         set
         {
-            if (value != null)
+            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != sourceNFT.Utxo)
             {
-                if (!string.IsNullOrEmpty(value.Utxo))
-                {
-                    if (value.Utxo != sourceNFT.Utxo)
-                    {
-                        sourceNFT = value;
-                        StateHasChanged();
-                    }
-                }
+                sourceNFT = value;
+                StateHasChanged();
             }
         }
     }

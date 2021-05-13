@@ -36,6 +36,8 @@ namespace VEDriversLite
         public double SourceTokensBalance { get; set; } = 0.0;
         public double AddressNFTCount { get; set; } = 0.0;
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        public List<ActiveTab> Tabs { get; set; } = new List<ActiveTab>();
+         
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
         public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; } = new Dictionary<string, TokenSupplyDto>();
@@ -310,6 +312,8 @@ namespace VEDriversLite
             return false;
         }
 
+        #region Bookmarks
+
         public async Task LoadBookmarks(string bookmarks)
         {
             try
@@ -327,31 +331,40 @@ namespace VEDriversLite
         public async Task<(bool,string)> AddBookmark(string name, string address, string note)
         {
             if (!Bookmarks.Any(b => b.Address == address))
-                Bookmarks.Add(new Bookmark()
+            {
+                var bkm = new Bookmark()
                 {
                     Name = name,
                     Address = address,
                     Note = note
-                });
+                };
+                Bookmarks.Add(bkm);
+                var tab = Tabs.Find(t => t.Address == address);
+                if (tab != null)
+                    tab.LoadBookmark(bkm);
+                return (true, JsonConvert.SerializeObject(Bookmarks));
+            }
             else
             {
                 await InvokeErrorEvent("Bookmark Already Exists", "Already Exists");
                 return (false, "Already Exists.");
             }
-
-            return (true,JsonConvert.SerializeObject(Bookmarks));
         }
 
         public async Task<(bool,string)> RemoveBookmark(string address)
         {
-            var bk = Bookmarks.FirstOrDefault(b => b.Address == address);
+            var bk = Bookmarks.Find(b => b.Address == address);
             if (bk != null)
                 Bookmarks.Remove(bk);
             else
             {
                 await InvokeErrorEvent("Bookmark Not Found.", "Not Found");
-                return (false, "Not Found.");
+                return (false, string.Empty);
             }
+
+            var tab = Tabs.Find(t => t.Address == address);
+            if (tab != null)
+                tab.ClearBookmark();
 
             return (true,JsonConvert.SerializeObject(Bookmarks));
         }
@@ -360,6 +373,112 @@ namespace VEDriversLite
         {
             return JsonConvert.SerializeObject(Bookmarks);
         }
+
+        public async Task<(bool, Bookmark)> IsInTheBookmarks(string address)
+        {
+            var bkm = Bookmarks.Find(b => b.Address == address);
+            if (bkm == null || string.IsNullOrEmpty(bkm.Address) || string.IsNullOrEmpty(bkm.Name))
+                return (false, new Bookmark());
+            //return (false, new Bookmark() { Address = NeblioTransactionHelpers.ShortenAddress(address) });
+            else
+                return (true, bkm);
+        }
+
+        #endregion
+
+        #region Tabs
+        public async Task LoadTabs(string tabs)
+        {
+            try
+            {
+                var tbs = JsonConvert.DeserializeObject<List<ActiveTab>>(tabs);
+                if (tbs != null)
+                    Tabs = tbs;
+
+                if (Tabs.Count > 0)
+                {
+                    foreach (var t in Tabs)
+                    {
+                        t.Selected = false;
+                        var bkm = await IsInTheBookmarks(t.Address);
+                        t.LoadBookmark(bkm.Item2);
+                    }
+                    Tabs.FirstOrDefault().Selected = true;
+
+                    try
+                    {
+                        await Tabs.FirstOrDefault().Reload();
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Cannot reload tabs" + ex.Message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorEvent(ex.Message, "Cannot deserialize the tabs.");
+            }
+        }
+
+        public async Task<(bool, string)> AddTab(string address)
+        {
+            if (!Tabs.Any(t => t.Address == address))
+            {
+                var bkm = await IsInTheBookmarks(address);
+                var tab = new ActiveTab(address);
+                tab.BookmarkFromAccount = bkm.Item2;
+                tab.Selected = true;
+
+                foreach (var t in Tabs)
+                    t.Selected = false;
+
+                await tab.Reload();
+                Tabs.Add(tab);
+            }
+            else
+            {
+                await InvokeErrorEvent("Bookmark Already Exists", "Already Exists");
+                return (false, "Already Exists.");
+            }
+
+            return (true, JsonConvert.SerializeObject(Bookmarks));
+        }
+
+        public async Task<(bool, string)> RemoveTab(string address)
+        {
+            var tab = Tabs.Find(t => t.Address == address);
+            if (tab != null)
+                Tabs.Remove(tab);
+            else
+            {
+                await InvokeErrorEvent("Tab Not Found.", "Not Found");
+                return (false, string.Empty);
+            }
+
+            foreach (var t in Tabs)
+                t.Selected = false;
+            Tabs.FirstOrDefault().Selected = true;
+
+            return (true, JsonConvert.SerializeObject(Tabs));
+        }
+        public async Task SelectTab(string address)
+        {
+            foreach (var t in Tabs)
+                t.Selected = false;
+            var tab = Tabs.Find(t => t.Address == address);
+            if (tab != null)
+                tab.Selected = true;
+            if (tab.NFTs.Count == 0)
+                await tab.Reload();
+        }
+
+        public async Task<string> SerializeTabs()
+        {
+            return JsonConvert.SerializeObject(Tabs);
+        }
+
+        #endregion
 
         public async Task ReloadTokenSupply()
         {
@@ -383,19 +502,20 @@ namespace VEDriversLite
         public async Task ReloadUtxos()
         {
             var ux = await NeblioTransactionHelpers.GetAddressUtxosObjects(Address);
+            var ouxox = ux.OrderBy(u => u.Blocktime).Reverse().ToList();
             AddressInfoUtxos = new GetAddressInfoResponse()
             {
-                Utxos = ux
+                Utxos = ouxox
             };
 
-            if (ux.Count > 0)
+            if (ouxox.Count > 0)
             {
                 Utxos.Clear();
                 TotalBalance = 0.0;
                 TotalUnconfirmedBalance = 0.0;
                 TotalSpendableBalance = 0.0;
                 // add new ones
-                foreach (var u in ux)
+                foreach (var u in ouxox)
                 {
                     Utxos.TryAdd(u.Txid, u);
 

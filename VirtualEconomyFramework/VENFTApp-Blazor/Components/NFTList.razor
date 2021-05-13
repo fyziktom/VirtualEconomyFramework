@@ -2,13 +2,13 @@
 @using VEDriversLite.NFT
 @inject AppData AppData
 
-<div class="container-fluid">
+<div class="container-fluid overflow-auto">
     <div class="row">
         <div class="col">
 
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-end justify-content-xl-end align-items-xl-end">
-                    <button class="btn btn-primary" @onclick="ReloadNFTs"><i class="oi oi-reload"></i></button>
+                    <button class="btn btn-light" @onclick="ReloadNFTs"><i class="oi oi-reload"></i></button>
                 </div>
             </div>
 
@@ -123,7 +123,7 @@
         {
             if (!MainAccount)
             {
-                var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
+                var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
                 if (tab != null)
                     await tab.Reload();
 
@@ -147,7 +147,7 @@
         {
             if (!MainAccount)
             {
-                var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
+                var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
                 if (tab != null)
                     if (tab.NFTs.Count == 0)
                         await tab.Reload();

@@ -3,7 +3,7 @@
 @inject AppData AppData
 @inject IJSRuntime jsRuntime
 
-<div class="card" style="margin-left:10px; margin-top:10px;min-width:250px; width:250px; min-height:400px; max-height:600px;">
+<div class="card" style="margin-left:10px; margin-top:10px;min-width:250px; width:250px; max-width:250px; min-height:400px; max-height:600px;">
     <div class="card-header" style="padding: 0px;">
         <div class="row" style="max-width: 250px;height:200px;margin: 0px;">
             <div class="col d-flex justify-content-center align-items-center" style="padding: 0px;">
@@ -226,7 +226,7 @@
         {
             if (!string.IsNullOrEmpty(_address))
             {
-                var tab = AppData.Tabs.Where(t => t.Address == _address)?.ToList()?.FirstOrDefault();
+                var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
                 if (tab != null)
                     return tab.ReceivedPayments.ContainsKey(utxo);
             }

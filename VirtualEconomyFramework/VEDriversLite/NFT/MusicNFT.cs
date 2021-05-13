@@ -50,6 +50,7 @@ namespace VEDriversLite.NFT
                     ImageLink = imagelink;
                 if (nftData.NFTMetadata.TryGetValue("Type", out var type))
                     TypeText = type;
+                /*
                 if (nftData.NFTMetadata.TryGetValue("Price", out var price))
                 {
                     if (!string.IsNullOrEmpty(price))
@@ -67,9 +68,12 @@ namespace VEDriversLite.NFT
                 {
                     PriceActive = false;
                 }
-
+                */
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
+
+                if (string.IsNullOrEmpty(Link) && !string.IsNullOrEmpty(ImageLink))
+                    Link = ImageLink;
             }
         }
 
@@ -112,6 +116,9 @@ namespace VEDriversLite.NFT
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
+
+                if (string.IsNullOrEmpty(Link) && !string.IsNullOrEmpty(ImageLink))
+                    Link = ImageLink;
             }
         }
 

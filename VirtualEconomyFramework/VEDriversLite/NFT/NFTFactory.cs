@@ -105,9 +105,11 @@ namespace VEDriversLite.NFT
                     var mnft = new MusicNFT(utxo);
                     //await ponft.ParseOriginData();
                     if (wait)
-                        await mnft.LoadLastData(meta);
+                        await mnft.ParseOriginData();
                     else
-                        mnft.LoadLastData(meta);
+                        mnft.ParseOriginData();
+                    mnft.Price = Price;
+                    mnft.PriceActive = PriceActive;
                     return mnft;
                 case NFTTypes.Payment:
                     var pmnft = new PaymentNFT(utxo);

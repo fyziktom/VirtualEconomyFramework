@@ -8,6 +8,5 @@ public class AppData
 {
     public NeblioAccount Account { get; set; } = new NeblioAccount();
     public List<TokenOwnerDto> VENFTOwners = new List<TokenOwnerDto>();
-    public List<ActiveTab> Tabs = new List<ActiveTab>();
 }
 

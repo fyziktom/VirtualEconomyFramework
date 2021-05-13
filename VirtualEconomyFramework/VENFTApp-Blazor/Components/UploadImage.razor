@@ -31,11 +31,11 @@
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             @if (NFTType == NFTTypes.Music)
                             {
-                            <input type="file" @ref=inputTypeFileElement accept="audio/*" />
+                            <input type="file" @ref=inputTypeFileElement /> <!--accept="audio/*" />-->
                             }
                             else
                             {
-                            <input type="file" @ref=inputTypeFileElement accept="image/*" />
+                            <input type="file" @ref=inputTypeFileElement /> <!--accept="image/*" />-->
                             }
                             
                         </div>

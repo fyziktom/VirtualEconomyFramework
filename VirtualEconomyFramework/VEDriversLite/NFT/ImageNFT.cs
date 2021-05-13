@@ -54,6 +54,7 @@ namespace VEDriversLite.NFT
                     IconLink = iconlink;
                 if (nftData.NFTMetadata.TryGetValue("Type", out var type))
                     TypeText = type;
+                /*
                 if (nftData.NFTMetadata.TryGetValue("Price", out var price))
                         Price = double.Parse(price, CultureInfo.InvariantCulture);
                 
@@ -61,7 +62,7 @@ namespace VEDriversLite.NFT
                     PriceActive = true;
                 else
                     PriceActive = false;
-
+                */
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }
