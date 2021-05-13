@@ -397,17 +397,25 @@ namespace VEDriversLite
 
                 if (Tabs.Count > 0)
                 {
+                    var first = true;
                     foreach (var t in Tabs)
                     {
                         t.Selected = false;
                         var bkm = await IsInTheBookmarks(t.Address);
                         t.LoadBookmark(bkm.Item2);
+                        if (first)
+                        {
+                            await t.Reload();
+                            first = false;
+                        }
+                        //else
+                            //t.Reload();
                     }
                     Tabs.FirstOrDefault().Selected = true;
 
                     try
                     {
-                        await Tabs.FirstOrDefault().Reload();
+                        
                     }
                     catch(Exception ex)
                     {

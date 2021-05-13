@@ -37,9 +37,7 @@ namespace VEDriversLite.Bookmarks
                 NFTs = new List<INFT>();
 
             if (NFTs.Count > 0)
-            {
                 Profile = await NFTHelpers.FindProfileNFT(NFTs);
-            }
 
             await RefreshAddressReceivedPayments();
         }
@@ -48,12 +46,8 @@ namespace VEDriversLite.Bookmarks
             ReceivedPayments.Clear();
             var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
             if (pnfts.Count > 0)
-            {
                 foreach (var p in pnfts)
-                {
                     ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
-                }
-            }
         }
 
         public void LoadBookmark(Bookmark bkm)
@@ -64,9 +58,7 @@ namespace VEDriversLite.Bookmarks
                 BookmarkFromAccount = bkm;
             }
             else
-            {
                 ClearBookmark();
-            }
         }
         public void ClearBookmark()
         {

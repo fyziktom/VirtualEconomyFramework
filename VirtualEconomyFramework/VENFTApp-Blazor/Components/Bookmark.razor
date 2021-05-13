@@ -65,27 +65,6 @@
     bool addBookmarkVisible = false;
     bool removeBookmarkVisible = false;
     VEDriversLite.Bookmarks.Bookmark newBookmark = new VEDriversLite.Bookmarks.Bookmark();
-    VEDriversLite.Bookmarks.Bookmark bookmark = new VEDriversLite.Bookmarks.Bookmark();
-    [Parameter]
-    public VEDriversLite.Bookmarks.Bookmark TabBookmark
-    {
-        get => bookmark;
-        set
-        {
-            if (!string.IsNullOrEmpty(value.Name))
-            {
-                bookmark = value;
-            }
-            else
-            {
-                bookmark = new VEDriversLite.Bookmarks.Bookmark();
-                bookmark.Address = _address;
-            }
-            if (!string.IsNullOrEmpty(newBookmark.Name))
-                newBookmark = bookmark;
-            StateHasChanged();
-        }
-    }
 
     [Parameter]
     public EventCallback<VEDriversLite.Bookmarks.Bookmark> BookmarkRefreshed { get; set; }
@@ -98,9 +77,7 @@
         set
         {
             if (!string.IsNullOrEmpty(value))
-            {
                 _address = value;
-            }
         }
     }
 
@@ -157,7 +134,7 @@
             if (bks.Item1)
                 await localStorage.SetItemAsync("bookmarks", bks.Item2);
         }
-        bookmark = new VEDriversLite.Bookmarks.Bookmark() { Address = address };
+        newBookmark = new VEDriversLite.Bookmarks.Bookmark() { Address = address };
         BookmarkRefreshed.InvokeAsync(newBookmark);
     }
 }

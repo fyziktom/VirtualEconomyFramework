@@ -97,7 +97,9 @@
 
                                                     <VENFTApp_Blazor.Components.CopyIcon MarginLeft="15" TextToCopy="@tab.Address" />
                                                     <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="@tab.Address" />
-                                                    <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@tab.IsInBookmark" TabBookmark="@tab.BookmarkFromAccount" Address="@tab.Address" BookmarkRefreshed="@BookmarkRefreshedHandler" />
+                                                    <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@tab.IsInBookmark" 
+                                                                                         Address="@addressInOpenTab"
+                                                                                         BookmarkRefreshed="@BookmarkRefreshedHandler" />
                                                 </div>
                                             </div>
 
@@ -328,7 +330,6 @@
     {
         try
         {
-            var setFirst = true;
             loadingBrowser = true;
             try
             {
@@ -337,7 +338,8 @@
                     bookmarks = string.Empty;
 
                 if (!string.IsNullOrEmpty(bookmarks))
-                    await AppData.Account.LoadBookmarks(bookmarks);
+                    if (AppData.Account.Bookmarks.Count == 0)
+                        await AppData.Account.LoadBookmarks(bookmarks);
             }
             catch(Exception ex)
             {
@@ -347,7 +349,8 @@
             {
                 var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
                 if (!string.IsNullOrEmpty(browserTabs))
-                    await AppData.Account.LoadTabs(browserTabs);
+                    if (AppData.Account.Tabs.Count == 0)
+                        await AppData.Account.LoadTabs(browserTabs);
             }
             catch (Exception ex)
             {
@@ -357,7 +360,7 @@
             StateHasChanged();
 
             if (AppData.VENFTOwners.Count == 0)
-                AppData.VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners(NFTHelpers.TokenId);
+                LoadVENFTOwners();
         }
         catch (Exception ex)
         {
@@ -365,6 +368,12 @@
             Console.WriteLine("Error during loading browser. " + ex.Message);
             loadingBrowser = false;
         }
+    }
+
+    private async Task LoadVENFTOwners()
+    {
+        // load on background
+        AppData.VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners(NFTHelpers.TokenId);
     }
 
     private void BookmarkRefreshedHandler(VEDriversLite.Bookmarks.Bookmark bookmark)
@@ -409,6 +418,7 @@
         await AppData.Account.SelectTab(address);
         addressInOpenTab = address;
         loadingBrowser = false;
+        await Task.Delay(50);
         StateHasChanged();
     }
 
