@@ -16,7 +16,9 @@ namespace VEDriversLite.NFT
         }
 
         public string NFTUtxoTxId { get; set; } = string.Empty;
+        public int NFTUtxoIndex { get; set; } = 0;
         public string Sender { get; set; } = string.Empty;
+        public bool Matched { get; set; } = false;
 
         public override async Task Fill(INFT NFT)
         {
@@ -28,12 +30,15 @@ namespace VEDriversLite.NFT
             Author = NFT.Author;
             SourceTxId = NFT.SourceTxId;
             NFTOriginTxId = NFT.NFTOriginTxId;
+            
             Utxo = NFT.Utxo;
+            UtxoIndex = NFT.UtxoIndex;
             Price = NFT.Price;
             PriceActive = NFT.PriceActive;
 
             var pnft = NFT as PaymentNFT;
             NFTUtxoTxId = pnft.NFTUtxoTxId;
+            NFTUtxoIndex = pnft.NFTUtxoIndex;
             Sender = pnft.Sender;
         }
 
@@ -54,6 +59,9 @@ namespace VEDriversLite.NFT
                     ImageLink = imagelink;
                 if (metadata.TryGetValue("Type", out var type))
                     TypeText = type;
+                if (metadata.TryGetValue("NFTUtxoIndex", out var index))
+                    if (!string.IsNullOrEmpty(index))
+                        NFTUtxoIndex = Convert.ToInt32(index);
                 if (metadata.TryGetValue("Price", out var price))
                 {
                     if (!string.IsNullOrEmpty(price))

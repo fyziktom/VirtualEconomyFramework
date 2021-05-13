@@ -49,6 +49,8 @@
 @code {
 
     [Parameter]
+    public int UtxoIndex { get; set; }
+    [Parameter]
     public string Utxo { get; set; }
     [Parameter]
     public double Price { get; set; }
@@ -120,7 +122,7 @@
             StateHasChanged();
 
             var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, true);
-
+            NFT.UtxoIndex = UtxoIndex;
             var res = await AppData.Account.SendNFTPayment(receiverAddress, NFT);
             if (res.Item1)
                 status = res.Item2;

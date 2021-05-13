@@ -74,9 +74,7 @@ namespace VEDriversLite
                 }
             }
             else
-            {
                 return true;
-            }
         }
 
         private void InitHandlers()
@@ -412,15 +410,6 @@ namespace VEDriversLite
                             //t.Reload();
                     }
                     Tabs.FirstOrDefault().Selected = true;
-
-                    try
-                    {
-                        
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine("Cannot reload tabs" + ex.Message);
-                    }
                 }
             }
             catch (Exception ex)
@@ -548,9 +537,7 @@ namespace VEDriversLite
                 AddressInfo.Transactions = AddressInfo.Transactions.Reverse().ToList();
             }
             else
-            {
                 AddressInfo = new GetAddressResponse();
-            }
 
             if (TotalBalance > 1)
                 EnoughBalanceToBuySourceTokens = true;
@@ -559,9 +546,7 @@ namespace VEDriversLite
         public async Task ReLoadNFTs()
         {
             if (!string.IsNullOrEmpty(Address))
-            {
-                NFTs = await NFTHelpers.LoadAddressNFTs(Address);
-            }
+                NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.Values.ToList());
         }
 
         public async Task RefreshAddressReceivedPayments()
@@ -585,29 +570,23 @@ namespace VEDriversLite
                 foreach (var p in pnfts)
                 {
                     var pn = NFTs.Where(n => n.Utxo == ((PaymentNFT)p).NFTUtxoTxId).FirstOrDefault();
-                    if (pn != null)
+                    if (pn != null && pn.Price > 0 && p.Price >= pn.Price)
                     {
-                        if (pn.Price > 0)
+                        try
                         {
-                            if (p.Price >= pn.Price)
+                            var res = await CheckSpendableNeblio(0.001);
+                            if (res.Item2 != null)
                             {
-                                try
-                                {
-                                    var res = await CheckSpendableNeblio(0.001);
-                                    if (res.Item2 != null)
-                                    {
-                                        var rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
-                                        Console.WriteLine(rtxid);
-                                        await Task.Delay(500);
-                                        await ReLoadNFTs();
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    //await InvokeErrorDuringSendEvent($"Cannot send ordered NFT. Payment TxId: {p.Utxo}, NFT TxId: {pn.Utxo}, error message: {ex.Message}", "Cannot send ordered NFT");
-                                    Console.WriteLine("Cannot send ordered NFT, payment txid: " + p.Utxo + " - " + ex.Message);
-                                }
+                                var rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
+                                Console.WriteLine(rtxid);
+                                await Task.Delay(500);
+                                await ReLoadNFTs();
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            //await InvokeErrorDuringSendEvent($"Cannot send ordered NFT. Payment TxId: {p.Utxo}, NFT TxId: {pn.Utxo}, error message: {ex.Message}", "Cannot send ordered NFT");
+                            Console.WriteLine("Cannot send ordered NFT, payment txid: " + p.Utxo + " - " + ex.Message);
                         }
                     }
                 }
@@ -638,11 +617,8 @@ namespace VEDriversLite
         {
             var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, NFTHelpers.TokenId, 1);
 
-
             if (tutxos.Count == 0)
-            {
                 return (false, 0);
-            }
             else
             {
                 var a = 0;
@@ -664,9 +640,7 @@ namespace VEDriversLite
                 return (false, msg);
             }
             else
-            {
                 return (true, "OK");
-            }
         }
 
         public async Task<(string, ICollection<Utxos>)> CheckSpendableNeblio(double amount)

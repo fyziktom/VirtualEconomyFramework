@@ -46,9 +46,7 @@
         set
         {
             if (value != null)
-            {
                 _nfts = value;
-            }
         }
     }
 
@@ -62,24 +60,18 @@
         get => _address;
         set
         {
-            if (!string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(value) && _address != value && !MainAccount)
             {
-                if (_address != value)
-                {
-                    if (!MainAccount)
-                    {
-                        _nfts = new List<INFT>();
-                        _address = value;
-                        LoadNFTs();
-                    }
-                    else
-                    {
-                        _nfts = new List<INFT>();
-                        _address = value;
-                        _nfts = AppData.Account.NFTs;
+                _nfts = new List<INFT>();
+                _address = value;
+                LoadNFTs();
+            }
+            else
+            {
+                _nfts = new List<INFT>();
+                _address = value;
+                _nfts = AppData.Account.NFTs;
 
-                    }
-                }
             }
         }
     }

@@ -32,6 +32,7 @@ namespace VEDriversLite.NFT
         double Price { get; set; }
         bool PriceActive { get; set; }
         string NFTOriginTxId { get; set; }
+        int UtxoIndex { get; set; }
         DateTime Time { get; set; }
         List<INFT> History { get; set; }
         GetTransactionInfoResponse TxDetails { get; set; }

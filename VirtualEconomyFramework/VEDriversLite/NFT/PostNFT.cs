@@ -27,6 +27,7 @@ namespace VEDriversLite.NFT
             NFTOriginTxId = NFT.NFTOriginTxId;
             TypeText = NFT.TypeText;
             Utxo = NFT.Utxo;
+            UtxoIndex = NFT.UtxoIndex;
             Price = NFT.Price;
             PriceActive = NFT.PriceActive;
         }

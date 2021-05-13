@@ -134,23 +134,22 @@ namespace VEDriversLite.NFT
         {
             var info = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
 
-            if (info != null) {
-                if (info.Vin != null && info.Vin.Count > 0)
+            if (info != null && info.Vin != null && info.Vin.Count > 0)
+            {
+                var vin = info.Vin.ToArray()?[0];
+                if (vin.Tokens != null && vin.Tokens.Count > 0)
                 {
-                    var vin = info.Vin.ToArray()?[0];
-                    if (vin.Tokens != null && vin.Tokens.Count > 0)
+                    var vintok = vin.Tokens.ToArray()?[0];
+                    if (vintok != null)
                     {
-                        var vintok = vin.Tokens.ToArray()?[0];
-                        if (vintok != null)
-                        {
-                            if (vintok.Amount > 1)
-                                return (true, vin.Txid);
-                            else if (vintok.Amount == 1)
-                                return (false, vin.Txid);
-                        }
+                        if (vintok.Amount > 1)
+                            return (true, vin.Txid);
+                        else if (vintok.Amount == 1)
+                            return (false, vin.Txid);
                     }
                 }
             }
+            
             return (false, string.Empty);
         }
 
@@ -181,59 +180,46 @@ namespace VEDriversLite.NFT
             INFT profile = null;
 
             foreach (var u in utxos)
-            {
-                if (u.Tokens != null)
-                {
-                    if (u.Tokens.Count > 0)
-                    {
-                        foreach (var t in u.Tokens)
-                        {
-                            if (t.TokenId == TokenId)
-                            {
-                                if (t.Amount == 1)
-                                {
-                                    var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
-
-                                    if (nft != null)
-                                    {
-                                        if (nft.Type == NFTTypes.Profile && profile == null)
-                                            profile = nft;
-
-                                        if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
-                                            nfts.Add(nft);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            return (profile, nfts);
-        }
-        public static async Task<List<INFT>> LoadAddressNFTs(string address)
-        {
-            List<INFT> nfts = new List<INFT>();
-            var uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
-            var utxos = uts.OrderBy(u => u.Blocktime).Reverse().ToList();
-
-            foreach (var u in utxos)
-            {
                 if (u.Tokens != null && u.Tokens.Count > 0)
-                {
                     foreach (var t in u.Tokens)
-                    {
                         if (t.TokenId == TokenId && t.Amount == 1)
                         {
                             var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
                             if (nft != null)
-                                //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
+                            {
+                                if (nft.Type == NFTTypes.Profile && profile == null)
+                                    profile = nft;
+                                if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
                                     nfts.Add(nft);
+                            }
                         }
-                    }
-                }
-            }
+            
+            return (profile, nfts);
+        }
+        public static async Task<List<INFT>> LoadAddressNFTs(string address, ICollection<Utxos> inutxos = null)
+        {
+            List<INFT> nfts = new List<INFT>();
+            ICollection<Utxos> uts = null;
+            if (inutxos == null)
+                uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
+            else
+                uts = inutxos;
+            var utxos = uts.OrderBy(u => u.Blocktime).Reverse().ToList();
 
+            foreach (var u in utxos)
+                if (u.Tokens != null && u.Tokens.Count > 0)
+                    foreach (var t in u.Tokens)
+                        if (t.TokenId == TokenId && t.Amount == 1)
+                        {
+                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
+                            if (nft != null)
+                            {
+                                nft.UtxoIndex = (int)u.Index;
+                                //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
+                                nfts.Add(nft);
+                            }
+                        }
+                
             return nfts;
         }
 
@@ -268,7 +254,6 @@ namespace VEDriversLite.NFT
                             if (vin.Tokens != null)
                             {
                                 var toks = vin.Tokens.ToList();
-
                                 if (toks != null && toks.Count > 0 && toks[0] != null && toks[0].Amount > 0)
                                 {
                                     try
@@ -278,9 +263,7 @@ namespace VEDriversLite.NFT
                                         if (nft != null)
                                         {
                                             if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
-                                            {
                                                 nfts.Add(nft);
-                                            }
                                             // go to previous tx
                                             txid = vin.Txid;
                                         }
@@ -340,13 +323,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -384,13 +363,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -426,13 +401,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -467,13 +438,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -508,13 +475,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -549,13 +512,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -590,13 +549,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -635,13 +590,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -681,13 +632,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -734,13 +681,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.SendMultiTokenAPIAsync(dto, ekey, nutxos);
                 if (!string.IsNullOrEmpty(rtxid))
-                {
                     return rtxid;
-                }
                 else
-                {
                     throw new Exception("Sending Multi Token Transaction was not successfull.");
-                }
             }
             catch (Exception ex)
             {
@@ -761,6 +704,7 @@ namespace VEDriversLite.NFT
             metadata.Add("NFT", "true");
             metadata.Add("Sender", address);
             metadata.Add("NFTUtxoTxId", nft.Utxo);
+            metadata.Add("NFTUtxoIndex", nft.UtxoIndex.ToString());
             metadata.Add("Image", nft.ImageLink);
             metadata.Add("Link", nft.Link);
             metadata.Add("Price", nft.Price.ToString(CultureInfo.InvariantCulture));
@@ -782,13 +726,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, ekey, nft.Price, nutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {
@@ -836,13 +776,9 @@ namespace VEDriversLite.NFT
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
                 if (rtxid != null)
-                {
                     return rtxid;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
             catch (Exception ex)
             {

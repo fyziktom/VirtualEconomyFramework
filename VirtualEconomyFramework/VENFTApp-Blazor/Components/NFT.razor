@@ -16,7 +16,7 @@
                         }
                         else
                         {
-                            <Spin Tip="Loading...">
+                            <Spin Tip="Loading..." Style="min-width:50px;">
                                 <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
                             </Spin>
                         }
@@ -28,7 +28,7 @@
                         }
                         else
                         {
-                            <Spin Tip="Loading...">
+                            <Spin Tip="Loading..." Style="min-width:50px;">
                                 <img src="@nft.ImageLink" style="min-width:100px; max-height:200px;  max-width:250px;" />
                             </Spin>
                         }
@@ -102,31 +102,21 @@
                             <i class="oi oi-info" style="font-size:12px;"></i>
                         </button>
                     </div>
-                    @if (!IsInThePayments(nft.Utxo))
+                    @if (!IsInThePayments(nft.Utxo) && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
                     {
-                        @if (!OwnNFT)
-                        {
-                            @if (nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
-                            {
-                                <div class="col d-flex justify-content-center align-items-center" style="margin-left:25px;">
-                                    <SendNFTPayment Utxo="@nft.Utxo" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
-                                </div>
-                            }
-                        }
+                        <div class="col d-flex justify-content-center align-items-center" style="margin-left:25px;">
+                            <SendNFTPayment Utxo="@nft.Utxo" UtxoIndex="@nft.UtxoIndex" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
+                        </div>
                     }
                 </div>
                 <div class="row d-flex justify-content-center align-items-center">
-
                     @if (!IsInThePayments(nft.Utxo))
                     {
-                        @if (OwnNFT)
+                        @if (OwnNFT && nft.PriceActive)
                         {
-                            @if (nft.PriceActive)
-                            {
-                                <div class="col">
-                                    <small class="text-muted">Setted Price: @nft.Price NEBL</small>
-                                </div>
-                            }
+                            <div class="col">
+                                <small class="text-muted">Setted Price: @nft.Price NEBL</small>
+                            </div>
                         }
                     }
                     else
@@ -162,17 +152,17 @@
 
 @code {
 
-    string nftDetailsUtxo = string.Empty;
-    bool nftDetailsVisible = false;
+        string nftDetailsUtxo = string.Empty;
+        bool nftDetailsVisible = false;
 
-    string modalWithImageLink = string.Empty;
-    bool modalWithImageVisible = false;
+        string modalWithImageLink = string.Empty;
+        bool modalWithImageVisible = false;
 
-    [Parameter]
-    public bool HideButtons { get; set; } = false;
+        [Parameter]
+        public bool HideButtons { get; set; } = false;
 
-    [Parameter]
-    public EventCallback<string> NFTSent { get; set; }
+        [Parameter]
+        public EventCallback<string> NFTSent { get; set; }
 
     private INFT nft = new ImageNFT("");
     [Parameter]
@@ -181,13 +171,10 @@
         get => nft;
         set
         {
-            if (value != null)
+            if (value != null && value.Utxo != nft.Utxo)
             {
-                if (value.Utxo != nft.Utxo)
-                { 
-                    nft = value;
-                    StateHasChanged();
-                }
+                nft = value;
+                StateHasChanged();
             }
         }
     }
@@ -220,15 +207,19 @@
     {
         if (OwnNFT)
         {
-            return AppData.Account.ReceivedPayments.ContainsKey(utxo);
+            if (AppData.Account.ReceivedPayments.TryGetValue(utxo, out var mnft))
+                if ((mnft as PaymentNFT).NFTUtxoIndex == nft.UtxoIndex)
+                    return true;
+
         }
         else
         {
             if (!string.IsNullOrEmpty(_address))
             {
-                var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
-                if (tab != null)
-                    return tab.ReceivedPayments.ContainsKey(utxo);
+                var tab = AppData.Account.Tabs.Find(t => t.Address == _address);
+                if (tab != null && tab.ReceivedPayments.TryGetValue(utxo, out var nnft))
+                    if ((nnft as PaymentNFT).NFTUtxoIndex == nft.UtxoIndex)
+                        return true;
             }
         }
 

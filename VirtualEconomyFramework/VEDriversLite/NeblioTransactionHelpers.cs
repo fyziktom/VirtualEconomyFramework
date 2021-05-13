@@ -16,6 +16,9 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Dto for info about actual Token supply on address
+    /// </summary>
     public class TokenSupplyDto
     {
         public string TokenSymbol { get; set; } = string.Empty;
@@ -23,6 +26,9 @@ namespace VEDriversLite
         public double Amount { get; set; } = 0.0;
         public string ImageUrl { get; set; } = string.Empty;
     }
+    /// <summary>
+    /// Dto for info about owner of some kind of the tokens
+    /// </summary>
     public class TokenOwnerDto
     {
         public string Address { get; set; } = string.Empty;
@@ -31,13 +37,24 @@ namespace VEDriversLite
         public int AmountOfNFTs { get; set; } = 0;
     }
 
-    public class NeblioAPIScripPubKeyDto
+    /// <summary>
+    /// Dto for serialization of response from Neblio API
+    /// </summary>
+    public class NeblioAPIScripPubKeyDto // todo move to Neblio API
     {
         public string asm { get; set; } = string.Empty;
         public string hex { get; set; } = string.Empty;
         public string type { get; set; } = string.Empty;
         public int reqSigs { get; set; } = 0;
         public ICollection<string> addresses { get; set; }
+    }
+    /// <summary>
+    /// Dto for serialization of response from Neblio API
+    /// </summary>
+    public class SignResultDto // todo move to Neblio API
+    {
+        public string hex { get; set; }
+        public bool complete { get; set; }
     }
 
     public static class NeblioTransactionHelpers
@@ -51,24 +68,35 @@ namespace VEDriversLite
         public static int MinimumConfirmations = 4;
 
         public static event EventHandler<IEventInfo> NewEventInfo;
-        private class SignResultDto
-        {
-            public string hex { get; set; }
-            public bool complete { get; set; }
-        }
 
-        
+        /// <summary>
+        /// Create short version of address, 3 chars on start...3 chars on end
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public static string ShortenAddress(string address)
         {
             var shortaddress = address.Substring(0, 3) + "..." + address.Substring(address.Length - 3);
             return shortaddress;
         }
+        /// <summary>
+        /// Create short version of txid hash, 3 chars on start...3 chars on end
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <returns></returns>
         public static string ShortenTxId(string txid)
         {
             var txids = txid.Remove(5, txid.Length - 5) + "....." + txid.Remove(0, txid.Length - 5);
             return txids;
         }
 
+        /// <summary>
+        /// Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
+        /// and returns BitcoinAddress and BitcoinSecret classes from NBitcoin
+        /// </summary>
+        /// <param name="ekey"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public static async Task<(BitcoinAddress, BitcoinSecret)> GetAddressAndKey(EncryptionKey ekey, string password = "")
         {
             var key = string.Empty;
@@ -115,6 +143,11 @@ namespace VEDriversLite
                 throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
         }
 
+        /// <summary>
+        /// Function will take hex of signed transaction and broadcast it via Neblio API
+        /// </summary>
+        /// <param name="txhex"></param>
+        /// <returns></returns>
         public static async Task<string> BroadcastSignedTransaction(string txhex)
         {
             try
@@ -142,6 +175,14 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Function prepares SendTokenRequest object. It is important to initialitze correct inside properties
+        /// </summary>
+        /// <param name="amount">Amount to send</param>
+        /// <param name="fee">Fee - min 10000, with metadata you need at least 20000</param>
+        /// <param name="receiver">Receiver of the amount</param>
+        /// <param name="tokenId">Token Id hash</param>
+        /// <returns></returns>
         public static SendTokenRequest GetSendTokenObject(double amount, double fee = 20000, string receiver = "", string tokenId = "")
         {
             if (amount == 0)
@@ -178,6 +219,20 @@ namespace VEDriversLite
             return dto;
         }
 
+        /// <summary>
+        /// Function will obtain correct Utxos for token transaction
+        /// Older version, not recommended to use now
+        /// </summary>
+        /// <param name="address">Account address - sender</param>
+        /// <param name="tokenId">Token Id hash</param>
+        /// <param name="amount">Amount to send</param>
+        /// <param name="tokenUtxos">you can add own input utxos it can contain info about indes separated by ':' or doesnt</param>
+        /// <param name="inputNeblUtxo">you can add input Neblio utxo. It is need for the fee</param>
+        /// <param name="fee">Fee for the tx. 10000 is minimum, 20000 for token with metadata</param>
+        /// <param name="isItMintNFT">if you set this true you must provide input token utxo which is not verified again</param>
+        /// <param name="isNFTtx">if you sending NFT - 1 token - you need to set this to run correct verifying function</param>
+        /// <param name="sendEvenNeblUtxoNotFound">if you set this and provide neblio utxo which is not valid, another is searched and used if it is available</param>
+        /// <returns></returns>
         private static async Task<ICollection<string>> GetUtxoListForTx(string address, 
                                                                         string tokenId, 
                                                                         double amount, 
@@ -387,6 +442,15 @@ namespace VEDriversLite
             var res = MintNFTTokenAsync(data, ekey, nutxos, tutxos, fee).GetAwaiter().GetResult();
             return res;
         }
+        /// <summary>
+        /// Function will Mint NFT from lot of the tokens
+        /// </summary>
+        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="tutxos">Optional input token utxo</param>
+        /// <param name="fee">Fee - 20000 minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> MintNFTTokenAsync(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
         {
             var res = "ERROR";
@@ -489,6 +553,16 @@ namespace VEDriversLite
             var res = MintMultiNFTTokenAsync(data, coppies, ekey, nutxos, tutxos, fee).GetAwaiter().GetResult();
             return res;
         }
+        /// <summary>
+        /// Function will Mint NFT with the coppies
+        /// </summary>
+        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
+        /// <param name="coppies">0 or more coppies - with 0 input it is same as MintNFTTokenAsync</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="tutxos">Optional input token utxo</param>
+        /// <param name="fee">Fee - 20000 minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> MintMultiNFTTokenAsync(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
         {
             var res = "ERROR";
@@ -610,6 +684,15 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Function will sent exact NFT. 
+        /// You must fill the input token utxo in data object!
+        /// </summary>
+        /// <param name="data">Send data, please see SendTokenTxData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="fee">Fee - 20000 minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendNFTTokenAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
         {
             var res = "ERROR";
@@ -701,6 +784,15 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Function will send lot of tokens (means more than 1) to some address
+        /// </summary>
+        /// <param name="data">Send data, please see SendtokenTxTData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="tutxos">Optional input token utxo</param>
+        /// <param name="fee">Fee - 20000 minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendTokenLotAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
         {
             var res = "ERROR";
@@ -787,6 +879,14 @@ namespace VEDriversLite
             var res = SendNeblioTransactionAPIAsync(data, ekey, nutxos, fee).GetAwaiter().GetResult();
             return res;
         }
+        /// <summary>
+        /// Function will send standard Neblio transaction
+        /// </summary>
+        /// <param name="data">Send data, please see SendTxData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="fee">Fee - 10000 minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendNeblioTransactionAPIAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
         {
             var res = "ERROR";
@@ -871,7 +971,15 @@ namespace VEDriversLite
             }
         }
 
-
+        /// <summary>
+        /// This function will send Neblio payment together with the token whichc carry some metadata
+        /// </summary>
+        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="neblAmount">Amount of Neblio to send</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="fee">Fee - 20000 minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, double fee = 20000)
         {
             var res = "ERROR";
@@ -1055,6 +1163,13 @@ namespace VEDriversLite
 
         }
 
+        /// <summary>
+        /// Function will sign transaction with provided key and broadcast with Neblio API
+        /// </summary>
+        /// <param name="transaction">NBitcoin Transaction object</param>
+        /// <param name="key">NBitcoin Key - must contain Private Key</param>
+        /// <param name="address">NBitcoin address - must match with the provided key</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key, BitcoinAddress address)
         {
             // add coins

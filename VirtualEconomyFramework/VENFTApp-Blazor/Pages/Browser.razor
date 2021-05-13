@@ -11,7 +11,7 @@
 
 <Spin Tip="Loading Browser..." Spinning="@loadingBrowser">
     <div class="container-fluid overflow-auto">
-        <div class="row" style="margin-top:10px;">
+        <div class="row">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <h3>NFT Browser</h3>
             </div>
@@ -22,16 +22,6 @@
             </div>
         </div>
 
-        <div class="row" style="margin-top:10px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <h6>Browse All VENFT Holders</h6>
-            </div>
-        </div>
-        <div class="row" style="margin-top:10px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <button @onclick="openPublicAddresses" class="btn btn-secondary" type="button">Browse Public Addresses</button>
-            </div>
-        </div>
         <!--
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -44,7 +34,7 @@
             </div>
         </div>
         -->
-        <div class="row d-flex justify-content-center align-items-center" style="margin-top:50px;">
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:15px;">
             <div class="col">
                 <div>
                     <ul class="nav nav-tabs" role="tablist" id="shopTabsHeadings">
@@ -94,20 +84,23 @@
                                                     {
                                                         <span>@tab.Address</span>
                                                     }
-
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 10px;">
+                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                     <VENFTApp_Blazor.Components.CopyIcon MarginLeft="15" TextToCopy="@tab.Address" />
                                                     <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="@tab.Address" />
-                                                    <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@tab.IsInBookmark" 
+                                                    <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@tab.IsInBookmark"
                                                                                          Address="@addressInOpenTab"
                                                                                          BookmarkRefreshed="@BookmarkRefreshedHandler" />
                                                 </div>
                                             </div>
-
-                                            <div class="row">
+                                            <!--
+                                            <div class="row" style="margin-top:10px;">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                     <h3>Profile</h3>
                                                 </div>
-                                            </div>
+                                            </div>-->
                                             <div class="row bg-light">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                     <div class="row">
@@ -132,11 +125,14 @@
                                                                     Bio: @tab.Profile.Description
                                                                 </div>
                                                             </div>
+                                                            @if (!string.IsNullOrEmpty(tab.Profile.Link))
+                                                            {
                                                             <div class="row">
                                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                                     <a href="@tab.Profile.Link" target="_blank">Webpage</a>
                                                                 </div>
                                                             </div>
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
@@ -171,7 +167,38 @@
         <div class="col">
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Please Input Neblio Address</span>
+                    <span>Select from Bookmarks</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
+                        <Overlay>
+                            <Menu>
+                                @foreach (var b in AppData.Account.Bookmarks)
+                                {
+                                    <MenuItem>
+                                        <span @onclick="() => selectNewTabAddressFromBookmark(b.Address, b.Name)">@b.Name</span>
+                                    </MenuItem>
+                                }
+                            </Menu>
+                        </Overlay>
+                        <ChildContent>
+                            <a class="ant-dropdown-link" @onclick:preventDefault>
+                                @selectedNewTabFromBookmarkName <Icon Type="down" />
+                            </a>
+                        </ChildContent>
+                    </Dropdown>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <button @onclick="openPublicAddresses" class="btn btn-secondary" type="button">Or Browse Public Addresses</button>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Or Input Neblio Address</span>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
@@ -238,6 +265,8 @@
     bool copyTextButtonCoppied = false;
     int holdersPage = 0;
 
+    private string selectedNewTabFromBookmarkName = "Select From Bookmark";
+
     private bool openTabVisible = false;
     string addressInOpenTab = string.Empty;
     private string newTabAddress = string.Empty;
@@ -247,13 +276,10 @@
         try
         {
             if (string.IsNullOrEmpty(AppData.Account.Address))
-            {
                 Redirect();
-            }
             else
             {
                 LoadBookmarksAndState();
-
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
             }
@@ -390,13 +416,22 @@
 
     private async Task addNewTabModal()
     {
+        selectedNewTabFromBookmarkName = "Select From Bookmark";
+        newTabAddress = string.Empty;
+        StateHasChanged();
         openTabVisible = true;
     }
 
     private async Task addNewTab()
     {
-        loadingBrowser = true;
         openTabVisible = false;
+        var tab = AppData.Account.Tabs.Find(t => t.Address == newTabAddress);
+        if (tab != null)
+        {
+            await selectTab(tab.Address);
+            return;
+        }
+        loadingBrowser = true;
         StateHasChanged();
         var res = await AppData.Account.AddTab(newTabAddress);
         if (res.Item1)
@@ -427,5 +462,12 @@
         var tbs = await AppData.Account.RemoveTab(address);
         if (tbs.Item1)
             await localStorage.SetItemAsync("browserTabs", tbs.Item2);
+    }
+
+    private async Task selectNewTabAddressFromBookmark(string address, string name)
+    {
+        selectedNewTabFromBookmarkName = name;
+        newTabAddress = address;
+        StateHasChanged();
     }
 }

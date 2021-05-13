@@ -8,6 +8,8 @@
         <Spin Tip="Processing..." Spinning="@processing">
             <div class="row d-flex justify-content-center align-items-center w-100">
                 <div class="col w-auto">
+                    @if (DisplaySign)
+                    {
                     <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
                             <h6>Sign Message</h6>
@@ -33,6 +35,9 @@
                             <textarea style="min-width:250px; min-height:80px;">@signature</textarea>
                         </div>
                     </div>
+                    }
+                    @if (DisplayVerify)
+                    {
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <h6>Verify Message Signature</h6>
@@ -63,6 +68,7 @@
                             <span>Verification Result: @verifyResult</span>
                         </div>
                     </div>
+                    }
                 </div>
             </div>
         </Spin>
@@ -77,6 +83,11 @@
     string verifyMessage = string.Empty;
     string message = string.Empty;
     string signature = string.Empty;
+
+    [Parameter]
+    public bool DisplaySign { get; set; } = true;
+    [Parameter]
+    public bool DisplayVerify { get; set; } = true;
 
     private async Task SignMessage(MouseEventArgs e)
     {

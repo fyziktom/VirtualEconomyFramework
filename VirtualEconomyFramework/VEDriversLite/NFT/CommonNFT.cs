@@ -19,6 +19,7 @@ namespace VEDriversLite.NFT
         public string Tags { get; set; } = string.Empty;
         public string Utxo { get; set; } = string.Empty;
         public string SourceTxId { get; set; } = string.Empty;
+        public int UtxoIndex { get; set; } = 0;
         public string NFTOriginTxId { get; set; } = string.Empty;
         public double Price { get; set; } = 0.0;
         public bool PriceActive { get; set; } = false;
@@ -52,6 +53,7 @@ namespace VEDriversLite.NFT
             Utxo = nft.Utxo;
             Price = nft.Price;
             PriceActive = nft.PriceActive;
+            UtxoIndex = nft.UtxoIndex;
         }
 
         public async Task StopRefreshingData()

@@ -27,6 +27,7 @@ namespace VEDriversLite.NFT
             Utxo = NFT.Utxo;
             Price = NFT.Price;
             TypeText = NFT.TypeText;
+            UtxoIndex = NFT.UtxoIndex;
             if (Price > 0)
                 PriceActive = true;
             else
