@@ -36,7 +36,7 @@ namespace VEDriversLite.NFT
             UtxoIndex = pnft.UtxoIndex;
             Price = pnft.Price;
             PriceActive = pnft.PriceActive;
-
+            Time = pnft.Time;
             Name = pnft.Name;
             Surname = pnft.Surname;
             Nickname = pnft.Nickname;

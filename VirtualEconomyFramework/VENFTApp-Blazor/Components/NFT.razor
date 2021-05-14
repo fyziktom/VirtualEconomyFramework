@@ -152,17 +152,17 @@
 
 @code {
 
-        string nftDetailsUtxo = string.Empty;
-        bool nftDetailsVisible = false;
+    string nftDetailsUtxo = string.Empty;
+    bool nftDetailsVisible = false;
 
-        string modalWithImageLink = string.Empty;
-        bool modalWithImageVisible = false;
+    string modalWithImageLink = string.Empty;
+    bool modalWithImageVisible = false;
 
-        [Parameter]
-        public bool HideButtons { get; set; } = false;
+    [Parameter]
+    public bool HideButtons { get; set; } = false;
 
-        [Parameter]
-        public EventCallback<string> NFTSent { get; set; }
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
 
     private INFT nft = new ImageNFT("");
     [Parameter]
@@ -228,6 +228,7 @@
 
     private async Task CloseNFTDetails(MouseEventArgs e)
     {
+        await nft.StopRefreshingData();
         nftDetailsVisible = false;
     }
 

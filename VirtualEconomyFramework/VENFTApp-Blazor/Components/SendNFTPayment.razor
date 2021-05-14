@@ -121,7 +121,7 @@
             sendingTransaction = true;
             StateHasChanged();
 
-            var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, true);
+            var NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, true);
             NFT.UtxoIndex = UtxoIndex;
             var res = await AppData.Account.SendNFTPayment(receiverAddress, NFT);
             if (res.Item1)

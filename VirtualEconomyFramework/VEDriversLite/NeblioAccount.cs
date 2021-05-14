@@ -41,7 +41,7 @@ namespace VEDriversLite
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
         public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; } = new Dictionary<string, TokenSupplyDto>();
-        public Dictionary<string, Utxos> Utxos { get; set; } = new Dictionary<string, Utxos>();
+        public List<Utxos> Utxos { get; set; } = new List<Utxos>();
         public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
         public GetAddressResponse AddressInfo { get; set; } = new GetAddressResponse();
         public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
@@ -179,8 +179,8 @@ namespace VEDriversLite
                         await ReloadCountOfNFTs();
                         await ReloadTokenSupply();
 
-                        if (lastNFTcount != AddressNFTCount)
-                            await ReLoadNFTs();
+                        //if (lastNFTcount != AddressNFTCount)
+                        await ReLoadNFTs();
 
                         minorRefresh--;
                         if (minorRefresh < 0)
@@ -385,14 +385,14 @@ namespace VEDriversLite
         #endregion
 
         #region Tabs
-        public async Task LoadTabs(string tabs)
+        public async Task<string> LoadTabs(string tabs)
         {
             try
             {
                 var tbs = JsonConvert.DeserializeObject<List<ActiveTab>>(tabs);
                 if (tbs != null)
                     Tabs = tbs;
-
+                var firstAdd = string.Empty;
                 if (Tabs.Count > 0)
                 {
                     var first = true;
@@ -405,17 +405,20 @@ namespace VEDriversLite
                         {
                             await t.Reload();
                             first = false;
+                            firstAdd = t.Address;
                         }
                         //else
                             //t.Reload();
                     }
                     Tabs.FirstOrDefault().Selected = true;
                 }
+                return firstAdd;
             }
             catch (Exception ex)
             {
                 await InvokeErrorEvent(ex.Message, "Cannot deserialize the tabs.");
             }
+            return string.Empty;
         }
 
         public async Task<(bool, string)> AddTab(string address)
@@ -435,11 +438,11 @@ namespace VEDriversLite
             }
             else
             {
-                await InvokeErrorEvent("Bookmark Already Exists", "Already Exists");
+                await InvokeErrorEvent("Tab Already Exists", "Already Exists");
                 return (false, "Already Exists.");
             }
 
-            return (true, JsonConvert.SerializeObject(Bookmarks));
+            return (true, JsonConvert.SerializeObject(Tabs));
         }
 
         public async Task<(bool, string)> RemoveTab(string address)
@@ -514,7 +517,7 @@ namespace VEDriversLite
                 // add new ones
                 foreach (var u in ouxox)
                 {
-                    Utxos.TryAdd(u.Txid, u);
+                    Utxos.Add(u);
 
                     if (u.Blockheight <= 0)
                         TotalUnconfirmedBalance += ((double)u.Value / NeblioTransactionHelpers.FromSatToMainRatio);
@@ -546,7 +549,8 @@ namespace VEDriversLite
         public async Task ReLoadNFTs()
         {
             if (!string.IsNullOrEmpty(Address))
-                NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.Values.ToList());
+                NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList());
+                //NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.Values.ToList(), NFTs.ToList());
         }
 
         public async Task RefreshAddressReceivedPayments()

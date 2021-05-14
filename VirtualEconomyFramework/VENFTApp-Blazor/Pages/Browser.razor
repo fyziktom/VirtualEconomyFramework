@@ -101,7 +101,7 @@
                                                     <h3>Profile</h3>
                                                 </div>
                                             </div>-->
-                                            <div class="row bg-light">
+                                            <div class="row bg-light" style="margin-top:5px;">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                     <div class="row">
                                                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -376,7 +376,8 @@
                 var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
                 if (!string.IsNullOrEmpty(browserTabs))
                     if (AppData.Account.Tabs.Count == 0)
-                        await AppData.Account.LoadTabs(browserTabs);
+                        addressInOpenTab = await AppData.Account.LoadTabs(browserTabs);
+
             }
             catch (Exception ex)
             {
@@ -434,6 +435,7 @@
         loadingBrowser = true;
         StateHasChanged();
         var res = await AppData.Account.AddTab(newTabAddress);
+        await Task.Delay(50);
         if (res.Item1)
             await localStorage.SetItemAsync("browserTabs", res.Item2);
         addressInOpenTab = newTabAddress;

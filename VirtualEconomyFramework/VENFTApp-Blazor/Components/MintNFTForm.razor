@@ -105,45 +105,50 @@
                     {
                         <VENFTApp_Blazor.Components.UploadImage NFTType="@nftType" ImageLink="@newNFT.ImageLink" ImageLinkChanged="@ImageLinkChanged" />
                     }
-
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
-                        </div>
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
-                        </div>
-                    </div>
-
-                    @if (withPrice)
+                    @if (nftType == NFTTypes.Profile || (nftType == NFTTypes.Post && !string.IsNullOrEmpty(NFT.Utxo)))
                     {
+                        <!--no price or coppy option now-->
+                    }
+                    else 
+                    { 
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <small>Price in Neblio</small>
+                                <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
+                            </div>
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
                             </div>
                         </div>
 
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@newNFT.Price" />
+                        @if (withPrice)
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <small>Price in Neblio</small>
+                                </div>
                             </div>
-                        </div>
+
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@newNFT.Price" />
+                                </div>
+                            </div>
+                        }
+
+                        @if (withCoppies)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <small>Coppies</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <input type="number" step="1" min="0" max="@(AppData.Account.SourceTokensBalance-1)" @bind="@NumberOfCoppies" />
+                                </div>
+                            </div>
+                        }
                     }
-
-                    @if (withCoppies)
-                    {
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <small>Coppies</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <input type="number" step="1" min="0" max="@(AppData.Account.SourceTokensBalance-1)" @bind="@NumberOfCoppies" />
-                            </div>
-                        </div>
-                    }
-
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>

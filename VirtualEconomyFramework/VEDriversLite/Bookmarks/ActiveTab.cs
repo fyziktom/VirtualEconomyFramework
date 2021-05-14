@@ -32,7 +32,7 @@ namespace VEDriversLite.Bookmarks
 
         public async Task Reload()
         {
-            NFTs = await NFTHelpers.LoadAddressNFTs(Address);
+            NFTs = await NFTHelpers.LoadAddressNFTs(Address, null, NFTs.ToList());
             if (NFTs == null)
                 NFTs = new List<INFT>();
 

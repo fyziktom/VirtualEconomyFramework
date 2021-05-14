@@ -65,7 +65,8 @@ namespace VEDriversLite
         public static double FromSatToMainRatio = 100000000;
         public static Network Network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
         public static string VENFTId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
-        public static int MinimumConfirmations = 4;
+        public static GetTokenMetadataResponse VENFTInfo = null;
+        public static int MinimumConfirmations = 2;
 
         public static event EventHandler<IEventInfo> NewEventInfo;
 
@@ -1915,8 +1916,8 @@ namespace VEDriversLite
             if (_client == null)
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
 
-            GetTokenMetadataResponse tokeninfo = new GetTokenMetadataResponse();
-            tokeninfo = await _client.GetTokenMetadataAsync(VENFTId, 0);
+            if (VENFTInfo == null)
+                VENFTInfo = await _client.GetTokenMetadataAsync(VENFTId, 0);
 
             var res = await NeblioTransactionHelpers.GetAddressTokensUtxos(address, addressinfo);
             var utxos = new List<Utxos>();
@@ -1932,7 +1933,7 @@ namespace VEDriversLite
             foreach (var u in utxos)
                 totalAmount += (double)u.Tokens.ToArray()?[0]?.Amount;
 
-            return (totalAmount, tokeninfo);
+            return (totalAmount, VENFTInfo);
         }
 
         private class tokenUrlCarrier
@@ -1953,14 +1954,14 @@ namespace VEDriversLite
 
                 if (toks != null && toks.Amount > 1)
                 {
-                    GetTokenMetadataResponse tokeninfo = new GetTokenMetadataResponse();
-                    tokeninfo = await _client.GetTokenMetadataAsync(toks.TokenId, 0);
+                    if (VENFTInfo == null)
+                        VENFTInfo = await _client.GetTokenMetadataAsync(VENFTId, 0);
 
-                    if (!resp.TryGetValue(tokeninfo.MetadataOfIssuance.Data.TokenName, out var tk))
+                    if (!resp.TryGetValue(VENFTInfo.MetadataOfIssuance.Data.TokenName, out var tk))
                     {
                         var t = new TokenSupplyDto();
-                        t.TokenSymbol = tokeninfo.MetadataOfIssuance.Data.TokenName;
-                        var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tokeninfo.MetadataOfIssuance.Data.Urls));
+                        t.TokenSymbol = VENFTInfo.MetadataOfIssuance.Data.TokenName;
+                        var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(VENFTInfo.MetadataOfIssuance.Data.Urls));
 
                         var tu = tus.FirstOrDefault();
                         if (tu != null)

@@ -8,80 +8,100 @@
 @inject IJSRuntime JSRuntime
 @inject AppData AppData
 
-<div class="row">
-    <div class="col">
-        <!--
-    <div class="row">
-        <div class="col">
-            <input type="file" ref=inputTypeFileElement accept="image/*" capture/>
-        </div>
+<div class="card" style="margin-top:10px; min-width:250px; max-width:350px;">
+    <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+        <h5 class="text-center">NFT Ownership Verifier</h5>
     </div>
-    -->
-        <Spin Tip="Processing..." Spinning="@processing">
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <button @onclick=ReadCode>Verify</button>
+    <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:620px;">
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center w-100 h-100">
+
+                <div class="row">
+                    <div class="col">
+                        <!--
+                        <div class="row">
+                            <div class="col">
+                                <input type="file" ref=inputTypeFileElement accept="image/*" capture/>
+                            </div>
+                        </div>
+                        -->
+                        <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small class="text-center">
+                                This tool can verify ownership of the NFT. It need to run camera (sometimes it turn on front camera instead of back camera).
+                                When someone will show you the ownership QR code of NFT you can read it with this verifier and check if he is really owner.
+                            </small>
+                        </div>
+                        </div>
+                        <Spin Tip="Processing..." Spinning="@processing">
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <button @onclick=ReadCode>Verify</button>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <div id="CameraStream" @ref=qrCodeRef></div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <h4>Results</h4>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <h6>Read: @readresult</h6>
+                                </div>
+                            </div>
+                            <!--
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <textarea>message</textarea>
+                                </div>
+                            </div>
+                            -->
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <h6>Result</h6>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <span>@result</span>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <small>Owner: @ownerAddress</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <small>Sender: @senderAddress</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    @if (!string.IsNullOrEmpty(NFT.Utxo))
+                                    {
+                                        <NFT InputNFT="@NFT" OwnNFT="false" />
+                                    }
+                                </div>
+                            </div>
+                        </Spin>
+                    </div>
                 </div>
             </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <div id="CameraStream" @ref=qrCodeRef></div>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h4>Results</h4>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h6>Read: @readresult</h6>
-                </div>
-            </div>
-            <!--
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <textarea>message</textarea>
         </div>
-    </div>
-    -->
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h6>Result</h6>
-                </div>
-            </div>
-            <div class="row" style="margin-top:2px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>@result</span>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <small>Owner: @ownerAddress</small>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <small>Sender: @senderAddress</small>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    @if (!string.IsNullOrEmpty(NFT.Utxo))
-                    {
-                        <NFT InputNFT="@NFT" OwnNFT="false"/>
-                    }
-                </div>
-            </div>
-        </Spin>
     </div>
 </div>
 
 
 @code {
-        INFT NFT = new ImageNFT("");
-        string ownerAddress = string.Empty;
-        string senderAddress = string.Empty;
+    INFT NFT = new ImageNFT("");
+    string ownerAddress = string.Empty;
+    string senderAddress = string.Empty;
     private ElementReference inputTypeFileElement;
     private ElementReference qrCodeRef;
     private static String result = string.Empty;

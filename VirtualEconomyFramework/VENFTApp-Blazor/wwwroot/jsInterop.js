@@ -9,6 +9,25 @@ var ipfs = null;
     //global init
 })();
 
+window.setMusicInfo = (title, artist, description) => {
+    
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: title,
+            artist: artist,
+            album: description,
+            artwork: [
+                { src: 'https://dummyimage.com/96x96', sizes: '96x96', type: 'image/png' },
+                { src: 'https://dummyimage.com/128x128', sizes: '128x128', type: 'image/png' },
+                { src: 'https://dummyimage.com/192x192', sizes: '192x192', type: 'image/png' },
+                { src: 'https://dummyimage.com/256x256', sizes: '256x256', type: 'image/png' },
+                { src: 'https://dummyimage.com/384x384', sizes: '384x384', type: 'image/png' },
+                { src: 'https://dummyimage.com/512x512', sizes: '512x512', type: 'image/png' },
+            ]
+        });
+    }
+}
+
 window.jsFunctions = {
     init: function (obj) {
         dotnetRef = obj;
@@ -16,22 +35,18 @@ window.jsFunctions = {
             html5QrCode.clear();
         }
     },
-    setMusicInfo: function (title, artist, description) {
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: title,
-                artist: artist,
-                album: description,
-                artwork: [
-                    { src: 'https://dummyimage.com/96x96', sizes: '96x96', type: 'image/png' },
-                    { src: 'https://dummyimage.com/128x128', sizes: '128x128', type: 'image/png' },
-                    { src: 'https://dummyimage.com/192x192', sizes: '192x192', type: 'image/png' },
-                    { src: 'https://dummyimage.com/256x256', sizes: '256x256', type: 'image/png' },
-                    { src: 'https://dummyimage.com/384x384', sizes: '384x384', type: 'image/png' },
-                    { src: 'https://dummyimage.com/512x512', sizes: '512x512', type: 'image/png' },
-                ]
-            });
-        }
+    downloadText: function (data, filename) {
+        var text = data;
+        //text = text.replace(/\n/g, "\r\n"); // To retain the Line breaks.
+        var blob = new Blob([text], { type: "text/plain" });
+        var anchor = document.createElement("a");
+        anchor.download = filename;
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.target = "_blank";
+        anchor.style.display = "none"; // just to be safe!
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
     },
     initUpload: function (obj) {
         if (uploadReference == null) {

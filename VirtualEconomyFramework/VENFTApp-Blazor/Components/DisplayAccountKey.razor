@@ -1,5 +1,6 @@
-﻿@inject AppData AppData
- 
+﻿@using Newtonsoft.Json
+@inject AppData AppData
+
 <div class="row" style="margin-top:10px;">
     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
         <span>If your account is unlocked now you can display not encrypted private key. If account is locked the key is encrypted with your password.</span>
@@ -38,6 +39,7 @@
                     {
                         //todo
                     }
+                    <VENFTApp_Blazor.Components.SaveTextAsFile MarginLeft="10" TextToSave="@keyToSave" FileName="@filename" />
                 </div>
             </div>
         </div>
@@ -50,6 +52,9 @@
     private bool privateKeyDialogVisible = false;
     private System.Threading.Timer hideTimer;
     private string accountKey = string.Empty;
+    private string ekey = string.Empty;
+    private string keyToSave = string.Empty;
+    private string filename = string.Empty;
 
     private async Task downloadAccountKey()
     {
@@ -57,9 +62,10 @@
         {
             closeQRModal = false;
             StateHasChanged();
+            ekey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
             if (AppData.Account.IsLocked())
             {
-                accountKey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                accountKey = ekey;
                 privateKeyDialogVisible = true;
             }
             else
@@ -75,6 +81,10 @@
                 }
             }
 
+            //keyToSave = "{ Address:\"" + AppData.Account.Address + "\", EncryptedKey:\"" + ekey + "\", DecryptedKey:\"" + accountKey + "\" }";
+            keyToSave = "{ Address:\"" + AppData.Account.Address + "\", EncryptedKey:\"" + ekey + "\" }";
+            filename = "Key-Export-" + AppData.Account.Address + ".txt";
+
             hideTimer = new System.Threading.Timer(async (object stateInfo) =>
             {
                 accountKey = string.Empty;
@@ -87,10 +97,10 @@
 
     private async Task privateKeyDialogClose(MouseEventArgs e)
     {
+        accountKey = string.Empty;
         closeQRModal = true;
         StateHasChanged();
-        await Task.Delay(50);
-        accountKey = string.Empty;
+        await Task.Delay(100);
         privateKeyDialogVisible = false;
     }
 

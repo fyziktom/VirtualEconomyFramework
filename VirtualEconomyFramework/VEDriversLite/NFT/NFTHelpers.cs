@@ -164,7 +164,7 @@ namespace VEDriversLite.NFT
                     foreach (var t in u.Tokens)
                         if (t.TokenId == TokenId && t.Amount == 1)
                         {
-                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
+                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid, (double)u.Blocktime);
                             if (nft != null)
                                 if (nft.Type == NFTTypes.Profile && profile == null)
                                     profile = nft;
@@ -184,7 +184,7 @@ namespace VEDriversLite.NFT
                     foreach (var t in u.Tokens)
                         if (t.TokenId == TokenId && t.Amount == 1)
                         {
-                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
+                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid, (double)u.Blocktime);
                             if (nft != null)
                             {
                                 if (nft.Type == NFTTypes.Profile && profile == null)
@@ -196,31 +196,54 @@ namespace VEDriversLite.NFT
             
             return (profile, nfts);
         }
-        public static async Task<List<INFT>> LoadAddressNFTs(string address, ICollection<Utxos> inutxos = null)
+        public static async Task<List<INFT>> LoadAddressNFTs(string address, ICollection<Utxos> inutxos = null, ICollection<INFT> innfts = null)
         {
             List<INFT> nfts = new List<INFT>();
             ICollection<Utxos> uts = null;
             if (inutxos == null)
                 uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
             else
-                uts = inutxos;
+                uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, new GetAddressInfoResponse() { Utxos = inutxos });
             var utxos = uts.OrderBy(u => u.Blocktime).Reverse().ToList();
+
+            var ns = new List<INFT>();
+            if (innfts != null && utxos.Count < innfts.Count)
+            {
+                innfts.ToList().ForEach(n =>
+                {
+                    if (utxos.Any(u => (u.Txid == n.Utxo && u.Index == n.UtxoIndex)))
+                        ns.Add(n);
+                });
+                innfts = ns.ToList();
+            }
+
+            var lastNFTTime = DateTime.MinValue;
+            if (innfts != null && innfts.Count > 0)
+                lastNFTTime = innfts.FirstOrDefault().Time;
 
             foreach (var u in utxos)
                 if (u.Tokens != null && u.Tokens.Count > 0)
                     foreach (var t in u.Tokens)
                         if (t.TokenId == TokenId && t.Amount == 1)
-                        {
-                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid);
-                            if (nft != null)
+                            if (TimeHelpers.UnixTimestampToDateTime((double)u.Blocktime) > lastNFTTime)
                             {
-                                nft.UtxoIndex = (int)u.Index;
-                                //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
-                                nfts.Add(nft);
+                                var nft = await NFTFactory.GetNFT(TokenId, u.Txid, (double)u.Blocktime);
+                                if (nft != null)
+                                {
+                                    nft.UtxoIndex = (int)u.Index;
+                                    //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
+                                    nfts.Add(nft);
+                                }
                             }
-                        }
-                
-            return nfts;
+                        
+            if (innfts == null)
+                return nfts;
+            else
+                nfts.ForEach(n => { 
+                    if (!innfts.Any(i => i.Utxo == n.Utxo && i.UtxoIndex == n.UtxoIndex))
+                        innfts.Add(n); 
+                });
+            return innfts.OrderByDescending(n => n.Time).ToList();
         }
 
         public static async Task<List<INFT>> LoadNFTsHistory(string utxo)
@@ -258,8 +281,7 @@ namespace VEDriversLite.NFT
                                 {
                                     try
                                     {
-                                        var nft = await NFTFactory.GetNFT(TokenId, txinfo.Txid, true);
-
+                                        var nft = await NFTFactory.GetNFT(TokenId, txinfo.Txid, (double)txinfo.Blocktime, true);
                                         if (nft != null)
                                         {
                                             if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
@@ -829,11 +851,12 @@ namespace VEDriversLite.NFT
 
         public static async Task<(bool, GetNFTOwnerDto)> GetNFTWithOwner(string txid)
         {
-            var nft = await NFTFactory.GetNFT(TokenId, txid, true);
+            var nft = await NFTFactory.GetNFT(TokenId, txid, 0, true);
             if (nft != null && txid == nft.Utxo)
             {
-                var txhex = await NeblioTransactionHelpers.GetTxHex(txid);
-                var tx = NBitcoin.Transaction.Parse(txhex, NeblioTransactionHelpers.Network);
+                var txi = await NeblioTransactionHelpers.GetTransactionInfo(txid);
+                nft.Time = TimeHelpers.UnixTimestampToDateTime((double)txi.Blocktime);
+                var tx = NBitcoin.Transaction.Parse(txi.Hex, NeblioTransactionHelpers.Network);
 
                 if (tx != null && tx.Outputs.Count > 0 && tx.Inputs.Count > 0)
                 {

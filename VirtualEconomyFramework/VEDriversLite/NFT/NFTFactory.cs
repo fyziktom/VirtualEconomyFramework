@@ -8,7 +8,7 @@ namespace VEDriversLite.NFT
 {
     public static class NFTFactory
     {
-        public static async Task<INFT> GetNFT(string tokenId, string utxo, bool wait = false)
+        public static async Task<INFT> GetNFT(string tokenId, string utxo, double time = 0, bool wait = false)
         {
             NFTTypes type = NFTTypes.Image;
 
@@ -59,6 +59,8 @@ namespace VEDriversLite.NFT
                 }
             }
 
+            var Time = TimeHelpers.UnixTimestampToDateTime(time);
+
             var Price = 0.0;
             var PriceActive = false;
             if (meta.TryGetValue("Price", out var price))
@@ -84,6 +86,7 @@ namespace VEDriversLite.NFT
                         nft.ParseOriginData();
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;
+                    nft.Time = Time;
                     return nft;
                 case NFTTypes.Profile:
                     var pnft = new ProfileNFT(utxo);
@@ -92,6 +95,7 @@ namespace VEDriversLite.NFT
                         await pnft.LoadLastData(meta);
                     else
                         pnft.LoadLastData(meta);
+                    pnft.Time = Time;
                     return pnft;
                 case NFTTypes.Post:
                     var ponft = new PostNFT(utxo);
@@ -100,6 +104,7 @@ namespace VEDriversLite.NFT
                         await ponft.LoadLastData(meta);
                     else
                         ponft.LoadLastData(meta);
+                    ponft.Time = Time;
                     return ponft;
                 case NFTTypes.Music:
                     var mnft = new MusicNFT(utxo);
@@ -110,6 +115,7 @@ namespace VEDriversLite.NFT
                         mnft.ParseOriginData();
                     mnft.Price = Price;
                     mnft.PriceActive = PriceActive;
+                    mnft.Time = Time;
                     return mnft;
                 case NFTTypes.Payment:
                     var pmnft = new PaymentNFT(utxo);
@@ -117,6 +123,7 @@ namespace VEDriversLite.NFT
                         await pmnft.LoadLastData(meta);
                     else
                         pmnft.LoadLastData(meta);
+                    pmnft.Time = Time;
                     return pmnft;
             }
 

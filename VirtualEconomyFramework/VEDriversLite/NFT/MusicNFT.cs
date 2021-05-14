@@ -29,6 +29,7 @@ namespace VEDriversLite.NFT
             Utxo = NFT.Utxo;
             UtxoIndex = NFT.UtxoIndex;
             Price = NFT.Price;
+            Time = NFT.Time;
             PriceActive = NFT.PriceActive;
         }
 

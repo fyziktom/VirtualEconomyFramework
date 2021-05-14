@@ -5,14 +5,28 @@
 <div class="container-fluid overflow-auto">
     <div class="row">
         <div class="col">
-
             <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-end justify-content-xl-end align-items-xl-end">
+                <div class="col d-flex justify-content-end align-items-end">
                     <button class="btn btn-light" @onclick="ReloadNFTs"><i class="oi oi-reload"></i></button>
                 </div>
             </div>
-
-            <div class="row">
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayImagesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Images</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayPostsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Posts</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayMusicChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Music</span><br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     @if (_nfts.Count == 0)
                     {
@@ -25,7 +39,10 @@
                             {
                                 if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings")
                                 {
-                                    <NFT Address="@_address" InputNFT="@nft" NFTSent="@NFTSentHandler" OwnNFT="@MainAccount" />
+                                    if ((displayImages && nft.Type == NFTTypes.Image) || (displayPosts && nft.Type == NFTTypes.Post) || (displayMusic && nft.Type == NFTTypes.Music))
+                                    {
+                                        <NFT Address="@_address" InputNFT="@nft" NFTSent="@NFTSentHandler" OwnNFT="@MainAccount" />
+                                    }
                                 }
                             }
                         </div>
@@ -66,12 +83,12 @@
                 _address = value;
                 LoadNFTs();
             }
-            else
+            else if (!string.IsNullOrEmpty(value) && _address != value && MainAccount)
             {
                 _nfts = new List<INFT>();
                 _address = value;
                 _nfts = AppData.Account.NFTs;
-
+                StateHasChanged();
             }
         }
     }
@@ -80,10 +97,15 @@
     public bool MainAccount { get; set; } = false;
 
     bool nftDetailsVisible = false;
+    bool displayImages = true;
+    bool displayPosts = true;
+    bool displayMusic = true;
+    bool displayYouTube = false;
+    bool displaySpotify = false;
 
     string lastAddress = string.Empty;
 
-    int refresh = 10;
+    int refresh = 5;
 
     protected override async Task OnInitializedAsync()
     {
@@ -157,4 +179,21 @@
         nftDetailsVisible = false;
         ReloadNFTs();
     }
+
+    private async Task displayImagesChanged(object e)
+    {
+        displayImages = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayMusicChanged(object e)
+    {
+        displayMusic = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayPostsChanged(object e)
+    {
+        displayPosts = (bool)e;
+        StateHasChanged();
+    }
+    
 }

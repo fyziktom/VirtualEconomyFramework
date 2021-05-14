@@ -287,6 +287,7 @@
     string status = string.Empty;
     bool qrrefreshed = false;
     private ElementReference qrCodeRef;
+    private string songName = string.Empty;
 
     protected override Task OnInitializedAsync()
     {
@@ -295,13 +296,26 @@
         return base.OnInitializedAsync();
     }
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (NFT.Type == NFTTypes.Music && !string.IsNullOrEmpty(NFT.Name) && NFT.Name != songName)
+        {
+            songName = NFT.Name;
+            VideoStartedPlay();
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
     private async Task Load()
     {
         loading = true;
         StateHasChanged();
         NFT.TxDataRefreshed -= TxDataRefreshedHandler;
         await NFT.StopRefreshingData();
-        NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo);
+        if (NFT.Type !=  NFTTypes.Music)
+            NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo);
+        else
+            NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo, 0, true);
 
         if (NFT == null)
             return;
@@ -312,9 +326,11 @@
         StateHasChanged();
     }
 
-    private void VideoStartedPlay(EventArgs e)
+    private async Task VideoStartedPlay()
     {
-        JSRuntime.InvokeVoidAsync("jsFunctions.setMusicInfo", new object[] { NFT.Name, NFT.Author, NFT.Description });
+        await JSRuntime.InvokeVoidAsync("setMusicInfo", NFT.Name, NFT.Author, NFT.Description );
+
+        // not work - handler is not called, I had to add little hack in onafterrender
     }
 
     private void TxDataRefreshedHandler(object sender, GetTransactionInfoResponse info)

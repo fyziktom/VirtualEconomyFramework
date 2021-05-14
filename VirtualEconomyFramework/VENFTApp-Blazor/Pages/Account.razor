@@ -59,7 +59,7 @@
                         <div class="col">
                             <div class="row" style="margin-top:10px;">
                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <span>Please dont forget to save your private key. It is unique key for your Neblio address. If you save it you can backup address anytime.</span>
+                                    <span class="text-center">Please dont forget to save your private key!!! It is unique key for your Neblio address. If you save it you can backup address anytime.</span>
                                 </div>
                             </div>
                             <VENFTApp_Blazor.Components.DisplayAccountKey />
@@ -67,47 +67,6 @@
                     </div>
                 </div>
             </div>
-            
-            <VENFTApp_Blazor.Components.SignAndVerifyMessage />
-            <!--
-            <div class="card" style="margin-top:10px;">
-                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
-                    <h5 class="text-center">Neblio Price Information</h5>
-                </div>
-                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:550px; height:550px;">
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center w-100 h-100">
-                            <iframe src="https://ve-nft.com/neblio-coingecko.html" class="w-100" style="min-height:540px;" frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card" style="margin-top:10px;">
-                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
-                    <h5 class="text-center">Neblio Price Conversion</h5>
-                </div>
-                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:300px; height:300px;">
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center w-100 h-100">
-                            <iframe src="https://ve-nft.com/neblio-price-conversion.html" class="w-100" style="min-height:300px;" frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>
-                        </div>
-                    </div>
-                </div>
-             </div>
-                -->
-
-             <div class="card" style="margin-top:10px;">
-                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
-                    <h5 class="text-center">NFT Ownership Verifier</h5>
-                </div>
-                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:500px;">
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center w-100 h-100">
-                            <VENFTApp_Blazor.Components.NFTOwnerVerifier />
-                        </div>
-                    </div>
-                </div>
-             </div>
         </div>
 
         <div class="col">
@@ -131,6 +90,25 @@
                                     <VENFTApp_Blazor.Components.TransactionsList @bind-MaxLoadedTx="maxLoadedTransaction" />
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom:20px;">
+        <div class="col">
+            <div class="card" style="margin-top:10px;">
+                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                    <h5 class="text-center">Advanced Tools</h5>
+                </div>
+                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:600px;">
+                    <div class="row d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center flex-wrap">
+                            <VENFTApp_Blazor.Components.SignAndVerifyMessage />
+                            <VENFTApp_Blazor.Components.NFTOwnerVerifier />
+                            <VENFTApp_Blazor.Components.NeblioPriceStats />
+                            <VENFTApp_Blazor.Components.NeblioPriceConversion />
                         </div>
                     </div>
                 </div>
