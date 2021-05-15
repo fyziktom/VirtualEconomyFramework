@@ -103,14 +103,14 @@ namespace VEDriversLite.Security
             }
         }
 
-        public static async Task<(bool, string)> EncryptMessage(string message, string privateKey)
+        public static async Task<(bool, string)> EncryptMessage(string message, string publicKey)
         {
-            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(privateKey))
+            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(publicKey))
                 return (false, "Input parameters cannot be empty or null.");
 
             try
             {
-                PubKey k = new PubKey(privateKey);
+                PubKey k = new PubKey(publicKey);
                 var cmsg = k.Encrypt(message);
                 return (true, cmsg);
             }
