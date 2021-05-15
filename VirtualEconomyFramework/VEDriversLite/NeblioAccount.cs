@@ -23,37 +23,103 @@ namespace VEDriversLite
             Bookmarks = new List<Bookmark>();
             InitHandlers();
         }
-        public Guid Id { get; set; }
+        /// <summary>
+        /// Neblio Address hash
+        /// </summary>
         public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// Loaded Secret, NBitcoin Class which carry Public Key and Private Key
+        /// </summary>
         public BitcoinSecret Secret { get; set; }
-        public string MetadataKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Number of the transactions on the address. not used now
+        /// </summary>
         public double NumberOfTransaction { get; set; } = 0;
+        /// <summary>
+        /// Number of already loaded transaction on the address. not used now
+        /// </summary>
         public double NumberOfLoadedTransaction { get; } = 0;
+        /// <summary>
+        /// If the address has enought Neblio to buy source VENFT tokens (costs 1 NEBL) this is set as true.
+        /// </summary>
         public bool EnoughBalanceToBuySourceTokens { get; set; } = false;
+        /// <summary>
+        /// Total actual balance based on Utxos. This means sum of spendable and unconfirmed balances.
+        /// </summary>
         public double TotalBalance { get; set; } = 0.0;
+        /// <summary>
+        /// Total spendable balance based on Utxos.
+        /// </summary>
         public double TotalSpendableBalance { get; set; } = 0.0;
+        /// <summary>
+        /// Total balance which is now unconfirmed based on Utxos.
+        /// </summary>
         public double TotalUnconfirmedBalance { get; set; } = 0.0;
+        /// <summary>
+        /// Total balance of VENFT tokens which can be used for minting purposes.
+        /// </summary>
         public double SourceTokensBalance { get; set; } = 0.0;
+        /// <summary>
+        /// Total number of NFT on the address. It counts also Profile NFT, etc.
+        /// </summary>
         public double AddressNFTCount { get; set; } = 0.0;
+        /// <summary>
+        /// List of actual address NFTs. Based on Utxos list
+        /// </summary>
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        /// <summary>
+        /// List of all active tabs for browsing or interacting with the address. All has possibility to load own list of NFTs.
+        /// </summary>
         public List<ActiveTab> Tabs { get; set; } = new List<ActiveTab>();
-         
+        /// <summary>
+        /// Received payments (means Payment NFT) of this address.
+        /// </summary>
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
+        /// <summary>
+        /// If address has some profile NFT, it is founded in Utxo list and in this object.
+        /// </summary>
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
+        /// <summary>
+        /// Actual all token supplies. Consider also other tokens than VENFT.
+        /// </summary>
         public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; } = new Dictionary<string, TokenSupplyDto>();
+        /// <summary>
+        /// Actual list of all Utxos on this address.
+        /// </summary>
         public List<Utxos> Utxos { get; set; } = new List<Utxos>();
+        /// <summary>
+        /// List of all saved bookmarks. This is just realtime carrier. It need some serialization/deserialization.
+        /// </summary>
         public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
+        /// <summary>
+        /// Actual loaded address info. It has inside list of all transactions.
+        /// </summary>
         public GetAddressResponse AddressInfo { get; set; } = new GetAddressResponse();
+        /// <summary>
+        /// Actual loaded address info with list of Utxos. When utxos are loaded first, this is just fill with it to prevent not necessary API request.
+        /// </summary>
         public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
         
+        /// <summary>
+        /// This event is called whenever info about the address is reloaded. It is periodic event.
+        /// </summary>
         public event EventHandler Refreshed;
+        /// <summary>
+        /// This event is called whenever some important thing happen. You can obtain success, error and info messages.
+        /// </summary>
         public event EventHandler<IEventInfo> NewEventInfo;
-        public event EventHandler<string> PaymentSent;
-        public event EventHandler<string> PaymentSentError;
 
+        /// <summary>
+        /// Carrier for encrypted private key from storage and its password.
+        /// </summary>
         [JsonIgnore]
         public EncryptionKey AccountKey { get; set; }
 
+        /// <summary>
+        /// This function will check if the account is locked or unlocked.
+        /// </summary>
+        /// <returns></returns>
         public bool IsLocked()
         {
             if (AccountKey != null)
@@ -77,21 +143,37 @@ namespace VEDriversLite
                 return true;
         }
 
+        /// <summary>
+        /// This function will register event info from NeblioTransactionHelpers class.
+        /// </summary>
         private void InitHandlers()
         {
             NeblioTransactionHelpers.NewEventInfo += NeblioTransactionHelpers_NewEventInfo;
         }
+        /// <summary>
+        /// This function will unregister event info from NeblioTransactionHelpers class.
+        /// </summary>
         private void DeInitHandlers()
         {
             NeblioTransactionHelpers.NewEventInfo -= NeblioTransactionHelpers_NewEventInfo;
         }
-
+        /// <summary>
+        /// Handler for event info messages. Now it just store events in common store.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NeblioTransactionHelpers_NewEventInfo(object sender, IEventInfo e)
         {
             e.Address = Address;
             EventInfoProvider.StoreEventInfo(e);
         }
 
+        /// <summary>
+        /// Invoke Success message info event
+        /// </summary>
+        /// <param name="txid">new tx id hash</param>
+        /// <param name="title">Title of the event message</param>
+        /// <returns></returns>
         private async Task InvokeSendPaymentSuccessEvent(string txid, string title = "Neblio Payment Sent")
         {
             NewEventInfo?.Invoke(this,
@@ -103,6 +185,11 @@ namespace VEDriversLite
                                                     100));
         }
 
+        /// <summary>
+        /// Invoke Error message because account is locked
+        /// </summary>
+        /// <param name="title">Title of the event message</param>
+        /// <returns></returns>
         private async Task InvokeAccountLockedEvent(string title = "Cannot send transaction")
         {
             NewEventInfo?.Invoke(this,
@@ -113,6 +200,12 @@ namespace VEDriversLite
                                                     string.Empty,
                                                     100));
         }
+        /// <summary>
+        /// Invoke Error message which occured during sending of the transaction
+        /// </summary>
+        /// <param name="errorMessage">Error message content</param>
+        /// <param name="title">Title of the event message</param>
+        /// <returns></returns>
         private async Task InvokeErrorDuringSendEvent(string errorMessage, string title = "Cannot send transaction")
         {
             NewEventInfo?.Invoke(this,
@@ -123,6 +216,12 @@ namespace VEDriversLite
                                                     string.Empty,
                                                     100));
         }
+        /// <summary>
+        /// Invoke Common Error message
+        /// </summary>
+        /// <param name="errorMessage">Error message content</param>
+        /// <param name="title">Title of the event message</param>
+        /// <returns></returns>
         private async Task InvokeErrorEvent(string errorMessage, string title = "Error")
         {
             NewEventInfo?.Invoke(this,
@@ -134,6 +233,12 @@ namespace VEDriversLite
                                                     100));
         }
 
+        /// <summary>
+        /// This function will load the actual data and then run the task which periodically refresh this data.
+        /// It doesnt have cancellation now!
+        /// </summary>
+        /// <param name="interval">Default interval is 3000 = 3 seconds</param>
+        /// <returns></returns>
         public async Task<string> StartRefreshingData(int interval = 3000)
         {
             try
@@ -208,6 +313,12 @@ namespace VEDriversLite
             return await Task.FromResult("RUNNING");
         }
 
+        /// <summary>
+        /// This function will create new account - Neblio address and its Private key.
+        /// </summary>
+        /// <param name="password">Input password, which will encrypt the Private key</param>
+        /// <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
+        /// <returns></returns>
         public async Task<bool> CreateNewAccount(string password, bool saveToFile = false)
         {
             try
@@ -252,6 +363,11 @@ namespace VEDriversLite
             return false;
         }
 
+        /// <summary>
+        /// Load account from "key.txt" file placed in the root exe directory. Doesnt work in WABS
+        /// </summary>
+        /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <returns></returns>
         public async Task<bool> LoadAccount(string password)
         {
             if (FileHelpers.IsFileExists("key.txt"))
@@ -284,6 +400,15 @@ namespace VEDriversLite
             return false;
         }
 
+        /// <summary>
+        /// Load account from password, input encrypted private key and address.
+        /// It expect the private key is encrypted by the password.
+        /// It uses AES encryption
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="encryptedKey"></param>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public async Task<bool> LoadAccount(string password, string encryptedKey, string address)
         {
             try
@@ -312,6 +437,11 @@ namespace VEDriversLite
 
         #region Bookmarks
 
+        /// <summary>
+        /// Load bookmarks from previous serialized list of bookmarks. 
+        /// </summary>
+        /// <param name="bookmarks"></param>
+        /// <returns></returns>
         public async Task LoadBookmarks(string bookmarks)
         {
             try
@@ -326,6 +456,13 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Add new bookmark to bookmark list and return serialized list for save
+        /// </summary>
+        /// <param name="name">Name of the bookmark. It is important for most functions which work with the bookmarks</param>
+        /// <param name="address">Neblio Address</param>
+        /// <param name="note">optional note</param>
+        /// <returns>Serialized list in string for save</returns>
         public async Task<(bool,string)> AddBookmark(string name, string address, string note)
         {
             if (!Bookmarks.Any(b => b.Address == address))
@@ -349,6 +486,11 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Remove bookmark by the neblio address. It must be found in the bookmark list
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns>Serialized list in string for save</returns>
         public async Task<(bool,string)> RemoveBookmark(string address)
         {
             var bk = Bookmarks.Find(b => b.Address == address);
@@ -367,11 +509,20 @@ namespace VEDriversLite
             return (true,JsonConvert.SerializeObject(Bookmarks));
         }
 
+        /// <summary>
+        /// Get serialized bookmarks list as string
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> SerializeBookmarks()
         {
             return JsonConvert.SerializeObject(Bookmarks);
         }
 
+        /// <summary>
+        /// Check if the address is already in the bookmarks and return this bookmark
+        /// </summary>
+        /// <param name="address">Address which should be in the bookmarks</param>
+        /// <returns>true and bookmark class if exists</returns>
         public async Task<(bool, Bookmark)> IsInTheBookmarks(string address)
         {
             var bkm = Bookmarks.Find(b => b.Address == address);
@@ -385,6 +536,11 @@ namespace VEDriversLite
         #endregion
 
         #region Tabs
+        /// <summary>
+        /// Load tabs from previous serialized string.
+        /// </summary>
+        /// <param name="tabs">List of ActiveTabs as json string</param>
+        /// <returns></returns>
         public async Task<string> LoadTabs(string tabs)
         {
             try
@@ -421,6 +577,11 @@ namespace VEDriversLite
             return string.Empty;
         }
 
+        /// <summary>
+        /// Add new tab based on some Neblio address
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns>true and string with serialized tabs list as json string</returns>
         public async Task<(bool, string)> AddTab(string address)
         {
             if (!Tabs.Any(t => t.Address == address))
@@ -445,6 +606,11 @@ namespace VEDriversLite
             return (true, JsonConvert.SerializeObject(Tabs));
         }
 
+        /// <summary>
+        /// Remove tab by Neblio address if exists in the tabs
+        /// </summary>
+        /// <param name="address">Neblio Address which tab should be removed</param>
+        /// <returns>true and string with serialized tabs list as json string</returns>
         public async Task<(bool, string)> RemoveTab(string address)
         {
             var tab = Tabs.Find(t => t.Address == address);
@@ -473,6 +639,10 @@ namespace VEDriversLite
                 await tab.Reload();
         }
 
+        /// <summary>
+        /// Return serialized list of ActiveTabs as Json stirng
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> SerializeTabs()
         {
             return JsonConvert.SerializeObject(Tabs);
@@ -480,11 +650,19 @@ namespace VEDriversLite
 
         #endregion
 
+        /// <summary>
+        /// Reload actual token supplies based on already loaded list of address utxos
+        /// </summary>
+        /// <returns></returns>
         public async Task ReloadTokenSupply()
         {
             TokensSupplies = await NeblioTransactionHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
         }
 
+        /// <summary>
+        /// Reload actual count of the NFTs based on already loaded list of address utxos
+        /// </summary>
+        /// <returns></returns>
         public async Task ReloadCountOfNFTs()
         {
             var nftsu = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, AddressInfoUtxos);
@@ -492,6 +670,10 @@ namespace VEDriversLite
                 AddressNFTCount = nftsu.Count;
         }
 
+        /// <summary>
+        /// Reload actual VENFT minting supply based on already loaded list of address utxos
+        /// </summary>
+        /// <returns></returns>
         public async Task ReloadMintingSupply()
         {
             var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(Address, AddressInfoUtxos);
@@ -499,6 +681,10 @@ namespace VEDriversLite
 
         }
 
+        /// <summary>
+        /// Reload address Utxos list. It will sort descending the utxos based on the utxos time stamps.
+        /// </summary>
+        /// <returns></returns>
         public async Task ReloadUtxos()
         {
             var ux = await NeblioTransactionHelpers.GetAddressUtxosObjects(Address);
@@ -528,6 +714,10 @@ namespace VEDriversLite
                 TotalBalance = TotalSpendableBalance + TotalUnconfirmedBalance;
             }
         }
+        /// <summary>
+        /// This function will load actual address info an adress utxos. It is used mainly for loading list of all transactions.
+        /// </summary>
+        /// <returns></returns>
         public async Task ReloadAccountInfo()
         {
             AddressInfo = await NeblioTransactionHelpers.AddressInfoAsync(Address);
@@ -546,6 +736,10 @@ namespace VEDriversLite
                 EnoughBalanceToBuySourceTokens = true;
         }
 
+        /// <summary>
+        /// This function will reload changes in the NFTs list based on provided list of already loaded utxos.
+        /// </summary>
+        /// <returns></returns>
         public async Task ReLoadNFTs()
         {
             if (!string.IsNullOrEmpty(Address))
@@ -553,6 +747,11 @@ namespace VEDriversLite
                 //NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.Values.ToList(), NFTs.ToList());
         }
 
+        /// <summary>
+        /// This function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. 
+        /// This list is cleared at the start of this function
+        /// </summary>
+        /// <returns></returns>
         public async Task RefreshAddressReceivedPayments()
         {
             ReceivedPayments.Clear();
@@ -566,6 +765,11 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// This function will check payments and try to find them complementary NFT which was sold. 
+        /// If there is price mathc and enough of confirmations it will try to send NFT to new owner.
+        /// </summary>
+        /// <returns></returns>
         public async Task CheckPayments()
         {
             var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
@@ -597,6 +801,11 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// This function will check if the address has some spendable neblio for transaction.
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         public async Task<(bool,double)> HasSomeSpendableNeblio(double amount = 0.0002)
         {
             var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0001, amount);
@@ -617,6 +826,10 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// This function will check if the address has some spendable VENFT tokens for minting. 
+        /// </summary>
+        /// <returns></returns>
         public async Task<(bool, int)> HasSomeSourceForMinting()
         {
             var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, NFTHelpers.TokenId, 1);
@@ -635,6 +848,11 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// This function will validate if the NFT of this address is spendable
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> ValidateNFTUtxo(string utxo)
         {
             var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo);
@@ -647,6 +865,11 @@ namespace VEDriversLite
                 return (true, "OK");
         }
 
+        /// <summary>
+        /// This function will check if there is some spendable neblio of specific amount and returns list of the utxos for the transaction
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         public async Task<(string, ICollection<Utxos>)> CheckSpendableNeblio(double amount)
         {
             try
@@ -663,6 +886,12 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// This function will check if there is some spendable tokens of specific Id and amount and returns list of the utxos for the transaction.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         public async Task<(string, ICollection<Utxos>)> CheckSpendableNeblioTokens(string id, int amount)
         {
             try
@@ -679,11 +908,22 @@ namespace VEDriversLite
             }
         }
 
-        public async Task<(bool, string)> OrderSourceTokens(double amount)
+        /// <summary>
+        /// This function will send request for 100 VENFT tokens. It can be process by sending 1 NEBL to specific project address.
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public async Task<(bool, string)> OrderSourceTokens(double amount = 1)
         {
             return await SendNeblioPayment("NRJs13ULX5RPqCDfEofpwxGptg5ePB8Ypw", amount);
         }
 
+        /// <summary>
+        /// Send classic neblio payment
+        /// </summary>
+        /// <param name="receiver">Receiver Neblio Address</param>
+        /// <param name="amount">Ammount in Neblio</param>
+        /// <returns></returns>
         public async Task<(bool, string)> SendNeblioPayment(string receiver, double amount)
         {
             if (IsLocked())
@@ -726,6 +966,14 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
+        /// <summary>
+        /// Send classic token payment. It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
+        /// </summary>
+        /// <param name="tokenId">Token Id hash</param>
+        /// <param name="metadata">Custom metadata</param>
+        /// <param name="receiver">Receiver Neblio address</param>
+        /// <param name="amount">Amount of the tokens</param>
+        /// <returns></returns>
         public async Task<(bool, string)> SendNeblioTokenPayment(string tokenId, IDictionary<string,string> metadata, string receiver, int amount)
         {
             if (IsLocked())
@@ -776,6 +1024,12 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
+        /// <summary>
+        /// Mint new NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input
+        /// </summary>
+        /// <param name="tokenId"></param>
+        /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
+        /// <returns></returns>
         public async Task<(bool, string)> MintNFT(string tokenId, INFT NFT)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
@@ -835,6 +1089,13 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
+        /// <summary>
+        /// Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
+        /// </summary>
+        /// <param name="tokenId"></param>
+        /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
+        /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
+        /// <returns></returns>
         public async Task<(bool, string)> MintMultiNFT(string tokenId, INFT NFT, int coppies)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
@@ -891,6 +1152,11 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
+        /// <summary>
+        /// This function will change profile NFT. It need as input previous loaded Profile NFT.
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> ChangeProfileNFT(INFT NFT)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
@@ -934,6 +1200,11 @@ namespace VEDriversLite
 
         }
 
+        /// <summary>
+        /// Change Post NEFt. It requeires previous loadedPost NFT as input.
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> ChangePostNFT(INFT NFT)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
@@ -975,6 +1246,14 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
+        /// <summary>
+        /// Send input NFT to new owner, or use it just for price write and resend it to yourself with new metadata about the price.
+        /// </summary>
+        /// <param name="receiver">If the pricewrite is set, this is filled with own address</param>
+        /// <param name="NFT"></param>
+        /// <param name="priceWrite">Set this if you need to just write the price to the NFT</param>
+        /// <param name="price">Price must be bigger than 0.0002 NEBL</param>
+        /// <returns></returns>
         public async Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite, double price)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
@@ -1022,6 +1301,12 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
+        /// <summary>
+        /// This function will send payment for some specific NFT which is from foreign address.
+        /// </summary>
+        /// <param name="receiver">Receiver - owner of the NFT</param>
+        /// <param name="NFT">NFT what you want to buy</param>
+        /// <returns></returns>
         public async Task<(bool, string)> SendNFTPayment(string receiver, INFT NFT)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
@@ -1063,6 +1348,11 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
+        /// <summary>
+        /// Sign custom message with use of account Private Key
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> SignMessage(string message)
         {
             if (IsLocked())
@@ -1074,6 +1364,13 @@ namespace VEDriversLite
             return await ECDSAProvider.SignMessage(message, key); ;
         }
 
+        /// <summary>
+        /// Verify message which was signed by some address.
+        /// </summary>
+        /// <param name="message">Input message</param>
+        /// <param name="signature">Signature of this message created by owner of some address.</param>
+        /// <param name="address">Neblio address which should sign the message and should be verified.</param>
+        /// <returns></returns>
         public async Task<(bool, string)> VerifyMessage(string message, string signature, string address)
         {
             var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(address);
@@ -1083,6 +1380,12 @@ namespace VEDriversLite
                 return await ECDSAProvider.VerifyMessage(message, signature, ownerpubkey.Item2);
         }
 
+        /// <summary>
+        /// Obtain verify code of some transaction. This will combine txid and UTC time (rounded to minutes) and sign with the private key.
+        /// It will create unique code, which can be verified and it is valid just one minute.
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <returns></returns>
         public async Task<OwnershipVerificationCodeDto> GetNFTVerifyCode(string txid)
         {
             var res = await OwnershipVerifier.GetCodeInDto(txid, Secret);
@@ -1091,6 +1394,11 @@ namespace VEDriversLite
             else
                 return new OwnershipVerificationCodeDto();
         }
+        /// <summary>
+        /// Verification function for the NFT ownership code generated by GetNFTVerifyCode function.
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <returns></returns>
         public async Task<(OwnershipVerificationCodeDto, byte[])> GetNFTVerifyQRCode(string txid)
         {
             var res = await OwnershipVerifier.GetQRCode(txid, Secret);
@@ -1099,6 +1407,5 @@ namespace VEDriversLite
             else
                 return (new OwnershipVerificationCodeDto(), new byte[0]);
         }
-
     }
 }

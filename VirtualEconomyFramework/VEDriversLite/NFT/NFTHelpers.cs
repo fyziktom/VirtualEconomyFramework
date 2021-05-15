@@ -33,29 +33,44 @@ namespace VEDriversLite.NFT
 
     public static class NFTHelpers
     {
-        private static HttpClient httpClient = new HttpClient();
-        private static IClient _client;
-        private static string BaseURL = "https://ntp1node.nebl.io/";
         public static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         private static string TokenSymbol = "VENFT";
         public static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
 
         public static event EventHandler<IEventInfo> NewEventInfo;
 
+        /// <summary>
+        /// Init handler to receive event info messages from Neblio Transaction Helpers class
+        /// </summary>
         public static void InitHandlers()
         {
             NeblioTransactionHelpers.NewEventInfo += NeblioTransactionHelpers_NewEventInfo;
         }
+        /// <summary>
+        /// Deinit handler to receive event info messages from Neblio Transaction Helpers class
+        /// </summary>
         public static void DeInitHandlers()
         {
             NeblioTransactionHelpers.NewEventInfo -= NeblioTransactionHelpers_NewEventInfo;
         }
 
+        /// <summary>
+        /// Process new received info from Neblio Transaction Helpers class. Now just resend higher
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void NeblioTransactionHelpers_NewEventInfo(object sender, IEventInfo e)
         {
             NewEventInfo?.Invoke(null, e);
         }
 
+        /// <summary>
+        /// This function will iterate through inputs of tx from the point of the utxo to find tx where this 1 token was splited from some lot.
+        /// Metadata from this founded tx is returned for load to NFT carrier.
+        /// This method is now used for "original" NFTs. It is for example Image and Music. 
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <returns></returns>
         public static async Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo)
         {
             var result = new LoadNFTOriginDataDto();
@@ -94,6 +109,12 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This will load just last transaction metadata if it is NFT metadata. 
+        /// This function will not iterate to start/origin. It is used for example in Post
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <returns></returns>
         public static async Task<LoadNFTOriginDataDto> LoadLastData(string utxo)
         {
             var result = new LoadNFTOriginDataDto();
@@ -119,6 +140,11 @@ namespace VEDriversLite.NFT
             return null;
         }
 
+        /// <summary>
+        /// this function will obtain tx metadata and check if it contains flag NFT true
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <returns></returns>
         public static async Task<Dictionary<string,string>> CheckIfContainsNFTData(string utxo)
         {
             var meta = await NeblioTransactionHelpers.GetTransactionMetadata(TokenId, utxo);
@@ -130,6 +156,12 @@ namespace VEDriversLite.NFT
             return null;
         }
 
+        /// <summary>
+        /// This function will check if the transaction is mint transaction. it means if the input to this tx was lot of the tokens.
+        /// This kind of transaction means origin for the NFTs.
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <returns></returns>
         public static async Task<(bool,string)> CheckIfMintTx(string utxo)
         {
             var info = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
@@ -153,6 +185,12 @@ namespace VEDriversLite.NFT
             return (false, string.Empty);
         }
 
+        /// <summary>
+        /// this function will search the utxos, get all nfts utxos (if utxos list is not loaded) and return last profile nft which is founded on the address.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="utxos">leave null if you need to obtain new utxos nft list</param>
+        /// <returns></returns>
         public static async Task<INFT> FindProfileOfAddress(string address, ICollection<Utxos> utxos = null)
         {
             if (utxos == null)
@@ -173,6 +211,11 @@ namespace VEDriversLite.NFT
             return profile;
         }
 
+        /// <summary>
+        /// This function will load NFTs and during it find the profile NFT
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns>profile NFT and list of all NFTs</returns>
         public static async Task<(INFT, List<INFT>)> LoadAddressNFTsWithProfile(string address)
         {
             List<INFT> nfts = new List<INFT>();
@@ -196,6 +239,15 @@ namespace VEDriversLite.NFT
             
             return (profile, nfts);
         }
+
+        /// <summary>
+        /// This function will find all NFTs and load them to the carriers. 
+        /// If you already have list of utxos and NFTs you can provide it and it will load just the changes.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="inutxos"></param>
+        /// <param name="innfts"></param>
+        /// <returns></returns>
         public static async Task<List<INFT>> LoadAddressNFTs(string address, ICollection<Utxos> inutxos = null, ICollection<INFT> innfts = null)
         {
             List<INFT> nfts = new List<INFT>();
@@ -246,6 +298,11 @@ namespace VEDriversLite.NFT
             return innfts.OrderByDescending(n => n.Time).ToList();
         }
 
+        /// <summary>
+        /// Returns list of NFTs with the data of the point of this history of some NFT.
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <returns></returns>
         public static async Task<List<INFT>> LoadNFTsHistory(string utxo)
         {
             try
@@ -315,6 +372,17 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will new NFTs as multimint. 
+        /// It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="coppies">number of copies. one NFT is minted even 0 coppies is input</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintMultiImageNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             if (string.IsNullOrEmpty(NFT.ImageLink))
@@ -355,6 +423,15 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will new Image NFTs. 
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintImageNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             if (string.IsNullOrEmpty(NFT.ImageLink))
@@ -395,6 +472,14 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will new Profile NFTs. 
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             var profile = nft as ProfileNFT;
@@ -433,6 +518,15 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will new Post NFT.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintPostNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             // create token metadata
@@ -470,6 +564,15 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will new Music NFT.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintMusicNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             // create token metadata
@@ -506,7 +609,17 @@ namespace VEDriversLite.NFT
                 throw ex;
             }
         }
-
+        /// <summary>
+        /// This function will new Post NFTs as multimint. 
+        /// It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="coppies">number of copies. one NFT is minted even 0 coppies is input</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintMultiPostNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             // create token metadata
@@ -544,6 +657,17 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will new Music NFTs as multimint. 
+        /// It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="coppies">number of copies. one NFT is minted even 0 coppies is input</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintMultiMusicNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             // create token metadata
@@ -581,6 +705,14 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will change Profile NFT.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="nft">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> ChangeProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos)
         {
             var profile = nft as ProfileNFT;
@@ -622,6 +754,14 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will change post NFT
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="nft">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> ChangePostNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos)
         {
             var postnft = nft as PostNFT;
@@ -664,6 +804,16 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will take some NFT which was matched with some payment, coppy data and create complete payment, which will send NFT to new owner.
+        /// During this the payment NFT token is send back to project address
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="payment">Payment NFT of received payment</param>
+        /// <param name="NFT">NFT for sale</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <returns></returns>
         public static async Task<string> SendOrderedNFT(string address, EncryptionKey ekey, PaymentNFT payment, INFT NFT, ICollection<Utxos> nutxos)
         {
             if (NFT == null)
@@ -713,6 +863,14 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will send payment for some NFT.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="nft">Input NFT object with data to save to metadata. It is NFT what you are buying.</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
         public static async Task<string> SendNFTPayment(string address, EncryptionKey ekey, string receiver, INFT nft, ICollection<Utxos> nutxos)
         {
             if (string.IsNullOrEmpty(nft.Utxo))
@@ -758,6 +916,17 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will send NFT. It can be also used for write the price of the NFT.
+        /// </summary>
+        /// <param name="address">adress of sender</param>
+        /// <param name="receiver">address of receiver</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata. It is NFT what you are sending.</param>
+        /// <param name="priceWrite">Set this if you just want to set price of the NFT. means resend to yourself</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="price">Price must be higher than 0.0002 Neblio</param>
+        /// <returns>New Tx Id hash</returns>
         public static async Task<string> SendNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, bool priceWrite, ICollection<Utxos> nutxos, double price = 0.0002)
         {
             if (price < 0.0002)
@@ -808,6 +977,11 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will return first profile NFT in NFTs list.
+        /// </summary>
+        /// <param name="nfts"></param>
+        /// <returns></returns>
         public static async Task<ProfileNFT> FindProfileNFT(ICollection<INFT> nfts)
         {
             if (nfts != null)
@@ -817,6 +991,12 @@ namespace VEDriversLite.NFT
             return new ProfileNFT("");
         }
 
+        /// <summary>
+        /// This function will find profile on address if exists and parse address public key (NBitcoin class) from it.
+        /// Usefull for encryption
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public static async Task<(bool, PubKey)> GetPubKeyFromProfileNFTTx(string address)
         {
             var profile = await FindProfileOfAddress(address);
@@ -836,6 +1016,12 @@ namespace VEDriversLite.NFT
                 return (true, pubkey[0]);
         }
 
+        /// <summary>
+        /// This function will find last send transaction by some address and parse public key (NBitcoin class) from it.
+        /// Usefull for encryption.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public static async Task<(bool, PubKey)> GetPubKeyFromLastFoundTx(string address)
         {
             var tx = await NeblioTransactionHelpers.GetLastSentTransaction(address);
@@ -849,6 +1035,11 @@ namespace VEDriversLite.NFT
                 return (true, pubkey[0]);
         }
 
+        /// <summary>
+        /// This function will load the NFT based by Tx Id hash and find the owner of the NFT
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <returns></returns>
         public static async Task<(bool, GetNFTOwnerDto)> GetNFTWithOwner(string txid)
         {
             var nft = await NFTFactory.GetNFT(TokenId, txid, 0, true);

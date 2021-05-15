@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>VEFramework.VEDriversLite</PackageId>
     <Version>0.1.0</Version>
     <Authors>fyziktom</Authors>
@@ -17,10 +17,10 @@
 
   <ItemGroup>
     <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
-    <PackageReference Include="NBitcoin.Altcoins" Version="2.0.31" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="QRCoder" Version="1.4.1" />
-    <PackageReference Include="ZXing.Net" Version="0.16.6" />
+    <PackageReference Include="NBitcoin" Version="5.0.81" />
+    <PackageReference Include="NBitcoin.Altcoins" Version="2.0.32" />
+    <!--<PackageReference Include="QRCoder" Version="1.4.1" />-->
+    <!--<PackageReference Include="ZXing.Net" Version="0.16.6" />-->
   </ItemGroup>
 
   <ItemGroup>

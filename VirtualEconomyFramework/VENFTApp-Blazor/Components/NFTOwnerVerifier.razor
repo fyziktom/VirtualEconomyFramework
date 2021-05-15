@@ -199,11 +199,12 @@
 
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     // drawing doesnt work in blazor webassebmly :(
+                    /*
                     System.Drawing.Image image = null;
                     await Task.Run(() => { image = System.Drawing.Image.FromStream(memoryStream); });
 
                     var dto = await OwnershipVerifier.VerifyFromImage(image);
-
+                    
                     var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, dto.TxId);
                     if (nft != null)
                         NFT = await NFTFactory.CloneNFT(nft);
@@ -211,7 +212,7 @@
                     result = dto.VerifyResult;
                     ownerAddress = dto.Owner;
                     senderAddress = dto.Sender;
-
+                    */
                     StateHasChanged();
                 }
             }

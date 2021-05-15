@@ -1,17 +1,17 @@
 ﻿using Newtonsoft.Json;
-using QRCoder;
+//using QRCoder;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
+//using System.Drawing;
+//using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Security;
-using ZXing;
-using ZXing.Common;
-using ZXing.QrCode;
+//using ZXing;
+//using ZXing.Common;
+//using ZXing.QrCode;
 
 namespace VEDriversLite.NFT
 {
@@ -32,7 +32,7 @@ namespace VEDriversLite.NFT
     }
     public static class OwnershipVerifier
     {
-        private static QRCodeGenerator qrGenerator = new QRCodeGenerator();
+        //private static QRCodeGenerator qrGenerator = new QRCodeGenerator();
 
         public static string CreateMessage(string txid)
         {
@@ -89,6 +89,7 @@ namespace VEDriversLite.NFT
             return (false, (null, null));
         }
 
+        /*
         public static async Task<(bool,(OwnershipVerificationCodeDto,byte[]))> GetQRCode(string txid, EncryptionKey key)
         {
             var signature = await GetCode(txid, key);
@@ -108,6 +109,7 @@ namespace VEDriversLite.NFT
             }
             return (false, (null, null));
         }
+        */
 
         public static async Task<OwnershipVerificationResult> VerifyOwner(OwnershipVerificationCodeDto dto)
         {
@@ -155,6 +157,7 @@ namespace VEDriversLite.NFT
             return new OwnershipVerificationResult() { VerifyResult = "Not Valid input." };
         }
         private static Object thisLock = new Object();
+        /*
         public static async Task<OwnershipVerificationResult> VerifyFromImage(Image image)
         {
             //stream.Seek(0, SeekOrigin.Begin);
@@ -211,7 +214,8 @@ namespace VEDriversLite.NFT
             }
             return null;
         }
-
+        */
+        /*
         private static byte[] ToByteArray(Image img)
         {
             byte[] byteArray = new byte[0];
@@ -239,6 +243,6 @@ namespace VEDriversLite.NFT
                 return ms.ToArray();
             }
         }
-
+        */
     }
 }

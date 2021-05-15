@@ -13,14 +13,14 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+/*
 using System;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using ZXing;
 
-namespace VEDriversLite
+namespace VEDriversLite.NFT
 {
     /// <summary>
     /// class which represents the luminance values for a bitmap object
@@ -564,3 +564,4 @@ namespace VEDriversLite
         }
     }
 }
+*/

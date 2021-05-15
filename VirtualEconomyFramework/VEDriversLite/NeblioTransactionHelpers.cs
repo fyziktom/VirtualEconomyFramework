@@ -1355,15 +1355,27 @@ namespace VEDriversLite
         ///////////////////////////////////////////
         // calls of Neblio API and helpers
 
-        public static async Task<string> SendRawNTP1TxAsync(SendTokenRequest data)
+        /// <summary>
+        /// Returns private client for Neblio API. If it is null, it will create new instance.
+        /// </summary>
+        /// <returns></returns>
+        private static IClient GetClient()
         {
-
             if (_client == null)
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
+            return _client;
+        }
 
+        /// <summary>
+        /// Send request for creating RAW token transaction
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static async Task<string> SendRawNTP1TxAsync(SendTokenRequest data)
+        {
             try
             {
-                var info = await _client.SendTokenAsync(data);
+                var info = await GetClient().SendTokenAsync(data);
                 return info.TxHex;
             }
             catch(Exception ex)
@@ -1372,56 +1384,60 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Broadcast of signed transaction. Works for Neblio and Token transactions.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static async Task<string> BroadcastNTP1TxAsync(BroadcastTxRequest data)
         {
-
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var info = await _client.BroadcastTxAsync(data);
-
+            var info = await GetClient().BroadcastTxAsync(data);
             return info.Txid;
         }
 
+        /// <summary>
+        /// Return Address info object. Contains list of all transactions
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
         public static async Task<GetAddressResponse> AddressInfoAsync(string addr)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var address = await _client.GetAddressAsync(addr);
-
+            var address = await GetClient().GetAddressAsync(addr);
             return address;
         }
 
+        /// <summary>
+        /// Return address info object. this object contains list of Utxos.
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
         public static async Task<GetAddressInfoResponse> AddressInfoUtxosAsync(string addr)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var address = await _client.GetAddressInfoAsync(addr);
-
+            var address = await GetClient().GetAddressInfoAsync(addr);
             return address;
         }
 
+        /// <summary>
+        /// Return list of address utxos.
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
         public static async Task<ICollection<Anonymous>> GetAddressUtxos(string addr)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var utxos = await _client.GetAddressUtxosAsync(addr);
-
+            var utxos = await GetClient().GetAddressUtxosAsync(addr);
             return utxos;
         }
 
+        /// <summary>
+        /// Return list of Utxos object.
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
         public static async Task<ICollection<Utxos>> GetAddressUtxosObjects(string addr)
         {
             try
             {
-                if (_client == null)
-                    _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-                var addinfo = await _client.GetAddressInfoAsync(addr);
-
+                var addinfo = await GetClient().GetAddressInfoAsync(addr);
                 return addinfo.Utxos;
             }
             catch (Exception ex)
@@ -1431,18 +1447,18 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Returns list of all Utxos which contains some tokens
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <param name="addressinfo"></param>
+        /// <returns></returns>
         public static async Task<ICollection<Utxos>> GetAddressTokensUtxos(string addr, GetAddressInfoResponse addressinfo = null)
         {
             if (addressinfo == null)
-            {
-                if (_client == null)
-                    _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-                addressinfo = await _client.GetAddressInfoAsync(addr);
-            }
+                addressinfo = await GetClient().GetAddressInfoAsync(addr);
 
             var utxos = new List<Utxos>();
-
             if (addressinfo?.Utxos != null)
                 foreach (var u in addressinfo.Utxos)
                     if (u.Tokens.Count > 0)
@@ -1451,30 +1467,32 @@ namespace VEDriversLite
             return utxos;
         }
 
+        /// <summary>
+        /// Return transaction Hex
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <returns></returns>
         public static async Task<string> GetTxHex(string txid)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var tx = await _client.GetTransactionInfoAsync(txid);
-
+            var tx = await GetClient().GetTransactionInfoAsync(txid);
             if (tx != null)
                 return tx.Hex;
             else
                 return string.Empty;
         }
 
+        /// <summary>
+        /// Returns list of all Utxos which contains just one token, means amount = 1
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <param name="addressinfo"></param>
+        /// <returns></returns>
         public static async Task<ICollection<Utxos>> GetAddressNFTsUtxos(string addr, GetAddressInfoResponse addressinfo = null)
         {
             if (addressinfo == null)
-            {
-                if (_client == null)
-                    _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
+                addressinfo = await GetClient().GetAddressInfoAsync(addr);
 
-                addressinfo = await _client.GetAddressInfoAsync(addr);
-            }
             var utxos = new List<Utxos>();
-
             if (addressinfo?.Utxos != null)
                 foreach (var u in addressinfo.Utxos)
                     foreach(var tok in u.Tokens)
@@ -1484,16 +1502,12 @@ namespace VEDriversLite
             return utxos;
         }
 
-        public static async Task<string> BroadcastNeblTxAsync(BroadcastTxRequest dto)
-        {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var resp = await _client.SendTxAsync(dto);
-
-            return resp?.Txid;
-        }
-
+        /// <summary>
+        /// Returns sended amount of neblio in some transaction. It counts the outputs which was send to input address
+        /// </summary>
+        /// <param name="tx"></param>
+        /// <param name="address">expected address where was nebl send in this tx</param>
+        /// <returns></returns>
         public static async Task<double> GetSendAmount(GetTransactionInfoResponse tx, string address)
         {
             BitcoinAddress addr = null;
@@ -1521,28 +1535,27 @@ namespace VEDriversLite
             return amount;
         }
 
+        /// <summary>
+        /// Returns list of spendable utxos which together match some input required amount for some transaction
+        /// </summary>
+        /// <param name="addr">address which has utxos for spend - sender in tx</param>
+        /// <param name="minAmount">minimum amount of one utxo</param>
+        /// <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
+        /// <returns></returns>
         public static async Task<ICollection<Utxos>> GetAddressNeblUtxo(string addr, double minAmount = 0.0001, double requiredAmount = 0.0001)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             GetAddressInfoResponse addinfo = null;
-
-            addinfo = await _client.GetAddressInfoAsync(addr);
-
-            var utxos = addinfo.Utxos;
-
             var resp = new List<Utxos>();
-            var founded = 0.0;
 
-            utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
-
+            addinfo = await GetClient().GetAddressInfoAsync(addr);
+            var utxos = addinfo.Utxos;
             if (utxos == null)
                 return resp;
+            utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
 
+            var founded = 0.0;
             foreach (var utx in utxos)
-            {
                 if (utx.Blockheight > 0 && utx.Value > 10000 && utx.Tokens?.Count == 0)
-                {
                     if (((double)utx.Value) > (minAmount * FromSatToMainRatio))
                     {
                         try
@@ -1561,18 +1574,19 @@ namespace VEDriversLite
                             ;
                         }
                     }
-                }
-            }
-            
+                
             return resp;
         }
 
+        /// <summary>
+        /// Check if the neblio is spendable.
+        /// </summary>
+        /// <param name="address">address which should have this utxo</param>
+        /// <param name="txid">input txid hash</param>
+        /// <returns>true and index of utxo</returns>
         public static async Task<(bool, double)> ValidateNeblioUtxo(string address, string txid)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var info = await _client.GetAddressInfoAsync(address);
+            var info = await GetClient().GetAddressInfoAsync(address);
             if (info == null)
                 return (false, 0);
 
@@ -1581,70 +1595,67 @@ namespace VEDriversLite
                 return (false, 0);
 
             foreach (var ut in uts)
-            {
                 if (ut != null && ut.Blockheight > 0)
                 {
                     var tx = await _client.GetTransactionInfoAsync(ut.Txid);
                     if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                         return (true, (double)ut.Index);
                 }
-            }
             
             return (false, 0);
         }
 
+        /// <summary>
+        /// Check if the token utxo is spendable.
+        /// </summary>
+        /// <param name="address">address which should have this utxo</param>
+        /// <param name="txid">input txid hash</param>
+        /// <param name="tokenId">Token Id hash</param>
+        /// <param name="isMint">If it is mint transaction it counts just utxos which has amount bigger than 1 token</param>
+        /// <returns>true and index of utxo</returns>
         public static async Task<(bool, double)> ValidateNeblioTokenUtxo(string address, string txid, string tokenId, bool isMint = false)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var addinfo = await _client.GetAddressInfoAsync(address);
+            var addinfo = await GetClient().GetAddressInfoAsync(address);
             var utxos = addinfo.Utxos;
-
-            var resp = new List<Utxos>();
-            
             if (utxos == null)
                 return (false, 0);
+            
             foreach (var ut in utxos)
-            {
                 if (ut != null && ut.Blockheight > 0 && ut.Tokens.Count > 0)
                 {
                     var toks = ut.Tokens.ToArray();
                     if (toks[0].TokenId == tokenId)
-                    {
                         if ((toks[0].Amount > 0 && !isMint) || (toks[0].Amount > 1 && isMint))
                         {
                             var tx = await _client.GetTransactionInfoAsync(ut.Txid);
                             if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                                 return (true, (double)ut.Index);
                         }
-                    }
+                    
                 }
-            }
-
+            
             return (false, 0);
         }
 
+        /// <summary>
+        /// Check if the NFT token is spendable. Means utxos with token amount = 1
+        /// </summary>
+        /// <param name="address">address which should have this utxo</param>
+        /// <param name="tokenId">input token id hash</param>
+        /// <param name="txid">input txid hash</param>
+        /// <returns>true and index of utxo</returns>
         public static async Task<(bool, double)> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var addinfo = await _client.GetAddressInfoAsync(address);
+            var addinfo = await GetClient().GetAddressInfoAsync(address);
             var utxos = addinfo.Utxos;
-
-            var resp = new List<Utxos>();
-
             if (utxos == null)
                 return (false, 0);
             
             var uts = utxos.Where(u => u.Txid == txid); // you can have multiple utxos with same txid but different amount of tokens
-
             if (uts == null)
                 return (false, 0);
-
+            
             foreach (var ut in uts)
-            {
                 if (ut.Blockheight > 0 && ut.Tokens != null && ut.Tokens.Count > 0)
                 {
                     var toks = ut.Tokens.ToArray();
@@ -1655,99 +1666,97 @@ namespace VEDriversLite
                             return (true, (double)ut.Index);
                     }
                 }
-            }
+            
             return (false, 0);
         }
 
+        /// <summary>
+        /// Find utxo which can be used for minting. It means it has token amount > 1
+        /// </summary>
+        /// <param name="addr">address which has utxos</param>
+        /// <param name="tokenId">token id hash</param>
+        /// <param name="numberToMint">number of tokens which will be minted - because of multimint</param>
+        /// <param name="oneTokenSat">this is usually default. On Neblio all token tx should have value 10000sat</param>
+        /// <returns></returns>
         public static async Task<List<Utxos>> FindUtxoForMintNFT(string addr, string tokenId, int numberToMint = 1, double oneTokenSat = 10000)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var addinfo = await _client.GetAddressInfoAsync(addr);
+            var addinfo = await GetClient().GetAddressInfoAsync(addr);
             var utxos = addinfo.Utxos;
-
             var resp = new List<Utxos>();
             var founded = 0.0;
 
             if (utxos == null)
                 return resp;
-            
+
             utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
             foreach (var utx in utxos)
-            {
                 if (utx.Blockheight > 0 && utx.Tokens.Count > 0)
                 {
-                    //if (utx.Value == oneTokenSat)
+                    var tok = utx.Tokens.ToArray()?[0];
+                    if (tok != null && tok.TokenId == tokenId && tok?.Amount > 1)
                     {
-                        var tok = utx.Tokens.ToArray()?[0];
-                        if (tok != null && tok.TokenId == tokenId && tok?.Amount > 1)
+                        var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                        if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                         {
-                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
-                            if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                            {
-                                founded += (double)tok.Amount;
-                                resp.Add(utx);
-
-                                if (founded > numberToMint)
-                                    return resp;
-                            }
+                            founded += (double)tok.Amount;
+                            resp.Add(utx);
+                            if (founded > numberToMint)
+                                return resp;
                         }
                     }
                 }
-            }
+        
             return resp;
         }
 
+        /// <summary>
+        /// Find utxo which can be splited to lots. It is specific function which is used to auto splitter (old version, new version will do in in one tx)
+        /// missing number of lots. this is covered by function which use it.
+        /// </summary>
+        /// <param name="addr">address which has utxos</param>
+        /// <param name="tokenId">token id hash</param>
+        /// <param name="lotAmount">amount of tokens in one lot</param>
+        /// <param name="oneTokenSat">this is usually default. On Neblio all token tx should have value 10000sat</param>
+        /// <returns></returns>
         public static async Task<Utxos> FindUtxoToSplit(string addr, string tokenId, int lotAmount = 100, double oneTokenSat = 10000)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            var addinfo = await _client.GetAddressInfoAsync(addr);
+            var addinfo = await GetClient().GetAddressInfoAsync(addr);
             var utxos = addinfo.Utxos;
-
-            var resp = new List<Utxos>();
-            var founded = 0.0;
-
             if (utxos == null)
                 return null;
-            
-            utxos = utxos.OrderBy(u => u.Value).ToList();
 
+            var founded = 0.0;
+            utxos = utxos.OrderBy(u => u.Value).ToList();
             foreach (var utx in utxos)
-            {
                 if (utx.Blockheight > 0 && utx.Tokens.Count > 0 && utx.Value == oneTokenSat)
                 {
                     var tok = utx.Tokens.ToArray()?[0];
                     if (tok != null && tok.TokenId == tokenId && tok?.Amount > lotAmount)
                     {
                         var tx = await _client.GetTransactionInfoAsync(utx.Txid);
-                        if (tx != null)
+                        if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                         {
-                            if (tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                            {
-                                founded += (double)tok.Amount;
-                                return utx;
-                            }
+                            founded += (double)tok.Amount;
+                            return utx;
                         }
                     }
                 }
-            }
-            
+                        
             return null;
         }
 
+        /// <summary>
+        /// Returns metadata in the token transction
+        /// </summary>
+        /// <param name="tokenid">token id hash</param>
+        /// <param name="txid">tx id hash</param>
+        /// <returns></returns>
         public static async Task<Dictionary<string, string>> GetTransactionMetadata(string tokenid, string txid)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
             var resp = new Dictionary<string, string>();
-            var info = await _client.GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
+            var info = await GetClient().GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
             
             if (info.MetadataOfUtxo != null && info.MetadataOfUtxo.UserData.Meta.Count > 0)
-            {
                 foreach (var o in info.MetadataOfUtxo.UserData.Meta)
                 {
                     var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
@@ -1758,18 +1767,21 @@ namespace VEDriversLite
                             resp.Add(of.Key, of.Value);
                     }
                 }
-            }
+            
             return resp;
         }
 
+        /// <summary>
+        /// Find last send transaction by some address.
+        /// This is usefull to obtain address public key from signature of input.
+        /// </summary>
+        /// <param name="address">Searched address</param>
+        /// <returns>NBitcoin Transaction object</returns>
         public static async Task<Transaction> GetLastSentTransaction(string address)
         {
             try
             {
-                if (_client == null)
-                    _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-                var addinfo = await _client.GetAddressAsync(address);
+                var addinfo = await GetClient().GetAddressAsync(address);
                 if (addinfo == null || addinfo.Transactions.Count == 0)
                     return null;
 
@@ -1791,14 +1803,16 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Get transaction info.
+        /// </summary>
+        /// <param name="txid">tx id hash</param>
+        /// <returns>Neblio API GetTransactionInfo object</returns>
         public static async Task<GetTransactionInfoResponse> GetTransactionInfo(string txid)
         {
             try
             {
-                if (_client == null)
-                    _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-                
-                var info = await _client.GetTransactionInfoAsync(txid);
+                var info = await GetClient().GetTransactionInfoAsync(txid);
                 return info;
             }
             catch(Exception ex)
@@ -1808,6 +1822,16 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Not recommended to use now. It split tokens to lots, but doing it in separated transactions. Will be changed to do it in one tx soon.
+        /// </summary>
+        /// <param name="account"></param>
+        /// <param name="address"></param>
+        /// <param name="password"></param>
+        /// <param name="tokenId"></param>
+        /// <param name="lotAmount"></param>
+        /// <param name="numberOfLots"></param>
+        /// <returns></returns>
         public static async Task<List<string>> SplitTheTokens(NeblioAccount account, string address, string password, string tokenId, int lotAmount, int numberOfLots)
         {
             var listofFinalUtxo = new List<string>();
@@ -1893,15 +1917,16 @@ namespace VEDriversLite
             return null;
         }
 
+        /// <summary>
+        /// Get token issue metadata. Contains image url, issuer, and other info
+        /// </summary>
+        /// <param name="tokenId">token id hash</param>
+        /// <returns></returns>
         public static async Task<GetTokenMetadataResponse> GetTokenMetadata(string tokenId)
         {
             try
             {
-                if (_client == null)
-                    _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-                GetTokenMetadataResponse tokeninfo = new GetTokenMetadataResponse();
-                tokeninfo = await _client.GetTokenMetadataAsync(tokenId, 0);
+                var tokeninfo = await GetClient().GetTokenMetadataAsync(tokenId, 0);
                 return tokeninfo;
             }
             catch(Exception ex)
@@ -1911,13 +1936,17 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// check actual supply for minting on some address. It is just for VENFT tokens now. 
+        /// Function will also load token metadta if it has not loaded yet.
+        /// </summary>
+        /// <param name="address">address which has utxos</param>
+        /// <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
+        /// <returns></returns>
         public static async Task<(double, GetTokenMetadataResponse)> GetActualMintingSupply(string address, GetAddressInfoResponse addressinfo = null)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
             if (VENFTInfo == null)
-                VENFTInfo = await _client.GetTokenMetadataAsync(VENFTId, 0);
+                VENFTInfo = await GetClient().GetTokenMetadataAsync(VENFTId, 0);
 
             var res = await NeblioTransactionHelpers.GetAddressTokensUtxos(address, addressinfo);
             var utxos = new List<Utxos>();
@@ -1942,6 +1971,12 @@ namespace VEDriversLite
             public string url { get; set; } = string.Empty;
             public string mimeType { get; set; } = string.Empty;
         }
+        /// <summary>
+        /// Check supply of all VENFT tokens on address.
+        /// </summary>
+        /// <param name="address">address which has utxos</param>
+        /// <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
+        /// <returns></returns>
         public static async Task<Dictionary<string,TokenSupplyDto>> CheckTokensSupplies(string address, GetAddressInfoResponse addressinfo = null)
         {
             var resp = new Dictionary<string, TokenSupplyDto>();
@@ -1955,7 +1990,7 @@ namespace VEDriversLite
                 if (toks != null && toks.Amount > 1)
                 {
                     if (VENFTInfo == null)
-                        VENFTInfo = await _client.GetTokenMetadataAsync(VENFTId, 0);
+                        VENFTInfo = await GetClient().GetTokenMetadataAsync(VENFTId, 0);
 
                     if (!resp.TryGetValue(VENFTInfo.MetadataOfIssuance.Data.TokenName, out var tk))
                     {
@@ -1982,13 +2017,14 @@ namespace VEDriversLite
             return resp;
         }
 
+        /// <summary>
+        /// Return VENFT top owners. It eliminate some testing addresses.
+        /// </summary>
+        /// <param name="tokenId">Token Id hash</param>
+        /// <returns></returns>
         public static async Task<List<TokenOwnerDto>> GetTokenOwners(string tokenId)
         {
-            if (_client == null)
-                _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
-
-            GetTokenHoldersResponse tokenholders = new GetTokenHoldersResponse();
-            tokenholders = await _client.GetTokenHoldersAsync("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
+            var tokenholders = await GetClient().GetTokenHoldersAsync("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
 
             var resp = new List<TokenOwnerDto>();
             var hd = tokenholders.Holders.ToList().OrderBy(h => (double)h.Amount).Reverse().ToList();
