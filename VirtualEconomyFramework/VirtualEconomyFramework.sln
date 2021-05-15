@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-Blazor", "VENFTApp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", "{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEDriversLiteConsoleAppExamples", "VEDriversLiteConsoleAppExamples\VEDriversLiteConsoleAppExamples.csproj", "{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -219,6 +221,18 @@ Global
 		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Release|x64.Build.0 = Release|Any CPU
 		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Release|x86.ActiveCfg = Release|Any CPU
 		{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}.Release|x86.Build.0 = Release|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Debug|x64.Build.0 = Debug|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Debug|x86.Build.0 = Debug|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Release|x64.ActiveCfg = Release|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Release|x64.Build.0 = Release|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Release|x86.ActiveCfg = Release|Any CPU
+		{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
