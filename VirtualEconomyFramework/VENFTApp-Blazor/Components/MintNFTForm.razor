@@ -109,8 +109,8 @@
                     {
                         <!--no price or coppy option now-->
                     }
-                    else 
-                    { 
+                    else
+                    {
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                 <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
@@ -154,11 +154,22 @@
                             <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
                         </div>
                     </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
+                    @if ((string.IsNullOrEmpty(newNFT.ImageLink) && newNFT.Type == NFTTypes.Image) || (string.IsNullOrEmpty(newNFT.Link) && newNFT.Type == NFTTypes.Music))
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <button class="btn btn-primary disabled" @onclick="ShowMintConfirm">Create NFT</button>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </Spin>

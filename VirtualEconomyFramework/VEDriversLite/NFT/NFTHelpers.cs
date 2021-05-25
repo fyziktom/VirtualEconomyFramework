@@ -259,7 +259,7 @@ namespace VEDriversLite.NFT
             var utxos = uts.OrderBy(u => u.Blocktime).Reverse().ToList();
 
             var ns = new List<INFT>();
-            if (innfts != null && utxos.Count < innfts.Count)
+            if (innfts != null && utxos.Count <= innfts.Count)
             {
                 innfts.ToList().ForEach(n =>
                 {

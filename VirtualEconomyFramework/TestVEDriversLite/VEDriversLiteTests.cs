@@ -19,7 +19,7 @@ namespace TestVEDriversLite
         public static void Help(string param)
         {
             Console.WriteLine("Help for The Tests");
-            Console.WriteLine("-------------------------0--------");
+            Console.WriteLine("----------------------------------");
             Console.WriteLine("For detail info about functions please look inside of the functions.");
             Console.WriteLine("Important for running:");
             Console.WriteLine("- run GenerateNewAccount if you dont have account. It will create file key.txt where is your new address and key.");
@@ -454,7 +454,7 @@ namespace TestVEDriversLite
             var pk = await NFTHelpers.GetPubKeyFromLastFoundTx(split[1]);
             if (!pk.Item1)
                 throw new Exception("Cannot load public key of this address. Probably does not have any spended transaction.");
-            var res = await ECDSAProvider.EncryptMessage(split[0], pk.Item2.ToHex().ToString());
+            var res = await ECDSAProvider.EncryptMessage(split[0], pk.Item2.ToHex());
             Console.WriteLine("Encrypted message is: ");
             Console.WriteLine(res);
         }

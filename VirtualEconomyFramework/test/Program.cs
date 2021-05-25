@@ -22,11 +22,13 @@ namespace test
                 var key = "";
                 var address = "NWzAr4qG9VnVv9GajWYWJmBVdNU4SACEvn";// "NWzAr4qG9VnVv9GajWYWJmBVdNU4SACEvn";//"NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7";
                 var receiver = "NWzAr4qG9VnVv9GajWYWJmBVdNU4SACEvn";
+                var password = "";
 
-                NeblioAccount account = new NeblioAccount();
-                await account.LoadAccount(pass, key, address); // put here your password
-                                                               //await account.StartRefreshingData();
 
+                var account = new NeblioAccount();
+                await account.CreateNewAccount(password);
+
+                await account.LoadAccount(pass, key, address);
 
                 /*
                 // Read into buffer and act (uses less memory)

@@ -44,20 +44,47 @@
                     <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
                 </div>
             </div>-->
+            <div class="row">
+                <div class="col" style="margin-top:10px;">
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <RadioGroup @bind-Value="@NFTType" @onselectionchange="nftTypeChangedHandler">
+                                <Radio Value="NFTTypes.Image">Image - Original</Radio>
+                                <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
+                                <Radio Value="NFTTypes.Music">Music - Original</Radio>
+                            </RadioGroup>
+                        </div>
+                    </div>
 
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <RadioGroup @bind-Value="@NFTType" @onselectionchange="nftTypeChangedHandler">
-                        <Radio Value="NFTTypes.Image">Image - Original</Radio>
-                        <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
-                        <Radio Value="NFTTypes.Music">Music - Original</Radio>
-                    </RadioGroup>
+                    <div class="row" style="margin-top:10px; margin-bottom:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <VENFTApp_Blazor.Components.MintNFTForm NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="row" style="margin-top:10px; margin-bottom:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <VENFTApp_Blazor.Components.MintNFTForm NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                <div class="col" style="margin-top:10px; margin-right:20px; max-width:250px;">
+                    <div class="row" style="margin-top:10px; margin-bottom:10px;max-width:250px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Last 10 Minted Items</span>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px; margin-bottom:10px; max-width:250px;">
+                        <div class="col d-flex justify-content-center align-items-center" style="max-width:250px;">
+                            <div class="card-group">
+                                @for (var i = 0; i < 10; i++)
+                                {
+                                    if (i < AppData.Account.NFTs.Count)
+                                    {
+                                        var nft = AppData.Account.NFTs[i];
+                                        if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings")
+                                        {
+                                            <VENFTApp_Blazor.Components.NFT Address="@AppData.Account.Address" InputNFT="@nft" OwnNFT="true" />
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
