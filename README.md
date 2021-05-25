@@ -6,9 +6,9 @@ Application uses PostgreSQL to store local data, publish data to MQTT and lots o
 Main framework is .NET Core 5.0 (ASP.NET). Code is written in C#, HTML, CSS and JavaScript.
 Solution is for Visual Studio 2019.
 
-Repository now contains new version of drivers for Neblio: VEDriversLite. It is also available as [Nuget package](https://www.nuget.org/packages/VEDrivers.VEDriversLite/0.1.1). Please check this drivers and [documentation](https://docs.veframework.com/VEDriversLite/index.html). 
+Repository now contains new version of drivers for Neblio and Doge: VEDriversLite. It is also available as [Nuget package](https://www.nuget.org/packages/VEFramework.VEDriversLite/). Please check this drivers and [documentation](https://docs.veframework.com/VEDriversLite/index.html). 
 
-I Recommen to use them if you need to build app which uses just Neblio !
+I Recommen to use them if you need to build app which uses just Neblio or Doge! Doge is supported from version VEFramework.VEDriversLite 0.1.2!
 
 Please explore [VE NFT App](https://ve-nft.com/) - C# Blazor Neblio NFT Web Wallet which uses VEDriversLite.
 
@@ -68,6 +68,7 @@ For compilation you need to install Arduino IDE and M5Stack libraries and ESP32 
 
 -	ASP.NET Core base application, VEconomy, which can be shaped for your app needs.
 -	VEDriversLite is under .NET Standard - you can add it to most of C# projects
+-	VEDriversLite contains Doge Coin functions. It can create, load account, send transactions, etc.
 -	Blazor Webassebmly example [VE NFT App](https://ve-nft.com/) with lots of Neblio Blazor components.
 -	Digital Twins of objects related to blockchain such as Wallet, Account, Transaction, Token, etc. and publishing these data to MQTT.
 -	Set of drivers/helpers for economy-based applications.
@@ -262,6 +263,8 @@ If you like this project, please donate the team with some Nebl,  Bitcoin or Red
 Thanks to donations we can focus our energy to this opensource project.
 
 Project Neblio Address - NUhbMPqKYaGe8irb4kXECb8KN79YbD6ZyX
+
+Project Doge Address - D9g337oMmTVUnyMdpYDdSS5ob58CD7Hq7y
 
 Project BTC Address - 34cuGjGbdVBHvwS3dha8pMv63jbxsF96MP
 
