@@ -3,15 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>VEFramework.VEDriversLite</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.2</Version>
     <Authors>fyziktom</Authors>
     <Company>VEFramework</Company>
-    <Description>.NET Standard version of VEDrivers. Contains just minimum dependencies and now just support of Neblio blockchain.</Description>
+    <Description>.NET Standard version of VEDrivers. Contains just minimum dependencies and now just support of Neblio and Doge blockchain.</Description>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>VEFramework, Cryptocurrencies, Crypto, Bitcoin, ReddCoin, Neblio, Nebl, Blockchain, eCommerce, dApps</PackageTags>
+    <PackageTags>VEFramework, Cryptocurrencies, Crypto, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Blockchain, eCommerce, dApps</PackageTags>
     <Copyright>fyziktom</Copyright>
   </PropertyGroup>
 
@@ -20,9 +20,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
     <PackageReference Include="NBitcoin" Version="5.0.81" />
-    <PackageReference Include="NBitcoin.Altcoins" Version="2.0.32" />
+    <PackageReference Include="NBitcoin.Altcoins" Version="2.0.33" />
     <!--<PackageReference Include="QRCoder" Version="1.4.1" />-->
     <!--<PackageReference Include="ZXing.Net" Version="0.16.6" />-->
   </ItemGroup>
