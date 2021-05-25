@@ -10,6 +10,27 @@ namespace VEDriversLite.Security
 {
     public static class ECDSAProvider
     {
+        public static async Task<(bool, string)> VerifyDogeMessage(string message, string signature, string address)
+        {
+            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))
+                return (false, "Input parameters cannot be empty or null.");
+
+            try
+            {
+                var add = BitcoinAddress.Create(address, DogeTransactionHelpers.Network);
+                var vadd = (add as IPubkeyHashUsable);
+
+                if (vadd.VerifyMessage(message, signature))
+                    return (true, "Verified.");
+                else
+                    return (false, "Not verified.");
+            }
+            catch (Exception ex)
+            {
+                return (false, "Wrong input. Cannot verify the message signature.");
+            }
+        }
+
         public static async Task<(bool, string)> VerifyMessage(string message, string signature, string address)
         {
             if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))

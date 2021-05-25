@@ -1361,7 +1361,7 @@ namespace VEDriversLite
                 return (false, "Account is locked.");
             }
             var key = await AccountKey.GetEncryptedKey();
-            return await ECDSAProvider.SignMessage(message, key); ;
+            return await ECDSAProvider.SignMessage(message, key);
         }
 
         /// <summary>

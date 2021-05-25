@@ -14,6 +14,7 @@ namespace TestVEDriversLite
     {
         private static string password = string.Empty;
         private static NeblioAccount account = new NeblioAccount();
+        private static DogeAccount dogeAccount = new DogeAccount();
 
         [TestEntry]
         public static void Help(string param)
@@ -43,6 +44,7 @@ namespace TestVEDriversLite
             Console.WriteLine($"Encrypted Private Key: {await account.AccountKey.GetEncryptedKey("", true)}");
             StartRefreshingData( null);
         }
+
 
         [TestEntry]
         public static void LoadAccount(string param)
@@ -547,6 +549,164 @@ namespace TestVEDriversLite
             Console.WriteLine("Decrypted message is: ");
             Console.WriteLine(res);
         }
+
+
+        #region DogeTests
+
+        ////////////////////////////////////////////////////////////
+        ///// Doge Tests
+
+        [TestEntry]
+        public static void DogeGenerateNewAccount(string param)
+        {
+            GenerateNewDogeAccountAsync(param);
+        }
+        public static async Task GenerateNewDogeAccountAsync(string param)
+        {
+            password = param;
+            await dogeAccount.CreateNewAccount(password, true);
+            Console.WriteLine($"Account created.");
+            Console.WriteLine($"Address: {account.Address}");
+            Console.WriteLine($"Encrypted Private Key: {await dogeAccount.AccountKey.GetEncryptedKey("", true)}");
+            StartRefreshingData(null);
+        }
+
+        [TestEntry]
+        public static void DogeLoadAccount(string param)
+        {
+            LoadDogeAccountAsync(param);
+        }
+        public static async Task LoadDogeAccountAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+                throw new Exception("Password cannot be empty.");
+
+            password = param;
+            await dogeAccount.LoadAccount(password);
+            DogeStartRefreshingData(null);
+        }
+
+
+        [TestEntry]
+        public static void DogeStartRefreshingData(string param)
+        {
+            StartRefreshingDogeDataAsync(param);
+        }
+        public static async Task StartRefreshingDogeDataAsync(string param)
+        {
+            if (string.IsNullOrEmpty(dogeAccount.Address))
+                throw new Exception("Account is not initialized.");
+
+            await dogeAccount.StartRefreshingData();
+            Console.WriteLine("Refreshing started.");
+        }
+
+        [TestEntry]
+        public static void DogeLoadAccountWithCreds(string param)
+        {
+            LoadDogeAccountWithCredsAsync(param);
+        }
+        public static async Task LoadDogeAccountWithCredsAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input pass,encryptedprivatekey,address");
+            var pass = split[0];
+            var ekey = split[1];
+            var addr = split[2];
+            await dogeAccount.LoadAccount(pass, ekey, addr);
+            DogeStartRefreshingData(null);
+        }
+
+        [TestEntry]
+        public static void DogeGetDecryptedPrivateKey(string param)
+        {
+            GetDogeDecryptedPrivateKeyAsync(param);
+        }
+        public static async Task GetDogeDecryptedPrivateKeyAsync(string param)
+        {
+            if (string.IsNullOrEmpty(dogeAccount.Address))
+                throw new Exception("Account is not initialized.");
+            if (dogeAccount.IsLocked())
+                throw new Exception("Account is locked.");
+            var res = await dogeAccount.AccountKey.GetEncryptedKey();
+            Console.WriteLine($"Private key for address {dogeAccount.Address} is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void DogeDisplayAccountDetails(string param)
+        {
+            Console.WriteLine("Account Details");
+            Console.WriteLine($"Account Total Balance: {dogeAccount.TotalBalance} DOGE");
+            Console.WriteLine($"Account Total Spendable Balance: {dogeAccount.TotalSpendableBalance} DOGE");
+            Console.WriteLine($"Account Total Unconfirmed Balance: {dogeAccount.TotalUnconfirmedBalance} DOGE");
+            Console.WriteLine($"Account Total Utxos Count: {dogeAccount.Utxos.Count}");
+            Console.WriteLine("-----------------------------------------------------");
+            Console.WriteLine("Account Utxos:");
+            dogeAccount.Utxos.ForEach(u => { Console.WriteLine($"Utxo: {u.TxId}:{u.N}"); });
+            Console.WriteLine("-----------------------------------------------------");
+        }
+
+        [TestEntry]
+        public static void DogeSendTransaction(string param)
+        {
+            SendDogeTransactionAsync(param);
+        }
+        public static async Task SendDogeTransactionAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input receiveraddress,amountofdoge");
+            var receiver = split[0];
+            var am = split[1];
+            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
+            var res = await dogeAccount.SendPayment(receiver, amount);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void DogeSignMessage(string param)
+        {
+            DogeSignMessageAsync(param);
+        }
+        public static async Task DogeSignMessageAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+                throw new Exception("Message must be filled.");
+
+            Console.WriteLine("Mesaage for signature: ");
+            Console.WriteLine(param);
+            var signature = await dogeAccount.SignMessage(param);
+            Console.WriteLine("Signature of the message is: ");
+            Console.WriteLine(signature.Item2);
+        }
+
+        [TestEntry]
+        public static void DogeVerifyMessage(string param)
+        {
+            DogeVerifyMessageAsync(param);
+        }
+        public static async Task DogeVerifyMessageAsync(string param)
+        {
+            var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input message,signature,address. Dont use any other separator in this case.");
+
+            Console.WriteLine("Mesaage for signature: ");
+            Console.WriteLine(split[0]);
+            Console.WriteLine("Signature: ");
+            Console.WriteLine(split[1]);
+            Console.WriteLine("Address: ");
+            Console.WriteLine(split[2]);
+            var ver = await ECDSAProvider.VerifyDogeMessage(split[0], split[1], split[2]);
+            Console.WriteLine("Signature verification result is: ");
+            Console.WriteLine(ver.Item2);
+        }
+
+        #endregion
+        ///////////////////////////////////////////////////////////////////
 
     }
 }
