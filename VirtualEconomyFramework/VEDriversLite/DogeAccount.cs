@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.DogeAPI;
 using VEDriversLite.Events;
+using VEDriversLite.NFT;
 using VEDriversLite.Security;
 
 namespace VEDriversLite
@@ -395,6 +396,65 @@ namespace VEDriversLite
             {
                 // send tx
                 var rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
+
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+
+        /// <summary>
+        /// Send Doge payment
+        /// </summary>
+        /// <param name="receiver">Receiver Doge Address</param>
+        /// <param name="amount">Ammount in Doge</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> BuyNFT(string neblioAddress, string receiver, INFT nft)
+        {
+            if (!nft.PriceActive)
+                return (false, "NFT does not have setted up the price. It is not sellable NFT.");
+
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+
+            var res = await CheckSpendableDoge(nft.Price);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                return (false, res.Item1);
+            }
+
+            var nftid = nft.Utxo + ":" + nft.UtxoIndex.ToString();
+            var msg = neblioAddress + "=" + String.Format("{0:X}", nftid.GetHashCode());
+
+            // fill input data for sending tx
+            var dto = new SendTxData() // please check SendTxData for another properties such as specify source UTXOs
+            {
+                Amount = nft.Price,
+                SenderAddress = Address,
+                ReceiverAddress = receiver,
+                CustomMessage = msg
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");

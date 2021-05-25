@@ -1,6 +1,8 @@
 ﻿using NBitcoin;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -223,6 +225,94 @@ namespace VEDriversLite
                 throw ex;
             }
         }
+
+
+        public static async Task<string> SendDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
+        {
+            var res = "ERROR";
+
+            if (data == null)
+                throw new Exception("Data cannot be null!");
+
+            if (ekey == null)
+                throw new Exception("Account cannot be null!");
+
+            // create receiver address
+            BitcoinAddress recaddr = null;
+            try
+            {
+                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot send transaction. cannot create receiver address!");
+            }
+
+            // load key and address
+            BitcoinSecret key = null;
+            BitcoinAddress addressForTx = null;
+            try
+            {
+                var k = await GetAddressAndKey(ekey, data.Password);
+                key = k.Item2;
+                addressForTx = k.Item1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            // create template for new tx from last one
+            var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
+
+            try
+            {
+                // add inputs of tx
+                foreach (var utxo in utxos)
+                {
+                    var txin = new TxIn(new OutPoint(uint256.Parse(utxo.TxId), utxo.N));
+                    txin.ScriptSig = addressForTx.ScriptPubKey;
+                    transaction.Inputs.Add(txin);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during loading inputs. " + ex.Message);
+            }
+
+            try
+            {
+                var allNeblCoins = 0.0;
+                foreach (var u in utxos)
+                    allNeblCoins += (double)u.Value;
+
+                var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
+                var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
+
+                // create outputs
+                transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
+                var bytes = Encoding.UTF8.GetBytes(data.CustomMessage); 
+                transaction.Outputs.Add(new TxOut(){ 
+                    Value = 0,    
+                    ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
+                });
+                transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during creating outputs. " + ex.Message);
+            }
+
+            try
+            {
+                return await SignAndBroadcast(transaction, key, addressForTx);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
 
         ///////////////////////////////////////////
         // calls of Doge API and helpers

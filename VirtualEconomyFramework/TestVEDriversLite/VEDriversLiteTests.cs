@@ -566,7 +566,7 @@ namespace TestVEDriversLite
             password = param;
             await dogeAccount.CreateNewAccount(password, true);
             Console.WriteLine($"Account created.");
-            Console.WriteLine($"Address: {account.Address}");
+            Console.WriteLine($"Address: {dogeAccount.Address}");
             Console.WriteLine($"Encrypted Private Key: {await dogeAccount.AccountKey.GetEncryptedKey("", true)}");
             StartRefreshingData(null);
         }
@@ -656,12 +656,33 @@ namespace TestVEDriversLite
         public static async Task SendDogeTransactionAsync(string param)
         {
             var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (split.Length < 1)
+            if (split.Length < 2)
                 throw new Exception("Please input receiveraddress,amountofdoge");
             var receiver = split[0];
             var am = split[1];
             var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
             var res = await dogeAccount.SendPayment(receiver, amount);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void DogeBuyNFT(string param)
+        {
+            DogeBuyNFTAsync(param);
+        }
+        public static async Task DogeBuyNFTAsync(string param)
+        {
+            var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input receiveraddress,neblioaddress,nfttxid");
+            var receiver = split[0];
+            var neblioaddress = split[1];
+            var nftid = split[2];
+            //var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftid);
+
+            var res = await dogeAccount.BuyNFT(neblioaddress, receiver, nft);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }
