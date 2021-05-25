@@ -1,0 +1,955 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey
+  commentId: T:VEDriversLite.NeblioAPI.ScriptPubKey
+  id: ScriptPubKey
+  parent: VEDriversLite.NeblioAPI
+  children:
+  - VEDriversLite.NeblioAPI.ScriptPubKey.AdditionalProperties
+  - VEDriversLite.NeblioAPI.ScriptPubKey.Addresses
+  - VEDriversLite.NeblioAPI.ScriptPubKey.Asm
+  - VEDriversLite.NeblioAPI.ScriptPubKey.Hex
+  - VEDriversLite.NeblioAPI.ScriptPubKey.ReqSigs
+  - VEDriversLite.NeblioAPI.ScriptPubKey.Type
+  langs:
+  - csharp
+  - vb
+  name: ScriptPubKey
+  nameWithType: ScriptPubKey
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey
+  type: Class
+  source:
+    id: ScriptPubKey
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 6312
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: public class ScriptPubKey
+    content.vb: Public Class ScriptPubKey
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.Asm
+  commentId: P:VEDriversLite.NeblioAPI.ScriptPubKey.Asm
+  id: Asm
+  parent: VEDriversLite.NeblioAPI.ScriptPubKey
+  langs:
+  - csharp
+  - vb
+  name: Asm
+  nameWithType: ScriptPubKey.Asm
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.Asm
+  type: Property
+  source:
+    id: Asm
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 6315
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: >-
+      [JsonProperty("asm", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public string Asm { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("asm", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Asm As String
+  overload: VEDriversLite.NeblioAPI.ScriptPubKey.Asm*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: asm
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.Hex
+  commentId: P:VEDriversLite.NeblioAPI.ScriptPubKey.Hex
+  id: Hex
+  parent: VEDriversLite.NeblioAPI.ScriptPubKey
+  langs:
+  - csharp
+  - vb
+  name: Hex
+  nameWithType: ScriptPubKey.Hex
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.Hex
+  type: Property
+  source:
+    id: Hex
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 6318
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: >-
+      [JsonProperty("hex", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public string Hex { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("hex", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Hex As String
+  overload: VEDriversLite.NeblioAPI.ScriptPubKey.Hex*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: hex
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.ReqSigs
+  commentId: P:VEDriversLite.NeblioAPI.ScriptPubKey.ReqSigs
+  id: ReqSigs
+  parent: VEDriversLite.NeblioAPI.ScriptPubKey
+  langs:
+  - csharp
+  - vb
+  name: ReqSigs
+  nameWithType: ScriptPubKey.ReqSigs
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.ReqSigs
+  type: Property
+  source:
+    id: ReqSigs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 6321
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: >-
+      [JsonProperty("reqSigs", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? ReqSigs { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("reqSigs", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property ReqSigs As Double?
+  overload: VEDriversLite.NeblioAPI.ScriptPubKey.ReqSigs*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: reqSigs
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.Type
+  commentId: P:VEDriversLite.NeblioAPI.ScriptPubKey.Type
+  id: Type
+  parent: VEDriversLite.NeblioAPI.ScriptPubKey
+  langs:
+  - csharp
+  - vb
+  name: Type
+  nameWithType: ScriptPubKey.Type
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.Type
+  type: Property
+  source:
+    id: Type
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 6324
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: >-
+      [JsonProperty("type", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public string Type { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("type", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Type As String
+  overload: VEDriversLite.NeblioAPI.ScriptPubKey.Type*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: type
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.Addresses
+  commentId: P:VEDriversLite.NeblioAPI.ScriptPubKey.Addresses
+  id: Addresses
+  parent: VEDriversLite.NeblioAPI.ScriptPubKey
+  langs:
+  - csharp
+  - vb
+  name: Addresses
+  nameWithType: ScriptPubKey.Addresses
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.Addresses
+  type: Property
+  source:
+    id: Addresses
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 6327
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: >-
+      [JsonProperty("addresses", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public ICollection<string> Addresses { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.ICollection{System.String}
+    content.vb: >-
+      <JsonProperty("addresses", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Addresses As ICollection(Of String)
+  overload: VEDriversLite.NeblioAPI.ScriptPubKey.Addresses*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: addresses
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.AdditionalProperties
+  commentId: P:VEDriversLite.NeblioAPI.ScriptPubKey.AdditionalProperties
+  id: AdditionalProperties
+  parent: VEDriversLite.NeblioAPI.ScriptPubKey
+  langs:
+  - csharp
+  - vb
+  name: AdditionalProperties
+  nameWithType: ScriptPubKey.AdditionalProperties
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.AdditionalProperties
+  type: Property
+  source:
+    id: AdditionalProperties
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 6332
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: >-
+      [JsonExtensionData]
+
+      public IDictionary<string, object> AdditionalProperties { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IDictionary{System.String,System.Object}
+    content.vb: >-
+      <JsonExtensionData>
+
+      Public Property AdditionalProperties As IDictionary(Of String, Object)
+  overload: VEDriversLite.NeblioAPI.ScriptPubKey.AdditionalProperties*
+  attributes:
+  - type: Newtonsoft.Json.JsonExtensionDataAttribute
+    ctor: Newtonsoft.Json.JsonExtensionDataAttribute.#ctor
+    arguments: []
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite.NeblioAPI
+  commentId: N:VEDriversLite.NeblioAPI
+  name: VEDriversLite.NeblioAPI
+  nameWithType: VEDriversLite.NeblioAPI
+  fullName: VEDriversLite.NeblioAPI
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.Asm*
+  commentId: Overload:VEDriversLite.NeblioAPI.ScriptPubKey.Asm
+  name: Asm
+  nameWithType: ScriptPubKey.Asm
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.Asm
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.Hex*
+  commentId: Overload:VEDriversLite.NeblioAPI.ScriptPubKey.Hex
+  name: Hex
+  nameWithType: ScriptPubKey.Hex
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.Hex
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.ReqSigs*
+  commentId: Overload:VEDriversLite.NeblioAPI.ScriptPubKey.ReqSigs
+  name: ReqSigs
+  nameWithType: ScriptPubKey.ReqSigs
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.ReqSigs
+- uid: System.Nullable{System.Double}
+  commentId: T:System.Nullable{System.Double}
+  parent: System
+  definition: System.Nullable`1
+  name: Nullable<Double>
+  nameWithType: Nullable<Double>
+  fullName: System.Nullable<System.Double>
+  nameWithType.vb: Nullable(Of Double)
+  fullName.vb: System.Nullable(Of System.Double)
+  name.vb: Nullable(Of Double)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    nameWithType: Nullable
+    fullName: System.Nullable
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Double
+    name: Double
+    nameWithType: Double
+    fullName: System.Double
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    nameWithType: Nullable
+    fullName: System.Nullable
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Double
+    name: Double
+    nameWithType: Double
+    fullName: System.Double
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Nullable`1
+  commentId: T:System.Nullable`1
+  isExternal: true
+  name: Nullable<T>
+  nameWithType: Nullable<T>
+  fullName: System.Nullable<T>
+  nameWithType.vb: Nullable(Of T)
+  fullName.vb: System.Nullable(Of T)
+  name.vb: Nullable(Of T)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    nameWithType: Nullable
+    fullName: System.Nullable
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    nameWithType: Nullable
+    fullName: System.Nullable
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.Type*
+  commentId: Overload:VEDriversLite.NeblioAPI.ScriptPubKey.Type
+  name: Type
+  nameWithType: ScriptPubKey.Type
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.Type
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.Addresses*
+  commentId: Overload:VEDriversLite.NeblioAPI.ScriptPubKey.Addresses
+  name: Addresses
+  nameWithType: ScriptPubKey.Addresses
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.Addresses
+- uid: System.Collections.Generic.ICollection{System.String}
+  commentId: T:System.Collections.Generic.ICollection{System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.ICollection`1
+  name: ICollection<String>
+  nameWithType: ICollection<String>
+  fullName: System.Collections.Generic.ICollection<System.String>
+  nameWithType.vb: ICollection(Of String)
+  fullName.vb: System.Collections.Generic.ICollection(Of System.String)
+  name.vb: ICollection(Of String)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.ICollection`1
+  commentId: T:System.Collections.Generic.ICollection`1
+  isExternal: true
+  name: ICollection<T>
+  nameWithType: ICollection<T>
+  fullName: System.Collections.Generic.ICollection<T>
+  nameWithType.vb: ICollection(Of T)
+  fullName.vb: System.Collections.Generic.ICollection(Of T)
+  name.vb: ICollection(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: VEDriversLite.NeblioAPI.ScriptPubKey.AdditionalProperties*
+  commentId: Overload:VEDriversLite.NeblioAPI.ScriptPubKey.AdditionalProperties
+  name: AdditionalProperties
+  nameWithType: ScriptPubKey.AdditionalProperties
+  fullName: VEDriversLite.NeblioAPI.ScriptPubKey.AdditionalProperties
+- uid: System.Collections.Generic.IDictionary{System.String,System.Object}
+  commentId: T:System.Collections.Generic.IDictionary{System.String,System.Object}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IDictionary`2
+  name: IDictionary<String, Object>
+  nameWithType: IDictionary<String, Object>
+  fullName: System.Collections.Generic.IDictionary<System.String, System.Object>
+  nameWithType.vb: IDictionary(Of String, Object)
+  fullName.vb: System.Collections.Generic.IDictionary(Of System.String, System.Object)
+  name.vb: IDictionary(Of String, Object)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IDictionary`2
+  commentId: T:System.Collections.Generic.IDictionary`2
+  isExternal: true
+  name: IDictionary<TKey, TValue>
+  nameWithType: IDictionary<TKey, TValue>
+  fullName: System.Collections.Generic.IDictionary<TKey, TValue>
+  nameWithType.vb: IDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.IDictionary(Of TKey, TValue)
+  name.vb: IDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )

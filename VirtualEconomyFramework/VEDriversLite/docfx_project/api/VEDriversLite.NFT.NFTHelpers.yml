@@ -1,0 +1,2719 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NFT.NFTHelpers
+  commentId: T:VEDriversLite.NFT.NFTHelpers
+  id: NFTHelpers
+  parent: VEDriversLite.NFT
+  children:
+  - VEDriversLite.NFT.NFTHelpers.DeInitHandlers
+  - VEDriversLite.NFT.NFTHelpers.FindProfileNFT(System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})
+  - VEDriversLite.NFT.NFTHelpers.FindProfileOfAddress(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.GetNFTWithOwner(System.String)
+  - VEDriversLite.NFT.NFTHelpers.GetPubKeyFromLastFoundTx(System.String)
+  - VEDriversLite.NFT.NFTHelpers.GetPubKeyFromProfileNFTTx(System.String)
+  - VEDriversLite.NFT.NFTHelpers.ChangePostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.ChangeProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.CheckIfContainsNFTData(System.String)
+  - VEDriversLite.NFT.NFTHelpers.CheckIfMintTx(System.String)
+  - VEDriversLite.NFT.NFTHelpers.InitHandlers
+  - VEDriversLite.NFT.NFTHelpers.ipfs
+  - VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})
+  - VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile(System.String)
+  - VEDriversLite.NFT.NFTHelpers.LoadLastData(System.String)
+  - VEDriversLite.NFT.NFTHelpers.LoadNFTOriginData(System.String)
+  - VEDriversLite.NFT.NFTHelpers.LoadNFTsHistory(System.String)
+  - VEDriversLite.NFT.NFTHelpers.MintImageNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.MintMultiImageNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.MintMultiMusicNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.MintMultiPostNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.MintMusicNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.MintPostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.MintProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.NewEventInfo
+  - VEDriversLite.NFT.NFTHelpers.SendNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Boolean,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)
+  - VEDriversLite.NFT.NFTHelpers.SendNFTPayment(System.String,VEDriversLite.Security.EncryptionKey,System.String,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.SendOrderedNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  - VEDriversLite.NFT.NFTHelpers.TokenId
+  langs:
+  - csharp
+  - vb
+  name: NFTHelpers
+  nameWithType: NFTHelpers
+  fullName: VEDriversLite.NFT.NFTHelpers
+  type: Class
+  source:
+    id: NFTHelpers
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 33
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static class NFTHelpers
+    content.vb: Public Module NFTHelpers
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - static
+  - class
+  modifiers.vb:
+  - Public
+  - Module
+- uid: VEDriversLite.NFT.NFTHelpers.TokenId
+  commentId: F:VEDriversLite.NFT.NFTHelpers.TokenId
+  id: TokenId
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: TokenId
+  nameWithType: NFTHelpers.TokenId
+  fullName: VEDriversLite.NFT.NFTHelpers.TokenId
+  type: Field
+  source:
+    id: TokenId
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 35
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static string TokenId
+    return:
+      type: System.String
+    content.vb: Public Shared TokenId As String
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.ipfs
+  commentId: F:VEDriversLite.NFT.NFTHelpers.ipfs
+  id: ipfs
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: ipfs
+  nameWithType: NFTHelpers.ipfs
+  fullName: VEDriversLite.NFT.NFTHelpers.ipfs
+  type: Field
+  source:
+    id: ipfs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 37
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static readonly IpfsClient ipfs
+    return:
+      type: Ipfs.Http.IpfsClient
+    content.vb: Public Shared ReadOnly ipfs As IpfsClient
+  modifiers.csharp:
+  - public
+  - static
+  - readonly
+  modifiers.vb:
+  - Public
+  - Shared
+  - ReadOnly
+- uid: VEDriversLite.NFT.NFTHelpers.NewEventInfo
+  commentId: E:VEDriversLite.NFT.NFTHelpers.NewEventInfo
+  id: NewEventInfo
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: NewEventInfo
+  nameWithType: NFTHelpers.NewEventInfo
+  fullName: VEDriversLite.NFT.NFTHelpers.NewEventInfo
+  type: Event
+  source:
+    id: NewEventInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 39
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static event EventHandler<IEventInfo> NewEventInfo
+    return:
+      type: System.EventHandler{VEDriversLite.Events.IEventInfo}
+    content.vb: Public Shared Event NewEventInfo As EventHandler(Of IEventInfo)
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.InitHandlers
+  commentId: M:VEDriversLite.NFT.NFTHelpers.InitHandlers
+  id: InitHandlers
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: InitHandlers()
+  nameWithType: NFTHelpers.InitHandlers()
+  fullName: VEDriversLite.NFT.NFTHelpers.InitHandlers()
+  type: Method
+  source:
+    id: InitHandlers
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 44
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nInit handler to receive event info messages from Neblio Transaction Helpers class\n"
+  example: []
+  syntax:
+    content: public static void InitHandlers()
+    content.vb: Public Shared Sub InitHandlers
+  overload: VEDriversLite.NFT.NFTHelpers.InitHandlers*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.DeInitHandlers
+  commentId: M:VEDriversLite.NFT.NFTHelpers.DeInitHandlers
+  id: DeInitHandlers
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: DeInitHandlers()
+  nameWithType: NFTHelpers.DeInitHandlers()
+  fullName: VEDriversLite.NFT.NFTHelpers.DeInitHandlers()
+  type: Method
+  source:
+    id: DeInitHandlers
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 51
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nDeinit handler to receive event info messages from Neblio Transaction Helpers class\n"
+  example: []
+  syntax:
+    content: public static void DeInitHandlers()
+    content.vb: Public Shared Sub DeInitHandlers
+  overload: VEDriversLite.NFT.NFTHelpers.DeInitHandlers*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.LoadNFTOriginData(System.String)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.LoadNFTOriginData(System.String)
+  id: LoadNFTOriginData(System.String)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: LoadNFTOriginData(String)
+  nameWithType: NFTHelpers.LoadNFTOriginData(String)
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadNFTOriginData(System.String)
+  type: Method
+  source:
+    id: LoadNFTOriginData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 73
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will iterate through inputs of tx from the point of the utxo to find tx where this 1 token was splited from some lot.\nMetadata from this founded tx is returned for load to NFT carrier.\nThis method is now used for &quot;original&quot; NFTs. It is for example Image and Music. \n"
+  example: []
+  syntax:
+    content: public static Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo)
+    parameters:
+    - id: utxo
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{VEDriversLite.NFT.LoadNFTOriginDataDto}
+      description: ''
+    content.vb: Public Shared Function LoadNFTOriginData(utxo As String) As Task(Of LoadNFTOriginDataDto)
+  overload: VEDriversLite.NFT.NFTHelpers.LoadNFTOriginData*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.LoadLastData(System.String)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.LoadLastData(System.String)
+  id: LoadLastData(System.String)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: LoadLastData(String)
+  nameWithType: NFTHelpers.LoadLastData(String)
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadLastData(System.String)
+  type: Method
+  source:
+    id: LoadLastData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 117
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis will load just last transaction metadata if it is NFT metadata. \nThis function will not iterate to start/origin. It is used for example in Post\n"
+  example: []
+  syntax:
+    content: public static Task<LoadNFTOriginDataDto> LoadLastData(string utxo)
+    parameters:
+    - id: utxo
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{VEDriversLite.NFT.LoadNFTOriginDataDto}
+      description: ''
+    content.vb: Public Shared Function LoadLastData(utxo As String) As Task(Of LoadNFTOriginDataDto)
+  overload: VEDriversLite.NFT.NFTHelpers.LoadLastData*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.CheckIfContainsNFTData(System.String)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.CheckIfContainsNFTData(System.String)
+  id: CheckIfContainsNFTData(System.String)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: CheckIfContainsNFTData(String)
+  nameWithType: NFTHelpers.CheckIfContainsNFTData(String)
+  fullName: VEDriversLite.NFT.NFTHelpers.CheckIfContainsNFTData(System.String)
+  type: Method
+  source:
+    id: CheckIfContainsNFTData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 147
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nthis function will obtain tx metadata and check if it contains flag NFT true\n"
+  example: []
+  syntax:
+    content: public static Task<Dictionary<string, string>> CheckIfContainsNFTData(string utxo)
+    parameters:
+    - id: utxo
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.Collections.Generic.Dictionary{System.String,System.String}}
+      description: ''
+    content.vb: Public Shared Function CheckIfContainsNFTData(utxo As String) As Task(Of Dictionary(Of String, String))
+  overload: VEDriversLite.NFT.NFTHelpers.CheckIfContainsNFTData*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.CheckIfMintTx(System.String)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.CheckIfMintTx(System.String)
+  id: CheckIfMintTx(System.String)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: CheckIfMintTx(String)
+  nameWithType: NFTHelpers.CheckIfMintTx(String)
+  fullName: VEDriversLite.NFT.NFTHelpers.CheckIfMintTx(System.String)
+  type: Method
+  source:
+    id: CheckIfMintTx
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 164
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will check if the transaction is mint transaction. it means if the input to this tx was lot of the tokens.\nThis kind of transaction means origin for the NFTs.\n"
+  example: []
+  syntax:
+    content: public static Task<(bool, string)> CheckIfMintTx(string utxo)
+    parameters:
+    - id: utxo
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Shared Function CheckIfMintTx(utxo As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NFT.NFTHelpers.CheckIfMintTx*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.FindProfileOfAddress(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.FindProfileOfAddress(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: FindProfileOfAddress(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: FindProfileOfAddress(String, ICollection<Utxos>)
+  nameWithType: NFTHelpers.FindProfileOfAddress(String, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.FindProfileOfAddress(System.String, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: FindProfileOfAddress
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 193
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nthis function will search the utxos, get all nfts utxos (if utxos list is not loaded) and return last profile nft which is founded on the address.\n"
+  example: []
+  syntax:
+    content: public static Task<INFT> FindProfileOfAddress(string address, ICollection<Utxos> utxos = null)
+    parameters:
+    - id: address
+      type: System.String
+      description: ''
+    - id: utxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: leave null if you need to obtain new utxos nft list
+    return:
+      type: System.Threading.Tasks.Task{VEDriversLite.NFT.INFT}
+      description: ''
+    content.vb: Public Shared Function FindProfileOfAddress(address As String, utxos As ICollection(Of Utxos) = Nothing) As Task(Of INFT)
+  overload: VEDriversLite.NFT.NFTHelpers.FindProfileOfAddress*
+  nameWithType.vb: NFTHelpers.FindProfileOfAddress(String, ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.FindProfileOfAddress(System.String, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: FindProfileOfAddress(String, ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile(System.String)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile(System.String)
+  id: LoadAddressNFTsWithProfile(System.String)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: LoadAddressNFTsWithProfile(String)
+  nameWithType: NFTHelpers.LoadAddressNFTsWithProfile(String)
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile(System.String)
+  type: Method
+  source:
+    id: LoadAddressNFTsWithProfile
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 218
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will load NFTs and during it find the profile NFT\n"
+  example: []
+  syntax:
+    content: public static Task<(INFT, List<INFT>)> LoadAddressNFTsWithProfile(string address)
+    parameters:
+    - id: address
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{VEDriversLite.NFT.INFT,System.Collections.Generic.List{VEDriversLite.NFT.INFT}}}
+      description: profile NFT and list of all NFTs
+    content.vb: Public Shared Function LoadAddressNFTsWithProfile(address As String) As Task(Of(INFT, List(Of INFT)))
+  overload: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})
+  id: LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: LoadAddressNFTs(String, ICollection<Utxos>, ICollection<INFT>)
+  nameWithType: NFTHelpers.LoadAddressNFTs(String, ICollection<Utxos>, ICollection<INFT>)
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>, System.Collections.Generic.ICollection<VEDriversLite.NFT.INFT>)
+  type: Method
+  source:
+    id: LoadAddressNFTs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 250
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will find all NFTs and load them to the carriers. \nIf you already have list of utxos and NFTs you can provide it and it will load just the changes.\n"
+  example: []
+  syntax:
+    content: public static Task<List<INFT>> LoadAddressNFTs(string address, ICollection<Utxos> inutxos = null, ICollection<INFT> innfts = null)
+    parameters:
+    - id: address
+      type: System.String
+      description: ''
+    - id: inutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: ''
+    - id: innfts
+      type: System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT}
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.Collections.Generic.List{VEDriversLite.NFT.INFT}}
+      description: ''
+    content.vb: Public Shared Function LoadAddressNFTs(address As String, inutxos As ICollection(Of Utxos) = Nothing, innfts As ICollection(Of INFT) = Nothing) As Task(Of List(Of INFT))
+  overload: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs*
+  nameWithType.vb: NFTHelpers.LoadAddressNFTs(String, ICollection(Of Utxos), ICollection(Of INFT))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos), System.Collections.Generic.ICollection(Of VEDriversLite.NFT.INFT))
+  name.vb: LoadAddressNFTs(String, ICollection(Of Utxos), ICollection(Of INFT))
+- uid: VEDriversLite.NFT.NFTHelpers.LoadNFTsHistory(System.String)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.LoadNFTsHistory(System.String)
+  id: LoadNFTsHistory(System.String)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: LoadNFTsHistory(String)
+  nameWithType: NFTHelpers.LoadNFTsHistory(String)
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadNFTsHistory(System.String)
+  type: Method
+  source:
+    id: LoadNFTsHistory
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 305
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nReturns list of NFTs with the data of the point of this history of some NFT.\n"
+  example: []
+  syntax:
+    content: public static Task<List<INFT>> LoadNFTsHistory(string utxo)
+    parameters:
+    - id: utxo
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.Collections.Generic.List{VEDriversLite.NFT.INFT}}
+      description: ''
+    content.vb: Public Shared Function LoadNFTsHistory(utxo As String) As Task(Of List(Of INFT))
+  overload: VEDriversLite.NFT.NFTHelpers.LoadNFTsHistory*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.MintMultiImageNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.MintMultiImageNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: MintMultiImageNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: MintMultiImageNFT(String, Int32, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  nameWithType: NFTHelpers.MintMultiImageNFT(String, Int32, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.MintMultiImageNFT(System.String, System.Int32, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: MintMultiImageNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 385
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will new NFTs as multimint. \nIt means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.\n"
+  example: []
+  syntax:
+    content: public static Task<string> MintMultiImageNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: coppies
+      type: System.Int32
+      description: number of copies. one NFT is minted even 0 coppies is input
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    - id: tutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable token utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function MintMultiImageNFT(address As String, coppies As Integer, ekey As EncryptionKey, NFT As INFT, nutxos As ICollection(Of Utxos), tutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.MintMultiImageNFT*
+  nameWithType.vb: NFTHelpers.MintMultiImageNFT(String, Int32, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.MintMultiImageNFT(System.String, System.Int32, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos), System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: MintMultiImageNFT(String, Int32, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.MintImageNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.MintImageNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: MintImageNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: MintImageNFT(String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  nameWithType: NFTHelpers.MintImageNFT(String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.MintImageNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: MintImageNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 434
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will new Image NFTs. \n"
+  example: []
+  syntax:
+    content: public static Task<string> MintImageNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    - id: tutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable token utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function MintImageNFT(address As String, ekey As EncryptionKey, NFT As INFT, nutxos As ICollection(Of Utxos), tutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.MintImageNFT*
+  nameWithType.vb: NFTHelpers.MintImageNFT(String, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.MintImageNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos), System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: MintImageNFT(String, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.MintProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.MintProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: MintProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: MintProfileNFT(String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  nameWithType: NFTHelpers.MintProfileNFT(String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.MintProfileNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: MintProfileNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 482
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will new Profile NFTs. \n"
+  example: []
+  syntax:
+    content: public static Task<string> MintProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: nft
+      type: VEDriversLite.NFT.INFT
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    - id: tutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable token utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function MintProfileNFT(address As String, ekey As EncryptionKey, nft As INFT, nutxos As ICollection(Of Utxos), tutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.MintProfileNFT*
+  nameWithType.vb: NFTHelpers.MintProfileNFT(String, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.MintProfileNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos), System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: MintProfileNFT(String, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.MintPostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.MintPostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: MintPostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: MintPostNFT(String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  nameWithType: NFTHelpers.MintPostNFT(String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.MintPostNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: MintPostNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 529
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will new Post NFT.\n"
+  example: []
+  syntax:
+    content: public static Task<string> MintPostNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    - id: tutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable token utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function MintPostNFT(address As String, ekey As EncryptionKey, NFT As INFT, nutxos As ICollection(Of Utxos), tutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.MintPostNFT*
+  nameWithType.vb: NFTHelpers.MintPostNFT(String, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.MintPostNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos), System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: MintPostNFT(String, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.MintMusicNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.MintMusicNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: MintMusicNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: MintMusicNFT(String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  nameWithType: NFTHelpers.MintMusicNFT(String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.MintMusicNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: MintMusicNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 575
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will new Music NFT.\n"
+  example: []
+  syntax:
+    content: public static Task<string> MintMusicNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    - id: tutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable token utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function MintMusicNFT(address As String, ekey As EncryptionKey, NFT As INFT, nutxos As ICollection(Of Utxos), tutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.MintMusicNFT*
+  nameWithType.vb: NFTHelpers.MintMusicNFT(String, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.MintMusicNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos), System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: MintMusicNFT(String, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.MintMultiPostNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.MintMultiPostNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: MintMultiPostNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: MintMultiPostNFT(String, Int32, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  nameWithType: NFTHelpers.MintMultiPostNFT(String, Int32, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.MintMultiPostNFT(System.String, System.Int32, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: MintMultiPostNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 622
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will new Post NFTs as multimint. \nIt means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.\n"
+  example: []
+  syntax:
+    content: public static Task<string> MintMultiPostNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: coppies
+      type: System.Int32
+      description: number of copies. one NFT is minted even 0 coppies is input
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    - id: tutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable token utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function MintMultiPostNFT(address As String, coppies As Integer, ekey As EncryptionKey, NFT As INFT, nutxos As ICollection(Of Utxos), tutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.MintMultiPostNFT*
+  nameWithType.vb: NFTHelpers.MintMultiPostNFT(String, Int32, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.MintMultiPostNFT(System.String, System.Int32, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos), System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: MintMultiPostNFT(String, Int32, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.MintMultiMusicNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.MintMultiMusicNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: MintMultiMusicNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: MintMultiMusicNFT(String, Int32, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  nameWithType: NFTHelpers.MintMultiMusicNFT(String, Int32, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.MintMultiMusicNFT(System.String, System.Int32, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: MintMultiMusicNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 670
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will new Music NFTs as multimint. \nIt means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.\n"
+  example: []
+  syntax:
+    content: public static Task<string> MintMultiMusicNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: coppies
+      type: System.Int32
+      description: number of copies. one NFT is minted even 0 coppies is input
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    - id: tutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable token utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function MintMultiMusicNFT(address As String, coppies As Integer, ekey As EncryptionKey, NFT As INFT, nutxos As ICollection(Of Utxos), tutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.MintMultiMusicNFT*
+  nameWithType.vb: NFTHelpers.MintMultiMusicNFT(String, Int32, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.MintMultiMusicNFT(System.String, System.Int32, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos), System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: MintMultiMusicNFT(String, Int32, EncryptionKey, INFT, ICollection(Of Utxos), ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.ChangeProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.ChangeProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: ChangeProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: ChangeProfileNFT(String, EncryptionKey, INFT, ICollection<Utxos>)
+  nameWithType: NFTHelpers.ChangeProfileNFT(String, EncryptionKey, INFT, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.ChangeProfileNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: ChangeProfileNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 715
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will change Profile NFT.\n"
+  example: []
+  syntax:
+    content: public static Task<string> ChangeProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: nft
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata. Must contain Utxo hash
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function ChangeProfileNFT(address As String, ekey As EncryptionKey, nft As INFT, nutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.ChangeProfileNFT*
+  nameWithType.vb: NFTHelpers.ChangeProfileNFT(String, EncryptionKey, INFT, ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.ChangeProfileNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: ChangeProfileNFT(String, EncryptionKey, INFT, ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.ChangePostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.ChangePostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: ChangePostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: ChangePostNFT(String, EncryptionKey, INFT, ICollection<Utxos>)
+  nameWithType: NFTHelpers.ChangePostNFT(String, EncryptionKey, INFT, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.ChangePostNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: ChangePostNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 764
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will change post NFT\n"
+  example: []
+  syntax:
+    content: public static Task<string> ChangePostNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: nft
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata. Must contain Utxo hash
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function ChangePostNFT(address As String, ekey As EncryptionKey, nft As INFT, nutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.ChangePostNFT*
+  nameWithType.vb: NFTHelpers.ChangePostNFT(String, EncryptionKey, INFT, ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.ChangePostNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: ChangePostNFT(String, EncryptionKey, INFT, ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.SendOrderedNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.SendOrderedNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: SendOrderedNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: SendOrderedNFT(String, EncryptionKey, PaymentNFT, INFT, ICollection<Utxos>)
+  nameWithType: NFTHelpers.SendOrderedNFT(String, EncryptionKey, PaymentNFT, INFT, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.SendOrderedNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.PaymentNFT, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: SendOrderedNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 816
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will take some NFT which was matched with some payment, coppy data and create complete payment, which will send NFT to new owner.\nDuring this the payment NFT token is send back to project address\n"
+  example: []
+  syntax:
+    content: public static Task<string> SendOrderedNFT(string address, EncryptionKey ekey, PaymentNFT payment, INFT NFT, ICollection<Utxos> nutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: payment
+      type: VEDriversLite.NFT.PaymentNFT
+      description: Payment NFT of received payment
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: NFT for sale
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: ''
+    content.vb: Public Shared Function SendOrderedNFT(address As String, ekey As EncryptionKey, payment As PaymentNFT, NFT As INFT, nutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.SendOrderedNFT*
+  nameWithType.vb: NFTHelpers.SendOrderedNFT(String, EncryptionKey, PaymentNFT, INFT, ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.SendOrderedNFT(System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.PaymentNFT, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: SendOrderedNFT(String, EncryptionKey, PaymentNFT, INFT, ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.SendNFTPayment(System.String,VEDriversLite.Security.EncryptionKey,System.String,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.SendNFTPayment(System.String,VEDriversLite.Security.EncryptionKey,System.String,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  id: SendNFTPayment(System.String,VEDriversLite.Security.EncryptionKey,System.String,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: SendNFTPayment(String, EncryptionKey, String, INFT, ICollection<Utxos>)
+  nameWithType: NFTHelpers.SendNFTPayment(String, EncryptionKey, String, INFT, ICollection<Utxos>)
+  fullName: VEDriversLite.NFT.NFTHelpers.SendNFTPayment(System.String, VEDriversLite.Security.EncryptionKey, System.String, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>)
+  type: Method
+  source:
+    id: SendNFTPayment
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 873
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will send payment for some NFT.\n"
+  example: []
+  syntax:
+    content: public static Task<string> SendNFTPayment(string address, EncryptionKey ekey, string receiver, INFT nft, ICollection<Utxos> nutxos)
+    parameters:
+    - id: address
+      type: System.String
+      description: sender address
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: receiver
+      type: System.String
+    - id: nft
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata. It is NFT what you are buying.
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id Hash
+    content.vb: Public Shared Function SendNFTPayment(address As String, ekey As EncryptionKey, receiver As String, nft As INFT, nutxos As ICollection(Of Utxos)) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.SendNFTPayment*
+  nameWithType.vb: NFTHelpers.SendNFTPayment(String, EncryptionKey, String, INFT, ICollection(Of Utxos))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.SendNFTPayment(System.String, VEDriversLite.Security.EncryptionKey, System.String, VEDriversLite.NFT.INFT, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos))
+  name.vb: SendNFTPayment(String, EncryptionKey, String, INFT, ICollection(Of Utxos))
+- uid: VEDriversLite.NFT.NFTHelpers.SendNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Boolean,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.SendNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Boolean,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)
+  id: SendNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Boolean,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: SendNFT(String, String, EncryptionKey, INFT, Boolean, ICollection<Utxos>, Double)
+  nameWithType: NFTHelpers.SendNFT(String, String, EncryptionKey, INFT, Boolean, ICollection<Utxos>, Double)
+  fullName: VEDriversLite.NFT.NFTHelpers.SendNFT(System.String, System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Boolean, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>, System.Double)
+  type: Method
+  source:
+    id: SendNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 929
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will send NFT. It can be also used for write the price of the NFT.\n"
+  example: []
+  syntax:
+    content: public static Task<string> SendNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, bool priceWrite, ICollection<Utxos> nutxos, double price = 0.0002)
+    parameters:
+    - id: address
+      type: System.String
+      description: adress of sender
+    - id: receiver
+      type: System.String
+      description: address of receiver
+    - id: ekey
+      type: VEDriversLite.Security.EncryptionKey
+      description: Encryption Key object of the address
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: Input NFT object with data to save to metadata. It is NFT what you are sending.
+    - id: priceWrite
+      type: System.Boolean
+      description: Set this if you just want to set price of the NFT. means resend to yourself
+    - id: nutxos
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+      description: List of spendable neblio utxos if you have it loaded.
+    - id: price
+      type: System.Double
+      description: Price must be higher than 0.0002 Neblio
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: New Tx Id hash
+    content.vb: Public Shared Function SendNFT(address As String, receiver As String, ekey As EncryptionKey, NFT As INFT, priceWrite As Boolean, nutxos As ICollection(Of Utxos), price As Double = 0.0002) As Task(Of String)
+  overload: VEDriversLite.NFT.NFTHelpers.SendNFT*
+  nameWithType.vb: NFTHelpers.SendNFT(String, String, EncryptionKey, INFT, Boolean, ICollection(Of Utxos), Double)
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.SendNFT(System.String, System.String, VEDriversLite.Security.EncryptionKey, VEDriversLite.NFT.INFT, System.Boolean, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos), System.Double)
+  name.vb: SendNFT(String, String, EncryptionKey, INFT, Boolean, ICollection(Of Utxos), Double)
+- uid: VEDriversLite.NFT.NFTHelpers.FindProfileNFT(System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})
+  commentId: M:VEDriversLite.NFT.NFTHelpers.FindProfileNFT(System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})
+  id: FindProfileNFT(System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: FindProfileNFT(ICollection<INFT>)
+  nameWithType: NFTHelpers.FindProfileNFT(ICollection<INFT>)
+  fullName: VEDriversLite.NFT.NFTHelpers.FindProfileNFT(System.Collections.Generic.ICollection<VEDriversLite.NFT.INFT>)
+  type: Method
+  source:
+    id: FindProfileNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 984
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will return first profile NFT in NFTs list.\n"
+  example: []
+  syntax:
+    content: public static Task<ProfileNFT> FindProfileNFT(ICollection<INFT> nfts)
+    parameters:
+    - id: nfts
+      type: System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT}
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{VEDriversLite.NFT.ProfileNFT}
+      description: ''
+    content.vb: Public Shared Function FindProfileNFT(nfts As ICollection(Of INFT)) As Task(Of ProfileNFT)
+  overload: VEDriversLite.NFT.NFTHelpers.FindProfileNFT*
+  nameWithType.vb: NFTHelpers.FindProfileNFT(ICollection(Of INFT))
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: VEDriversLite.NFT.NFTHelpers.FindProfileNFT(System.Collections.Generic.ICollection(Of VEDriversLite.NFT.INFT))
+  name.vb: FindProfileNFT(ICollection(Of INFT))
+- uid: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromProfileNFTTx(System.String)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.GetPubKeyFromProfileNFTTx(System.String)
+  id: GetPubKeyFromProfileNFTTx(System.String)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: GetPubKeyFromProfileNFTTx(String)
+  nameWithType: NFTHelpers.GetPubKeyFromProfileNFTTx(String)
+  fullName: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromProfileNFTTx(System.String)
+  type: Method
+  source:
+    id: GetPubKeyFromProfileNFTTx
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 999
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will find profile on address if exists and parse address public key (NBitcoin class) from it.\nUsefull for encryption\n"
+  example: []
+  syntax:
+    content: public static Task<(bool, PubKey)> GetPubKeyFromProfileNFTTx(string address)
+    parameters:
+    - id: address
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,NBitcoin.PubKey}}
+      description: ''
+    content.vb: Public Shared Function GetPubKeyFromProfileNFTTx(address As String) As Task(Of(Boolean, PubKey))
+  overload: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromProfileNFTTx*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromLastFoundTx(System.String)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.GetPubKeyFromLastFoundTx(System.String)
+  id: GetPubKeyFromLastFoundTx(System.String)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: GetPubKeyFromLastFoundTx(String)
+  nameWithType: NFTHelpers.GetPubKeyFromLastFoundTx(String)
+  fullName: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromLastFoundTx(System.String)
+  type: Method
+  source:
+    id: GetPubKeyFromLastFoundTx
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 1024
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will find last send transaction by some address and parse public key (NBitcoin class) from it.\nUsefull for encryption.\n"
+  example: []
+  syntax:
+    content: public static Task<(bool, PubKey)> GetPubKeyFromLastFoundTx(string address)
+    parameters:
+    - id: address
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,NBitcoin.PubKey}}
+      description: ''
+    content.vb: Public Shared Function GetPubKeyFromLastFoundTx(address As String) As Task(Of(Boolean, PubKey))
+  overload: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromLastFoundTx*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.NFTHelpers.GetNFTWithOwner(System.String)
+  commentId: M:VEDriversLite.NFT.NFTHelpers.GetNFTWithOwner(System.String)
+  id: GetNFTWithOwner(System.String)
+  parent: VEDriversLite.NFT.NFTHelpers
+  langs:
+  - csharp
+  - vb
+  name: GetNFTWithOwner(String)
+  nameWithType: NFTHelpers.GetNFTWithOwner(String)
+  fullName: VEDriversLite.NFT.NFTHelpers.GetNFTWithOwner(System.String)
+  type: Method
+  source:
+    id: GetNFTWithOwner
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 1042
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  summary: "\nThis function will load the NFT based by Tx Id hash and find the owner of the NFT\n"
+  example: []
+  syntax:
+    content: public static Task<(bool, GetNFTOwnerDto)> GetNFTWithOwner(string txid)
+    parameters:
+    - id: txid
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,VEDriversLite.NFT.Dto.GetNFTOwnerDto}}
+      description: ''
+    content.vb: Public Shared Function GetNFTWithOwner(txid As String) As Task(Of(Boolean, GetNFTOwnerDto))
+  overload: VEDriversLite.NFT.NFTHelpers.GetNFTWithOwner*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+references:
+- uid: VEDriversLite.NFT
+  commentId: N:VEDriversLite.NFT
+  name: VEDriversLite.NFT
+  nameWithType: VEDriversLite.NFT
+  fullName: VEDriversLite.NFT
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: Ipfs.Http.IpfsClient
+  commentId: T:Ipfs.Http.IpfsClient
+  parent: Ipfs.Http
+  isExternal: true
+  name: IpfsClient
+  nameWithType: IpfsClient
+  fullName: Ipfs.Http.IpfsClient
+- uid: Ipfs.Http
+  commentId: N:Ipfs.Http
+  isExternal: true
+  name: Ipfs.Http
+  nameWithType: Ipfs.Http
+  fullName: Ipfs.Http
+- uid: System.EventHandler{VEDriversLite.Events.IEventInfo}
+  commentId: T:System.EventHandler{VEDriversLite.Events.IEventInfo}
+  parent: System
+  definition: System.EventHandler`1
+  name: EventHandler<IEventInfo>
+  nameWithType: EventHandler<IEventInfo>
+  fullName: System.EventHandler<VEDriversLite.Events.IEventInfo>
+  nameWithType.vb: EventHandler(Of IEventInfo)
+  fullName.vb: System.EventHandler(Of VEDriversLite.Events.IEventInfo)
+  name.vb: EventHandler(Of IEventInfo)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.Events.IEventInfo
+    name: IEventInfo
+    nameWithType: IEventInfo
+    fullName: VEDriversLite.Events.IEventInfo
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.Events.IEventInfo
+    name: IEventInfo
+    nameWithType: IEventInfo
+    fullName: VEDriversLite.Events.IEventInfo
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.EventHandler`1
+  commentId: T:System.EventHandler`1
+  isExternal: true
+  name: EventHandler<TEventArgs>
+  nameWithType: EventHandler<TEventArgs>
+  fullName: System.EventHandler<TEventArgs>
+  nameWithType.vb: EventHandler(Of TEventArgs)
+  fullName.vb: System.EventHandler(Of TEventArgs)
+  name.vb: EventHandler(Of TEventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TEventArgs
+    nameWithType: TEventArgs
+    fullName: TEventArgs
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TEventArgs
+    nameWithType: TEventArgs
+    fullName: TEventArgs
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.NFTHelpers.InitHandlers*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.InitHandlers
+  name: InitHandlers
+  nameWithType: NFTHelpers.InitHandlers
+  fullName: VEDriversLite.NFT.NFTHelpers.InitHandlers
+- uid: VEDriversLite.NFT.NFTHelpers.DeInitHandlers*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.DeInitHandlers
+  name: DeInitHandlers
+  nameWithType: NFTHelpers.DeInitHandlers
+  fullName: VEDriversLite.NFT.NFTHelpers.DeInitHandlers
+- uid: VEDriversLite.NFT.NFTHelpers.LoadNFTOriginData*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.LoadNFTOriginData
+  name: LoadNFTOriginData
+  nameWithType: NFTHelpers.LoadNFTOriginData
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadNFTOriginData
+- uid: System.Threading.Tasks.Task{VEDriversLite.NFT.LoadNFTOriginDataDto}
+  commentId: T:System.Threading.Tasks.Task{VEDriversLite.NFT.LoadNFTOriginDataDto}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<LoadNFTOriginDataDto>
+  nameWithType: Task<LoadNFTOriginDataDto>
+  fullName: System.Threading.Tasks.Task<VEDriversLite.NFT.LoadNFTOriginDataDto>
+  nameWithType.vb: Task(Of LoadNFTOriginDataDto)
+  fullName.vb: System.Threading.Tasks.Task(Of VEDriversLite.NFT.LoadNFTOriginDataDto)
+  name.vb: Task(Of LoadNFTOriginDataDto)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.LoadNFTOriginDataDto
+    name: LoadNFTOriginDataDto
+    nameWithType: LoadNFTOriginDataDto
+    fullName: VEDriversLite.NFT.LoadNFTOriginDataDto
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.LoadNFTOriginDataDto
+    name: LoadNFTOriginDataDto
+    nameWithType: LoadNFTOriginDataDto
+    fullName: VEDriversLite.NFT.LoadNFTOriginDataDto
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+- uid: VEDriversLite.NFT.NFTHelpers.LoadLastData*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.LoadLastData
+  name: LoadLastData
+  nameWithType: NFTHelpers.LoadLastData
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadLastData
+- uid: VEDriversLite.NFT.NFTHelpers.CheckIfContainsNFTData*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.CheckIfContainsNFTData
+  name: CheckIfContainsNFTData
+  nameWithType: NFTHelpers.CheckIfContainsNFTData
+  fullName: VEDriversLite.NFT.NFTHelpers.CheckIfContainsNFTData
+- uid: System.Threading.Tasks.Task{System.Collections.Generic.Dictionary{System.String,System.String}}
+  commentId: T:System.Threading.Tasks.Task{System.Collections.Generic.Dictionary{System.String,System.String}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<Dictionary<String, String>>
+  nameWithType: Task<Dictionary<String, String>>
+  fullName: System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<System.String, System.String>>
+  nameWithType.vb: Task(Of Dictionary(Of String, String))
+  fullName.vb: System.Threading.Tasks.Task(Of System.Collections.Generic.Dictionary(Of System.String, System.String))
+  name.vb: Task(Of Dictionary(Of String, String))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.NFTHelpers.CheckIfMintTx*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.CheckIfMintTx
+  name: CheckIfMintTx
+  nameWithType: NFTHelpers.CheckIfMintTx
+  fullName: VEDriversLite.NFT.NFTHelpers.CheckIfMintTx
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, String>>
+  nameWithType: Task<ValueTuple<Boolean, String>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, System.String>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, String))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, System.String))
+  name.vb: Task(Of ValueTuple(Of Boolean, String))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.NFTHelpers.FindProfileOfAddress*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.FindProfileOfAddress
+  name: FindProfileOfAddress
+  nameWithType: NFTHelpers.FindProfileOfAddress
+  fullName: VEDriversLite.NFT.NFTHelpers.FindProfileOfAddress
+- uid: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+  commentId: T:System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.ICollection`1
+  name: ICollection<Utxos>
+  nameWithType: ICollection<Utxos>
+  fullName: System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>
+  nameWithType.vb: ICollection(Of Utxos)
+  fullName.vb: System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos)
+  name.vb: ICollection(Of Utxos)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Utxos
+    name: Utxos
+    nameWithType: Utxos
+    fullName: VEDriversLite.NeblioAPI.Utxos
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Utxos
+    name: Utxos
+    nameWithType: Utxos
+    fullName: VEDriversLite.NeblioAPI.Utxos
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task{VEDriversLite.NFT.INFT}
+  commentId: T:System.Threading.Tasks.Task{VEDriversLite.NFT.INFT}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<INFT>
+  nameWithType: Task<INFT>
+  fullName: System.Threading.Tasks.Task<VEDriversLite.NFT.INFT>
+  nameWithType.vb: Task(Of INFT)
+  fullName.vb: System.Threading.Tasks.Task(Of VEDriversLite.NFT.INFT)
+  name.vb: Task(Of INFT)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.ICollection`1
+  commentId: T:System.Collections.Generic.ICollection`1
+  isExternal: true
+  name: ICollection<T>
+  nameWithType: ICollection<T>
+  fullName: System.Collections.Generic.ICollection<T>
+  nameWithType.vb: ICollection(Of T)
+  fullName.vb: System.Collections.Generic.ICollection(Of T)
+  name.vb: ICollection(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile
+  name: LoadAddressNFTsWithProfile
+  nameWithType: NFTHelpers.LoadAddressNFTsWithProfile
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile
+- uid: System.Threading.Tasks.Task{System.ValueTuple{VEDriversLite.NFT.INFT,System.Collections.Generic.List{VEDriversLite.NFT.INFT}}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{VEDriversLite.NFT.INFT,System.Collections.Generic.List{VEDriversLite.NFT.INFT}}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<INFT, List<INFT>>>
+  nameWithType: Task<ValueTuple<INFT, List<INFT>>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<VEDriversLite.NFT.INFT, System.Collections.Generic.List<VEDriversLite.NFT.INFT>>>
+  nameWithType.vb: Task(Of ValueTuple(Of INFT, List(Of INFT)))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of VEDriversLite.NFT.INFT, System.Collections.Generic.List(Of VEDriversLite.NFT.INFT)))
+  name.vb: Task(Of ValueTuple(Of INFT, List(Of INFT)))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs
+  name: LoadAddressNFTs
+  nameWithType: NFTHelpers.LoadAddressNFTs
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs
+- uid: System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT}
+  commentId: T:System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.ICollection`1
+  name: ICollection<INFT>
+  nameWithType: ICollection<INFT>
+  fullName: System.Collections.Generic.ICollection<VEDriversLite.NFT.INFT>
+  nameWithType.vb: ICollection(Of INFT)
+  fullName.vb: System.Collections.Generic.ICollection(Of VEDriversLite.NFT.INFT)
+  name.vb: ICollection(Of INFT)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task{System.Collections.Generic.List{VEDriversLite.NFT.INFT}}
+  commentId: T:System.Threading.Tasks.Task{System.Collections.Generic.List{VEDriversLite.NFT.INFT}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<List<INFT>>
+  nameWithType: Task<List<INFT>>
+  fullName: System.Threading.Tasks.Task<System.Collections.Generic.List<VEDriversLite.NFT.INFT>>
+  nameWithType.vb: Task(Of List(Of INFT))
+  fullName.vb: System.Threading.Tasks.Task(Of System.Collections.Generic.List(Of VEDriversLite.NFT.INFT))
+  name.vb: Task(Of List(Of INFT))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.NFTHelpers.LoadNFTsHistory*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.LoadNFTsHistory
+  name: LoadNFTsHistory
+  nameWithType: NFTHelpers.LoadNFTsHistory
+  fullName: VEDriversLite.NFT.NFTHelpers.LoadNFTsHistory
+- uid: VEDriversLite.NFT.NFTHelpers.MintMultiImageNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.MintMultiImageNFT
+  name: MintMultiImageNFT
+  nameWithType: NFTHelpers.MintMultiImageNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.MintMultiImageNFT
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  name: Int32
+  nameWithType: Int32
+  fullName: System.Int32
+- uid: VEDriversLite.Security.EncryptionKey
+  commentId: T:VEDriversLite.Security.EncryptionKey
+  parent: VEDriversLite.Security
+  name: EncryptionKey
+  nameWithType: EncryptionKey
+  fullName: VEDriversLite.Security.EncryptionKey
+- uid: VEDriversLite.NFT.INFT
+  commentId: T:VEDriversLite.NFT.INFT
+  parent: VEDriversLite.NFT
+  name: INFT
+  nameWithType: INFT
+  fullName: VEDriversLite.NFT.INFT
+- uid: System.Threading.Tasks.Task{System.String}
+  commentId: T:System.Threading.Tasks.Task{System.String}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<String>
+  nameWithType: Task<String>
+  fullName: System.Threading.Tasks.Task<System.String>
+  nameWithType.vb: Task(Of String)
+  fullName.vb: System.Threading.Tasks.Task(Of System.String)
+  name.vb: Task(Of String)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.Security
+  commentId: N:VEDriversLite.Security
+  name: VEDriversLite.Security
+  nameWithType: VEDriversLite.Security
+  fullName: VEDriversLite.Security
+- uid: VEDriversLite.NFT.NFTHelpers.MintImageNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.MintImageNFT
+  name: MintImageNFT
+  nameWithType: NFTHelpers.MintImageNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.MintImageNFT
+- uid: VEDriversLite.NFT.NFTHelpers.MintProfileNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.MintProfileNFT
+  name: MintProfileNFT
+  nameWithType: NFTHelpers.MintProfileNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.MintProfileNFT
+- uid: VEDriversLite.NFT.NFTHelpers.MintPostNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.MintPostNFT
+  name: MintPostNFT
+  nameWithType: NFTHelpers.MintPostNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.MintPostNFT
+- uid: VEDriversLite.NFT.NFTHelpers.MintMusicNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.MintMusicNFT
+  name: MintMusicNFT
+  nameWithType: NFTHelpers.MintMusicNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.MintMusicNFT
+- uid: VEDriversLite.NFT.NFTHelpers.MintMultiPostNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.MintMultiPostNFT
+  name: MintMultiPostNFT
+  nameWithType: NFTHelpers.MintMultiPostNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.MintMultiPostNFT
+- uid: VEDriversLite.NFT.NFTHelpers.MintMultiMusicNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.MintMultiMusicNFT
+  name: MintMultiMusicNFT
+  nameWithType: NFTHelpers.MintMultiMusicNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.MintMultiMusicNFT
+- uid: VEDriversLite.NFT.NFTHelpers.ChangeProfileNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.ChangeProfileNFT
+  name: ChangeProfileNFT
+  nameWithType: NFTHelpers.ChangeProfileNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.ChangeProfileNFT
+- uid: VEDriversLite.NFT.NFTHelpers.ChangePostNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.ChangePostNFT
+  name: ChangePostNFT
+  nameWithType: NFTHelpers.ChangePostNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.ChangePostNFT
+- uid: VEDriversLite.NFT.NFTHelpers.SendOrderedNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.SendOrderedNFT
+  name: SendOrderedNFT
+  nameWithType: NFTHelpers.SendOrderedNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.SendOrderedNFT
+- uid: VEDriversLite.NFT.PaymentNFT
+  commentId: T:VEDriversLite.NFT.PaymentNFT
+  parent: VEDriversLite.NFT
+  name: PaymentNFT
+  nameWithType: PaymentNFT
+  fullName: VEDriversLite.NFT.PaymentNFT
+- uid: VEDriversLite.NFT.NFTHelpers.SendNFTPayment*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.SendNFTPayment
+  name: SendNFTPayment
+  nameWithType: NFTHelpers.SendNFTPayment
+  fullName: VEDriversLite.NFT.NFTHelpers.SendNFTPayment
+- uid: VEDriversLite.NFT.NFTHelpers.SendNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.SendNFT
+  name: SendNFT
+  nameWithType: NFTHelpers.SendNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.SendNFT
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  name: Boolean
+  nameWithType: Boolean
+  fullName: System.Boolean
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  name: Double
+  nameWithType: Double
+  fullName: System.Double
+- uid: VEDriversLite.NFT.NFTHelpers.FindProfileNFT*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.FindProfileNFT
+  name: FindProfileNFT
+  nameWithType: NFTHelpers.FindProfileNFT
+  fullName: VEDriversLite.NFT.NFTHelpers.FindProfileNFT
+- uid: System.Threading.Tasks.Task{VEDriversLite.NFT.ProfileNFT}
+  commentId: T:System.Threading.Tasks.Task{VEDriversLite.NFT.ProfileNFT}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ProfileNFT>
+  nameWithType: Task<ProfileNFT>
+  fullName: System.Threading.Tasks.Task<VEDriversLite.NFT.ProfileNFT>
+  nameWithType.vb: Task(Of ProfileNFT)
+  fullName.vb: System.Threading.Tasks.Task(Of VEDriversLite.NFT.ProfileNFT)
+  name.vb: Task(Of ProfileNFT)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.ProfileNFT
+    name: ProfileNFT
+    nameWithType: ProfileNFT
+    fullName: VEDriversLite.NFT.ProfileNFT
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.ProfileNFT
+    name: ProfileNFT
+    nameWithType: ProfileNFT
+    fullName: VEDriversLite.NFT.ProfileNFT
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromProfileNFTTx*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.GetPubKeyFromProfileNFTTx
+  name: GetPubKeyFromProfileNFTTx
+  nameWithType: NFTHelpers.GetPubKeyFromProfileNFTTx
+  fullName: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromProfileNFTTx
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,NBitcoin.PubKey}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,NBitcoin.PubKey}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, PubKey>>
+  nameWithType: Task<ValueTuple<Boolean, PubKey>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, NBitcoin.PubKey>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, PubKey))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, NBitcoin.PubKey))
+  name.vb: Task(Of ValueTuple(Of Boolean, PubKey))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: NBitcoin.PubKey
+    name: PubKey
+    nameWithType: PubKey
+    fullName: NBitcoin.PubKey
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: NBitcoin.PubKey
+    name: PubKey
+    nameWithType: PubKey
+    fullName: NBitcoin.PubKey
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromLastFoundTx*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.GetPubKeyFromLastFoundTx
+  name: GetPubKeyFromLastFoundTx
+  nameWithType: NFTHelpers.GetPubKeyFromLastFoundTx
+  fullName: VEDriversLite.NFT.NFTHelpers.GetPubKeyFromLastFoundTx
+- uid: VEDriversLite.NFT.NFTHelpers.GetNFTWithOwner*
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.GetNFTWithOwner
+  name: GetNFTWithOwner
+  nameWithType: NFTHelpers.GetNFTWithOwner
+  fullName: VEDriversLite.NFT.NFTHelpers.GetNFTWithOwner
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,VEDriversLite.NFT.Dto.GetNFTOwnerDto}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,VEDriversLite.NFT.Dto.GetNFTOwnerDto}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, GetNFTOwnerDto>>
+  nameWithType: Task<ValueTuple<Boolean, GetNFTOwnerDto>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, VEDriversLite.NFT.Dto.GetNFTOwnerDto>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, GetNFTOwnerDto))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, VEDriversLite.NFT.Dto.GetNFTOwnerDto))
+  name.vb: Task(Of ValueTuple(Of Boolean, GetNFTOwnerDto))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NFT.Dto.GetNFTOwnerDto
+    name: GetNFTOwnerDto
+    nameWithType: GetNFTOwnerDto
+    fullName: VEDriversLite.NFT.Dto.GetNFTOwnerDto
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NFT.Dto.GetNFTOwnerDto
+    name: GetNFTOwnerDto
+    nameWithType: GetNFTOwnerDto
+    fullName: VEDriversLite.NFT.Dto.GetNFTOwnerDto
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )

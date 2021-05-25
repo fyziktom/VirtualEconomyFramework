@@ -1,0 +1,245 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.Events.EventType
+  commentId: T:VEDriversLite.Events.EventType
+  id: EventType
+  parent: VEDriversLite.Events
+  children:
+  - VEDriversLite.Events.EventType.Basic
+  - VEDriversLite.Events.EventType.Error
+  - VEDriversLite.Events.EventType.Info
+  - VEDriversLite.Events.EventType.NFTReceived
+  - VEDriversLite.Events.EventType.TxReceived
+  - VEDriversLite.Events.EventType.TxSending
+  - VEDriversLite.Events.EventType.Warning
+  langs:
+  - csharp
+  - vb
+  name: EventType
+  nameWithType: EventType
+  fullName: VEDriversLite.Events.EventType
+  type: Enum
+  source:
+    id: EventType
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 7
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public enum EventType
+    content.vb: Public Enum EventType
+  modifiers.csharp:
+  - public
+  - enum
+  modifiers.vb:
+  - Public
+  - Enum
+- uid: VEDriversLite.Events.EventType.Basic
+  commentId: F:VEDriversLite.Events.EventType.Basic
+  id: Basic
+  parent: VEDriversLite.Events.EventType
+  langs:
+  - csharp
+  - vb
+  name: Basic
+  nameWithType: EventType.Basic
+  fullName: VEDriversLite.Events.EventType.Basic
+  type: Field
+  source:
+    id: Basic
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 9
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: Basic = 0
+    return:
+      type: VEDriversLite.Events.EventType
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+- uid: VEDriversLite.Events.EventType.Info
+  commentId: F:VEDriversLite.Events.EventType.Info
+  id: Info
+  parent: VEDriversLite.Events.EventType
+  langs:
+  - csharp
+  - vb
+  name: Info
+  nameWithType: EventType.Info
+  fullName: VEDriversLite.Events.EventType.Info
+  type: Field
+  source:
+    id: Info
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 10
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: Info = 1
+    return:
+      type: VEDriversLite.Events.EventType
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+- uid: VEDriversLite.Events.EventType.Warning
+  commentId: F:VEDriversLite.Events.EventType.Warning
+  id: Warning
+  parent: VEDriversLite.Events.EventType
+  langs:
+  - csharp
+  - vb
+  name: Warning
+  nameWithType: EventType.Warning
+  fullName: VEDriversLite.Events.EventType.Warning
+  type: Field
+  source:
+    id: Warning
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 11
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: Warning = 2
+    return:
+      type: VEDriversLite.Events.EventType
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+- uid: VEDriversLite.Events.EventType.Error
+  commentId: F:VEDriversLite.Events.EventType.Error
+  id: Error
+  parent: VEDriversLite.Events.EventType
+  langs:
+  - csharp
+  - vb
+  name: Error
+  nameWithType: EventType.Error
+  fullName: VEDriversLite.Events.EventType.Error
+  type: Field
+  source:
+    id: Error
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 12
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: Error = 3
+    return:
+      type: VEDriversLite.Events.EventType
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+- uid: VEDriversLite.Events.EventType.TxSending
+  commentId: F:VEDriversLite.Events.EventType.TxSending
+  id: TxSending
+  parent: VEDriversLite.Events.EventType
+  langs:
+  - csharp
+  - vb
+  name: TxSending
+  nameWithType: EventType.TxSending
+  fullName: VEDriversLite.Events.EventType.TxSending
+  type: Field
+  source:
+    id: TxSending
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 13
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: TxSending = 4
+    return:
+      type: VEDriversLite.Events.EventType
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+- uid: VEDriversLite.Events.EventType.TxReceived
+  commentId: F:VEDriversLite.Events.EventType.TxReceived
+  id: TxReceived
+  parent: VEDriversLite.Events.EventType
+  langs:
+  - csharp
+  - vb
+  name: TxReceived
+  nameWithType: EventType.TxReceived
+  fullName: VEDriversLite.Events.EventType.TxReceived
+  type: Field
+  source:
+    id: TxReceived
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 14
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: TxReceived = 5
+    return:
+      type: VEDriversLite.Events.EventType
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+- uid: VEDriversLite.Events.EventType.NFTReceived
+  commentId: F:VEDriversLite.Events.EventType.NFTReceived
+  id: NFTReceived
+  parent: VEDriversLite.Events.EventType
+  langs:
+  - csharp
+  - vb
+  name: NFTReceived
+  nameWithType: EventType.NFTReceived
+  fullName: VEDriversLite.Events.EventType.NFTReceived
+  type: Field
+  source:
+    id: NFTReceived
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 15
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: NFTReceived = 6
+    return:
+      type: VEDriversLite.Events.EventType
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+references:
+- uid: VEDriversLite.Events
+  commentId: N:VEDriversLite.Events
+  name: VEDriversLite.Events
+  nameWithType: VEDriversLite.Events
+  fullName: VEDriversLite.Events
+- uid: VEDriversLite.Events.EventType
+  commentId: T:VEDriversLite.Events.EventType
+  parent: VEDriversLite.Events
+  name: EventType
+  nameWithType: EventType
+  fullName: VEDriversLite.Events.EventType

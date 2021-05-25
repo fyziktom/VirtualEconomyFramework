@@ -1,0 +1,22 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NFT.Dto
+  commentId: N:VEDriversLite.NFT.Dto
+  id: VEDriversLite.NFT.Dto
+  children:
+  - VEDriversLite.NFT.Dto.GetNFTOwnerDto
+  langs:
+  - csharp
+  - vb
+  name: VEDriversLite.NFT.Dto
+  nameWithType: VEDriversLite.NFT.Dto
+  fullName: VEDriversLite.NFT.Dto
+  type: Namespace
+  assemblies:
+  - VEDriversLite
+references:
+- uid: VEDriversLite.NFT.Dto.GetNFTOwnerDto
+  commentId: T:VEDriversLite.NFT.Dto.GetNFTOwnerDto
+  name: GetNFTOwnerDto
+  nameWithType: GetNFTOwnerDto
+  fullName: VEDriversLite.NFT.Dto.GetNFTOwnerDto

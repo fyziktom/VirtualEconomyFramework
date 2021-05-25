@@ -1,0 +1,502 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.TokenOwnerDto
+  commentId: T:VEDriversLite.TokenOwnerDto
+  id: TokenOwnerDto
+  parent: VEDriversLite
+  children:
+  - VEDriversLite.TokenOwnerDto.Address
+  - VEDriversLite.TokenOwnerDto.AmountOfNFTs
+  - VEDriversLite.TokenOwnerDto.AmountOfTokens
+  - VEDriversLite.TokenOwnerDto.ShortenAddress
+  langs:
+  - csharp
+  - vb
+  name: TokenOwnerDto
+  nameWithType: TokenOwnerDto
+  fullName: VEDriversLite.TokenOwnerDto
+  type: Class
+  source:
+    id: TokenOwnerDto
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioTransactionHelpers.cs
+    startLine: 31
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nDto for info about owner of some kind of the tokens\n"
+  example: []
+  syntax:
+    content: public class TokenOwnerDto
+    content.vb: Public Class TokenOwnerDto
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.TokenOwnerDto.Address
+  commentId: P:VEDriversLite.TokenOwnerDto.Address
+  id: Address
+  parent: VEDriversLite.TokenOwnerDto
+  langs:
+  - csharp
+  - vb
+  name: Address
+  nameWithType: TokenOwnerDto.Address
+  fullName: VEDriversLite.TokenOwnerDto.Address
+  type: Property
+  source:
+    id: Address
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioTransactionHelpers.cs
+    startLine: 33
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public string Address { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Address As String
+  overload: VEDriversLite.TokenOwnerDto.Address*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.TokenOwnerDto.ShortenAddress
+  commentId: P:VEDriversLite.TokenOwnerDto.ShortenAddress
+  id: ShortenAddress
+  parent: VEDriversLite.TokenOwnerDto
+  langs:
+  - csharp
+  - vb
+  name: ShortenAddress
+  nameWithType: TokenOwnerDto.ShortenAddress
+  fullName: VEDriversLite.TokenOwnerDto.ShortenAddress
+  type: Property
+  source:
+    id: ShortenAddress
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioTransactionHelpers.cs
+    startLine: 34
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public string ShortenAddress { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property ShortenAddress As String
+  overload: VEDriversLite.TokenOwnerDto.ShortenAddress*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.TokenOwnerDto.AmountOfTokens
+  commentId: P:VEDriversLite.TokenOwnerDto.AmountOfTokens
+  id: AmountOfTokens
+  parent: VEDriversLite.TokenOwnerDto
+  langs:
+  - csharp
+  - vb
+  name: AmountOfTokens
+  nameWithType: TokenOwnerDto.AmountOfTokens
+  fullName: VEDriversLite.TokenOwnerDto.AmountOfTokens
+  type: Property
+  source:
+    id: AmountOfTokens
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioTransactionHelpers.cs
+    startLine: 35
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public int AmountOfTokens { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property AmountOfTokens As Integer
+  overload: VEDriversLite.TokenOwnerDto.AmountOfTokens*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.TokenOwnerDto.AmountOfNFTs
+  commentId: P:VEDriversLite.TokenOwnerDto.AmountOfNFTs
+  id: AmountOfNFTs
+  parent: VEDriversLite.TokenOwnerDto
+  langs:
+  - csharp
+  - vb
+  name: AmountOfNFTs
+  nameWithType: TokenOwnerDto.AmountOfNFTs
+  fullName: VEDriversLite.TokenOwnerDto.AmountOfNFTs
+  type: Property
+  source:
+    id: AmountOfNFTs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioTransactionHelpers.cs
+    startLine: 36
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public int AmountOfNFTs { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property AmountOfNFTs As Integer
+  overload: VEDriversLite.TokenOwnerDto.AmountOfNFTs*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite
+  commentId: N:VEDriversLite
+  name: VEDriversLite
+  nameWithType: VEDriversLite
+  fullName: VEDriversLite
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.TokenOwnerDto.Address*
+  commentId: Overload:VEDriversLite.TokenOwnerDto.Address
+  name: Address
+  nameWithType: TokenOwnerDto.Address
+  fullName: VEDriversLite.TokenOwnerDto.Address
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.TokenOwnerDto.ShortenAddress*
+  commentId: Overload:VEDriversLite.TokenOwnerDto.ShortenAddress
+  name: ShortenAddress
+  nameWithType: TokenOwnerDto.ShortenAddress
+  fullName: VEDriversLite.TokenOwnerDto.ShortenAddress
+- uid: VEDriversLite.TokenOwnerDto.AmountOfTokens*
+  commentId: Overload:VEDriversLite.TokenOwnerDto.AmountOfTokens
+  name: AmountOfTokens
+  nameWithType: TokenOwnerDto.AmountOfTokens
+  fullName: VEDriversLite.TokenOwnerDto.AmountOfTokens
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  name: Int32
+  nameWithType: Int32
+  fullName: System.Int32
+- uid: VEDriversLite.TokenOwnerDto.AmountOfNFTs*
+  commentId: Overload:VEDriversLite.TokenOwnerDto.AmountOfNFTs
+  name: AmountOfNFTs
+  nameWithType: TokenOwnerDto.AmountOfNFTs
+  fullName: VEDriversLite.TokenOwnerDto.AmountOfNFTs

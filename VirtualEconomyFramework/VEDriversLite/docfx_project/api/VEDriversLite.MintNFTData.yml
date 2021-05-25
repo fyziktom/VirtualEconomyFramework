@@ -1,0 +1,774 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.MintNFTData
+  commentId: T:VEDriversLite.MintNFTData
+  id: MintNFTData
+  parent: VEDriversLite
+  children:
+  - VEDriversLite.MintNFTData.#ctor
+  - VEDriversLite.MintNFTData.Id
+  - VEDriversLite.MintNFTData.Metadata
+  - VEDriversLite.MintNFTData.Password
+  - VEDriversLite.MintNFTData.ReceiverAddress
+  - VEDriversLite.MintNFTData.SenderAddress
+  - VEDriversLite.MintNFTData.sendUtxo
+  - VEDriversLite.MintNFTData.UseRPCPrimarily
+  langs:
+  - csharp
+  - vb
+  name: MintNFTData
+  nameWithType: MintNFTData
+  fullName: VEDriversLite.MintNFTData
+  type: Class
+  source:
+    id: MintNFTData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\MintNFTData.cs
+    startLine: 8
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public class MintNFTData
+    content.vb: Public Class MintNFTData
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.MintNFTData.#ctor
+  commentId: M:VEDriversLite.MintNFTData.#ctor
+  id: '#ctor'
+  parent: VEDriversLite.MintNFTData
+  langs:
+  - csharp
+  - vb
+  name: MintNFTData()
+  nameWithType: MintNFTData.MintNFTData()
+  fullName: VEDriversLite.MintNFTData.MintNFTData()
+  type: Constructor
+  source:
+    id: .ctor
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\MintNFTData.cs
+    startLine: 10
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public MintNFTData()
+    content.vb: Public Sub New
+  overload: VEDriversLite.MintNFTData.#ctor*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.MintNFTData.SenderAddress
+  commentId: P:VEDriversLite.MintNFTData.SenderAddress
+  id: SenderAddress
+  parent: VEDriversLite.MintNFTData
+  langs:
+  - csharp
+  - vb
+  name: SenderAddress
+  nameWithType: MintNFTData.SenderAddress
+  fullName: VEDriversLite.MintNFTData.SenderAddress
+  type: Property
+  source:
+    id: SenderAddress
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\MintNFTData.cs
+    startLine: 17
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nAddress from where token will be send\n"
+  example: []
+  syntax:
+    content: public string SenderAddress { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property SenderAddress As String
+  overload: VEDriversLite.MintNFTData.SenderAddress*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.MintNFTData.ReceiverAddress
+  commentId: P:VEDriversLite.MintNFTData.ReceiverAddress
+  id: ReceiverAddress
+  parent: VEDriversLite.MintNFTData
+  langs:
+  - csharp
+  - vb
+  name: ReceiverAddress
+  nameWithType: MintNFTData.ReceiverAddress
+  fullName: VEDriversLite.MintNFTData.ReceiverAddress
+  type: Property
+  source:
+    id: ReceiverAddress
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\MintNFTData.cs
+    startLine: 21
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nAddress from where to send new NFT\n"
+  example: []
+  syntax:
+    content: public string ReceiverAddress { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property ReceiverAddress As String
+  overload: VEDriversLite.MintNFTData.ReceiverAddress*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.MintNFTData.Password
+  commentId: P:VEDriversLite.MintNFTData.Password
+  id: Password
+  parent: VEDriversLite.MintNFTData
+  langs:
+  - csharp
+  - vb
+  name: Password
+  nameWithType: MintNFTData.Password
+  fullName: VEDriversLite.MintNFTData.Password
+  type: Property
+  source:
+    id: Password
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\MintNFTData.cs
+    startLine: 26
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nIf the account is locked you can provide password directly in the send token api command\nif the account is unlocked or the QT wallet is connected fill empty string\n"
+  example: []
+  syntax:
+    content: public string Password { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Password As String
+  overload: VEDriversLite.MintNFTData.Password*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.MintNFTData.Id
+  commentId: P:VEDriversLite.MintNFTData.Id
+  id: Id
+  parent: VEDriversLite.MintNFTData
+  langs:
+  - csharp
+  - vb
+  name: Id
+  nameWithType: MintNFTData.Id
+  fullName: VEDriversLite.MintNFTData.Id
+  type: Property
+  source:
+    id: Id
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\MintNFTData.cs
+    startLine: 31
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nId of token\n"
+  example: []
+  syntax:
+    content: public string Id { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Id As String
+  overload: VEDriversLite.MintNFTData.Id*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.MintNFTData.Metadata
+  commentId: P:VEDriversLite.MintNFTData.Metadata
+  id: Metadata
+  parent: VEDriversLite.MintNFTData
+  langs:
+  - csharp
+  - vb
+  name: Metadata
+  nameWithType: MintNFTData.Metadata
+  fullName: VEDriversLite.MintNFTData.Metadata
+  type: Property
+  source:
+    id: Metadata
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\MintNFTData.cs
+    startLine: 35
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nMetadata dictionary, key-value pairs\n"
+  example: []
+  syntax:
+    content: public IDictionary<string, string> Metadata { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IDictionary{System.String,System.String}
+    content.vb: Public Property Metadata As IDictionary(Of String, String)
+  overload: VEDriversLite.MintNFTData.Metadata*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.MintNFTData.sendUtxo
+  commentId: P:VEDriversLite.MintNFTData.sendUtxo
+  id: sendUtxo
+  parent: VEDriversLite.MintNFTData
+  langs:
+  - csharp
+  - vb
+  name: sendUtxo
+  nameWithType: MintNFTData.sendUtxo
+  fullName: VEDriversLite.MintNFTData.sendUtxo
+  type: Property
+  source:
+    id: sendUtxo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\MintNFTData.cs
+    startLine: 39
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nInitial Utxo for sending transaction from\n"
+  example: []
+  syntax:
+    content: public string sendUtxo { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property sendUtxo As String
+  overload: VEDriversLite.MintNFTData.sendUtxo*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.MintNFTData.UseRPCPrimarily
+  commentId: P:VEDriversLite.MintNFTData.UseRPCPrimarily
+  id: UseRPCPrimarily
+  parent: VEDriversLite.MintNFTData
+  langs:
+  - csharp
+  - vb
+  name: UseRPCPrimarily
+  nameWithType: MintNFTData.UseRPCPrimarily
+  fullName: VEDriversLite.MintNFTData.UseRPCPrimarily
+  type: Property
+  source:
+    id: UseRPCPrimarily
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\MintNFTData.cs
+    startLine: 44
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nIf you use RPC and NBitcoin you can preffer using RPC with set this to true\n"
+  example: []
+  syntax:
+    content: public bool UseRPCPrimarily { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property UseRPCPrimarily As Boolean
+  overload: VEDriversLite.MintNFTData.UseRPCPrimarily*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite
+  commentId: N:VEDriversLite
+  name: VEDriversLite
+  nameWithType: VEDriversLite
+  fullName: VEDriversLite
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.MintNFTData.#ctor*
+  commentId: Overload:VEDriversLite.MintNFTData.#ctor
+  name: MintNFTData
+  nameWithType: MintNFTData.MintNFTData
+  fullName: VEDriversLite.MintNFTData.MintNFTData
+- uid: VEDriversLite.MintNFTData.SenderAddress*
+  commentId: Overload:VEDriversLite.MintNFTData.SenderAddress
+  name: SenderAddress
+  nameWithType: MintNFTData.SenderAddress
+  fullName: VEDriversLite.MintNFTData.SenderAddress
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.MintNFTData.ReceiverAddress*
+  commentId: Overload:VEDriversLite.MintNFTData.ReceiverAddress
+  name: ReceiverAddress
+  nameWithType: MintNFTData.ReceiverAddress
+  fullName: VEDriversLite.MintNFTData.ReceiverAddress
+- uid: VEDriversLite.MintNFTData.Password*
+  commentId: Overload:VEDriversLite.MintNFTData.Password
+  name: Password
+  nameWithType: MintNFTData.Password
+  fullName: VEDriversLite.MintNFTData.Password
+- uid: VEDriversLite.MintNFTData.Id*
+  commentId: Overload:VEDriversLite.MintNFTData.Id
+  name: Id
+  nameWithType: MintNFTData.Id
+  fullName: VEDriversLite.MintNFTData.Id
+- uid: VEDriversLite.MintNFTData.Metadata*
+  commentId: Overload:VEDriversLite.MintNFTData.Metadata
+  name: Metadata
+  nameWithType: MintNFTData.Metadata
+  fullName: VEDriversLite.MintNFTData.Metadata
+- uid: System.Collections.Generic.IDictionary{System.String,System.String}
+  commentId: T:System.Collections.Generic.IDictionary{System.String,System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IDictionary`2
+  name: IDictionary<String, String>
+  nameWithType: IDictionary<String, String>
+  fullName: System.Collections.Generic.IDictionary<System.String, System.String>
+  nameWithType.vb: IDictionary(Of String, String)
+  fullName.vb: System.Collections.Generic.IDictionary(Of System.String, System.String)
+  name.vb: IDictionary(Of String, String)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IDictionary`2
+  commentId: T:System.Collections.Generic.IDictionary`2
+  isExternal: true
+  name: IDictionary<TKey, TValue>
+  nameWithType: IDictionary<TKey, TValue>
+  fullName: System.Collections.Generic.IDictionary<TKey, TValue>
+  nameWithType.vb: IDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.IDictionary(Of TKey, TValue)
+  name.vb: IDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: VEDriversLite.MintNFTData.sendUtxo*
+  commentId: Overload:VEDriversLite.MintNFTData.sendUtxo
+  name: sendUtxo
+  nameWithType: MintNFTData.sendUtxo
+  fullName: VEDriversLite.MintNFTData.sendUtxo
+- uid: VEDriversLite.MintNFTData.UseRPCPrimarily*
+  commentId: Overload:VEDriversLite.MintNFTData.UseRPCPrimarily
+  name: UseRPCPrimarily
+  nameWithType: MintNFTData.UseRPCPrimarily
+  fullName: VEDriversLite.MintNFTData.UseRPCPrimarily
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  name: Boolean
+  nameWithType: Boolean
+  fullName: System.Boolean

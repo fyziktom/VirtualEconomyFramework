@@ -1,0 +1,1103 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NFT.INFT
+  commentId: T:VEDriversLite.NFT.INFT
+  id: INFT
+  parent: VEDriversLite.NFT
+  children:
+  - VEDriversLite.NFT.INFT.Author
+  - VEDriversLite.NFT.INFT.Description
+  - VEDriversLite.NFT.INFT.Fill(VEDriversLite.NFT.INFT)
+  - VEDriversLite.NFT.INFT.FillCommon(VEDriversLite.NFT.INFT)
+  - VEDriversLite.NFT.INFT.History
+  - VEDriversLite.NFT.INFT.IconLink
+  - VEDriversLite.NFT.INFT.ImageLink
+  - VEDriversLite.NFT.INFT.Link
+  - VEDriversLite.NFT.INFT.LoadHistory
+  - VEDriversLite.NFT.INFT.Name
+  - VEDriversLite.NFT.INFT.NFTOriginTxId
+  - VEDriversLite.NFT.INFT.ParseOriginData
+  - VEDriversLite.NFT.INFT.Price
+  - VEDriversLite.NFT.INFT.PriceActive
+  - VEDriversLite.NFT.INFT.SourceTxId
+  - VEDriversLite.NFT.INFT.StartRefreshingTxData
+  - VEDriversLite.NFT.INFT.StopRefreshingData
+  - VEDriversLite.NFT.INFT.Tags
+  - VEDriversLite.NFT.INFT.Time
+  - VEDriversLite.NFT.INFT.TxDataRefreshed
+  - VEDriversLite.NFT.INFT.TxDetails
+  - VEDriversLite.NFT.INFT.Type
+  - VEDriversLite.NFT.INFT.TypeText
+  - VEDriversLite.NFT.INFT.Utxo
+  - VEDriversLite.NFT.INFT.UtxoIndex
+  langs:
+  - csharp
+  - vb
+  name: INFT
+  nameWithType: INFT
+  fullName: VEDriversLite.NFT.INFT
+  type: Interface
+  source:
+    id: INFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 18
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public interface INFT
+    content.vb: Public Interface INFT
+  modifiers.csharp:
+  - public
+  - interface
+  modifiers.vb:
+  - Public
+  - Interface
+- uid: VEDriversLite.NFT.INFT.TypeText
+  commentId: P:VEDriversLite.NFT.INFT.TypeText
+  id: TypeText
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: TypeText
+  nameWithType: INFT.TypeText
+  fullName: VEDriversLite.NFT.INFT.TypeText
+  type: Property
+  source:
+    id: TypeText
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 20
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string TypeText { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property TypeText As String
+  overload: VEDriversLite.NFT.INFT.TypeText*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.Type
+  commentId: P:VEDriversLite.NFT.INFT.Type
+  id: Type
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Type
+  nameWithType: INFT.Type
+  fullName: VEDriversLite.NFT.INFT.Type
+  type: Property
+  source:
+    id: Type
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 21
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: NFTTypes Type { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NFT.NFTTypes
+    content.vb: Property Type As NFTTypes
+  overload: VEDriversLite.NFT.INFT.Type*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.Name
+  commentId: P:VEDriversLite.NFT.INFT.Name
+  id: Name
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Name
+  nameWithType: INFT.Name
+  fullName: VEDriversLite.NFT.INFT.Name
+  type: Property
+  source:
+    id: Name
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 22
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string Name { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Name As String
+  overload: VEDriversLite.NFT.INFT.Name*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.Author
+  commentId: P:VEDriversLite.NFT.INFT.Author
+  id: Author
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Author
+  nameWithType: INFT.Author
+  fullName: VEDriversLite.NFT.INFT.Author
+  type: Property
+  source:
+    id: Author
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 23
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string Author { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Author As String
+  overload: VEDriversLite.NFT.INFT.Author*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.Description
+  commentId: P:VEDriversLite.NFT.INFT.Description
+  id: Description
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Description
+  nameWithType: INFT.Description
+  fullName: VEDriversLite.NFT.INFT.Description
+  type: Property
+  source:
+    id: Description
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 24
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string Description { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Description As String
+  overload: VEDriversLite.NFT.INFT.Description*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.Link
+  commentId: P:VEDriversLite.NFT.INFT.Link
+  id: Link
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Link
+  nameWithType: INFT.Link
+  fullName: VEDriversLite.NFT.INFT.Link
+  type: Property
+  source:
+    id: Link
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 25
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string Link { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Link As String
+  overload: VEDriversLite.NFT.INFT.Link*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.IconLink
+  commentId: P:VEDriversLite.NFT.INFT.IconLink
+  id: IconLink
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: IconLink
+  nameWithType: INFT.IconLink
+  fullName: VEDriversLite.NFT.INFT.IconLink
+  type: Property
+  source:
+    id: IconLink
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 26
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string IconLink { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property IconLink As String
+  overload: VEDriversLite.NFT.INFT.IconLink*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.ImageLink
+  commentId: P:VEDriversLite.NFT.INFT.ImageLink
+  id: ImageLink
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: ImageLink
+  nameWithType: INFT.ImageLink
+  fullName: VEDriversLite.NFT.INFT.ImageLink
+  type: Property
+  source:
+    id: ImageLink
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 27
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string ImageLink { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property ImageLink As String
+  overload: VEDriversLite.NFT.INFT.ImageLink*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.Tags
+  commentId: P:VEDriversLite.NFT.INFT.Tags
+  id: Tags
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Tags
+  nameWithType: INFT.Tags
+  fullName: VEDriversLite.NFT.INFT.Tags
+  type: Property
+  source:
+    id: Tags
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 28
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string Tags { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Tags As String
+  overload: VEDriversLite.NFT.INFT.Tags*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.Utxo
+  commentId: P:VEDriversLite.NFT.INFT.Utxo
+  id: Utxo
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Utxo
+  nameWithType: INFT.Utxo
+  fullName: VEDriversLite.NFT.INFT.Utxo
+  type: Property
+  source:
+    id: Utxo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 29
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string Utxo { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Utxo As String
+  overload: VEDriversLite.NFT.INFT.Utxo*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.SourceTxId
+  commentId: P:VEDriversLite.NFT.INFT.SourceTxId
+  id: SourceTxId
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: SourceTxId
+  nameWithType: INFT.SourceTxId
+  fullName: VEDriversLite.NFT.INFT.SourceTxId
+  type: Property
+  source:
+    id: SourceTxId
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 30
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string SourceTxId { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property SourceTxId As String
+  overload: VEDriversLite.NFT.INFT.SourceTxId*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.Price
+  commentId: P:VEDriversLite.NFT.INFT.Price
+  id: Price
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Price
+  nameWithType: INFT.Price
+  fullName: VEDriversLite.NFT.INFT.Price
+  type: Property
+  source:
+    id: Price
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 31
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: double Price { get; set; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Property Price As Double
+  overload: VEDriversLite.NFT.INFT.Price*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.PriceActive
+  commentId: P:VEDriversLite.NFT.INFT.PriceActive
+  id: PriceActive
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: PriceActive
+  nameWithType: INFT.PriceActive
+  fullName: VEDriversLite.NFT.INFT.PriceActive
+  type: Property
+  source:
+    id: PriceActive
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 32
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: bool PriceActive { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Property PriceActive As Boolean
+  overload: VEDriversLite.NFT.INFT.PriceActive*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.NFTOriginTxId
+  commentId: P:VEDriversLite.NFT.INFT.NFTOriginTxId
+  id: NFTOriginTxId
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: NFTOriginTxId
+  nameWithType: INFT.NFTOriginTxId
+  fullName: VEDriversLite.NFT.INFT.NFTOriginTxId
+  type: Property
+  source:
+    id: NFTOriginTxId
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 33
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: string NFTOriginTxId { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property NFTOriginTxId As String
+  overload: VEDriversLite.NFT.INFT.NFTOriginTxId*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.UtxoIndex
+  commentId: P:VEDriversLite.NFT.INFT.UtxoIndex
+  id: UtxoIndex
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: UtxoIndex
+  nameWithType: INFT.UtxoIndex
+  fullName: VEDriversLite.NFT.INFT.UtxoIndex
+  type: Property
+  source:
+    id: UtxoIndex
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 34
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: int UtxoIndex { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Property UtxoIndex As Integer
+  overload: VEDriversLite.NFT.INFT.UtxoIndex*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.Time
+  commentId: P:VEDriversLite.NFT.INFT.Time
+  id: Time
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Time
+  nameWithType: INFT.Time
+  fullName: VEDriversLite.NFT.INFT.Time
+  type: Property
+  source:
+    id: Time
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 35
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: DateTime Time { get; set; }
+    parameters: []
+    return:
+      type: System.DateTime
+    content.vb: Property Time As Date
+  overload: VEDriversLite.NFT.INFT.Time*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.History
+  commentId: P:VEDriversLite.NFT.INFT.History
+  id: History
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: History
+  nameWithType: INFT.History
+  fullName: VEDriversLite.NFT.INFT.History
+  type: Property
+  source:
+    id: History
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 36
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: List<INFT> History { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{VEDriversLite.NFT.INFT}
+    content.vb: Property History As List(Of INFT)
+  overload: VEDriversLite.NFT.INFT.History*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.TxDetails
+  commentId: P:VEDriversLite.NFT.INFT.TxDetails
+  id: TxDetails
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: TxDetails
+  nameWithType: INFT.TxDetails
+  fullName: VEDriversLite.NFT.INFT.TxDetails
+  type: Property
+  source:
+    id: TxDetails
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 37
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: GetTransactionInfoResponse TxDetails { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+    content.vb: Property TxDetails As GetTransactionInfoResponse
+  overload: VEDriversLite.NFT.INFT.TxDetails*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.NFT.INFT.TxDataRefreshed
+  commentId: E:VEDriversLite.NFT.INFT.TxDataRefreshed
+  id: TxDataRefreshed
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: TxDataRefreshed
+  nameWithType: INFT.TxDataRefreshed
+  fullName: VEDriversLite.NFT.INFT.TxDataRefreshed
+  type: Event
+  source:
+    id: TxDataRefreshed
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 38
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: event EventHandler<GetTransactionInfoResponse> TxDataRefreshed
+    return:
+      type: System.EventHandler{VEDriversLite.NeblioAPI.GetTransactionInfoResponse}
+    content.vb: Event TxDataRefreshed As EventHandler(Of GetTransactionInfoResponse)
+- uid: VEDriversLite.NFT.INFT.FillCommon(VEDriversLite.NFT.INFT)
+  commentId: M:VEDriversLite.NFT.INFT.FillCommon(VEDriversLite.NFT.INFT)
+  id: FillCommon(VEDriversLite.NFT.INFT)
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: FillCommon(INFT)
+  nameWithType: INFT.FillCommon(INFT)
+  fullName: VEDriversLite.NFT.INFT.FillCommon(VEDriversLite.NFT.INFT)
+  type: Method
+  source:
+    id: FillCommon
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 40
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: Task FillCommon(INFT nft)
+    parameters:
+    - id: nft
+      type: VEDriversLite.NFT.INFT
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Function FillCommon(nft As INFT) As Task
+  overload: VEDriversLite.NFT.INFT.FillCommon*
+- uid: VEDriversLite.NFT.INFT.Fill(VEDriversLite.NFT.INFT)
+  commentId: M:VEDriversLite.NFT.INFT.Fill(VEDriversLite.NFT.INFT)
+  id: Fill(VEDriversLite.NFT.INFT)
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: Fill(INFT)
+  nameWithType: INFT.Fill(INFT)
+  fullName: VEDriversLite.NFT.INFT.Fill(VEDriversLite.NFT.INFT)
+  type: Method
+  source:
+    id: Fill
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 41
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: Task Fill(INFT NFT)
+    parameters:
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Function Fill(NFT As INFT) As Task
+  overload: VEDriversLite.NFT.INFT.Fill*
+- uid: VEDriversLite.NFT.INFT.ParseOriginData
+  commentId: M:VEDriversLite.NFT.INFT.ParseOriginData
+  id: ParseOriginData
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: ParseOriginData()
+  nameWithType: INFT.ParseOriginData()
+  fullName: VEDriversLite.NFT.INFT.ParseOriginData()
+  type: Method
+  source:
+    id: ParseOriginData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 42
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: Task ParseOriginData()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Function ParseOriginData As Task
+  overload: VEDriversLite.NFT.INFT.ParseOriginData*
+- uid: VEDriversLite.NFT.INFT.LoadHistory
+  commentId: M:VEDriversLite.NFT.INFT.LoadHistory
+  id: LoadHistory
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: LoadHistory()
+  nameWithType: INFT.LoadHistory()
+  fullName: VEDriversLite.NFT.INFT.LoadHistory()
+  type: Method
+  source:
+    id: LoadHistory
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 43
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: Task LoadHistory()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Function LoadHistory As Task
+  overload: VEDriversLite.NFT.INFT.LoadHistory*
+- uid: VEDriversLite.NFT.INFT.StopRefreshingData
+  commentId: M:VEDriversLite.NFT.INFT.StopRefreshingData
+  id: StopRefreshingData
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: StopRefreshingData()
+  nameWithType: INFT.StopRefreshingData()
+  fullName: VEDriversLite.NFT.INFT.StopRefreshingData()
+  type: Method
+  source:
+    id: StopRefreshingData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 44
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: Task StopRefreshingData()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Function StopRefreshingData As Task
+  overload: VEDriversLite.NFT.INFT.StopRefreshingData*
+- uid: VEDriversLite.NFT.INFT.StartRefreshingTxData
+  commentId: M:VEDriversLite.NFT.INFT.StartRefreshingTxData
+  id: StartRefreshingTxData
+  parent: VEDriversLite.NFT.INFT
+  langs:
+  - csharp
+  - vb
+  name: StartRefreshingTxData()
+  nameWithType: INFT.StartRefreshingTxData()
+  fullName: VEDriversLite.NFT.INFT.StartRefreshingTxData()
+  type: Method
+  source:
+    id: StartRefreshingTxData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\INFT.cs
+    startLine: 45
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: Task StartRefreshingTxData()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Function StartRefreshingTxData As Task
+  overload: VEDriversLite.NFT.INFT.StartRefreshingTxData*
+references:
+- uid: VEDriversLite.NFT
+  commentId: N:VEDriversLite.NFT
+  name: VEDriversLite.NFT
+  nameWithType: VEDriversLite.NFT
+  fullName: VEDriversLite.NFT
+- uid: VEDriversLite.NFT.INFT.TypeText*
+  commentId: Overload:VEDriversLite.NFT.INFT.TypeText
+  name: TypeText
+  nameWithType: INFT.TypeText
+  fullName: VEDriversLite.NFT.INFT.TypeText
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.NFT.INFT.Type*
+  commentId: Overload:VEDriversLite.NFT.INFT.Type
+  name: Type
+  nameWithType: INFT.Type
+  fullName: VEDriversLite.NFT.INFT.Type
+- uid: VEDriversLite.NFT.NFTTypes
+  commentId: T:VEDriversLite.NFT.NFTTypes
+  parent: VEDriversLite.NFT
+  name: NFTTypes
+  nameWithType: NFTTypes
+  fullName: VEDriversLite.NFT.NFTTypes
+- uid: VEDriversLite.NFT.INFT.Name*
+  commentId: Overload:VEDriversLite.NFT.INFT.Name
+  name: Name
+  nameWithType: INFT.Name
+  fullName: VEDriversLite.NFT.INFT.Name
+- uid: VEDriversLite.NFT.INFT.Author*
+  commentId: Overload:VEDriversLite.NFT.INFT.Author
+  name: Author
+  nameWithType: INFT.Author
+  fullName: VEDriversLite.NFT.INFT.Author
+- uid: VEDriversLite.NFT.INFT.Description*
+  commentId: Overload:VEDriversLite.NFT.INFT.Description
+  name: Description
+  nameWithType: INFT.Description
+  fullName: VEDriversLite.NFT.INFT.Description
+- uid: VEDriversLite.NFT.INFT.Link*
+  commentId: Overload:VEDriversLite.NFT.INFT.Link
+  name: Link
+  nameWithType: INFT.Link
+  fullName: VEDriversLite.NFT.INFT.Link
+- uid: VEDriversLite.NFT.INFT.IconLink*
+  commentId: Overload:VEDriversLite.NFT.INFT.IconLink
+  name: IconLink
+  nameWithType: INFT.IconLink
+  fullName: VEDriversLite.NFT.INFT.IconLink
+- uid: VEDriversLite.NFT.INFT.ImageLink*
+  commentId: Overload:VEDriversLite.NFT.INFT.ImageLink
+  name: ImageLink
+  nameWithType: INFT.ImageLink
+  fullName: VEDriversLite.NFT.INFT.ImageLink
+- uid: VEDriversLite.NFT.INFT.Tags*
+  commentId: Overload:VEDriversLite.NFT.INFT.Tags
+  name: Tags
+  nameWithType: INFT.Tags
+  fullName: VEDriversLite.NFT.INFT.Tags
+- uid: VEDriversLite.NFT.INFT.Utxo*
+  commentId: Overload:VEDriversLite.NFT.INFT.Utxo
+  name: Utxo
+  nameWithType: INFT.Utxo
+  fullName: VEDriversLite.NFT.INFT.Utxo
+- uid: VEDriversLite.NFT.INFT.SourceTxId*
+  commentId: Overload:VEDriversLite.NFT.INFT.SourceTxId
+  name: SourceTxId
+  nameWithType: INFT.SourceTxId
+  fullName: VEDriversLite.NFT.INFT.SourceTxId
+- uid: VEDriversLite.NFT.INFT.Price*
+  commentId: Overload:VEDriversLite.NFT.INFT.Price
+  name: Price
+  nameWithType: INFT.Price
+  fullName: VEDriversLite.NFT.INFT.Price
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  name: Double
+  nameWithType: Double
+  fullName: System.Double
+- uid: VEDriversLite.NFT.INFT.PriceActive*
+  commentId: Overload:VEDriversLite.NFT.INFT.PriceActive
+  name: PriceActive
+  nameWithType: INFT.PriceActive
+  fullName: VEDriversLite.NFT.INFT.PriceActive
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  name: Boolean
+  nameWithType: Boolean
+  fullName: System.Boolean
+- uid: VEDriversLite.NFT.INFT.NFTOriginTxId*
+  commentId: Overload:VEDriversLite.NFT.INFT.NFTOriginTxId
+  name: NFTOriginTxId
+  nameWithType: INFT.NFTOriginTxId
+  fullName: VEDriversLite.NFT.INFT.NFTOriginTxId
+- uid: VEDriversLite.NFT.INFT.UtxoIndex*
+  commentId: Overload:VEDriversLite.NFT.INFT.UtxoIndex
+  name: UtxoIndex
+  nameWithType: INFT.UtxoIndex
+  fullName: VEDriversLite.NFT.INFT.UtxoIndex
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  name: Int32
+  nameWithType: Int32
+  fullName: System.Int32
+- uid: VEDriversLite.NFT.INFT.Time*
+  commentId: Overload:VEDriversLite.NFT.INFT.Time
+  name: Time
+  nameWithType: INFT.Time
+  fullName: VEDriversLite.NFT.INFT.Time
+- uid: System.DateTime
+  commentId: T:System.DateTime
+  parent: System
+  isExternal: true
+  name: DateTime
+  nameWithType: DateTime
+  fullName: System.DateTime
+- uid: VEDriversLite.NFT.INFT.History*
+  commentId: Overload:VEDriversLite.NFT.INFT.History
+  name: History
+  nameWithType: INFT.History
+  fullName: VEDriversLite.NFT.INFT.History
+- uid: System.Collections.Generic.List{VEDriversLite.NFT.INFT}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.NFT.INFT}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<INFT>
+  nameWithType: List<INFT>
+  fullName: System.Collections.Generic.List<VEDriversLite.NFT.INFT>
+  nameWithType.vb: List(Of INFT)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.NFT.INFT)
+  name.vb: List(Of INFT)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: VEDriversLite.NFT.INFT.TxDetails*
+  commentId: Overload:VEDriversLite.NFT.INFT.TxDetails
+  name: TxDetails
+  nameWithType: INFT.TxDetails
+  fullName: VEDriversLite.NFT.INFT.TxDetails
+- uid: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+  commentId: T:VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+  parent: VEDriversLite.NeblioAPI
+  name: GetTransactionInfoResponse
+  nameWithType: GetTransactionInfoResponse
+  fullName: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+- uid: VEDriversLite.NeblioAPI
+  commentId: N:VEDriversLite.NeblioAPI
+  name: VEDriversLite.NeblioAPI
+  nameWithType: VEDriversLite.NeblioAPI
+  fullName: VEDriversLite.NeblioAPI
+- uid: System.EventHandler{VEDriversLite.NeblioAPI.GetTransactionInfoResponse}
+  commentId: T:System.EventHandler{VEDriversLite.NeblioAPI.GetTransactionInfoResponse}
+  parent: System
+  definition: System.EventHandler`1
+  name: EventHandler<GetTransactionInfoResponse>
+  nameWithType: EventHandler<GetTransactionInfoResponse>
+  fullName: System.EventHandler<VEDriversLite.NeblioAPI.GetTransactionInfoResponse>
+  nameWithType.vb: EventHandler(Of GetTransactionInfoResponse)
+  fullName.vb: System.EventHandler(Of VEDriversLite.NeblioAPI.GetTransactionInfoResponse)
+  name.vb: EventHandler(Of GetTransactionInfoResponse)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+    name: GetTransactionInfoResponse
+    nameWithType: GetTransactionInfoResponse
+    fullName: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+    name: GetTransactionInfoResponse
+    nameWithType: GetTransactionInfoResponse
+    fullName: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.EventHandler`1
+  commentId: T:System.EventHandler`1
+  isExternal: true
+  name: EventHandler<TEventArgs>
+  nameWithType: EventHandler<TEventArgs>
+  fullName: System.EventHandler<TEventArgs>
+  nameWithType.vb: EventHandler(Of TEventArgs)
+  fullName.vb: System.EventHandler(Of TEventArgs)
+  name.vb: EventHandler(Of TEventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TEventArgs
+    nameWithType: TEventArgs
+    fullName: TEventArgs
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TEventArgs
+    nameWithType: TEventArgs
+    fullName: TEventArgs
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.INFT.FillCommon*
+  commentId: Overload:VEDriversLite.NFT.INFT.FillCommon
+  name: FillCommon
+  nameWithType: INFT.FillCommon
+  fullName: VEDriversLite.NFT.INFT.FillCommon
+- uid: VEDriversLite.NFT.INFT
+  commentId: T:VEDriversLite.NFT.INFT
+  parent: VEDriversLite.NFT
+  name: INFT
+  nameWithType: INFT
+  fullName: VEDriversLite.NFT.INFT
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+- uid: VEDriversLite.NFT.INFT.Fill*
+  commentId: Overload:VEDriversLite.NFT.INFT.Fill
+  name: Fill
+  nameWithType: INFT.Fill
+  fullName: VEDriversLite.NFT.INFT.Fill
+- uid: VEDriversLite.NFT.INFT.ParseOriginData*
+  commentId: Overload:VEDriversLite.NFT.INFT.ParseOriginData
+  name: ParseOriginData
+  nameWithType: INFT.ParseOriginData
+  fullName: VEDriversLite.NFT.INFT.ParseOriginData
+- uid: VEDriversLite.NFT.INFT.LoadHistory*
+  commentId: Overload:VEDriversLite.NFT.INFT.LoadHistory
+  name: LoadHistory
+  nameWithType: INFT.LoadHistory
+  fullName: VEDriversLite.NFT.INFT.LoadHistory
+- uid: VEDriversLite.NFT.INFT.StopRefreshingData*
+  commentId: Overload:VEDriversLite.NFT.INFT.StopRefreshingData
+  name: StopRefreshingData
+  nameWithType: INFT.StopRefreshingData
+  fullName: VEDriversLite.NFT.INFT.StopRefreshingData
+- uid: VEDriversLite.NFT.INFT.StartRefreshingTxData*
+  commentId: Overload:VEDriversLite.NFT.INFT.StartRefreshingTxData
+  name: StartRefreshingTxData
+  nameWithType: INFT.StartRefreshingTxData
+  fullName: VEDriversLite.NFT.INFT.StartRefreshingTxData

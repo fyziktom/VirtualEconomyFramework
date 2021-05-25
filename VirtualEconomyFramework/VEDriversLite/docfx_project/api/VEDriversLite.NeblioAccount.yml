@@ -1,0 +1,4313 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NeblioAccount
+  commentId: T:VEDriversLite.NeblioAccount
+  id: NeblioAccount
+  parent: VEDriversLite
+  children:
+  - VEDriversLite.NeblioAccount.#ctor
+  - VEDriversLite.NeblioAccount.AccountKey
+  - VEDriversLite.NeblioAccount.AddBookmark(System.String,System.String,System.String)
+  - VEDriversLite.NeblioAccount.Address
+  - VEDriversLite.NeblioAccount.AddressInfo
+  - VEDriversLite.NeblioAccount.AddressInfoUtxos
+  - VEDriversLite.NeblioAccount.AddressNFTCount
+  - VEDriversLite.NeblioAccount.AddTab(System.String)
+  - VEDriversLite.NeblioAccount.Bookmarks
+  - VEDriversLite.NeblioAccount.CreateNewAccount(System.String,System.Boolean)
+  - VEDriversLite.NeblioAccount.EnoughBalanceToBuySourceTokens
+  - VEDriversLite.NeblioAccount.GetNFTVerifyCode(System.String)
+  - VEDriversLite.NeblioAccount.GetNFTVerifyQRCode(System.String)
+  - VEDriversLite.NeblioAccount.HasSomeSourceForMinting
+  - VEDriversLite.NeblioAccount.HasSomeSpendableNeblio(System.Double)
+  - VEDriversLite.NeblioAccount.ChangePostNFT(VEDriversLite.NFT.INFT)
+  - VEDriversLite.NeblioAccount.ChangeProfileNFT(VEDriversLite.NFT.INFT)
+  - VEDriversLite.NeblioAccount.CheckPayments
+  - VEDriversLite.NeblioAccount.CheckSpendableNeblio(System.Double)
+  - VEDriversLite.NeblioAccount.CheckSpendableNeblioTokens(System.String,System.Int32)
+  - VEDriversLite.NeblioAccount.IsInTheBookmarks(System.String)
+  - VEDriversLite.NeblioAccount.IsLocked
+  - VEDriversLite.NeblioAccount.LoadAccount(System.String)
+  - VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String)
+  - VEDriversLite.NeblioAccount.LoadBookmarks(System.String)
+  - VEDriversLite.NeblioAccount.LoadTabs(System.String)
+  - VEDriversLite.NeblioAccount.MintMultiNFT(System.String,VEDriversLite.NFT.INFT,System.Int32)
+  - VEDriversLite.NeblioAccount.MintNFT(System.String,VEDriversLite.NFT.INFT)
+  - VEDriversLite.NeblioAccount.NewEventInfo
+  - VEDriversLite.NeblioAccount.NFTs
+  - VEDriversLite.NeblioAccount.NumberOfLoadedTransaction
+  - VEDriversLite.NeblioAccount.NumberOfTransaction
+  - VEDriversLite.NeblioAccount.OrderSourceTokens(System.Double)
+  - VEDriversLite.NeblioAccount.Profile
+  - VEDriversLite.NeblioAccount.ReceivedPayments
+  - VEDriversLite.NeblioAccount.RefreshAddressReceivedPayments
+  - VEDriversLite.NeblioAccount.Refreshed
+  - VEDriversLite.NeblioAccount.ReloadAccountInfo
+  - VEDriversLite.NeblioAccount.ReloadCountOfNFTs
+  - VEDriversLite.NeblioAccount.ReloadMintingSupply
+  - VEDriversLite.NeblioAccount.ReLoadNFTs
+  - VEDriversLite.NeblioAccount.ReloadTokenSupply
+  - VEDriversLite.NeblioAccount.ReloadUtxos
+  - VEDriversLite.NeblioAccount.RemoveBookmark(System.String)
+  - VEDriversLite.NeblioAccount.RemoveTab(System.String)
+  - VEDriversLite.NeblioAccount.Secret
+  - VEDriversLite.NeblioAccount.SelectTab(System.String)
+  - VEDriversLite.NeblioAccount.SendNeblioPayment(System.String,System.Double)
+  - VEDriversLite.NeblioAccount.SendNeblioTokenPayment(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)
+  - VEDriversLite.NeblioAccount.SendNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double)
+  - VEDriversLite.NeblioAccount.SendNFTPayment(System.String,VEDriversLite.NFT.INFT)
+  - VEDriversLite.NeblioAccount.SerializeBookmarks
+  - VEDriversLite.NeblioAccount.SerializeTabs
+  - VEDriversLite.NeblioAccount.SignMessage(System.String)
+  - VEDriversLite.NeblioAccount.SourceTokensBalance
+  - VEDriversLite.NeblioAccount.StartRefreshingData(System.Int32)
+  - VEDriversLite.NeblioAccount.Tabs
+  - VEDriversLite.NeblioAccount.TokensSupplies
+  - VEDriversLite.NeblioAccount.TotalBalance
+  - VEDriversLite.NeblioAccount.TotalSpendableBalance
+  - VEDriversLite.NeblioAccount.TotalUnconfirmedBalance
+  - VEDriversLite.NeblioAccount.Utxos
+  - VEDriversLite.NeblioAccount.ValidateNFTUtxo(System.String)
+  - VEDriversLite.NeblioAccount.VerifyMessage(System.String,System.String,System.String)
+  langs:
+  - csharp
+  - vb
+  name: NeblioAccount
+  nameWithType: NeblioAccount
+  fullName: VEDriversLite.NeblioAccount
+  type: Class
+  source:
+    id: NeblioAccount
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 16
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public class NeblioAccount
+    content.vb: Public Class NeblioAccount
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.NeblioAccount.#ctor
+  commentId: M:VEDriversLite.NeblioAccount.#ctor
+  id: '#ctor'
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: NeblioAccount()
+  nameWithType: NeblioAccount.NeblioAccount()
+  fullName: VEDriversLite.NeblioAccount.NeblioAccount()
+  type: Constructor
+  source:
+    id: .ctor
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 18
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public NeblioAccount()
+    content.vb: Public Sub New
+  overload: VEDriversLite.NeblioAccount.#ctor*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.Address
+  commentId: P:VEDriversLite.NeblioAccount.Address
+  id: Address
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: Address
+  nameWithType: NeblioAccount.Address
+  fullName: VEDriversLite.NeblioAccount.Address
+  type: Property
+  source:
+    id: Address
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 28
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nNeblio Address hash\n"
+  example: []
+  syntax:
+    content: public string Address { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Address As String
+  overload: VEDriversLite.NeblioAccount.Address*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.Secret
+  commentId: P:VEDriversLite.NeblioAccount.Secret
+  id: Secret
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: Secret
+  nameWithType: NeblioAccount.Secret
+  fullName: VEDriversLite.NeblioAccount.Secret
+  type: Property
+  source:
+    id: Secret
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 32
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nLoaded Secret, NBitcoin Class which carry Public Key and Private Key\n"
+  example: []
+  syntax:
+    content: public BitcoinSecret Secret { get; set; }
+    parameters: []
+    return:
+      type: NBitcoin.BitcoinSecret
+    content.vb: Public Property Secret As BitcoinSecret
+  overload: VEDriversLite.NeblioAccount.Secret*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.NumberOfTransaction
+  commentId: P:VEDriversLite.NeblioAccount.NumberOfTransaction
+  id: NumberOfTransaction
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: NumberOfTransaction
+  nameWithType: NeblioAccount.NumberOfTransaction
+  fullName: VEDriversLite.NeblioAccount.NumberOfTransaction
+  type: Property
+  source:
+    id: NumberOfTransaction
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 37
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nNumber of the transactions on the address. not used now\n"
+  example: []
+  syntax:
+    content: public double NumberOfTransaction { get; set; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public Property NumberOfTransaction As Double
+  overload: VEDriversLite.NeblioAccount.NumberOfTransaction*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.NumberOfLoadedTransaction
+  commentId: P:VEDriversLite.NeblioAccount.NumberOfLoadedTransaction
+  id: NumberOfLoadedTransaction
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: NumberOfLoadedTransaction
+  nameWithType: NeblioAccount.NumberOfLoadedTransaction
+  fullName: VEDriversLite.NeblioAccount.NumberOfLoadedTransaction
+  type: Property
+  source:
+    id: NumberOfLoadedTransaction
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 41
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nNumber of already loaded transaction on the address. not used now\n"
+  example: []
+  syntax:
+    content: public double NumberOfLoadedTransaction { get; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public ReadOnly Property NumberOfLoadedTransaction As Double
+  overload: VEDriversLite.NeblioAccount.NumberOfLoadedTransaction*
+  modifiers.csharp:
+  - public
+  - get
+  modifiers.vb:
+  - Public
+  - ReadOnly
+- uid: VEDriversLite.NeblioAccount.EnoughBalanceToBuySourceTokens
+  commentId: P:VEDriversLite.NeblioAccount.EnoughBalanceToBuySourceTokens
+  id: EnoughBalanceToBuySourceTokens
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: EnoughBalanceToBuySourceTokens
+  nameWithType: NeblioAccount.EnoughBalanceToBuySourceTokens
+  fullName: VEDriversLite.NeblioAccount.EnoughBalanceToBuySourceTokens
+  type: Property
+  source:
+    id: EnoughBalanceToBuySourceTokens
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 45
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nIf the address has enought Neblio to buy source VENFT tokens (costs 1 NEBL) this is set as true.\n"
+  example: []
+  syntax:
+    content: public bool EnoughBalanceToBuySourceTokens { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property EnoughBalanceToBuySourceTokens As Boolean
+  overload: VEDriversLite.NeblioAccount.EnoughBalanceToBuySourceTokens*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.TotalBalance
+  commentId: P:VEDriversLite.NeblioAccount.TotalBalance
+  id: TotalBalance
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: TotalBalance
+  nameWithType: NeblioAccount.TotalBalance
+  fullName: VEDriversLite.NeblioAccount.TotalBalance
+  type: Property
+  source:
+    id: TotalBalance
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 49
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nTotal actual balance based on Utxos. This means sum of spendable and unconfirmed balances.\n"
+  example: []
+  syntax:
+    content: public double TotalBalance { get; set; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public Property TotalBalance As Double
+  overload: VEDriversLite.NeblioAccount.TotalBalance*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.TotalSpendableBalance
+  commentId: P:VEDriversLite.NeblioAccount.TotalSpendableBalance
+  id: TotalSpendableBalance
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: TotalSpendableBalance
+  nameWithType: NeblioAccount.TotalSpendableBalance
+  fullName: VEDriversLite.NeblioAccount.TotalSpendableBalance
+  type: Property
+  source:
+    id: TotalSpendableBalance
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 53
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nTotal spendable balance based on Utxos.\n"
+  example: []
+  syntax:
+    content: public double TotalSpendableBalance { get; set; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public Property TotalSpendableBalance As Double
+  overload: VEDriversLite.NeblioAccount.TotalSpendableBalance*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.TotalUnconfirmedBalance
+  commentId: P:VEDriversLite.NeblioAccount.TotalUnconfirmedBalance
+  id: TotalUnconfirmedBalance
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: TotalUnconfirmedBalance
+  nameWithType: NeblioAccount.TotalUnconfirmedBalance
+  fullName: VEDriversLite.NeblioAccount.TotalUnconfirmedBalance
+  type: Property
+  source:
+    id: TotalUnconfirmedBalance
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 57
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nTotal balance which is now unconfirmed based on Utxos.\n"
+  example: []
+  syntax:
+    content: public double TotalUnconfirmedBalance { get; set; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public Property TotalUnconfirmedBalance As Double
+  overload: VEDriversLite.NeblioAccount.TotalUnconfirmedBalance*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.SourceTokensBalance
+  commentId: P:VEDriversLite.NeblioAccount.SourceTokensBalance
+  id: SourceTokensBalance
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: SourceTokensBalance
+  nameWithType: NeblioAccount.SourceTokensBalance
+  fullName: VEDriversLite.NeblioAccount.SourceTokensBalance
+  type: Property
+  source:
+    id: SourceTokensBalance
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 61
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nTotal balance of VENFT tokens which can be used for minting purposes.\n"
+  example: []
+  syntax:
+    content: public double SourceTokensBalance { get; set; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public Property SourceTokensBalance As Double
+  overload: VEDriversLite.NeblioAccount.SourceTokensBalance*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.AddressNFTCount
+  commentId: P:VEDriversLite.NeblioAccount.AddressNFTCount
+  id: AddressNFTCount
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: AddressNFTCount
+  nameWithType: NeblioAccount.AddressNFTCount
+  fullName: VEDriversLite.NeblioAccount.AddressNFTCount
+  type: Property
+  source:
+    id: AddressNFTCount
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 65
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nTotal number of NFT on the address. It counts also Profile NFT, etc.\n"
+  example: []
+  syntax:
+    content: public double AddressNFTCount { get; set; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public Property AddressNFTCount As Double
+  overload: VEDriversLite.NeblioAccount.AddressNFTCount*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.NFTs
+  commentId: P:VEDriversLite.NeblioAccount.NFTs
+  id: NFTs
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: NFTs
+  nameWithType: NeblioAccount.NFTs
+  fullName: VEDriversLite.NeblioAccount.NFTs
+  type: Property
+  source:
+    id: NFTs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 69
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nList of actual address NFTs. Based on Utxos list\n"
+  example: []
+  syntax:
+    content: public List<INFT> NFTs { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{VEDriversLite.NFT.INFT}
+    content.vb: Public Property NFTs As List(Of INFT)
+  overload: VEDriversLite.NeblioAccount.NFTs*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.Tabs
+  commentId: P:VEDriversLite.NeblioAccount.Tabs
+  id: Tabs
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: Tabs
+  nameWithType: NeblioAccount.Tabs
+  fullName: VEDriversLite.NeblioAccount.Tabs
+  type: Property
+  source:
+    id: Tabs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 73
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nList of all active tabs for browsing or interacting with the address. All has possibility to load own list of NFTs.\n"
+  example: []
+  syntax:
+    content: public List<ActiveTab> Tabs { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{VEDriversLite.Bookmarks.ActiveTab}
+    content.vb: Public Property Tabs As List(Of ActiveTab)
+  overload: VEDriversLite.NeblioAccount.Tabs*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ReceivedPayments
+  commentId: F:VEDriversLite.NeblioAccount.ReceivedPayments
+  id: ReceivedPayments
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ReceivedPayments
+  nameWithType: NeblioAccount.ReceivedPayments
+  fullName: VEDriversLite.NeblioAccount.ReceivedPayments
+  type: Field
+  source:
+    id: ReceivedPayments
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 77
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nReceived payments (means Payment NFT) of this address.\n"
+  example: []
+  syntax:
+    content: public ConcurrentDictionary<string, INFT> ReceivedPayments
+    return:
+      type: System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.NFT.INFT}
+    content.vb: Public ReceivedPayments As ConcurrentDictionary(Of String, INFT)
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.Profile
+  commentId: P:VEDriversLite.NeblioAccount.Profile
+  id: Profile
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: Profile
+  nameWithType: NeblioAccount.Profile
+  fullName: VEDriversLite.NeblioAccount.Profile
+  type: Property
+  source:
+    id: Profile
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 81
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nIf address has some profile NFT, it is founded in Utxo list and in this object.\n"
+  example: []
+  syntax:
+    content: public ProfileNFT Profile { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NFT.ProfileNFT
+    content.vb: Public Property Profile As ProfileNFT
+  overload: VEDriversLite.NeblioAccount.Profile*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.TokensSupplies
+  commentId: P:VEDriversLite.NeblioAccount.TokensSupplies
+  id: TokensSupplies
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: TokensSupplies
+  nameWithType: NeblioAccount.TokensSupplies
+  fullName: VEDriversLite.NeblioAccount.TokensSupplies
+  type: Property
+  source:
+    id: TokensSupplies
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 85
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nActual all token supplies. Consider also other tokens than VENFT.\n"
+  example: []
+  syntax:
+    content: public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.Dictionary{System.String,VEDriversLite.TokenSupplyDto}
+    content.vb: Public Property TokensSupplies As Dictionary(Of String, TokenSupplyDto)
+  overload: VEDriversLite.NeblioAccount.TokensSupplies*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.Utxos
+  commentId: P:VEDriversLite.NeblioAccount.Utxos
+  id: Utxos
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: Utxos
+  nameWithType: NeblioAccount.Utxos
+  fullName: VEDriversLite.NeblioAccount.Utxos
+  type: Property
+  source:
+    id: Utxos
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 89
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nActual list of all Utxos on this address.\n"
+  example: []
+  syntax:
+    content: public List<Utxos> Utxos { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{VEDriversLite.NeblioAPI.Utxos}
+    content.vb: Public Property Utxos As List(Of Utxos)
+  overload: VEDriversLite.NeblioAccount.Utxos*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.Bookmarks
+  commentId: P:VEDriversLite.NeblioAccount.Bookmarks
+  id: Bookmarks
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: Bookmarks
+  nameWithType: NeblioAccount.Bookmarks
+  fullName: VEDriversLite.NeblioAccount.Bookmarks
+  type: Property
+  source:
+    id: Bookmarks
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 93
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nList of all saved bookmarks. This is just realtime carrier. It need some serialization/deserialization.\n"
+  example: []
+  syntax:
+    content: public List<Bookmark> Bookmarks { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{VEDriversLite.Bookmarks.Bookmark}
+    content.vb: Public Property Bookmarks As List(Of Bookmark)
+  overload: VEDriversLite.NeblioAccount.Bookmarks*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.AddressInfo
+  commentId: P:VEDriversLite.NeblioAccount.AddressInfo
+  id: AddressInfo
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: AddressInfo
+  nameWithType: NeblioAccount.AddressInfo
+  fullName: VEDriversLite.NeblioAccount.AddressInfo
+  type: Property
+  source:
+    id: AddressInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 97
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nActual loaded address info. It has inside list of all transactions.\n"
+  example: []
+  syntax:
+    content: public GetAddressResponse AddressInfo { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NeblioAPI.GetAddressResponse
+    content.vb: Public Property AddressInfo As GetAddressResponse
+  overload: VEDriversLite.NeblioAccount.AddressInfo*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.AddressInfoUtxos
+  commentId: P:VEDriversLite.NeblioAccount.AddressInfoUtxos
+  id: AddressInfoUtxos
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: AddressInfoUtxos
+  nameWithType: NeblioAccount.AddressInfoUtxos
+  fullName: VEDriversLite.NeblioAccount.AddressInfoUtxos
+  type: Property
+  source:
+    id: AddressInfoUtxos
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 101
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nActual loaded address info with list of Utxos. When utxos are loaded first, this is just fill with it to prevent not necessary API request.\n"
+  example: []
+  syntax:
+    content: public GetAddressInfoResponse AddressInfoUtxos { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NeblioAPI.GetAddressInfoResponse
+    content.vb: Public Property AddressInfoUtxos As GetAddressInfoResponse
+  overload: VEDriversLite.NeblioAccount.AddressInfoUtxos*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.Refreshed
+  commentId: E:VEDriversLite.NeblioAccount.Refreshed
+  id: Refreshed
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: Refreshed
+  nameWithType: NeblioAccount.Refreshed
+  fullName: VEDriversLite.NeblioAccount.Refreshed
+  type: Event
+  source:
+    id: Refreshed
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 106
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis event is called whenever info about the address is reloaded. It is periodic event.\n"
+  example: []
+  syntax:
+    content: public event EventHandler Refreshed
+    return:
+      type: System.EventHandler
+    content.vb: Public Event Refreshed As EventHandler
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.NewEventInfo
+  commentId: E:VEDriversLite.NeblioAccount.NewEventInfo
+  id: NewEventInfo
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: NewEventInfo
+  nameWithType: NeblioAccount.NewEventInfo
+  fullName: VEDriversLite.NeblioAccount.NewEventInfo
+  type: Event
+  source:
+    id: NewEventInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 110
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis event is called whenever some important thing happen. You can obtain success, error and info messages.\n"
+  example: []
+  syntax:
+    content: public event EventHandler<IEventInfo> NewEventInfo
+    return:
+      type: System.EventHandler{VEDriversLite.Events.IEventInfo}
+    content.vb: Public Event NewEventInfo As EventHandler(Of IEventInfo)
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.AccountKey
+  commentId: P:VEDriversLite.NeblioAccount.AccountKey
+  id: AccountKey
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: AccountKey
+  nameWithType: NeblioAccount.AccountKey
+  fullName: VEDriversLite.NeblioAccount.AccountKey
+  type: Property
+  source:
+    id: AccountKey
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 115
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nCarrier for encrypted private key from storage and its password.\n"
+  example: []
+  syntax:
+    content: >-
+      [JsonIgnore]
+
+      public EncryptionKey AccountKey { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.Security.EncryptionKey
+    content.vb: >-
+      <JsonIgnore>
+
+      Public Property AccountKey As EncryptionKey
+  overload: VEDriversLite.NeblioAccount.AccountKey*
+  attributes:
+  - type: Newtonsoft.Json.JsonIgnoreAttribute
+    ctor: Newtonsoft.Json.JsonIgnoreAttribute.#ctor
+    arguments: []
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.IsLocked
+  commentId: M:VEDriversLite.NeblioAccount.IsLocked
+  id: IsLocked
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: IsLocked()
+  nameWithType: NeblioAccount.IsLocked()
+  fullName: VEDriversLite.NeblioAccount.IsLocked()
+  type: Method
+  source:
+    id: IsLocked
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 122
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will check if the account is locked or unlocked.\n"
+  example: []
+  syntax:
+    content: public bool IsLocked()
+    return:
+      type: System.Boolean
+      description: ''
+    content.vb: Public Function IsLocked As Boolean
+  overload: VEDriversLite.NeblioAccount.IsLocked*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.StartRefreshingData(System.Int32)
+  commentId: M:VEDriversLite.NeblioAccount.StartRefreshingData(System.Int32)
+  id: StartRefreshingData(System.Int32)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: StartRefreshingData(Int32)
+  nameWithType: NeblioAccount.StartRefreshingData(Int32)
+  fullName: VEDriversLite.NeblioAccount.StartRefreshingData(System.Int32)
+  type: Method
+  source:
+    id: StartRefreshingData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 241
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will load the actual data and then run the task which periodically refresh this data.\nIt doesnt have cancellation now!\n"
+  example: []
+  syntax:
+    content: public Task<string> StartRefreshingData(int interval = 3000)
+    parameters:
+    - id: interval
+      type: System.Int32
+      description: Default interval is 3000 = 3 seconds
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: ''
+    content.vb: Public Function StartRefreshingData(interval As Integer = 3000) As Task(Of String)
+  overload: VEDriversLite.NeblioAccount.StartRefreshingData*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.CreateNewAccount(System.String,System.Boolean)
+  commentId: M:VEDriversLite.NeblioAccount.CreateNewAccount(System.String,System.Boolean)
+  id: CreateNewAccount(System.String,System.Boolean)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: CreateNewAccount(String, Boolean)
+  nameWithType: NeblioAccount.CreateNewAccount(String, Boolean)
+  fullName: VEDriversLite.NeblioAccount.CreateNewAccount(System.String, System.Boolean)
+  type: Method
+  source:
+    id: CreateNewAccount
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 321
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will create new account - Neblio address and its Private key.\n"
+  example: []
+  syntax:
+    content: public Task<bool> CreateNewAccount(string password, bool saveToFile = false)
+    parameters:
+    - id: password
+      type: System.String
+      description: Input password, which will encrypt the Private key
+    - id: saveToFile
+      type: System.Boolean
+      description: if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt
+    return:
+      type: System.Threading.Tasks.Task{System.Boolean}
+      description: ''
+    content.vb: Public Function CreateNewAccount(password As String, saveToFile As Boolean = False) As Task(Of Boolean)
+  overload: VEDriversLite.NeblioAccount.CreateNewAccount*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.LoadAccount(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.LoadAccount(System.String)
+  id: LoadAccount(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: LoadAccount(String)
+  nameWithType: NeblioAccount.LoadAccount(String)
+  fullName: VEDriversLite.NeblioAccount.LoadAccount(System.String)
+  type: Method
+  source:
+    id: LoadAccount
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 370
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nLoad account from &quot;key.txt&quot; file placed in the root exe directory. Doesnt work in WABS\n"
+  example: []
+  syntax:
+    content: public Task<bool> LoadAccount(string password)
+    parameters:
+    - id: password
+      type: System.String
+      description: Passwotd to decrypt the loaded private key
+    return:
+      type: System.Threading.Tasks.Task{System.Boolean}
+      description: ''
+    content.vb: Public Function LoadAccount(password As String) As Task(Of Boolean)
+  overload: VEDriversLite.NeblioAccount.LoadAccount*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String)
+  commentId: M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String)
+  id: LoadAccount(System.String,System.String,System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: LoadAccount(String, String, String)
+  nameWithType: NeblioAccount.LoadAccount(String, String, String)
+  fullName: VEDriversLite.NeblioAccount.LoadAccount(System.String, System.String, System.String)
+  type: Method
+  source:
+    id: LoadAccount
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 411
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nLoad account from password, input encrypted private key and address.\nIt expect the private key is encrypted by the password.\nIt uses AES encryption\n"
+  example: []
+  syntax:
+    content: public Task<bool> LoadAccount(string password, string encryptedKey, string address)
+    parameters:
+    - id: password
+      type: System.String
+      description: ''
+    - id: encryptedKey
+      type: System.String
+      description: ''
+    - id: address
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.Boolean}
+      description: ''
+    content.vb: Public Function LoadAccount(password As String, encryptedKey As String, address As String) As Task(Of Boolean)
+  overload: VEDriversLite.NeblioAccount.LoadAccount*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.LoadBookmarks(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.LoadBookmarks(System.String)
+  id: LoadBookmarks(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: LoadBookmarks(String)
+  nameWithType: NeblioAccount.LoadBookmarks(String)
+  fullName: VEDriversLite.NeblioAccount.LoadBookmarks(System.String)
+  type: Method
+  source:
+    id: LoadBookmarks
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 444
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nLoad bookmarks from previous serialized list of bookmarks. \n"
+  example: []
+  syntax:
+    content: public Task LoadBookmarks(string bookmarks)
+    parameters:
+    - id: bookmarks
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task
+      description: ''
+    content.vb: Public Function LoadBookmarks(bookmarks As String) As Task
+  overload: VEDriversLite.NeblioAccount.LoadBookmarks*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.AddBookmark(System.String,System.String,System.String)
+  commentId: M:VEDriversLite.NeblioAccount.AddBookmark(System.String,System.String,System.String)
+  id: AddBookmark(System.String,System.String,System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: AddBookmark(String, String, String)
+  nameWithType: NeblioAccount.AddBookmark(String, String, String)
+  fullName: VEDriversLite.NeblioAccount.AddBookmark(System.String, System.String, System.String)
+  type: Method
+  source:
+    id: AddBookmark
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 465
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nAdd new bookmark to bookmark list and return serialized list for save\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> AddBookmark(string name, string address, string note)
+    parameters:
+    - id: name
+      type: System.String
+      description: Name of the bookmark. It is important for most functions which work with the bookmarks
+    - id: address
+      type: System.String
+      description: Neblio Address
+    - id: note
+      type: System.String
+      description: optional note
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: Serialized list in string for save
+    content.vb: Public Function AddBookmark(name As String, address As String, note As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.AddBookmark*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.RemoveBookmark(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.RemoveBookmark(System.String)
+  id: RemoveBookmark(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: RemoveBookmark(String)
+  nameWithType: NeblioAccount.RemoveBookmark(String)
+  fullName: VEDriversLite.NeblioAccount.RemoveBookmark(System.String)
+  type: Method
+  source:
+    id: RemoveBookmark
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 493
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nRemove bookmark by the neblio address. It must be found in the bookmark list\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> RemoveBookmark(string address)
+    parameters:
+    - id: address
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: Serialized list in string for save
+    content.vb: Public Function RemoveBookmark(address As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.RemoveBookmark*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.SerializeBookmarks
+  commentId: M:VEDriversLite.NeblioAccount.SerializeBookmarks
+  id: SerializeBookmarks
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: SerializeBookmarks()
+  nameWithType: NeblioAccount.SerializeBookmarks()
+  fullName: VEDriversLite.NeblioAccount.SerializeBookmarks()
+  type: Method
+  source:
+    id: SerializeBookmarks
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 515
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nGet serialized bookmarks list as string\n"
+  example: []
+  syntax:
+    content: public Task<string> SerializeBookmarks()
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: ''
+    content.vb: Public Function SerializeBookmarks As Task(Of String)
+  overload: VEDriversLite.NeblioAccount.SerializeBookmarks*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.IsInTheBookmarks(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.IsInTheBookmarks(System.String)
+  id: IsInTheBookmarks(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: IsInTheBookmarks(String)
+  nameWithType: NeblioAccount.IsInTheBookmarks(String)
+  fullName: VEDriversLite.NeblioAccount.IsInTheBookmarks(System.String)
+  type: Method
+  source:
+    id: IsInTheBookmarks
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 525
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nCheck if the address is already in the bookmarks and return this bookmark\n"
+  example: []
+  syntax:
+    content: public Task<(bool, Bookmark)> IsInTheBookmarks(string address)
+    parameters:
+    - id: address
+      type: System.String
+      description: Address which should be in the bookmarks
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,VEDriversLite.Bookmarks.Bookmark}}
+      description: true and bookmark class if exists
+    content.vb: Public Function IsInTheBookmarks(address As String) As Task(Of(Boolean, Bookmark))
+  overload: VEDriversLite.NeblioAccount.IsInTheBookmarks*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.LoadTabs(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.LoadTabs(System.String)
+  id: LoadTabs(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: LoadTabs(String)
+  nameWithType: NeblioAccount.LoadTabs(String)
+  fullName: VEDriversLite.NeblioAccount.LoadTabs(System.String)
+  type: Method
+  source:
+    id: LoadTabs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 543
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nLoad tabs from previous serialized string.\n"
+  example: []
+  syntax:
+    content: public Task<string> LoadTabs(string tabs)
+    parameters:
+    - id: tabs
+      type: System.String
+      description: List of ActiveTabs as json string
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: ''
+    content.vb: Public Function LoadTabs(tabs As String) As Task(Of String)
+  overload: VEDriversLite.NeblioAccount.LoadTabs*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.AddTab(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.AddTab(System.String)
+  id: AddTab(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: AddTab(String)
+  nameWithType: NeblioAccount.AddTab(String)
+  fullName: VEDriversLite.NeblioAccount.AddTab(System.String)
+  type: Method
+  source:
+    id: AddTab
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 584
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nAdd new tab based on some Neblio address\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> AddTab(string address)
+    parameters:
+    - id: address
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: true and string with serialized tabs list as json string
+    content.vb: Public Function AddTab(address As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.AddTab*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.RemoveTab(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.RemoveTab(System.String)
+  id: RemoveTab(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: RemoveTab(String)
+  nameWithType: NeblioAccount.RemoveTab(String)
+  fullName: VEDriversLite.NeblioAccount.RemoveTab(System.String)
+  type: Method
+  source:
+    id: RemoveTab
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 613
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nRemove tab by Neblio address if exists in the tabs\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> RemoveTab(string address)
+    parameters:
+    - id: address
+      type: System.String
+      description: Neblio Address which tab should be removed
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: true and string with serialized tabs list as json string
+    content.vb: Public Function RemoveTab(address As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.RemoveTab*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.SelectTab(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.SelectTab(System.String)
+  id: SelectTab(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: SelectTab(String)
+  nameWithType: NeblioAccount.SelectTab(String)
+  fullName: VEDriversLite.NeblioAccount.SelectTab(System.String)
+  type: Method
+  source:
+    id: SelectTab
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 630
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public Task SelectTab(string address)
+    parameters:
+    - id: address
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function SelectTab(address As String) As Task
+  overload: VEDriversLite.NeblioAccount.SelectTab*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.SerializeTabs
+  commentId: M:VEDriversLite.NeblioAccount.SerializeTabs
+  id: SerializeTabs
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: SerializeTabs()
+  nameWithType: NeblioAccount.SerializeTabs()
+  fullName: VEDriversLite.NeblioAccount.SerializeTabs()
+  type: Method
+  source:
+    id: SerializeTabs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 645
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nReturn serialized list of ActiveTabs as Json stirng\n"
+  example: []
+  syntax:
+    content: public Task<string> SerializeTabs()
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+      description: ''
+    content.vb: Public Function SerializeTabs As Task(Of String)
+  overload: VEDriversLite.NeblioAccount.SerializeTabs*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ReloadTokenSupply
+  commentId: M:VEDriversLite.NeblioAccount.ReloadTokenSupply
+  id: ReloadTokenSupply
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ReloadTokenSupply()
+  nameWithType: NeblioAccount.ReloadTokenSupply()
+  fullName: VEDriversLite.NeblioAccount.ReloadTokenSupply()
+  type: Method
+  source:
+    id: ReloadTokenSupply
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 656
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nReload actual token supplies based on already loaded list of address utxos\n"
+  example: []
+  syntax:
+    content: public Task ReloadTokenSupply()
+    return:
+      type: System.Threading.Tasks.Task
+      description: ''
+    content.vb: Public Function ReloadTokenSupply As Task
+  overload: VEDriversLite.NeblioAccount.ReloadTokenSupply*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ReloadCountOfNFTs
+  commentId: M:VEDriversLite.NeblioAccount.ReloadCountOfNFTs
+  id: ReloadCountOfNFTs
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ReloadCountOfNFTs()
+  nameWithType: NeblioAccount.ReloadCountOfNFTs()
+  fullName: VEDriversLite.NeblioAccount.ReloadCountOfNFTs()
+  type: Method
+  source:
+    id: ReloadCountOfNFTs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 665
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nReload actual count of the NFTs based on already loaded list of address utxos\n"
+  example: []
+  syntax:
+    content: public Task ReloadCountOfNFTs()
+    return:
+      type: System.Threading.Tasks.Task
+      description: ''
+    content.vb: Public Function ReloadCountOfNFTs As Task
+  overload: VEDriversLite.NeblioAccount.ReloadCountOfNFTs*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ReloadMintingSupply
+  commentId: M:VEDriversLite.NeblioAccount.ReloadMintingSupply
+  id: ReloadMintingSupply
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ReloadMintingSupply()
+  nameWithType: NeblioAccount.ReloadMintingSupply()
+  fullName: VEDriversLite.NeblioAccount.ReloadMintingSupply()
+  type: Method
+  source:
+    id: ReloadMintingSupply
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 676
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nReload actual VENFT minting supply based on already loaded list of address utxos\n"
+  example: []
+  syntax:
+    content: public Task ReloadMintingSupply()
+    return:
+      type: System.Threading.Tasks.Task
+      description: ''
+    content.vb: Public Function ReloadMintingSupply As Task
+  overload: VEDriversLite.NeblioAccount.ReloadMintingSupply*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ReloadUtxos
+  commentId: M:VEDriversLite.NeblioAccount.ReloadUtxos
+  id: ReloadUtxos
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ReloadUtxos()
+  nameWithType: NeblioAccount.ReloadUtxos()
+  fullName: VEDriversLite.NeblioAccount.ReloadUtxos()
+  type: Method
+  source:
+    id: ReloadUtxos
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 687
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nReload address Utxos list. It will sort descending the utxos based on the utxos time stamps.\n"
+  example: []
+  syntax:
+    content: public Task ReloadUtxos()
+    return:
+      type: System.Threading.Tasks.Task
+      description: ''
+    content.vb: Public Function ReloadUtxos As Task
+  overload: VEDriversLite.NeblioAccount.ReloadUtxos*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ReloadAccountInfo
+  commentId: M:VEDriversLite.NeblioAccount.ReloadAccountInfo
+  id: ReloadAccountInfo
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ReloadAccountInfo()
+  nameWithType: NeblioAccount.ReloadAccountInfo()
+  fullName: VEDriversLite.NeblioAccount.ReloadAccountInfo()
+  type: Method
+  source:
+    id: ReloadAccountInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 720
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will load actual address info an adress utxos. It is used mainly for loading list of all transactions.\n"
+  example: []
+  syntax:
+    content: public Task ReloadAccountInfo()
+    return:
+      type: System.Threading.Tasks.Task
+      description: ''
+    content.vb: Public Function ReloadAccountInfo As Task
+  overload: VEDriversLite.NeblioAccount.ReloadAccountInfo*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ReLoadNFTs
+  commentId: M:VEDriversLite.NeblioAccount.ReLoadNFTs
+  id: ReLoadNFTs
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ReLoadNFTs()
+  nameWithType: NeblioAccount.ReLoadNFTs()
+  fullName: VEDriversLite.NeblioAccount.ReLoadNFTs()
+  type: Method
+  source:
+    id: ReLoadNFTs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 742
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will reload changes in the NFTs list based on provided list of already loaded utxos.\n"
+  example: []
+  syntax:
+    content: public Task ReLoadNFTs()
+    return:
+      type: System.Threading.Tasks.Task
+      description: ''
+    content.vb: Public Function ReLoadNFTs As Task
+  overload: VEDriversLite.NeblioAccount.ReLoadNFTs*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.RefreshAddressReceivedPayments
+  commentId: M:VEDriversLite.NeblioAccount.RefreshAddressReceivedPayments
+  id: RefreshAddressReceivedPayments
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: RefreshAddressReceivedPayments()
+  nameWithType: NeblioAccount.RefreshAddressReceivedPayments()
+  fullName: VEDriversLite.NeblioAccount.RefreshAddressReceivedPayments()
+  type: Method
+  source:
+    id: RefreshAddressReceivedPayments
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 754
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. \nThis list is cleared at the start of this function\n"
+  example: []
+  syntax:
+    content: public Task RefreshAddressReceivedPayments()
+    return:
+      type: System.Threading.Tasks.Task
+      description: ''
+    content.vb: Public Function RefreshAddressReceivedPayments As Task
+  overload: VEDriversLite.NeblioAccount.RefreshAddressReceivedPayments*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.CheckPayments
+  commentId: M:VEDriversLite.NeblioAccount.CheckPayments
+  id: CheckPayments
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: CheckPayments()
+  nameWithType: NeblioAccount.CheckPayments()
+  fullName: VEDriversLite.NeblioAccount.CheckPayments()
+  type: Method
+  source:
+    id: CheckPayments
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 772
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will check payments and try to find them complementary NFT which was sold. \nIf there is price mathc and enough of confirmations it will try to send NFT to new owner.\n"
+  example: []
+  syntax:
+    content: public Task CheckPayments()
+    return:
+      type: System.Threading.Tasks.Task
+      description: ''
+    content.vb: Public Function CheckPayments As Task
+  overload: VEDriversLite.NeblioAccount.CheckPayments*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.HasSomeSpendableNeblio(System.Double)
+  commentId: M:VEDriversLite.NeblioAccount.HasSomeSpendableNeblio(System.Double)
+  id: HasSomeSpendableNeblio(System.Double)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: HasSomeSpendableNeblio(Double)
+  nameWithType: NeblioAccount.HasSomeSpendableNeblio(Double)
+  fullName: VEDriversLite.NeblioAccount.HasSomeSpendableNeblio(System.Double)
+  type: Method
+  source:
+    id: HasSomeSpendableNeblio
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 808
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will check if the address has some spendable neblio for transaction.\n"
+  example: []
+  syntax:
+    content: public Task<(bool, double)> HasSomeSpendableNeblio(double amount = 0.0002)
+    parameters:
+    - id: amount
+      type: System.Double
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.Double}}
+      description: ''
+    content.vb: Public Function HasSomeSpendableNeblio(amount As Double = 0.0002) As Task(Of(Boolean, Double))
+  overload: VEDriversLite.NeblioAccount.HasSomeSpendableNeblio*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.HasSomeSourceForMinting
+  commentId: M:VEDriversLite.NeblioAccount.HasSomeSourceForMinting
+  id: HasSomeSourceForMinting
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: HasSomeSourceForMinting()
+  nameWithType: NeblioAccount.HasSomeSourceForMinting()
+  fullName: VEDriversLite.NeblioAccount.HasSomeSourceForMinting()
+  type: Method
+  source:
+    id: HasSomeSourceForMinting
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 832
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will check if the address has some spendable VENFT tokens for minting. \n"
+  example: []
+  syntax:
+    content: public Task<(bool, int)> HasSomeSourceForMinting()
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.Int32}}
+      description: ''
+    content.vb: Public Function HasSomeSourceForMinting As Task(Of(Boolean, Integer))
+  overload: VEDriversLite.NeblioAccount.HasSomeSourceForMinting*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ValidateNFTUtxo(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.ValidateNFTUtxo(System.String)
+  id: ValidateNFTUtxo(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ValidateNFTUtxo(String)
+  nameWithType: NeblioAccount.ValidateNFTUtxo(String)
+  fullName: VEDriversLite.NeblioAccount.ValidateNFTUtxo(System.String)
+  type: Method
+  source:
+    id: ValidateNFTUtxo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 855
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will validate if the NFT of this address is spendable\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> ValidateNFTUtxo(string utxo)
+    parameters:
+    - id: utxo
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function ValidateNFTUtxo(utxo As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.ValidateNFTUtxo*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.CheckSpendableNeblio(System.Double)
+  commentId: M:VEDriversLite.NeblioAccount.CheckSpendableNeblio(System.Double)
+  id: CheckSpendableNeblio(System.Double)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: CheckSpendableNeblio(Double)
+  nameWithType: NeblioAccount.CheckSpendableNeblio(Double)
+  fullName: VEDriversLite.NeblioAccount.CheckSpendableNeblio(System.Double)
+  type: Method
+  source:
+    id: CheckSpendableNeblio
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 872
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will check if there is some spendable neblio of specific amount and returns list of the utxos for the transaction\n"
+  example: []
+  syntax:
+    content: public Task<(string, ICollection<Utxos>)> CheckSpendableNeblio(double amount)
+    parameters:
+    - id: amount
+      type: System.Double
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}}}
+      description: ''
+    content.vb: Public Function CheckSpendableNeblio(amount As Double) As Task(Of(String, ICollection(Of Utxos)))
+  overload: VEDriversLite.NeblioAccount.CheckSpendableNeblio*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.CheckSpendableNeblioTokens(System.String,System.Int32)
+  commentId: M:VEDriversLite.NeblioAccount.CheckSpendableNeblioTokens(System.String,System.Int32)
+  id: CheckSpendableNeblioTokens(System.String,System.Int32)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: CheckSpendableNeblioTokens(String, Int32)
+  nameWithType: NeblioAccount.CheckSpendableNeblioTokens(String, Int32)
+  fullName: VEDriversLite.NeblioAccount.CheckSpendableNeblioTokens(System.String, System.Int32)
+  type: Method
+  source:
+    id: CheckSpendableNeblioTokens
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 894
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will check if there is some spendable tokens of specific Id and amount and returns list of the utxos for the transaction.\n"
+  example: []
+  syntax:
+    content: public Task<(string, ICollection<Utxos>)> CheckSpendableNeblioTokens(string id, int amount)
+    parameters:
+    - id: id
+      type: System.String
+      description: ''
+    - id: amount
+      type: System.Int32
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}}}
+      description: ''
+    content.vb: Public Function CheckSpendableNeblioTokens(id As String, amount As Integer) As Task(Of(String, ICollection(Of Utxos)))
+  overload: VEDriversLite.NeblioAccount.CheckSpendableNeblioTokens*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.OrderSourceTokens(System.Double)
+  commentId: M:VEDriversLite.NeblioAccount.OrderSourceTokens(System.Double)
+  id: OrderSourceTokens(System.Double)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: OrderSourceTokens(Double)
+  nameWithType: NeblioAccount.OrderSourceTokens(Double)
+  fullName: VEDriversLite.NeblioAccount.OrderSourceTokens(System.Double)
+  type: Method
+  source:
+    id: OrderSourceTokens
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 915
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will send request for 100 VENFT tokens. It can be process by sending 1 NEBL to specific project address.\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> OrderSourceTokens(double amount = 1)
+    parameters:
+    - id: amount
+      type: System.Double
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function OrderSourceTokens(amount As Double = 1) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.OrderSourceTokens*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.SendNeblioPayment(System.String,System.Double)
+  commentId: M:VEDriversLite.NeblioAccount.SendNeblioPayment(System.String,System.Double)
+  id: SendNeblioPayment(System.String,System.Double)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: SendNeblioPayment(String, Double)
+  nameWithType: NeblioAccount.SendNeblioPayment(String, Double)
+  fullName: VEDriversLite.NeblioAccount.SendNeblioPayment(System.String, System.Double)
+  type: Method
+  source:
+    id: SendNeblioPayment
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 926
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nSend classic neblio payment\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> SendNeblioPayment(string receiver, double amount)
+    parameters:
+    - id: receiver
+      type: System.String
+      description: Receiver Neblio Address
+    - id: amount
+      type: System.Double
+      description: Ammount in Neblio
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function SendNeblioPayment(receiver As String, amount As Double) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.SendNeblioPayment*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.SendNeblioTokenPayment(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)
+  commentId: M:VEDriversLite.NeblioAccount.SendNeblioTokenPayment(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)
+  id: SendNeblioTokenPayment(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: SendNeblioTokenPayment(String, IDictionary<String, String>, String, Int32)
+  nameWithType: NeblioAccount.SendNeblioTokenPayment(String, IDictionary<String, String>, String, Int32)
+  fullName: VEDriversLite.NeblioAccount.SendNeblioTokenPayment(System.String, System.Collections.Generic.IDictionary<System.String, System.String>, System.String, System.Int32)
+  type: Method
+  source:
+    id: SendNeblioTokenPayment
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 976
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nSend classic token payment. It must match same requirements as minting. It cannot use 1 token inputs (NFTs).\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> SendNeblioTokenPayment(string tokenId, IDictionary<string, string> metadata, string receiver, int amount)
+    parameters:
+    - id: tokenId
+      type: System.String
+      description: Token Id hash
+    - id: metadata
+      type: System.Collections.Generic.IDictionary{System.String,System.String}
+      description: Custom metadata
+    - id: receiver
+      type: System.String
+      description: Receiver Neblio address
+    - id: amount
+      type: System.Int32
+      description: Amount of the tokens
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function SendNeblioTokenPayment(tokenId As String, metadata As IDictionary(Of String, String), receiver As String, amount As Integer) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.SendNeblioTokenPayment*
+  nameWithType.vb: NeblioAccount.SendNeblioTokenPayment(String, IDictionary(Of String, String), String, Int32)
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+  fullName.vb: VEDriversLite.NeblioAccount.SendNeblioTokenPayment(System.String, System.Collections.Generic.IDictionary(Of System.String, System.String), System.String, System.Int32)
+  name.vb: SendNeblioTokenPayment(String, IDictionary(Of String, String), String, Int32)
+- uid: VEDriversLite.NeblioAccount.MintNFT(System.String,VEDriversLite.NFT.INFT)
+  commentId: M:VEDriversLite.NeblioAccount.MintNFT(System.String,VEDriversLite.NFT.INFT)
+  id: MintNFT(System.String,VEDriversLite.NFT.INFT)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: MintNFT(String, INFT)
+  nameWithType: NeblioAccount.MintNFT(String, INFT)
+  fullName: VEDriversLite.NeblioAccount.MintNFT(System.String, VEDriversLite.NFT.INFT)
+  type: Method
+  source:
+    id: MintNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1032
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nMint new NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> MintNFT(string tokenId, INFT NFT)
+    parameters:
+    - id: tokenId
+      type: System.String
+      description: ''
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: Input carrier of NFT data. It must specify the type
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function MintNFT(tokenId As String, NFT As INFT) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.MintNFT*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.MintMultiNFT(System.String,VEDriversLite.NFT.INFT,System.Int32)
+  commentId: M:VEDriversLite.NeblioAccount.MintMultiNFT(System.String,VEDriversLite.NFT.INFT,System.Int32)
+  id: MintMultiNFT(System.String,VEDriversLite.NFT.INFT,System.Int32)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: MintMultiNFT(String, INFT, Int32)
+  nameWithType: NeblioAccount.MintMultiNFT(String, INFT, Int32)
+  fullName: VEDriversLite.NeblioAccount.MintMultiNFT(System.String, VEDriversLite.NFT.INFT, System.Int32)
+  type: Method
+  source:
+    id: MintMultiNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1098
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nMint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> MintMultiNFT(string tokenId, INFT NFT, int coppies)
+    parameters:
+    - id: tokenId
+      type: System.String
+      description: ''
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: Input carrier of NFT data. It must specify the type
+    - id: coppies
+      type: System.Int32
+      description: Number of coppies. 1 coppy means 2 final NFTs
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function MintMultiNFT(tokenId As String, NFT As INFT, coppies As Integer) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.MintMultiNFT*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ChangeProfileNFT(VEDriversLite.NFT.INFT)
+  commentId: M:VEDriversLite.NeblioAccount.ChangeProfileNFT(VEDriversLite.NFT.INFT)
+  id: ChangeProfileNFT(VEDriversLite.NFT.INFT)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ChangeProfileNFT(INFT)
+  nameWithType: NeblioAccount.ChangeProfileNFT(INFT)
+  fullName: VEDriversLite.NeblioAccount.ChangeProfileNFT(VEDriversLite.NFT.INFT)
+  type: Method
+  source:
+    id: ChangeProfileNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1159
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will change profile NFT. It need as input previous loaded Profile NFT.\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> ChangeProfileNFT(INFT NFT)
+    parameters:
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function ChangeProfileNFT(NFT As INFT) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.ChangeProfileNFT*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.ChangePostNFT(VEDriversLite.NFT.INFT)
+  commentId: M:VEDriversLite.NeblioAccount.ChangePostNFT(VEDriversLite.NFT.INFT)
+  id: ChangePostNFT(VEDriversLite.NFT.INFT)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: ChangePostNFT(INFT)
+  nameWithType: NeblioAccount.ChangePostNFT(INFT)
+  fullName: VEDriversLite.NeblioAccount.ChangePostNFT(VEDriversLite.NFT.INFT)
+  type: Method
+  source:
+    id: ChangePostNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1207
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nChange Post NEFt. It requeires previous loadedPost NFT as input.\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> ChangePostNFT(INFT NFT)
+    parameters:
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function ChangePostNFT(NFT As INFT) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.ChangePostNFT*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.SendNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double)
+  commentId: M:VEDriversLite.NeblioAccount.SendNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double)
+  id: SendNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: SendNFT(String, INFT, Boolean, Double)
+  nameWithType: NeblioAccount.SendNFT(String, INFT, Boolean, Double)
+  fullName: VEDriversLite.NeblioAccount.SendNFT(System.String, VEDriversLite.NFT.INFT, System.Boolean, System.Double)
+  type: Method
+  source:
+    id: SendNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1256
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nSend input NFT to new owner, or use it just for price write and resend it to yourself with new metadata about the price.\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite, double price)
+    parameters:
+    - id: receiver
+      type: System.String
+      description: If the pricewrite is set, this is filled with own address
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: ''
+    - id: priceWrite
+      type: System.Boolean
+      description: Set this if you need to just write the price to the NFT
+    - id: price
+      type: System.Double
+      description: Price must be bigger than 0.0002 NEBL
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function SendNFT(receiver As String, NFT As INFT, priceWrite As Boolean, price As Double) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.SendNFT*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.SendNFTPayment(System.String,VEDriversLite.NFT.INFT)
+  commentId: M:VEDriversLite.NeblioAccount.SendNFTPayment(System.String,VEDriversLite.NFT.INFT)
+  id: SendNFTPayment(System.String,VEDriversLite.NFT.INFT)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: SendNFTPayment(String, INFT)
+  nameWithType: NeblioAccount.SendNFTPayment(String, INFT)
+  fullName: VEDriversLite.NeblioAccount.SendNFTPayment(System.String, VEDriversLite.NFT.INFT)
+  type: Method
+  source:
+    id: SendNFTPayment
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1309
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nThis function will send payment for some specific NFT which is from foreign address.\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> SendNFTPayment(string receiver, INFT NFT)
+    parameters:
+    - id: receiver
+      type: System.String
+      description: Receiver - owner of the NFT
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+      description: NFT what you want to buy
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function SendNFTPayment(receiver As String, NFT As INFT) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.SendNFTPayment*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.SignMessage(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.SignMessage(System.String)
+  id: SignMessage(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: SignMessage(String)
+  nameWithType: NeblioAccount.SignMessage(String)
+  fullName: VEDriversLite.NeblioAccount.SignMessage(System.String)
+  type: Method
+  source:
+    id: SignMessage
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1355
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nSign custom message with use of account Private Key\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> SignMessage(string message)
+    parameters:
+    - id: message
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function SignMessage(message As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.SignMessage*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.VerifyMessage(System.String,System.String,System.String)
+  commentId: M:VEDriversLite.NeblioAccount.VerifyMessage(System.String,System.String,System.String)
+  id: VerifyMessage(System.String,System.String,System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: VerifyMessage(String, String, String)
+  nameWithType: NeblioAccount.VerifyMessage(String, String, String)
+  fullName: VEDriversLite.NeblioAccount.VerifyMessage(System.String, System.String, System.String)
+  type: Method
+  source:
+    id: VerifyMessage
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1373
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nVerify message which was signed by some address.\n"
+  example: []
+  syntax:
+    content: public Task<(bool, string)> VerifyMessage(string message, string signature, string address)
+    parameters:
+    - id: message
+      type: System.String
+      description: Input message
+    - id: signature
+      type: System.String
+      description: Signature of this message created by owner of some address.
+    - id: address
+      type: System.String
+      description: Neblio address which should sign the message and should be verified.
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+      description: ''
+    content.vb: Public Function VerifyMessage(message As String, signature As String, address As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NeblioAccount.VerifyMessage*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.GetNFTVerifyCode(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.GetNFTVerifyCode(System.String)
+  id: GetNFTVerifyCode(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: GetNFTVerifyCode(String)
+  nameWithType: NeblioAccount.GetNFTVerifyCode(String)
+  fullName: VEDriversLite.NeblioAccount.GetNFTVerifyCode(System.String)
+  type: Method
+  source:
+    id: GetNFTVerifyCode
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1388
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nObtain verify code of some transaction. This will combine txid and UTC time (rounded to minutes) and sign with the private key.\nIt will create unique code, which can be verified and it is valid just one minute.\n"
+  example: []
+  syntax:
+    content: public Task<OwnershipVerificationCodeDto> GetNFTVerifyCode(string txid)
+    parameters:
+    - id: txid
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationCodeDto}
+      description: ''
+    content.vb: Public Function GetNFTVerifyCode(txid As String) As Task(Of OwnershipVerificationCodeDto)
+  overload: VEDriversLite.NeblioAccount.GetNFTVerifyCode*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAccount.GetNFTVerifyQRCode(System.String)
+  commentId: M:VEDriversLite.NeblioAccount.GetNFTVerifyQRCode(System.String)
+  id: GetNFTVerifyQRCode(System.String)
+  parent: VEDriversLite.NeblioAccount
+  langs:
+  - csharp
+  - vb
+  name: GetNFTVerifyQRCode(String)
+  nameWithType: NeblioAccount.GetNFTVerifyQRCode(String)
+  fullName: VEDriversLite.NeblioAccount.GetNFTVerifyQRCode(System.String)
+  type: Method
+  source:
+    id: GetNFTVerifyQRCode
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAccount.cs
+    startLine: 1401
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nVerification function for the NFT ownership code generated by GetNFTVerifyCode function.\n"
+  example: []
+  syntax:
+    content: public Task<(OwnershipVerificationCodeDto, byte[])> GetNFTVerifyQRCode(string txid)
+    parameters:
+    - id: txid
+      type: System.String
+      description: ''
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{VEDriversLite.NFT.OwnershipVerificationCodeDto,System.Byte[]}}
+      description: ''
+    content.vb: Public Function GetNFTVerifyQRCode(txid As String) As Task(Of(OwnershipVerificationCodeDto, Byte()))
+  overload: VEDriversLite.NeblioAccount.GetNFTVerifyQRCode*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite
+  commentId: N:VEDriversLite
+  name: VEDriversLite
+  nameWithType: VEDriversLite
+  fullName: VEDriversLite
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.NeblioAccount.#ctor*
+  commentId: Overload:VEDriversLite.NeblioAccount.#ctor
+  name: NeblioAccount
+  nameWithType: NeblioAccount.NeblioAccount
+  fullName: VEDriversLite.NeblioAccount.NeblioAccount
+- uid: VEDriversLite.NeblioAccount.Address*
+  commentId: Overload:VEDriversLite.NeblioAccount.Address
+  name: Address
+  nameWithType: NeblioAccount.Address
+  fullName: VEDriversLite.NeblioAccount.Address
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.NeblioAccount.Secret*
+  commentId: Overload:VEDriversLite.NeblioAccount.Secret
+  name: Secret
+  nameWithType: NeblioAccount.Secret
+  fullName: VEDriversLite.NeblioAccount.Secret
+- uid: NBitcoin.BitcoinSecret
+  commentId: T:NBitcoin.BitcoinSecret
+  parent: NBitcoin
+  isExternal: true
+  name: BitcoinSecret
+  nameWithType: BitcoinSecret
+  fullName: NBitcoin.BitcoinSecret
+- uid: NBitcoin
+  commentId: N:NBitcoin
+  isExternal: true
+  name: NBitcoin
+  nameWithType: NBitcoin
+  fullName: NBitcoin
+- uid: VEDriversLite.NeblioAccount.NumberOfTransaction*
+  commentId: Overload:VEDriversLite.NeblioAccount.NumberOfTransaction
+  name: NumberOfTransaction
+  nameWithType: NeblioAccount.NumberOfTransaction
+  fullName: VEDriversLite.NeblioAccount.NumberOfTransaction
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  name: Double
+  nameWithType: Double
+  fullName: System.Double
+- uid: VEDriversLite.NeblioAccount.NumberOfLoadedTransaction*
+  commentId: Overload:VEDriversLite.NeblioAccount.NumberOfLoadedTransaction
+  name: NumberOfLoadedTransaction
+  nameWithType: NeblioAccount.NumberOfLoadedTransaction
+  fullName: VEDriversLite.NeblioAccount.NumberOfLoadedTransaction
+- uid: VEDriversLite.NeblioAccount.EnoughBalanceToBuySourceTokens*
+  commentId: Overload:VEDriversLite.NeblioAccount.EnoughBalanceToBuySourceTokens
+  name: EnoughBalanceToBuySourceTokens
+  nameWithType: NeblioAccount.EnoughBalanceToBuySourceTokens
+  fullName: VEDriversLite.NeblioAccount.EnoughBalanceToBuySourceTokens
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  name: Boolean
+  nameWithType: Boolean
+  fullName: System.Boolean
+- uid: VEDriversLite.NeblioAccount.TotalBalance*
+  commentId: Overload:VEDriversLite.NeblioAccount.TotalBalance
+  name: TotalBalance
+  nameWithType: NeblioAccount.TotalBalance
+  fullName: VEDriversLite.NeblioAccount.TotalBalance
+- uid: VEDriversLite.NeblioAccount.TotalSpendableBalance*
+  commentId: Overload:VEDriversLite.NeblioAccount.TotalSpendableBalance
+  name: TotalSpendableBalance
+  nameWithType: NeblioAccount.TotalSpendableBalance
+  fullName: VEDriversLite.NeblioAccount.TotalSpendableBalance
+- uid: VEDriversLite.NeblioAccount.TotalUnconfirmedBalance*
+  commentId: Overload:VEDriversLite.NeblioAccount.TotalUnconfirmedBalance
+  name: TotalUnconfirmedBalance
+  nameWithType: NeblioAccount.TotalUnconfirmedBalance
+  fullName: VEDriversLite.NeblioAccount.TotalUnconfirmedBalance
+- uid: VEDriversLite.NeblioAccount.SourceTokensBalance*
+  commentId: Overload:VEDriversLite.NeblioAccount.SourceTokensBalance
+  name: SourceTokensBalance
+  nameWithType: NeblioAccount.SourceTokensBalance
+  fullName: VEDriversLite.NeblioAccount.SourceTokensBalance
+- uid: VEDriversLite.NeblioAccount.AddressNFTCount*
+  commentId: Overload:VEDriversLite.NeblioAccount.AddressNFTCount
+  name: AddressNFTCount
+  nameWithType: NeblioAccount.AddressNFTCount
+  fullName: VEDriversLite.NeblioAccount.AddressNFTCount
+- uid: VEDriversLite.NeblioAccount.NFTs*
+  commentId: Overload:VEDriversLite.NeblioAccount.NFTs
+  name: NFTs
+  nameWithType: NeblioAccount.NFTs
+  fullName: VEDriversLite.NeblioAccount.NFTs
+- uid: System.Collections.Generic.List{VEDriversLite.NFT.INFT}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.NFT.INFT}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<INFT>
+  nameWithType: List<INFT>
+  fullName: System.Collections.Generic.List<VEDriversLite.NFT.INFT>
+  nameWithType.vb: List(Of INFT)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.NFT.INFT)
+  name.vb: List(Of INFT)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: VEDriversLite.NeblioAccount.Tabs*
+  commentId: Overload:VEDriversLite.NeblioAccount.Tabs
+  name: Tabs
+  nameWithType: NeblioAccount.Tabs
+  fullName: VEDriversLite.NeblioAccount.Tabs
+- uid: System.Collections.Generic.List{VEDriversLite.Bookmarks.ActiveTab}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.Bookmarks.ActiveTab}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<ActiveTab>
+  nameWithType: List<ActiveTab>
+  fullName: System.Collections.Generic.List<VEDriversLite.Bookmarks.ActiveTab>
+  nameWithType.vb: List(Of ActiveTab)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.Bookmarks.ActiveTab)
+  name.vb: List(Of ActiveTab)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.Bookmarks.ActiveTab
+    name: ActiveTab
+    nameWithType: ActiveTab
+    fullName: VEDriversLite.Bookmarks.ActiveTab
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.Bookmarks.ActiveTab
+    name: ActiveTab
+    nameWithType: ActiveTab
+    fullName: VEDriversLite.Bookmarks.ActiveTab
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.NFT.INFT}
+  commentId: T:System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.NFT.INFT}
+  parent: System.Collections.Concurrent
+  definition: System.Collections.Concurrent.ConcurrentDictionary`2
+  name: ConcurrentDictionary<String, INFT>
+  nameWithType: ConcurrentDictionary<String, INFT>
+  fullName: System.Collections.Concurrent.ConcurrentDictionary<System.String, VEDriversLite.NFT.INFT>
+  nameWithType.vb: ConcurrentDictionary(Of String, INFT)
+  fullName.vb: System.Collections.Concurrent.ConcurrentDictionary(Of System.String, VEDriversLite.NFT.INFT)
+  name.vb: ConcurrentDictionary(Of String, INFT)
+  spec.csharp:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Concurrent.ConcurrentDictionary`2
+  commentId: T:System.Collections.Concurrent.ConcurrentDictionary`2
+  isExternal: true
+  name: ConcurrentDictionary<TKey, TValue>
+  nameWithType: ConcurrentDictionary<TKey, TValue>
+  fullName: System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>
+  nameWithType.vb: ConcurrentDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Concurrent.ConcurrentDictionary(Of TKey, TValue)
+  name.vb: ConcurrentDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Concurrent
+  commentId: N:System.Collections.Concurrent
+  isExternal: true
+  name: System.Collections.Concurrent
+  nameWithType: System.Collections.Concurrent
+  fullName: System.Collections.Concurrent
+- uid: VEDriversLite.NeblioAccount.Profile*
+  commentId: Overload:VEDriversLite.NeblioAccount.Profile
+  name: Profile
+  nameWithType: NeblioAccount.Profile
+  fullName: VEDriversLite.NeblioAccount.Profile
+- uid: VEDriversLite.NFT.ProfileNFT
+  commentId: T:VEDriversLite.NFT.ProfileNFT
+  parent: VEDriversLite.NFT
+  name: ProfileNFT
+  nameWithType: ProfileNFT
+  fullName: VEDriversLite.NFT.ProfileNFT
+- uid: VEDriversLite.NFT
+  commentId: N:VEDriversLite.NFT
+  name: VEDriversLite.NFT
+  nameWithType: VEDriversLite.NFT
+  fullName: VEDriversLite.NFT
+- uid: VEDriversLite.NeblioAccount.TokensSupplies*
+  commentId: Overload:VEDriversLite.NeblioAccount.TokensSupplies
+  name: TokensSupplies
+  nameWithType: NeblioAccount.TokensSupplies
+  fullName: VEDriversLite.NeblioAccount.TokensSupplies
+- uid: System.Collections.Generic.Dictionary{System.String,VEDriversLite.TokenSupplyDto}
+  commentId: T:System.Collections.Generic.Dictionary{System.String,VEDriversLite.TokenSupplyDto}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.Dictionary`2
+  name: Dictionary<String, TokenSupplyDto>
+  nameWithType: Dictionary<String, TokenSupplyDto>
+  fullName: System.Collections.Generic.Dictionary<System.String, VEDriversLite.TokenSupplyDto>
+  nameWithType.vb: Dictionary(Of String, TokenSupplyDto)
+  fullName.vb: System.Collections.Generic.Dictionary(Of System.String, VEDriversLite.TokenSupplyDto)
+  name.vb: Dictionary(Of String, TokenSupplyDto)
+  spec.csharp:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.TokenSupplyDto
+    name: TokenSupplyDto
+    nameWithType: TokenSupplyDto
+    fullName: VEDriversLite.TokenSupplyDto
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.TokenSupplyDto
+    name: TokenSupplyDto
+    nameWithType: TokenSupplyDto
+    fullName: VEDriversLite.TokenSupplyDto
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.Dictionary`2
+  commentId: T:System.Collections.Generic.Dictionary`2
+  isExternal: true
+  name: Dictionary<TKey, TValue>
+  nameWithType: Dictionary<TKey, TValue>
+  fullName: System.Collections.Generic.Dictionary<TKey, TValue>
+  nameWithType.vb: Dictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.Dictionary(Of TKey, TValue)
+  name.vb: Dictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.Utxos*
+  commentId: Overload:VEDriversLite.NeblioAccount.Utxos
+  name: Utxos
+  nameWithType: NeblioAccount.Utxos
+  fullName: VEDriversLite.NeblioAccount.Utxos
+- uid: System.Collections.Generic.List{VEDriversLite.NeblioAPI.Utxos}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.NeblioAPI.Utxos}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<Utxos>
+  nameWithType: List<Utxos>
+  fullName: System.Collections.Generic.List<VEDriversLite.NeblioAPI.Utxos>
+  nameWithType.vb: List(Of Utxos)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.NeblioAPI.Utxos)
+  name.vb: List(Of Utxos)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Utxos
+    name: Utxos
+    nameWithType: Utxos
+    fullName: VEDriversLite.NeblioAPI.Utxos
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Utxos
+    name: Utxos
+    nameWithType: Utxos
+    fullName: VEDriversLite.NeblioAPI.Utxos
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.Bookmarks*
+  commentId: Overload:VEDriversLite.NeblioAccount.Bookmarks
+  name: Bookmarks
+  nameWithType: NeblioAccount.Bookmarks
+  fullName: VEDriversLite.NeblioAccount.Bookmarks
+- uid: System.Collections.Generic.List{VEDriversLite.Bookmarks.Bookmark}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.Bookmarks.Bookmark}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<Bookmark>
+  nameWithType: List<Bookmark>
+  fullName: System.Collections.Generic.List<VEDriversLite.Bookmarks.Bookmark>
+  nameWithType.vb: List(Of Bookmark)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.Bookmarks.Bookmark)
+  name.vb: List(Of Bookmark)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.Bookmarks.Bookmark
+    name: Bookmark
+    nameWithType: Bookmark
+    fullName: VEDriversLite.Bookmarks.Bookmark
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.Bookmarks.Bookmark
+    name: Bookmark
+    nameWithType: Bookmark
+    fullName: VEDriversLite.Bookmarks.Bookmark
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.AddressInfo*
+  commentId: Overload:VEDriversLite.NeblioAccount.AddressInfo
+  name: AddressInfo
+  nameWithType: NeblioAccount.AddressInfo
+  fullName: VEDriversLite.NeblioAccount.AddressInfo
+- uid: VEDriversLite.NeblioAPI.GetAddressResponse
+  commentId: T:VEDriversLite.NeblioAPI.GetAddressResponse
+  parent: VEDriversLite.NeblioAPI
+  name: GetAddressResponse
+  nameWithType: GetAddressResponse
+  fullName: VEDriversLite.NeblioAPI.GetAddressResponse
+- uid: VEDriversLite.NeblioAPI
+  commentId: N:VEDriversLite.NeblioAPI
+  name: VEDriversLite.NeblioAPI
+  nameWithType: VEDriversLite.NeblioAPI
+  fullName: VEDriversLite.NeblioAPI
+- uid: VEDriversLite.NeblioAccount.AddressInfoUtxos*
+  commentId: Overload:VEDriversLite.NeblioAccount.AddressInfoUtxos
+  name: AddressInfoUtxos
+  nameWithType: NeblioAccount.AddressInfoUtxos
+  fullName: VEDriversLite.NeblioAccount.AddressInfoUtxos
+- uid: VEDriversLite.NeblioAPI.GetAddressInfoResponse
+  commentId: T:VEDriversLite.NeblioAPI.GetAddressInfoResponse
+  parent: VEDriversLite.NeblioAPI
+  name: GetAddressInfoResponse
+  nameWithType: GetAddressInfoResponse
+  fullName: VEDriversLite.NeblioAPI.GetAddressInfoResponse
+- uid: System.EventHandler
+  commentId: T:System.EventHandler
+  parent: System
+  isExternal: true
+  name: EventHandler
+  nameWithType: EventHandler
+  fullName: System.EventHandler
+- uid: System.EventHandler{VEDriversLite.Events.IEventInfo}
+  commentId: T:System.EventHandler{VEDriversLite.Events.IEventInfo}
+  parent: System
+  definition: System.EventHandler`1
+  name: EventHandler<IEventInfo>
+  nameWithType: EventHandler<IEventInfo>
+  fullName: System.EventHandler<VEDriversLite.Events.IEventInfo>
+  nameWithType.vb: EventHandler(Of IEventInfo)
+  fullName.vb: System.EventHandler(Of VEDriversLite.Events.IEventInfo)
+  name.vb: EventHandler(Of IEventInfo)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.Events.IEventInfo
+    name: IEventInfo
+    nameWithType: IEventInfo
+    fullName: VEDriversLite.Events.IEventInfo
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.Events.IEventInfo
+    name: IEventInfo
+    nameWithType: IEventInfo
+    fullName: VEDriversLite.Events.IEventInfo
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.EventHandler`1
+  commentId: T:System.EventHandler`1
+  isExternal: true
+  name: EventHandler<TEventArgs>
+  nameWithType: EventHandler<TEventArgs>
+  fullName: System.EventHandler<TEventArgs>
+  nameWithType.vb: EventHandler(Of TEventArgs)
+  fullName.vb: System.EventHandler(Of TEventArgs)
+  name.vb: EventHandler(Of TEventArgs)
+  spec.csharp:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TEventArgs
+    nameWithType: TEventArgs
+    fullName: TEventArgs
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.EventHandler`1
+    name: EventHandler
+    nameWithType: EventHandler
+    fullName: System.EventHandler
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TEventArgs
+    nameWithType: TEventArgs
+    fullName: TEventArgs
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.AccountKey*
+  commentId: Overload:VEDriversLite.NeblioAccount.AccountKey
+  name: AccountKey
+  nameWithType: NeblioAccount.AccountKey
+  fullName: VEDriversLite.NeblioAccount.AccountKey
+- uid: VEDriversLite.Security.EncryptionKey
+  commentId: T:VEDriversLite.Security.EncryptionKey
+  parent: VEDriversLite.Security
+  name: EncryptionKey
+  nameWithType: EncryptionKey
+  fullName: VEDriversLite.Security.EncryptionKey
+- uid: VEDriversLite.Security
+  commentId: N:VEDriversLite.Security
+  name: VEDriversLite.Security
+  nameWithType: VEDriversLite.Security
+  fullName: VEDriversLite.Security
+- uid: VEDriversLite.NeblioAccount.IsLocked*
+  commentId: Overload:VEDriversLite.NeblioAccount.IsLocked
+  name: IsLocked
+  nameWithType: NeblioAccount.IsLocked
+  fullName: VEDriversLite.NeblioAccount.IsLocked
+- uid: VEDriversLite.NeblioAccount.StartRefreshingData*
+  commentId: Overload:VEDriversLite.NeblioAccount.StartRefreshingData
+  name: StartRefreshingData
+  nameWithType: NeblioAccount.StartRefreshingData
+  fullName: VEDriversLite.NeblioAccount.StartRefreshingData
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  name: Int32
+  nameWithType: Int32
+  fullName: System.Int32
+- uid: System.Threading.Tasks.Task{System.String}
+  commentId: T:System.Threading.Tasks.Task{System.String}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<String>
+  nameWithType: Task<String>
+  fullName: System.Threading.Tasks.Task<System.String>
+  nameWithType.vb: Task(Of String)
+  fullName.vb: System.Threading.Tasks.Task(Of System.String)
+  name.vb: Task(Of String)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+- uid: VEDriversLite.NeblioAccount.CreateNewAccount*
+  commentId: Overload:VEDriversLite.NeblioAccount.CreateNewAccount
+  name: CreateNewAccount
+  nameWithType: NeblioAccount.CreateNewAccount
+  fullName: VEDriversLite.NeblioAccount.CreateNewAccount
+- uid: System.Threading.Tasks.Task{System.Boolean}
+  commentId: T:System.Threading.Tasks.Task{System.Boolean}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<Boolean>
+  nameWithType: Task<Boolean>
+  fullName: System.Threading.Tasks.Task<System.Boolean>
+  nameWithType.vb: Task(Of Boolean)
+  fullName.vb: System.Threading.Tasks.Task(Of System.Boolean)
+  name.vb: Task(Of Boolean)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.LoadAccount*
+  commentId: Overload:VEDriversLite.NeblioAccount.LoadAccount
+  name: LoadAccount
+  nameWithType: NeblioAccount.LoadAccount
+  fullName: VEDriversLite.NeblioAccount.LoadAccount
+- uid: VEDriversLite.NeblioAccount.LoadBookmarks*
+  commentId: Overload:VEDriversLite.NeblioAccount.LoadBookmarks
+  name: LoadBookmarks
+  nameWithType: NeblioAccount.LoadBookmarks
+  fullName: VEDriversLite.NeblioAccount.LoadBookmarks
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: VEDriversLite.NeblioAccount.AddBookmark*
+  commentId: Overload:VEDriversLite.NeblioAccount.AddBookmark
+  name: AddBookmark
+  nameWithType: NeblioAccount.AddBookmark
+  fullName: VEDriversLite.NeblioAccount.AddBookmark
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, String>>
+  nameWithType: Task<ValueTuple<Boolean, String>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, System.String>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, String))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, System.String))
+  name.vb: Task(Of ValueTuple(Of Boolean, String))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.RemoveBookmark*
+  commentId: Overload:VEDriversLite.NeblioAccount.RemoveBookmark
+  name: RemoveBookmark
+  nameWithType: NeblioAccount.RemoveBookmark
+  fullName: VEDriversLite.NeblioAccount.RemoveBookmark
+- uid: VEDriversLite.NeblioAccount.SerializeBookmarks*
+  commentId: Overload:VEDriversLite.NeblioAccount.SerializeBookmarks
+  name: SerializeBookmarks
+  nameWithType: NeblioAccount.SerializeBookmarks
+  fullName: VEDriversLite.NeblioAccount.SerializeBookmarks
+- uid: VEDriversLite.NeblioAccount.IsInTheBookmarks*
+  commentId: Overload:VEDriversLite.NeblioAccount.IsInTheBookmarks
+  name: IsInTheBookmarks
+  nameWithType: NeblioAccount.IsInTheBookmarks
+  fullName: VEDriversLite.NeblioAccount.IsInTheBookmarks
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,VEDriversLite.Bookmarks.Bookmark}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,VEDriversLite.Bookmarks.Bookmark}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, Bookmark>>
+  nameWithType: Task<ValueTuple<Boolean, Bookmark>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, VEDriversLite.Bookmarks.Bookmark>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, Bookmark))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, VEDriversLite.Bookmarks.Bookmark))
+  name.vb: Task(Of ValueTuple(Of Boolean, Bookmark))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.Bookmarks.Bookmark
+    name: Bookmark
+    nameWithType: Bookmark
+    fullName: VEDriversLite.Bookmarks.Bookmark
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.Bookmarks.Bookmark
+    name: Bookmark
+    nameWithType: Bookmark
+    fullName: VEDriversLite.Bookmarks.Bookmark
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.LoadTabs*
+  commentId: Overload:VEDriversLite.NeblioAccount.LoadTabs
+  name: LoadTabs
+  nameWithType: NeblioAccount.LoadTabs
+  fullName: VEDriversLite.NeblioAccount.LoadTabs
+- uid: VEDriversLite.NeblioAccount.AddTab*
+  commentId: Overload:VEDriversLite.NeblioAccount.AddTab
+  name: AddTab
+  nameWithType: NeblioAccount.AddTab
+  fullName: VEDriversLite.NeblioAccount.AddTab
+- uid: VEDriversLite.NeblioAccount.RemoveTab*
+  commentId: Overload:VEDriversLite.NeblioAccount.RemoveTab
+  name: RemoveTab
+  nameWithType: NeblioAccount.RemoveTab
+  fullName: VEDriversLite.NeblioAccount.RemoveTab
+- uid: VEDriversLite.NeblioAccount.SelectTab*
+  commentId: Overload:VEDriversLite.NeblioAccount.SelectTab
+  name: SelectTab
+  nameWithType: NeblioAccount.SelectTab
+  fullName: VEDriversLite.NeblioAccount.SelectTab
+- uid: VEDriversLite.NeblioAccount.SerializeTabs*
+  commentId: Overload:VEDriversLite.NeblioAccount.SerializeTabs
+  name: SerializeTabs
+  nameWithType: NeblioAccount.SerializeTabs
+  fullName: VEDriversLite.NeblioAccount.SerializeTabs
+- uid: VEDriversLite.NeblioAccount.ReloadTokenSupply*
+  commentId: Overload:VEDriversLite.NeblioAccount.ReloadTokenSupply
+  name: ReloadTokenSupply
+  nameWithType: NeblioAccount.ReloadTokenSupply
+  fullName: VEDriversLite.NeblioAccount.ReloadTokenSupply
+- uid: VEDriversLite.NeblioAccount.ReloadCountOfNFTs*
+  commentId: Overload:VEDriversLite.NeblioAccount.ReloadCountOfNFTs
+  name: ReloadCountOfNFTs
+  nameWithType: NeblioAccount.ReloadCountOfNFTs
+  fullName: VEDriversLite.NeblioAccount.ReloadCountOfNFTs
+- uid: VEDriversLite.NeblioAccount.ReloadMintingSupply*
+  commentId: Overload:VEDriversLite.NeblioAccount.ReloadMintingSupply
+  name: ReloadMintingSupply
+  nameWithType: NeblioAccount.ReloadMintingSupply
+  fullName: VEDriversLite.NeblioAccount.ReloadMintingSupply
+- uid: VEDriversLite.NeblioAccount.ReloadUtxos*
+  commentId: Overload:VEDriversLite.NeblioAccount.ReloadUtxos
+  name: ReloadUtxos
+  nameWithType: NeblioAccount.ReloadUtxos
+  fullName: VEDriversLite.NeblioAccount.ReloadUtxos
+- uid: VEDriversLite.NeblioAccount.ReloadAccountInfo*
+  commentId: Overload:VEDriversLite.NeblioAccount.ReloadAccountInfo
+  name: ReloadAccountInfo
+  nameWithType: NeblioAccount.ReloadAccountInfo
+  fullName: VEDriversLite.NeblioAccount.ReloadAccountInfo
+- uid: VEDriversLite.NeblioAccount.ReLoadNFTs*
+  commentId: Overload:VEDriversLite.NeblioAccount.ReLoadNFTs
+  name: ReLoadNFTs
+  nameWithType: NeblioAccount.ReLoadNFTs
+  fullName: VEDriversLite.NeblioAccount.ReLoadNFTs
+- uid: VEDriversLite.NeblioAccount.RefreshAddressReceivedPayments*
+  commentId: Overload:VEDriversLite.NeblioAccount.RefreshAddressReceivedPayments
+  name: RefreshAddressReceivedPayments
+  nameWithType: NeblioAccount.RefreshAddressReceivedPayments
+  fullName: VEDriversLite.NeblioAccount.RefreshAddressReceivedPayments
+- uid: VEDriversLite.NeblioAccount.CheckPayments*
+  commentId: Overload:VEDriversLite.NeblioAccount.CheckPayments
+  name: CheckPayments
+  nameWithType: NeblioAccount.CheckPayments
+  fullName: VEDriversLite.NeblioAccount.CheckPayments
+- uid: VEDriversLite.NeblioAccount.HasSomeSpendableNeblio*
+  commentId: Overload:VEDriversLite.NeblioAccount.HasSomeSpendableNeblio
+  name: HasSomeSpendableNeblio
+  nameWithType: NeblioAccount.HasSomeSpendableNeblio
+  fullName: VEDriversLite.NeblioAccount.HasSomeSpendableNeblio
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.Double}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.Double}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, Double>>
+  nameWithType: Task<ValueTuple<Boolean, Double>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, System.Double>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, Double))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, System.Double))
+  name.vb: Task(Of ValueTuple(Of Boolean, Double))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Double
+    name: Double
+    nameWithType: Double
+    fullName: System.Double
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Double
+    name: Double
+    nameWithType: Double
+    fullName: System.Double
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.HasSomeSourceForMinting*
+  commentId: Overload:VEDriversLite.NeblioAccount.HasSomeSourceForMinting
+  name: HasSomeSourceForMinting
+  nameWithType: NeblioAccount.HasSomeSourceForMinting
+  fullName: VEDriversLite.NeblioAccount.HasSomeSourceForMinting
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.Int32}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.Int32}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, Int32>>
+  nameWithType: Task<ValueTuple<Boolean, Int32>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, System.Int32>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, Int32))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, System.Int32))
+  name.vb: Task(Of ValueTuple(Of Boolean, Int32))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.ValidateNFTUtxo*
+  commentId: Overload:VEDriversLite.NeblioAccount.ValidateNFTUtxo
+  name: ValidateNFTUtxo
+  nameWithType: NeblioAccount.ValidateNFTUtxo
+  fullName: VEDriversLite.NeblioAccount.ValidateNFTUtxo
+- uid: VEDriversLite.NeblioAccount.CheckSpendableNeblio*
+  commentId: Overload:VEDriversLite.NeblioAccount.CheckSpendableNeblio
+  name: CheckSpendableNeblio
+  nameWithType: NeblioAccount.CheckSpendableNeblio
+  fullName: VEDriversLite.NeblioAccount.CheckSpendableNeblio
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos}}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<String, ICollection<Utxos>>>
+  nameWithType: Task<ValueTuple<String, ICollection<Utxos>>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.String, System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Utxos>>>
+  nameWithType.vb: Task(Of ValueTuple(Of String, ICollection(Of Utxos)))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.String, System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Utxos)))
+  name.vb: Task(Of ValueTuple(Of String, ICollection(Of Utxos)))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Utxos
+    name: Utxos
+    nameWithType: Utxos
+    fullName: VEDriversLite.NeblioAPI.Utxos
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Utxos
+    name: Utxos
+    nameWithType: Utxos
+    fullName: VEDriversLite.NeblioAPI.Utxos
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.CheckSpendableNeblioTokens*
+  commentId: Overload:VEDriversLite.NeblioAccount.CheckSpendableNeblioTokens
+  name: CheckSpendableNeblioTokens
+  nameWithType: NeblioAccount.CheckSpendableNeblioTokens
+  fullName: VEDriversLite.NeblioAccount.CheckSpendableNeblioTokens
+- uid: VEDriversLite.NeblioAccount.OrderSourceTokens*
+  commentId: Overload:VEDriversLite.NeblioAccount.OrderSourceTokens
+  name: OrderSourceTokens
+  nameWithType: NeblioAccount.OrderSourceTokens
+  fullName: VEDriversLite.NeblioAccount.OrderSourceTokens
+- uid: VEDriversLite.NeblioAccount.SendNeblioPayment*
+  commentId: Overload:VEDriversLite.NeblioAccount.SendNeblioPayment
+  name: SendNeblioPayment
+  nameWithType: NeblioAccount.SendNeblioPayment
+  fullName: VEDriversLite.NeblioAccount.SendNeblioPayment
+- uid: VEDriversLite.NeblioAccount.SendNeblioTokenPayment*
+  commentId: Overload:VEDriversLite.NeblioAccount.SendNeblioTokenPayment
+  name: SendNeblioTokenPayment
+  nameWithType: NeblioAccount.SendNeblioTokenPayment
+  fullName: VEDriversLite.NeblioAccount.SendNeblioTokenPayment
+- uid: System.Collections.Generic.IDictionary{System.String,System.String}
+  commentId: T:System.Collections.Generic.IDictionary{System.String,System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IDictionary`2
+  name: IDictionary<String, String>
+  nameWithType: IDictionary<String, String>
+  fullName: System.Collections.Generic.IDictionary<System.String, System.String>
+  nameWithType.vb: IDictionary(Of String, String)
+  fullName.vb: System.Collections.Generic.IDictionary(Of System.String, System.String)
+  name.vb: IDictionary(Of String, String)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IDictionary`2
+  commentId: T:System.Collections.Generic.IDictionary`2
+  isExternal: true
+  name: IDictionary<TKey, TValue>
+  nameWithType: IDictionary<TKey, TValue>
+  fullName: System.Collections.Generic.IDictionary<TKey, TValue>
+  nameWithType.vb: IDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.IDictionary(Of TKey, TValue)
+  name.vb: IDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.MintNFT*
+  commentId: Overload:VEDriversLite.NeblioAccount.MintNFT
+  name: MintNFT
+  nameWithType: NeblioAccount.MintNFT
+  fullName: VEDriversLite.NeblioAccount.MintNFT
+- uid: VEDriversLite.NFT.INFT
+  commentId: T:VEDriversLite.NFT.INFT
+  parent: VEDriversLite.NFT
+  name: INFT
+  nameWithType: INFT
+  fullName: VEDriversLite.NFT.INFT
+- uid: VEDriversLite.NeblioAccount.MintMultiNFT*
+  commentId: Overload:VEDriversLite.NeblioAccount.MintMultiNFT
+  name: MintMultiNFT
+  nameWithType: NeblioAccount.MintMultiNFT
+  fullName: VEDriversLite.NeblioAccount.MintMultiNFT
+- uid: VEDriversLite.NeblioAccount.ChangeProfileNFT*
+  commentId: Overload:VEDriversLite.NeblioAccount.ChangeProfileNFT
+  name: ChangeProfileNFT
+  nameWithType: NeblioAccount.ChangeProfileNFT
+  fullName: VEDriversLite.NeblioAccount.ChangeProfileNFT
+- uid: VEDriversLite.NeblioAccount.ChangePostNFT*
+  commentId: Overload:VEDriversLite.NeblioAccount.ChangePostNFT
+  name: ChangePostNFT
+  nameWithType: NeblioAccount.ChangePostNFT
+  fullName: VEDriversLite.NeblioAccount.ChangePostNFT
+- uid: VEDriversLite.NeblioAccount.SendNFT*
+  commentId: Overload:VEDriversLite.NeblioAccount.SendNFT
+  name: SendNFT
+  nameWithType: NeblioAccount.SendNFT
+  fullName: VEDriversLite.NeblioAccount.SendNFT
+- uid: VEDriversLite.NeblioAccount.SendNFTPayment*
+  commentId: Overload:VEDriversLite.NeblioAccount.SendNFTPayment
+  name: SendNFTPayment
+  nameWithType: NeblioAccount.SendNFTPayment
+  fullName: VEDriversLite.NeblioAccount.SendNFTPayment
+- uid: VEDriversLite.NeblioAccount.SignMessage*
+  commentId: Overload:VEDriversLite.NeblioAccount.SignMessage
+  name: SignMessage
+  nameWithType: NeblioAccount.SignMessage
+  fullName: VEDriversLite.NeblioAccount.SignMessage
+- uid: VEDriversLite.NeblioAccount.VerifyMessage*
+  commentId: Overload:VEDriversLite.NeblioAccount.VerifyMessage
+  name: VerifyMessage
+  nameWithType: NeblioAccount.VerifyMessage
+  fullName: VEDriversLite.NeblioAccount.VerifyMessage
+- uid: VEDriversLite.NeblioAccount.GetNFTVerifyCode*
+  commentId: Overload:VEDriversLite.NeblioAccount.GetNFTVerifyCode
+  name: GetNFTVerifyCode
+  nameWithType: NeblioAccount.GetNFTVerifyCode
+  fullName: VEDriversLite.NeblioAccount.GetNFTVerifyCode
+- uid: System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationCodeDto}
+  commentId: T:System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationCodeDto}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<OwnershipVerificationCodeDto>
+  nameWithType: Task<OwnershipVerificationCodeDto>
+  fullName: System.Threading.Tasks.Task<VEDriversLite.NFT.OwnershipVerificationCodeDto>
+  nameWithType.vb: Task(Of OwnershipVerificationCodeDto)
+  fullName.vb: System.Threading.Tasks.Task(Of VEDriversLite.NFT.OwnershipVerificationCodeDto)
+  name.vb: Task(Of OwnershipVerificationCodeDto)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.OwnershipVerificationCodeDto
+    name: OwnershipVerificationCodeDto
+    nameWithType: OwnershipVerificationCodeDto
+    fullName: VEDriversLite.NFT.OwnershipVerificationCodeDto
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.OwnershipVerificationCodeDto
+    name: OwnershipVerificationCodeDto
+    nameWithType: OwnershipVerificationCodeDto
+    fullName: VEDriversLite.NFT.OwnershipVerificationCodeDto
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAccount.GetNFTVerifyQRCode*
+  commentId: Overload:VEDriversLite.NeblioAccount.GetNFTVerifyQRCode
+  name: GetNFTVerifyQRCode
+  nameWithType: NeblioAccount.GetNFTVerifyQRCode
+  fullName: VEDriversLite.NeblioAccount.GetNFTVerifyQRCode
+- uid: System.Threading.Tasks.Task{System.ValueTuple{VEDriversLite.NFT.OwnershipVerificationCodeDto,System.Byte[]}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{VEDriversLite.NFT.OwnershipVerificationCodeDto,System.Byte[]}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<OwnershipVerificationCodeDto, Byte[]>>
+  nameWithType: Task<ValueTuple<OwnershipVerificationCodeDto, Byte[]>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<VEDriversLite.NFT.OwnershipVerificationCodeDto, System.Byte[]>>
+  nameWithType.vb: Task(Of ValueTuple(Of OwnershipVerificationCodeDto, Byte()))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of VEDriversLite.NFT.OwnershipVerificationCodeDto, System.Byte()))
+  name.vb: Task(Of ValueTuple(Of OwnershipVerificationCodeDto, Byte()))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.OwnershipVerificationCodeDto
+    name: OwnershipVerificationCodeDto
+    nameWithType: OwnershipVerificationCodeDto
+    fullName: VEDriversLite.NFT.OwnershipVerificationCodeDto
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Byte
+    name: Byte
+    nameWithType: Byte
+    fullName: System.Byte
+    isExternal: true
+  - name: '[]'
+    nameWithType: '[]'
+    fullName: '[]'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.OwnershipVerificationCodeDto
+    name: OwnershipVerificationCodeDto
+    nameWithType: OwnershipVerificationCodeDto
+    fullName: VEDriversLite.NFT.OwnershipVerificationCodeDto
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Byte
+    name: Byte
+    nameWithType: Byte
+    fullName: System.Byte
+    isExternal: true
+  - name: ()
+    nameWithType: ()
+    fullName: ()
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )

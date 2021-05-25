@@ -1,0 +1,723 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo
+  commentId: T:VEDriversLite.Builder.NeblioBuilderUtxo
+  id: NeblioBuilderUtxo
+  parent: VEDriversLite.Builder
+  children:
+  - VEDriversLite.Builder.NeblioBuilderUtxo.#ctor(VEDriversLite.NeblioAPI.Utxos)
+  - VEDriversLite.Builder.NeblioBuilderUtxo.LoadInfo
+  - VEDriversLite.Builder.NeblioBuilderUtxo.TokenInfo
+  - VEDriversLite.Builder.NeblioBuilderUtxo.TotalTokens
+  - VEDriversLite.Builder.NeblioBuilderUtxo.TxInfo
+  - VEDriversLite.Builder.NeblioBuilderUtxo.Used
+  - VEDriversLite.Builder.NeblioBuilderUtxo.Utxo
+  langs:
+  - csharp
+  - vb
+  name: NeblioBuilderUtxo
+  nameWithType: NeblioBuilderUtxo
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo
+  type: Class
+  source:
+    id: NeblioBuilderUtxo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderUtxo.cs
+    startLine: 9
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public class NeblioBuilderUtxo
+    content.vb: Public Class NeblioBuilderUtxo
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.#ctor(VEDriversLite.NeblioAPI.Utxos)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderUtxo.#ctor(VEDriversLite.NeblioAPI.Utxos)
+  id: '#ctor(VEDriversLite.NeblioAPI.Utxos)'
+  parent: VEDriversLite.Builder.NeblioBuilderUtxo
+  langs:
+  - csharp
+  - vb
+  name: NeblioBuilderUtxo(Utxos)
+  nameWithType: NeblioBuilderUtxo.NeblioBuilderUtxo(Utxos)
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.NeblioBuilderUtxo(VEDriversLite.NeblioAPI.Utxos)
+  type: Constructor
+  source:
+    id: .ctor
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderUtxo.cs
+    startLine: 11
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public NeblioBuilderUtxo(Utxos utxo)
+    parameters:
+    - id: utxo
+      type: VEDriversLite.NeblioAPI.Utxos
+    content.vb: Public Sub New(utxo As Utxos)
+  overload: VEDriversLite.Builder.NeblioBuilderUtxo.#ctor*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.Used
+  commentId: P:VEDriversLite.Builder.NeblioBuilderUtxo.Used
+  id: Used
+  parent: VEDriversLite.Builder.NeblioBuilderUtxo
+  langs:
+  - csharp
+  - vb
+  name: Used
+  nameWithType: NeblioBuilderUtxo.Used
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.Used
+  type: Property
+  source:
+    id: Used
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderUtxo.cs
+    startLine: 15
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public bool Used { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property Used As Boolean
+  overload: VEDriversLite.Builder.NeblioBuilderUtxo.Used*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.Utxo
+  commentId: P:VEDriversLite.Builder.NeblioBuilderUtxo.Utxo
+  id: Utxo
+  parent: VEDriversLite.Builder.NeblioBuilderUtxo
+  langs:
+  - csharp
+  - vb
+  name: Utxo
+  nameWithType: NeblioBuilderUtxo.Utxo
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.Utxo
+  type: Property
+  source:
+    id: Utxo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderUtxo.cs
+    startLine: 16
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Utxos Utxo { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NeblioAPI.Utxos
+    content.vb: Public Property Utxo As Utxos
+  overload: VEDriversLite.Builder.NeblioBuilderUtxo.Utxo*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.TotalTokens
+  commentId: P:VEDriversLite.Builder.NeblioBuilderUtxo.TotalTokens
+  id: TotalTokens
+  parent: VEDriversLite.Builder.NeblioBuilderUtxo
+  langs:
+  - csharp
+  - vb
+  name: TotalTokens
+  nameWithType: NeblioBuilderUtxo.TotalTokens
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.TotalTokens
+  type: Property
+  source:
+    id: TotalTokens
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderUtxo.cs
+    startLine: 17
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public int TotalTokens { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property TotalTokens As Integer
+  overload: VEDriversLite.Builder.NeblioBuilderUtxo.TotalTokens*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.TokenInfo
+  commentId: P:VEDriversLite.Builder.NeblioBuilderUtxo.TokenInfo
+  id: TokenInfo
+  parent: VEDriversLite.Builder.NeblioBuilderUtxo
+  langs:
+  - csharp
+  - vb
+  name: TokenInfo
+  nameWithType: NeblioBuilderUtxo.TokenInfo
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.TokenInfo
+  type: Property
+  source:
+    id: TokenInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderUtxo.cs
+    startLine: 18
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public List<GetTokenMetadataResponse> TokenInfo { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{VEDriversLite.NeblioAPI.GetTokenMetadataResponse}
+    content.vb: Public Property TokenInfo As List(Of GetTokenMetadataResponse)
+  overload: VEDriversLite.Builder.NeblioBuilderUtxo.TokenInfo*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.TxInfo
+  commentId: P:VEDriversLite.Builder.NeblioBuilderUtxo.TxInfo
+  id: TxInfo
+  parent: VEDriversLite.Builder.NeblioBuilderUtxo
+  langs:
+  - csharp
+  - vb
+  name: TxInfo
+  nameWithType: NeblioBuilderUtxo.TxInfo
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.TxInfo
+  type: Property
+  source:
+    id: TxInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderUtxo.cs
+    startLine: 19
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public GetTransactionInfoResponse TxInfo { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+    content.vb: Public Property TxInfo As GetTransactionInfoResponse
+  overload: VEDriversLite.Builder.NeblioBuilderUtxo.TxInfo*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.LoadInfo
+  commentId: M:VEDriversLite.Builder.NeblioBuilderUtxo.LoadInfo
+  id: LoadInfo
+  parent: VEDriversLite.Builder.NeblioBuilderUtxo
+  langs:
+  - csharp
+  - vb
+  name: LoadInfo()
+  nameWithType: NeblioBuilderUtxo.LoadInfo()
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.LoadInfo()
+  type: Method
+  source:
+    id: LoadInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderUtxo.cs
+    startLine: 21
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task LoadInfo()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function LoadInfo As Task
+  overload: VEDriversLite.Builder.NeblioBuilderUtxo.LoadInfo*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite.Builder
+  commentId: N:VEDriversLite.Builder
+  name: VEDriversLite.Builder
+  nameWithType: VEDriversLite.Builder
+  fullName: VEDriversLite.Builder
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.#ctor*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderUtxo.#ctor
+  name: NeblioBuilderUtxo
+  nameWithType: NeblioBuilderUtxo.NeblioBuilderUtxo
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.NeblioBuilderUtxo
+- uid: VEDriversLite.NeblioAPI.Utxos
+  commentId: T:VEDriversLite.NeblioAPI.Utxos
+  parent: VEDriversLite.NeblioAPI
+  name: Utxos
+  nameWithType: Utxos
+  fullName: VEDriversLite.NeblioAPI.Utxos
+- uid: VEDriversLite.NeblioAPI
+  commentId: N:VEDriversLite.NeblioAPI
+  name: VEDriversLite.NeblioAPI
+  nameWithType: VEDriversLite.NeblioAPI
+  fullName: VEDriversLite.NeblioAPI
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.Used*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderUtxo.Used
+  name: Used
+  nameWithType: NeblioBuilderUtxo.Used
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.Used
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  name: Boolean
+  nameWithType: Boolean
+  fullName: System.Boolean
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.Utxo*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderUtxo.Utxo
+  name: Utxo
+  nameWithType: NeblioBuilderUtxo.Utxo
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.Utxo
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.TotalTokens*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderUtxo.TotalTokens
+  name: TotalTokens
+  nameWithType: NeblioBuilderUtxo.TotalTokens
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.TotalTokens
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  name: Int32
+  nameWithType: Int32
+  fullName: System.Int32
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.TokenInfo*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderUtxo.TokenInfo
+  name: TokenInfo
+  nameWithType: NeblioBuilderUtxo.TokenInfo
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.TokenInfo
+- uid: System.Collections.Generic.List{VEDriversLite.NeblioAPI.GetTokenMetadataResponse}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.NeblioAPI.GetTokenMetadataResponse}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<GetTokenMetadataResponse>
+  nameWithType: List<GetTokenMetadataResponse>
+  fullName: System.Collections.Generic.List<VEDriversLite.NeblioAPI.GetTokenMetadataResponse>
+  nameWithType.vb: List(Of GetTokenMetadataResponse)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.NeblioAPI.GetTokenMetadataResponse)
+  name.vb: List(Of GetTokenMetadataResponse)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.GetTokenMetadataResponse
+    name: GetTokenMetadataResponse
+    nameWithType: GetTokenMetadataResponse
+    fullName: VEDriversLite.NeblioAPI.GetTokenMetadataResponse
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.GetTokenMetadataResponse
+    name: GetTokenMetadataResponse
+    nameWithType: GetTokenMetadataResponse
+    fullName: VEDriversLite.NeblioAPI.GetTokenMetadataResponse
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.TxInfo*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderUtxo.TxInfo
+  name: TxInfo
+  nameWithType: NeblioBuilderUtxo.TxInfo
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.TxInfo
+- uid: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+  commentId: T:VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+  parent: VEDriversLite.NeblioAPI
+  name: GetTransactionInfoResponse
+  nameWithType: GetTransactionInfoResponse
+  fullName: VEDriversLite.NeblioAPI.GetTransactionInfoResponse
+- uid: VEDriversLite.Builder.NeblioBuilderUtxo.LoadInfo*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderUtxo.LoadInfo
+  name: LoadInfo
+  nameWithType: NeblioBuilderUtxo.LoadInfo
+  fullName: VEDriversLite.Builder.NeblioBuilderUtxo.LoadInfo
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks

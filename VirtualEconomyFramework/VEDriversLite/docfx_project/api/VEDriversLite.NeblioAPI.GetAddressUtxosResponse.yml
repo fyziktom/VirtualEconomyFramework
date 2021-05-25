@@ -1,0 +1,3212 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NeblioAPI.GetAddressUtxosResponse
+  commentId: T:VEDriversLite.NeblioAPI.GetAddressUtxosResponse
+  id: GetAddressUtxosResponse
+  parent: VEDriversLite.NeblioAPI
+  children: []
+  langs:
+  - csharp
+  - vb
+  name: GetAddressUtxosResponse
+  nameWithType: GetAddressUtxosResponse
+  fullName: VEDriversLite.NeblioAPI.GetAddressUtxosResponse
+  type: Class
+  source:
+    id: GetAddressUtxosResponse
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5451
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Array of objects representing this address&apos; UTXOs
+  example: []
+  syntax:
+    content: 'public class GetAddressUtxosResponse : Collection<Anonymous>, IList<Anonymous>, ICollection<Anonymous>, IReadOnlyList<Anonymous>, IReadOnlyCollection<Anonymous>, IEnumerable<Anonymous>, IList, ICollection, IEnumerable'
+    content.vb: >-
+      Public Class GetAddressUtxosResponse
+
+          Inherits Collection(Of Anonymous)
+
+          Implements IList(Of Anonymous), ICollection(Of Anonymous), IReadOnlyList(Of Anonymous), IReadOnlyCollection(Of Anonymous), IEnumerable(Of Anonymous), IList, ICollection, IEnumerable
+  inheritance:
+  - System.Object
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  implements:
+  - System.Collections.Generic.IList{VEDriversLite.NeblioAPI.Anonymous}
+  - System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Anonymous}
+  - System.Collections.Generic.IReadOnlyList{VEDriversLite.NeblioAPI.Anonymous}
+  - System.Collections.Generic.IReadOnlyCollection{VEDriversLite.NeblioAPI.Anonymous}
+  - System.Collections.Generic.IEnumerable{VEDriversLite.NeblioAPI.Anonymous}
+  - System.Collections.IList
+  - System.Collections.ICollection
+  - System.Collections.IEnumerable
+  inheritedMembers:
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#get_Item(System.Int32)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#set_Item(System.Int32,System.Object)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Add(VEDriversLite.NeblioAPI.Anonymous)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Clear
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.ClearItems
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Contains(VEDriversLite.NeblioAPI.Anonymous)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.CopyTo(VEDriversLite.NeblioAPI.Anonymous[],System.Int32)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.GetEnumerator
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.IndexOf(VEDriversLite.NeblioAPI.Anonymous)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Insert(System.Int32,VEDriversLite.NeblioAPI.Anonymous)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.InsertItem(System.Int32,VEDriversLite.NeblioAPI.Anonymous)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Remove(VEDriversLite.NeblioAPI.Anonymous)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.RemoveAt(System.Int32)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.RemoveItem(System.Int32)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.SetItem(System.Int32,VEDriversLite.NeblioAPI.Anonymous)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IEnumerable#GetEnumerator
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Add(System.Object)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Contains(System.Object)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#IndexOf(System.Object)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Insert(System.Int32,System.Object)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Remove(System.Object)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Count
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Item(System.Int32)
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Items
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#Generic#ICollection{T}#IsReadOnly
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#ICollection#IsSynchronized
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#ICollection#SyncRoot
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#IsFixedSize
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#IsReadOnly
+  - System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Item(System.Int32)
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+references:
+- uid: VEDriversLite.NeblioAPI
+  commentId: N:VEDriversLite.NeblioAPI
+  name: VEDriversLite.NeblioAPI
+  nameWithType: VEDriversLite.NeblioAPI
+  fullName: VEDriversLite.NeblioAPI
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  commentId: T:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  parent: System.Collections.ObjectModel
+  definition: System.Collections.ObjectModel.Collection`1
+  name: Collection<Anonymous>
+  nameWithType: Collection<Anonymous>
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>
+  nameWithType.vb: Collection(Of Anonymous)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous)
+  name.vb: Collection(Of Anonymous)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1
+    name: Collection
+    nameWithType: Collection
+    fullName: System.Collections.ObjectModel.Collection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1
+    name: Collection
+    nameWithType: Collection
+    fullName: System.Collections.ObjectModel.Collection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IList{VEDriversLite.NeblioAPI.Anonymous}
+  commentId: T:System.Collections.Generic.IList{VEDriversLite.NeblioAPI.Anonymous}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IList`1
+  name: IList<Anonymous>
+  nameWithType: IList<Anonymous>
+  fullName: System.Collections.Generic.IList<VEDriversLite.NeblioAPI.Anonymous>
+  nameWithType.vb: IList(Of Anonymous)
+  fullName.vb: System.Collections.Generic.IList(Of VEDriversLite.NeblioAPI.Anonymous)
+  name.vb: IList(Of Anonymous)
+  spec.csharp:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    nameWithType: IList
+    fullName: System.Collections.Generic.IList
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    nameWithType: IList
+    fullName: System.Collections.Generic.IList
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Anonymous}
+  commentId: T:System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Anonymous}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.ICollection`1
+  name: ICollection<Anonymous>
+  nameWithType: ICollection<Anonymous>
+  fullName: System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Anonymous>
+  nameWithType.vb: ICollection(Of Anonymous)
+  fullName.vb: System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Anonymous)
+  name.vb: ICollection(Of Anonymous)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IReadOnlyList{VEDriversLite.NeblioAPI.Anonymous}
+  commentId: T:System.Collections.Generic.IReadOnlyList{VEDriversLite.NeblioAPI.Anonymous}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  name: IReadOnlyList<Anonymous>
+  nameWithType: IReadOnlyList<Anonymous>
+  fullName: System.Collections.Generic.IReadOnlyList<VEDriversLite.NeblioAPI.Anonymous>
+  nameWithType.vb: IReadOnlyList(Of Anonymous)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of VEDriversLite.NeblioAPI.Anonymous)
+  name.vb: IReadOnlyList(Of Anonymous)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    nameWithType: IReadOnlyList
+    fullName: System.Collections.Generic.IReadOnlyList
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    nameWithType: IReadOnlyList
+    fullName: System.Collections.Generic.IReadOnlyList
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IReadOnlyCollection{VEDriversLite.NeblioAPI.Anonymous}
+  commentId: T:System.Collections.Generic.IReadOnlyCollection{VEDriversLite.NeblioAPI.Anonymous}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyCollection`1
+  name: IReadOnlyCollection<Anonymous>
+  nameWithType: IReadOnlyCollection<Anonymous>
+  fullName: System.Collections.Generic.IReadOnlyCollection<VEDriversLite.NeblioAPI.Anonymous>
+  nameWithType.vb: IReadOnlyCollection(Of Anonymous)
+  fullName.vb: System.Collections.Generic.IReadOnlyCollection(Of VEDriversLite.NeblioAPI.Anonymous)
+  name.vb: IReadOnlyCollection(Of Anonymous)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyCollection`1
+    name: IReadOnlyCollection
+    nameWithType: IReadOnlyCollection
+    fullName: System.Collections.Generic.IReadOnlyCollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyCollection`1
+    name: IReadOnlyCollection
+    nameWithType: IReadOnlyCollection
+    fullName: System.Collections.Generic.IReadOnlyCollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IEnumerable{VEDriversLite.NeblioAPI.Anonymous}
+  commentId: T:System.Collections.Generic.IEnumerable{VEDriversLite.NeblioAPI.Anonymous}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IEnumerable`1
+  name: IEnumerable<Anonymous>
+  nameWithType: IEnumerable<Anonymous>
+  fullName: System.Collections.Generic.IEnumerable<VEDriversLite.NeblioAPI.Anonymous>
+  nameWithType.vb: IEnumerable(Of Anonymous)
+  fullName.vb: System.Collections.Generic.IEnumerable(Of VEDriversLite.NeblioAPI.Anonymous)
+  name.vb: IEnumerable(Of Anonymous)
+  spec.csharp:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    nameWithType: IEnumerable
+    fullName: System.Collections.Generic.IEnumerable
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    nameWithType: IEnumerable
+    fullName: System.Collections.Generic.IEnumerable
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.IList
+  commentId: T:System.Collections.IList
+  parent: System.Collections
+  isExternal: true
+  name: IList
+  nameWithType: IList
+  fullName: System.Collections.IList
+- uid: System.Collections.ICollection
+  commentId: T:System.Collections.ICollection
+  parent: System.Collections
+  isExternal: true
+  name: ICollection
+  nameWithType: ICollection
+  fullName: System.Collections.ICollection
+- uid: System.Collections.IEnumerable
+  commentId: T:System.Collections.IEnumerable
+  parent: System.Collections
+  isExternal: true
+  name: IEnumerable
+  nameWithType: IEnumerable
+  fullName: System.Collections.IEnumerable
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#get_Item(System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#get_Item(System.Int32)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#get_Item(System.Int32)
+  name: IList.get_Item(Int32)
+  nameWithType: Collection<Anonymous>.IList.get_Item(Int32)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.get_Item(System.Int32)
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.get_Item(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.get_Item(System.Int32)
+  name.vb: System.Collections.IList.get_Item(Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#get_Item(System.Int32)
+    name: IList.get_Item
+    nameWithType: Collection<Anonymous>.IList.get_Item
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.get_Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#get_Item(System.Int32)
+    name: System.Collections.IList.get_Item
+    nameWithType: Collection(Of Anonymous).System.Collections.IList.get_Item
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.get_Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#set_Item(System.Int32,System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#set_Item(System.Int32,System.Object)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#set_Item(System.Int32,System.Object)
+  name: IList.set_Item(Int32, Object)
+  nameWithType: Collection<Anonymous>.IList.set_Item(Int32, Object)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.set_Item(System.Int32, System.Object)
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.set_Item(Int32, Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.set_Item(System.Int32, System.Object)
+  name.vb: System.Collections.IList.set_Item(Int32, Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#set_Item(System.Int32,System.Object)
+    name: IList.set_Item
+    nameWithType: Collection<Anonymous>.IList.set_Item
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.set_Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#set_Item(System.Int32,System.Object)
+    name: System.Collections.IList.set_Item
+    nameWithType: Collection(Of Anonymous).System.Collections.IList.set_Item
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.set_Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Add(VEDriversLite.NeblioAPI.Anonymous)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Add(VEDriversLite.NeblioAPI.Anonymous)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.Add(`0)
+  name: Add(Anonymous)
+  nameWithType: Collection<Anonymous>.Add(Anonymous)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Add(VEDriversLite.NeblioAPI.Anonymous)
+  nameWithType.vb: Collection(Of Anonymous).Add(Anonymous)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Add(VEDriversLite.NeblioAPI.Anonymous)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Add(`0)
+    name: Add
+    nameWithType: Collection<Anonymous>.Add
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Add
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Add(`0)
+    name: Add
+    nameWithType: Collection(Of Anonymous).Add
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Add
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Clear
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Clear
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.Clear
+  name: Clear()
+  nameWithType: Collection<Anonymous>.Clear()
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Clear()
+  nameWithType.vb: Collection(Of Anonymous).Clear()
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Clear()
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Clear
+    name: Clear
+    nameWithType: Collection<Anonymous>.Clear
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Clear
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Clear
+    name: Clear
+    nameWithType: Collection(Of Anonymous).Clear
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Clear
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.ClearItems
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.ClearItems
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.ClearItems
+  name: ClearItems()
+  nameWithType: Collection<Anonymous>.ClearItems()
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.ClearItems()
+  nameWithType.vb: Collection(Of Anonymous).ClearItems()
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).ClearItems()
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.ClearItems
+    name: ClearItems
+    nameWithType: Collection<Anonymous>.ClearItems
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.ClearItems
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.ClearItems
+    name: ClearItems
+    nameWithType: Collection(Of Anonymous).ClearItems
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).ClearItems
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Contains(VEDriversLite.NeblioAPI.Anonymous)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Contains(VEDriversLite.NeblioAPI.Anonymous)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.Contains(`0)
+  name: Contains(Anonymous)
+  nameWithType: Collection<Anonymous>.Contains(Anonymous)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Contains(VEDriversLite.NeblioAPI.Anonymous)
+  nameWithType.vb: Collection(Of Anonymous).Contains(Anonymous)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Contains(VEDriversLite.NeblioAPI.Anonymous)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Contains(`0)
+    name: Contains
+    nameWithType: Collection<Anonymous>.Contains
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Contains
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Contains(`0)
+    name: Contains
+    nameWithType: Collection(Of Anonymous).Contains
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Contains
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.CopyTo(VEDriversLite.NeblioAPI.Anonymous[],System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.CopyTo(VEDriversLite.NeblioAPI.Anonymous[],System.Int32)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.CopyTo(`0[],System.Int32)
+  name: CopyTo(Anonymous[], Int32)
+  nameWithType: Collection<Anonymous>.CopyTo(Anonymous[], Int32)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.CopyTo(VEDriversLite.NeblioAPI.Anonymous[], System.Int32)
+  nameWithType.vb: Collection(Of Anonymous).CopyTo(Anonymous(), Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).CopyTo(VEDriversLite.NeblioAPI.Anonymous(), System.Int32)
+  name.vb: CopyTo(Anonymous(), Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.CopyTo(`0[],System.Int32)
+    name: CopyTo
+    nameWithType: Collection<Anonymous>.CopyTo
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.CopyTo
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: '[]'
+    nameWithType: '[]'
+    fullName: '[]'
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.CopyTo(`0[],System.Int32)
+    name: CopyTo
+    nameWithType: Collection(Of Anonymous).CopyTo
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).CopyTo
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: ()
+    nameWithType: ()
+    fullName: ()
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.GetEnumerator
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.GetEnumerator
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.GetEnumerator
+  name: GetEnumerator()
+  nameWithType: Collection<Anonymous>.GetEnumerator()
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.GetEnumerator()
+  nameWithType.vb: Collection(Of Anonymous).GetEnumerator()
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).GetEnumerator()
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.GetEnumerator
+    name: GetEnumerator
+    nameWithType: Collection<Anonymous>.GetEnumerator
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.GetEnumerator
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.GetEnumerator
+    name: GetEnumerator
+    nameWithType: Collection(Of Anonymous).GetEnumerator
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).GetEnumerator
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.IndexOf(VEDriversLite.NeblioAPI.Anonymous)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.IndexOf(VEDriversLite.NeblioAPI.Anonymous)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.IndexOf(`0)
+  name: IndexOf(Anonymous)
+  nameWithType: Collection<Anonymous>.IndexOf(Anonymous)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.IndexOf(VEDriversLite.NeblioAPI.Anonymous)
+  nameWithType.vb: Collection(Of Anonymous).IndexOf(Anonymous)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).IndexOf(VEDriversLite.NeblioAPI.Anonymous)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.IndexOf(`0)
+    name: IndexOf
+    nameWithType: Collection<Anonymous>.IndexOf
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.IndexOf
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.IndexOf(`0)
+    name: IndexOf
+    nameWithType: Collection(Of Anonymous).IndexOf
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).IndexOf
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Insert(System.Int32,VEDriversLite.NeblioAPI.Anonymous)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Insert(System.Int32,VEDriversLite.NeblioAPI.Anonymous)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.Insert(System.Int32,`0)
+  name: Insert(Int32, Anonymous)
+  nameWithType: Collection<Anonymous>.Insert(Int32, Anonymous)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Insert(System.Int32, VEDriversLite.NeblioAPI.Anonymous)
+  nameWithType.vb: Collection(Of Anonymous).Insert(Int32, Anonymous)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Insert(System.Int32, VEDriversLite.NeblioAPI.Anonymous)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Insert(System.Int32,`0)
+    name: Insert
+    nameWithType: Collection<Anonymous>.Insert
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Insert
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Insert(System.Int32,`0)
+    name: Insert
+    nameWithType: Collection(Of Anonymous).Insert
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Insert
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.InsertItem(System.Int32,VEDriversLite.NeblioAPI.Anonymous)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.InsertItem(System.Int32,VEDriversLite.NeblioAPI.Anonymous)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.InsertItem(System.Int32,`0)
+  name: InsertItem(Int32, Anonymous)
+  nameWithType: Collection<Anonymous>.InsertItem(Int32, Anonymous)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.InsertItem(System.Int32, VEDriversLite.NeblioAPI.Anonymous)
+  nameWithType.vb: Collection(Of Anonymous).InsertItem(Int32, Anonymous)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).InsertItem(System.Int32, VEDriversLite.NeblioAPI.Anonymous)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.InsertItem(System.Int32,`0)
+    name: InsertItem
+    nameWithType: Collection<Anonymous>.InsertItem
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.InsertItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.InsertItem(System.Int32,`0)
+    name: InsertItem
+    nameWithType: Collection(Of Anonymous).InsertItem
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).InsertItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Remove(VEDriversLite.NeblioAPI.Anonymous)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Remove(VEDriversLite.NeblioAPI.Anonymous)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.Remove(`0)
+  name: Remove(Anonymous)
+  nameWithType: Collection<Anonymous>.Remove(Anonymous)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Remove(VEDriversLite.NeblioAPI.Anonymous)
+  nameWithType.vb: Collection(Of Anonymous).Remove(Anonymous)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Remove(VEDriversLite.NeblioAPI.Anonymous)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Remove(`0)
+    name: Remove
+    nameWithType: Collection<Anonymous>.Remove
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Remove
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Remove(`0)
+    name: Remove
+    nameWithType: Collection(Of Anonymous).Remove
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Remove
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.RemoveAt(System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.RemoveAt(System.Int32)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.RemoveAt(System.Int32)
+  name: RemoveAt(Int32)
+  nameWithType: Collection<Anonymous>.RemoveAt(Int32)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.RemoveAt(System.Int32)
+  nameWithType.vb: Collection(Of Anonymous).RemoveAt(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).RemoveAt(System.Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.RemoveAt(System.Int32)
+    name: RemoveAt
+    nameWithType: Collection<Anonymous>.RemoveAt
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.RemoveAt
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.RemoveAt(System.Int32)
+    name: RemoveAt
+    nameWithType: Collection(Of Anonymous).RemoveAt
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).RemoveAt
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.RemoveItem(System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.RemoveItem(System.Int32)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.RemoveItem(System.Int32)
+  name: RemoveItem(Int32)
+  nameWithType: Collection<Anonymous>.RemoveItem(Int32)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.RemoveItem(System.Int32)
+  nameWithType.vb: Collection(Of Anonymous).RemoveItem(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).RemoveItem(System.Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.RemoveItem(System.Int32)
+    name: RemoveItem
+    nameWithType: Collection<Anonymous>.RemoveItem
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.RemoveItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.RemoveItem(System.Int32)
+    name: RemoveItem
+    nameWithType: Collection(Of Anonymous).RemoveItem
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).RemoveItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.SetItem(System.Int32,VEDriversLite.NeblioAPI.Anonymous)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.SetItem(System.Int32,VEDriversLite.NeblioAPI.Anonymous)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.SetItem(System.Int32,`0)
+  name: SetItem(Int32, Anonymous)
+  nameWithType: Collection<Anonymous>.SetItem(Int32, Anonymous)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.SetItem(System.Int32, VEDriversLite.NeblioAPI.Anonymous)
+  nameWithType.vb: Collection(Of Anonymous).SetItem(Int32, Anonymous)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).SetItem(System.Int32, VEDriversLite.NeblioAPI.Anonymous)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.SetItem(System.Int32,`0)
+    name: SetItem
+    nameWithType: Collection<Anonymous>.SetItem
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.SetItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.SetItem(System.Int32,`0)
+    name: SetItem
+    nameWithType: Collection(Of Anonymous).SetItem
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).SetItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.NeblioAPI.Anonymous
+    name: Anonymous
+    nameWithType: Anonymous
+    fullName: VEDriversLite.NeblioAPI.Anonymous
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+  name: ICollection.CopyTo(Array, Int32)
+  nameWithType: Collection<Anonymous>.ICollection.CopyTo(Array, Int32)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.ICollection.CopyTo(System.Array, System.Int32)
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.ICollection.CopyTo(Array, Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.ICollection.CopyTo(System.Array, System.Int32)
+  name.vb: System.Collections.ICollection.CopyTo(Array, Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+    name: ICollection.CopyTo
+    nameWithType: Collection<Anonymous>.ICollection.CopyTo
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.ICollection.CopyTo
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Array
+    name: Array
+    nameWithType: Array
+    fullName: System.Array
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+    name: System.Collections.ICollection.CopyTo
+    nameWithType: Collection(Of Anonymous).System.Collections.ICollection.CopyTo
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.ICollection.CopyTo
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Array
+    name: Array
+    nameWithType: Array
+    fullName: System.Array
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IEnumerable#GetEnumerator
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IEnumerable#GetEnumerator
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IEnumerable#GetEnumerator
+  name: IEnumerable.GetEnumerator()
+  nameWithType: Collection<Anonymous>.IEnumerable.GetEnumerator()
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IEnumerable.GetEnumerator()
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IEnumerable.GetEnumerator()
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IEnumerable.GetEnumerator()
+  name.vb: System.Collections.IEnumerable.GetEnumerator()
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IEnumerable#GetEnumerator
+    name: IEnumerable.GetEnumerator
+    nameWithType: Collection<Anonymous>.IEnumerable.GetEnumerator
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IEnumerable.GetEnumerator
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IEnumerable#GetEnumerator
+    name: System.Collections.IEnumerable.GetEnumerator
+    nameWithType: Collection(Of Anonymous).System.Collections.IEnumerable.GetEnumerator
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IEnumerable.GetEnumerator
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Add(System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Add(System.Object)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Add(System.Object)
+  name: IList.Add(Object)
+  nameWithType: Collection<Anonymous>.IList.Add(Object)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Add(System.Object)
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.Add(Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Add(System.Object)
+  name.vb: System.Collections.IList.Add(Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Add(System.Object)
+    name: IList.Add
+    nameWithType: Collection<Anonymous>.IList.Add
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Add
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Add(System.Object)
+    name: System.Collections.IList.Add
+    nameWithType: Collection(Of Anonymous).System.Collections.IList.Add
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Add
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Contains(System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Contains(System.Object)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Contains(System.Object)
+  name: IList.Contains(Object)
+  nameWithType: Collection<Anonymous>.IList.Contains(Object)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Contains(System.Object)
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.Contains(Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Contains(System.Object)
+  name.vb: System.Collections.IList.Contains(Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Contains(System.Object)
+    name: IList.Contains
+    nameWithType: Collection<Anonymous>.IList.Contains
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Contains
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Contains(System.Object)
+    name: System.Collections.IList.Contains
+    nameWithType: Collection(Of Anonymous).System.Collections.IList.Contains
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Contains
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#IndexOf(System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#IndexOf(System.Object)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IndexOf(System.Object)
+  name: IList.IndexOf(Object)
+  nameWithType: Collection<Anonymous>.IList.IndexOf(Object)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.IndexOf(System.Object)
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.IndexOf(Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.IndexOf(System.Object)
+  name.vb: System.Collections.IList.IndexOf(Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IndexOf(System.Object)
+    name: IList.IndexOf
+    nameWithType: Collection<Anonymous>.IList.IndexOf
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.IndexOf
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IndexOf(System.Object)
+    name: System.Collections.IList.IndexOf
+    nameWithType: Collection(Of Anonymous).System.Collections.IList.IndexOf
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.IndexOf
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Insert(System.Int32,System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Insert(System.Int32,System.Object)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Insert(System.Int32,System.Object)
+  name: IList.Insert(Int32, Object)
+  nameWithType: Collection<Anonymous>.IList.Insert(Int32, Object)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Insert(System.Int32, System.Object)
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.Insert(Int32, Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Insert(System.Int32, System.Object)
+  name.vb: System.Collections.IList.Insert(Int32, Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Insert(System.Int32,System.Object)
+    name: IList.Insert
+    nameWithType: Collection<Anonymous>.IList.Insert
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Insert
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Insert(System.Int32,System.Object)
+    name: System.Collections.IList.Insert
+    nameWithType: Collection(Of Anonymous).System.Collections.IList.Insert
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Insert
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Remove(System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Remove(System.Object)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Remove(System.Object)
+  name: IList.Remove(Object)
+  nameWithType: Collection<Anonymous>.IList.Remove(Object)
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Remove(System.Object)
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.Remove(Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Remove(System.Object)
+  name.vb: System.Collections.IList.Remove(Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Remove(System.Object)
+    name: IList.Remove
+    nameWithType: Collection<Anonymous>.IList.Remove
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Remove
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Remove(System.Object)
+    name: System.Collections.IList.Remove
+    nameWithType: Collection(Of Anonymous).System.Collections.IList.Remove
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Remove
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Count
+  commentId: P:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Count
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.Count
+  name: Count
+  nameWithType: Collection<Anonymous>.Count
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Count
+  nameWithType.vb: Collection(Of Anonymous).Count
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Count
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Item(System.Int32)
+  commentId: P:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Item(System.Int32)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.Item(System.Int32)
+  name: Item[Int32]
+  nameWithType: Collection<Anonymous>.Item[Int32]
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Item[System.Int32]
+  nameWithType.vb: Collection(Of Anonymous).Item(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Item(System.Int32)
+  name.vb: Item(Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Item(System.Int32)
+    name: Item
+    nameWithType: Collection<Anonymous>.Item
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Item
+    isExternal: true
+  - name: '['
+    nameWithType: '['
+    fullName: '['
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ']'
+    nameWithType: ']'
+    fullName: ']'
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Item(System.Int32)
+    name: Item
+    nameWithType: Collection(Of Anonymous).Item
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Items
+  commentId: P:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.Items
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.Items
+  name: Items
+  nameWithType: Collection<Anonymous>.Items
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.Items
+  nameWithType.vb: Collection(Of Anonymous).Items
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).Items
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#Generic#ICollection{T}#IsReadOnly
+  commentId: P:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#Generic#ICollection{T}#IsReadOnly
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  name: ICollection<Anonymous>.IsReadOnly
+  nameWithType: Collection<Anonymous>.ICollection<Anonymous>.IsReadOnly
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Anonymous>.IsReadOnly
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.Generic.ICollection<T>.IsReadOnly
+  name.vb: System.Collections.Generic.ICollection<T>.IsReadOnly
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#ICollection#IsSynchronized
+  commentId: P:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#ICollection#IsSynchronized
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#IsSynchronized
+  name: ICollection.IsSynchronized
+  nameWithType: Collection<Anonymous>.ICollection.IsSynchronized
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.ICollection.IsSynchronized
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.ICollection.IsSynchronized
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.ICollection.IsSynchronized
+  name.vb: System.Collections.ICollection.IsSynchronized
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#ICollection#SyncRoot
+  commentId: P:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#ICollection#SyncRoot
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#SyncRoot
+  name: ICollection.SyncRoot
+  nameWithType: Collection<Anonymous>.ICollection.SyncRoot
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.ICollection.SyncRoot
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.ICollection.SyncRoot
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.ICollection.SyncRoot
+  name.vb: System.Collections.ICollection.SyncRoot
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#IsFixedSize
+  commentId: P:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#IsFixedSize
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IsFixedSize
+  name: IList.IsFixedSize
+  nameWithType: Collection<Anonymous>.IList.IsFixedSize
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.IsFixedSize
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.IsFixedSize
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.IsFixedSize
+  name.vb: System.Collections.IList.IsFixedSize
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#IsReadOnly
+  commentId: P:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#IsReadOnly
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IsReadOnly
+  name: IList.IsReadOnly
+  nameWithType: Collection<Anonymous>.IList.IsReadOnly
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.IsReadOnly
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.IsReadOnly
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.IsReadOnly
+  name.vb: System.Collections.IList.IsReadOnly
+- uid: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Item(System.Int32)
+  commentId: P:System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}.System#Collections#IList#Item(System.Int32)
+  parent: System.Collections.ObjectModel.Collection{VEDriversLite.NeblioAPI.Anonymous}
+  definition: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Item(System.Int32)
+  name: IList.Item[Int32]
+  nameWithType: Collection<Anonymous>.IList.Item[Int32]
+  fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Item[System.Int32]
+  nameWithType.vb: Collection(Of Anonymous).System.Collections.IList.Item(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Item(System.Int32)
+  name.vb: System.Collections.IList.Item(Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Item(System.Int32)
+    name: IList.Item
+    nameWithType: Collection<Anonymous>.IList.Item
+    fullName: System.Collections.ObjectModel.Collection<VEDriversLite.NeblioAPI.Anonymous>.System.Collections.IList.Item
+    isExternal: true
+  - name: '['
+    nameWithType: '['
+    fullName: '['
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ']'
+    nameWithType: ']'
+    fullName: ']'
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Item(System.Int32)
+    name: System.Collections.IList.Item
+    nameWithType: Collection(Of Anonymous).System.Collections.IList.Item
+    fullName: System.Collections.ObjectModel.Collection(Of VEDriversLite.NeblioAPI.Anonymous).System.Collections.IList.Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.Collections.ObjectModel.Collection`1
+  commentId: T:System.Collections.ObjectModel.Collection`1
+  isExternal: true
+  name: Collection<T>
+  nameWithType: Collection<T>
+  fullName: System.Collections.ObjectModel.Collection<T>
+  nameWithType.vb: Collection(Of T)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T)
+  name.vb: Collection(Of T)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1
+    name: Collection
+    nameWithType: Collection
+    fullName: System.Collections.ObjectModel.Collection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1
+    name: Collection
+    nameWithType: Collection
+    fullName: System.Collections.ObjectModel.Collection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel
+  commentId: N:System.Collections.ObjectModel
+  isExternal: true
+  name: System.Collections.ObjectModel
+  nameWithType: System.Collections.ObjectModel
+  fullName: System.Collections.ObjectModel
+- uid: System.Collections.Generic.IList`1
+  commentId: T:System.Collections.Generic.IList`1
+  isExternal: true
+  name: IList<T>
+  nameWithType: IList<T>
+  fullName: System.Collections.Generic.IList<T>
+  nameWithType.vb: IList(Of T)
+  fullName.vb: System.Collections.Generic.IList(Of T)
+  name.vb: IList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    nameWithType: IList
+    fullName: System.Collections.Generic.IList
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    nameWithType: IList
+    fullName: System.Collections.Generic.IList
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: System.Collections.Generic.ICollection`1
+  commentId: T:System.Collections.Generic.ICollection`1
+  isExternal: true
+  name: ICollection<T>
+  nameWithType: ICollection<T>
+  fullName: System.Collections.Generic.ICollection<T>
+  nameWithType.vb: ICollection(Of T)
+  fullName.vb: System.Collections.Generic.ICollection(Of T)
+  name.vb: ICollection(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IReadOnlyList`1
+  commentId: T:System.Collections.Generic.IReadOnlyList`1
+  isExternal: true
+  name: IReadOnlyList<T>
+  nameWithType: IReadOnlyList<T>
+  fullName: System.Collections.Generic.IReadOnlyList<T>
+  nameWithType.vb: IReadOnlyList(Of T)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of T)
+  name.vb: IReadOnlyList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    nameWithType: IReadOnlyList
+    fullName: System.Collections.Generic.IReadOnlyList
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    nameWithType: IReadOnlyList
+    fullName: System.Collections.Generic.IReadOnlyList
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IReadOnlyCollection`1
+  commentId: T:System.Collections.Generic.IReadOnlyCollection`1
+  isExternal: true
+  name: IReadOnlyCollection<T>
+  nameWithType: IReadOnlyCollection<T>
+  fullName: System.Collections.Generic.IReadOnlyCollection<T>
+  nameWithType.vb: IReadOnlyCollection(Of T)
+  fullName.vb: System.Collections.Generic.IReadOnlyCollection(Of T)
+  name.vb: IReadOnlyCollection(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyCollection`1
+    name: IReadOnlyCollection
+    nameWithType: IReadOnlyCollection
+    fullName: System.Collections.Generic.IReadOnlyCollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyCollection`1
+    name: IReadOnlyCollection
+    nameWithType: IReadOnlyCollection
+    fullName: System.Collections.Generic.IReadOnlyCollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IEnumerable`1
+  commentId: T:System.Collections.Generic.IEnumerable`1
+  isExternal: true
+  name: IEnumerable<T>
+  nameWithType: IEnumerable<T>
+  fullName: System.Collections.Generic.IEnumerable<T>
+  nameWithType.vb: IEnumerable(Of T)
+  fullName.vb: System.Collections.Generic.IEnumerable(Of T)
+  name.vb: IEnumerable(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    nameWithType: IEnumerable
+    fullName: System.Collections.Generic.IEnumerable
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    nameWithType: IEnumerable
+    fullName: System.Collections.Generic.IEnumerable
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections
+  commentId: N:System.Collections
+  isExternal: true
+  name: System.Collections
+  nameWithType: System.Collections
+  fullName: System.Collections
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#get_Item(System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection`1.System#Collections#IList#get_Item(System.Int32)
+  isExternal: true
+  name: IList.get_Item(Int32)
+  nameWithType: Collection<T>.IList.get_Item(Int32)
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.get_Item(System.Int32)
+  nameWithType.vb: Collection(Of T).System.Collections.IList.get_Item(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.get_Item(System.Int32)
+  name.vb: System.Collections.IList.get_Item(Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#get_Item(System.Int32)
+    name: IList.get_Item
+    nameWithType: Collection<T>.IList.get_Item
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.get_Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#get_Item(System.Int32)
+    name: System.Collections.IList.get_Item
+    nameWithType: Collection(Of T).System.Collections.IList.get_Item
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.get_Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#set_Item(System.Int32,System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection`1.System#Collections#IList#set_Item(System.Int32,System.Object)
+  isExternal: true
+  name: IList.set_Item(Int32, Object)
+  nameWithType: Collection<T>.IList.set_Item(Int32, Object)
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.set_Item(System.Int32, System.Object)
+  nameWithType.vb: Collection(Of T).System.Collections.IList.set_Item(Int32, Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.set_Item(System.Int32, System.Object)
+  name.vb: System.Collections.IList.set_Item(Int32, Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#set_Item(System.Int32,System.Object)
+    name: IList.set_Item
+    nameWithType: Collection<T>.IList.set_Item
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.set_Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#set_Item(System.Int32,System.Object)
+    name: System.Collections.IList.set_Item
+    nameWithType: Collection(Of T).System.Collections.IList.set_Item
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.set_Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.Add(`0)
+  commentId: M:System.Collections.ObjectModel.Collection`1.Add(`0)
+  isExternal: true
+  name: Add(T)
+  nameWithType: Collection<T>.Add(T)
+  fullName: System.Collections.ObjectModel.Collection<T>.Add(T)
+  nameWithType.vb: Collection(Of T).Add(T)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).Add(T)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Add(`0)
+    name: Add
+    nameWithType: Collection<T>.Add
+    fullName: System.Collections.ObjectModel.Collection<T>.Add
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Add(`0)
+    name: Add
+    nameWithType: Collection(Of T).Add
+    fullName: System.Collections.ObjectModel.Collection(Of T).Add
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.Clear
+  commentId: M:System.Collections.ObjectModel.Collection`1.Clear
+  isExternal: true
+  name: Clear()
+  nameWithType: Collection<T>.Clear()
+  fullName: System.Collections.ObjectModel.Collection<T>.Clear()
+  nameWithType.vb: Collection(Of T).Clear()
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).Clear()
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Clear
+    name: Clear
+    nameWithType: Collection<T>.Clear
+    fullName: System.Collections.ObjectModel.Collection<T>.Clear
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Clear
+    name: Clear
+    nameWithType: Collection(Of T).Clear
+    fullName: System.Collections.ObjectModel.Collection(Of T).Clear
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.ClearItems
+  commentId: M:System.Collections.ObjectModel.Collection`1.ClearItems
+  isExternal: true
+  name: ClearItems()
+  nameWithType: Collection<T>.ClearItems()
+  fullName: System.Collections.ObjectModel.Collection<T>.ClearItems()
+  nameWithType.vb: Collection(Of T).ClearItems()
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).ClearItems()
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.ClearItems
+    name: ClearItems
+    nameWithType: Collection<T>.ClearItems
+    fullName: System.Collections.ObjectModel.Collection<T>.ClearItems
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.ClearItems
+    name: ClearItems
+    nameWithType: Collection(Of T).ClearItems
+    fullName: System.Collections.ObjectModel.Collection(Of T).ClearItems
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.Contains(`0)
+  commentId: M:System.Collections.ObjectModel.Collection`1.Contains(`0)
+  isExternal: true
+  name: Contains(T)
+  nameWithType: Collection<T>.Contains(T)
+  fullName: System.Collections.ObjectModel.Collection<T>.Contains(T)
+  nameWithType.vb: Collection(Of T).Contains(T)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).Contains(T)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Contains(`0)
+    name: Contains
+    nameWithType: Collection<T>.Contains
+    fullName: System.Collections.ObjectModel.Collection<T>.Contains
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Contains(`0)
+    name: Contains
+    nameWithType: Collection(Of T).Contains
+    fullName: System.Collections.ObjectModel.Collection(Of T).Contains
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.CopyTo(`0[],System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection`1.CopyTo(`0[],System.Int32)
+  isExternal: true
+  name: CopyTo(T[], Int32)
+  nameWithType: Collection<T>.CopyTo(T[], Int32)
+  fullName: System.Collections.ObjectModel.Collection<T>.CopyTo(T[], System.Int32)
+  nameWithType.vb: Collection(Of T).CopyTo(T(), Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).CopyTo(T(), System.Int32)
+  name.vb: CopyTo(T(), Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.CopyTo(`0[],System.Int32)
+    name: CopyTo
+    nameWithType: Collection<T>.CopyTo
+    fullName: System.Collections.ObjectModel.Collection<T>.CopyTo
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '[]'
+    nameWithType: '[]'
+    fullName: '[]'
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.CopyTo(`0[],System.Int32)
+    name: CopyTo
+    nameWithType: Collection(Of T).CopyTo
+    fullName: System.Collections.ObjectModel.Collection(Of T).CopyTo
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: ()
+    nameWithType: ()
+    fullName: ()
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.GetEnumerator
+  commentId: M:System.Collections.ObjectModel.Collection`1.GetEnumerator
+  isExternal: true
+  name: GetEnumerator()
+  nameWithType: Collection<T>.GetEnumerator()
+  fullName: System.Collections.ObjectModel.Collection<T>.GetEnumerator()
+  nameWithType.vb: Collection(Of T).GetEnumerator()
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).GetEnumerator()
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.GetEnumerator
+    name: GetEnumerator
+    nameWithType: Collection<T>.GetEnumerator
+    fullName: System.Collections.ObjectModel.Collection<T>.GetEnumerator
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.GetEnumerator
+    name: GetEnumerator
+    nameWithType: Collection(Of T).GetEnumerator
+    fullName: System.Collections.ObjectModel.Collection(Of T).GetEnumerator
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.IndexOf(`0)
+  commentId: M:System.Collections.ObjectModel.Collection`1.IndexOf(`0)
+  isExternal: true
+  name: IndexOf(T)
+  nameWithType: Collection<T>.IndexOf(T)
+  fullName: System.Collections.ObjectModel.Collection<T>.IndexOf(T)
+  nameWithType.vb: Collection(Of T).IndexOf(T)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).IndexOf(T)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.IndexOf(`0)
+    name: IndexOf
+    nameWithType: Collection<T>.IndexOf
+    fullName: System.Collections.ObjectModel.Collection<T>.IndexOf
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.IndexOf(`0)
+    name: IndexOf
+    nameWithType: Collection(Of T).IndexOf
+    fullName: System.Collections.ObjectModel.Collection(Of T).IndexOf
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.Insert(System.Int32,`0)
+  commentId: M:System.Collections.ObjectModel.Collection`1.Insert(System.Int32,`0)
+  isExternal: true
+  name: Insert(Int32, T)
+  nameWithType: Collection<T>.Insert(Int32, T)
+  fullName: System.Collections.ObjectModel.Collection<T>.Insert(System.Int32, T)
+  nameWithType.vb: Collection(Of T).Insert(Int32, T)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).Insert(System.Int32, T)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Insert(System.Int32,`0)
+    name: Insert
+    nameWithType: Collection<T>.Insert
+    fullName: System.Collections.ObjectModel.Collection<T>.Insert
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Insert(System.Int32,`0)
+    name: Insert
+    nameWithType: Collection(Of T).Insert
+    fullName: System.Collections.ObjectModel.Collection(Of T).Insert
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.InsertItem(System.Int32,`0)
+  commentId: M:System.Collections.ObjectModel.Collection`1.InsertItem(System.Int32,`0)
+  isExternal: true
+  name: InsertItem(Int32, T)
+  nameWithType: Collection<T>.InsertItem(Int32, T)
+  fullName: System.Collections.ObjectModel.Collection<T>.InsertItem(System.Int32, T)
+  nameWithType.vb: Collection(Of T).InsertItem(Int32, T)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).InsertItem(System.Int32, T)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.InsertItem(System.Int32,`0)
+    name: InsertItem
+    nameWithType: Collection<T>.InsertItem
+    fullName: System.Collections.ObjectModel.Collection<T>.InsertItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.InsertItem(System.Int32,`0)
+    name: InsertItem
+    nameWithType: Collection(Of T).InsertItem
+    fullName: System.Collections.ObjectModel.Collection(Of T).InsertItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.Remove(`0)
+  commentId: M:System.Collections.ObjectModel.Collection`1.Remove(`0)
+  isExternal: true
+  name: Remove(T)
+  nameWithType: Collection<T>.Remove(T)
+  fullName: System.Collections.ObjectModel.Collection<T>.Remove(T)
+  nameWithType.vb: Collection(Of T).Remove(T)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).Remove(T)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Remove(`0)
+    name: Remove
+    nameWithType: Collection<T>.Remove
+    fullName: System.Collections.ObjectModel.Collection<T>.Remove
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Remove(`0)
+    name: Remove
+    nameWithType: Collection(Of T).Remove
+    fullName: System.Collections.ObjectModel.Collection(Of T).Remove
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.RemoveAt(System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection`1.RemoveAt(System.Int32)
+  isExternal: true
+  name: RemoveAt(Int32)
+  nameWithType: Collection<T>.RemoveAt(Int32)
+  fullName: System.Collections.ObjectModel.Collection<T>.RemoveAt(System.Int32)
+  nameWithType.vb: Collection(Of T).RemoveAt(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).RemoveAt(System.Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.RemoveAt(System.Int32)
+    name: RemoveAt
+    nameWithType: Collection<T>.RemoveAt
+    fullName: System.Collections.ObjectModel.Collection<T>.RemoveAt
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.RemoveAt(System.Int32)
+    name: RemoveAt
+    nameWithType: Collection(Of T).RemoveAt
+    fullName: System.Collections.ObjectModel.Collection(Of T).RemoveAt
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.RemoveItem(System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection`1.RemoveItem(System.Int32)
+  isExternal: true
+  name: RemoveItem(Int32)
+  nameWithType: Collection<T>.RemoveItem(Int32)
+  fullName: System.Collections.ObjectModel.Collection<T>.RemoveItem(System.Int32)
+  nameWithType.vb: Collection(Of T).RemoveItem(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).RemoveItem(System.Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.RemoveItem(System.Int32)
+    name: RemoveItem
+    nameWithType: Collection<T>.RemoveItem
+    fullName: System.Collections.ObjectModel.Collection<T>.RemoveItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.RemoveItem(System.Int32)
+    name: RemoveItem
+    nameWithType: Collection(Of T).RemoveItem
+    fullName: System.Collections.ObjectModel.Collection(Of T).RemoveItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.SetItem(System.Int32,`0)
+  commentId: M:System.Collections.ObjectModel.Collection`1.SetItem(System.Int32,`0)
+  isExternal: true
+  name: SetItem(Int32, T)
+  nameWithType: Collection<T>.SetItem(Int32, T)
+  fullName: System.Collections.ObjectModel.Collection<T>.SetItem(System.Int32, T)
+  nameWithType.vb: Collection(Of T).SetItem(Int32, T)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).SetItem(System.Int32, T)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.SetItem(System.Int32,`0)
+    name: SetItem
+    nameWithType: Collection<T>.SetItem
+    fullName: System.Collections.ObjectModel.Collection<T>.SetItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.SetItem(System.Int32,`0)
+    name: SetItem
+    nameWithType: Collection(Of T).SetItem
+    fullName: System.Collections.ObjectModel.Collection(Of T).SetItem
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+  commentId: M:System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+  isExternal: true
+  name: ICollection.CopyTo(Array, Int32)
+  nameWithType: Collection<T>.ICollection.CopyTo(Array, Int32)
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.ICollection.CopyTo(System.Array, System.Int32)
+  nameWithType.vb: Collection(Of T).System.Collections.ICollection.CopyTo(Array, Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.ICollection.CopyTo(System.Array, System.Int32)
+  name.vb: System.Collections.ICollection.CopyTo(Array, Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+    name: ICollection.CopyTo
+    nameWithType: Collection<T>.ICollection.CopyTo
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.ICollection.CopyTo
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Array
+    name: Array
+    nameWithType: Array
+    fullName: System.Array
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#CopyTo(System.Array,System.Int32)
+    name: System.Collections.ICollection.CopyTo
+    nameWithType: Collection(Of T).System.Collections.ICollection.CopyTo
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.ICollection.CopyTo
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Array
+    name: Array
+    nameWithType: Array
+    fullName: System.Array
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IEnumerable#GetEnumerator
+  commentId: M:System.Collections.ObjectModel.Collection`1.System#Collections#IEnumerable#GetEnumerator
+  isExternal: true
+  name: IEnumerable.GetEnumerator()
+  nameWithType: Collection<T>.IEnumerable.GetEnumerator()
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IEnumerable.GetEnumerator()
+  nameWithType.vb: Collection(Of T).System.Collections.IEnumerable.GetEnumerator()
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IEnumerable.GetEnumerator()
+  name.vb: System.Collections.IEnumerable.GetEnumerator()
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IEnumerable#GetEnumerator
+    name: IEnumerable.GetEnumerator
+    nameWithType: Collection<T>.IEnumerable.GetEnumerator
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IEnumerable.GetEnumerator
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IEnumerable#GetEnumerator
+    name: System.Collections.IEnumerable.GetEnumerator
+    nameWithType: Collection(Of T).System.Collections.IEnumerable.GetEnumerator
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.IEnumerable.GetEnumerator
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Add(System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection`1.System#Collections#IList#Add(System.Object)
+  isExternal: true
+  name: IList.Add(Object)
+  nameWithType: Collection<T>.IList.Add(Object)
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Add(System.Object)
+  nameWithType.vb: Collection(Of T).System.Collections.IList.Add(Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Add(System.Object)
+  name.vb: System.Collections.IList.Add(Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Add(System.Object)
+    name: IList.Add
+    nameWithType: Collection<T>.IList.Add
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Add
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Add(System.Object)
+    name: System.Collections.IList.Add
+    nameWithType: Collection(Of T).System.Collections.IList.Add
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Add
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Contains(System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection`1.System#Collections#IList#Contains(System.Object)
+  isExternal: true
+  name: IList.Contains(Object)
+  nameWithType: Collection<T>.IList.Contains(Object)
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Contains(System.Object)
+  nameWithType.vb: Collection(Of T).System.Collections.IList.Contains(Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Contains(System.Object)
+  name.vb: System.Collections.IList.Contains(Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Contains(System.Object)
+    name: IList.Contains
+    nameWithType: Collection<T>.IList.Contains
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Contains
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Contains(System.Object)
+    name: System.Collections.IList.Contains
+    nameWithType: Collection(Of T).System.Collections.IList.Contains
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Contains
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IndexOf(System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection`1.System#Collections#IList#IndexOf(System.Object)
+  isExternal: true
+  name: IList.IndexOf(Object)
+  nameWithType: Collection<T>.IList.IndexOf(Object)
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.IndexOf(System.Object)
+  nameWithType.vb: Collection(Of T).System.Collections.IList.IndexOf(Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.IndexOf(System.Object)
+  name.vb: System.Collections.IList.IndexOf(Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IndexOf(System.Object)
+    name: IList.IndexOf
+    nameWithType: Collection<T>.IList.IndexOf
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.IndexOf
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IndexOf(System.Object)
+    name: System.Collections.IList.IndexOf
+    nameWithType: Collection(Of T).System.Collections.IList.IndexOf
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.IndexOf
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Insert(System.Int32,System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection`1.System#Collections#IList#Insert(System.Int32,System.Object)
+  isExternal: true
+  name: IList.Insert(Int32, Object)
+  nameWithType: Collection<T>.IList.Insert(Int32, Object)
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Insert(System.Int32, System.Object)
+  nameWithType.vb: Collection(Of T).System.Collections.IList.Insert(Int32, Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Insert(System.Int32, System.Object)
+  name.vb: System.Collections.IList.Insert(Int32, Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Insert(System.Int32,System.Object)
+    name: IList.Insert
+    nameWithType: Collection<T>.IList.Insert
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Insert
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Insert(System.Int32,System.Object)
+    name: System.Collections.IList.Insert
+    nameWithType: Collection(Of T).System.Collections.IList.Insert
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Insert
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Remove(System.Object)
+  commentId: M:System.Collections.ObjectModel.Collection`1.System#Collections#IList#Remove(System.Object)
+  isExternal: true
+  name: IList.Remove(Object)
+  nameWithType: Collection<T>.IList.Remove(Object)
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Remove(System.Object)
+  nameWithType.vb: Collection(Of T).System.Collections.IList.Remove(Object)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Remove(System.Object)
+  name.vb: System.Collections.IList.Remove(Object)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Remove(System.Object)
+    name: IList.Remove
+    nameWithType: Collection<T>.IList.Remove
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Remove
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Remove(System.Object)
+    name: System.Collections.IList.Remove
+    nameWithType: Collection(Of T).System.Collections.IList.Remove
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Remove
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.Count
+  commentId: P:System.Collections.ObjectModel.Collection`1.Count
+  isExternal: true
+  name: Count
+  nameWithType: Collection<T>.Count
+  fullName: System.Collections.ObjectModel.Collection<T>.Count
+  nameWithType.vb: Collection(Of T).Count
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).Count
+- uid: System.Collections.ObjectModel.Collection`1.Item(System.Int32)
+  commentId: P:System.Collections.ObjectModel.Collection`1.Item(System.Int32)
+  isExternal: true
+  name: Item[Int32]
+  nameWithType: Collection<T>.Item[Int32]
+  fullName: System.Collections.ObjectModel.Collection<T>.Item[System.Int32]
+  nameWithType.vb: Collection(Of T).Item(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).Item(System.Int32)
+  name.vb: Item(Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.Item(System.Int32)
+    name: Item
+    nameWithType: Collection<T>.Item
+    fullName: System.Collections.ObjectModel.Collection<T>.Item
+    isExternal: true
+  - name: '['
+    nameWithType: '['
+    fullName: '['
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ']'
+    nameWithType: ']'
+    fullName: ']'
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.Item(System.Int32)
+    name: Item
+    nameWithType: Collection(Of T).Item
+    fullName: System.Collections.ObjectModel.Collection(Of T).Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.ObjectModel.Collection`1.Items
+  commentId: P:System.Collections.ObjectModel.Collection`1.Items
+  isExternal: true
+  name: Items
+  nameWithType: Collection<T>.Items
+  fullName: System.Collections.ObjectModel.Collection<T>.Items
+  nameWithType.vb: Collection(Of T).Items
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).Items
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  commentId: P:System.Collections.ObjectModel.Collection`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  isExternal: true
+  name: ICollection<T>.IsReadOnly
+  nameWithType: Collection<T>.ICollection<T>.IsReadOnly
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.Generic.ICollection<T>.IsReadOnly
+  nameWithType.vb: Collection(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+  name.vb: System.Collections.Generic.ICollection<T>.IsReadOnly
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#IsSynchronized
+  commentId: P:System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#IsSynchronized
+  isExternal: true
+  name: ICollection.IsSynchronized
+  nameWithType: Collection<T>.ICollection.IsSynchronized
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.ICollection.IsSynchronized
+  nameWithType.vb: Collection(Of T).System.Collections.ICollection.IsSynchronized
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.ICollection.IsSynchronized
+  name.vb: System.Collections.ICollection.IsSynchronized
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#SyncRoot
+  commentId: P:System.Collections.ObjectModel.Collection`1.System#Collections#ICollection#SyncRoot
+  isExternal: true
+  name: ICollection.SyncRoot
+  nameWithType: Collection<T>.ICollection.SyncRoot
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.ICollection.SyncRoot
+  nameWithType.vb: Collection(Of T).System.Collections.ICollection.SyncRoot
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.ICollection.SyncRoot
+  name.vb: System.Collections.ICollection.SyncRoot
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IsFixedSize
+  commentId: P:System.Collections.ObjectModel.Collection`1.System#Collections#IList#IsFixedSize
+  isExternal: true
+  name: IList.IsFixedSize
+  nameWithType: Collection<T>.IList.IsFixedSize
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.IsFixedSize
+  nameWithType.vb: Collection(Of T).System.Collections.IList.IsFixedSize
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.IsFixedSize
+  name.vb: System.Collections.IList.IsFixedSize
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#IsReadOnly
+  commentId: P:System.Collections.ObjectModel.Collection`1.System#Collections#IList#IsReadOnly
+  isExternal: true
+  name: IList.IsReadOnly
+  nameWithType: Collection<T>.IList.IsReadOnly
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.IsReadOnly
+  nameWithType.vb: Collection(Of T).System.Collections.IList.IsReadOnly
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.IsReadOnly
+  name.vb: System.Collections.IList.IsReadOnly
+- uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Item(System.Int32)
+  commentId: P:System.Collections.ObjectModel.Collection`1.System#Collections#IList#Item(System.Int32)
+  isExternal: true
+  name: IList.Item[Int32]
+  nameWithType: Collection<T>.IList.Item[Int32]
+  fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Item[System.Int32]
+  nameWithType.vb: Collection(Of T).System.Collections.IList.Item(Int32)
+  fullName.vb: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Item(System.Int32)
+  name.vb: System.Collections.IList.Item(Int32)
+  spec.csharp:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Item(System.Int32)
+    name: IList.Item
+    nameWithType: Collection<T>.IList.Item
+    fullName: System.Collections.ObjectModel.Collection<T>.System.Collections.IList.Item
+    isExternal: true
+  - name: '['
+    nameWithType: '['
+    fullName: '['
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: ']'
+    nameWithType: ']'
+    fullName: ']'
+  spec.vb:
+  - uid: System.Collections.ObjectModel.Collection`1.System#Collections#IList#Item(System.Int32)
+    name: System.Collections.IList.Item
+    nameWithType: Collection(Of T).System.Collections.IList.Item
+    fullName: System.Collections.ObjectModel.Collection(Of T).System.Collections.IList.Item
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Int32
+    name: Int32
+    nameWithType: Int32
+    fullName: System.Int32
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )

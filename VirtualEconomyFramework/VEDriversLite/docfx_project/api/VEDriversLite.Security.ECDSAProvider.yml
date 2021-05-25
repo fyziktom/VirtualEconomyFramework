@@ -1,0 +1,1058 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.Security.ECDSAProvider
+  commentId: T:VEDriversLite.Security.ECDSAProvider
+  id: ECDSAProvider
+  parent: VEDriversLite.Security
+  children:
+  - VEDriversLite.Security.ECDSAProvider.DecryptMessage(System.String,System.String)
+  - VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)
+  - VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,System.String)
+  - VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey(System.String,System.String,System.String)
+  - VEDriversLite.Security.ECDSAProvider.EncryptMessage(System.String,System.String)
+  - VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)
+  - VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,System.String)
+  - VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecretWithKey(System.String,System.String,System.String)
+  - VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,NBitcoin.BitcoinSecret)
+  - VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,System.String)
+  - VEDriversLite.Security.ECDSAProvider.SignMessage(System.String,NBitcoin.BitcoinSecret)
+  - VEDriversLite.Security.ECDSAProvider.SignMessage(System.String,System.String)
+  - VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,NBitcoin.PubKey)
+  - VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,System.String)
+  langs:
+  - csharp
+  - vb
+  name: ECDSAProvider
+  nameWithType: ECDSAProvider
+  fullName: VEDriversLite.Security.ECDSAProvider
+  type: Class
+  source:
+    id: ECDSAProvider
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 10
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static class ECDSAProvider
+    content.vb: Public Module ECDSAProvider
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - static
+  - class
+  modifiers.vb:
+  - Public
+  - Module
+- uid: VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,System.String)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,System.String)
+  id: VerifyMessage(System.String,System.String,System.String)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: VerifyMessage(String, String, String)
+  nameWithType: ECDSAProvider.VerifyMessage(String, String, String)
+  fullName: VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String, System.String, System.String)
+  type: Method
+  source:
+    id: VerifyMessage
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 12
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> VerifyMessage(string message, string signature, string address)
+    parameters:
+    - id: message
+      type: System.String
+    - id: signature
+      type: System.String
+    - id: address
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function VerifyMessage(message As String, signature As String, address As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.VerifyMessage*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,NBitcoin.PubKey)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,NBitcoin.PubKey)
+  id: VerifyMessage(System.String,System.String,NBitcoin.PubKey)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: VerifyMessage(String, String, PubKey)
+  nameWithType: ECDSAProvider.VerifyMessage(String, String, PubKey)
+  fullName: VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String, System.String, NBitcoin.PubKey)
+  type: Method
+  source:
+    id: VerifyMessage
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 32
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> VerifyMessage(string message, string signature, PubKey pubkey)
+    parameters:
+    - id: message
+      type: System.String
+    - id: signature
+      type: System.String
+    - id: pubkey
+      type: NBitcoin.PubKey
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function VerifyMessage(message As String, signature As String, pubkey As PubKey) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.VerifyMessage*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.SignMessage(System.String,System.String)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.SignMessage(System.String,System.String)
+  id: SignMessage(System.String,System.String)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: SignMessage(String, String)
+  nameWithType: ECDSAProvider.SignMessage(String, String)
+  fullName: VEDriversLite.Security.ECDSAProvider.SignMessage(System.String, System.String)
+  type: Method
+  source:
+    id: SignMessage
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 54
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> SignMessage(string message, string privateKey)
+    parameters:
+    - id: message
+      type: System.String
+    - id: privateKey
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function SignMessage(message As String, privateKey As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.SignMessage*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.SignMessage(System.String,NBitcoin.BitcoinSecret)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.SignMessage(System.String,NBitcoin.BitcoinSecret)
+  id: SignMessage(System.String,NBitcoin.BitcoinSecret)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: SignMessage(String, BitcoinSecret)
+  nameWithType: ECDSAProvider.SignMessage(String, BitcoinSecret)
+  fullName: VEDriversLite.Security.ECDSAProvider.SignMessage(System.String, NBitcoin.BitcoinSecret)
+  type: Method
+  source:
+    id: SignMessage
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 71
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> SignMessage(string message, BitcoinSecret secret)
+    parameters:
+    - id: message
+      type: System.String
+    - id: secret
+      type: NBitcoin.BitcoinSecret
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function SignMessage(message As String, secret As BitcoinSecret) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.SignMessage*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.DecryptMessage(System.String,System.String)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.DecryptMessage(System.String,System.String)
+  id: DecryptMessage(System.String,System.String)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: DecryptMessage(String, String)
+  nameWithType: ECDSAProvider.DecryptMessage(String, String)
+  fullName: VEDriversLite.Security.ECDSAProvider.DecryptMessage(System.String, System.String)
+  type: Method
+  source:
+    id: DecryptMessage
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 87
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> DecryptMessage(string cryptedMessage, string privateKey)
+    parameters:
+    - id: cryptedMessage
+      type: System.String
+    - id: privateKey
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function DecryptMessage(cryptedMessage As String, privateKey As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.DecryptMessage*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.EncryptMessage(System.String,System.String)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.EncryptMessage(System.String,System.String)
+  id: EncryptMessage(System.String,System.String)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: EncryptMessage(String, String)
+  nameWithType: ECDSAProvider.EncryptMessage(String, String)
+  fullName: VEDriversLite.Security.ECDSAProvider.EncryptMessage(System.String, System.String)
+  type: Method
+  source:
+    id: EncryptMessage
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 105
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> EncryptMessage(string message, string publicKey)
+    parameters:
+    - id: message
+      type: System.String
+    - id: publicKey
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function EncryptMessage(message As String, publicKey As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.EncryptMessage*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,System.String)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,System.String)
+  id: GetSharedSecret(System.String,System.String)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: GetSharedSecret(String, String)
+  nameWithType: ECDSAProvider.GetSharedSecret(String, String)
+  fullName: VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String, System.String)
+  type: Method
+  source:
+    id: GetSharedSecret
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 122
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> GetSharedSecret(string bobAddress, string key)
+    parameters:
+    - id: bobAddress
+      type: System.String
+    - id: key
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function GetSharedSecret(bobAddress As String, key As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.GetSharedSecret*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,NBitcoin.BitcoinSecret)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,NBitcoin.BitcoinSecret)
+  id: GetSharedSecret(System.String,NBitcoin.BitcoinSecret)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: GetSharedSecret(String, BitcoinSecret)
+  nameWithType: ECDSAProvider.GetSharedSecret(String, BitcoinSecret)
+  fullName: VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String, NBitcoin.BitcoinSecret)
+  type: Method
+  source:
+    id: GetSharedSecret
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 135
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret)
+    parameters:
+    - id: bobAddress
+      type: System.String
+    - id: secret
+      type: NBitcoin.BitcoinSecret
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function GetSharedSecret(bobAddress As String, secret As BitcoinSecret) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.GetSharedSecret*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,System.String)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,System.String)
+  id: EncryptStringWithSharedSecret(System.String,System.String,System.String)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: EncryptStringWithSharedSecret(String, String, String)
+  nameWithType: ECDSAProvider.EncryptStringWithSharedSecret(String, String, String)
+  fullName: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String, System.String, System.String)
+  type: Method
+  source:
+    id: EncryptStringWithSharedSecret
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 147
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, string key)
+    parameters:
+    - id: message
+      type: System.String
+    - id: bobAddress
+      type: System.String
+    - id: key
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function EncryptStringWithSharedSecret(message As String, bobAddress As String, key As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)
+  id: EncryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: EncryptStringWithSharedSecret(String, String, BitcoinSecret)
+  nameWithType: ECDSAProvider.EncryptStringWithSharedSecret(String, String, BitcoinSecret)
+  fullName: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String, System.String, NBitcoin.BitcoinSecret)
+  type: Method
+  source:
+    id: EncryptStringWithSharedSecret
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 160
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, BitcoinSecret secret)
+    parameters:
+    - id: message
+      type: System.String
+    - id: bobAddress
+      type: System.String
+    - id: secret
+      type: NBitcoin.BitcoinSecret
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function EncryptStringWithSharedSecret(message As String, bobAddress As String, secret As BitcoinSecret) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecretWithKey(System.String,System.String,System.String)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecretWithKey(System.String,System.String,System.String)
+  id: EncryptStringWithSharedSecretWithKey(System.String,System.String,System.String)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: EncryptStringWithSharedSecretWithKey(String, String, String)
+  nameWithType: ECDSAProvider.EncryptStringWithSharedSecretWithKey(String, String, String)
+  fullName: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecretWithKey(System.String, System.String, System.String)
+  type: Method
+  source:
+    id: EncryptStringWithSharedSecretWithKey
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 184
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> EncryptStringWithSharedSecretWithKey(string message, string bobAddress, string key)
+    parameters:
+    - id: message
+      type: System.String
+    - id: bobAddress
+      type: System.String
+    - id: key
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function EncryptStringWithSharedSecretWithKey(message As String, bobAddress As String, key As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecretWithKey*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,System.String)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,System.String)
+  id: DecryptStringWithSharedSecret(System.String,System.String,System.String)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: DecryptStringWithSharedSecret(String, String, String)
+  nameWithType: ECDSAProvider.DecryptStringWithSharedSecret(String, String, String)
+  fullName: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String, System.String, System.String)
+  type: Method
+  source:
+    id: DecryptStringWithSharedSecret
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 205
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> DecryptStringWithSharedSecret(string emessage, string bobAddress, string key)
+    parameters:
+    - id: emessage
+      type: System.String
+    - id: bobAddress
+      type: System.String
+    - id: key
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function DecryptStringWithSharedSecret(emessage As String, bobAddress As String, key As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)
+  id: DecryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: DecryptStringWithSharedSecret(String, String, BitcoinSecret)
+  nameWithType: ECDSAProvider.DecryptStringWithSharedSecret(String, String, BitcoinSecret)
+  fullName: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String, System.String, NBitcoin.BitcoinSecret)
+  type: Method
+  source:
+    id: DecryptStringWithSharedSecret
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 218
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> DecryptStringWithSharedSecret(string emessage, string bobAddress, BitcoinSecret secret)
+    parameters:
+    - id: emessage
+      type: System.String
+    - id: bobAddress
+      type: System.String
+    - id: secret
+      type: NBitcoin.BitcoinSecret
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function DecryptStringWithSharedSecret(emessage As String, bobAddress As String, secret As BitcoinSecret) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey(System.String,System.String,System.String)
+  commentId: M:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey(System.String,System.String,System.String)
+  id: DecryptStringWithSharedSecretWithKey(System.String,System.String,System.String)
+  parent: VEDriversLite.Security.ECDSAProvider
+  langs:
+  - csharp
+  - vb
+  name: DecryptStringWithSharedSecretWithKey(String, String, String)
+  nameWithType: ECDSAProvider.DecryptStringWithSharedSecretWithKey(String, String, String)
+  fullName: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey(System.String, System.String, System.String)
+  type: Method
+  source:
+    id: DecryptStringWithSharedSecretWithKey
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\ECDSAProvider.cs
+    startLine: 242
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public static Task<(bool, string)> DecryptStringWithSharedSecretWithKey(string emessage, string bobAddress, string key)
+    parameters:
+    - id: emessage
+      type: System.String
+    - id: bobAddress
+      type: System.String
+    - id: key
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function DecryptStringWithSharedSecretWithKey(emessage As String, bobAddress As String, key As String) As Task(Of(Boolean, String))
+  overload: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+references:
+- uid: VEDriversLite.Security
+  commentId: N:VEDriversLite.Security
+  name: VEDriversLite.Security
+  nameWithType: VEDriversLite.Security
+  fullName: VEDriversLite.Security
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.Security.ECDSAProvider.VerifyMessage*
+  commentId: Overload:VEDriversLite.Security.ECDSAProvider.VerifyMessage
+  name: VerifyMessage
+  nameWithType: ECDSAProvider.VerifyMessage
+  fullName: VEDriversLite.Security.ECDSAProvider.VerifyMessage
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, String>>
+  nameWithType: Task<ValueTuple<Boolean, String>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, System.String>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, String))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, System.String))
+  name.vb: Task(Of ValueTuple(Of Boolean, String))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+- uid: NBitcoin.PubKey
+  commentId: T:NBitcoin.PubKey
+  parent: NBitcoin
+  isExternal: true
+  name: PubKey
+  nameWithType: PubKey
+  fullName: NBitcoin.PubKey
+- uid: NBitcoin
+  commentId: N:NBitcoin
+  isExternal: true
+  name: NBitcoin
+  nameWithType: NBitcoin
+  fullName: NBitcoin
+- uid: VEDriversLite.Security.ECDSAProvider.SignMessage*
+  commentId: Overload:VEDriversLite.Security.ECDSAProvider.SignMessage
+  name: SignMessage
+  nameWithType: ECDSAProvider.SignMessage
+  fullName: VEDriversLite.Security.ECDSAProvider.SignMessage
+- uid: NBitcoin.BitcoinSecret
+  commentId: T:NBitcoin.BitcoinSecret
+  parent: NBitcoin
+  isExternal: true
+  name: BitcoinSecret
+  nameWithType: BitcoinSecret
+  fullName: NBitcoin.BitcoinSecret
+- uid: VEDriversLite.Security.ECDSAProvider.DecryptMessage*
+  commentId: Overload:VEDriversLite.Security.ECDSAProvider.DecryptMessage
+  name: DecryptMessage
+  nameWithType: ECDSAProvider.DecryptMessage
+  fullName: VEDriversLite.Security.ECDSAProvider.DecryptMessage
+- uid: VEDriversLite.Security.ECDSAProvider.EncryptMessage*
+  commentId: Overload:VEDriversLite.Security.ECDSAProvider.EncryptMessage
+  name: EncryptMessage
+  nameWithType: ECDSAProvider.EncryptMessage
+  fullName: VEDriversLite.Security.ECDSAProvider.EncryptMessage
+- uid: VEDriversLite.Security.ECDSAProvider.GetSharedSecret*
+  commentId: Overload:VEDriversLite.Security.ECDSAProvider.GetSharedSecret
+  name: GetSharedSecret
+  nameWithType: ECDSAProvider.GetSharedSecret
+  fullName: VEDriversLite.Security.ECDSAProvider.GetSharedSecret
+- uid: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret*
+  commentId: Overload:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret
+  name: EncryptStringWithSharedSecret
+  nameWithType: ECDSAProvider.EncryptStringWithSharedSecret
+  fullName: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret
+- uid: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecretWithKey*
+  commentId: Overload:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecretWithKey
+  name: EncryptStringWithSharedSecretWithKey
+  nameWithType: ECDSAProvider.EncryptStringWithSharedSecretWithKey
+  fullName: VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecretWithKey
+- uid: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret*
+  commentId: Overload:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret
+  name: DecryptStringWithSharedSecret
+  nameWithType: ECDSAProvider.DecryptStringWithSharedSecret
+  fullName: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret
+- uid: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey*
+  commentId: Overload:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey
+  name: DecryptStringWithSharedSecretWithKey
+  nameWithType: ECDSAProvider.DecryptStringWithSharedSecretWithKey
+  fullName: VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey

@@ -1,0 +1,1076 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.Security.EncryptionKey
+  commentId: T:VEDriversLite.Security.EncryptionKey
+  id: EncryptionKey
+  parent: VEDriversLite.Security
+  children:
+  - VEDriversLite.Security.EncryptionKey.#ctor(System.String,System.String,System.Boolean)
+  - VEDriversLite.Security.EncryptionKey.Deleted
+  - VEDriversLite.Security.EncryptionKey.GetEncryptedKey(System.String,System.Boolean)
+  - VEDriversLite.Security.EncryptionKey.Id
+  - VEDriversLite.Security.EncryptionKey.IsEncrypted
+  - VEDriversLite.Security.EncryptionKey.IsLoaded
+  - VEDriversLite.Security.EncryptionKey.IsPassLoaded
+  - VEDriversLite.Security.EncryptionKey.LoadNewKey(System.String,System.String,System.Boolean)
+  - VEDriversLite.Security.EncryptionKey.LoadPassword(System.String)
+  - VEDriversLite.Security.EncryptionKey.Lock
+  - VEDriversLite.Security.EncryptionKey.Name
+  - VEDriversLite.Security.EncryptionKey.PasswordHash
+  - VEDriversLite.Security.EncryptionKey.PublicKey
+  - VEDriversLite.Security.EncryptionKey.RelatedItemId
+  - VEDriversLite.Security.EncryptionKey.Version
+  langs:
+  - csharp
+  - vb
+  name: EncryptionKey
+  nameWithType: EncryptionKey
+  fullName: VEDriversLite.Security.EncryptionKey
+  type: Class
+  source:
+    id: EncryptionKey
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 8
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public class EncryptionKey
+    content.vb: Public Class EncryptionKey
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.Security.EncryptionKey.#ctor(System.String,System.String,System.Boolean)
+  commentId: M:VEDriversLite.Security.EncryptionKey.#ctor(System.String,System.String,System.Boolean)
+  id: '#ctor(System.String,System.String,System.Boolean)'
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: EncryptionKey(String, String, Boolean)
+  nameWithType: EncryptionKey.EncryptionKey(String, String, Boolean)
+  fullName: VEDriversLite.Security.EncryptionKey.EncryptionKey(System.String, System.String, System.Boolean)
+  type: Constructor
+  source:
+    id: .ctor
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 10
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public EncryptionKey(string key, string password = "", bool fromDb = false)
+    parameters:
+    - id: key
+      type: System.String
+    - id: password
+      type: System.String
+    - id: fromDb
+      type: System.Boolean
+    content.vb: Public Sub New(key As String, password As String = "", fromDb As Boolean = False)
+  overload: VEDriversLite.Security.EncryptionKey.#ctor*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.Id
+  commentId: P:VEDriversLite.Security.EncryptionKey.Id
+  id: Id
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: Id
+  nameWithType: EncryptionKey.Id
+  fullName: VEDriversLite.Security.EncryptionKey.Id
+  type: Property
+  source:
+    id: Id
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 22
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public Guid Id { get; set; }
+    parameters: []
+    return:
+      type: System.Guid
+    content.vb: Public Property Id As Guid
+  overload: VEDriversLite.Security.EncryptionKey.Id*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.RelatedItemId
+  commentId: P:VEDriversLite.Security.EncryptionKey.RelatedItemId
+  id: RelatedItemId
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: RelatedItemId
+  nameWithType: EncryptionKey.RelatedItemId
+  fullName: VEDriversLite.Security.EncryptionKey.RelatedItemId
+  type: Property
+  source:
+    id: RelatedItemId
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 23
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public Guid RelatedItemId { get; set; }
+    parameters: []
+    return:
+      type: System.Guid
+    content.vb: Public Property RelatedItemId As Guid
+  overload: VEDriversLite.Security.EncryptionKey.RelatedItemId*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.Name
+  commentId: P:VEDriversLite.Security.EncryptionKey.Name
+  id: Name
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: Name
+  nameWithType: EncryptionKey.Name
+  fullName: VEDriversLite.Security.EncryptionKey.Name
+  type: Property
+  source:
+    id: Name
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 24
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public string Name { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Name As String
+  overload: VEDriversLite.Security.EncryptionKey.Name*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.PublicKey
+  commentId: P:VEDriversLite.Security.EncryptionKey.PublicKey
+  id: PublicKey
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: PublicKey
+  nameWithType: EncryptionKey.PublicKey
+  fullName: VEDriversLite.Security.EncryptionKey.PublicKey
+  type: Property
+  source:
+    id: PublicKey
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 25
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public string PublicKey { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property PublicKey As String
+  overload: VEDriversLite.Security.EncryptionKey.PublicKey*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.PasswordHash
+  commentId: P:VEDriversLite.Security.EncryptionKey.PasswordHash
+  id: PasswordHash
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: PasswordHash
+  nameWithType: EncryptionKey.PasswordHash
+  fullName: VEDriversLite.Security.EncryptionKey.PasswordHash
+  type: Property
+  source:
+    id: PasswordHash
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 26
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public byte[] PasswordHash { get; set; }
+    parameters: []
+    return:
+      type: System.Byte[]
+    content.vb: Public Property PasswordHash As Byte()
+  overload: VEDriversLite.Security.EncryptionKey.PasswordHash*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.IsEncrypted
+  commentId: P:VEDriversLite.Security.EncryptionKey.IsEncrypted
+  id: IsEncrypted
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: IsEncrypted
+  nameWithType: EncryptionKey.IsEncrypted
+  fullName: VEDriversLite.Security.EncryptionKey.IsEncrypted
+  type: Property
+  source:
+    id: IsEncrypted
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 29
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public bool IsEncrypted { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property IsEncrypted As Boolean
+  overload: VEDriversLite.Security.EncryptionKey.IsEncrypted*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.Version
+  commentId: P:VEDriversLite.Security.EncryptionKey.Version
+  id: Version
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: Version
+  nameWithType: EncryptionKey.Version
+  fullName: VEDriversLite.Security.EncryptionKey.Version
+  type: Property
+  source:
+    id: Version
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 30
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public string Version { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Version As String
+  overload: VEDriversLite.Security.EncryptionKey.Version*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.Deleted
+  commentId: P:VEDriversLite.Security.EncryptionKey.Deleted
+  id: Deleted
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: Deleted
+  nameWithType: EncryptionKey.Deleted
+  fullName: VEDriversLite.Security.EncryptionKey.Deleted
+  type: Property
+  source:
+    id: Deleted
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 31
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public bool Deleted { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property Deleted As Boolean
+  overload: VEDriversLite.Security.EncryptionKey.Deleted*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.IsLoaded
+  commentId: P:VEDriversLite.Security.EncryptionKey.IsLoaded
+  id: IsLoaded
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: IsLoaded
+  nameWithType: EncryptionKey.IsLoaded
+  fullName: VEDriversLite.Security.EncryptionKey.IsLoaded
+  type: Property
+  source:
+    id: IsLoaded
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 32
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public bool IsLoaded { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property IsLoaded As Boolean
+  overload: VEDriversLite.Security.EncryptionKey.IsLoaded*
+  modifiers.csharp:
+  - public
+  - get
+  modifiers.vb:
+  - Public
+  - ReadOnly
+- uid: VEDriversLite.Security.EncryptionKey.IsPassLoaded
+  commentId: P:VEDriversLite.Security.EncryptionKey.IsPassLoaded
+  id: IsPassLoaded
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: IsPassLoaded
+  nameWithType: EncryptionKey.IsPassLoaded
+  fullName: VEDriversLite.Security.EncryptionKey.IsPassLoaded
+  type: Property
+  source:
+    id: IsPassLoaded
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 40
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public bool IsPassLoaded { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property IsPassLoaded As Boolean
+  overload: VEDriversLite.Security.EncryptionKey.IsPassLoaded*
+  modifiers.csharp:
+  - public
+  - get
+  modifiers.vb:
+  - Public
+  - ReadOnly
+- uid: VEDriversLite.Security.EncryptionKey.GetEncryptedKey(System.String,System.Boolean)
+  commentId: M:VEDriversLite.Security.EncryptionKey.GetEncryptedKey(System.String,System.Boolean)
+  id: GetEncryptedKey(System.String,System.Boolean)
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: GetEncryptedKey(String, Boolean)
+  nameWithType: EncryptionKey.GetEncryptedKey(String, Boolean)
+  fullName: VEDriversLite.Security.EncryptionKey.GetEncryptedKey(System.String, System.Boolean)
+  type: Method
+  source:
+    id: GetEncryptedKey
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 48
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public Task<string> GetEncryptedKey(string password = "", bool returnEncrypted = false)
+    parameters:
+    - id: password
+      type: System.String
+    - id: returnEncrypted
+      type: System.Boolean
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function GetEncryptedKey(password As String = "", returnEncrypted As Boolean = False) As Task(Of String)
+  overload: VEDriversLite.Security.EncryptionKey.GetEncryptedKey*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.LoadNewKey(System.String,System.String,System.Boolean)
+  commentId: M:VEDriversLite.Security.EncryptionKey.LoadNewKey(System.String,System.String,System.Boolean)
+  id: LoadNewKey(System.String,System.String,System.Boolean)
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: LoadNewKey(String, String, Boolean)
+  nameWithType: EncryptionKey.LoadNewKey(String, String, Boolean)
+  fullName: VEDriversLite.Security.EncryptionKey.LoadNewKey(System.String, System.String, System.Boolean)
+  type: Method
+  source:
+    id: LoadNewKey
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 74
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public Task<bool> LoadNewKey(string key, string password = "", bool fromDb = false)
+    parameters:
+    - id: key
+      type: System.String
+    - id: password
+      type: System.String
+    - id: fromDb
+      type: System.Boolean
+    return:
+      type: System.Threading.Tasks.Task{System.Boolean}
+    content.vb: Public Function LoadNewKey(key As String, password As String = "", fromDb As Boolean = False) As Task(Of Boolean)
+  overload: VEDriversLite.Security.EncryptionKey.LoadNewKey*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.Lock
+  commentId: M:VEDriversLite.Security.EncryptionKey.Lock
+  id: Lock
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: Lock()
+  nameWithType: EncryptionKey.Lock()
+  fullName: VEDriversLite.Security.EncryptionKey.Lock()
+  type: Method
+  source:
+    id: Lock
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 101
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public void Lock()
+    content.vb: Public Sub Lock
+  overload: VEDriversLite.Security.EncryptionKey.Lock*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Security.EncryptionKey.LoadPassword(System.String)
+  commentId: M:VEDriversLite.Security.EncryptionKey.LoadPassword(System.String)
+  id: LoadPassword(System.String)
+  parent: VEDriversLite.Security.EncryptionKey
+  langs:
+  - csharp
+  - vb
+  name: LoadPassword(String)
+  nameWithType: EncryptionKey.LoadPassword(String)
+  fullName: VEDriversLite.Security.EncryptionKey.LoadPassword(System.String)
+  type: Method
+  source:
+    id: LoadPassword
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Security\EncryptionKey.cs
+    startLine: 107
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Security
+  syntax:
+    content: public Task<bool> LoadPassword(string password)
+    parameters:
+    - id: password
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.Boolean}
+    content.vb: Public Function LoadPassword(password As String) As Task(Of Boolean)
+  overload: VEDriversLite.Security.EncryptionKey.LoadPassword*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite.Security
+  commentId: N:VEDriversLite.Security
+  name: VEDriversLite.Security
+  nameWithType: VEDriversLite.Security
+  fullName: VEDriversLite.Security
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.Security.EncryptionKey.#ctor*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.#ctor
+  name: EncryptionKey
+  nameWithType: EncryptionKey.EncryptionKey
+  fullName: VEDriversLite.Security.EncryptionKey.EncryptionKey
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  name: Boolean
+  nameWithType: Boolean
+  fullName: System.Boolean
+- uid: VEDriversLite.Security.EncryptionKey.Id*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.Id
+  name: Id
+  nameWithType: EncryptionKey.Id
+  fullName: VEDriversLite.Security.EncryptionKey.Id
+- uid: System.Guid
+  commentId: T:System.Guid
+  parent: System
+  isExternal: true
+  name: Guid
+  nameWithType: Guid
+  fullName: System.Guid
+- uid: VEDriversLite.Security.EncryptionKey.RelatedItemId*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.RelatedItemId
+  name: RelatedItemId
+  nameWithType: EncryptionKey.RelatedItemId
+  fullName: VEDriversLite.Security.EncryptionKey.RelatedItemId
+- uid: VEDriversLite.Security.EncryptionKey.Name*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.Name
+  name: Name
+  nameWithType: EncryptionKey.Name
+  fullName: VEDriversLite.Security.EncryptionKey.Name
+- uid: VEDriversLite.Security.EncryptionKey.PublicKey*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.PublicKey
+  name: PublicKey
+  nameWithType: EncryptionKey.PublicKey
+  fullName: VEDriversLite.Security.EncryptionKey.PublicKey
+- uid: VEDriversLite.Security.EncryptionKey.PasswordHash*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.PasswordHash
+  name: PasswordHash
+  nameWithType: EncryptionKey.PasswordHash
+  fullName: VEDriversLite.Security.EncryptionKey.PasswordHash
+- uid: System.Byte[]
+  isExternal: true
+  name: Byte[]
+  nameWithType: Byte[]
+  fullName: System.Byte[]
+  nameWithType.vb: Byte()
+  fullName.vb: System.Byte()
+  name.vb: Byte()
+  spec.csharp:
+  - uid: System.Byte
+    name: Byte
+    nameWithType: Byte
+    fullName: System.Byte
+    isExternal: true
+  - name: '[]'
+    nameWithType: '[]'
+    fullName: '[]'
+  spec.vb:
+  - uid: System.Byte
+    name: Byte
+    nameWithType: Byte
+    fullName: System.Byte
+    isExternal: true
+  - name: ()
+    nameWithType: ()
+    fullName: ()
+- uid: VEDriversLite.Security.EncryptionKey.IsEncrypted*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.IsEncrypted
+  name: IsEncrypted
+  nameWithType: EncryptionKey.IsEncrypted
+  fullName: VEDriversLite.Security.EncryptionKey.IsEncrypted
+- uid: VEDriversLite.Security.EncryptionKey.Version*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.Version
+  name: Version
+  nameWithType: EncryptionKey.Version
+  fullName: VEDriversLite.Security.EncryptionKey.Version
+- uid: VEDriversLite.Security.EncryptionKey.Deleted*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.Deleted
+  name: Deleted
+  nameWithType: EncryptionKey.Deleted
+  fullName: VEDriversLite.Security.EncryptionKey.Deleted
+- uid: VEDriversLite.Security.EncryptionKey.IsLoaded*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.IsLoaded
+  name: IsLoaded
+  nameWithType: EncryptionKey.IsLoaded
+  fullName: VEDriversLite.Security.EncryptionKey.IsLoaded
+- uid: VEDriversLite.Security.EncryptionKey.IsPassLoaded*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.IsPassLoaded
+  name: IsPassLoaded
+  nameWithType: EncryptionKey.IsPassLoaded
+  fullName: VEDriversLite.Security.EncryptionKey.IsPassLoaded
+- uid: VEDriversLite.Security.EncryptionKey.GetEncryptedKey*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.GetEncryptedKey
+  name: GetEncryptedKey
+  nameWithType: EncryptionKey.GetEncryptedKey
+  fullName: VEDriversLite.Security.EncryptionKey.GetEncryptedKey
+- uid: System.Threading.Tasks.Task{System.String}
+  commentId: T:System.Threading.Tasks.Task{System.String}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<String>
+  nameWithType: Task<String>
+  fullName: System.Threading.Tasks.Task<System.String>
+  nameWithType.vb: Task(Of String)
+  fullName.vb: System.Threading.Tasks.Task(Of System.String)
+  name.vb: Task(Of String)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+- uid: VEDriversLite.Security.EncryptionKey.LoadNewKey*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.LoadNewKey
+  name: LoadNewKey
+  nameWithType: EncryptionKey.LoadNewKey
+  fullName: VEDriversLite.Security.EncryptionKey.LoadNewKey
+- uid: System.Threading.Tasks.Task{System.Boolean}
+  commentId: T:System.Threading.Tasks.Task{System.Boolean}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<Boolean>
+  nameWithType: Task<Boolean>
+  fullName: System.Threading.Tasks.Task<System.Boolean>
+  nameWithType.vb: Task(Of Boolean)
+  fullName.vb: System.Threading.Tasks.Task(Of System.Boolean)
+  name.vb: Task(Of Boolean)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.Security.EncryptionKey.Lock*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.Lock
+  name: Lock
+  nameWithType: EncryptionKey.Lock
+  fullName: VEDriversLite.Security.EncryptionKey.Lock
+- uid: VEDriversLite.Security.EncryptionKey.LoadPassword*
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.LoadPassword
+  name: LoadPassword
+  nameWithType: EncryptionKey.LoadPassword
+  fullName: VEDriversLite.Security.EncryptionKey.LoadPassword

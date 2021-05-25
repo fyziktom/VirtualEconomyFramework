@@ -1,0 +1,439 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.TimeHelpers
+  commentId: T:VEDriversLite.TimeHelpers
+  id: TimeHelpers
+  parent: VEDriversLite
+  children:
+  - VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp(System.DateTime)
+  - VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)
+  langs:
+  - csharp
+  - vb
+  name: TimeHelpers
+  nameWithType: TimeHelpers
+  fullName: VEDriversLite.TimeHelpers
+  type: Class
+  source:
+    id: TimeHelpers
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\TimeHelpers.cs
+    startLine: 9
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  syntax:
+    content: public static class TimeHelpers
+    content.vb: Public Module TimeHelpers
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - static
+  - class
+  modifiers.vb:
+  - Public
+  - Module
+- uid: VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)
+  commentId: M:VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)
+  id: UnixTimestampToDateTime(System.Double)
+  parent: VEDriversLite.TimeHelpers
+  langs:
+  - csharp
+  - vb
+  name: UnixTimestampToDateTime(Double)
+  nameWithType: TimeHelpers.UnixTimestampToDateTime(Double)
+  fullName: VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)
+  type: Method
+  source:
+    id: UnixTimestampToDateTime
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\TimeHelpers.cs
+    startLine: 16
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nConvert Unix Time stamp in miliseconds to DateTime\n"
+  example: []
+  syntax:
+    content: public static DateTime UnixTimestampToDateTime(double unixTime)
+    parameters:
+    - id: unixTime
+      type: System.Double
+      description: timestamp in miliseconds
+    return:
+      type: System.DateTime
+      description: ''
+    content.vb: Public Shared Function UnixTimestampToDateTime(unixTime As Double) As Date
+  overload: VEDriversLite.TimeHelpers.UnixTimestampToDateTime*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp(System.DateTime)
+  commentId: M:VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp(System.DateTime)
+  id: DateTimeToUnixTimestamp(System.DateTime)
+  parent: VEDriversLite.TimeHelpers
+  langs:
+  - csharp
+  - vb
+  name: DateTimeToUnixTimestamp(DateTime)
+  nameWithType: TimeHelpers.DateTimeToUnixTimestamp(DateTime)
+  fullName: VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp(System.DateTime)
+  type: Method
+  source:
+    id: DateTimeToUnixTimestamp
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\TimeHelpers.cs
+    startLine: 28
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite
+  summary: "\nConvert DateTime to Unix timestamp in miliseconds\n"
+  example: []
+  syntax:
+    content: public static double DateTimeToUnixTimestamp(DateTime dateTime)
+    parameters:
+    - id: dateTime
+      type: System.DateTime
+      description: ''
+    return:
+      type: System.Double
+      description: ''
+    content.vb: Public Shared Function DateTimeToUnixTimestamp(dateTime As Date) As Double
+  overload: VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+references:
+- uid: VEDriversLite
+  commentId: N:VEDriversLite
+  name: VEDriversLite
+  nameWithType: VEDriversLite
+  fullName: VEDriversLite
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.TimeHelpers.UnixTimestampToDateTime*
+  commentId: Overload:VEDriversLite.TimeHelpers.UnixTimestampToDateTime
+  name: UnixTimestampToDateTime
+  nameWithType: TimeHelpers.UnixTimestampToDateTime
+  fullName: VEDriversLite.TimeHelpers.UnixTimestampToDateTime
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  name: Double
+  nameWithType: Double
+  fullName: System.Double
+- uid: System.DateTime
+  commentId: T:System.DateTime
+  parent: System
+  isExternal: true
+  name: DateTime
+  nameWithType: DateTime
+  fullName: System.DateTime
+- uid: VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp*
+  commentId: Overload:VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp
+  name: DateTimeToUnixTimestamp
+  nameWithType: TimeHelpers.DateTimeToUnixTimestamp
+  fullName: VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp

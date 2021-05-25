@@ -1,0 +1,973 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.Events.CommonEvent
+  commentId: T:VEDriversLite.Events.CommonEvent
+  id: CommonEvent
+  parent: VEDriversLite.Events
+  children:
+  - VEDriversLite.Events.CommonEvent.Address
+  - VEDriversLite.Events.CommonEvent.Data
+  - VEDriversLite.Events.CommonEvent.Fill(VEDriversLite.Events.IEventInfo)
+  - VEDriversLite.Events.CommonEvent.Message
+  - VEDriversLite.Events.CommonEvent.ParseData``1
+  - VEDriversLite.Events.CommonEvent.Progress
+  - VEDriversLite.Events.CommonEvent.TimeStamp
+  - VEDriversLite.Events.CommonEvent.Title
+  - VEDriversLite.Events.CommonEvent.TxId
+  - VEDriversLite.Events.CommonEvent.Type
+  langs:
+  - csharp
+  - vb
+  name: CommonEvent
+  nameWithType: CommonEvent
+  fullName: VEDriversLite.Events.CommonEvent
+  type: Class
+  source:
+    id: CommonEvent
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 8
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: 'public abstract class CommonEvent : IEventInfo'
+    content.vb: >-
+      Public MustInherit Class CommonEvent
+
+          Implements IEventInfo
+  inheritance:
+  - System.Object
+  derivedClasses:
+  - VEDriversLite.Events.ErrorEvent
+  - VEDriversLite.Events.InfoEvent
+  implements:
+  - VEDriversLite.Events.IEventInfo
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - abstract
+  - class
+  modifiers.vb:
+  - Public
+  - MustInherit
+  - Class
+- uid: VEDriversLite.Events.CommonEvent.Type
+  commentId: P:VEDriversLite.Events.CommonEvent.Type
+  id: Type
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: Type
+  nameWithType: CommonEvent.Type
+  fullName: VEDriversLite.Events.CommonEvent.Type
+  type: Property
+  source:
+    id: Type
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 10
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public EventType Type { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.Events.EventType
+    content.vb: Public Property Type As EventType
+  overload: VEDriversLite.Events.CommonEvent.Type*
+  implements:
+  - VEDriversLite.Events.IEventInfo.Type
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Events.CommonEvent.Address
+  commentId: P:VEDriversLite.Events.CommonEvent.Address
+  id: Address
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: Address
+  nameWithType: CommonEvent.Address
+  fullName: VEDriversLite.Events.CommonEvent.Address
+  type: Property
+  source:
+    id: Address
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 11
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public string Address { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Address As String
+  overload: VEDriversLite.Events.CommonEvent.Address*
+  implements:
+  - VEDriversLite.Events.IEventInfo.Address
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Events.CommonEvent.Title
+  commentId: P:VEDriversLite.Events.CommonEvent.Title
+  id: Title
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: Title
+  nameWithType: CommonEvent.Title
+  fullName: VEDriversLite.Events.CommonEvent.Title
+  type: Property
+  source:
+    id: Title
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 12
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public string Title { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Title As String
+  overload: VEDriversLite.Events.CommonEvent.Title*
+  implements:
+  - VEDriversLite.Events.IEventInfo.Title
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Events.CommonEvent.Message
+  commentId: P:VEDriversLite.Events.CommonEvent.Message
+  id: Message
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: Message
+  nameWithType: CommonEvent.Message
+  fullName: VEDriversLite.Events.CommonEvent.Message
+  type: Property
+  source:
+    id: Message
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 13
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public string Message { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Message As String
+  overload: VEDriversLite.Events.CommonEvent.Message*
+  implements:
+  - VEDriversLite.Events.IEventInfo.Message
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Events.CommonEvent.TxId
+  commentId: P:VEDriversLite.Events.CommonEvent.TxId
+  id: TxId
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: TxId
+  nameWithType: CommonEvent.TxId
+  fullName: VEDriversLite.Events.CommonEvent.TxId
+  type: Property
+  source:
+    id: TxId
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 14
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public string TxId { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property TxId As String
+  overload: VEDriversLite.Events.CommonEvent.TxId*
+  implements:
+  - VEDriversLite.Events.IEventInfo.TxId
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Events.CommonEvent.Data
+  commentId: P:VEDriversLite.Events.CommonEvent.Data
+  id: Data
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: Data
+  nameWithType: CommonEvent.Data
+  fullName: VEDriversLite.Events.CommonEvent.Data
+  type: Property
+  source:
+    id: Data
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 15
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public string Data { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Data As String
+  overload: VEDriversLite.Events.CommonEvent.Data*
+  implements:
+  - VEDriversLite.Events.IEventInfo.Data
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Events.CommonEvent.Progress
+  commentId: P:VEDriversLite.Events.CommonEvent.Progress
+  id: Progress
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: Progress
+  nameWithType: CommonEvent.Progress
+  fullName: VEDriversLite.Events.CommonEvent.Progress
+  type: Property
+  source:
+    id: Progress
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 16
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public double Progress { get; set; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public Property Progress As Double
+  overload: VEDriversLite.Events.CommonEvent.Progress*
+  implements:
+  - VEDriversLite.Events.IEventInfo.Progress
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Events.CommonEvent.TimeStamp
+  commentId: P:VEDriversLite.Events.CommonEvent.TimeStamp
+  id: TimeStamp
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: TimeStamp
+  nameWithType: CommonEvent.TimeStamp
+  fullName: VEDriversLite.Events.CommonEvent.TimeStamp
+  type: Property
+  source:
+    id: TimeStamp
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 17
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public DateTime TimeStamp { get; set; }
+    parameters: []
+    return:
+      type: System.DateTime
+    content.vb: Public Property TimeStamp As Date
+  overload: VEDriversLite.Events.CommonEvent.TimeStamp*
+  implements:
+  - VEDriversLite.Events.IEventInfo.TimeStamp
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Events.CommonEvent.Fill(VEDriversLite.Events.IEventInfo)
+  commentId: M:VEDriversLite.Events.CommonEvent.Fill(VEDriversLite.Events.IEventInfo)
+  id: Fill(VEDriversLite.Events.IEventInfo)
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: Fill(IEventInfo)
+  nameWithType: CommonEvent.Fill(IEventInfo)
+  fullName: VEDriversLite.Events.CommonEvent.Fill(VEDriversLite.Events.IEventInfo)
+  type: Method
+  source:
+    id: Fill
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 19
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public virtual void Fill(IEventInfo ev)
+    parameters:
+    - id: ev
+      type: VEDriversLite.Events.IEventInfo
+    content.vb: Public Overridable Sub Fill(ev As IEventInfo)
+  overload: VEDriversLite.Events.CommonEvent.Fill*
+  implements:
+  - VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+  modifiers.csharp:
+  - public
+  - virtual
+  modifiers.vb:
+  - Public
+  - Overridable
+- uid: VEDriversLite.Events.CommonEvent.ParseData``1
+  commentId: M:VEDriversLite.Events.CommonEvent.ParseData``1
+  id: ParseData``1
+  parent: VEDriversLite.Events.CommonEvent
+  langs:
+  - csharp
+  - vb
+  name: ParseData<T>()
+  nameWithType: CommonEvent.ParseData<T>()
+  fullName: VEDriversLite.Events.CommonEvent.ParseData<T>()
+  type: Method
+  source:
+    id: ParseData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\CommonEvent.cs
+    startLine: 28
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public Task<T> ParseData<T>()
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{{T}}
+    content.vb: Public Function ParseData(Of T) As Task(Of T)
+  overload: VEDriversLite.Events.CommonEvent.ParseData*
+  implements:
+  - VEDriversLite.Events.IEventInfo.ParseData``1
+  nameWithType.vb: CommonEvent.ParseData(Of T)()
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+  fullName.vb: VEDriversLite.Events.CommonEvent.ParseData(Of T)()
+  name.vb: ParseData(Of T)()
+references:
+- uid: VEDriversLite.Events
+  commentId: N:VEDriversLite.Events
+  name: VEDriversLite.Events
+  nameWithType: VEDriversLite.Events
+  fullName: VEDriversLite.Events
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: VEDriversLite.Events.IEventInfo
+  commentId: T:VEDriversLite.Events.IEventInfo
+  parent: VEDriversLite.Events
+  name: IEventInfo
+  nameWithType: IEventInfo
+  fullName: VEDriversLite.Events.IEventInfo
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.Events.CommonEvent.Type*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.Type
+  name: Type
+  nameWithType: CommonEvent.Type
+  fullName: VEDriversLite.Events.CommonEvent.Type
+- uid: VEDriversLite.Events.IEventInfo.Type
+  commentId: P:VEDriversLite.Events.IEventInfo.Type
+  parent: VEDriversLite.Events.IEventInfo
+  name: Type
+  nameWithType: IEventInfo.Type
+  fullName: VEDriversLite.Events.IEventInfo.Type
+- uid: VEDriversLite.Events.EventType
+  commentId: T:VEDriversLite.Events.EventType
+  parent: VEDriversLite.Events
+  name: EventType
+  nameWithType: EventType
+  fullName: VEDriversLite.Events.EventType
+- uid: VEDriversLite.Events.CommonEvent.Address*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.Address
+  name: Address
+  nameWithType: CommonEvent.Address
+  fullName: VEDriversLite.Events.CommonEvent.Address
+- uid: VEDriversLite.Events.IEventInfo.Address
+  commentId: P:VEDriversLite.Events.IEventInfo.Address
+  parent: VEDriversLite.Events.IEventInfo
+  name: Address
+  nameWithType: IEventInfo.Address
+  fullName: VEDriversLite.Events.IEventInfo.Address
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.Events.CommonEvent.Title*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.Title
+  name: Title
+  nameWithType: CommonEvent.Title
+  fullName: VEDriversLite.Events.CommonEvent.Title
+- uid: VEDriversLite.Events.IEventInfo.Title
+  commentId: P:VEDriversLite.Events.IEventInfo.Title
+  parent: VEDriversLite.Events.IEventInfo
+  name: Title
+  nameWithType: IEventInfo.Title
+  fullName: VEDriversLite.Events.IEventInfo.Title
+- uid: VEDriversLite.Events.CommonEvent.Message*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.Message
+  name: Message
+  nameWithType: CommonEvent.Message
+  fullName: VEDriversLite.Events.CommonEvent.Message
+- uid: VEDriversLite.Events.IEventInfo.Message
+  commentId: P:VEDriversLite.Events.IEventInfo.Message
+  parent: VEDriversLite.Events.IEventInfo
+  name: Message
+  nameWithType: IEventInfo.Message
+  fullName: VEDriversLite.Events.IEventInfo.Message
+- uid: VEDriversLite.Events.CommonEvent.TxId*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.TxId
+  name: TxId
+  nameWithType: CommonEvent.TxId
+  fullName: VEDriversLite.Events.CommonEvent.TxId
+- uid: VEDriversLite.Events.IEventInfo.TxId
+  commentId: P:VEDriversLite.Events.IEventInfo.TxId
+  parent: VEDriversLite.Events.IEventInfo
+  name: TxId
+  nameWithType: IEventInfo.TxId
+  fullName: VEDriversLite.Events.IEventInfo.TxId
+- uid: VEDriversLite.Events.CommonEvent.Data*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.Data
+  name: Data
+  nameWithType: CommonEvent.Data
+  fullName: VEDriversLite.Events.CommonEvent.Data
+- uid: VEDriversLite.Events.IEventInfo.Data
+  commentId: P:VEDriversLite.Events.IEventInfo.Data
+  parent: VEDriversLite.Events.IEventInfo
+  name: Data
+  nameWithType: IEventInfo.Data
+  fullName: VEDriversLite.Events.IEventInfo.Data
+- uid: VEDriversLite.Events.CommonEvent.Progress*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.Progress
+  name: Progress
+  nameWithType: CommonEvent.Progress
+  fullName: VEDriversLite.Events.CommonEvent.Progress
+- uid: VEDriversLite.Events.IEventInfo.Progress
+  commentId: P:VEDriversLite.Events.IEventInfo.Progress
+  parent: VEDriversLite.Events.IEventInfo
+  name: Progress
+  nameWithType: IEventInfo.Progress
+  fullName: VEDriversLite.Events.IEventInfo.Progress
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  name: Double
+  nameWithType: Double
+  fullName: System.Double
+- uid: VEDriversLite.Events.CommonEvent.TimeStamp*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.TimeStamp
+  name: TimeStamp
+  nameWithType: CommonEvent.TimeStamp
+  fullName: VEDriversLite.Events.CommonEvent.TimeStamp
+- uid: VEDriversLite.Events.IEventInfo.TimeStamp
+  commentId: P:VEDriversLite.Events.IEventInfo.TimeStamp
+  parent: VEDriversLite.Events.IEventInfo
+  name: TimeStamp
+  nameWithType: IEventInfo.TimeStamp
+  fullName: VEDriversLite.Events.IEventInfo.TimeStamp
+- uid: System.DateTime
+  commentId: T:System.DateTime
+  parent: System
+  isExternal: true
+  name: DateTime
+  nameWithType: DateTime
+  fullName: System.DateTime
+- uid: VEDriversLite.Events.CommonEvent.Fill*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.Fill
+  name: Fill
+  nameWithType: CommonEvent.Fill
+  fullName: VEDriversLite.Events.CommonEvent.Fill
+- uid: VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+  commentId: M:VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+  parent: VEDriversLite.Events.IEventInfo
+  name: Fill(IEventInfo)
+  nameWithType: IEventInfo.Fill(IEventInfo)
+  fullName: VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+  spec.csharp:
+  - uid: VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+    name: Fill
+    nameWithType: IEventInfo.Fill
+    fullName: VEDriversLite.Events.IEventInfo.Fill
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.Events.IEventInfo
+    name: IEventInfo
+    nameWithType: IEventInfo
+    fullName: VEDriversLite.Events.IEventInfo
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+    name: Fill
+    nameWithType: IEventInfo.Fill
+    fullName: VEDriversLite.Events.IEventInfo.Fill
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.Events.IEventInfo
+    name: IEventInfo
+    nameWithType: IEventInfo
+    fullName: VEDriversLite.Events.IEventInfo
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.Events.CommonEvent.ParseData*
+  commentId: Overload:VEDriversLite.Events.CommonEvent.ParseData
+  name: ParseData
+  nameWithType: CommonEvent.ParseData
+  fullName: VEDriversLite.Events.CommonEvent.ParseData
+- uid: VEDriversLite.Events.IEventInfo.ParseData``1
+  commentId: M:VEDriversLite.Events.IEventInfo.ParseData``1
+  parent: VEDriversLite.Events.IEventInfo
+  name: ParseData<T>()
+  nameWithType: IEventInfo.ParseData<T>()
+  fullName: VEDriversLite.Events.IEventInfo.ParseData<T>()
+  nameWithType.vb: IEventInfo.ParseData(Of T)()
+  fullName.vb: VEDriversLite.Events.IEventInfo.ParseData(Of T)()
+  name.vb: ParseData(Of T)()
+  spec.csharp:
+  - uid: VEDriversLite.Events.IEventInfo.ParseData``1
+    name: ParseData<T>
+    nameWithType: IEventInfo.ParseData<T>
+    fullName: VEDriversLite.Events.IEventInfo.ParseData<T>
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: VEDriversLite.Events.IEventInfo.ParseData``1
+    name: ParseData(Of T)
+    nameWithType: IEventInfo.ParseData(Of T)
+    fullName: VEDriversLite.Events.IEventInfo.ParseData(Of T)
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task{{T}}
+  commentId: T:System.Threading.Tasks.Task{``0}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<T>
+  nameWithType: Task<T>
+  fullName: System.Threading.Tasks.Task<T>
+  nameWithType.vb: Task(Of T)
+  fullName.vb: System.Threading.Tasks.Task(Of T)
+  name.vb: Task(Of T)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks

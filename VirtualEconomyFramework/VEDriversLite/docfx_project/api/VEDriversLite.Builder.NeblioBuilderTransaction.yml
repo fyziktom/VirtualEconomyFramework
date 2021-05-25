@@ -1,0 +1,2130 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction
+  commentId: T:VEDriversLite.Builder.NeblioBuilderTransaction
+  id: NeblioBuilderTransaction
+  parent: VEDriversLite.Builder
+  children:
+  - VEDriversLite.Builder.NeblioBuilderTransaction.ActualDifference
+  - VEDriversLite.Builder.NeblioBuilderTransaction.AddInput(System.String,System.Int32)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioOutput(System.Int32)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioTokensToOutput(System.String,System.Int32,System.Int32)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiver(System.String)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiverToOutput(System.String,System.Int32)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.AddSender(System.String)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.Broadcast
+  - VEDriversLite.Builder.NeblioBuilderTransaction.CreateRawTransaction(System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxUtxo},System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxReceiver},System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxMetaField})
+  - VEDriversLite.Builder.NeblioBuilderTransaction.GetTokenImageUrl(System.String)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionHex
+  - VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionString
+  - VEDriversLite.Builder.NeblioBuilderTransaction.Inputs
+  - VEDriversLite.Builder.NeblioBuilderTransaction.InputSummary
+  - VEDriversLite.Builder.NeblioBuilderTransaction.LoadTransaction(NBitcoin.Transaction)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.NewTransaction
+  - VEDriversLite.Builder.NeblioBuilderTransaction.OP_RETURN
+  - VEDriversLite.Builder.NeblioBuilderTransaction.Outputs
+  - VEDriversLite.Builder.NeblioBuilderTransaction.OutputSummary
+  - VEDriversLite.Builder.NeblioBuilderTransaction.Receivers
+  - VEDriversLite.Builder.NeblioBuilderTransaction.RefreshInputSummary
+  - VEDriversLite.Builder.NeblioBuilderTransaction.RefreshOutputSummary
+  - VEDriversLite.Builder.NeblioBuilderTransaction.RemoveInput(System.String,System.Int32)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.RemoveNeblioTokensFromOutput(System.Int32)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.RemoveOutput(System.Int32)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiver(System.String)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiverFromOutput(System.Int32)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.Sender
+  - VEDriversLite.Builder.NeblioBuilderTransaction.SenderRefreshed
+  - VEDriversLite.Builder.NeblioBuilderTransaction.Sign(System.String)
+  - VEDriversLite.Builder.NeblioBuilderTransaction.TxHex
+  - VEDriversLite.Builder.NeblioBuilderTransaction.TxHexSigned
+  - VEDriversLite.Builder.NeblioBuilderTransaction.TxString
+  - VEDriversLite.Builder.NeblioBuilderTransaction.TxStringSigned
+  langs:
+  - csharp
+  - vb
+  name: NeblioBuilderTransaction
+  nameWithType: NeblioBuilderTransaction
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction
+  type: Class
+  source:
+    id: NeblioBuilderTransaction
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 30
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public class NeblioBuilderTransaction
+    content.vb: Public Class NeblioBuilderTransaction
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Sender
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.Sender
+  id: Sender
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: Sender
+  nameWithType: NeblioBuilderTransaction.Sender
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Sender
+  type: Property
+  source:
+    id: Sender
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 32
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public NeblioBuilderAddress Sender { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.Builder.NeblioBuilderAddress
+    content.vb: Public Property Sender As NeblioBuilderAddress
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.Sender*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Receivers
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.Receivers
+  id: Receivers
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: Receivers
+  nameWithType: NeblioBuilderTransaction.Receivers
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Receivers
+  type: Property
+  source:
+    id: Receivers
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 33
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public ConcurrentDictionary<string, NeblioBuilderAddress> Receivers { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.Builder.NeblioBuilderAddress}
+    content.vb: Public Property Receivers As ConcurrentDictionary(Of String, NeblioBuilderAddress)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.Receivers*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Inputs
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.Inputs
+  id: Inputs
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: Inputs
+  nameWithType: NeblioBuilderTransaction.Inputs
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Inputs
+  type: Property
+  source:
+    id: Inputs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 35
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public ConcurrentDictionary<string, NeblioBuilderUtxo> Inputs { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.Builder.NeblioBuilderUtxo}
+    content.vb: Public Property Inputs As ConcurrentDictionary(Of String, NeblioBuilderUtxo)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.Inputs*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Outputs
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.Outputs
+  id: Outputs
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: Outputs
+  nameWithType: NeblioBuilderTransaction.Outputs
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Outputs
+  type: Property
+  source:
+    id: Outputs
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 36
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public List<NeblioBuilderOutput> Outputs { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{VEDriversLite.Builder.NeblioBuilderOutput}
+    content.vb: Public Property Outputs As List(Of NeblioBuilderOutput)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.Outputs*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.NewTransaction
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.NewTransaction
+  id: NewTransaction
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: NewTransaction
+  nameWithType: NeblioBuilderTransaction.NewTransaction
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.NewTransaction
+  type: Property
+  source:
+    id: NewTransaction
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 37
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Transaction NewTransaction { get; set; }
+    parameters: []
+    return:
+      type: NBitcoin.Transaction
+    content.vb: Public Property NewTransaction As Transaction
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.NewTransaction*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.InputSummary
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.InputSummary
+  id: InputSummary
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: InputSummary
+  nameWithType: NeblioBuilderTransaction.InputSummary
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.InputSummary
+  type: Property
+  source:
+    id: InputSummary
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 38
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public TransactionInputSummary InputSummary { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.Builder.TransactionInputSummary
+    content.vb: Public Property InputSummary As TransactionInputSummary
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.InputSummary*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.OutputSummary
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.OutputSummary
+  id: OutputSummary
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: OutputSummary
+  nameWithType: NeblioBuilderTransaction.OutputSummary
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.OutputSummary
+  type: Property
+  source:
+    id: OutputSummary
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 39
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public TransactionOutputSummary OutputSummary { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.Builder.TransactionOutputSummary
+    content.vb: Public Property OutputSummary As TransactionOutputSummary
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.OutputSummary*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.TxHex
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.TxHex
+  id: TxHex
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: TxHex
+  nameWithType: NeblioBuilderTransaction.TxHex
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.TxHex
+  type: Property
+  source:
+    id: TxHex
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 40
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public string TxHex { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property TxHex As String
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.TxHex*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.TxHexSigned
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.TxHexSigned
+  id: TxHexSigned
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: TxHexSigned
+  nameWithType: NeblioBuilderTransaction.TxHexSigned
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.TxHexSigned
+  type: Property
+  source:
+    id: TxHexSigned
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 41
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public string TxHexSigned { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property TxHexSigned As String
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.TxHexSigned*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.TxString
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.TxString
+  id: TxString
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: TxString
+  nameWithType: NeblioBuilderTransaction.TxString
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.TxString
+  type: Property
+  source:
+    id: TxString
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 42
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public string TxString { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property TxString As String
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.TxString*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.TxStringSigned
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.TxStringSigned
+  id: TxStringSigned
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: TxStringSigned
+  nameWithType: NeblioBuilderTransaction.TxStringSigned
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.TxStringSigned
+  type: Property
+  source:
+    id: TxStringSigned
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 43
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public string TxStringSigned { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property TxStringSigned As String
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.TxStringSigned*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.OP_RETURN
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.OP_RETURN
+  id: OP_RETURN
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: OP_RETURN
+  nameWithType: NeblioBuilderTransaction.OP_RETURN
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.OP_RETURN
+  type: Property
+  source:
+    id: OP_RETURN
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 44
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public string OP_RETURN { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property OP_RETURN As String
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.OP_RETURN*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.ActualDifference
+  commentId: P:VEDriversLite.Builder.NeblioBuilderTransaction.ActualDifference
+  id: ActualDifference
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: ActualDifference
+  nameWithType: NeblioBuilderTransaction.ActualDifference
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.ActualDifference
+  type: Property
+  source:
+    id: ActualDifference
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 45
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public double ActualDifference { get; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public ReadOnly Property ActualDifference As Double
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.ActualDifference*
+  modifiers.csharp:
+  - public
+  - get
+  modifiers.vb:
+  - Public
+  - ReadOnly
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.SenderRefreshed
+  commentId: E:VEDriversLite.Builder.NeblioBuilderTransaction.SenderRefreshed
+  id: SenderRefreshed
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: SenderRefreshed
+  nameWithType: NeblioBuilderTransaction.SenderRefreshed
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.SenderRefreshed
+  type: Event
+  source:
+    id: SenderRefreshed
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 53
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public event EventHandler SenderRefreshed
+    return:
+      type: System.EventHandler
+    content.vb: Public Event SenderRefreshed As EventHandler
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddSender(System.String)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.AddSender(System.String)
+  id: AddSender(System.String)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: AddSender(String)
+  nameWithType: NeblioBuilderTransaction.AddSender(String)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddSender(System.String)
+  type: Method
+  source:
+    id: AddSender
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 55
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> AddSender(string address)
+    parameters:
+    - id: address
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function AddSender(address As String) As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.AddSender*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiver(System.String)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiver(System.String)
+  id: AddReceiver(System.String)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: AddReceiver(String)
+  nameWithType: NeblioBuilderTransaction.AddReceiver(String)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiver(System.String)
+  type: Method
+  source:
+    id: AddReceiver
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 80
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> AddReceiver(string address)
+    parameters:
+    - id: address
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function AddReceiver(address As String) As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiver*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiver(System.String)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiver(System.String)
+  id: RemoveReceiver(System.String)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: RemoveReceiver(String)
+  nameWithType: NeblioBuilderTransaction.RemoveReceiver(String)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiver(System.String)
+  type: Method
+  source:
+    id: RemoveReceiver
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 94
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> RemoveReceiver(string address)
+    parameters:
+    - id: address
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function RemoveReceiver(address As String) As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiver*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionHex
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionHex
+  id: GetTransactionHex
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: GetTransactionHex()
+  nameWithType: NeblioBuilderTransaction.GetTransactionHex()
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionHex()
+  type: Method
+  source:
+    id: GetTransactionHex
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 107
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> GetTransactionHex()
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function GetTransactionHex As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionHex*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionString
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionString
+  id: GetTransactionString
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: GetTransactionString()
+  nameWithType: NeblioBuilderTransaction.GetTransactionString()
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionString()
+  type: Method
+  source:
+    id: GetTransactionString
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 111
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> GetTransactionString()
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function GetTransactionString As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionString*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshInputSummary
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.RefreshInputSummary
+  id: RefreshInputSummary
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: RefreshInputSummary()
+  nameWithType: NeblioBuilderTransaction.RefreshInputSummary()
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshInputSummary()
+  type: Method
+  source:
+    id: RefreshInputSummary
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 118
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task RefreshInputSummary()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function RefreshInputSummary As Task
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshInputSummary*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshOutputSummary
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.RefreshOutputSummary
+  id: RefreshOutputSummary
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: RefreshOutputSummary()
+  nameWithType: NeblioBuilderTransaction.RefreshOutputSummary()
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshOutputSummary()
+  type: Method
+  source:
+    id: RefreshOutputSummary
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 140
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task RefreshOutputSummary()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function RefreshOutputSummary As Task
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshOutputSummary*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddInput(System.String,System.Int32)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.AddInput(System.String,System.Int32)
+  id: AddInput(System.String,System.Int32)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: AddInput(String, Int32)
+  nameWithType: NeblioBuilderTransaction.AddInput(String, Int32)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddInput(System.String, System.Int32)
+  type: Method
+  source:
+    id: AddInput
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 161
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> AddInput(string utxid, int nindex)
+    parameters:
+    - id: utxid
+      type: System.String
+    - id: nindex
+      type: System.Int32
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function AddInput(utxid As String, nindex As Integer) As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.AddInput*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Sign(System.String)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.Sign(System.String)
+  id: Sign(System.String)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: Sign(String)
+  nameWithType: NeblioBuilderTransaction.Sign(String)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Sign(System.String)
+  type: Method
+  source:
+    id: Sign
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 178
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> Sign(string inpkey)
+    parameters:
+    - id: inpkey
+      type: System.String
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function Sign(inpkey As String) As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.Sign*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Broadcast
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.Broadcast
+  id: Broadcast
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: Broadcast()
+  nameWithType: NeblioBuilderTransaction.Broadcast()
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Broadcast()
+  type: Method
+  source:
+    id: Broadcast
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 215
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> Broadcast()
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function Broadcast As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.Broadcast*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.CreateRawTransaction(System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxUtxo},System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxReceiver},System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxMetaField})
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.CreateRawTransaction(System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxUtxo},System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxReceiver},System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxMetaField})
+  id: CreateRawTransaction(System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxUtxo},System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxReceiver},System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxMetaField})
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: CreateRawTransaction(List<NewTokenTxUtxo>, List<NewTokenTxReceiver>, List<NewTokenTxMetaField>)
+  nameWithType: NeblioBuilderTransaction.CreateRawTransaction(List<NewTokenTxUtxo>, List<NewTokenTxReceiver>, List<NewTokenTxMetaField>)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.CreateRawTransaction(System.Collections.Generic.List<VEDriversLite.Builder.NewTokenTxUtxo>, System.Collections.Generic.List<VEDriversLite.Builder.NewTokenTxReceiver>, System.Collections.Generic.List<VEDriversLite.Builder.NewTokenTxMetaField>)
+  type: Method
+  source:
+    id: CreateRawTransaction
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 233
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> CreateRawTransaction(List<NewTokenTxUtxo> utxos, List<NewTokenTxReceiver> receivers, List<NewTokenTxMetaField> metadata)
+    parameters:
+    - id: utxos
+      type: System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxUtxo}
+    - id: receivers
+      type: System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxReceiver}
+    - id: metadata
+      type: System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxMetaField}
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function CreateRawTransaction(utxos As List(Of NewTokenTxUtxo), receivers As List(Of NewTokenTxReceiver), metadata As List(Of NewTokenTxMetaField)) As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.CreateRawTransaction*
+  nameWithType.vb: NeblioBuilderTransaction.CreateRawTransaction(List(Of NewTokenTxUtxo), List(Of NewTokenTxReceiver), List(Of NewTokenTxMetaField))
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+  fullName.vb: VEDriversLite.Builder.NeblioBuilderTransaction.CreateRawTransaction(System.Collections.Generic.List(Of VEDriversLite.Builder.NewTokenTxUtxo), System.Collections.Generic.List(Of VEDriversLite.Builder.NewTokenTxReceiver), System.Collections.Generic.List(Of VEDriversLite.Builder.NewTokenTxMetaField))
+  name.vb: CreateRawTransaction(List(Of NewTokenTxUtxo), List(Of NewTokenTxReceiver), List(Of NewTokenTxMetaField))
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.LoadTransaction(NBitcoin.Transaction)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.LoadTransaction(NBitcoin.Transaction)
+  id: LoadTransaction(NBitcoin.Transaction)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: LoadTransaction(Transaction)
+  nameWithType: NeblioBuilderTransaction.LoadTransaction(Transaction)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.LoadTransaction(NBitcoin.Transaction)
+  type: Method
+  source:
+    id: LoadTransaction
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 249
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task LoadTransaction(Transaction tx)
+    parameters:
+    - id: tx
+      type: NBitcoin.Transaction
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function LoadTransaction(tx As Transaction) As Task
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.LoadTransaction*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveInput(System.String,System.Int32)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveInput(System.String,System.Int32)
+  id: RemoveInput(System.String,System.Int32)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: RemoveInput(String, Int32)
+  nameWithType: NeblioBuilderTransaction.RemoveInput(String, Int32)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveInput(System.String, System.Int32)
+  type: Method
+  source:
+    id: RemoveInput
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 289
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task<string> RemoveInput(string utxid, int nindex)
+    parameters:
+    - id: utxid
+      type: System.String
+    - id: nindex
+      type: System.Int32
+    return:
+      type: System.Threading.Tasks.Task{System.String}
+    content.vb: Public Function RemoveInput(utxid As String, nindex As Integer) As Task(Of String)
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveInput*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioOutput(System.Int32)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioOutput(System.Int32)
+  id: AddNeblioOutput(System.Int32)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: AddNeblioOutput(Int32)
+  nameWithType: NeblioBuilderTransaction.AddNeblioOutput(Int32)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioOutput(System.Int32)
+  type: Method
+  source:
+    id: AddNeblioOutput
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 308
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task AddNeblioOutput(int amount = 10000)
+    parameters:
+    - id: amount
+      type: System.Int32
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function AddNeblioOutput(amount As Integer = 10000) As Task
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioOutput*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveOutput(System.Int32)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveOutput(System.Int32)
+  id: RemoveOutput(System.Int32)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: RemoveOutput(Int32)
+  nameWithType: NeblioBuilderTransaction.RemoveOutput(Int32)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveOutput(System.Int32)
+  type: Method
+  source:
+    id: RemoveOutput
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 315
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task RemoveOutput(int nindex)
+    parameters:
+    - id: nindex
+      type: System.Int32
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function RemoveOutput(nindex As Integer) As Task
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveOutput*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.GetTokenImageUrl(System.String)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.GetTokenImageUrl(System.String)
+  id: GetTokenImageUrl(System.String)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: GetTokenImageUrl(String)
+  nameWithType: NeblioBuilderTransaction.GetTokenImageUrl(String)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.GetTokenImageUrl(System.String)
+  type: Method
+  source:
+    id: GetTokenImageUrl
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 331
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public string GetTokenImageUrl(string tokenId)
+    parameters:
+    - id: tokenId
+      type: System.String
+    return:
+      type: System.String
+    content.vb: Public Function GetTokenImageUrl(tokenId As String) As String
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.GetTokenImageUrl*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioTokensToOutput(System.String,System.Int32,System.Int32)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioTokensToOutput(System.String,System.Int32,System.Int32)
+  id: AddNeblioTokensToOutput(System.String,System.Int32,System.Int32)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: AddNeblioTokensToOutput(String, Int32, Int32)
+  nameWithType: NeblioBuilderTransaction.AddNeblioTokensToOutput(String, Int32, Int32)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioTokensToOutput(System.String, System.Int32, System.Int32)
+  type: Method
+  source:
+    id: AddNeblioTokensToOutput
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 352
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task AddNeblioTokensToOutput(string tokenId, int index, int amount = 1)
+    parameters:
+    - id: tokenId
+      type: System.String
+    - id: index
+      type: System.Int32
+    - id: amount
+      type: System.Int32
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function AddNeblioTokensToOutput(tokenId As String, index As Integer, amount As Integer = 1) As Task
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioTokensToOutput*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveNeblioTokensFromOutput(System.Int32)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveNeblioTokensFromOutput(System.Int32)
+  id: RemoveNeblioTokensFromOutput(System.Int32)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: RemoveNeblioTokensFromOutput(Int32)
+  nameWithType: NeblioBuilderTransaction.RemoveNeblioTokensFromOutput(Int32)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveNeblioTokensFromOutput(System.Int32)
+  type: Method
+  source:
+    id: RemoveNeblioTokensFromOutput
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 363
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task RemoveNeblioTokensFromOutput(int index)
+    parameters:
+    - id: index
+      type: System.Int32
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function RemoveNeblioTokensFromOutput(index As Integer) As Task
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveNeblioTokensFromOutput*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiverToOutput(System.String,System.Int32)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiverToOutput(System.String,System.Int32)
+  id: AddReceiverToOutput(System.String,System.Int32)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: AddReceiverToOutput(String, Int32)
+  nameWithType: NeblioBuilderTransaction.AddReceiverToOutput(String, Int32)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiverToOutput(System.String, System.Int32)
+  type: Method
+  source:
+    id: AddReceiverToOutput
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 373
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task AddReceiverToOutput(string address, int index)
+    parameters:
+    - id: address
+      type: System.String
+    - id: index
+      type: System.Int32
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function AddReceiverToOutput(address As String, index As Integer) As Task
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiverToOutput*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiverFromOutput(System.Int32)
+  commentId: M:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiverFromOutput(System.Int32)
+  id: RemoveReceiverFromOutput(System.Int32)
+  parent: VEDriversLite.Builder.NeblioBuilderTransaction
+  langs:
+  - csharp
+  - vb
+  name: RemoveReceiverFromOutput(Int32)
+  nameWithType: NeblioBuilderTransaction.RemoveReceiverFromOutput(Int32)
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiverFromOutput(System.Int32)
+  type: Method
+  source:
+    id: RemoveReceiverFromOutput
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Builder\NeblioBuilderTransaction.cs
+    startLine: 384
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Builder
+  syntax:
+    content: public Task RemoveReceiverFromOutput(int index)
+    parameters:
+    - id: index
+      type: System.Int32
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function RemoveReceiverFromOutput(index As Integer) As Task
+  overload: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiverFromOutput*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite.Builder
+  commentId: N:VEDriversLite.Builder
+  name: VEDriversLite.Builder
+  nameWithType: VEDriversLite.Builder
+  fullName: VEDriversLite.Builder
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Sender*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.Sender
+  name: Sender
+  nameWithType: NeblioBuilderTransaction.Sender
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Sender
+- uid: VEDriversLite.Builder.NeblioBuilderAddress
+  commentId: T:VEDriversLite.Builder.NeblioBuilderAddress
+  parent: VEDriversLite.Builder
+  name: NeblioBuilderAddress
+  nameWithType: NeblioBuilderAddress
+  fullName: VEDriversLite.Builder.NeblioBuilderAddress
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Receivers*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.Receivers
+  name: Receivers
+  nameWithType: NeblioBuilderTransaction.Receivers
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Receivers
+- uid: System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.Builder.NeblioBuilderAddress}
+  commentId: T:System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.Builder.NeblioBuilderAddress}
+  parent: System.Collections.Concurrent
+  definition: System.Collections.Concurrent.ConcurrentDictionary`2
+  name: ConcurrentDictionary<String, NeblioBuilderAddress>
+  nameWithType: ConcurrentDictionary<String, NeblioBuilderAddress>
+  fullName: System.Collections.Concurrent.ConcurrentDictionary<System.String, VEDriversLite.Builder.NeblioBuilderAddress>
+  nameWithType.vb: ConcurrentDictionary(Of String, NeblioBuilderAddress)
+  fullName.vb: System.Collections.Concurrent.ConcurrentDictionary(Of System.String, VEDriversLite.Builder.NeblioBuilderAddress)
+  name.vb: ConcurrentDictionary(Of String, NeblioBuilderAddress)
+  spec.csharp:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.Builder.NeblioBuilderAddress
+    name: NeblioBuilderAddress
+    nameWithType: NeblioBuilderAddress
+    fullName: VEDriversLite.Builder.NeblioBuilderAddress
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.Builder.NeblioBuilderAddress
+    name: NeblioBuilderAddress
+    nameWithType: NeblioBuilderAddress
+    fullName: VEDriversLite.Builder.NeblioBuilderAddress
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Concurrent.ConcurrentDictionary`2
+  commentId: T:System.Collections.Concurrent.ConcurrentDictionary`2
+  isExternal: true
+  name: ConcurrentDictionary<TKey, TValue>
+  nameWithType: ConcurrentDictionary<TKey, TValue>
+  fullName: System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>
+  nameWithType.vb: ConcurrentDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Concurrent.ConcurrentDictionary(Of TKey, TValue)
+  name.vb: ConcurrentDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Concurrent
+  commentId: N:System.Collections.Concurrent
+  isExternal: true
+  name: System.Collections.Concurrent
+  nameWithType: System.Collections.Concurrent
+  fullName: System.Collections.Concurrent
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Inputs*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.Inputs
+  name: Inputs
+  nameWithType: NeblioBuilderTransaction.Inputs
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Inputs
+- uid: System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.Builder.NeblioBuilderUtxo}
+  commentId: T:System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.Builder.NeblioBuilderUtxo}
+  parent: System.Collections.Concurrent
+  definition: System.Collections.Concurrent.ConcurrentDictionary`2
+  name: ConcurrentDictionary<String, NeblioBuilderUtxo>
+  nameWithType: ConcurrentDictionary<String, NeblioBuilderUtxo>
+  fullName: System.Collections.Concurrent.ConcurrentDictionary<System.String, VEDriversLite.Builder.NeblioBuilderUtxo>
+  nameWithType.vb: ConcurrentDictionary(Of String, NeblioBuilderUtxo)
+  fullName.vb: System.Collections.Concurrent.ConcurrentDictionary(Of System.String, VEDriversLite.Builder.NeblioBuilderUtxo)
+  name.vb: ConcurrentDictionary(Of String, NeblioBuilderUtxo)
+  spec.csharp:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.Builder.NeblioBuilderUtxo
+    name: NeblioBuilderUtxo
+    nameWithType: NeblioBuilderUtxo
+    fullName: VEDriversLite.Builder.NeblioBuilderUtxo
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.Builder.NeblioBuilderUtxo
+    name: NeblioBuilderUtxo
+    nameWithType: NeblioBuilderUtxo
+    fullName: VEDriversLite.Builder.NeblioBuilderUtxo
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Outputs*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.Outputs
+  name: Outputs
+  nameWithType: NeblioBuilderTransaction.Outputs
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Outputs
+- uid: System.Collections.Generic.List{VEDriversLite.Builder.NeblioBuilderOutput}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.Builder.NeblioBuilderOutput}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<NeblioBuilderOutput>
+  nameWithType: List<NeblioBuilderOutput>
+  fullName: System.Collections.Generic.List<VEDriversLite.Builder.NeblioBuilderOutput>
+  nameWithType.vb: List(Of NeblioBuilderOutput)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.Builder.NeblioBuilderOutput)
+  name.vb: List(Of NeblioBuilderOutput)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.Builder.NeblioBuilderOutput
+    name: NeblioBuilderOutput
+    nameWithType: NeblioBuilderOutput
+    fullName: VEDriversLite.Builder.NeblioBuilderOutput
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.Builder.NeblioBuilderOutput
+    name: NeblioBuilderOutput
+    nameWithType: NeblioBuilderOutput
+    fullName: VEDriversLite.Builder.NeblioBuilderOutput
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.NewTransaction*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.NewTransaction
+  name: NewTransaction
+  nameWithType: NeblioBuilderTransaction.NewTransaction
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.NewTransaction
+- uid: NBitcoin.Transaction
+  commentId: T:NBitcoin.Transaction
+  parent: NBitcoin
+  isExternal: true
+  name: Transaction
+  nameWithType: Transaction
+  fullName: NBitcoin.Transaction
+- uid: NBitcoin
+  commentId: N:NBitcoin
+  isExternal: true
+  name: NBitcoin
+  nameWithType: NBitcoin
+  fullName: NBitcoin
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.InputSummary*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.InputSummary
+  name: InputSummary
+  nameWithType: NeblioBuilderTransaction.InputSummary
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.InputSummary
+- uid: VEDriversLite.Builder.TransactionInputSummary
+  commentId: T:VEDriversLite.Builder.TransactionInputSummary
+  parent: VEDriversLite.Builder
+  name: TransactionInputSummary
+  nameWithType: TransactionInputSummary
+  fullName: VEDriversLite.Builder.TransactionInputSummary
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.OutputSummary*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.OutputSummary
+  name: OutputSummary
+  nameWithType: NeblioBuilderTransaction.OutputSummary
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.OutputSummary
+- uid: VEDriversLite.Builder.TransactionOutputSummary
+  commentId: T:VEDriversLite.Builder.TransactionOutputSummary
+  parent: VEDriversLite.Builder
+  name: TransactionOutputSummary
+  nameWithType: TransactionOutputSummary
+  fullName: VEDriversLite.Builder.TransactionOutputSummary
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.TxHex*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.TxHex
+  name: TxHex
+  nameWithType: NeblioBuilderTransaction.TxHex
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.TxHex
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.TxHexSigned*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.TxHexSigned
+  name: TxHexSigned
+  nameWithType: NeblioBuilderTransaction.TxHexSigned
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.TxHexSigned
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.TxString*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.TxString
+  name: TxString
+  nameWithType: NeblioBuilderTransaction.TxString
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.TxString
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.TxStringSigned*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.TxStringSigned
+  name: TxStringSigned
+  nameWithType: NeblioBuilderTransaction.TxStringSigned
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.TxStringSigned
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.OP_RETURN*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.OP_RETURN
+  name: OP_RETURN
+  nameWithType: NeblioBuilderTransaction.OP_RETURN
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.OP_RETURN
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.ActualDifference*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.ActualDifference
+  name: ActualDifference
+  nameWithType: NeblioBuilderTransaction.ActualDifference
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.ActualDifference
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  name: Double
+  nameWithType: Double
+  fullName: System.Double
+- uid: System.EventHandler
+  commentId: T:System.EventHandler
+  parent: System
+  isExternal: true
+  name: EventHandler
+  nameWithType: EventHandler
+  fullName: System.EventHandler
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddSender*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.AddSender
+  name: AddSender
+  nameWithType: NeblioBuilderTransaction.AddSender
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddSender
+- uid: System.Threading.Tasks.Task{System.String}
+  commentId: T:System.Threading.Tasks.Task{System.String}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<String>
+  nameWithType: Task<String>
+  fullName: System.Threading.Tasks.Task<System.String>
+  nameWithType.vb: Task(Of String)
+  fullName.vb: System.Threading.Tasks.Task(Of System.String)
+  name.vb: Task(Of String)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiver*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiver
+  name: AddReceiver
+  nameWithType: NeblioBuilderTransaction.AddReceiver
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiver
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiver*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiver
+  name: RemoveReceiver
+  nameWithType: NeblioBuilderTransaction.RemoveReceiver
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiver
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionHex*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionHex
+  name: GetTransactionHex
+  nameWithType: NeblioBuilderTransaction.GetTransactionHex
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionHex
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionString*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionString
+  name: GetTransactionString
+  nameWithType: NeblioBuilderTransaction.GetTransactionString
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.GetTransactionString
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshInputSummary*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.RefreshInputSummary
+  name: RefreshInputSummary
+  nameWithType: NeblioBuilderTransaction.RefreshInputSummary
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshInputSummary
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshOutputSummary*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.RefreshOutputSummary
+  name: RefreshOutputSummary
+  nameWithType: NeblioBuilderTransaction.RefreshOutputSummary
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RefreshOutputSummary
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddInput*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.AddInput
+  name: AddInput
+  nameWithType: NeblioBuilderTransaction.AddInput
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddInput
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  name: Int32
+  nameWithType: Int32
+  fullName: System.Int32
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Sign*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.Sign
+  name: Sign
+  nameWithType: NeblioBuilderTransaction.Sign
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Sign
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.Broadcast*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.Broadcast
+  name: Broadcast
+  nameWithType: NeblioBuilderTransaction.Broadcast
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.Broadcast
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.CreateRawTransaction*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.CreateRawTransaction
+  name: CreateRawTransaction
+  nameWithType: NeblioBuilderTransaction.CreateRawTransaction
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.CreateRawTransaction
+- uid: System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxUtxo}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxUtxo}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<NewTokenTxUtxo>
+  nameWithType: List<NewTokenTxUtxo>
+  fullName: System.Collections.Generic.List<VEDriversLite.Builder.NewTokenTxUtxo>
+  nameWithType.vb: List(Of NewTokenTxUtxo)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.Builder.NewTokenTxUtxo)
+  name.vb: List(Of NewTokenTxUtxo)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.Builder.NewTokenTxUtxo
+    name: NewTokenTxUtxo
+    nameWithType: NewTokenTxUtxo
+    fullName: VEDriversLite.Builder.NewTokenTxUtxo
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.Builder.NewTokenTxUtxo
+    name: NewTokenTxUtxo
+    nameWithType: NewTokenTxUtxo
+    fullName: VEDriversLite.Builder.NewTokenTxUtxo
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxReceiver}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxReceiver}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<NewTokenTxReceiver>
+  nameWithType: List<NewTokenTxReceiver>
+  fullName: System.Collections.Generic.List<VEDriversLite.Builder.NewTokenTxReceiver>
+  nameWithType.vb: List(Of NewTokenTxReceiver)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.Builder.NewTokenTxReceiver)
+  name.vb: List(Of NewTokenTxReceiver)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.Builder.NewTokenTxReceiver
+    name: NewTokenTxReceiver
+    nameWithType: NewTokenTxReceiver
+    fullName: VEDriversLite.Builder.NewTokenTxReceiver
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.Builder.NewTokenTxReceiver
+    name: NewTokenTxReceiver
+    nameWithType: NewTokenTxReceiver
+    fullName: VEDriversLite.Builder.NewTokenTxReceiver
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxMetaField}
+  commentId: T:System.Collections.Generic.List{VEDriversLite.Builder.NewTokenTxMetaField}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  name: List<NewTokenTxMetaField>
+  nameWithType: List<NewTokenTxMetaField>
+  fullName: System.Collections.Generic.List<VEDriversLite.Builder.NewTokenTxMetaField>
+  nameWithType.vb: List(Of NewTokenTxMetaField)
+  fullName.vb: System.Collections.Generic.List(Of VEDriversLite.Builder.NewTokenTxMetaField)
+  name.vb: List(Of NewTokenTxMetaField)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.Builder.NewTokenTxMetaField
+    name: NewTokenTxMetaField
+    nameWithType: NewTokenTxMetaField
+    fullName: VEDriversLite.Builder.NewTokenTxMetaField
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    nameWithType: List
+    fullName: System.Collections.Generic.List
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.Builder.NewTokenTxMetaField
+    name: NewTokenTxMetaField
+    nameWithType: NewTokenTxMetaField
+    fullName: VEDriversLite.Builder.NewTokenTxMetaField
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.LoadTransaction*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.LoadTransaction
+  name: LoadTransaction
+  nameWithType: NeblioBuilderTransaction.LoadTransaction
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.LoadTransaction
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveInput*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveInput
+  name: RemoveInput
+  nameWithType: NeblioBuilderTransaction.RemoveInput
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveInput
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioOutput*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioOutput
+  name: AddNeblioOutput
+  nameWithType: NeblioBuilderTransaction.AddNeblioOutput
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioOutput
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveOutput*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveOutput
+  name: RemoveOutput
+  nameWithType: NeblioBuilderTransaction.RemoveOutput
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveOutput
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.GetTokenImageUrl*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.GetTokenImageUrl
+  name: GetTokenImageUrl
+  nameWithType: NeblioBuilderTransaction.GetTokenImageUrl
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.GetTokenImageUrl
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioTokensToOutput*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioTokensToOutput
+  name: AddNeblioTokensToOutput
+  nameWithType: NeblioBuilderTransaction.AddNeblioTokensToOutput
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddNeblioTokensToOutput
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveNeblioTokensFromOutput*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveNeblioTokensFromOutput
+  name: RemoveNeblioTokensFromOutput
+  nameWithType: NeblioBuilderTransaction.RemoveNeblioTokensFromOutput
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveNeblioTokensFromOutput
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiverToOutput*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiverToOutput
+  name: AddReceiverToOutput
+  nameWithType: NeblioBuilderTransaction.AddReceiverToOutput
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.AddReceiverToOutput
+- uid: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiverFromOutput*
+  commentId: Overload:VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiverFromOutput
+  name: RemoveReceiverFromOutput
+  nameWithType: NeblioBuilderTransaction.RemoveReceiverFromOutput
+  fullName: VEDriversLite.Builder.NeblioBuilderTransaction.RemoveReceiverFromOutput

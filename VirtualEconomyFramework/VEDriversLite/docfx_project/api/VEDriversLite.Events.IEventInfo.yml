@@ -1,0 +1,498 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.Events.IEventInfo
+  commentId: T:VEDriversLite.Events.IEventInfo
+  id: IEventInfo
+  parent: VEDriversLite.Events
+  children:
+  - VEDriversLite.Events.IEventInfo.Address
+  - VEDriversLite.Events.IEventInfo.Data
+  - VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+  - VEDriversLite.Events.IEventInfo.Message
+  - VEDriversLite.Events.IEventInfo.ParseData``1
+  - VEDriversLite.Events.IEventInfo.Progress
+  - VEDriversLite.Events.IEventInfo.TimeStamp
+  - VEDriversLite.Events.IEventInfo.Title
+  - VEDriversLite.Events.IEventInfo.TxId
+  - VEDriversLite.Events.IEventInfo.Type
+  langs:
+  - csharp
+  - vb
+  name: IEventInfo
+  nameWithType: IEventInfo
+  fullName: VEDriversLite.Events.IEventInfo
+  type: Interface
+  source:
+    id: IEventInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 17
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public interface IEventInfo
+    content.vb: Public Interface IEventInfo
+  modifiers.csharp:
+  - public
+  - interface
+  modifiers.vb:
+  - Public
+  - Interface
+- uid: VEDriversLite.Events.IEventInfo.Type
+  commentId: P:VEDriversLite.Events.IEventInfo.Type
+  id: Type
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: Type
+  nameWithType: IEventInfo.Type
+  fullName: VEDriversLite.Events.IEventInfo.Type
+  type: Property
+  source:
+    id: Type
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 19
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: EventType Type { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.Events.EventType
+    content.vb: Property Type As EventType
+  overload: VEDriversLite.Events.IEventInfo.Type*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.Events.IEventInfo.Address
+  commentId: P:VEDriversLite.Events.IEventInfo.Address
+  id: Address
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: Address
+  nameWithType: IEventInfo.Address
+  fullName: VEDriversLite.Events.IEventInfo.Address
+  type: Property
+  source:
+    id: Address
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 20
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: string Address { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Address As String
+  overload: VEDriversLite.Events.IEventInfo.Address*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.Events.IEventInfo.Title
+  commentId: P:VEDriversLite.Events.IEventInfo.Title
+  id: Title
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: Title
+  nameWithType: IEventInfo.Title
+  fullName: VEDriversLite.Events.IEventInfo.Title
+  type: Property
+  source:
+    id: Title
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 21
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: string Title { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Title As String
+  overload: VEDriversLite.Events.IEventInfo.Title*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.Events.IEventInfo.Message
+  commentId: P:VEDriversLite.Events.IEventInfo.Message
+  id: Message
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: Message
+  nameWithType: IEventInfo.Message
+  fullName: VEDriversLite.Events.IEventInfo.Message
+  type: Property
+  source:
+    id: Message
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 22
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: string Message { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Message As String
+  overload: VEDriversLite.Events.IEventInfo.Message*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.Events.IEventInfo.TxId
+  commentId: P:VEDriversLite.Events.IEventInfo.TxId
+  id: TxId
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: TxId
+  nameWithType: IEventInfo.TxId
+  fullName: VEDriversLite.Events.IEventInfo.TxId
+  type: Property
+  source:
+    id: TxId
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 23
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: string TxId { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property TxId As String
+  overload: VEDriversLite.Events.IEventInfo.TxId*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.Events.IEventInfo.Data
+  commentId: P:VEDriversLite.Events.IEventInfo.Data
+  id: Data
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: Data
+  nameWithType: IEventInfo.Data
+  fullName: VEDriversLite.Events.IEventInfo.Data
+  type: Property
+  source:
+    id: Data
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 24
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: string Data { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Property Data As String
+  overload: VEDriversLite.Events.IEventInfo.Data*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.Events.IEventInfo.Progress
+  commentId: P:VEDriversLite.Events.IEventInfo.Progress
+  id: Progress
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: Progress
+  nameWithType: IEventInfo.Progress
+  fullName: VEDriversLite.Events.IEventInfo.Progress
+  type: Property
+  source:
+    id: Progress
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 25
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: double Progress { get; set; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Property Progress As Double
+  overload: VEDriversLite.Events.IEventInfo.Progress*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.Events.IEventInfo.TimeStamp
+  commentId: P:VEDriversLite.Events.IEventInfo.TimeStamp
+  id: TimeStamp
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: TimeStamp
+  nameWithType: IEventInfo.TimeStamp
+  fullName: VEDriversLite.Events.IEventInfo.TimeStamp
+  type: Property
+  source:
+    id: TimeStamp
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 26
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: DateTime TimeStamp { get; set; }
+    parameters: []
+    return:
+      type: System.DateTime
+    content.vb: Property TimeStamp As Date
+  overload: VEDriversLite.Events.IEventInfo.TimeStamp*
+  modifiers.csharp:
+  - get
+  - set
+- uid: VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+  commentId: M:VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+  id: Fill(VEDriversLite.Events.IEventInfo)
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: Fill(IEventInfo)
+  nameWithType: IEventInfo.Fill(IEventInfo)
+  fullName: VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)
+  type: Method
+  source:
+    id: Fill
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 28
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: void Fill(IEventInfo ev)
+    parameters:
+    - id: ev
+      type: VEDriversLite.Events.IEventInfo
+    content.vb: Sub Fill(ev As IEventInfo)
+  overload: VEDriversLite.Events.IEventInfo.Fill*
+- uid: VEDriversLite.Events.IEventInfo.ParseData``1
+  commentId: M:VEDriversLite.Events.IEventInfo.ParseData``1
+  id: ParseData``1
+  parent: VEDriversLite.Events.IEventInfo
+  langs:
+  - csharp
+  - vb
+  name: ParseData<T>()
+  nameWithType: IEventInfo.ParseData<T>()
+  fullName: VEDriversLite.Events.IEventInfo.ParseData<T>()
+  type: Method
+  source:
+    id: ParseData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\IEventInfo.cs
+    startLine: 29
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: Task<T> ParseData<T>()
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{{T}}
+    content.vb: Function ParseData(Of T) As Task(Of T)
+  overload: VEDriversLite.Events.IEventInfo.ParseData*
+  nameWithType.vb: IEventInfo.ParseData(Of T)()
+  fullName.vb: VEDriversLite.Events.IEventInfo.ParseData(Of T)()
+  name.vb: ParseData(Of T)()
+references:
+- uid: VEDriversLite.Events
+  commentId: N:VEDriversLite.Events
+  name: VEDriversLite.Events
+  nameWithType: VEDriversLite.Events
+  fullName: VEDriversLite.Events
+- uid: VEDriversLite.Events.IEventInfo.Type*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.Type
+  name: Type
+  nameWithType: IEventInfo.Type
+  fullName: VEDriversLite.Events.IEventInfo.Type
+- uid: VEDriversLite.Events.EventType
+  commentId: T:VEDriversLite.Events.EventType
+  parent: VEDriversLite.Events
+  name: EventType
+  nameWithType: EventType
+  fullName: VEDriversLite.Events.EventType
+- uid: VEDriversLite.Events.IEventInfo.Address*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.Address
+  name: Address
+  nameWithType: IEventInfo.Address
+  fullName: VEDriversLite.Events.IEventInfo.Address
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.Events.IEventInfo.Title*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.Title
+  name: Title
+  nameWithType: IEventInfo.Title
+  fullName: VEDriversLite.Events.IEventInfo.Title
+- uid: VEDriversLite.Events.IEventInfo.Message*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.Message
+  name: Message
+  nameWithType: IEventInfo.Message
+  fullName: VEDriversLite.Events.IEventInfo.Message
+- uid: VEDriversLite.Events.IEventInfo.TxId*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.TxId
+  name: TxId
+  nameWithType: IEventInfo.TxId
+  fullName: VEDriversLite.Events.IEventInfo.TxId
+- uid: VEDriversLite.Events.IEventInfo.Data*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.Data
+  name: Data
+  nameWithType: IEventInfo.Data
+  fullName: VEDriversLite.Events.IEventInfo.Data
+- uid: VEDriversLite.Events.IEventInfo.Progress*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.Progress
+  name: Progress
+  nameWithType: IEventInfo.Progress
+  fullName: VEDriversLite.Events.IEventInfo.Progress
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  name: Double
+  nameWithType: Double
+  fullName: System.Double
+- uid: VEDriversLite.Events.IEventInfo.TimeStamp*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.TimeStamp
+  name: TimeStamp
+  nameWithType: IEventInfo.TimeStamp
+  fullName: VEDriversLite.Events.IEventInfo.TimeStamp
+- uid: System.DateTime
+  commentId: T:System.DateTime
+  parent: System
+  isExternal: true
+  name: DateTime
+  nameWithType: DateTime
+  fullName: System.DateTime
+- uid: VEDriversLite.Events.IEventInfo.Fill*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.Fill
+  name: Fill
+  nameWithType: IEventInfo.Fill
+  fullName: VEDriversLite.Events.IEventInfo.Fill
+- uid: VEDriversLite.Events.IEventInfo
+  commentId: T:VEDriversLite.Events.IEventInfo
+  parent: VEDriversLite.Events
+  name: IEventInfo
+  nameWithType: IEventInfo
+  fullName: VEDriversLite.Events.IEventInfo
+- uid: VEDriversLite.Events.IEventInfo.ParseData*
+  commentId: Overload:VEDriversLite.Events.IEventInfo.ParseData
+  name: ParseData
+  nameWithType: IEventInfo.ParseData
+  fullName: VEDriversLite.Events.IEventInfo.ParseData
+- uid: System.Threading.Tasks.Task{{T}}
+  commentId: T:System.Threading.Tasks.Task{``0}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<T>
+  nameWithType: Task<T>
+  fullName: System.Threading.Tasks.Task<T>
+  nameWithType.vb: Task(Of T)
+  fullName.vb: System.Threading.Tasks.Task(Of T)
+  name.vb: Task(Of T)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks

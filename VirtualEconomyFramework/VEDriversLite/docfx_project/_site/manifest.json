@@ -1,0 +1,1878 @@
+{
+  "homepages": [],
+  "source_base_path": "C:/repositories/VirtualEconomyFramework/VirtualEconomyFramework/VEDriversLite/docfx_project",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Bookmarks.ActiveTab.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Bookmarks.ActiveTab.html",
+          "hash": "blCc8+VpD2w0e+nS+IITyYF2wnWM0CUuh4aMLdFF0Kw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Bookmarks.Bookmark.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Bookmarks.Bookmark.html",
+          "hash": "URAuFjfRzYwfCx4cvGv7Se7cVFivVYvvugHEww+ibTk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Bookmarks.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Bookmarks.html",
+          "hash": "i4mp6U4Ntr6wCLGxASkdb/GX0xylNnga4IX9d1qlmSQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.NeblioBuilderAddress.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.NeblioBuilderAddress.html",
+          "hash": "bDrIgra7pi9VT8YZvAqa6Dqxkjj/eo3yb+LNjhTkpTg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.NeblioBuilderOutput.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.NeblioBuilderOutput.html",
+          "hash": "ALOjKFZea9L/d/n3NWY6XLP6sFLcA6FrDp3tktAZAHM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.NeblioBuilderTransaction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.NeblioBuilderTransaction.html",
+          "hash": "JIC+zSvtRYletNiPjBmuUqOztg70lpWtFBnUleUlABE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.NeblioBuilderUtxo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.NeblioBuilderUtxo.html",
+          "hash": "2O+ptMHkTjUe1O6xVegB9Z1o7v+CylF60TblqKQ9in4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.NeblioTransactionBuilder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.NeblioTransactionBuilder.html",
+          "hash": "av/Zj50I7WwnZDRmi5y658Yr50xPyCgvSJ3/iYVVziE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.NewTokenTxMetaField.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.NewTokenTxMetaField.html",
+          "hash": "PK28lb+VqCh0JDKEk3yroqYC6zm3u1U+bYEy8RQw6sg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.NewTokenTxReceiver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.NewTokenTxReceiver.html",
+          "hash": "pirp5XttD03wD7QyuejJqcfssqDkAV1fexJhyRFRIvE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.NewTokenTxUtxo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.NewTokenTxUtxo.html",
+          "hash": "qjeliICW9DSqEMHsefcitPzhiFRnOIdfDT/L/w6d8T4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.TransactionInputSummary.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.TransactionInputSummary.html",
+          "hash": "VZc4TYinRumljz+r/Fx/NFVXsQ8vgK6ezwPSdX2Dcxg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.TransactionOutputSummary.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.TransactionOutputSummary.html",
+          "hash": "XKeirqWymwe3gKES6AZgiI75JmYoWeWKJuB6/I1OsNY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builder.html",
+          "hash": "Wqnay52jzEfkRcdVPBcDouoyeLDJnTXsafWBLJvxvdU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.CommonEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.CommonEvent.html",
+          "hash": "24gdJjUGz+GmOddKykfnq3udXH9KXNcQ/30QcTfQsUg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.ErrorEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.ErrorEvent.html",
+          "hash": "d+3Dq0t3ZwEP9Wc/LHKpuSgmRDKTby8/+jD8YN3goP8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.EventFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.EventFactory.html",
+          "hash": "K9MwIEQRd02KN9wFgfV6wzECRPrvV70Mlt4+ddGVBBw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.EventInfoProvider.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.EventInfoProvider.html",
+          "hash": "4e9IjGIkDAIrTXqFndxwMcSZxOud7YBdb4U9gjfbLSA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.EventType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.EventType.html",
+          "hash": "/vJhQFZV3+qGtqYmLyUBiMNRfuVb7ACimyCY/qFaBqQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.IEventInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.IEventInfo.html",
+          "hash": "BGgZwq1y7M6w8PDOZBMeo+FCiFBOA+0TShnem4p9vss="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.InfoEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.InfoEvent.html",
+          "hash": "ZAaHx7EQN1kzNTvW+vSqCXBD0wd83etSh4pZkLSjgJ4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.html",
+          "hash": "8joD5nlXI9MvDIEsG/HNehmN3WtXml45G+kHFTONtuc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.FileHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.FileHelpers.html",
+          "hash": "DjL1bKRwxUXIj2yL2C+TMPhWLdgz7DpfH7Hu67mfLFE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.KeyDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.KeyDto.html",
+          "hash": "Y87S+8KOoL0b5n0BL3Df6DyrTRUK3Qp/63xvWSx6MLc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.MintNFTData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.MintNFTData.html",
+          "hash": "QWCsof7lIQZTuHHw9PKJcQ17u1jQ0XSJfTMnjU0AdFk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.CommonNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.CommonNFT.html",
+          "hash": "qsKtLUVxSt+dXI4GC0VpQOJi8vAVL9umXpwIy6og4vI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.GetNFTOwnerDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.GetNFTOwnerDto.html",
+          "hash": "pD2I/Dix8e3G/8LzMyrzDFgwrEhzYeUGD9FLkcDfeRA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.html",
+          "hash": "PikCWdQcSmqZOOxW3aTYNuZDCqpoHr6Ibkmcot3X9eA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.INFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.INFT.html",
+          "hash": "aCblc/XARL6BQLMkO4RHYRVPWkjrWwckeQHjnyQC7yI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.ImageNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.ImageNFT.html",
+          "hash": "C/YvsyHih/FuQvCLiLTp9thZIsRrNvU3hJFOISWd+2s="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.LoadNFTOriginDataDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.LoadNFTOriginDataDto.html",
+          "hash": "BqZw7nh62qHhWEjRGJIA6Wm4Dh1oAuDa4SLWw3vnFa4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.LoadingImageStages.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.LoadingImageStages.html",
+          "hash": "35JZ+x2s02DESl7ATeP2igWMOMgMJpXWXDzKIPgZSxU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.MusicNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.MusicNFT.html",
+          "hash": "QBzzaTBIYVrrjki8jg8Sr2q2mFynbb+fVNmUMhZjkHM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.NFTFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.NFTFactory.html",
+          "hash": "+hsXnUOeuiv4RvwF23djYuBgZkL+jQp5hCjjIHGu4fg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.NFTHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.NFTHelpers.html",
+          "hash": "Vmaodbgh3eRSy5YCzDmSEzyE93vvSSnF/Sjt43nfWTY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.NFTTypes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.NFTTypes.html",
+          "hash": "A4dFgomBb1bE8MsFSJqlNXjO2mHTViuFQoFs1cTp97o="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.OwnershipVerificationCodeDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.OwnershipVerificationCodeDto.html",
+          "hash": "2ylpMG1+eZnOgs9I+ZzaqDyX1p2RCGC2YaIUwG8nOvY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.OwnershipVerificationResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.OwnershipVerificationResult.html",
+          "hash": "h3/J+2hWElJnUEjBLeRmUp9oSBBt77NY78+WqwmcG8g="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.OwnershipVerifier.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.OwnershipVerifier.html",
+          "hash": "pNEjIzTJufyo7bIX+OMgBgD2FMg9tNZA5gfl+Jj8Mvo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.PaymentNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.PaymentNFT.html",
+          "hash": "wtB1Lnw7sQXA1wQdKTGfjC3x6kX3dAEGKdxalQsPUDk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.PostNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.PostNFT.html",
+          "hash": "/pHiSgMIqtmJXMNi9b2K1s7Necn0t1mIZRtZKJ/6nhA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.ProfileNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.ProfileNFT.html",
+          "hash": "oK+FNVbA3RaqOHvrTyclK74ptr8cyzwAFm3xjSXrCoI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.html",
+          "hash": "q4Jb1QdDzVqdcDqGYECfPWAPuJHfYAb0W1AfHHAtC+Q="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Anonymous.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Anonymous.html",
+          "hash": "jwzeESgUHJj5YSSFVrE5+q3aw+5aC5kE8/6KKA/FAsM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ApiException-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ApiException-1.html",
+          "hash": "bA9F3OCI8U4D5zR+MQtQkzBL0vmZuT8vfXea499ZrAI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ApiException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ApiException.html",
+          "hash": "84skEaZPmAG0lxK9aNMlfaqlOzveDkgroq7tkwfCxw4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.BroadcastTxRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.BroadcastTxRequest.html",
+          "hash": "QbnHLTj3hK8avDR8+cQtiYt15rnnMgIFxnpgmq8gYrU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.BroadcastTxResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.BroadcastTxResponse.html",
+          "hash": "ZzkH8Koa0t7Qg3H6qDDttz1vX1uP926J18lsiwni/hs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Burn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Burn.html",
+          "hash": "sXN4zfQf7wE3DlaeZ6muaeSgF1NnL6ZisH+leX5ng3k="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.BurnTokenRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.BurnTokenRequest.html",
+          "hash": "ZuqtHRXfk0w0tBsipRvLvUNu8F9BajyNjvl0xqVVpCk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.BurnTokenResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.BurnTokenResponse.html",
+          "hash": "whf04SOWr0/3ATWur5+vcyDTHCVj314rYZOM7wUWphA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Client.ObjectResponseResult-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Client.ObjectResponseResult-1.html",
+          "hash": "6TY1cYBYdwTPTiwuAHRDDjLo10pZePLnlQYBDvaEAT4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Client.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Client.html",
+          "hash": "oDvNiQvQou5cldpw9rsx+Skdx1+/YAgxffJUsHNr03Y="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Data.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Data.html",
+          "hash": "H01+ivDp4iZfaUyqS1IM4GZ7YKbhwnc86R9kAArZXTM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Data2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Data2.html",
+          "hash": "+OPzptL2tsYJPyJeDXKA30RwO+ADTTkY4C7n45Q3oiE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Encryptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Encryptions.html",
+          "hash": "utlOc3kFwri/RoIaiepj9Iys6Y7WsmyADKYI/TXK1Fc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Encryptions2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Encryptions2.html",
+          "hash": "VzCQ1xXQhJfeurQYPuhOZbdaYjDiIo5oHl38dXOyzQ8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Error.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Error.html",
+          "hash": "r33YDHIITdAkdcxZOOFaWufJk9gQzv26KQlgrA5xj/U="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Expiration.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Expiration.html",
+          "hash": "3Twn8JmTl3SsLI+vKB/UNCquWVcK3iGN1ZNJUgba1DE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Expiration2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Expiration2.html",
+          "hash": "U4PMy0zDYGClNuKHjY94yazAerlctTSHsNhI3yLmDtY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Fees.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Fees.html",
+          "hash": "dX90/BK0WBz1TUFPEyUb3Bt9xn03WTY4JkfW7meMGN0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Fees2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Fees2.html",
+          "hash": "Zhj/gxltzQT+UQQzBV5wM/QRbs7oh3VO+srOvMjMzac="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Flags.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Flags.html",
+          "hash": "pUw/6y0wQWL4WRqXLv+suYjf4gv0ygvY9u6qLI7CiEA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Flags2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Flags2.html",
+          "hash": "BLWbdiirJDqRfxRGzqJ+lzHMx8FCO3uHjLgImXL5izI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetAddressInfoResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetAddressInfoResponse.html",
+          "hash": "+YwCHRQFd5BX+koJEc45Y3R4+1Hj14jtVDlDlEk2O7g="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetAddressResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetAddressResponse.html",
+          "hash": "v7Q06AHCSb1eJAtl/UmcmV7g08DAXF5wlHqNHJGHn2c="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetAddressUtxosResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetAddressUtxosResponse.html",
+          "hash": "r11JgTusSBDafDocQg60UADG6drDyc+9OjDJyAs6oOo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetBlockIndexResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetBlockIndexResponse.html",
+          "hash": "JqPOI0JOw/jEJs3wROCszNVYvO/39KOCaJOUw+cWjc4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetBlockResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetBlockResponse.html",
+          "hash": "aqmwjQojVpYQav4CdYalk9+O05kaw9s8yR3A7mRFjak="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetFaucetResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetFaucetResponse.html",
+          "hash": "0fN3Xx5t3UFmvzPuoGBMtTHG3xyDISXIDFDC46YHW0g="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetRawTxResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetRawTxResponse.html",
+          "hash": "o8pDtxJuALdwlYCpI8Idw2tEG/JJ00yk0ty+rvaPfLM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetStatusResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetStatusResponse.html",
+          "hash": "aOZnoF6XC8z0gdmhMYHViCJgiEykyztiGTvxpbMhJQg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetSyncResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetSyncResponse.html",
+          "hash": "xwZ4qHTEWTGrQz0U6WEnk+qF9mfliHs/rQyOPy3Biss="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTokenHoldersResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTokenHoldersResponse.html",
+          "hash": "e6/jsjSeBoGeOymTi4zBGSQI63ig2mjsxdN1YvNorz0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTokenIdResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTokenIdResponse.html",
+          "hash": "agkI9EiTAnaPjRhLxIaeEuhEzuQN1o8ZjXP7owQX6ZY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTokenMetadataResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTokenMetadataResponse.html",
+          "hash": "iRNI61PhlZeT6vGcInwGxRrWwYoXWDg37/fDP+sMACU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTransactionInfoResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTransactionInfoResponse.html",
+          "hash": "i8yt3NZ+dLjmmOljTbhbHij5a/HEoXI3WLYnvlkQ/AQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTxResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTxResponse.html",
+          "hash": "gDWfTbFKJV55OVmE6zEWFeBCtfAK/3j964Z9/wKVbVk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTxsResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTxsResponse.html",
+          "hash": "TywtzJT8GEb92nTJB17FnqiMLl7oVoxIQmu2B1LFA5w="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Holders.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Holders.html",
+          "hash": "1XT7jHV1cbHDy+l1NaXJzhIrCralkrrhYa5jYr8ygvA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Holders2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Holders2.html",
+          "hash": "Tm54HbpgDzlI4gTNXcC+NMKXwhM1p3CYXEb7JYDviWA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Holders3.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Holders3.html",
+          "hash": "JeiZfiDJ+OXjHp5HH80IArmkA5yGFEaCdwV41sloWWU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.IClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.IClient.html",
+          "hash": "8ZZlvMnQAqfo4sbx2EZcMzVMMhVi00lRP3h5EIFAF80="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.IJsonClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.IJsonClient.html",
+          "hash": "4Dayn/bJev+fJ9slRa19okXcZOM3w9S1/7FhLHS/3io="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ITestnetClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ITestnetClient.html",
+          "hash": "I77mz+LYrEtQFAx3E+4OIYWGfZ7GGpYyuF/RLoueudY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.IssueTokenRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.IssueTokenRequest.html",
+          "hash": "DSUcDWgPrtBjf/OWoDi3km7ukRO3aO3evVyUPI7A1Cc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.IssueTokenResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.IssueTokenResponse.html",
+          "hash": "WgNdXIRNyi92LP51+qse9F18r/9IaiYw4SPhEZ1eLFY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Items.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Items.html",
+          "hash": "r7I/2cKB8KHv2k7Dyc0lTys7XY65ewDk2VtFO9r+xqE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Items2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Items2.html",
+          "hash": "gtEboLcuEOXJuLejOc+BxpRaem9jU1VwvZm1KYIYNog="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.JsonClient.ObjectResponseResult-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.JsonClient.ObjectResponseResult-1.html",
+          "hash": "yJvbaX2FAZXMLbv1N5A0jejCFUIzg84ZEI9h/KvpD5o="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.JsonClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.JsonClient.html",
+          "hash": "sCwkrMxg4D5Dd5NmwyStC/vqzKHwZf49hNZdSomlayU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Meta.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Meta.html",
+          "hash": "jTMqZxLfNzntQ5GKcxuTsQRVtnTo9m+2k7jPs8jixEs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Meta2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Meta2.html",
+          "hash": "kEQAtzVTt9TCXdxRbiheCLWY0nCXFHSxpbRzOD0t94I="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Meta3.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Meta3.html",
+          "hash": "4cIVnUy5WwEbsJZKfUq9VgE9gN7unXp9G2QZltaa8b8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Metadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Metadata.html",
+          "hash": "GPZnTR88mG62S4JO49o3U6GOpQixGIYa/bI2c2gORGk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Metadata2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Metadata2.html",
+          "hash": "l7mvzQJaDMTEufz9JE3hjACY+dQa2TIuPudw84Yyw2U="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.MetadataOfIssuance.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.MetadataOfIssuance.html",
+          "hash": "5jERC6jQq/3TyDqdeAild+Q1GdDuejmcI1Apo0EC5rs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.MetadataOfUtxo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.MetadataOfUtxo.html",
+          "hash": "p95YkQpFIER9BtqjABHE8eupXQuUWDgESbXEtZxui2c="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.PreviousOutput.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.PreviousOutput.html",
+          "hash": "Cp+f6N+VMPw5kMMG+EHm12pa1aFCf2oxgQr6SjcmA/k="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.RpcRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.RpcRequest.html",
+          "hash": "ejMLz4uZnLwfEy2sc840DRphfn8VfItoRFcQt+LWwTU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.RpcResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.RpcResponse.html",
+          "hash": "3NOYMvW0uMOk0zy8Hn/W5rBbNiPsLw1Np8yf6a6RMVc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Rules.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Rules.html",
+          "hash": "NU48YHKEa1bZdgnAiNsgWoelfd3nArwywxGB8Q5XAhM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Rules2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Rules2.html",
+          "hash": "jYP6BTB0VcBLFUpueezX8ucRoVDVCqs0k/GFjwvmQyo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ScriptPubKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ScriptPubKey.html",
+          "hash": "sM1iS8L99p104QzCDLWw6cIo1ehFSC4EcdpOWV09upM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ScriptPubKey2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ScriptPubKey2.html",
+          "hash": "uc5SmeA6vNongYGpC7ylL2MK9xSiZpUnD2NPZWPN1/w="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ScriptSig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ScriptSig.html",
+          "hash": "hJbocIRJwvK5AIRqrujZ600lgNWfHLk3XPoSFPON9cI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ScriptSig2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ScriptSig2.html",
+          "hash": "3iVDjrBZgbDP8K48Q+D5LOk10Tkk5mbN64aRKlfKbtA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.SendTokenRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.SendTokenRequest.html",
+          "hash": "rptY5ihko5gJMJt0uLqEWxY9JxnZGRjjddQh3ceOXV0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.SendTokenResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.SendTokenResponse.html",
+          "hash": "xLjGR+SMonA+ZpX5c2Sx2u3sXQpnjTUAhlb+WN0UkSY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.SendTxRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.SendTxRequest.html",
+          "hash": "7tPEdnRREpgKn8EiHgjKkJfJHQhOFKCBFfRMg1ma5F4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.TestnetClient.ObjectResponseResult-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.TestnetClient.ObjectResponseResult-1.html",
+          "hash": "8lNb29ekjJVenjHMe0tkaZ2V3TzjpGywXT2nSgekWD0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.TestnetClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.TestnetClient.html",
+          "hash": "AuKKqA51cVoJbpwjyD1FlxENi5V7yFExTrpz19MszU4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.To.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.To.html",
+          "hash": "y1RhQV41gnWGVMilDqZvws+tB2plESuaj+ZxsFNBLyA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Tokens.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Tokens.html",
+          "hash": "1ZLIrvIbHsDXZXMRr4uao7A0MoR+GHNpb1JgFogalRA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Tokens2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Tokens2.html",
+          "hash": "ETKTgGu9V4PMTFz/N3kQaQQpTx2Ia4I/VZ+0VHYQZ3M="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Tokens3.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Tokens3.html",
+          "hash": "pnmqtAKX/wbGR8Dkuf59EGWoVTu5LYo0h1/dBwir5T0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Transfer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Transfer.html",
+          "hash": "yRueElWZrWWGX5ttZhCtMrvzEX/EQXDshTVp2t487hU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Transfer2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Transfer2.html",
+          "hash": "K+RFhjOhqIZA60Dr1Bdqofc5EEgqJ4te2vtivC0N4M4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Urls.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Urls.html",
+          "hash": "+V+CnkhTXWb0Q5m1voWo9F+7x+ttAwI8m84I/eqUqHE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Urls2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Urls2.html",
+          "hash": "tb7GXz5SpQR5lftfkyKaTtnNvkwqpJcOD2vt4z8r9NM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.UserData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.UserData.html",
+          "hash": "3qbQaJ1BF+HfAjUxDGdQCO5TCQF9C3VtxGFD7pTNBws="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.UserData2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.UserData2.html",
+          "hash": "luu8KMf7xQ8kQ3GVAyeUBQVcCBvWytm9H7m72nhtzS4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.UserData3.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.UserData3.html",
+          "hash": "I8pHZgh7HetKUUWr1OV64jRKL0VKicV//tMh7HIGK3I="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.UserData4.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.UserData4.html",
+          "hash": "Yo/DLJ+l5aVW47d7PWNtqir2srYYces+a76WQGoab4U="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Utxos.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Utxos.html",
+          "hash": "KkJzGo/W2EDtFKDo/xXyouBN84gb/mzzHBqml7XuYpw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Vin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Vin.html",
+          "hash": "khBFCZeYbVcrUxH2aR0ZRZ4Ku8ycsEWC1L5ABotljWQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Vin2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Vin2.html",
+          "hash": "W2BAerCsNKlXvJZpKVHswoy9TP3i8qjYrTIvDWCN5uI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Vout.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Vout.html",
+          "hash": "n7PrYOzynENWsRoj0OHwQ4lTyoL2NVmE1UXn412WHKY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Vout2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Vout2.html",
+          "hash": "AwoPvgHHVkHeBvAvzny3UX5w9s/DO2MABoOVEtbrTOk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.html",
+          "hash": "z7b78IQOkhdSjljoyIb6TMKkjbVRQ94+Z3hThT/xc4E="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPIScripPubKeyDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPIScripPubKeyDto.html",
+          "hash": "kAIhdDxWFw2jZeyfRToLr7mOC1j3M+qRpY/wldTewic="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAccount.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAccount.html",
+          "hash": "//zOD4am+114YNvODXjYDJ9mvG4M+GhSjwffthbxhso="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioTransactionHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioTransactionHelpers.html",
+          "hash": "9gf7mtzWFuZlFlOrHkHxiUJahgnXXmt4WL5akbFZeaQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.ECDSAProvider.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.ECDSAProvider.html",
+          "hash": "sHkVM68riUYe4ZTmCVOKqzrd0O3EVErp3BylgS8gUPo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.EncryptionKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.EncryptionKey.html",
+          "hash": "i0dMP2/as9mX14R7Eb7rqvqNHwn18s1etXRWUcjkAXM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.SecurityUtils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.SecurityUtils.html",
+          "hash": "mJZPAGZpV+dz7lBnmBT/Ore8KcRi8noqIDIGpenp+4k="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.SymetricProvider.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.SymetricProvider.html",
+          "hash": "KKX+ytZl7/Zm1NG8FnF3VA8Bpr/UoKQVVfNdVbC22/A="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.html",
+          "hash": "/pxRXiP+A7HmaIrT6YAyA6htTGlvQ7mpzFAaozDszSA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.SendTokenTxData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.SendTokenTxData.html",
+          "hash": "G7sRUE6BNFLjcWpBcwRvBbo+SsorJ3QnwVlAfzoN/pA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.SendTxData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.SendTxData.html",
+          "hash": "0WDzXYibEanoQRKm7mfE1GMpzReyFwDHqLnHZmhcSt8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.SignResultDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.SignResultDto.html",
+          "hash": "feVga5zQyoxOuQVMJoYgJduQTzawfLJEgFjy1wCu8yY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.StringExt.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.StringExt.html",
+          "hash": "PbAoy5VFGAK50ORqnE/hCo/Vy6OcequC9A9Wfl7kRLs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.TimeHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.TimeHelpers.html",
+          "hash": "E1NWcbt99hpOVRsuXqOA3dLQ1RHaiLvKf/zSe6AwBfk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.TokenOwnerDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.TokenOwnerDto.html",
+          "hash": "1ZXJ31psGYDE3ZZYGQz/ywWDZN38I4qq4RrH2BtmmIk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.TokenSupplyDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.TokenSupplyDto.html",
+          "hash": "wHRrEvftVvnR17qeQEggFbFzLqi3bqs0dRTwaniR+wk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.html",
+          "hash": "+2GbrWrnz65RnAeaqi9nzgRxhXTlc4lOxHgn1B368zw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "KgpjNmccaMIemvTrL/hMxhURoH9AUhEx7KU0z4B+kWo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "OvzQSNoJj/U+njDKRUycHxxZlljhoMe6WJYHl3hTtN4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "g+ykCCDuLi/sva4p56YnC8R5R8oJo+Z0YCMK5CD/zl8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "BlPxk5mtl2kgfcZUgkEguqiSAR/EUyUTT4EdebwkQvs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "fgS2NZwfUxZAMWC/IPldtArYPT77YFCm/Y0JNwhHHNA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "WSuRrYiGwKKMbtdG9z8W9fXmLoCyTnGg9AxbPKLXm2Y="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": true,
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 3,
+          "skipped_file_count": 2
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 146,
+          "skipped_file_count": 146
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": true,
+        "details": "Can support incremental post processing.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

@@ -1,0 +1,1048 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NeblioAPI.Metadata
+  commentId: T:VEDriversLite.NeblioAPI.Metadata
+  id: Metadata
+  parent: VEDriversLite.NeblioAPI
+  children:
+  - VEDriversLite.NeblioAPI.Metadata.AdditionalProperties
+  - VEDriversLite.NeblioAPI.Metadata.Description
+  - VEDriversLite.NeblioAPI.Metadata.Encryptions
+  - VEDriversLite.NeblioAPI.Metadata.Issuer
+  - VEDriversLite.NeblioAPI.Metadata.Rules
+  - VEDriversLite.NeblioAPI.Metadata.TokenName
+  - VEDriversLite.NeblioAPI.Metadata.Urls
+  - VEDriversLite.NeblioAPI.Metadata.UserData
+  langs:
+  - csharp
+  - vb
+  name: Metadata
+  nameWithType: Metadata
+  fullName: VEDriversLite.NeblioAPI.Metadata
+  type: Class
+  source:
+    id: Metadata
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5901
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: public class Metadata
+    content.vb: Public Class Metadata
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.NeblioAPI.Metadata.TokenName
+  commentId: P:VEDriversLite.NeblioAPI.Metadata.TokenName
+  id: TokenName
+  parent: VEDriversLite.NeblioAPI.Metadata
+  langs:
+  - csharp
+  - vb
+  name: TokenName
+  nameWithType: Metadata.TokenName
+  fullName: VEDriversLite.NeblioAPI.Metadata.TokenName
+  type: Property
+  source:
+    id: TokenName
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5905
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Token Symbol it will be identified by (ex. NIBBL)
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("tokenName", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public string TokenName { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("tokenName", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property TokenName As String
+  overload: VEDriversLite.NeblioAPI.Metadata.TokenName*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: tokenName
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.Metadata.Issuer
+  commentId: P:VEDriversLite.NeblioAPI.Metadata.Issuer
+  id: Issuer
+  parent: VEDriversLite.NeblioAPI.Metadata
+  langs:
+  - csharp
+  - vb
+  name: Issuer
+  nameWithType: Metadata.Issuer
+  fullName: VEDriversLite.NeblioAPI.Metadata.Issuer
+  type: Property
+  source:
+    id: Issuer
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5909
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Name of token issuer
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("issuer", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public string Issuer { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("issuer", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Issuer As String
+  overload: VEDriversLite.NeblioAPI.Metadata.Issuer*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: issuer
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.Metadata.Description
+  commentId: P:VEDriversLite.NeblioAPI.Metadata.Description
+  id: Description
+  parent: VEDriversLite.NeblioAPI.Metadata
+  langs:
+  - csharp
+  - vb
+  name: Description
+  nameWithType: Metadata.Description
+  fullName: VEDriversLite.NeblioAPI.Metadata.Description
+  type: Property
+  source:
+    id: Description
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5913
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Long name or description of token (ex. Nibble)
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("description", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public string Description { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("description", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Description As String
+  overload: VEDriversLite.NeblioAPI.Metadata.Description*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: description
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.Metadata.Urls
+  commentId: P:VEDriversLite.NeblioAPI.Metadata.Urls
+  id: Urls
+  parent: VEDriversLite.NeblioAPI.Metadata
+  langs:
+  - csharp
+  - vb
+  name: Urls
+  nameWithType: Metadata.Urls
+  fullName: VEDriversLite.NeblioAPI.Metadata.Urls
+  type: Property
+  source:
+    id: Urls
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5916
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: >-
+      [JsonProperty("urls", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public ICollection<Urls> Urls { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Urls}
+    content.vb: >-
+      <JsonProperty("urls", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Urls As ICollection(Of Urls)
+  overload: VEDriversLite.NeblioAPI.Metadata.Urls*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: urls
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.Metadata.UserData
+  commentId: P:VEDriversLite.NeblioAPI.Metadata.UserData
+  id: UserData
+  parent: VEDriversLite.NeblioAPI.Metadata
+  langs:
+  - csharp
+  - vb
+  name: UserData
+  nameWithType: Metadata.UserData
+  fullName: VEDriversLite.NeblioAPI.Metadata.UserData
+  type: Property
+  source:
+    id: UserData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5920
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Metadata set by user on token
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("userData", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public UserData2 UserData { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NeblioAPI.UserData2
+    content.vb: >-
+      <JsonProperty("userData", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property UserData As UserData2
+  overload: VEDriversLite.NeblioAPI.Metadata.UserData*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: userData
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.Metadata.Encryptions
+  commentId: P:VEDriversLite.NeblioAPI.Metadata.Encryptions
+  id: Encryptions
+  parent: VEDriversLite.NeblioAPI.Metadata
+  langs:
+  - csharp
+  - vb
+  name: Encryptions
+  nameWithType: Metadata.Encryptions
+  fullName: VEDriversLite.NeblioAPI.Metadata.Encryptions
+  type: Property
+  source:
+    id: Encryptions
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5924
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Array of encryption instruction objects for encrypting userData
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("encryptions", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public ICollection<Encryptions> Encryptions { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Encryptions}
+    content.vb: >-
+      <JsonProperty("encryptions", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Encryptions As ICollection(Of Encryptions)
+  overload: VEDriversLite.NeblioAPI.Metadata.Encryptions*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: encryptions
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.Metadata.Rules
+  commentId: P:VEDriversLite.NeblioAPI.Metadata.Rules
+  id: Rules
+  parent: VEDriversLite.NeblioAPI.Metadata
+  langs:
+  - csharp
+  - vb
+  name: Rules
+  nameWithType: Metadata.Rules
+  fullName: VEDriversLite.NeblioAPI.Metadata.Rules
+  type: Property
+  source:
+    id: Rules
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5928
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Object describing token rules
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("rules", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public Rules Rules { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NeblioAPI.Rules
+    content.vb: >-
+      <JsonProperty("rules", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Rules As Rules
+  overload: VEDriversLite.NeblioAPI.Metadata.Rules*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: rules
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.Metadata.AdditionalProperties
+  commentId: P:VEDriversLite.NeblioAPI.Metadata.AdditionalProperties
+  id: AdditionalProperties
+  parent: VEDriversLite.NeblioAPI.Metadata
+  langs:
+  - csharp
+  - vb
+  name: AdditionalProperties
+  nameWithType: Metadata.AdditionalProperties
+  fullName: VEDriversLite.NeblioAPI.Metadata.AdditionalProperties
+  type: Property
+  source:
+    id: AdditionalProperties
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5933
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: >-
+      [JsonExtensionData]
+
+      public IDictionary<string, object> AdditionalProperties { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IDictionary{System.String,System.Object}
+    content.vb: >-
+      <JsonExtensionData>
+
+      Public Property AdditionalProperties As IDictionary(Of String, Object)
+  overload: VEDriversLite.NeblioAPI.Metadata.AdditionalProperties*
+  attributes:
+  - type: Newtonsoft.Json.JsonExtensionDataAttribute
+    ctor: Newtonsoft.Json.JsonExtensionDataAttribute.#ctor
+    arguments: []
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite.NeblioAPI
+  commentId: N:VEDriversLite.NeblioAPI
+  name: VEDriversLite.NeblioAPI
+  nameWithType: VEDriversLite.NeblioAPI
+  fullName: VEDriversLite.NeblioAPI
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.NeblioAPI.Metadata.TokenName*
+  commentId: Overload:VEDriversLite.NeblioAPI.Metadata.TokenName
+  name: TokenName
+  nameWithType: Metadata.TokenName
+  fullName: VEDriversLite.NeblioAPI.Metadata.TokenName
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.NeblioAPI.Metadata.Issuer*
+  commentId: Overload:VEDriversLite.NeblioAPI.Metadata.Issuer
+  name: Issuer
+  nameWithType: Metadata.Issuer
+  fullName: VEDriversLite.NeblioAPI.Metadata.Issuer
+- uid: VEDriversLite.NeblioAPI.Metadata.Description*
+  commentId: Overload:VEDriversLite.NeblioAPI.Metadata.Description
+  name: Description
+  nameWithType: Metadata.Description
+  fullName: VEDriversLite.NeblioAPI.Metadata.Description
+- uid: VEDriversLite.NeblioAPI.Metadata.Urls*
+  commentId: Overload:VEDriversLite.NeblioAPI.Metadata.Urls
+  name: Urls
+  nameWithType: Metadata.Urls
+  fullName: VEDriversLite.NeblioAPI.Metadata.Urls
+- uid: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Urls}
+  commentId: T:System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Urls}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.ICollection`1
+  name: ICollection<Urls>
+  nameWithType: ICollection<Urls>
+  fullName: System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Urls>
+  nameWithType.vb: ICollection(Of Urls)
+  fullName.vb: System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Urls)
+  name.vb: ICollection(Of Urls)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Urls
+    name: Urls
+    nameWithType: Urls
+    fullName: VEDriversLite.NeblioAPI.Urls
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Urls
+    name: Urls
+    nameWithType: Urls
+    fullName: VEDriversLite.NeblioAPI.Urls
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.ICollection`1
+  commentId: T:System.Collections.Generic.ICollection`1
+  isExternal: true
+  name: ICollection<T>
+  nameWithType: ICollection<T>
+  fullName: System.Collections.Generic.ICollection<T>
+  nameWithType.vb: ICollection(Of T)
+  fullName.vb: System.Collections.Generic.ICollection(Of T)
+  name.vb: ICollection(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: VEDriversLite.NeblioAPI.Metadata.UserData*
+  commentId: Overload:VEDriversLite.NeblioAPI.Metadata.UserData
+  name: UserData
+  nameWithType: Metadata.UserData
+  fullName: VEDriversLite.NeblioAPI.Metadata.UserData
+- uid: VEDriversLite.NeblioAPI.UserData2
+  commentId: T:VEDriversLite.NeblioAPI.UserData2
+  parent: VEDriversLite.NeblioAPI
+  name: UserData2
+  nameWithType: UserData2
+  fullName: VEDriversLite.NeblioAPI.UserData2
+- uid: VEDriversLite.NeblioAPI.Metadata.Encryptions*
+  commentId: Overload:VEDriversLite.NeblioAPI.Metadata.Encryptions
+  name: Encryptions
+  nameWithType: Metadata.Encryptions
+  fullName: VEDriversLite.NeblioAPI.Metadata.Encryptions
+- uid: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Encryptions}
+  commentId: T:System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Encryptions}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.ICollection`1
+  name: ICollection<Encryptions>
+  nameWithType: ICollection<Encryptions>
+  fullName: System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Encryptions>
+  nameWithType.vb: ICollection(Of Encryptions)
+  fullName.vb: System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Encryptions)
+  name.vb: ICollection(Of Encryptions)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Encryptions
+    name: Encryptions
+    nameWithType: Encryptions
+    fullName: VEDriversLite.NeblioAPI.Encryptions
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Encryptions
+    name: Encryptions
+    nameWithType: Encryptions
+    fullName: VEDriversLite.NeblioAPI.Encryptions
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAPI.Metadata.Rules*
+  commentId: Overload:VEDriversLite.NeblioAPI.Metadata.Rules
+  name: Rules
+  nameWithType: Metadata.Rules
+  fullName: VEDriversLite.NeblioAPI.Metadata.Rules
+- uid: VEDriversLite.NeblioAPI.Rules
+  commentId: T:VEDriversLite.NeblioAPI.Rules
+  parent: VEDriversLite.NeblioAPI
+  name: Rules
+  nameWithType: Rules
+  fullName: VEDriversLite.NeblioAPI.Rules
+- uid: VEDriversLite.NeblioAPI.Metadata.AdditionalProperties*
+  commentId: Overload:VEDriversLite.NeblioAPI.Metadata.AdditionalProperties
+  name: AdditionalProperties
+  nameWithType: Metadata.AdditionalProperties
+  fullName: VEDriversLite.NeblioAPI.Metadata.AdditionalProperties
+- uid: System.Collections.Generic.IDictionary{System.String,System.Object}
+  commentId: T:System.Collections.Generic.IDictionary{System.String,System.Object}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IDictionary`2
+  name: IDictionary<String, Object>
+  nameWithType: IDictionary<String, Object>
+  fullName: System.Collections.Generic.IDictionary<System.String, System.Object>
+  nameWithType.vb: IDictionary(Of String, Object)
+  fullName.vb: System.Collections.Generic.IDictionary(Of System.String, System.Object)
+  name.vb: IDictionary(Of String, Object)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IDictionary`2
+  commentId: T:System.Collections.Generic.IDictionary`2
+  isExternal: true
+  name: IDictionary<TKey, TValue>
+  nameWithType: IDictionary<TKey, TValue>
+  fullName: System.Collections.Generic.IDictionary<TKey, TValue>
+  nameWithType.vb: IDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.IDictionary(Of TKey, TValue)
+  name.vb: IDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )

@@ -1,0 +1,129 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NFT.LoadingImageStages
+  commentId: T:VEDriversLite.NFT.LoadingImageStages
+  id: LoadingImageStages
+  parent: VEDriversLite.NFT
+  children:
+  - VEDriversLite.NFT.LoadingImageStages.Loaded
+  - VEDriversLite.NFT.LoadingImageStages.Loading
+  - VEDriversLite.NFT.LoadingImageStages.NotStarted
+  langs:
+  - csharp
+  - vb
+  name: LoadingImageStages
+  nameWithType: LoadingImageStages
+  fullName: VEDriversLite.NFT.LoadingImageStages
+  type: Enum
+  source:
+    id: LoadingImageStages
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 19
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public enum LoadingImageStages
+    content.vb: Public Enum LoadingImageStages
+  modifiers.csharp:
+  - public
+  - enum
+  modifiers.vb:
+  - Public
+  - Enum
+- uid: VEDriversLite.NFT.LoadingImageStages.NotStarted
+  commentId: F:VEDriversLite.NFT.LoadingImageStages.NotStarted
+  id: NotStarted
+  parent: VEDriversLite.NFT.LoadingImageStages
+  langs:
+  - csharp
+  - vb
+  name: NotStarted
+  nameWithType: LoadingImageStages.NotStarted
+  fullName: VEDriversLite.NFT.LoadingImageStages.NotStarted
+  type: Field
+  source:
+    id: NotStarted
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 21
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: NotStarted = 0
+    return:
+      type: VEDriversLite.NFT.LoadingImageStages
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+- uid: VEDriversLite.NFT.LoadingImageStages.Loading
+  commentId: F:VEDriversLite.NFT.LoadingImageStages.Loading
+  id: Loading
+  parent: VEDriversLite.NFT.LoadingImageStages
+  langs:
+  - csharp
+  - vb
+  name: Loading
+  nameWithType: LoadingImageStages.Loading
+  fullName: VEDriversLite.NFT.LoadingImageStages.Loading
+  type: Field
+  source:
+    id: Loading
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 22
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: Loading = 1
+    return:
+      type: VEDriversLite.NFT.LoadingImageStages
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+- uid: VEDriversLite.NFT.LoadingImageStages.Loaded
+  commentId: F:VEDriversLite.NFT.LoadingImageStages.Loaded
+  id: Loaded
+  parent: VEDriversLite.NFT.LoadingImageStages
+  langs:
+  - csharp
+  - vb
+  name: Loaded
+  nameWithType: LoadingImageStages.Loaded
+  fullName: VEDriversLite.NFT.LoadingImageStages.Loaded
+  type: Field
+  source:
+    id: Loaded
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\NFTHelpers.cs
+    startLine: 23
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: Loaded = 2
+    return:
+      type: VEDriversLite.NFT.LoadingImageStages
+  modifiers.csharp:
+  - public
+  - const
+  modifiers.vb:
+  - Public
+  - Const
+references:
+- uid: VEDriversLite.NFT
+  commentId: N:VEDriversLite.NFT
+  name: VEDriversLite.NFT
+  nameWithType: VEDriversLite.NFT
+  fullName: VEDriversLite.NFT
+- uid: VEDriversLite.NFT.LoadingImageStages
+  commentId: T:VEDriversLite.NFT.LoadingImageStages
+  parent: VEDriversLite.NFT
+  name: LoadingImageStages
+  nameWithType: LoadingImageStages
+  fullName: VEDriversLite.NFT.LoadingImageStages

@@ -1,0 +1,1643 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NeblioAPI.GetTxResponse
+  commentId: T:VEDriversLite.NeblioAPI.GetTxResponse
+  id: GetTxResponse
+  parent: VEDriversLite.NeblioAPI
+  children:
+  - VEDriversLite.NeblioAPI.GetTxResponse.AdditionalProperties
+  - VEDriversLite.NeblioAPI.GetTxResponse.Blockhash
+  - VEDriversLite.NeblioAPI.GetTxResponse.Blockheight
+  - VEDriversLite.NeblioAPI.GetTxResponse.Blocktime
+  - VEDriversLite.NeblioAPI.GetTxResponse.Confirmations
+  - VEDriversLite.NeblioAPI.GetTxResponse.Fee
+  - VEDriversLite.NeblioAPI.GetTxResponse.Fees
+  - VEDriversLite.NeblioAPI.GetTxResponse.Locktime
+  - VEDriversLite.NeblioAPI.GetTxResponse.Size
+  - VEDriversLite.NeblioAPI.GetTxResponse.Time
+  - VEDriversLite.NeblioAPI.GetTxResponse.Totalsent
+  - VEDriversLite.NeblioAPI.GetTxResponse.Txid
+  - VEDriversLite.NeblioAPI.GetTxResponse.ValueIn
+  - VEDriversLite.NeblioAPI.GetTxResponse.ValueOut
+  - VEDriversLite.NeblioAPI.GetTxResponse.Version
+  - VEDriversLite.NeblioAPI.GetTxResponse.Vin
+  - VEDriversLite.NeblioAPI.GetTxResponse.Vout
+  langs:
+  - csharp
+  - vb
+  name: GetTxResponse
+  nameWithType: GetTxResponse
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse
+  type: Class
+  source:
+    id: GetTxResponse
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5289
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: public class GetTxResponse
+    content.vb: Public Class GetTxResponse
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Txid
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Txid
+  id: Txid
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Txid
+  nameWithType: GetTxResponse.Txid
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Txid
+  type: Property
+  source:
+    id: Txid
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5293
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: TXID of transaction
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("txid", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public string Txid { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("txid", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Txid As String
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Txid*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: txid
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Version
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Version
+  id: Version
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Version
+  nameWithType: GetTxResponse.Version
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Version
+  type: Property
+  source:
+    id: Version
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5297
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Transaction version
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("version", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Version { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("version", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Version As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Version*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: version
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Locktime
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Locktime
+  id: Locktime
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Locktime
+  nameWithType: GetTxResponse.Locktime
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Locktime
+  type: Property
+  source:
+    id: Locktime
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5301
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Transaction locktime
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("locktime", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Locktime { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("locktime", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Locktime As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Locktime*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: locktime
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Vin
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Vin
+  id: Vin
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Vin
+  nameWithType: GetTxResponse.Vin
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Vin
+  type: Property
+  source:
+    id: Vin
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5305
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Array of transaction inputs
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("vin", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public ICollection<Vin2> Vin { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Vin2}
+    content.vb: >-
+      <JsonProperty("vin", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Vin As ICollection(Of Vin2)
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Vin*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: vin
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Vout
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Vout
+  id: Vout
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Vout
+  nameWithType: GetTxResponse.Vout
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Vout
+  type: Property
+  source:
+    id: Vout
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5309
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Array of transaction outputs
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("vout", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public ICollection<Vout2> Vout { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Vout2}
+    content.vb: >-
+      <JsonProperty("vout", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Vout As ICollection(Of Vout2)
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Vout*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: vout
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Blocktime
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Blocktime
+  id: Blocktime
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Blocktime
+  nameWithType: GetTxResponse.Blocktime
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Blocktime
+  type: Property
+  source:
+    id: Blocktime
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5313
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Block time of this transaction
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("blocktime", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Blocktime { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("blocktime", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Blocktime As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Blocktime*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: blocktime
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Blockheight
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Blockheight
+  id: Blockheight
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Blockheight
+  nameWithType: GetTxResponse.Blockheight
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Blockheight
+  type: Property
+  source:
+    id: Blockheight
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5317
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Block height of this transaction
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("blockheight", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Blockheight { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("blockheight", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Blockheight As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Blockheight*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: blockheight
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Totalsent
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Totalsent
+  id: Totalsent
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Totalsent
+  nameWithType: GetTxResponse.Totalsent
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Totalsent
+  type: Property
+  source:
+    id: Totalsent
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5321
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Total NEBL sent in this transaction in satoshis
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("totalsent", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Totalsent { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("totalsent", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Totalsent As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Totalsent*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: totalsent
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Fee
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Fee
+  id: Fee
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Fee
+  nameWithType: GetTxResponse.Fee
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Fee
+  type: Property
+  source:
+    id: Fee
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5325
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Total NEBL used as fee for this transcation in satoshis
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("fee", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Fee { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("fee", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Fee As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Fee*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: fee
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Blockhash
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Blockhash
+  id: Blockhash
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Blockhash
+  nameWithType: GetTxResponse.Blockhash
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Blockhash
+  type: Property
+  source:
+    id: Blockhash
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5329
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Hash of the block this transaction is in
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("blockhash", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public string Blockhash { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: >-
+      <JsonProperty("blockhash", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Blockhash As String
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Blockhash*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: blockhash
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Time
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Time
+  id: Time
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Time
+  nameWithType: GetTxResponse.Time
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Time
+  type: Property
+  source:
+    id: Time
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5333
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Transaction time
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("time", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Time { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("time", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Time As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Time*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: time
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Confirmations
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Confirmations
+  id: Confirmations
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Confirmations
+  nameWithType: GetTxResponse.Confirmations
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Confirmations
+  type: Property
+  source:
+    id: Confirmations
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5337
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Number of transaction confirmations
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("confirmations", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Confirmations { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("confirmations", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Confirmations As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Confirmations*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: confirmations
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.ValueOut
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.ValueOut
+  id: ValueOut
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: ValueOut
+  nameWithType: GetTxResponse.ValueOut
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.ValueOut
+  type: Property
+  source:
+    id: ValueOut
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5341
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Total NEBL output in this transaction
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("valueOut", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? ValueOut { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("valueOut", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property ValueOut As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.ValueOut*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: valueOut
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.ValueIn
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.ValueIn
+  id: ValueIn
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: ValueIn
+  nameWithType: GetTxResponse.ValueIn
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.ValueIn
+  type: Property
+  source:
+    id: ValueIn
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5345
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Total NEBL input in this transaction
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("valueIn", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? ValueIn { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("valueIn", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property ValueIn As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.ValueIn*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: valueIn
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Fees
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Fees
+  id: Fees
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Fees
+  nameWithType: GetTxResponse.Fees
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Fees
+  type: Property
+  source:
+    id: Fees
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5349
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Total NEBL used in fees for this transaction
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("fees", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Fees { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("fees", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Fees As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Fees*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: fees
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Size
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.Size
+  id: Size
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: Size
+  nameWithType: GetTxResponse.Size
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Size
+  type: Property
+  source:
+    id: Size
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5353
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  summary: Transcation size in bytes
+  example: []
+  syntax:
+    content: >-
+      [JsonProperty("size", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+
+      public double? Size { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Double}
+    content.vb: >-
+      <JsonProperty("size", Required:=Required.DisallowNull, NullValueHandling:=NullValueHandling.Ignore)>
+
+      Public Property Size As Double?
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.Size*
+  attributes:
+  - type: Newtonsoft.Json.JsonPropertyAttribute
+    ctor: Newtonsoft.Json.JsonPropertyAttribute.#ctor(System.String)
+    arguments:
+    - type: System.String
+      value: size
+    namedArguments:
+    - name: Required
+      type: Newtonsoft.Json.Required
+      value: 3
+    - name: NullValueHandling
+      type: Newtonsoft.Json.NullValueHandling
+      value: 1
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.AdditionalProperties
+  commentId: P:VEDriversLite.NeblioAPI.GetTxResponse.AdditionalProperties
+  id: AdditionalProperties
+  parent: VEDriversLite.NeblioAPI.GetTxResponse
+  langs:
+  - csharp
+  - vb
+  name: AdditionalProperties
+  nameWithType: GetTxResponse.AdditionalProperties
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.AdditionalProperties
+  type: Property
+  source:
+    id: AdditionalProperties
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NeblioAPI\NeblioRestApi.cs
+    startLine: 5358
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NeblioAPI
+  syntax:
+    content: >-
+      [JsonExtensionData]
+
+      public IDictionary<string, object> AdditionalProperties { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IDictionary{System.String,System.Object}
+    content.vb: >-
+      <JsonExtensionData>
+
+      Public Property AdditionalProperties As IDictionary(Of String, Object)
+  overload: VEDriversLite.NeblioAPI.GetTxResponse.AdditionalProperties*
+  attributes:
+  - type: Newtonsoft.Json.JsonExtensionDataAttribute
+    ctor: Newtonsoft.Json.JsonExtensionDataAttribute.#ctor
+    arguments: []
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite.NeblioAPI
+  commentId: N:VEDriversLite.NeblioAPI
+  name: VEDriversLite.NeblioAPI
+  nameWithType: VEDriversLite.NeblioAPI
+  fullName: VEDriversLite.NeblioAPI
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Txid*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Txid
+  name: Txid
+  nameWithType: GetTxResponse.Txid
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Txid
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Version*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Version
+  name: Version
+  nameWithType: GetTxResponse.Version
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Version
+- uid: System.Nullable{System.Double}
+  commentId: T:System.Nullable{System.Double}
+  parent: System
+  definition: System.Nullable`1
+  name: Nullable<Double>
+  nameWithType: Nullable<Double>
+  fullName: System.Nullable<System.Double>
+  nameWithType.vb: Nullable(Of Double)
+  fullName.vb: System.Nullable(Of System.Double)
+  name.vb: Nullable(Of Double)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    nameWithType: Nullable
+    fullName: System.Nullable
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Double
+    name: Double
+    nameWithType: Double
+    fullName: System.Double
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    nameWithType: Nullable
+    fullName: System.Nullable
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Double
+    name: Double
+    nameWithType: Double
+    fullName: System.Double
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Nullable`1
+  commentId: T:System.Nullable`1
+  isExternal: true
+  name: Nullable<T>
+  nameWithType: Nullable<T>
+  fullName: System.Nullable<T>
+  nameWithType.vb: Nullable(Of T)
+  fullName.vb: System.Nullable(Of T)
+  name.vb: Nullable(Of T)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    nameWithType: Nullable
+    fullName: System.Nullable
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    nameWithType: Nullable
+    fullName: System.Nullable
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Locktime*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Locktime
+  name: Locktime
+  nameWithType: GetTxResponse.Locktime
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Locktime
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Vin*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Vin
+  name: Vin
+  nameWithType: GetTxResponse.Vin
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Vin
+- uid: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Vin2}
+  commentId: T:System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Vin2}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.ICollection`1
+  name: ICollection<Vin2>
+  nameWithType: ICollection<Vin2>
+  fullName: System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Vin2>
+  nameWithType.vb: ICollection(Of Vin2)
+  fullName.vb: System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Vin2)
+  name.vb: ICollection(Of Vin2)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Vin2
+    name: Vin2
+    nameWithType: Vin2
+    fullName: VEDriversLite.NeblioAPI.Vin2
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Vin2
+    name: Vin2
+    nameWithType: Vin2
+    fullName: VEDriversLite.NeblioAPI.Vin2
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.ICollection`1
+  commentId: T:System.Collections.Generic.ICollection`1
+  isExternal: true
+  name: ICollection<T>
+  nameWithType: ICollection<T>
+  fullName: System.Collections.Generic.ICollection<T>
+  nameWithType.vb: ICollection(Of T)
+  fullName.vb: System.Collections.Generic.ICollection(Of T)
+  name.vb: ICollection(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: T
+    nameWithType: T
+    fullName: T
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Vout*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Vout
+  name: Vout
+  nameWithType: GetTxResponse.Vout
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Vout
+- uid: System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Vout2}
+  commentId: T:System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Vout2}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.ICollection`1
+  name: ICollection<Vout2>
+  nameWithType: ICollection<Vout2>
+  fullName: System.Collections.Generic.ICollection<VEDriversLite.NeblioAPI.Vout2>
+  nameWithType.vb: ICollection(Of Vout2)
+  fullName.vb: System.Collections.Generic.ICollection(Of VEDriversLite.NeblioAPI.Vout2)
+  name.vb: ICollection(Of Vout2)
+  spec.csharp:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NeblioAPI.Vout2
+    name: Vout2
+    nameWithType: Vout2
+    fullName: VEDriversLite.NeblioAPI.Vout2
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.ICollection`1
+    name: ICollection
+    nameWithType: ICollection
+    fullName: System.Collections.Generic.ICollection
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NeblioAPI.Vout2
+    name: Vout2
+    nameWithType: Vout2
+    fullName: VEDriversLite.NeblioAPI.Vout2
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Blocktime*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Blocktime
+  name: Blocktime
+  nameWithType: GetTxResponse.Blocktime
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Blocktime
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Blockheight*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Blockheight
+  name: Blockheight
+  nameWithType: GetTxResponse.Blockheight
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Blockheight
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Totalsent*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Totalsent
+  name: Totalsent
+  nameWithType: GetTxResponse.Totalsent
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Totalsent
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Fee*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Fee
+  name: Fee
+  nameWithType: GetTxResponse.Fee
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Fee
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Blockhash*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Blockhash
+  name: Blockhash
+  nameWithType: GetTxResponse.Blockhash
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Blockhash
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Time*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Time
+  name: Time
+  nameWithType: GetTxResponse.Time
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Time
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Confirmations*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Confirmations
+  name: Confirmations
+  nameWithType: GetTxResponse.Confirmations
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Confirmations
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.ValueOut*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.ValueOut
+  name: ValueOut
+  nameWithType: GetTxResponse.ValueOut
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.ValueOut
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.ValueIn*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.ValueIn
+  name: ValueIn
+  nameWithType: GetTxResponse.ValueIn
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.ValueIn
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Fees*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Fees
+  name: Fees
+  nameWithType: GetTxResponse.Fees
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Fees
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.Size*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.Size
+  name: Size
+  nameWithType: GetTxResponse.Size
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.Size
+- uid: VEDriversLite.NeblioAPI.GetTxResponse.AdditionalProperties*
+  commentId: Overload:VEDriversLite.NeblioAPI.GetTxResponse.AdditionalProperties
+  name: AdditionalProperties
+  nameWithType: GetTxResponse.AdditionalProperties
+  fullName: VEDriversLite.NeblioAPI.GetTxResponse.AdditionalProperties
+- uid: System.Collections.Generic.IDictionary{System.String,System.Object}
+  commentId: T:System.Collections.Generic.IDictionary{System.String,System.Object}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IDictionary`2
+  name: IDictionary<String, Object>
+  nameWithType: IDictionary<String, Object>
+  fullName: System.Collections.Generic.IDictionary<System.String, System.Object>
+  nameWithType.vb: IDictionary(Of String, Object)
+  fullName.vb: System.Collections.Generic.IDictionary(Of System.String, System.Object)
+  name.vb: IDictionary(Of String, Object)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.IDictionary`2
+  commentId: T:System.Collections.Generic.IDictionary`2
+  isExternal: true
+  name: IDictionary<TKey, TValue>
+  nameWithType: IDictionary<TKey, TValue>
+  fullName: System.Collections.Generic.IDictionary<TKey, TValue>
+  nameWithType.vb: IDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.IDictionary(Of TKey, TValue)
+  name.vb: IDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IDictionary`2
+    name: IDictionary
+    nameWithType: IDictionary
+    fullName: System.Collections.Generic.IDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )

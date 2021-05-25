@@ -1,0 +1,1157 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NFT.ProfileNFT
+  commentId: T:VEDriversLite.NFT.ProfileNFT
+  id: ProfileNFT
+  parent: VEDriversLite.NFT
+  children:
+  - VEDriversLite.NFT.ProfileNFT.#ctor(System.String)
+  - VEDriversLite.NFT.ProfileNFT.Age
+  - VEDriversLite.NFT.ProfileNFT.Fill(VEDriversLite.NFT.INFT)
+  - VEDriversLite.NFT.ProfileNFT.GetLastData
+  - VEDriversLite.NFT.ProfileNFT.LoadLastData(System.Collections.Generic.Dictionary{System.String,System.String})
+  - VEDriversLite.NFT.ProfileNFT.Nickname
+  - VEDriversLite.NFT.ProfileNFT.ParseOriginData
+  - VEDriversLite.NFT.ProfileNFT.RelationshipStatus
+  - VEDriversLite.NFT.ProfileNFT.Surname
+  langs:
+  - csharp
+  - vb
+  name: ProfileNFT
+  nameWithType: ProfileNFT
+  fullName: VEDriversLite.NFT.ProfileNFT
+  type: Class
+  source:
+    id: ProfileNFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 8
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: 'public class ProfileNFT : CommonNFT, INFT'
+    content.vb: >-
+      Public Class ProfileNFT
+
+          Inherits CommonNFT
+
+          Implements INFT
+  inheritance:
+  - System.Object
+  - VEDriversLite.NFT.CommonNFT
+  implements:
+  - VEDriversLite.NFT.INFT
+  inheritedMembers:
+  - VEDriversLite.NFT.CommonNFT.TypeText
+  - VEDriversLite.NFT.CommonNFT.Type
+  - VEDriversLite.NFT.CommonNFT.Name
+  - VEDriversLite.NFT.CommonNFT.Author
+  - VEDriversLite.NFT.CommonNFT.Description
+  - VEDriversLite.NFT.CommonNFT.Link
+  - VEDriversLite.NFT.CommonNFT.IconLink
+  - VEDriversLite.NFT.CommonNFT.ImageLink
+  - VEDriversLite.NFT.CommonNFT.Tags
+  - VEDriversLite.NFT.CommonNFT.Utxo
+  - VEDriversLite.NFT.CommonNFT.SourceTxId
+  - VEDriversLite.NFT.CommonNFT.UtxoIndex
+  - VEDriversLite.NFT.CommonNFT.NFTOriginTxId
+  - VEDriversLite.NFT.CommonNFT.Price
+  - VEDriversLite.NFT.CommonNFT.PriceActive
+  - VEDriversLite.NFT.CommonNFT.Time
+  - VEDriversLite.NFT.CommonNFT.History
+  - VEDriversLite.NFT.CommonNFT.TxDetails
+  - VEDriversLite.NFT.CommonNFT.TxDataRefreshed
+  - VEDriversLite.NFT.CommonNFT.LoadHistory
+  - VEDriversLite.NFT.CommonNFT.FillCommon(VEDriversLite.NFT.INFT)
+  - VEDriversLite.NFT.CommonNFT.StopRefreshingData
+  - VEDriversLite.NFT.CommonNFT.StartRefreshingTxData
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.NFT.ProfileNFT.#ctor(System.String)
+  commentId: M:VEDriversLite.NFT.ProfileNFT.#ctor(System.String)
+  id: '#ctor(System.String)'
+  parent: VEDriversLite.NFT.ProfileNFT
+  langs:
+  - csharp
+  - vb
+  name: ProfileNFT(String)
+  nameWithType: ProfileNFT.ProfileNFT(String)
+  fullName: VEDriversLite.NFT.ProfileNFT.ProfileNFT(System.String)
+  type: Constructor
+  source:
+    id: .ctor
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 10
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public ProfileNFT(string utxo)
+    parameters:
+    - id: utxo
+      type: System.String
+    content.vb: Public Sub New(utxo As String)
+  overload: VEDriversLite.NFT.ProfileNFT.#ctor*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.ProfileNFT.Age
+  commentId: P:VEDriversLite.NFT.ProfileNFT.Age
+  id: Age
+  parent: VEDriversLite.NFT.ProfileNFT
+  langs:
+  - csharp
+  - vb
+  name: Age
+  nameWithType: ProfileNFT.Age
+  fullName: VEDriversLite.NFT.ProfileNFT.Age
+  type: Property
+  source:
+    id: Age
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 17
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public int Age { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property Age As Integer
+  overload: VEDriversLite.NFT.ProfileNFT.Age*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.ProfileNFT.Surname
+  commentId: P:VEDriversLite.NFT.ProfileNFT.Surname
+  id: Surname
+  parent: VEDriversLite.NFT.ProfileNFT
+  langs:
+  - csharp
+  - vb
+  name: Surname
+  nameWithType: ProfileNFT.Surname
+  fullName: VEDriversLite.NFT.ProfileNFT.Surname
+  type: Property
+  source:
+    id: Surname
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 18
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public string Surname { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Surname As String
+  overload: VEDriversLite.NFT.ProfileNFT.Surname*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.ProfileNFT.Nickname
+  commentId: P:VEDriversLite.NFT.ProfileNFT.Nickname
+  id: Nickname
+  parent: VEDriversLite.NFT.ProfileNFT
+  langs:
+  - csharp
+  - vb
+  name: Nickname
+  nameWithType: ProfileNFT.Nickname
+  fullName: VEDriversLite.NFT.ProfileNFT.Nickname
+  type: Property
+  source:
+    id: Nickname
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 19
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public string Nickname { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Nickname As String
+  overload: VEDriversLite.NFT.ProfileNFT.Nickname*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.ProfileNFT.RelationshipStatus
+  commentId: P:VEDriversLite.NFT.ProfileNFT.RelationshipStatus
+  id: RelationshipStatus
+  parent: VEDriversLite.NFT.ProfileNFT
+  langs:
+  - csharp
+  - vb
+  name: RelationshipStatus
+  nameWithType: ProfileNFT.RelationshipStatus
+  fullName: VEDriversLite.NFT.ProfileNFT.RelationshipStatus
+  type: Property
+  source:
+    id: RelationshipStatus
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 20
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public string RelationshipStatus { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property RelationshipStatus As String
+  overload: VEDriversLite.NFT.ProfileNFT.RelationshipStatus*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.ProfileNFT.Fill(VEDriversLite.NFT.INFT)
+  commentId: M:VEDriversLite.NFT.ProfileNFT.Fill(VEDriversLite.NFT.INFT)
+  id: Fill(VEDriversLite.NFT.INFT)
+  parent: VEDriversLite.NFT.ProfileNFT
+  langs:
+  - csharp
+  - vb
+  name: Fill(INFT)
+  nameWithType: ProfileNFT.Fill(INFT)
+  fullName: VEDriversLite.NFT.ProfileNFT.Fill(VEDriversLite.NFT.INFT)
+  type: Method
+  source:
+    id: Fill
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 22
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public override Task Fill(INFT NFT)
+    parameters:
+    - id: NFT
+      type: VEDriversLite.NFT.INFT
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Overrides Function Fill(NFT As INFT) As Task
+  overridden: VEDriversLite.NFT.CommonNFT.Fill(VEDriversLite.NFT.INFT)
+  overload: VEDriversLite.NFT.ProfileNFT.Fill*
+  modifiers.csharp:
+  - public
+  - override
+  modifiers.vb:
+  - Public
+  - Overrides
+- uid: VEDriversLite.NFT.ProfileNFT.ParseOriginData
+  commentId: M:VEDriversLite.NFT.ProfileNFT.ParseOriginData
+  id: ParseOriginData
+  parent: VEDriversLite.NFT.ProfileNFT
+  langs:
+  - csharp
+  - vb
+  name: ParseOriginData()
+  nameWithType: ProfileNFT.ParseOriginData()
+  fullName: VEDriversLite.NFT.ProfileNFT.ParseOriginData()
+  type: Method
+  source:
+    id: ParseOriginData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 46
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public override Task ParseOriginData()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Overrides Function ParseOriginData As Task
+  overridden: VEDriversLite.NFT.CommonNFT.ParseOriginData
+  overload: VEDriversLite.NFT.ProfileNFT.ParseOriginData*
+  modifiers.csharp:
+  - public
+  - override
+  modifiers.vb:
+  - Public
+  - Overrides
+- uid: VEDriversLite.NFT.ProfileNFT.GetLastData
+  commentId: M:VEDriversLite.NFT.ProfileNFT.GetLastData
+  id: GetLastData
+  parent: VEDriversLite.NFT.ProfileNFT
+  langs:
+  - csharp
+  - vb
+  name: GetLastData()
+  nameWithType: ProfileNFT.GetLastData()
+  fullName: VEDriversLite.NFT.ProfileNFT.GetLastData()
+  type: Method
+  source:
+    id: GetLastData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 93
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public Task GetLastData()
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function GetLastData As Task
+  overload: VEDriversLite.NFT.ProfileNFT.GetLastData*
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.ProfileNFT.LoadLastData(System.Collections.Generic.Dictionary{System.String,System.String})
+  commentId: M:VEDriversLite.NFT.ProfileNFT.LoadLastData(System.Collections.Generic.Dictionary{System.String,System.String})
+  id: LoadLastData(System.Collections.Generic.Dictionary{System.String,System.String})
+  parent: VEDriversLite.NFT.ProfileNFT
+  langs:
+  - csharp
+  - vb
+  name: LoadLastData(Dictionary<String, String>)
+  nameWithType: ProfileNFT.LoadLastData(Dictionary<String, String>)
+  fullName: VEDriversLite.NFT.ProfileNFT.LoadLastData(System.Collections.Generic.Dictionary<System.String, System.String>)
+  type: Method
+  source:
+    id: LoadLastData
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\ProfileNFT.cs
+    startLine: 139
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public Task LoadLastData(Dictionary<string, string> metadata)
+    parameters:
+    - id: metadata
+      type: System.Collections.Generic.Dictionary{System.String,System.String}
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Function LoadLastData(metadata As Dictionary(Of String, String)) As Task
+  overload: VEDriversLite.NFT.ProfileNFT.LoadLastData*
+  nameWithType.vb: ProfileNFT.LoadLastData(Dictionary(Of String, String))
+  modifiers.csharp:
+  - public
+  modifiers.vb:
+  - Public
+  fullName.vb: VEDriversLite.NFT.ProfileNFT.LoadLastData(System.Collections.Generic.Dictionary(Of System.String, System.String))
+  name.vb: LoadLastData(Dictionary(Of String, String))
+references:
+- uid: VEDriversLite.NFT
+  commentId: N:VEDriversLite.NFT
+  name: VEDriversLite.NFT
+  nameWithType: VEDriversLite.NFT
+  fullName: VEDriversLite.NFT
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: VEDriversLite.NFT.CommonNFT
+  commentId: T:VEDriversLite.NFT.CommonNFT
+  parent: VEDriversLite.NFT
+  name: CommonNFT
+  nameWithType: CommonNFT
+  fullName: VEDriversLite.NFT.CommonNFT
+- uid: VEDriversLite.NFT.INFT
+  commentId: T:VEDriversLite.NFT.INFT
+  parent: VEDriversLite.NFT
+  name: INFT
+  nameWithType: INFT
+  fullName: VEDriversLite.NFT.INFT
+- uid: VEDriversLite.NFT.CommonNFT.TypeText
+  commentId: P:VEDriversLite.NFT.CommonNFT.TypeText
+  parent: VEDriversLite.NFT.CommonNFT
+  name: TypeText
+  nameWithType: CommonNFT.TypeText
+  fullName: VEDriversLite.NFT.CommonNFT.TypeText
+- uid: VEDriversLite.NFT.CommonNFT.Type
+  commentId: P:VEDriversLite.NFT.CommonNFT.Type
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Type
+  nameWithType: CommonNFT.Type
+  fullName: VEDriversLite.NFT.CommonNFT.Type
+- uid: VEDriversLite.NFT.CommonNFT.Name
+  commentId: P:VEDriversLite.NFT.CommonNFT.Name
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Name
+  nameWithType: CommonNFT.Name
+  fullName: VEDriversLite.NFT.CommonNFT.Name
+- uid: VEDriversLite.NFT.CommonNFT.Author
+  commentId: P:VEDriversLite.NFT.CommonNFT.Author
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Author
+  nameWithType: CommonNFT.Author
+  fullName: VEDriversLite.NFT.CommonNFT.Author
+- uid: VEDriversLite.NFT.CommonNFT.Description
+  commentId: P:VEDriversLite.NFT.CommonNFT.Description
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Description
+  nameWithType: CommonNFT.Description
+  fullName: VEDriversLite.NFT.CommonNFT.Description
+- uid: VEDriversLite.NFT.CommonNFT.Link
+  commentId: P:VEDriversLite.NFT.CommonNFT.Link
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Link
+  nameWithType: CommonNFT.Link
+  fullName: VEDriversLite.NFT.CommonNFT.Link
+- uid: VEDriversLite.NFT.CommonNFT.IconLink
+  commentId: P:VEDriversLite.NFT.CommonNFT.IconLink
+  parent: VEDriversLite.NFT.CommonNFT
+  name: IconLink
+  nameWithType: CommonNFT.IconLink
+  fullName: VEDriversLite.NFT.CommonNFT.IconLink
+- uid: VEDriversLite.NFT.CommonNFT.ImageLink
+  commentId: P:VEDriversLite.NFT.CommonNFT.ImageLink
+  parent: VEDriversLite.NFT.CommonNFT
+  name: ImageLink
+  nameWithType: CommonNFT.ImageLink
+  fullName: VEDriversLite.NFT.CommonNFT.ImageLink
+- uid: VEDriversLite.NFT.CommonNFT.Tags
+  commentId: P:VEDriversLite.NFT.CommonNFT.Tags
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Tags
+  nameWithType: CommonNFT.Tags
+  fullName: VEDriversLite.NFT.CommonNFT.Tags
+- uid: VEDriversLite.NFT.CommonNFT.Utxo
+  commentId: P:VEDriversLite.NFT.CommonNFT.Utxo
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Utxo
+  nameWithType: CommonNFT.Utxo
+  fullName: VEDriversLite.NFT.CommonNFT.Utxo
+- uid: VEDriversLite.NFT.CommonNFT.SourceTxId
+  commentId: P:VEDriversLite.NFT.CommonNFT.SourceTxId
+  parent: VEDriversLite.NFT.CommonNFT
+  name: SourceTxId
+  nameWithType: CommonNFT.SourceTxId
+  fullName: VEDriversLite.NFT.CommonNFT.SourceTxId
+- uid: VEDriversLite.NFT.CommonNFT.UtxoIndex
+  commentId: P:VEDriversLite.NFT.CommonNFT.UtxoIndex
+  parent: VEDriversLite.NFT.CommonNFT
+  name: UtxoIndex
+  nameWithType: CommonNFT.UtxoIndex
+  fullName: VEDriversLite.NFT.CommonNFT.UtxoIndex
+- uid: VEDriversLite.NFT.CommonNFT.NFTOriginTxId
+  commentId: P:VEDriversLite.NFT.CommonNFT.NFTOriginTxId
+  parent: VEDriversLite.NFT.CommonNFT
+  name: NFTOriginTxId
+  nameWithType: CommonNFT.NFTOriginTxId
+  fullName: VEDriversLite.NFT.CommonNFT.NFTOriginTxId
+- uid: VEDriversLite.NFT.CommonNFT.Price
+  commentId: P:VEDriversLite.NFT.CommonNFT.Price
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Price
+  nameWithType: CommonNFT.Price
+  fullName: VEDriversLite.NFT.CommonNFT.Price
+- uid: VEDriversLite.NFT.CommonNFT.PriceActive
+  commentId: P:VEDriversLite.NFT.CommonNFT.PriceActive
+  parent: VEDriversLite.NFT.CommonNFT
+  name: PriceActive
+  nameWithType: CommonNFT.PriceActive
+  fullName: VEDriversLite.NFT.CommonNFT.PriceActive
+- uid: VEDriversLite.NFT.CommonNFT.Time
+  commentId: P:VEDriversLite.NFT.CommonNFT.Time
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Time
+  nameWithType: CommonNFT.Time
+  fullName: VEDriversLite.NFT.CommonNFT.Time
+- uid: VEDriversLite.NFT.CommonNFT.History
+  commentId: P:VEDriversLite.NFT.CommonNFT.History
+  parent: VEDriversLite.NFT.CommonNFT
+  name: History
+  nameWithType: CommonNFT.History
+  fullName: VEDriversLite.NFT.CommonNFT.History
+- uid: VEDriversLite.NFT.CommonNFT.TxDetails
+  commentId: P:VEDriversLite.NFT.CommonNFT.TxDetails
+  parent: VEDriversLite.NFT.CommonNFT
+  name: TxDetails
+  nameWithType: CommonNFT.TxDetails
+  fullName: VEDriversLite.NFT.CommonNFT.TxDetails
+- uid: VEDriversLite.NFT.CommonNFT.TxDataRefreshed
+  commentId: E:VEDriversLite.NFT.CommonNFT.TxDataRefreshed
+  parent: VEDriversLite.NFT.CommonNFT
+  name: TxDataRefreshed
+  nameWithType: CommonNFT.TxDataRefreshed
+  fullName: VEDriversLite.NFT.CommonNFT.TxDataRefreshed
+- uid: VEDriversLite.NFT.CommonNFT.LoadHistory
+  commentId: M:VEDriversLite.NFT.CommonNFT.LoadHistory
+  parent: VEDriversLite.NFT.CommonNFT
+  name: LoadHistory()
+  nameWithType: CommonNFT.LoadHistory()
+  fullName: VEDriversLite.NFT.CommonNFT.LoadHistory()
+  spec.csharp:
+  - uid: VEDriversLite.NFT.CommonNFT.LoadHistory
+    name: LoadHistory
+    nameWithType: CommonNFT.LoadHistory
+    fullName: VEDriversLite.NFT.CommonNFT.LoadHistory
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: VEDriversLite.NFT.CommonNFT.LoadHistory
+    name: LoadHistory
+    nameWithType: CommonNFT.LoadHistory
+    fullName: VEDriversLite.NFT.CommonNFT.LoadHistory
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.CommonNFT.FillCommon(VEDriversLite.NFT.INFT)
+  commentId: M:VEDriversLite.NFT.CommonNFT.FillCommon(VEDriversLite.NFT.INFT)
+  parent: VEDriversLite.NFT.CommonNFT
+  name: FillCommon(INFT)
+  nameWithType: CommonNFT.FillCommon(INFT)
+  fullName: VEDriversLite.NFT.CommonNFT.FillCommon(VEDriversLite.NFT.INFT)
+  spec.csharp:
+  - uid: VEDriversLite.NFT.CommonNFT.FillCommon(VEDriversLite.NFT.INFT)
+    name: FillCommon
+    nameWithType: CommonNFT.FillCommon
+    fullName: VEDriversLite.NFT.CommonNFT.FillCommon
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: VEDriversLite.NFT.CommonNFT.FillCommon(VEDriversLite.NFT.INFT)
+    name: FillCommon
+    nameWithType: CommonNFT.FillCommon
+    fullName: VEDriversLite.NFT.CommonNFT.FillCommon
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.CommonNFT.StopRefreshingData
+  commentId: M:VEDriversLite.NFT.CommonNFT.StopRefreshingData
+  parent: VEDriversLite.NFT.CommonNFT
+  name: StopRefreshingData()
+  nameWithType: CommonNFT.StopRefreshingData()
+  fullName: VEDriversLite.NFT.CommonNFT.StopRefreshingData()
+  spec.csharp:
+  - uid: VEDriversLite.NFT.CommonNFT.StopRefreshingData
+    name: StopRefreshingData
+    nameWithType: CommonNFT.StopRefreshingData
+    fullName: VEDriversLite.NFT.CommonNFT.StopRefreshingData
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: VEDriversLite.NFT.CommonNFT.StopRefreshingData
+    name: StopRefreshingData
+    nameWithType: CommonNFT.StopRefreshingData
+    fullName: VEDriversLite.NFT.CommonNFT.StopRefreshingData
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.CommonNFT.StartRefreshingTxData
+  commentId: M:VEDriversLite.NFT.CommonNFT.StartRefreshingTxData
+  parent: VEDriversLite.NFT.CommonNFT
+  name: StartRefreshingTxData()
+  nameWithType: CommonNFT.StartRefreshingTxData()
+  fullName: VEDriversLite.NFT.CommonNFT.StartRefreshingTxData()
+  spec.csharp:
+  - uid: VEDriversLite.NFT.CommonNFT.StartRefreshingTxData
+    name: StartRefreshingTxData
+    nameWithType: CommonNFT.StartRefreshingTxData
+    fullName: VEDriversLite.NFT.CommonNFT.StartRefreshingTxData
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: VEDriversLite.NFT.CommonNFT.StartRefreshingTxData
+    name: StartRefreshingTxData
+    nameWithType: CommonNFT.StartRefreshingTxData
+    fullName: VEDriversLite.NFT.CommonNFT.StartRefreshingTxData
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.NFT.ProfileNFT.#ctor*
+  commentId: Overload:VEDriversLite.NFT.ProfileNFT.#ctor
+  name: ProfileNFT
+  nameWithType: ProfileNFT.ProfileNFT
+  fullName: VEDriversLite.NFT.ProfileNFT.ProfileNFT
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.NFT.ProfileNFT.Age*
+  commentId: Overload:VEDriversLite.NFT.ProfileNFT.Age
+  name: Age
+  nameWithType: ProfileNFT.Age
+  fullName: VEDriversLite.NFT.ProfileNFT.Age
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  name: Int32
+  nameWithType: Int32
+  fullName: System.Int32
+- uid: VEDriversLite.NFT.ProfileNFT.Surname*
+  commentId: Overload:VEDriversLite.NFT.ProfileNFT.Surname
+  name: Surname
+  nameWithType: ProfileNFT.Surname
+  fullName: VEDriversLite.NFT.ProfileNFT.Surname
+- uid: VEDriversLite.NFT.ProfileNFT.Nickname*
+  commentId: Overload:VEDriversLite.NFT.ProfileNFT.Nickname
+  name: Nickname
+  nameWithType: ProfileNFT.Nickname
+  fullName: VEDriversLite.NFT.ProfileNFT.Nickname
+- uid: VEDriversLite.NFT.ProfileNFT.RelationshipStatus*
+  commentId: Overload:VEDriversLite.NFT.ProfileNFT.RelationshipStatus
+  name: RelationshipStatus
+  nameWithType: ProfileNFT.RelationshipStatus
+  fullName: VEDriversLite.NFT.ProfileNFT.RelationshipStatus
+- uid: VEDriversLite.NFT.CommonNFT.Fill(VEDriversLite.NFT.INFT)
+  commentId: M:VEDriversLite.NFT.CommonNFT.Fill(VEDriversLite.NFT.INFT)
+  parent: VEDriversLite.NFT.CommonNFT
+  name: Fill(INFT)
+  nameWithType: CommonNFT.Fill(INFT)
+  fullName: VEDriversLite.NFT.CommonNFT.Fill(VEDriversLite.NFT.INFT)
+  spec.csharp:
+  - uid: VEDriversLite.NFT.CommonNFT.Fill(VEDriversLite.NFT.INFT)
+    name: Fill
+    nameWithType: CommonNFT.Fill
+    fullName: VEDriversLite.NFT.CommonNFT.Fill
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: VEDriversLite.NFT.CommonNFT.Fill(VEDriversLite.NFT.INFT)
+    name: Fill
+    nameWithType: CommonNFT.Fill
+    fullName: VEDriversLite.NFT.CommonNFT.Fill
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: VEDriversLite.NFT.INFT
+    name: INFT
+    nameWithType: INFT
+    fullName: VEDriversLite.NFT.INFT
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.ProfileNFT.Fill*
+  commentId: Overload:VEDriversLite.NFT.ProfileNFT.Fill
+  name: Fill
+  nameWithType: ProfileNFT.Fill
+  fullName: VEDriversLite.NFT.ProfileNFT.Fill
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+- uid: VEDriversLite.NFT.CommonNFT.ParseOriginData
+  commentId: M:VEDriversLite.NFT.CommonNFT.ParseOriginData
+  parent: VEDriversLite.NFT.CommonNFT
+  name: ParseOriginData()
+  nameWithType: CommonNFT.ParseOriginData()
+  fullName: VEDriversLite.NFT.CommonNFT.ParseOriginData()
+  spec.csharp:
+  - uid: VEDriversLite.NFT.CommonNFT.ParseOriginData
+    name: ParseOriginData
+    nameWithType: CommonNFT.ParseOriginData
+    fullName: VEDriversLite.NFT.CommonNFT.ParseOriginData
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: VEDriversLite.NFT.CommonNFT.ParseOriginData
+    name: ParseOriginData
+    nameWithType: CommonNFT.ParseOriginData
+    fullName: VEDriversLite.NFT.CommonNFT.ParseOriginData
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.ProfileNFT.ParseOriginData*
+  commentId: Overload:VEDriversLite.NFT.ProfileNFT.ParseOriginData
+  name: ParseOriginData
+  nameWithType: ProfileNFT.ParseOriginData
+  fullName: VEDriversLite.NFT.ProfileNFT.ParseOriginData
+- uid: VEDriversLite.NFT.ProfileNFT.GetLastData*
+  commentId: Overload:VEDriversLite.NFT.ProfileNFT.GetLastData
+  name: GetLastData
+  nameWithType: ProfileNFT.GetLastData
+  fullName: VEDriversLite.NFT.ProfileNFT.GetLastData
+- uid: VEDriversLite.NFT.ProfileNFT.LoadLastData*
+  commentId: Overload:VEDriversLite.NFT.ProfileNFT.LoadLastData
+  name: LoadLastData
+  nameWithType: ProfileNFT.LoadLastData
+  fullName: VEDriversLite.NFT.ProfileNFT.LoadLastData
+- uid: System.Collections.Generic.Dictionary{System.String,System.String}
+  commentId: T:System.Collections.Generic.Dictionary{System.String,System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.Dictionary`2
+  name: Dictionary<String, String>
+  nameWithType: Dictionary<String, String>
+  fullName: System.Collections.Generic.Dictionary<System.String, System.String>
+  nameWithType.vb: Dictionary(Of String, String)
+  fullName.vb: System.Collections.Generic.Dictionary(Of System.String, System.String)
+  name.vb: Dictionary(Of String, String)
+  spec.csharp:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic.Dictionary`2
+  commentId: T:System.Collections.Generic.Dictionary`2
+  isExternal: true
+  name: Dictionary<TKey, TValue>
+  nameWithType: Dictionary<TKey, TValue>
+  fullName: System.Collections.Generic.Dictionary<TKey, TValue>
+  nameWithType.vb: Dictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.Dictionary(Of TKey, TValue)
+  name.vb: Dictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.Dictionary`2
+    name: Dictionary
+    nameWithType: Dictionary
+    fullName: System.Collections.Generic.Dictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic

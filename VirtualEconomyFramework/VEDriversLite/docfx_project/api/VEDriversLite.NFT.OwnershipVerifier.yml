@@ -1,0 +1,984 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NFT.OwnershipVerifier
+  commentId: T:VEDriversLite.NFT.OwnershipVerifier
+  id: OwnershipVerifier
+  parent: VEDriversLite.NFT
+  children:
+  - VEDriversLite.NFT.OwnershipVerifier.CreateMessage(System.String)
+  - VEDriversLite.NFT.OwnershipVerifier.GetCode(System.String,NBitcoin.BitcoinSecret)
+  - VEDriversLite.NFT.OwnershipVerifier.GetCode(System.String,VEDriversLite.Security.EncryptionKey)
+  - VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto(System.String,NBitcoin.BitcoinSecret)
+  - VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto(System.String,VEDriversLite.Security.EncryptionKey)
+  - VEDriversLite.NFT.OwnershipVerifier.GetQRCode(System.String,NBitcoin.BitcoinSecret)
+  - VEDriversLite.NFT.OwnershipVerifier.VerifyOwner(VEDriversLite.NFT.OwnershipVerificationCodeDto)
+  langs:
+  - csharp
+  - vb
+  name: OwnershipVerifier
+  nameWithType: OwnershipVerifier
+  fullName: VEDriversLite.NFT.OwnershipVerifier
+  type: Class
+  source:
+    id: OwnershipVerifier
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 32
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static class OwnershipVerifier
+    content.vb: Public Module OwnershipVerifier
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - static
+  - class
+  modifiers.vb:
+  - Public
+  - Module
+- uid: VEDriversLite.NFT.OwnershipVerifier.CreateMessage(System.String)
+  commentId: M:VEDriversLite.NFT.OwnershipVerifier.CreateMessage(System.String)
+  id: CreateMessage(System.String)
+  parent: VEDriversLite.NFT.OwnershipVerifier
+  langs:
+  - csharp
+  - vb
+  name: CreateMessage(String)
+  nameWithType: OwnershipVerifier.CreateMessage(String)
+  fullName: VEDriversLite.NFT.OwnershipVerifier.CreateMessage(System.String)
+  type: Method
+  source:
+    id: CreateMessage
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 36
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static string CreateMessage(string txid)
+    parameters:
+    - id: txid
+      type: System.String
+    return:
+      type: System.String
+    content.vb: Public Shared Function CreateMessage(txid As String) As String
+  overload: VEDriversLite.NFT.OwnershipVerifier.CreateMessage*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.OwnershipVerifier.GetCode(System.String,VEDriversLite.Security.EncryptionKey)
+  commentId: M:VEDriversLite.NFT.OwnershipVerifier.GetCode(System.String,VEDriversLite.Security.EncryptionKey)
+  id: GetCode(System.String,VEDriversLite.Security.EncryptionKey)
+  parent: VEDriversLite.NFT.OwnershipVerifier
+  langs:
+  - csharp
+  - vb
+  name: GetCode(String, EncryptionKey)
+  nameWithType: OwnershipVerifier.GetCode(String, EncryptionKey)
+  fullName: VEDriversLite.NFT.OwnershipVerifier.GetCode(System.String, VEDriversLite.Security.EncryptionKey)
+  type: Method
+  source:
+    id: GetCode
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 43
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static Task<(bool, string)> GetCode(string txid, EncryptionKey key)
+    parameters:
+    - id: txid
+      type: System.String
+    - id: key
+      type: VEDriversLite.Security.EncryptionKey
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function GetCode(txid As String, key As EncryptionKey) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NFT.OwnershipVerifier.GetCode*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.OwnershipVerifier.GetCode(System.String,NBitcoin.BitcoinSecret)
+  commentId: M:VEDriversLite.NFT.OwnershipVerifier.GetCode(System.String,NBitcoin.BitcoinSecret)
+  id: GetCode(System.String,NBitcoin.BitcoinSecret)
+  parent: VEDriversLite.NFT.OwnershipVerifier
+  langs:
+  - csharp
+  - vb
+  name: GetCode(String, BitcoinSecret)
+  nameWithType: OwnershipVerifier.GetCode(String, BitcoinSecret)
+  fullName: VEDriversLite.NFT.OwnershipVerifier.GetCode(System.String, NBitcoin.BitcoinSecret)
+  type: Method
+  source:
+    id: GetCode
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 49
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static Task<(bool, string)> GetCode(string txid, BitcoinSecret key)
+    parameters:
+    - id: txid
+      type: System.String
+    - id: key
+      type: NBitcoin.BitcoinSecret
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+    content.vb: Public Shared Function GetCode(txid As String, key As BitcoinSecret) As Task(Of(Boolean, String))
+  overload: VEDriversLite.NFT.OwnershipVerifier.GetCode*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto(System.String,NBitcoin.BitcoinSecret)
+  commentId: M:VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto(System.String,NBitcoin.BitcoinSecret)
+  id: GetCodeInDto(System.String,NBitcoin.BitcoinSecret)
+  parent: VEDriversLite.NFT.OwnershipVerifier
+  langs:
+  - csharp
+  - vb
+  name: GetCodeInDto(String, BitcoinSecret)
+  nameWithType: OwnershipVerifier.GetCodeInDto(String, BitcoinSecret)
+  fullName: VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto(System.String, NBitcoin.BitcoinSecret)
+  type: Method
+  source:
+    id: GetCodeInDto
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 55
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static Task<OwnershipVerificationCodeDto> GetCodeInDto(string txid, BitcoinSecret key)
+    parameters:
+    - id: txid
+      type: System.String
+    - id: key
+      type: NBitcoin.BitcoinSecret
+    return:
+      type: System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationCodeDto}
+    content.vb: Public Shared Function GetCodeInDto(txid As String, key As BitcoinSecret) As Task(Of OwnershipVerificationCodeDto)
+  overload: VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto(System.String,VEDriversLite.Security.EncryptionKey)
+  commentId: M:VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto(System.String,VEDriversLite.Security.EncryptionKey)
+  id: GetCodeInDto(System.String,VEDriversLite.Security.EncryptionKey)
+  parent: VEDriversLite.NFT.OwnershipVerifier
+  langs:
+  - csharp
+  - vb
+  name: GetCodeInDto(String, EncryptionKey)
+  nameWithType: OwnershipVerifier.GetCodeInDto(String, EncryptionKey)
+  fullName: VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto(System.String, VEDriversLite.Security.EncryptionKey)
+  type: Method
+  source:
+    id: GetCodeInDto
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 63
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static Task<OwnershipVerificationCodeDto> GetCodeInDto(string txid, EncryptionKey key)
+    parameters:
+    - id: txid
+      type: System.String
+    - id: key
+      type: VEDriversLite.Security.EncryptionKey
+    return:
+      type: System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationCodeDto}
+    content.vb: Public Shared Function GetCodeInDto(txid As String, key As EncryptionKey) As Task(Of OwnershipVerificationCodeDto)
+  overload: VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.OwnershipVerifier.GetQRCode(System.String,NBitcoin.BitcoinSecret)
+  commentId: M:VEDriversLite.NFT.OwnershipVerifier.GetQRCode(System.String,NBitcoin.BitcoinSecret)
+  id: GetQRCode(System.String,NBitcoin.BitcoinSecret)
+  parent: VEDriversLite.NFT.OwnershipVerifier
+  langs:
+  - csharp
+  - vb
+  name: GetQRCode(String, BitcoinSecret)
+  nameWithType: OwnershipVerifier.GetQRCode(String, BitcoinSecret)
+  fullName: VEDriversLite.NFT.OwnershipVerifier.GetQRCode(System.String, NBitcoin.BitcoinSecret)
+  type: Method
+  source:
+    id: GetQRCode
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 70
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static Task<(bool, (OwnershipVerificationCodeDto, byte[]))> GetQRCode(string txid, BitcoinSecret key)
+    parameters:
+    - id: txid
+      type: System.String
+    - id: key
+      type: NBitcoin.BitcoinSecret
+    return:
+      type: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.ValueTuple{VEDriversLite.NFT.OwnershipVerificationCodeDto,System.Byte[]}}}
+    content.vb: Public Shared Function GetQRCode(txid As String, key As BitcoinSecret) As Task(Of(Boolean, (OwnershipVerificationCodeDto, Byte())))
+  overload: VEDriversLite.NFT.OwnershipVerifier.GetQRCode*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.NFT.OwnershipVerifier.VerifyOwner(VEDriversLite.NFT.OwnershipVerificationCodeDto)
+  commentId: M:VEDriversLite.NFT.OwnershipVerifier.VerifyOwner(VEDriversLite.NFT.OwnershipVerificationCodeDto)
+  id: VerifyOwner(VEDriversLite.NFT.OwnershipVerificationCodeDto)
+  parent: VEDriversLite.NFT.OwnershipVerifier
+  langs:
+  - csharp
+  - vb
+  name: VerifyOwner(OwnershipVerificationCodeDto)
+  nameWithType: OwnershipVerifier.VerifyOwner(OwnershipVerificationCodeDto)
+  fullName: VEDriversLite.NFT.OwnershipVerifier.VerifyOwner(VEDriversLite.NFT.OwnershipVerificationCodeDto)
+  type: Method
+  source:
+    id: VerifyOwner
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 113
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public static Task<OwnershipVerificationResult> VerifyOwner(OwnershipVerificationCodeDto dto)
+    parameters:
+    - id: dto
+      type: VEDriversLite.NFT.OwnershipVerificationCodeDto
+    return:
+      type: System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationResult}
+    content.vb: Public Shared Function VerifyOwner(dto As OwnershipVerificationCodeDto) As Task(Of OwnershipVerificationResult)
+  overload: VEDriversLite.NFT.OwnershipVerifier.VerifyOwner*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+references:
+- uid: VEDriversLite.NFT
+  commentId: N:VEDriversLite.NFT
+  name: VEDriversLite.NFT
+  nameWithType: VEDriversLite.NFT
+  fullName: VEDriversLite.NFT
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.NFT.OwnershipVerifier.CreateMessage*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerifier.CreateMessage
+  name: CreateMessage
+  nameWithType: OwnershipVerifier.CreateMessage
+  fullName: VEDriversLite.NFT.OwnershipVerifier.CreateMessage
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.NFT.OwnershipVerifier.GetCode*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerifier.GetCode
+  name: GetCode
+  nameWithType: OwnershipVerifier.GetCode
+  fullName: VEDriversLite.NFT.OwnershipVerifier.GetCode
+- uid: VEDriversLite.Security.EncryptionKey
+  commentId: T:VEDriversLite.Security.EncryptionKey
+  parent: VEDriversLite.Security
+  name: EncryptionKey
+  nameWithType: EncryptionKey
+  fullName: VEDriversLite.Security.EncryptionKey
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.String}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, String>>
+  nameWithType: Task<ValueTuple<Boolean, String>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, System.String>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, String))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, System.String))
+  name.vb: Task(Of ValueTuple(Of Boolean, String))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.Security
+  commentId: N:VEDriversLite.Security
+  name: VEDriversLite.Security
+  nameWithType: VEDriversLite.Security
+  fullName: VEDriversLite.Security
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TResult
+    nameWithType: TResult
+    fullName: TResult
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+- uid: NBitcoin.BitcoinSecret
+  commentId: T:NBitcoin.BitcoinSecret
+  parent: NBitcoin
+  isExternal: true
+  name: BitcoinSecret
+  nameWithType: BitcoinSecret
+  fullName: NBitcoin.BitcoinSecret
+- uid: NBitcoin
+  commentId: N:NBitcoin
+  isExternal: true
+  name: NBitcoin
+  nameWithType: NBitcoin
+  fullName: NBitcoin
+- uid: VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto
+  name: GetCodeInDto
+  nameWithType: OwnershipVerifier.GetCodeInDto
+  fullName: VEDriversLite.NFT.OwnershipVerifier.GetCodeInDto
+- uid: System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationCodeDto}
+  commentId: T:System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationCodeDto}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<OwnershipVerificationCodeDto>
+  nameWithType: Task<OwnershipVerificationCodeDto>
+  fullName: System.Threading.Tasks.Task<VEDriversLite.NFT.OwnershipVerificationCodeDto>
+  nameWithType.vb: Task(Of OwnershipVerificationCodeDto)
+  fullName.vb: System.Threading.Tasks.Task(Of VEDriversLite.NFT.OwnershipVerificationCodeDto)
+  name.vb: Task(Of OwnershipVerificationCodeDto)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.OwnershipVerificationCodeDto
+    name: OwnershipVerificationCodeDto
+    nameWithType: OwnershipVerificationCodeDto
+    fullName: VEDriversLite.NFT.OwnershipVerificationCodeDto
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.OwnershipVerificationCodeDto
+    name: OwnershipVerificationCodeDto
+    nameWithType: OwnershipVerificationCodeDto
+    fullName: VEDriversLite.NFT.OwnershipVerificationCodeDto
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.OwnershipVerifier.GetQRCode*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerifier.GetQRCode
+  name: GetQRCode
+  nameWithType: OwnershipVerifier.GetQRCode
+  fullName: VEDriversLite.NFT.OwnershipVerifier.GetQRCode
+- uid: System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.ValueTuple{VEDriversLite.NFT.OwnershipVerificationCodeDto,System.Byte[]}}}
+  commentId: T:System.Threading.Tasks.Task{System.ValueTuple{System.Boolean,System.ValueTuple{VEDriversLite.NFT.OwnershipVerificationCodeDto,System.Byte[]}}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<ValueTuple<Boolean, ValueTuple<OwnershipVerificationCodeDto, Byte[]>>>
+  nameWithType: Task<ValueTuple<Boolean, ValueTuple<OwnershipVerificationCodeDto, Byte[]>>>
+  fullName: System.Threading.Tasks.Task<System.ValueTuple<System.Boolean, System.ValueTuple<VEDriversLite.NFT.OwnershipVerificationCodeDto, System.Byte[]>>>
+  nameWithType.vb: Task(Of ValueTuple(Of Boolean, ValueTuple(Of OwnershipVerificationCodeDto, Byte())))
+  fullName.vb: System.Threading.Tasks.Task(Of System.ValueTuple(Of System.Boolean, System.ValueTuple(Of VEDriversLite.NFT.OwnershipVerificationCodeDto, System.Byte())))
+  name.vb: Task(Of ValueTuple(Of Boolean, ValueTuple(Of OwnershipVerificationCodeDto, Byte())))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.OwnershipVerificationCodeDto
+    name: OwnershipVerificationCodeDto
+    nameWithType: OwnershipVerificationCodeDto
+    fullName: VEDriversLite.NFT.OwnershipVerificationCodeDto
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Byte
+    name: Byte
+    nameWithType: Byte
+    fullName: System.Byte
+    isExternal: true
+  - name: '[]'
+    nameWithType: '[]'
+    fullName: '[]'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.Boolean
+    name: Boolean
+    nameWithType: Boolean
+    fullName: System.Boolean
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.ValueTuple`2
+    name: ValueTuple
+    nameWithType: ValueTuple
+    fullName: System.ValueTuple
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.OwnershipVerificationCodeDto
+    name: OwnershipVerificationCodeDto
+    nameWithType: OwnershipVerificationCodeDto
+    fullName: VEDriversLite.NFT.OwnershipVerificationCodeDto
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Byte
+    name: Byte
+    nameWithType: Byte
+    fullName: System.Byte
+    isExternal: true
+  - name: ()
+    nameWithType: ()
+    fullName: ()
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: VEDriversLite.NFT.OwnershipVerifier.VerifyOwner*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerifier.VerifyOwner
+  name: VerifyOwner
+  nameWithType: OwnershipVerifier.VerifyOwner
+  fullName: VEDriversLite.NFT.OwnershipVerifier.VerifyOwner
+- uid: VEDriversLite.NFT.OwnershipVerificationCodeDto
+  commentId: T:VEDriversLite.NFT.OwnershipVerificationCodeDto
+  parent: VEDriversLite.NFT
+  name: OwnershipVerificationCodeDto
+  nameWithType: OwnershipVerificationCodeDto
+  fullName: VEDriversLite.NFT.OwnershipVerificationCodeDto
+- uid: System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationResult}
+  commentId: T:System.Threading.Tasks.Task{VEDriversLite.NFT.OwnershipVerificationResult}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  name: Task<OwnershipVerificationResult>
+  nameWithType: Task<OwnershipVerificationResult>
+  fullName: System.Threading.Tasks.Task<VEDriversLite.NFT.OwnershipVerificationResult>
+  nameWithType.vb: Task(Of OwnershipVerificationResult)
+  fullName.vb: System.Threading.Tasks.Task(Of VEDriversLite.NFT.OwnershipVerificationResult)
+  name.vb: Task(Of OwnershipVerificationResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: VEDriversLite.NFT.OwnershipVerificationResult
+    name: OwnershipVerificationResult
+    nameWithType: OwnershipVerificationResult
+    fullName: VEDriversLite.NFT.OwnershipVerificationResult
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    nameWithType: Task
+    fullName: System.Threading.Tasks.Task
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: VEDriversLite.NFT.OwnershipVerificationResult
+    name: OwnershipVerificationResult
+    nameWithType: OwnershipVerificationResult
+    fullName: VEDriversLite.NFT.OwnershipVerificationResult
+  - name: )
+    nameWithType: )
+    fullName: )

@@ -1,0 +1,584 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.Events.EventInfoProvider
+  commentId: T:VEDriversLite.Events.EventInfoProvider
+  id: EventInfoProvider
+  parent: VEDriversLite.Events
+  children:
+  - VEDriversLite.Events.EventInfoProvider.DeleteEventInfo(System.String)
+  - VEDriversLite.Events.EventInfoProvider.EventInfoStore
+  - VEDriversLite.Events.EventInfoProvider.StoreEventInfo(VEDriversLite.Events.IEventInfo)
+  langs:
+  - csharp
+  - vb
+  name: EventInfoProvider
+  nameWithType: EventInfoProvider
+  fullName: VEDriversLite.Events.EventInfoProvider
+  type: Class
+  source:
+    id: EventInfoProvider
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\EventInfoProvider.cs
+    startLine: 8
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public static class EventInfoProvider
+    content.vb: Public Module EventInfoProvider
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - static
+  - class
+  modifiers.vb:
+  - Public
+  - Module
+- uid: VEDriversLite.Events.EventInfoProvider.EventInfoStore
+  commentId: P:VEDriversLite.Events.EventInfoProvider.EventInfoStore
+  id: EventInfoStore
+  parent: VEDriversLite.Events.EventInfoProvider
+  langs:
+  - csharp
+  - vb
+  name: EventInfoStore
+  nameWithType: EventInfoProvider.EventInfoStore
+  fullName: VEDriversLite.Events.EventInfoProvider.EventInfoStore
+  type: Property
+  source:
+    id: EventInfoStore
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\EventInfoProvider.cs
+    startLine: 10
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public static ConcurrentDictionary<string, IEventInfo> EventInfoStore { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.Events.IEventInfo}
+    content.vb: Public Shared Property EventInfoStore As ConcurrentDictionary(Of String, IEventInfo)
+  overload: VEDriversLite.Events.EventInfoProvider.EventInfoStore*
+  modifiers.csharp:
+  - public
+  - static
+  - get
+  - set
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Events.EventInfoProvider.StoreEventInfo(VEDriversLite.Events.IEventInfo)
+  commentId: M:VEDriversLite.Events.EventInfoProvider.StoreEventInfo(VEDriversLite.Events.IEventInfo)
+  id: StoreEventInfo(VEDriversLite.Events.IEventInfo)
+  parent: VEDriversLite.Events.EventInfoProvider
+  langs:
+  - csharp
+  - vb
+  name: StoreEventInfo(IEventInfo)
+  nameWithType: EventInfoProvider.StoreEventInfo(IEventInfo)
+  fullName: VEDriversLite.Events.EventInfoProvider.StoreEventInfo(VEDriversLite.Events.IEventInfo)
+  type: Method
+  source:
+    id: StoreEventInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\EventInfoProvider.cs
+    startLine: 24
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public static string StoreEventInfo(IEventInfo info)
+    parameters:
+    - id: info
+      type: VEDriversLite.Events.IEventInfo
+    return:
+      type: System.String
+    content.vb: Public Shared Function StoreEventInfo(info As IEventInfo) As String
+  overload: VEDriversLite.Events.EventInfoProvider.StoreEventInfo*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: VEDriversLite.Events.EventInfoProvider.DeleteEventInfo(System.String)
+  commentId: M:VEDriversLite.Events.EventInfoProvider.DeleteEventInfo(System.String)
+  id: DeleteEventInfo(System.String)
+  parent: VEDriversLite.Events.EventInfoProvider
+  langs:
+  - csharp
+  - vb
+  name: DeleteEventInfo(String)
+  nameWithType: EventInfoProvider.DeleteEventInfo(String)
+  fullName: VEDriversLite.Events.EventInfoProvider.DeleteEventInfo(System.String)
+  type: Method
+  source:
+    id: DeleteEventInfo
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\Events\EventInfoProvider.cs
+    startLine: 30
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.Events
+  syntax:
+    content: public static IEventInfo DeleteEventInfo(string guid)
+    parameters:
+    - id: guid
+      type: System.String
+    return:
+      type: VEDriversLite.Events.IEventInfo
+    content.vb: Public Shared Function DeleteEventInfo(guid As String) As IEventInfo
+  overload: VEDriversLite.Events.EventInfoProvider.DeleteEventInfo*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+references:
+- uid: VEDriversLite.Events
+  commentId: N:VEDriversLite.Events
+  name: VEDriversLite.Events
+  nameWithType: VEDriversLite.Events
+  fullName: VEDriversLite.Events
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.Events.EventInfoProvider.EventInfoStore*
+  commentId: Overload:VEDriversLite.Events.EventInfoProvider.EventInfoStore
+  name: EventInfoStore
+  nameWithType: EventInfoProvider.EventInfoStore
+  fullName: VEDriversLite.Events.EventInfoProvider.EventInfoStore
+- uid: System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.Events.IEventInfo}
+  commentId: T:System.Collections.Concurrent.ConcurrentDictionary{System.String,VEDriversLite.Events.IEventInfo}
+  parent: System.Collections.Concurrent
+  definition: System.Collections.Concurrent.ConcurrentDictionary`2
+  name: ConcurrentDictionary<String, IEventInfo>
+  nameWithType: ConcurrentDictionary<String, IEventInfo>
+  fullName: System.Collections.Concurrent.ConcurrentDictionary<System.String, VEDriversLite.Events.IEventInfo>
+  nameWithType.vb: ConcurrentDictionary(Of String, IEventInfo)
+  fullName.vb: System.Collections.Concurrent.ConcurrentDictionary(Of System.String, VEDriversLite.Events.IEventInfo)
+  name.vb: ConcurrentDictionary(Of String, IEventInfo)
+  spec.csharp:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.Events.IEventInfo
+    name: IEventInfo
+    nameWithType: IEventInfo
+    fullName: VEDriversLite.Events.IEventInfo
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - uid: System.String
+    name: String
+    nameWithType: String
+    fullName: System.String
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: VEDriversLite.Events.IEventInfo
+    name: IEventInfo
+    nameWithType: IEventInfo
+    fullName: VEDriversLite.Events.IEventInfo
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Concurrent.ConcurrentDictionary`2
+  commentId: T:System.Collections.Concurrent.ConcurrentDictionary`2
+  isExternal: true
+  name: ConcurrentDictionary<TKey, TValue>
+  nameWithType: ConcurrentDictionary<TKey, TValue>
+  fullName: System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>
+  nameWithType.vb: ConcurrentDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Concurrent.ConcurrentDictionary(Of TKey, TValue)
+  name.vb: ConcurrentDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: <
+    nameWithType: <
+    fullName: <
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: '>'
+    nameWithType: '>'
+    fullName: '>'
+  spec.vb:
+  - uid: System.Collections.Concurrent.ConcurrentDictionary`2
+    name: ConcurrentDictionary
+    nameWithType: ConcurrentDictionary
+    fullName: System.Collections.Concurrent.ConcurrentDictionary
+    isExternal: true
+  - name: '(Of '
+    nameWithType: '(Of '
+    fullName: '(Of '
+  - name: TKey
+    nameWithType: TKey
+    fullName: TKey
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - name: TValue
+    nameWithType: TValue
+    fullName: TValue
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Collections.Concurrent
+  commentId: N:System.Collections.Concurrent
+  isExternal: true
+  name: System.Collections.Concurrent
+  nameWithType: System.Collections.Concurrent
+  fullName: System.Collections.Concurrent
+- uid: VEDriversLite.Events.EventInfoProvider.StoreEventInfo*
+  commentId: Overload:VEDriversLite.Events.EventInfoProvider.StoreEventInfo
+  name: StoreEventInfo
+  nameWithType: EventInfoProvider.StoreEventInfo
+  fullName: VEDriversLite.Events.EventInfoProvider.StoreEventInfo
+- uid: VEDriversLite.Events.IEventInfo
+  commentId: T:VEDriversLite.Events.IEventInfo
+  parent: VEDriversLite.Events
+  name: IEventInfo
+  nameWithType: IEventInfo
+  fullName: VEDriversLite.Events.IEventInfo
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.Events.EventInfoProvider.DeleteEventInfo*
+  commentId: Overload:VEDriversLite.Events.EventInfoProvider.DeleteEventInfo
+  name: DeleteEventInfo
+  nameWithType: EventInfoProvider.DeleteEventInfo
+  fullName: VEDriversLite.Events.EventInfoProvider.DeleteEventInfo

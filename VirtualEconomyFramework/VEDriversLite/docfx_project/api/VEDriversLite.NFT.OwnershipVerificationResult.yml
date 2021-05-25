@@ -1,0 +1,617 @@
+### YamlMime:ManagedReference
+items:
+- uid: VEDriversLite.NFT.OwnershipVerificationResult
+  commentId: T:VEDriversLite.NFT.OwnershipVerificationResult
+  id: OwnershipVerificationResult
+  parent: VEDriversLite.NFT
+  children:
+  - VEDriversLite.NFT.OwnershipVerificationResult.IsValid
+  - VEDriversLite.NFT.OwnershipVerificationResult.Message
+  - VEDriversLite.NFT.OwnershipVerificationResult.NFT
+  - VEDriversLite.NFT.OwnershipVerificationResult.Owner
+  - VEDriversLite.NFT.OwnershipVerificationResult.Sender
+  - VEDriversLite.NFT.OwnershipVerificationResult.TxId
+  - VEDriversLite.NFT.OwnershipVerificationResult.VerifyResult
+  langs:
+  - csharp
+  - vb
+  name: OwnershipVerificationResult
+  nameWithType: OwnershipVerificationResult
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult
+  type: Class
+  source:
+    id: OwnershipVerificationResult
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 22
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public class OwnershipVerificationResult
+    content.vb: Public Class OwnershipVerificationResult
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.TxId
+  commentId: P:VEDriversLite.NFT.OwnershipVerificationResult.TxId
+  id: TxId
+  parent: VEDriversLite.NFT.OwnershipVerificationResult
+  langs:
+  - csharp
+  - vb
+  name: TxId
+  nameWithType: OwnershipVerificationResult.TxId
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.TxId
+  type: Property
+  source:
+    id: TxId
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 24
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public string TxId { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property TxId As String
+  overload: VEDriversLite.NFT.OwnershipVerificationResult.TxId*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.Owner
+  commentId: P:VEDriversLite.NFT.OwnershipVerificationResult.Owner
+  id: Owner
+  parent: VEDriversLite.NFT.OwnershipVerificationResult
+  langs:
+  - csharp
+  - vb
+  name: Owner
+  nameWithType: OwnershipVerificationResult.Owner
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.Owner
+  type: Property
+  source:
+    id: Owner
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 25
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public string Owner { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Owner As String
+  overload: VEDriversLite.NFT.OwnershipVerificationResult.Owner*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.Sender
+  commentId: P:VEDriversLite.NFT.OwnershipVerificationResult.Sender
+  id: Sender
+  parent: VEDriversLite.NFT.OwnershipVerificationResult
+  langs:
+  - csharp
+  - vb
+  name: Sender
+  nameWithType: OwnershipVerificationResult.Sender
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.Sender
+  type: Property
+  source:
+    id: Sender
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 26
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public string Sender { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Sender As String
+  overload: VEDriversLite.NFT.OwnershipVerificationResult.Sender*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.IsValid
+  commentId: P:VEDriversLite.NFT.OwnershipVerificationResult.IsValid
+  id: IsValid
+  parent: VEDriversLite.NFT.OwnershipVerificationResult
+  langs:
+  - csharp
+  - vb
+  name: IsValid
+  nameWithType: OwnershipVerificationResult.IsValid
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.IsValid
+  type: Property
+  source:
+    id: IsValid
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 27
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public bool IsValid { get; set; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property IsValid As Boolean
+  overload: VEDriversLite.NFT.OwnershipVerificationResult.IsValid*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.NFT
+  commentId: P:VEDriversLite.NFT.OwnershipVerificationResult.NFT
+  id: NFT
+  parent: VEDriversLite.NFT.OwnershipVerificationResult
+  langs:
+  - csharp
+  - vb
+  name: NFT
+  nameWithType: OwnershipVerificationResult.NFT
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.NFT
+  type: Property
+  source:
+    id: NFT
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 28
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public INFT NFT { get; set; }
+    parameters: []
+    return:
+      type: VEDriversLite.NFT.INFT
+    content.vb: Public Property NFT As INFT
+  overload: VEDriversLite.NFT.OwnershipVerificationResult.NFT*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.Message
+  commentId: P:VEDriversLite.NFT.OwnershipVerificationResult.Message
+  id: Message
+  parent: VEDriversLite.NFT.OwnershipVerificationResult
+  langs:
+  - csharp
+  - vb
+  name: Message
+  nameWithType: OwnershipVerificationResult.Message
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.Message
+  type: Property
+  source:
+    id: Message
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 29
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public string Message { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Message As String
+  overload: VEDriversLite.NFT.OwnershipVerificationResult.Message*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.VerifyResult
+  commentId: P:VEDriversLite.NFT.OwnershipVerificationResult.VerifyResult
+  id: VerifyResult
+  parent: VEDriversLite.NFT.OwnershipVerificationResult
+  langs:
+  - csharp
+  - vb
+  name: VerifyResult
+  nameWithType: OwnershipVerificationResult.VerifyResult
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.VerifyResult
+  type: Property
+  source:
+    id: VerifyResult
+    path: C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\NFT\OwnershipVerifier.cs
+    startLine: 30
+  assemblies:
+  - VEDriversLite
+  namespace: VEDriversLite.NFT
+  syntax:
+    content: public string VerifyResult { get; set; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property VerifyResult As String
+  overload: VEDriversLite.NFT.OwnershipVerificationResult.VerifyResult*
+  modifiers.csharp:
+  - public
+  - get
+  - set
+  modifiers.vb:
+  - Public
+references:
+- uid: VEDriversLite.NFT
+  commentId: N:VEDriversLite.NFT
+  name: VEDriversLite.NFT
+  nameWithType: VEDriversLite.NFT
+  fullName: VEDriversLite.NFT
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.TxId*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerificationResult.TxId
+  name: TxId
+  nameWithType: OwnershipVerificationResult.TxId
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.TxId
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.Owner*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerificationResult.Owner
+  name: Owner
+  nameWithType: OwnershipVerificationResult.Owner
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.Owner
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.Sender*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerificationResult.Sender
+  name: Sender
+  nameWithType: OwnershipVerificationResult.Sender
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.Sender
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.IsValid*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerificationResult.IsValid
+  name: IsValid
+  nameWithType: OwnershipVerificationResult.IsValid
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.IsValid
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  name: Boolean
+  nameWithType: Boolean
+  fullName: System.Boolean
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.NFT*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerificationResult.NFT
+  name: NFT
+  nameWithType: OwnershipVerificationResult.NFT
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.NFT
+- uid: VEDriversLite.NFT.INFT
+  commentId: T:VEDriversLite.NFT.INFT
+  parent: VEDriversLite.NFT
+  name: INFT
+  nameWithType: INFT
+  fullName: VEDriversLite.NFT.INFT
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.Message*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerificationResult.Message
+  name: Message
+  nameWithType: OwnershipVerificationResult.Message
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.Message
+- uid: VEDriversLite.NFT.OwnershipVerificationResult.VerifyResult*
+  commentId: Overload:VEDriversLite.NFT.OwnershipVerificationResult.VerifyResult
+  name: VerifyResult
+  nameWithType: OwnershipVerificationResult.VerifyResult
+  fullName: VEDriversLite.NFT.OwnershipVerificationResult.VerifyResult
