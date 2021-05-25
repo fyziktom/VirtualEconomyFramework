@@ -19,11 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jint" Version="2.11.58" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\NeblioRestApi\NeblioRestApi.csproj" />
     <ProjectReference Include="..\VEDrivers\VEDrivers.csproj" />
   </ItemGroup>

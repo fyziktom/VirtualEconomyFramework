@@ -18,8 +18,8 @@ namespace test
 
             try
             {
-                var pass = "";
-                var key = "";
+                var pass = "12345678";
+                var key = "soqu+MyDwhNCmi5fXL1XvtQsSD/1z9+3/1I/rvbiy8nmOndR0DkU/EgyKH52NktGqKxE2ZOHZNETrnSPXJlORA==";
                 var address = "NWzAr4qG9VnVv9GajWYWJmBVdNU4SACEvn";// "NWzAr4qG9VnVv9GajWYWJmBVdNU4SACEvn";//"NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7";
                 var receiver = "NWzAr4qG9VnVv9GajWYWJmBVdNU4SACEvn";
                 var password = "";

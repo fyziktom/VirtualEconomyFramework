@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="docfx.console" Version="2.57.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
     <PackageReference Include="NBitcoin" Version="5.0.81" />
     <PackageReference Include="NBitcoin.Altcoins" Version="2.0.32" />
