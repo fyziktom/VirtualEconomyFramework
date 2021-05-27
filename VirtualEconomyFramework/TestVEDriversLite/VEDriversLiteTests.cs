@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -667,6 +668,40 @@ namespace TestVEDriversLite
         }
 
         [TestEntry]
+        public static void DogeSendTransactionWithIPFSUpload(string param)
+        {
+            DogeSendTransactionWithIPFSUploadAsync(param);
+        }
+        public static async Task DogeSendTransactionWithIPFSUploadAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input receiveraddress,amountofdoge,filename");
+            var receiver = split[0];
+            var am = split[1];
+            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
+            var fileName = split[2];
+            var filebytes = File.ReadAllBytes(fileName);
+            var link = string.Empty;
+            try
+            {
+                using (Stream stream = new MemoryStream(filebytes))
+                {
+                    var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileName);
+                    link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+            }
+            
+            var res = await dogeAccount.SendPayment(receiver, amount, link);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
         public static void DogeBuyNFT(string param)
         {
             DogeBuyNFTAsync(param);
@@ -679,7 +714,6 @@ namespace TestVEDriversLite
             var receiver = split[0];
             var neblioaddress = split[1];
             var nftid = split[2];
-            //var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
             var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftid);
 
             var res = await dogeAccount.BuyNFT(neblioaddress, receiver, nft);

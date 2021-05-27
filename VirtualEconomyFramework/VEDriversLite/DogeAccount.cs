@@ -370,7 +370,7 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendPayment(string receiver, double amount)
+        public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "")
         {
             if (IsLocked())
             {
@@ -389,13 +389,18 @@ namespace VEDriversLite
             {
                 Amount = amount,
                 SenderAddress = Address,
-                ReceiverAddress = receiver
+                ReceiverAddress = receiver,
+                CustomMessage = message
             };
 
             try
             {
                 // send tx
-                var rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
+                var rtxid = string.Empty;
+                if (string.IsNullOrEmpty(message))
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
+                else 
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
 
                 if (rtxid != null)
                 {
