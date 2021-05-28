@@ -32,8 +32,8 @@
                 <div class="col d-flex justify-content-center align-items-center">
                     <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@accountKey" />
                     @try
-                    {
-                    <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="@accountKey" Close="@closeQRModal" />
+                    { 
+                    <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="accountKey" Close="closeQRModal" />
                     }
                     catch (Exception ex)
                     {
@@ -56,12 +56,20 @@
     private string keyToSave = string.Empty;
     private string filename = string.Empty;
 
+    [Parameter]
+    public bool DogeAccountKey { get; set; } = false;
+
     private async Task downloadAccountKey()
     {
-        if (!string.IsNullOrEmpty(AppData.Account.Address))
+        if (string.IsNullOrEmpty(AppData.Account.Address))
+            return;
+
+        var addr = string.Empty;
+        var ekey = string.Empty;
+
+        if (!DogeAccountKey)
         {
-            closeQRModal = false;
-            StateHasChanged();
+            addr = AppData.Account.Address;
             ekey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
             if (AppData.Account.IsLocked())
             {
@@ -80,19 +88,47 @@
                     accountKey = "Exception during display key. " + ex.Message;
                 }
             }
-
-            //keyToSave = "{ Address:\"" + AppData.Account.Address + "\", EncryptedKey:\"" + ekey + "\", DecryptedKey:\"" + accountKey + "\" }";
-            keyToSave = "{ Address:\"" + AppData.Account.Address + "\", EncryptedKey:\"" + ekey + "\" }";
-            filename = "Key-Export-" + AppData.Account.Address + ".txt";
-
-            hideTimer = new System.Threading.Timer(async (object stateInfo) =>
-            {
-                accountKey = string.Empty;
-                privateKeyDialogVisible = false;
-                StateHasChanged();
-                hideTimer.Dispose();
-            }, new System.Threading.AutoResetEvent(false), 10000, 10000);
         }
+        else
+        {
+            addr = AppData.DogeAccount.Address;
+            ekey = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            if (AppData.DogeAccount.IsLocked())
+            {
+                accountKey = ekey;
+                privateKeyDialogVisible = true;
+            }
+            else
+            {
+                try
+                {
+                    accountKey = await AppData.DogeAccount.AccountKey.GetEncryptedKey();
+                    privateKeyDialogVisible = true;
+                }
+                catch (Exception ex)
+                {
+                    accountKey = "Exception during display key. " + ex.Message;
+                }
+            }
+        }
+
+        closeQRModal = false;
+        StateHasChanged();
+
+        //keyToSave = "{ Address:\"" + AppData.Account.Address + "\", EncryptedKey:\"" + ekey + "\", DecryptedKey:\"" + accountKey + "\" }";
+        keyToSave = "{ Address:\"" + addr + "\", EncryptedKey:\"" + ekey + "\" }";
+        if (!DogeAccountKey)
+            filename = "Key-Export-" + addr + ".txt";
+        else
+            filename = "Doge-Key-Export-" + addr + ".txt";
+
+        hideTimer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            accountKey = string.Empty;
+            privateKeyDialogVisible = false;
+            StateHasChanged();
+            hideTimer.Dispose();
+        }, new System.Threading.AutoResetEvent(false), 10000, 10000);
     }
 
     private async Task privateKeyDialogClose(MouseEventArgs e)

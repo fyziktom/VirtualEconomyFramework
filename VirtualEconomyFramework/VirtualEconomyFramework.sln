@@ -33,9 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-Blazor", "VENFTApp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", "{AB8FC27D-E4A7-4316-B89F-93D3295AC3AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEDriversLiteConsoleAppExamples", "VEDriversLiteConsoleAppExamples\VEDriversLiteConsoleAppExamples.csproj", "{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLiteConsoleAppExamples", "VEDriversLiteConsoleAppExamples\VEDriversLiteConsoleAppExamples.csproj", "{09DAC0A0-02CB-43F1-BE5F-67CF8C775F22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestVEDriversLite", "TestVEDriversLite\TestVEDriversLite.csproj", "{064B40F2-1421-4648-99B7-835AA90E4608}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestVEDriversLite", "TestVEDriversLite\TestVEDriversLite.csproj", "{064B40F2-1421-4648-99B7-835AA90E4608}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -87,6 +87,8 @@
             var kt = await AppData.Account.AccountKey.GetEncryptedKey();
             if (!string.IsNullOrEmpty(kt))
             {
+                await LoadDogeAccount();
+
                 unlockAcocuntModalVisible = false;
                 unlockingAccount = false;
 
@@ -108,6 +110,30 @@
             unlockingAccount = false;
             StateHasChanged();
             // todo
+        }
+    }
+
+    public async Task LoadDogeAccount()
+    {
+        if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
+        {
+            var address = await localStorage.GetItemAsync<string>("dogeaddress");
+            if (string.IsNullOrEmpty(address))
+            {
+                // create and save doge address and key
+                await AppData.DogeAccount.CreateNewAccount(unlockPassword, false);
+                address = AppData.DogeAccount.Address;
+                var k = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                await localStorage.SetItemAsync("dogeaddress", address);
+                await localStorage.SetItemAsync("dogekey", k);
+            }
+            else
+            {
+                var pass = unlockPassword;
+                var k = await localStorage.GetItemAsync<string>("dogekey");
+                await Task.Delay(100);
+                await AppData.DogeAccount.LoadAccount(pass, k, address);
+            }
         }
     }
 

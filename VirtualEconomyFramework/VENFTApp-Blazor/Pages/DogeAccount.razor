@@ -1,0 +1,186 @@
+﻿@using VEDriversLite
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject HttpClient _client
+@inject AppData AppData
+@inject NavigationManager NavManager
+@page "/dogeaccount"
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <h3>My Doge Account</h3>
+        </div>
+    </div>
+
+    <VENFTApp_Blazor.Components.DogeAccountBalance />
+
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex justify-content-center align-items-center">
+            <hr />
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom:20px;">
+        <div class="col">
+            <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
+                <div class="card" style="margin-top:10px;">
+                    <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                        <h5 class="text-center">Send Doge Transaction</h5>
+                    </div>
+                    <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <p>To Address:</p>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <Input Placeholder="Add receiver address" @bind-Value=@Receiver Style="font-size:12px; min-width:250px;max-width:350px;" />
+                                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:30px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <p>Amount of Doge:</p>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <input type="number" step="1" min="1" max="@AppData.DogeAccount.TotalBalance" @bind="@AmountToSend" />
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <button class="btn btn-primary" @onclick="SendTx">Send</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Spin>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom:20px;">
+        <div class="col">
+            <div class="card" style="margin-top:10px;">
+                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                    <h5 class="text-center">Export Account Key</h5>
+                </div>
+                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <span class="text-center">Please dont forget to save your private key!!! It is unique key for your Doge address. If you save it you can backup address anytime.</span>
+                                </div>
+                            </div>
+                            <VENFTApp_Blazor.Components.DisplayAccountKey DogeAccountKey="true" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--
+    <div class="row" style="margin-bottom:20px;">
+        <div class="col">
+            <div class="card" style="margin-top:10px;">
+                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                    <h5 class="text-center">Advanced Tools</h5>
+                </div>
+                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:600px;">
+                    <div class="row d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center flex-wrap">
+                            <VENFTApp_Blazor.Components.SignAndVerifyMessage />
+                            <VENFTApp_Blazor.Components.NeblioPriceStats />
+                            <VENFTApp_Blazor.Components.NeblioPriceConversion />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+    <VENFTApp_Blazor.Components.InfoEventModal />
+</div>
+
+@code {
+
+    private bool sendingTransaction = false;
+    private double AmountToSend = 1;
+    private string receiver = string.Empty;
+    public string Receiver
+    {
+        get => receiver;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                receiver = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                Redirect();
+            else
+                Load();
+        }
+        catch (Exception ex)
+        {
+            Redirect();
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task SendTx()
+    {
+        try
+        {
+            sendingTransaction = true;
+            StateHasChanged();
+
+            var res = await AppData.DogeAccount.SendPayment(Receiver, AmountToSend);
+            Console.WriteLine("Tx send result: " + res);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task Load()
+    {
+        if (AppData.DogeAccount != null)
+            AppData.DogeAccount.Refreshed += RefreshedHandler;
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.DogeAccount = new VEDriversLite.DogeAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
+}

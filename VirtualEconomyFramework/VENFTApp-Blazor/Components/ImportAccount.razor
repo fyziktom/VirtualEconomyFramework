@@ -11,10 +11,15 @@
        OnCancel="@importAccountCancel">
     <div class="row">
         <div class="col">
-            <Spin spinning="@creatingAddressSpinner" tip="Creating Address...">
+            <Spin spinning="@creatingAddressSpinner" tip="Importing Address...">
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Please Input password</span>
+                        <span>Please Input Neblio Address</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>Leave empty if you do not have any and app will create new one automatically.</small>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
@@ -29,9 +34,36 @@
                         <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Input Doge Address</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>Leave empty if you do not have any and app will create new one automatically.</small>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <Input Placeholder="Input address" @bind-Value="@importDogeAccountAddress" style="font-size:12px;min-width:150px; max-width:250px;" />
+                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword Placeholder="Input encrypted private key" @bind-Value="@importDogeAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
+                    </div>
+                </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <span>Is your key already encrypted with the password or not?</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:5px;">
+                    <div class="col d-flex justify-content-center align-items-center text-center">
+                        <small>If this is checked private keys (both if you input doge too) must be encrypted with AES with provided password.</small>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
@@ -120,6 +152,8 @@
     bool creatingAddressSpinner = false;
 
     bool accountImportError = false;
+    string importDogeAccountAddress = string.Empty;
+    string importDogeAccountKey = string.Empty;
     string importAccountAddress = string.Empty;
     string importAccountKey = string.Empty;
     string importAccountPass = string.Empty;
@@ -157,56 +191,103 @@
         if (passwordConfirm != importAccountPass)
             return;
 
+        if (string.IsNullOrEmpty(importAccountPass))
+        {
+            accountImportError = true;
+            return;
+        }
         if (importAccountPass.Length < 8)
             return;
 
         try
         {
-            if (string.IsNullOrEmpty(importAccountAddress) || string.IsNullOrEmpty(importAccountKey))
-            {
-                accountImportError = true;
-                return;
-            }
-
-            if (string.IsNullOrEmpty(importAccountPass))
-            {
-                accountImportError = true;
-                return;
-            }
-
             creatingAddressSpinner = true;
             StateHasChanged();
 
-            key = importAccountKey;
-            address = importAccountAddress;
+            var res = await LoadNeblioAccount();
 
-            if (!importKeyAlreadyEncrypted)
+            if (res)
             {
-                key = await SymetricProvider.EncryptString(importAccountPass, key);
-            }
+                await LoadDogeAccount();
 
-            await AppData.Account.LoadAccount(importAccountPass, key, address); // put here your password
-
-            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
-            if (!string.IsNullOrEmpty(kt))
-            {
                 accountImportError = false;
                 importAccountVisible = false;
                 creatingAddressSpinner = true;
-                await Task.Delay(50);
-                StateHasChanged();
-
-                await localStorage.SetItemAsync("address", address);
-                await localStorage.SetItemAsync("key", key);
 
                 StateHasChanged();
                 await AccountImported.InvokeAsync("OK");
+            }
+            else
+            {
+                accountImportError = true;
             }
         }
         catch (Exception ex)
         {
             accountImportError = true;
             // todo
+        }
+    }
+
+    public async Task<bool> LoadNeblioAccount()
+    {
+        if (string.IsNullOrEmpty(importAccountAddress) || string.IsNullOrEmpty(importAccountKey))
+        {
+            await AppData.Account.CreateNewAccount(importAccountPass, false);
+            // save neblio address and key
+            address = AppData.Account.Address;
+            key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            await localStorage.SetItemAsync("address", address);
+            await localStorage.SetItemAsync("key", key);
+            return true;
+        }
+        else
+        {
+            key = importAccountKey;
+            address = importAccountAddress;
+
+            if (!importKeyAlreadyEncrypted)
+                key = await SymetricProvider.EncryptString(importAccountPass, key);
+
+            await AppData.Account.LoadAccount(importAccountPass, key, address); // put here your password
+
+            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
+            if (!string.IsNullOrEmpty(kt))
+            {
+                await localStorage.SetItemAsync("address", address);
+                await localStorage.SetItemAsync("key", key);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public async Task LoadDogeAccount()
+    {
+        if (string.IsNullOrEmpty(importDogeAccountAddress) || string.IsNullOrEmpty(importDogeAccountKey))
+        {
+            // create and save doge address and key
+            await AppData.DogeAccount.CreateNewAccount(importAccountPass, false);
+            var addr = AppData.DogeAccount.Address;
+            var k = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            await localStorage.SetItemAsync("dogeaddress", addr);
+            await localStorage.SetItemAsync("dogekey", k);
+        }
+        else
+        {
+            var addr = importDogeAccountAddress;
+            var k = importDogeAccountKey;
+            if (!importKeyAlreadyEncrypted)
+                k = await SymetricProvider.EncryptString(importAccountPass, k);
+            await AppData.DogeAccount.LoadAccount(importAccountPass, k, addr); // put here your password
+            var kt = await AppData.DogeAccount.AccountKey.GetEncryptedKey();
+            if (!string.IsNullOrEmpty(kt))
+            {
+                await Task.Delay(50);
+                StateHasChanged();
+                await localStorage.SetItemAsync("dogeaddress", addr);
+                await localStorage.SetItemAsync("dogekey", k);
+            }
         }
     }
 

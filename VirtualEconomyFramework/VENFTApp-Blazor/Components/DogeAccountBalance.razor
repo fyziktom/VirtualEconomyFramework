@@ -1,0 +1,40 @@
+﻿@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:11px;">
+                    <a href="https://bitinfocharts.com/dogecoin/address/@AppData.DogeAccount.Address" style="font-size:11px;" target="_blank">@AppData.DogeAccount.Address</a>
+                </span>
+                <CopyIcon MarginLeft="15" TextToCopy="@AppData.DogeAccount.Address" />
+                <QRIcon MarginLeft="10" TextToCopy="@AppData.DogeAccount.Address" />
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:10px;">Actual Balance: @AppData.DogeAccount.TotalBalance DOGE</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:2px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:8px;">Unconfirmed Balance: @AppData.DogeAccount.TotalUnconfirmedBalance DOGE</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppData.DogeAccount != null)
+            AppData.DogeAccount.Refreshed += RefreshedHandler;
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}

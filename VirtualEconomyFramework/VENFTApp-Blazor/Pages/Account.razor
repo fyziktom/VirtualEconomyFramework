@@ -4,7 +4,6 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient _client
 @inject AppData AppData
-@inject ClipboardService ClipboardService
 @inject NavigationManager NavManager
 @page "/account"
 
@@ -62,7 +61,7 @@
                                     <span class="text-center">Please dont forget to save your private key!!! It is unique key for your Neblio address. If you save it you can backup address anytime.</span>
                                 </div>
                             </div>
-                            <VENFTApp_Blazor.Components.DisplayAccountKey />
+                            <VENFTApp_Blazor.Components.DisplayAccountKey DogeAccountKey="false" />
                         </div>
                     </div>
                 </div>
@@ -165,17 +164,5 @@
         AppData.Account = new NeblioAccount();
         await Task.Delay(500);
         NavManager.NavigateTo("/");
-    }
-
-    async Task CopyToClipboard(MouseEventArgs e)
-    {
-        try
-        {
-            await ClipboardService.WriteTextAsync(AppData.Account.Address);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Cannot write text to clipboard" + ex.Message);
-        }
     }
 }
