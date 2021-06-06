@@ -494,7 +494,10 @@ namespace VEDriversLite
             var dto = new SendTokenRequest();
             try
             {
-                dto = GetSendTokenObject(1, fee, data.SenderAddress, VENFTId);
+                if (string.IsNullOrEmpty(data.ReceiverAddress))
+                    dto = GetSendTokenObject(1, fee, data.SenderAddress, VENFTId);
+                else
+                    dto = GetSendTokenObject(1, fee, data.ReceiverAddress, VENFTId);
 
                 if (data.Metadata != null)
                     foreach (var d in data.Metadata)
@@ -1495,9 +1498,10 @@ namespace VEDriversLite
             var utxos = new List<Utxos>();
             if (addressinfo?.Utxos != null)
                 foreach (var u in addressinfo.Utxos)
-                    foreach(var tok in u.Tokens)
-                        if (tok.Amount == 1)
-                            utxos.Add(u);
+                    if (u.Tokens != null)
+                        foreach(var tok in u.Tokens)
+                            if (tok.Amount == 1)
+                                utxos.Add(u);
             
             return utxos;
         }
@@ -1819,6 +1823,49 @@ namespace VEDriversLite
             {
                 Console.WriteLine("Cannot load tx info. " + ex.Message);
                 return new GetTransactionInfoResponse();
+            }
+        }
+
+        /// <summary>
+        /// Get transaction sender.
+        /// </summary>
+        /// <param name="txid">tx id hash</param>
+        /// <returns>Sender address</returns>
+        public static async Task<string> GetTransactionSender(string txid)
+        {
+            try
+            {
+                var info = await GetClient().GetTransactionInfoAsync(txid);
+                var send = info.Vin.ToList()[0]?.PreviousOutput?.Addresses.ToList()[0];
+                return send;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load tx info. " + ex.Message);
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Get transaction sender.
+        /// </summary>
+        /// <param name="txid">tx id hash</param>
+        /// <returns>Sender address</returns>
+        public static async Task<string> GetTransactionReceiver(string txid)
+        {
+            try
+            {
+                var info = await GetClient().GetTransactionInfoAsync(txid);
+                var rec = info.Vout.ToList()[0]?.ScriptPubKey.Addresses.ToList()[0];
+                if (!string.IsNullOrEmpty(rec))
+                    return rec;
+                else
+                    return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load tx info. " + ex.Message);
+                return string.Empty;
             }
         }
 

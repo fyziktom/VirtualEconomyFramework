@@ -609,6 +609,90 @@ namespace VEDriversLite.NFT
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// This function will new Post NFT.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
+        public static async Task<string> SendMessageNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        {
+            if (NFT.Type != NFTTypes.Message)
+                throw new Exception("This is not Message NFT.");
+
+            var nft = NFT as MessageNFT;
+            var edescription = string.Empty;
+            var ename = string.Empty;
+            if (nft.Encrypt)
+            {
+                var res = await ECDSAProvider.EncryptStringWithSharedSecret(NFT.Description, receiver, await ekey.GetEncryptedKey());
+                if (res.Item1)
+                    edescription = res.Item2;
+
+                res = await ECDSAProvider.EncryptStringWithSharedSecret(NFT.Name, receiver, await ekey.GetEncryptedKey());
+                if (res.Item1)
+                    ename = res.Item2;
+            }
+            else
+            {
+                edescription = nft.Description;
+                ename = nft.Name;
+            }
+
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Name", ename);
+            metadata.Add("Author", address);
+            metadata.Add("Description", edescription);
+            metadata.Add("Image", NFT.ImageLink);
+            metadata.Add("Link", NFT.Link);
+            metadata.Add("Type", "NFT Message");
+
+            try
+            {
+                // send tx
+                var rtxid = string.Empty;
+                if (string.IsNullOrEmpty(NFT.Utxo))
+                {
+                    var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
+                    {
+                        Id = TokenId, // id of token
+                        Metadata = metadata,
+                        SenderAddress = address,
+                        ReceiverAddress = receiver
+                    };
+                    rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
+                }
+                else
+                {
+                    var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+                    {
+                        Id = TokenId, // id of token
+                        Metadata = metadata,
+                        Amount = 1,
+                        sendUtxo = new List<string>() { NFT.Utxo },
+                        SenderAddress = address,
+                        ReceiverAddress = receiver
+                    };
+                    rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+                }
+                if (rtxid != null)
+                    return rtxid;
+                else
+                    return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         /// <summary>
         /// This function will new Post NFTs as multimint. 
         /// It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.

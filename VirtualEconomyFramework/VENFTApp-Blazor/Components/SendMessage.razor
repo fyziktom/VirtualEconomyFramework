@@ -1,0 +1,176 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inject NavigationManager NavManager
+
+<div class="row">
+    <div class="col">
+        <Spin spinning="@processingSending" tip="Sending...">
+            <div class="row">
+                <div class="col">
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small>Name of message</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <Input Placeholder="Add Name of the message" MaxLength="50" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small>Message</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <Input Placeholder="Type your message" MaxLength="160" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small>Receiver</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <Input Placeholder="Add Receiver" MaxLength="160" @bind-Value=@receiver Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+
+
+                    @if (newNFT.Description.Length >= 500)
+                    {
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <small>Maximum length is 500 characters</small>
+                            </div>
+                        </div>
+                    }
+
+                    else
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <input type="checkbox" checked="checked" @onchange="eventArgs => { encryptChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Encrypt</span><br />
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small class="text-center">Sending costs 0.0002 NEBL (fee) and 1 VENFT (carrier).</small>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <button class="btn btn-primary" @onclick="ShowMintConfirm">Send Message</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </Spin>
+
+        <Modal Title="Mint New NFT"
+               Visible="@confirmVisible"
+               OnOk="@HandleOk"
+               OnCancel="@HandleCancel">
+            <p>"Do you realy want to send this message?"</p>
+        </Modal>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> MessageSent { get; set; }
+
+    private string receiver = string.Empty;
+    [Parameter]
+    public string Receiver
+    {
+        get => receiver;
+        set
+        {
+            receiver = value;
+            StateHasChanged();
+        }
+    }
+
+    private bool encrypt = true;
+    private INFT sourceNFT = new MessageNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => sourceNFT;
+        set
+        {
+            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != newNFT.Utxo)
+            {
+                newNFT.Fill(value);
+                StateHasChanged();
+            }
+        }
+    }
+
+    INFT newNFT = new MessageNFT("");
+    bool uploadingImage = false;
+    bool confirmVisible = false;
+    bool processingSending = false;
+
+    void ImageLinkChanged(string newLink)
+    {
+        newNFT.ImageLink = newLink;
+    }
+
+    private async Task encryptChanged(object e)
+    {
+        encrypt = (bool)e;
+        StateHasChanged();
+    }
+
+    void ShowMintConfirm()
+    {
+        confirmVisible = true;
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        await SendMessageNFT();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    private async Task SendMessageNFT()
+    {
+        try
+        {
+            processingSending = true;
+            confirmVisible = false;
+            StateHasChanged();
+
+            var res = await AppData.Account.SendMessageNFT(newNFT.Name, newNFT.Description, receiver, newNFT.Utxo, encrypt);
+
+            if (res.Item1)
+            {
+                await MessageSent.InvokeAsync(res.Item2);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            processingSending = false;
+            StateHasChanged();
+        }
+    }
+}

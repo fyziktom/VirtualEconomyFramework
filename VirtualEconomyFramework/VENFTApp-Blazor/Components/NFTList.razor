@@ -37,7 +37,7 @@
                         <div class="card-group">
                             @foreach (var nft in _nfts)
                             {
-                                if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings")
+                                if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
                                 {
                                     if ((displayImages && nft.Type == NFTTypes.Image) || (displayPosts && nft.Type == NFTTypes.Post) || (displayMusic && nft.Type == NFTTypes.Music))
                                     {

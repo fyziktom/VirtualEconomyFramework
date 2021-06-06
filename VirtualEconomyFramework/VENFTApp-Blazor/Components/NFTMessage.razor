@@ -1,0 +1,155 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject HttpClient _client
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col">
+        <Spin Tip="Loading..." Spinning="@loading">
+            <span class="badge badge-primary" style="position: absolute;right: 7px;top: 10px;">Conf:@NFT.TxDetails.Confirmations.ToString()</span>
+
+            @if (!string.IsNullOrEmpty(IsSenderInTheBookmarks(NFT.Author)))
+            {
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <small>Sender Bookmark Name: @IsSenderInTheBookmarks(NFT.Author)</small>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <small>Sender Address: @NFT.Author</small>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Name: @NFT.Name</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Message:</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>@NFT.Description</span>
+                </div>
+            </div>
+            <hr />
+
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <button class="btn btn-primary" @onclick="showSendMessage">Answer</button>
+                </div>
+            </div>
+
+            <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" />
+
+            @if (!string.IsNullOrEmpty(NFT.Utxo))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank" style="font-size:10px;">Show in the Explorer</a>
+                    </div>
+                </div>
+            }
+        </Spin>
+    </div>
+
+    <Modal Title="Send Message"
+           Visible="@sendMessageVisible"
+           OnOk="@sendMessageConfirm"
+           OnCancel="@sendMessageCancel">
+        <SendMessage NFT="@NFT" Receiver="@NFT.Author" />
+    </Modal>
+</div>
+
+@code {
+
+    private INFT NFT { get; set; } = new MessageNFT("");
+
+    private string _utxo = string.Empty;
+    [Parameter]
+    public string Utxo
+    {
+        get => _utxo;
+        set
+        {
+            if (!string.IsNullOrEmpty(value) && _utxo != value)
+            {
+                _utxo = value;
+                Load();
+            }
+        }
+    }
+
+    bool sendMessageVisible = false;
+    bool loading = false;
+
+    string status = string.Empty;
+
+    protected override Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(_utxo))
+            Load();
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Load()
+    {
+        loading = true;
+        StateHasChanged();
+        NFT.TxDataRefreshed -= TxDataRefreshedHandler;
+        await NFT.StopRefreshingData();
+        NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo, 0, true);
+
+        if (NFT == null)
+            return;
+
+        await (NFT as MessageNFT).Decrypt(AppData.Account.Secret);
+        await NFT.StartRefreshingTxData();
+        NFT.TxDataRefreshed += TxDataRefreshedHandler;
+        loading = false;
+        StateHasChanged();
+    }
+
+    private string IsSenderInTheBookmarks(string sender)
+    {
+        var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
+        if (s == null)
+            return string.Empty;
+
+        if (!string.IsNullOrEmpty(s.Name))
+            return s.Name;
+        else
+            return string.Empty;
+    }
+
+    private void TxDataRefreshedHandler(object sender, GetTransactionInfoResponse info)
+    {
+        StateHasChanged();
+    }
+
+    private async Task showSendMessage()
+    {
+        sendMessageVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task sendMessageConfirm(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task sendMessageCancel(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+    }
+
+}

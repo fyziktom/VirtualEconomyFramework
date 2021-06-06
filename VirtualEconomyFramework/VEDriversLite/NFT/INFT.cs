@@ -14,7 +14,8 @@ namespace VEDriversLite.NFT
         Music,
         YouTube,
         Spotify,
-        Payment
+        Payment,
+        Message
     }
     public interface INFT
     {

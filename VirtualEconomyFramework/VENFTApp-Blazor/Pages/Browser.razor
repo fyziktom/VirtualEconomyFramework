@@ -26,10 +26,10 @@
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <button onclick="browseTabs" class="btn btn-secondary" type="button">Browse Tabs</button>
-                <VENFTApp_Blazor.Components.OpenedTabList Open="openTabBrowser" 
-                                                          BrowseTabsClosed="browseTabsClosed" 
-                                                          TabSelected="TabSelectedHandler" 
-                                                          NewTabOpened="TabAddedHandler" 
+                <VENFTApp_Blazor.Components.OpenedTabList Open="openTabBrowser"
+                                                          BrowseTabsClosed="browseTabsClosed"
+                                                          TabSelected="TabSelectedHandler"
+                                                          NewTabOpened="TabAddedHandler"
                                                           TabClosed="TabClosedHandler" />
             </div>
         </div>
@@ -46,7 +46,7 @@
                                     {
                                         if (tab.BookmarkFromAccount.Name.Length < 10)
                                         {
-                                        @tab.BookmarkFromAccount.Name
+                                            @tab.BookmarkFromAccount.Name
                                         }
                                         else
                                         {
@@ -93,6 +93,7 @@
                                                     <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@tab.IsInBookmark"
                                                                                          Address="@addressInOpenTab"
                                                                                          BookmarkRefreshed="@BookmarkRefreshedHandler" />
+                                                    <i class="oi oi-envelope-closed" style="margin-left:10px; margin-top:0px; font-size:14px;" @onclick="showSendMessage"></i>
                                                 </div>
                                             </div>
                                             <!--
@@ -127,11 +128,11 @@
                                                             </div>
                                                             @if (!string.IsNullOrEmpty(tab.Profile.Link))
                                                             {
-                                                            <div class="row">
-                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                    <a href="@tab.Profile.Link" target="_blank">Webpage</a>
+                                                                <div class="row">
+                                                                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                        <a href="@tab.Profile.Link" target="_blank">Webpage</a>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
                                                             }
                                                         </div>
                                                     </div>
@@ -258,7 +259,15 @@
     </div>
 </Modal>
 
+<Modal Title="Send Message"
+       Visible="@sendMessageVisible"
+       OnOk="@sendMessageConfirm"
+       OnCancel="@sendMessageCancel">
+    <VENFTApp_Blazor.Components.SendMessage Receiver="@addressInOpenTab" />
+</Modal>
+
 @code {
+    bool sendMessageVisible = false;
     bool openTabBrowser = false;
     bool loadingBrowser = false;
     bool browsePublicAddresses = false;
@@ -367,7 +376,7 @@
                     if (AppData.Account.Bookmarks.Count == 0)
                         await AppData.Account.LoadBookmarks(bookmarks);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Cannot load bookmarks!" + ex.Message);
             }
@@ -472,4 +481,23 @@
         newTabAddress = address;
         StateHasChanged();
     }
+
+
+    private async Task showSendMessage()
+    {
+        sendMessageVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task sendMessageConfirm(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task sendMessageCancel(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+    }
+
 }

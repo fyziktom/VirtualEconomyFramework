@@ -551,6 +551,48 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        [TestEntry]
+        public static void SendMessageNFT(string param)
+        {
+            SendMessageNFTAsync(param);
+        }
+        public static async Task SendMessageNFTAsync(string param)
+        {
+            var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input name,message,receiver.");
+
+            if (string.IsNullOrEmpty(split[1]))
+                throw new Exception("Message cannot be empty!");
+
+            if (string.IsNullOrEmpty(split[2]))
+                throw new Exception("Receiver cannot be empty!");
+
+            var res = await account.SendMessageNFT(split[0], split[1], split[2]);
+            if (res.Item1)
+                Console.WriteLine("NFT TxId is: ");
+            Console.WriteLine(res.Item2);
+        }
+
+        [TestEntry]
+        public static void LoadMessageNFT(string param)
+        {
+            LoadMessageNFTAsync(param);
+        }
+        public static async Task LoadMessageNFTAsync(string param)
+        {
+            var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input txid.");
+
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, split[0], 0, true);
+            await (nft as MessageNFT).Decrypt(account.Secret);
+            Console.WriteLine($"NFT TxId is: {nft.Utxo}");
+            Console.WriteLine($"NFT Name is: {nft.Name}");
+            Console.WriteLine($"NFT Description is: {nft.Description}");
+            Console.WriteLine();
+        }
+
 
         #region DogeTests
 

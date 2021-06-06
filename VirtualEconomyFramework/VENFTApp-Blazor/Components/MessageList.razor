@@ -1,0 +1,234 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+
+<div class="container-fluid overflow-auto h-100" style="min-height:600px;">
+    <div class="row h-100">
+        <div class="col h-100">
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col">
+                            <button class="btn btn-light" @onclick="showSendMessage"><i class="oi oi-location"></i></button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-light" @onclick="ReloadNFTs"><i class="oi oi-reload"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row w-100 h-100" style="margin-top:10px;">
+                <div class="col h-100 d-flex justify-content-center align-items-center">
+                    @if (_nfts.Count == 0)
+                    {
+                        <p><em><Spin Tip="Loading...No Messages found yet" Style="min-width:100px;"></Spin></em></p>
+                    }
+                    else
+                    {
+                        <div class="card-group w-100">
+                            @foreach (var nft in _nfts)
+                            {
+                                if (nft.Type == NFTTypes.Message)
+                                {
+                                    <div class="card w-100" style="margin-left:10px; margin-top:10px; min-width:250px; max-width:400px; min-height:200px; max-height:200px;">
+                                        <div class="card-body w-100">
+                                            <div class="card-body w-100 d-flex justify-content-center align-items-end">
+
+                                                <div class="row w-100" style="margin: 0px;">
+                                                    <div class="col w-100" style="padding: 0px;">
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col" style="padding: 0px;">
+                                                                <small class="text-center">@nft.Time</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col" style="padding: 0px;">
+                                                                <small class="text-center text-muted mb-2">Sender: @IsSenderInTheBookmarks(nft.Author)</small>
+                                                            </div>
+                                                        </div>
+                                                        <hr />
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col" style="padding: 0px;">
+                                                                <span class="text-center">@nft.Name</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col text-center" style="padding: 0px;">
+                                                                @if (nft.Description.Length > 20)
+                                                                {
+                                                                    <small>@nft.Description.Substring(0, 19) ...</small>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <small>@nft.Description</small>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:20px;">
+                                                    <div class="col d-flex justify-content-end align-items-end">
+                                                        <button class="btn btn-light" @onclick="() => showMessageDetails(nft.Utxo)"><i class="oi oi-envelope-open"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Title="Message Details"
+       Visible="@messageDetailsVisible"
+       OnOk="@messageDetailsVisibleCancel"
+       OnCancel="@messageDetailsVisibleCancel">
+    <NFTMessage Utxo="@selectedNFTUtxo" />
+</Modal>
+
+
+<Modal Title="Send Message"
+       Visible="@sendMessageVisible"
+       OnOk="@sendMessageConfirm"
+       OnCancel="@sendMessageCancel">
+    <SendMessage />
+</Modal>
+
+@code {
+
+    private List<INFT> _nfts = new List<INFT>();
+    [Parameter]
+    public List<INFT> NFTs
+    {
+        get => _nfts;
+        set
+        {
+            if (value != null)
+            {
+                _nfts = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<List<INFT>> NFTsChanged { get; set; }
+
+    private string _address = string.Empty;
+    [Parameter]
+    public string Address
+    {
+        get => _address;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                _nfts = new List<INFT>();
+                _address = value;
+                _nfts = AppData.Account.NFTs;
+                StateHasChanged();
+            }
+        }
+    }
+
+    bool sendMessageVisible = false;
+    bool messageDetailsVisible = false;
+    string selectedNFTUtxo = string.Empty;
+
+    string lastAddress = string.Empty;
+
+    int refresh = 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+        DecryptMessages();
+    }
+
+    private async Task DecryptMessages()
+    {
+        foreach (var m in _nfts)
+            if (m.Type == NFTTypes.Message)
+                await (m as MessageNFT).Decrypt(AppData.Account.Secret);
+        StateHasChanged();
+    }
+
+    private string IsSenderInTheBookmarks(string sender)
+    {
+        var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
+        if (s == null)
+            return sender;
+
+        if (!string.IsNullOrEmpty(s.Name))
+            return s.Name;
+        else
+            return sender;
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        if (_nfts.Count != AppData.Account.NFTs.Count || refresh < 0)
+        {
+            _nfts = AppData.Account.NFTs;
+            DecryptMessages();
+            refresh = 10;
+        }
+        else
+        {
+            refresh--;
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task ReloadNFTs()
+    {
+        if (!string.IsNullOrEmpty(_address))
+        {
+            await AppData.Account.ReLoadNFTs();
+            _nfts = AppData.Account.NFTs;
+
+            lastAddress = _address;
+            await Task.Delay(50);
+            StateHasChanged();
+        }
+    }
+
+    private async Task messageDetailsVisibleCancel()
+    {
+        messageDetailsVisible = false;
+    }
+
+    private async Task showMessageDetails(string utxo)
+    {
+        selectedNFTUtxo = utxo;
+        StateHasChanged();
+        await Task.Delay(50);
+        Console.WriteLine(utxo);
+        messageDetailsVisible = true;
+    }
+
+    private async Task showSendMessage()
+    {
+        sendMessageVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task sendMessageConfirm(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task sendMessageCancel(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+    }
+
+}

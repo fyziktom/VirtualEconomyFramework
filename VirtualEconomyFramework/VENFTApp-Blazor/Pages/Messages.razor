@@ -1,0 +1,64 @@
+﻿@using System.IO;
+@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject HttpClient _client
+@inject NavigationManager NavManager
+@page "/messages"
+
+<div class="container-fluid h-100">
+    <div class="row h-100">
+        <div class="col h-100">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h3>My Messages</h3>
+                </div>
+            </div>
+
+            <VENFTApp_Blazor.Components.AccountBalances />
+
+            <VENFTApp_Blazor.Components.MessageList Address="@AppData.Account.Address"/>
+        </div>
+    </div>
+    <VENFTApp_Blazor.Components.InfoEventModal />
+</div>
+
+@code {
+
+    protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(AppData.Account.Address))
+            {
+                Redirect();
+            }
+            else
+            {
+                if (AppData.Account != null)
+                    AppData.Account.Refreshed += RefreshedHandler;
+            }
+        }
+        catch (Exception ex)
+        {
+            Redirect();
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+}

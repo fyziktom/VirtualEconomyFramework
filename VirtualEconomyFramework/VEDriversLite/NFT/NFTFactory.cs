@@ -40,6 +40,9 @@ namespace VEDriversLite.NFT
                         case "NFT Music":
                             type = NFTTypes.Music;
                             break;
+                        case "NFT Message":
+                            type = NFTTypes.Message;
+                            break;
                     }
                 }
                 else
@@ -125,6 +128,14 @@ namespace VEDriversLite.NFT
                         pmnft.LoadLastData(meta);
                     pmnft.Time = Time;
                     return pmnft;
+                case NFTTypes.Message:
+                    var msgnft = new MessageNFT(utxo);
+                    if (wait)
+                        await msgnft.LoadLastData(meta);
+                    else
+                        msgnft.LoadLastData(meta);
+                    msgnft.Time = Time;
+                    return msgnft;
             }
 
             return null;
@@ -156,6 +167,10 @@ namespace VEDriversLite.NFT
                     return nft;
                 case NFTTypes.Payment:
                     nft = new PaymentNFT(NFT.Utxo);
+                    nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Message:
+                    nft = new MessageNFT(NFT.Utxo);
                     nft.Fill(NFT);
                     return nft;
             }

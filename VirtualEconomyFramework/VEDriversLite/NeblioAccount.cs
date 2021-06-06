@@ -1201,7 +1201,7 @@ namespace VEDriversLite
         }
 
         /// <summary>
-        /// Change Post NEFt. It requeires previous loadedPost NFT as input.
+        /// Change Post NFT. It requeires previous loadedPost NFT as input.
         /// </summary>
         /// <param name="NFT"></param>
         /// <returns></returns>
@@ -1229,6 +1229,59 @@ namespace VEDriversLite
             try
             {
                 var rtxid = await NFTHelpers.ChangePostNFT(Address, AccountKey, nft, res.Item2);
+
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Post Changed");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
+        /// Send NFT.
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
+        public async Task<(bool, string)> SendMessageNFT(string name, string message, string receiver, string utxo = "", bool encrypt = true)
+        {
+            MessageNFT nft = new MessageNFT("");
+
+            nft.Utxo = utxo;
+            nft.Description = message;
+            nft.Name = name;
+            nft.Encrypt = encrypt;
+
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                return (false, res.Item1);
+            }
+
+            var tres = await CheckSpendableNeblioTokens(NFTHelpers.TokenId, 2);
+            if (tres.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
+                return (false, tres.Item1);
+            }
+
+            try
+            {
+                var rtxid = await NFTHelpers.SendMessageNFT(Address, receiver, AccountKey, nft, res.Item2, tres.Item2);
 
                 if (rtxid != null)
                 {

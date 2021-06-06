@@ -152,6 +152,20 @@
         {
             Console.WriteLine("Cannot refresh account tx list" + ex.Message);
         }
+        try
+        {
+            var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+            if (bookmarks == "{}" || bookmarks == "[]")
+                bookmarks = string.Empty;
+
+            if (!string.IsNullOrEmpty(bookmarks))
+                if (AppData.Account.Bookmarks.Count == 0)
+                    await AppData.Account.LoadBookmarks(bookmarks);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot load bookmarks!" + ex.Message);
+        }
     }
 
     void RefreshedHandler(object sender, EventArgs e)

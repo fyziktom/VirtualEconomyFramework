@@ -1,4 +1,5 @@
 ﻿@using VEDriversLite.NFT
+@inject AppData AppData
 
 <div class="row">
     <div class="col">
@@ -99,7 +100,16 @@
         loadingNFTHistory = true;
         StateHasChanged();
         nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(_utxo);
+        await DecryptMessages();
         loadingNFTHistory = false;
+        StateHasChanged();
+    }
+
+    private async Task DecryptMessages()
+    {
+        foreach (var m in nftInDetailsHistory)
+            if (m.Type == NFTTypes.Message)
+                await (m as MessageNFT).Decrypt(AppData.Account.Secret);
         StateHasChanged();
     }
 
