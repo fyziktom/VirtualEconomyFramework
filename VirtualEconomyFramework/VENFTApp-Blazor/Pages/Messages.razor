@@ -1,6 +1,7 @@
 ﻿@using System.IO;
 @using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.Messaging
 @using VEDriversLite.NeblioAPI
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
@@ -8,24 +9,135 @@
 @inject NavigationManager NavManager
 @page "/messages"
 
-<div class="container-fluid h-100">
-    <div class="row h-100">
-        <div class="col h-100">
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h3>My Messages</h3>
+<div class="container-fluid h-100" style="margin-left:-35px; padding-left:0px;">
+    <Spin Tip="Loading Message Browser..." Spinning="@loadingBrowser">
+        <div class="row h-100" style="margin-left:0px; padding-left:0px;">
+            <div class="col h-100" style="margin-left:0px; padding-left:0px;">
+
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h3>My Messages</h3>
+                    </div>
+                </div>
+
+                <!--<VENFTApp_Blazor.Components.MessageList Address="AppData.Account.Address"/>-->
+                <div class="row" style="margin-left:0px; padding-left:0px;">
+                    <div class="col d-flex justify-content-start align-items-start" style="margin-left:0px; padding-left:0px;">
+                        <div class="sidebar" style="margin-left:0px; padding-left:0px;">
+
+                            <div class="top-row pl-4 navbar navbar-dark">
+                                <a class="navbar-brand text-white">Friends</a>
+                                <button class="navbar-toggler" @onclick="ToggleNavMenu">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                            </div>
+                            <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+                                <ul class="nav flex-column">
+                                    @if (AppData.Account.MessageTabs != null || AppData.Account.MessageTabs.Count > 0)
+                                    {
+                                        @foreach (var mt in AppData.Account.MessageTabs)
+                                        {
+                                            <li class="nav-item px-3">
+                                                <a class="nav-link" @onclick="() => selectMessageTab(mt)">
+                                                    @if (mt.BookmarkFromAccount != null && !string.IsNullOrEmpty(mt.BookmarkFromAccount.Name))
+                                                    {
+                                                        <span class="oi oi-person" aria-hidden="true"></span> @mt.BookmarkFromAccount.Name
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="oi oi-person" aria-hidden="true"></span> @mt.ShortAddress
+                                                    }
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                    <li class="nav-item px-3">
+                                        <a class="nav-link" @onclick="addMessageTab">
+                                            <span class="oi oi-plus" aria-hidden="true"></span> Add
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="main">
+                            <div class="content px-4">
+                                <VENFTApp_Blazor.Components.MessagingTabContent InMessageTab="@selectedMessageTab" ReloadRequest="ReloadMessages" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <VENFTApp_Blazor.Components.AccountBalances />
-
-            <VENFTApp_Blazor.Components.MessageList Address="@AppData.Account.Address"/>
         </div>
-    </div>
+    </Spin>
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
+<Modal Title="Open Message Tab"
+       Visible="@addMessageTabVisible"
+       OnOk="@addMessageTabConfirm"
+       OnCancel="@addMessageTabCancel">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Select from Bookmarks</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
+                        <Overlay>
+                            <Menu>
+                                @foreach (var b in AppData.Account.Bookmarks)
+                                {
+                                    <MenuItem>
+                                        <span @onclick="() => selectNewTabAddressFromBookmark(b.Address, b.Name)">@b.Name</span>
+                                    </MenuItem>
+                                }
+                            </Menu>
+                        </Overlay>
+                        <ChildContent>
+                            <a class="ant-dropdown-link" @onclick:preventDefault>
+                                @selectedNewTabFromBookmarkName <Icon Type="down" />
+                            </a>
+                        </ChildContent>
+                    </Dropdown>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Or Input Neblio Address</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
 @code {
+
+    private string newTabAddress = string.Empty;
+    private string selectedNewTabFromBookmarkName = "Select From Bookmark";
+    bool loadingBrowser = false;
+
+    bool addMessageTabVisible = false;
+    string addressInOpenTab = string.Empty;
+    private bool collapseNavMenu = true;
+    private MessageTab selectedMessageTab = new MessageTab("");
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
 
     protected override Task OnInitializedAsync()
     {
@@ -39,6 +151,7 @@
             {
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
+                LoadStateFromMemory();
             }
         }
         catch (Exception ex)
@@ -56,9 +169,129 @@
         NavManager.NavigateTo("/");
     }
 
+    private int refresh = 10;
     void RefreshedHandler(object sender, EventArgs e)
     {
+        if (refresh < 0)
+        {
+            selectedMessageTab.Reload(AppData.Account.NFTs);
+            refresh = 10;
+        }
+        else
+        {
+            refresh--;
+        }
         StateHasChanged();
     }
 
+    private async Task ReloadMessages(string tabaddress)
+    {
+        await selectedMessageTab.Reload(AppData.Account.NFTs);
+        StateHasChanged();
+    }
+
+    private async Task LoadStateFromMemory()
+    {
+        try
+        {
+            loadingBrowser = true;
+
+            try
+            {
+                var msgTabs = await localStorage.GetItemAsync<string>("messagingTabs");
+                if (!string.IsNullOrEmpty(msgTabs))
+                    if (AppData.Account.MessageTabs.Count == 0)
+                        addressInOpenTab = await AppData.Account.LoadMessageTabs(msgTabs);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load message tabs from memory!" + ex.Message);
+            }
+            loadingBrowser = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            //todo
+            Console.WriteLine("Error during loading browser. " + ex.Message);
+            loadingBrowser = false;
+        }
+    }
+
+    private async Task selectMessageTab(MessageTab mt)
+    {
+        addressInOpenTab = mt.Address;
+        await selectTab(mt.Address);
+        StateHasChanged();
+    }
+
+    private async Task addMessageTab(MouseEventArgs e)
+    {
+        addMessageTabVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task addMessageTabConfirm(MouseEventArgs e)
+    {
+        await addNewMessageTab();
+    }
+    private async Task addMessageTabCancel(MouseEventArgs e)
+    {
+        addMessageTabVisible = false;
+    }
+
+    private async Task addNewMessageTab()
+    {
+        addMessageTabVisible = false;
+        var tab = AppData.Account.MessageTabs.Find(t => t.Address == newTabAddress);
+        if (tab != null)
+        {
+            await selectTab(tab.Address);
+            return;
+        }
+        loadingBrowser = true;
+        StateHasChanged();
+        var res = await AppData.Account.AddMessageTab(newTabAddress);
+        await Task.Delay(50);
+        if (res.Item1)
+            await localStorage.SetItemAsync("messagingTabs", res.Item2);
+        addressInOpenTab = newTabAddress;
+        var ntab = AppData.Account.MessageTabs.Find(t => t.Address == newTabAddress);
+        if (ntab != null)
+        {
+            await selectTab(ntab.Address);
+        }
+        loadingBrowser = false;
+        StateHasChanged();
+    }
+
+    private async Task selectTab(string address)
+    {
+        loadingBrowser = true;
+        StateHasChanged();
+        await AppData.Account.SelectMessageTab(address);
+        var ntab = AppData.Account.MessageTabs.Find(t => t.Address == address);
+        if (ntab != null)
+        {
+            selectedMessageTab = ntab;
+        }
+        addressInOpenTab = address;
+        loadingBrowser = false;
+        await Task.Delay(50);
+        StateHasChanged();
+    }
+
+    private async Task removeTab(string address)
+    {
+        var tbs = await AppData.Account.RemoveMessageTab(address);
+        if (tbs.Item1)
+            await localStorage.SetItemAsync("messagingTabs", tbs.Item2);
+    }
+
+    private async Task selectNewTabAddressFromBookmark(string address, string name)
+    {
+        selectedNewTabFromBookmarkName = name;
+        newTabAddress = address;
+        StateHasChanged();
+    }
 }

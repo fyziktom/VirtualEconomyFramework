@@ -26,7 +26,7 @@
                     </div>
                     <div class="row" style="margin-top:5px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <Input Placeholder="Type your message" MaxLength="160" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            <TextArea Placeholder="Type your message" MaxLength="160" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px; min-height:100px;" />
                         </div>
                     </div>
 
@@ -79,7 +79,7 @@
                Visible="@confirmVisible"
                OnOk="@HandleOk"
                OnCancel="@HandleCancel">
-            <p>"Do you realy want to send this message?"</p>
+            <p>"Do you really want to send this message?"</p>
         </Modal>
     </div>
 </div>
@@ -112,6 +112,7 @@
             if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != newNFT.Utxo)
             {
                 newNFT.Fill(value);
+                newNFT.Description = string.Empty;
                 StateHasChanged();
             }
         }

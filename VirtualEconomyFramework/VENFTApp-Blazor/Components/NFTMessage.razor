@@ -19,11 +19,25 @@
                     </div>
                 </div>
             }
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <small>Sender Address: @NFT.Author</small>
-                </div>
-            </div>
+            else
+            {
+                if (NFT.Author == AppData.Account.Address)
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small>Sender Address: Me</small>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small>Sender Address: @NFT.Author</small>
+                        </div>
+                    </div>
+                }
+            }
             <hr />
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -42,12 +56,14 @@
             </div>
             <hr />
 
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <button class="btn btn-primary" @onclick="showSendMessage">Answer</button>
+            @if ((NFT as VEDriversLite.NFT.MessageNFT).IsReceivedMessage)
+            {
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <button class="btn btn-primary" @onclick="showSendMessage">Answer</button>
+                    </div>
                 </div>
-            </div>
-
+            }
             <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" />
 
             @if (!string.IsNullOrEmpty(NFT.Utxo))

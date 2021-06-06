@@ -1,18 +1,23 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.Messaging
 @inject AppData AppData
+
 
 <div class="container-fluid overflow-auto h-100" style="min-height:600px;">
     <div class="row h-100">
         <div class="col h-100">
+
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex justify-content-center align-items-center">
                     <div class="row" style="margin-top:20px;">
                         <div class="col">
                             <button class="btn btn-light" @onclick="showSendMessage"><i class="oi oi-location"></i></button>
                         </div>
-                        <div class="col">
-                            <button class="btn btn-light" @onclick="ReloadNFTs"><i class="oi oi-reload"></i></button>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-end align-items-end">
+                            <button class="btn btn-light" @onclick="ReloadMessages"><i class="oi oi-reload"></i></button>
                         </div>
                     </div>
                 </div>
@@ -20,14 +25,14 @@
 
             <div class="row w-100 h-100" style="margin-top:10px;">
                 <div class="col h-100 d-flex justify-content-center align-items-center">
-                    @if (_nfts.Count == 0)
+                    @if (messageTab.NFTMessages.Count == 0)
                     {
                         <p><em><Spin Tip="Loading...No Messages found yet" Style="min-width:100px;"></Spin></em></p>
                     }
                     else
                     {
                         <div class="card-group w-100">
-                            @foreach (var nft in _nfts)
+                            @foreach (var nft in messageTab.NFTMessages)
                             {
                                 if (nft.Type == NFTTypes.Message)
                                 {
@@ -37,6 +42,14 @@
 
                                                 <div class="row w-100" style="margin: 0px;">
                                                     <div class="col w-100" style="padding: 0px;">
+                                                        @if ((nft as MessageNFT).IsReceivedMessage)
+                                                        {
+                                                        <span class="badge badge-primary" style="position: absolute;right: -10px;top: 5px;">Received</span>
+                                                        }
+                                                        else
+                                                        {
+                                                        <span class="badge badge-success" style="position: absolute;right: -10px;top: 5px;">Sent</span>
+                                                        }
                                                         <div class="row" style="margin: 0px;">
                                                             <div class="col" style="padding: 0px;">
                                                                 <small class="text-center">@nft.Time</small>
@@ -44,19 +57,19 @@
                                                         </div>
                                                         @if (nft.Author == AppData.Account.Address)
                                                         {
-                                                            <div class="row" style="margin: 0px;">
-                                                                <div class="col" style="padding: 0px;">
-                                                                    <small class="text-center text-muted mb-2">Sender: Me</small>
-                                                                </div>
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col" style="padding: 0px;">
+                                                                <small class="text-center text-muted mb-2">Sender: Me</small>
                                                             </div>
+                                                        </div>
                                                         }
                                                         else
                                                         {
-                                                            <div class="row" style="margin: 0px;">
-                                                                <div class="col" style="padding: 0px;">
-                                                                    <small class="text-center text-muted mb-2">Sender: @IsSenderInTheBookmarks(nft.Author)</small>
-                                                                </div>
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col" style="padding: 0px;">
+                                                                <small class="text-center text-muted mb-2">Sender: @IsSenderInTheBookmarks(nft.Author)</small>
                                                             </div>
+                                                        </div>
                                                         }
                                                         <hr />
                                                         <div class="row" style="margin: 0px;">
@@ -68,11 +81,11 @@
                                                             <div class="col text-center" style="padding: 0px;">
                                                                 @if (nft.Description.Length > 20)
                                                                 {
-                                                                    <small>@nft.Description.Substring(0, 19) ...</small>
+                                                                <small>@nft.Description.Substring(0, 19) ...</small>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <small>@nft.Description</small>
+                                                                <small>@nft.Description</small>
                                                                 }
                                                             </div>
                                                         </div>
@@ -92,6 +105,7 @@
                     }
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -113,60 +127,38 @@
 
 @code {
 
-    private List<INFT> _nfts = new List<INFT>();
-    [Parameter]
-    public List<INFT> NFTs
-    {
-        get => _nfts;
-        set
-        {
-            if (value != null)
-            {
-                _nfts = value;
-            }
-        }
-    }
-
-    [Parameter]
-    public EventCallback<List<INFT>> NFTsChanged { get; set; }
-
-    private string _address = string.Empty;
-    [Parameter]
-    public string Address
-    {
-        get => _address;
-        set
-        {
-            if (!string.IsNullOrEmpty(value))
-            {
-                _nfts = new List<INFT>();
-                _address = value;
-                _nfts = AppData.Account.NFTs;
-                StateHasChanged();
-            }
-        }
-    }
-
     bool sendMessageVisible = false;
     bool messageDetailsVisible = false;
     string selectedNFTUtxo = string.Empty;
 
-    string lastAddress = string.Empty;
+    [Parameter]
+    public EventCallback<string> ReloadRequest { get; set; }
 
-    int refresh = 5;
+
+    private MessageTab messageTab = new MessageTab("");
+    [Parameter]
+    public MessageTab InMessageTab
+    {
+        get => messageTab;
+        set
+        {
+            if (value != null)
+            {
+                messageTab = value;
+            }
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         if (AppData.Account != null)
             AppData.Account.Refreshed += RefreshedHandler;
-        DecryptMessages();
+
+        await messageTab.Reload(AppData.Account.NFTs);
     }
 
-    private async Task DecryptMessages()
+    void RefreshedHandler(object sender, EventArgs e)
     {
-        foreach (var m in _nfts)
-            if (m.Type == NFTTypes.Message)
-                await (m as MessageNFT).Decrypt(AppData.Account.Secret);
         StateHasChanged();
     }
 
@@ -180,35 +172,6 @@
             return s.Name;
         else
             return sender;
-    }
-
-    void RefreshedHandler(object sender, EventArgs e)
-    {
-        if (_nfts.Count != AppData.Account.NFTs.Count || refresh < 0)
-        {
-            _nfts = AppData.Account.NFTs;
-            DecryptMessages();
-            refresh = 10;
-        }
-        else
-        {
-            refresh--;
-        }
-
-        StateHasChanged();
-    }
-
-    private async Task ReloadNFTs()
-    {
-        if (!string.IsNullOrEmpty(_address))
-        {
-            await AppData.Account.ReLoadNFTs();
-            _nfts = AppData.Account.NFTs;
-
-            lastAddress = _address;
-            await Task.Delay(50);
-            StateHasChanged();
-        }
     }
 
     private async Task messageDetailsVisibleCancel()
@@ -242,4 +205,8 @@
         sendMessageVisible = false;
     }
 
+    private async Task ReloadMessages(MouseEventArgs e)
+    {
+        await ReloadRequest.InvokeAsync(messageTab.Address);
+    }
 }

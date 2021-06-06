@@ -102,7 +102,7 @@ namespace VEDriversLite.NFT
 
                     await Task.Delay(1);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine("Problem in loading of NFT origin!");
                 }
@@ -145,7 +145,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="utxo"></param>
         /// <returns></returns>
-        public static async Task<Dictionary<string,string>> CheckIfContainsNFTData(string utxo)
+        public static async Task<Dictionary<string, string>> CheckIfContainsNFTData(string utxo)
         {
             var meta = await NeblioTransactionHelpers.GetTransactionMetadata(TokenId, utxo);
 
@@ -162,7 +162,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="utxo"></param>
         /// <returns></returns>
-        public static async Task<(bool,string)> CheckIfMintTx(string utxo)
+        public static async Task<(bool, string)> CheckIfMintTx(string utxo)
         {
             var info = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
 
@@ -181,7 +181,7 @@ namespace VEDriversLite.NFT
                     }
                 }
             }
-            
+
             return (false, string.Empty);
         }
 
@@ -207,7 +207,7 @@ namespace VEDriversLite.NFT
                                 if (nft.Type == NFTTypes.Profile && profile == null)
                                     profile = nft;
                         }
-             
+
             return profile;
         }
 
@@ -236,7 +236,7 @@ namespace VEDriversLite.NFT
                                     nfts.Add(nft);
                             }
                         }
-            
+
             return (profile, nfts);
         }
 
@@ -287,13 +287,13 @@ namespace VEDriversLite.NFT
                                     nfts.Add(nft);
                                 }
                             }
-                        
+
             if (innfts == null)
                 return nfts;
             else
-                nfts.ForEach(n => { 
+                nfts.ForEach(n => {
                     if (!innfts.Any(i => i.Utxo == n.Utxo && i.UtxoIndex == n.UtxoIndex))
-                        innfts.Add(n); 
+                        innfts.Add(n);
                 });
             return innfts.OrderByDescending(n => n.Time).ToList();
         }
@@ -361,13 +361,57 @@ namespace VEDriversLite.NFT
                         }
                     }
                 }
-                         
+
                 return nfts;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var msg = ex.Message;
                 Console.WriteLine("Exception during loading NFT history: " + msg);
+                return new List<INFT>();
+            }
+        }
+
+        public static async Task<List<INFT>> LoadAddressNFTMessages(string aliceAddress, string bobAddress, ICollection<INFT> innfts = null)
+        {
+            if (innfts == null)
+                throw new Exception("Input NFT array cannot be null"); // todo load nfts when list is null or empty
+
+            var nftmessages = new List<INFT>();
+            try
+            {
+                foreach(var nft in innfts)
+                {
+                    if (nft.Type == NFTTypes.Message)
+                    {
+                        if (nft.TxDetails.Vin == null)
+                        {
+                            try
+                            {
+                                nft.TxDetails = await NeblioTransactionHelpers.GetTransactionInfo(nft.Utxo);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Cannot read tx details. " + ex.Message);
+                            }
+                        }
+                        if (nft.TxDetails != null && nft.TxDetails.Vin != null)
+                        {
+                            var sender = await NeblioTransactionHelpers.GetTransactionSender(nft.Utxo, nft.TxDetails);
+                            var receiver = await NeblioTransactionHelpers.GetTransactionReceiver(nft.Utxo, nft.TxDetails);
+                            if ((sender == aliceAddress && receiver == bobAddress) || (receiver == aliceAddress && sender == bobAddress))
+                                nftmessages.Add(nft);
+                        }
+                    }
+                }
+
+                return nftmessages;
+
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+                Console.WriteLine("Exception during loading NFT messages: " + msg);
                 return new List<INFT>();
             }
         }

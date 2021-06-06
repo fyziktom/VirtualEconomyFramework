@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
 using VEDriversLite.Events;
+using VEDriversLite.Messaging;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
@@ -72,6 +73,7 @@ namespace VEDriversLite
         /// List of all active tabs for browsing or interacting with the address. All has possibility to load own list of NFTs.
         /// </summary>
         public List<ActiveTab> Tabs { get; set; } = new List<ActiveTab>();
+        public List<MessageTab> MessageTabs { get; set; } = new List<MessageTab>();
         /// <summary>
         /// Received payments (means Payment NFT) of this address.
         /// </summary>
@@ -646,6 +648,128 @@ namespace VEDriversLite
         public async Task<string> SerializeTabs()
         {
             return JsonConvert.SerializeObject(Tabs);
+        }
+
+        #endregion
+
+
+        #region MessageTabs
+        /// <summary>
+        /// Load tabs from previous serialized string.
+        /// </summary>
+        /// <param name="tabs">List of MessageTabs as json string</param>
+        /// <returns></returns>
+        public async Task<string> LoadMessageTabs(string tabs)
+        {
+            try
+            {
+                var tbs = JsonConvert.DeserializeObject<List<MessageTab>>(tabs);
+                if (tbs != null)
+                    MessageTabs = tbs;
+                var firstAdd = string.Empty;
+                if (MessageTabs.Count > 0)
+                {
+                    var first = true;
+                    foreach (var t in MessageTabs)
+                    {
+                        t.Selected = false;
+                        var bkm = await IsInTheBookmarks(t.Address);
+                        t.AccountSecret = Secret;
+                        t.AccountAddress = Address;
+                        t.LoadBookmark(bkm.Item2);
+                        if (first)
+                        {
+                            if (NFTs.Count == 0)
+                                ReLoadNFTs();
+                            await t.Reload(NFTs);
+                            first = false;
+                            firstAdd = t.Address;
+                        }
+                        //else
+                        //t.Reload();
+                    }
+                    MessageTabs.FirstOrDefault().Selected = true;
+                }
+                return firstAdd;
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorEvent(ex.Message, "Cannot deserialize the message tabs.");
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Add new message tab based on some Neblio address
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns>true and string with serialized tabs list as json string</returns>
+        public async Task<(bool, string)> AddMessageTab(string address)
+        {
+            if (!MessageTabs.Any(t => t.Address == address))
+            {
+                var bkm = await IsInTheBookmarks(address);
+                var tab = new MessageTab(address);
+                tab.BookmarkFromAccount = bkm.Item2;
+                tab.Selected = true;
+                tab.AccountSecret = Secret;
+                tab.AccountAddress = Address;
+
+                foreach (var t in MessageTabs)
+                    t.Selected = false;
+
+                MessageTabs.Add(tab);
+                await tab.Reload(NFTs);
+            }
+            else
+            {
+                await InvokeErrorEvent("Message Tab Already Exists", "Already Exists");
+                return (false, "Already Exists.");
+            }
+
+            return (true, JsonConvert.SerializeObject(MessageTabs));
+        }
+
+        /// <summary>
+        /// Remove tab by Neblio address if exists in the tabs
+        /// </summary>
+        /// <param name="address">Neblio Address which tab should be removed</param>
+        /// <returns>true and string with serialized tabs list as json string</returns>
+        public async Task<(bool, string)> RemoveMessageTab(string address)
+        {
+            var tab = MessageTabs.Find(t => t.Address == address);
+            if (tab != null)
+                MessageTabs.Remove(tab);
+            else
+            {
+                await InvokeErrorEvent("Message Tab Not Found.", "Not Found");
+                return (false, string.Empty);
+            }
+
+            foreach (var t in MessageTabs)
+                t.Selected = false;
+            MessageTabs.FirstOrDefault().Selected = true;
+
+            return (true, JsonConvert.SerializeObject(MessageTabs));
+        }
+        public async Task SelectMessageTab(string address)
+        {
+            foreach (var t in MessageTabs)
+                t.Selected = false;
+            var tab = MessageTabs.Find(t => t.Address == address);
+            if (tab != null)
+                tab.Selected = true;
+            if (tab.NFTs.Count == 0)
+                await tab.Reload(NFTs);
+        }
+
+        /// <summary>
+        /// Return serialized list of MessageTabs as Json stirng
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> SerializeMessageTabs()
+        {
+            return JsonConvert.SerializeObject(MessageTabs);
         }
 
         #endregion

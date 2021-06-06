@@ -77,6 +77,8 @@ namespace VEDriversLite
         /// <returns></returns>
         public static string ShortenAddress(string address)
         {
+            if (string.IsNullOrEmpty(address))
+                return string.Empty;
             var shortaddress = address.Substring(0, 3) + "..." + address.Substring(address.Length - 3);
             return shortaddress;
         }
@@ -1831,12 +1833,13 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="txid">tx id hash</param>
         /// <returns>Sender address</returns>
-        public static async Task<string> GetTransactionSender(string txid)
+        public static async Task<string> GetTransactionSender(string txid, GetTransactionInfoResponse txinfo = null)
         {
             try
             {
-                var info = await GetClient().GetTransactionInfoAsync(txid);
-                var send = info.Vin.ToList()[0]?.PreviousOutput?.Addresses.ToList()[0];
+                if (txinfo == null)
+                    txinfo = await GetClient().GetTransactionInfoAsync(txid);
+                var send = txinfo.Vin.ToList()[0]?.PreviousOutput?.Addresses.ToList()[0];
                 return send;
             }
             catch (Exception ex)
@@ -1851,12 +1854,14 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="txid">tx id hash</param>
         /// <returns>Sender address</returns>
-        public static async Task<string> GetTransactionReceiver(string txid)
+        public static async Task<string> GetTransactionReceiver(string txid, GetTransactionInfoResponse txinfo = null)
         {
             try
             {
-                var info = await GetClient().GetTransactionInfoAsync(txid);
-                var rec = info.Vout.ToList()[0]?.ScriptPubKey.Addresses.ToList()[0];
+                if (txinfo == null)
+                    txinfo = await GetClient().GetTransactionInfoAsync(txid);
+
+                var rec = txinfo.Vout.ToList()[0]?.ScriptPubKey.Addresses.ToList()[0];
                 if (!string.IsNullOrEmpty(rec))
                     return rec;
                 else

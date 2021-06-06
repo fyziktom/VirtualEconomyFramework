@@ -35,6 +35,8 @@ namespace VEDriversLite.NFT
         public bool Decrypted { get; set; } = false;
         public string Partner { get; set; } = string.Empty;
 
+        public bool IsReceivedMessage { get; set; } = false;
+
         public override async Task ParseOriginData()
         {
             await GetPartner();
@@ -128,7 +130,7 @@ namespace VEDriversLite.NFT
 
         public async Task GetReceiver()
         {
-            var rec = await NeblioTransactionHelpers.GetTransactionSender(Utxo);
+            var rec = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo);
             if (!string.IsNullOrEmpty(rec))
                 Partner = rec;
         }
@@ -146,9 +148,14 @@ namespace VEDriversLite.NFT
 
             if (Partner == add.ToString())
             {
+                IsReceivedMessage = false;
                 Partner = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo);
                 if (string.IsNullOrEmpty(Partner))
                     throw new Exception("Cannot decrypt without loaded Partner address.");
+            }
+            else
+            {
+                IsReceivedMessage = true;
             }
             
             var dmsg = await Security.ECDSAProvider.DecryptStringWithSharedSecret(Description, Partner, secret);
