@@ -60,11 +60,11 @@
             {
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <button class="btn btn-primary" @onclick="showSendMessage">Answer</button>
+                        <button class="btn btn-primary" @onclick="showSendMessage">Reply</button>
                     </div>
                 </div>
             }
-            <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" />
+            <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" IsMessageHistory="true" />
 
             @if (!string.IsNullOrEmpty(NFT.Utxo))
             {

@@ -33,6 +33,12 @@
                             </div>
                             <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
                                 <ul class="nav flex-column">
+                                    <li class="nav-item px-3">
+                                        <a class="nav-link" @onclick="showAllMyMessageTab">
+                                            <span class="oi oi-home" aria-hidden="true"></span> All My Received
+                                        </a>
+                                    </li>
+
                                     @if (AppData.Account.MessageTabs != null || AppData.Account.MessageTabs.Count > 0)
                                     {
                                         @foreach (var mt in AppData.Account.MessageTabs)
@@ -51,6 +57,7 @@
                                             </li>
                                         }
                                     }
+
                                     <li class="nav-item px-3">
                                         <a class="nav-link" @onclick="addMessageTab">
                                             <span class="oi oi-plus" aria-hidden="true"></span> Add
@@ -62,7 +69,14 @@
 
                         <div class="main">
                             <div class="content px-4">
+                                @if (!allMyVisible)
+                                {
                                 <VENFTApp_Blazor.Components.MessagingTabContent InMessageTab="@selectedMessageTab" ReloadRequest="ReloadMessages" />
+                                }
+                                else
+                                {
+                                   <VENFTApp_Blazor.Components.MessageList NFTs="@AppData.Account.NFTs" Address="@AppData.Account.Address" />
+                                }
                             </div>
                         </div>
                     </div>
@@ -123,6 +137,7 @@
 
 @code {
 
+    private bool allMyVisible = false;
     private string newTabAddress = string.Empty;
     private string selectedNewTabFromBookmarkName = "Select From Bookmark";
     bool loadingBrowser = false;
@@ -225,6 +240,12 @@
         StateHasChanged();
     }
 
+    private async Task showAllMyMessageTab(MouseEventArgs e)
+    {
+        allMyVisible = true;
+        StateHasChanged();
+    }
+
     private async Task addMessageTab(MouseEventArgs e)
     {
         addMessageTabVisible = true;
@@ -268,6 +289,7 @@
     private async Task selectTab(string address)
     {
         loadingBrowser = true;
+        allMyVisible = false;
         StateHasChanged();
         await AppData.Account.SelectMessageTab(address);
         var ntab = AppData.Account.MessageTabs.Find(t => t.Address == address);

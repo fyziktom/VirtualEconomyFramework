@@ -11,12 +11,23 @@
         <div class="row" style="margin-top:20px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <Spin Tip="Loading History..." Spinning="@loadingNFTHistory">
-                    <table>
+                    <table class="table table-striped" style="max-width:350px;">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Image</th>
+                                @if (IsMessageHistory)
+                                {
+                                    <th style="min-width:50px;">Dir </th>
+                                }
+                                <th style="min-width:50px;">Name </th>
+                                <th style="min-width:50px;">Description </th>
+                                @if (!IsMessageHistory)
+                                {
+                                    <th style="min-width:50px;">Image</th>
+                                }
+                                else
+                                {
+                                    <th style="min-width:50px;">Details</th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -27,20 +38,56 @@
                                     @foreach (var nft in nftInDetailsHistory)
                                     {
                                         <tr>
-                                            <td>@nft.Name</td>
-                                            <td>@nft.Description</td>
+                                            @if (IsMessageHistory)
+                                            {
+                                                @if ((nft as MessageNFT).IsReceivedMessage)
+                                                {
+                                                <td style="min-width:70px;"><span class="badge badge-primary">Received</span></td>
+                                                }
+                                                else
+                                                {
+                                                <td style="min-width:70px;"><span class="badge badge-success">Sent</span></td>
+                                                }
+                                            }
+                                            @if (nft.Name.Length > 30)
+                                            {
+                                                <td style="min-width:70px;">@nft.Name.Substring(0,29) ... </td>
+                                            }
+                                            else 
+                                            { 
+                                                <td style="min-width:70px;">@nft.Name </td>
+                                            }
+                                            @if (nft.Description.Length > 160)
+                                            {
+                                                <td>@nft.Description.Substring(0,159) ...</td>
+                                            }
+                                            else 
+                                            { 
+                                                <td>@nft.Description</td>
+                                            }
+                                            @if (!IsMessageHistory)
+                                            {
                                             <td>
                                                 <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
                                                     <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                                                 </a>
                                             </td>
+                                            }
+                                            else 
+                                            { 
+                                            <td>
+                                                <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank" class="text-center">
+                                                    <i class="oi oi-envelope-open"></i>
+                                                </a>
+                                            </td>
+                                            }
                                         </tr>
                                     }
                                 }
                                 else
                                 {
                                     <tr>
-                                        <td>History Not Loaded</td>
+                                        <td colspan="4">History Not Loaded</td>
                                     </tr>
                                 }
                             }
@@ -58,7 +105,14 @@
        OnCancel="@nftHistoryDetailsClose">
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center" style="260px;">
-            <NFT InputNFT="@selectedHistoryNFT" Address="" OwnNFT="false" HideButtons="true" />
+            @if (!IsMessageHistory)
+            {
+                <NFT InputNFT="@selectedHistoryNFT" Address="" OwnNFT="false" HideButtons="true" />
+            }
+            else 
+            { 
+                <NFTMessage Utxo="@selectedHistoryNFT.Utxo" />
+            }
         </div>
     </div>
 </Modal>
@@ -90,6 +144,9 @@
         }
     }
 
+    [Parameter]
+    public bool IsMessageHistory { get; set; } = false;
+
     bool loadingNFTHistory = false;
     List<INFT> nftInDetailsHistory = new List<INFT>();
     INFT selectedHistoryNFT = new ImageNFT("");
@@ -100,7 +157,8 @@
         loadingNFTHistory = true;
         StateHasChanged();
         nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(_utxo);
-        await DecryptMessages();
+        if (IsMessageHistory)
+            await DecryptMessages();
         loadingNFTHistory = false;
         StateHasChanged();
     }

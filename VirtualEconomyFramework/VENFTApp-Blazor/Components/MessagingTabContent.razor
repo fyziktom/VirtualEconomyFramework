@@ -122,7 +122,7 @@
        Visible="@sendMessageVisible"
        OnOk="@sendMessageConfirm"
        OnCancel="@sendMessageCancel">
-    <SendMessage />
+    <SendMessage Receiver="@messageTab.Address" />
 </Modal>
 
 @code {
@@ -133,7 +133,6 @@
 
     [Parameter]
     public EventCallback<string> ReloadRequest { get; set; }
-
 
     private MessageTab messageTab = new MessageTab("");
     [Parameter]
