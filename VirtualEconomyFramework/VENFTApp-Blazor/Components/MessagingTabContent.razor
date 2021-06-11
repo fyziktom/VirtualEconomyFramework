@@ -10,12 +10,33 @@
 
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row">
+                        <div class="col">
+                            @if (messageTab.IsInBookmark)
+                            {
+                                <span>@messageTab.BookmarkFromAccount.Name - @messageTab.ShortAddress</span>
+                            }
+                            else
+                            {
+                                <span>@messageTab.Address</span>
+                            }
+
+                        </div>
+                    </div>
+                    <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@messageTab.IsInBookmark"
+                                                         Address="@messageTab.Address"
+                                                         BookmarkRefreshed="@BookmarkRefreshedHandler" />
+
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
                     <div class="row" style="margin-top:20px;">
                         <div class="col">
                             <button class="btn btn-light" @onclick="showSendMessage"><i class="oi oi-location"></i></button>
                         </div>
                     </div>
-                    <div class="row" style="margin-top:20px;">
+                    <div class="row" style="margin-top:20px; margin-left:10px;">
                         <div class="col d-flex justify-content-end align-items-end">
                             <button class="btn btn-light" @onclick="ReloadMessages"><i class="oi oi-reload"></i></button>
                         </div>
@@ -23,7 +44,7 @@
                 </div>
             </div>
 
-            <div class="row w-100 h-100" style="margin-top:10px;">
+            <div class="row w-100 h-100" style="margin-top:10px; padding:0px;">
                 <div class="col h-100 d-flex justify-content-center align-items-center">
                     @if (messageTab.NFTMessages.Count == 0)
                     {
@@ -31,24 +52,23 @@
                     }
                     else
                     {
-                        <div class="card-group w-100">
+                        <div class="card-group w-100 h-100">
                             @foreach (var nft in messageTab.NFTMessages)
                             {
                                 if (nft.Type == NFTTypes.Message)
                                 {
-                                    <div class="card w-100" style="margin-left:10px; margin-top:10px; min-width:250px; max-width:400px; min-height:200px; max-height:200px;">
-                                        <div class="card-body w-100">
+                                    <div class="card w-100" style="margin-left:10px; margin-top:10px; width:250px; max-width:250px; max-height:200px; height:200px;">
                                             <div class="card-body w-100 d-flex justify-content-center align-items-end">
 
                                                 <div class="row w-100" style="margin: 0px;">
                                                     <div class="col w-100" style="padding: 0px;">
                                                         @if ((nft as MessageNFT).IsReceivedMessage)
                                                         {
-                                                        <span class="badge badge-primary" style="position: absolute;right: -10px;top: 5px;">Received</span>
+                                                            <span class="badge badge-primary" style="position: absolute;right: -10px;top: 5px;">Received</span>
                                                         }
                                                         else
                                                         {
-                                                        <span class="badge badge-success" style="position: absolute;right: -10px;top: 5px;">Sent</span>
+                                                            <span class="badge badge-success" style="position: absolute;right: -10px;top: 5px;">Sent</span>
                                                         }
                                                         <div class="row" style="margin: 0px;">
                                                             <div class="col" style="padding: 0px;">
@@ -57,19 +77,19 @@
                                                         </div>
                                                         @if (nft.Author == AppData.Account.Address)
                                                         {
-                                                        <div class="row" style="margin: 0px;">
-                                                            <div class="col" style="padding: 0px;">
-                                                                <small class="text-center text-muted mb-2">Sender: Me</small>
+                                                            <div class="row" style="margin: 0px;">
+                                                                <div class="col" style="padding: 0px;">
+                                                                    <small class="text-center text-muted mb-2">Sender: Me</small>
+                                                                </div>
                                                             </div>
-                                                        </div>
                                                         }
                                                         else
                                                         {
-                                                        <div class="row" style="margin: 0px;">
-                                                            <div class="col" style="padding: 0px;">
-                                                                <small class="text-center text-muted mb-2">Sender: @IsSenderInTheBookmarks(nft.Author)</small>
+                                                            <div class="row" style="margin: 0px;">
+                                                                <div class="col" style="padding: 0px;">
+                                                                    <small class="text-center text-muted mb-2">Sender: @IsSenderInTheBookmarks(nft.Author)</small>
+                                                                </div>
                                                             </div>
-                                                        </div>
                                                         }
                                                         <hr />
                                                         <div class="row" style="margin: 0px;">
@@ -81,11 +101,11 @@
                                                             <div class="col text-center" style="padding: 0px;">
                                                                 @if (nft.Description.Length > 20)
                                                                 {
-                                                                <small>@nft.Description.Substring(0, 19) ...</small>
+                                                                    <small>@nft.Description.Substring(0, 19) ...</small>
                                                                 }
                                                                 else
                                                                 {
-                                                                <small>@nft.Description</small>
+                                                                    <small>@nft.Description</small>
                                                                 }
                                                             </div>
                                                         </div>
@@ -98,7 +118,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
                                 }
                             }
                         </div>
@@ -157,6 +176,11 @@
     }
 
     void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private void BookmarkRefreshedHandler(VEDriversLite.Bookmarks.Bookmark bookmark)
     {
         StateHasChanged();
     }

@@ -86,8 +86,8 @@
 
 @code {
 
-    [Parameter]
-    public EventCallback<string> MessageSent { get; set; }
+        [Parameter]
+        public EventCallback<string> MessageSent { get; set; }
 
     private string receiver = string.Empty;
     [Parameter]
@@ -161,6 +161,11 @@
 
             if (res.Item1)
             {
+                var r = AppData.Account.MessageTabs.Find(t => t.Address == receiver);
+                if (r == null || string.IsNullOrEmpty(r.Address))
+                {
+                    await AppData.Account.AddMessageTab(receiver);
+                }
                 await MessageSent.InvokeAsync(res.Item2);
             }
         }

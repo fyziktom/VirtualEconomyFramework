@@ -9,10 +9,10 @@
 @inject NavigationManager NavManager
 @page "/messages"
 
-<div class="container-fluid h-100" style="margin-left:-35px; padding-left:0px;">
+<div class="container-fluid h-100 w-100" style="padding:5px;">
     <Spin Tip="Loading Message Browser..." Spinning="@loadingBrowser">
-        <div class="row h-100" style="margin-left:0px; padding-left:0px;">
-            <div class="col h-100" style="margin-left:0px; padding-left:0px;">
+        <div class="row h-100 w-100" style="margin-left:0px; padding:0px;">
+            <div class="col h-100 w-100" style="margin-left:0px; padding:0px;">
 
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -21,66 +21,48 @@
                 </div>
 
                 <!--<VENFTApp_Blazor.Components.MessageList Address="AppData.Account.Address"/>-->
-                <div class="row" style="margin-left:0px; padding-left:0px;">
-                    <div class="col d-flex justify-content-start align-items-start" style="margin-left:0px; padding-left:0px;">
-                        <div class="sidebar" style="margin-left:0px; padding-left:0px;">
+                <div class="row w-100" style="margin-left:0px; padding:0px;">
+                    <div class="col w-100 d-flex justify-content-center align-items-center" style="margin-left:0px; padding:0px;">
 
-                            <div class="top-row pl-4 navbar navbar-dark">
-                                <a class="navbar-brand text-white">Friends</a>
-                                <button class="navbar-toggler" @onclick="ToggleNavMenu">
-                                    <span class="navbar-toggler-icon"></span>
-                                </button>
-                            </div>
-                            <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item px-3">
-                                        <a class="nav-link" @onclick="showAllMyMessageTab">
-                                            <span class="oi oi-home" aria-hidden="true"></span> All My Received
-                                        </a>
-                                    </li>
-
-                                    @if (AppData.Account.MessageTabs != null || AppData.Account.MessageTabs.Count > 0)
-                                    {
-                                        @foreach (var mt in AppData.Account.MessageTabs)
+                        <Collapse DefaultActiveKey="@(new[]{"Add"})" OnChange="Callback" Accordion Style="width:100%;">
+                            <Panel Header="All My Received" Key="AllMyReceived">
+                                <HeaderTemplate>
+                                        <span class="oi oi-home" aria-hidden="true"></span> All My Received
+                                </HeaderTemplate>
+                                <ChildContent>
+                                    <VENFTApp_Blazor.Components.MessageList NFTs="@AppData.Account.NFTs" Address="@AppData.Account.Address" />
+                                </ChildContent>
+                            </Panel>
+                            @foreach (var mt in AppData.Account.MessageTabs)
+                            {
+                                <Panel Key="@mt.Address" Style="width:100%;">
+                                    <HeaderTemplate>
+                                        @if (mt.BookmarkFromAccount != null && !string.IsNullOrEmpty(mt.BookmarkFromAccount.Name))
                                         {
-                                            <li class="nav-item px-3">
-                                                <a class="nav-link" @onclick="() => selectMessageTab(mt)">
-                                                    @if (mt.BookmarkFromAccount != null && !string.IsNullOrEmpty(mt.BookmarkFromAccount.Name))
-                                                    {
-                                                        <span class="oi oi-person" aria-hidden="true"></span> @mt.BookmarkFromAccount.Name
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="oi oi-person" aria-hidden="true"></span> @mt.ShortAddress
-                                                    }
-                                                </a>
-                                            </li>
+                                            <span class="oi oi-person" aria-hidden="true"></span> @mt.BookmarkFromAccount.Name
                                         }
-                                    }
-
-                                    <li class="nav-item px-3">
-                                        <a class="nav-link" @onclick="addMessageTab">
-                                            <span class="oi oi-plus" aria-hidden="true"></span> Add
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="main">
-                            <div class="content px-4">
-                                @if (!allMyVisible)
-                                {
-                                <VENFTApp_Blazor.Components.MessagingTabContent InMessageTab="@selectedMessageTab" ReloadRequest="ReloadMessages" />
-                                }
-                                else
-                                {
-                                   <VENFTApp_Blazor.Components.MessageList NFTs="@AppData.Account.NFTs" Address="@AppData.Account.Address" />
-                                }
-                            </div>
-                        </div>
+                                        else
+                                        {
+                                            <span class="oi oi-person" aria-hidden="true"></span> @mt.ShortAddress
+                                        }
+                                    </HeaderTemplate>
+                                    <ChildContent>
+                                        <div class="row" style="min-width:300px; padding:0px;">
+                                            <div class="col w-100" style="min-width:300px; padding:0px;">
+                                                 <VENFTApp_Blazor.Components.MessagingTabContent InMessageTab="@selectedMessageTab" ReloadRequest="ReloadMessages" />
+                                            </div>
+                                        </div>
+                                    </ChildContent>
+                                </Panel>
+                            }
+                            <Panel Header="Add New" Key="Add">
+                                <button @onclick="addMessageTab">Add New</button>
+                            </Panel>
+                        </Collapse>
                     </div>
                 </div>
+
+
             </div>
         </div>
     </Spin>
@@ -152,6 +134,26 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    void Callback(string[] keys)
+    {
+        var key = keys.Last();
+        if (string.IsNullOrEmpty(key))
+            return;
+        if (key == "Add")
+        {
+            addMessageTabVisible = true;
+            return;
+        }
+        else if (key == "AllMyReceived")
+        {
+            showAllMyMessageTab(null);
+            return;
+        }
+        addressInOpenTab = keys.Last();
+        selectTab(keys.Last());
+        Console.WriteLine(string.Join(',', keys));
     }
 
     protected override Task OnInitializedAsync()
@@ -263,44 +265,55 @@
 
     private async Task addNewMessageTab()
     {
-        addMessageTabVisible = false;
-        var tab = AppData.Account.MessageTabs.Find(t => t.Address == newTabAddress);
-        if (tab != null)
+        try
         {
-            await selectTab(tab.Address);
-            return;
+            addMessageTabVisible = false;
+            var tab = AppData.Account.MessageTabs.Find(t => t.Address == newTabAddress);
+            if (tab != null)
+            {
+                await selectTab(tab.Address);
+                return;
+            }
+            loadingBrowser = true;
+            StateHasChanged();
+            var res = await AppData.Account.AddMessageTab(newTabAddress);
+            await Task.Delay(50);
+            if (res.Item1)
+                await localStorage.SetItemAsync("messagingTabs", res.Item2);
+            addressInOpenTab = newTabAddress;
+            var ntab = AppData.Account.MessageTabs.Find(t => t.Address == newTabAddress);
+            if (ntab != null)
+            {
+                await selectTab(ntab.Address);
+            }
         }
-        loadingBrowser = true;
-        StateHasChanged();
-        var res = await AppData.Account.AddMessageTab(newTabAddress);
-        await Task.Delay(50);
-        if (res.Item1)
-            await localStorage.SetItemAsync("messagingTabs", res.Item2);
-        addressInOpenTab = newTabAddress;
-        var ntab = AppData.Account.MessageTabs.Find(t => t.Address == newTabAddress);
-        if (ntab != null)
+        finally
         {
-            await selectTab(ntab.Address);
+            loadingBrowser = false;
+            StateHasChanged();
         }
-        loadingBrowser = false;
-        StateHasChanged();
     }
 
     private async Task selectTab(string address)
     {
-        loadingBrowser = true;
-        allMyVisible = false;
-        StateHasChanged();
-        await AppData.Account.SelectMessageTab(address);
-        var ntab = AppData.Account.MessageTabs.Find(t => t.Address == address);
-        if (ntab != null)
+        try
         {
-            selectedMessageTab = ntab;
+            loadingBrowser = true;
+            allMyVisible = false;
+            StateHasChanged();
+            await AppData.Account.SelectMessageTab(address);
+            var ntab = AppData.Account.MessageTabs.Find(t => t.Address == address);
+            if (ntab != null)
+            {
+                selectedMessageTab = ntab;
+            }
+            addressInOpenTab = address;
         }
-        addressInOpenTab = address;
-        loadingBrowser = false;
-        await Task.Delay(50);
-        StateHasChanged();
+        finally
+        {
+            loadingBrowser = false;
+            StateHasChanged();
+        }
     }
 
     private async Task removeTab(string address)

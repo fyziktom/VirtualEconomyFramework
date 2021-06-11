@@ -479,6 +479,9 @@ namespace VEDriversLite
                 var tab = Tabs.Find(t => t.Address == address);
                 if (tab != null)
                     tab.LoadBookmark(bkm);
+                var mt = MessageTabs.Find(t => t.Address == address);
+                if (mt != null)
+                    mt.LoadBookmark(bkm);
                 return (true, JsonConvert.SerializeObject(Bookmarks));
             }
             else
@@ -507,7 +510,9 @@ namespace VEDriversLite
             var tab = Tabs.Find(t => t.Address == address);
             if (tab != null)
                 tab.ClearBookmark();
-
+            var mt = MessageTabs.Find(t => t.Address == address);
+            if (mt != null)
+                mt.ClearBookmark();
             return (true,JsonConvert.SerializeObject(Bookmarks));
         }
 
@@ -1396,7 +1401,7 @@ namespace VEDriversLite
                 return (false, res.Item1);
             }
 
-            var tres = await CheckSpendableNeblioTokens(NFTHelpers.TokenId, 2);
+            var tres = await CheckSpendableNeblioTokens(NFTHelpers.TokenId, 3);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
