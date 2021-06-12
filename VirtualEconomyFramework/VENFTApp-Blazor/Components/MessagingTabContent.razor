@@ -57,7 +57,7 @@
                             {
                                 if (nft.Type == NFTTypes.Message)
                                 {
-                                    <div class="card w-100" style="margin-left:10px; margin-top:10px; width:250px; max-width:250px; max-height:200px; height:200px;">
+                                    <div class="card w-100" style="margin-left:10px; margin-top:10px; width:250px; min-width:250px; max-width:250px; max-height:200px; height:200px;">
                                             <div class="card-body w-100 d-flex justify-content-center align-items-end">
 
                                                 <div class="row w-100" style="margin: 0px;">
@@ -94,7 +94,14 @@
                                                         <hr />
                                                         <div class="row" style="margin: 0px;">
                                                             <div class="col" style="padding: 0px;">
-                                                                <span class="text-center">@nft.Name</span>
+                                                                @if (nft.Name.Length > 20)
+                                                                {
+                                                                    <small>@nft.Name.Substring(0, 19) ...</small>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <small>@nft.Name</small>
+                                                                }
                                                             </div>
                                                         </div>
                                                         <div class="row" style="margin: 0px;">
@@ -189,12 +196,12 @@
     {
         var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
         if (s == null)
-            return sender;
+            return NeblioTransactionHelpers.ShortenAddress(sender);
 
         if (!string.IsNullOrEmpty(s.Name))
             return s.Name;
         else
-            return sender;
+            return NeblioTransactionHelpers.ShortenAddress(sender);
     }
 
     private async Task messageDetailsVisibleCancel()

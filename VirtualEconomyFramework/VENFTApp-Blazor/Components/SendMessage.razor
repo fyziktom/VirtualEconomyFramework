@@ -61,7 +61,7 @@
                     }
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <small class="text-center">Sending costs 0.0002 NEBL (fee) and 1 VENFT (carrier).</small>
+                            <small class="text-center">Sending costs 0.0002 NEBL (fee) and 1 VENFT (carrier, just in case of new message).</small>
                         </div>
                     </div>
 
@@ -81,13 +81,19 @@
                OnCancel="@HandleCancel">
             <p>"Do you really want to send this message?"</p>
         </Modal>
+        <Modal Title="Required"
+               Visible="@emptyInfoVisible"
+               OnOk="@HandleEmptyInfoCancel"
+               OnCancel="@HandleEmptyInfoCancel">
+            <p>"You must fill Name, Message and receiver."</p>
+        </Modal>
     </div>
 </div>
 
 @code {
 
-        [Parameter]
-        public EventCallback<string> MessageSent { get; set; }
+    [Parameter]
+    public EventCallback<string> MessageSent { get; set; }
 
     private string receiver = string.Empty;
     [Parameter]
@@ -119,6 +125,7 @@
     }
 
     INFT newNFT = new MessageNFT("");
+    bool emptyInfoVisible = false;
     bool uploadingImage = false;
     bool confirmVisible = false;
     bool processingSending = false;
@@ -149,10 +156,21 @@
         confirmVisible = false;
     }
 
+    private void HandleEmptyInfoCancel(MouseEventArgs e)
+    {
+        emptyInfoVisible = false;
+    }
+
     private async Task SendMessageNFT()
     {
         try
         {
+            if (string.IsNullOrEmpty(newNFT.Name) || string.IsNullOrEmpty(newNFT.Description) || string.IsNullOrEmpty(receiver))
+            {
+                emptyInfoVisible = true;
+                return;
+            }
+
             processingSending = true;
             confirmVisible = false;
             StateHasChanged();

@@ -2043,12 +2043,17 @@ namespace VEDriversLite
                 {
                     if (VENFTInfo == null)
                         VENFTInfo = await GetClient().GetTokenMetadataAsync(VENFTId, 0);
+                    GetTokenMetadataResponse info = null;
+                    if (toks.TokenId == VENFTId)
+                        info = VENFTInfo;
+                    else
+                        info = await GetClient().GetTokenMetadataAsync(toks.TokenId, 0);
 
-                    if (!resp.TryGetValue(VENFTInfo.MetadataOfIssuance.Data.TokenName, out var tk))
+                    if (!resp.TryGetValue(info.MetadataOfIssuance.Data.TokenName, out var tk))
                     {
                         var t = new TokenSupplyDto();
-                        t.TokenSymbol = VENFTInfo.MetadataOfIssuance.Data.TokenName;
-                        var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(VENFTInfo.MetadataOfIssuance.Data.Urls));
+                        t.TokenSymbol = info.MetadataOfIssuance.Data.TokenName;
+                        var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance.Data.Urls));
 
                         var tu = tus.FirstOrDefault();
                         if (tu != null)
