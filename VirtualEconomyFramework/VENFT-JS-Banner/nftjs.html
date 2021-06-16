@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>VENFT - Neblio NFTs</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/fonts/fontawesome5-overrides.min.css">
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <div class="container-fluid">
+                    <div class="row d-sm-flex justify-content-between align-items-center justify-content-xl-center" style="margin-top: 20px;">
+						<div class="col d-flex d-sm-flex justify-content-center align-items-center justify-content-xl-center">
+							<h3 class="text-dark">VENFT - Neblio NFTs</h3>
+						</div>
+					</div>
+
+					<div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+						<div id="NFT" class="col d-flex justify-content-center align-items-center">
+							<!--this is important, here the NFTs will be drawn-->
+						</div>
+					</div>
+                </div>
+            </div>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span><a href="https://about.ve-nft.com/" targe="blank">Copyright © VENFT 2021</a></span></div>
+                </div>
+            </footer>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+ 
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/bs-init.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+    <script src="assets/js/nft.js"></script>
+
+    <script>
+	$(document).ready(function () {
+		if (window.location.href.indexOf("txid") > -1) {
+			const queryString = window.location.search;
+			const urlParams = new URLSearchParams(queryString);
+			var txid = urlParams.get('txid');
+			if (txid != undefined && txid != null && txid != '') {
+				var nft = new NFT(txid,'La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8');
+				var display = setInterval(() => {
+					var nfthtml = nft.getNFTComponent();
+					if (nfthtml != undefined && nfthtml != null && nfthtml != '' ) {
+						$('#NFT').html(nfthtml);
+						clearInterval(display);
+					}
+				}, 1000);
+			}
+	   }
+	});
+    </script>
+</body>
+
+</html>
