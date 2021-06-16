@@ -65,21 +65,39 @@
                 <span class="badge badge-warning" style="position: absolute;right: 7px;top: 207px;">Music</span>
                 break;
         }
+        <button class="btn btn-light" @onclick="async () => ShowShareNFT(nft.Utxo)"
+                style="position:absolute; right: 7px;top: 230px; width: 30px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+            <i class="oi oi-share" style="font-size:12px;"></i>
+        </button>
         <div class="row" style="margin: 0px;">
             <div class="col" style="padding: 0px;">
-                <div class="row" style="margin: 0px;">
-                    <div class="col" style="padding: 0px;">
-                        <h5 class="text-center">@nft.Name</h5>
-                    </div>
-                </div>
-                <div class="row" style="margin: 0px;">
-                    <div class="col" style="padding: 0px;">
-                        <h6 class="text-center text-muted mb-2">@nft.Author</h6>
-                    </div>
-                </div>
-                <div class="row" style="margin: 0px;">
+                <div class="row text-center" style="margin: 0px;">
                     <div class="col text-center" style="padding: 0px;">
-                        <small>@nft.Description</small>
+                        @if (nft.Name.Length > 20)
+                        {
+                            <h6 class="text-center">@nft.Name.Substring(0, 19) ...</h6>
+                        }
+                        else
+                        {
+                            <h6 class="text-center">@nft.Name</h6>
+                        }
+                    </div>
+                </div>
+                <div class="row text-center" style="margin: 0px;">
+                    <div class="col text-center" style="padding: 0px;">
+                        <small class="text-center">@nft.Author</small>
+                    </div>
+                </div>
+                <div class="row text-center" style="margin: 0px;">
+                    <div class="col text-center" style="padding: 0px;">
+                        @if (nft.Description.Length > 80)
+                        {
+                            <small>@nft.Description.Substring(0,79) ...</small>
+                        }
+                        else
+                        {
+                            <small>@nft.Description</small>
+                        }
                     </div>
                 </div>
             </div>
@@ -96,15 +114,16 @@
     {
         <div class="card-footer d-flex justify-content-center align-items-center">
             <small class="text-muted">
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+                <div class="row d-flex justify-content-center align-items-center">
+                    <div class="col d-flex w-auto">
+                        <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="width: 40px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
                             <i class="oi oi-info" style="font-size:12px;"></i>
                         </button>
                     </div>
+
                     @if (!IsInThePayments(nft.Utxo) && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
                     {
-                        <div class="col d-flex justify-content-center align-items-center" style="margin-left:25px;">
+                        <div class="col d-flex w-auto" style="margin-left:15px;">
                             <SendNFTPayment Utxo="@nft.Utxo" UtxoIndex="@nft.UtxoIndex" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
                         </div>
                     }
@@ -150,7 +169,27 @@
     </div>
 </Modal>
 
+<Modal Title="Share NFT"
+       Visible="@shareNFTVisible"
+       OnOk="@CloseShareNFT"
+       OnCancel="@CloseShareNFT">
+    <div class="row">
+        <div class="col">
+            <a href="@shareNFTUtxo" target="_blank">@shareNFTUtxo</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <CopyButton TextToCopy="@shareNFTUtxo" />
+        </div>
+    </div>
+</Modal>
+
 @code {
+
+
+    bool shareNFTVisible = false;
+    string shareNFTUtxo = string.Empty;
 
     string nftDetailsUtxo = string.Empty;
     bool nftDetailsVisible = false;
@@ -230,6 +269,17 @@
     {
         await nft.StopRefreshingData();
         nftDetailsVisible = false;
+    }
+
+    private async Task ShowShareNFT(string utxo)
+    {
+        shareNFTUtxo = "https://nft.ve-nft.com/?txid=" + utxo;
+        shareNFTVisible = true;
+    }
+
+    private async Task CloseShareNFT(MouseEventArgs e)
+    {
+        shareNFTVisible = false;
     }
 
     private async Task ShowNFTDetails(string utxo)

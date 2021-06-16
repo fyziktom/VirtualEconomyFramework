@@ -1,0 +1,134 @@
+﻿@using VEDriversLite.NFT
+
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:20px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <button class="btn btn-primary" @onclick="LoadNFTHistory"><i class="oi oi-timer"></i> Load NFT History</button>
+            </div>
+        </div>
+        <div class="row" style="margin-top:20px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <Spin Tip="Loading History..." Spinning="@loadingNFTHistory">
+                    <table class="table table-striped" style="max-width:350px;">
+                        <thead>
+                            <tr>
+                                <th style="min-width:50px;">Name </th>
+                                <th style="min-width:50px;">Description </th>
+                                <th style="min-width:50px;">Image</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (nftInDetailsHistory != null)
+                            {
+                                @if (nftInDetailsHistory.Count > 0)
+                                {
+                                    @foreach (var nft in nftInDetailsHistory)
+                                    {
+                                        <tr>
+                                            @if (nft.Name.Length > 30)
+                                            {
+                                                <td style="min-width:70px;">@nft.Name.Substring(0,29) ... </td>
+                                            }
+                                            else 
+                                            { 
+                                                <td style="min-width:70px;">@nft.Name </td>
+                                            }
+                                            @if (nft.Description.Length > 160)
+                                            {
+                                                <td>@nft.Description.Substring(0,159) ...</td>
+                                            }
+                                            else 
+                                            { 
+                                                <td>@nft.Description</td>
+                                            }
+                                            <td>
+                                                <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                    <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                </a>
+                                            </td>
+                                            
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4">History Not Loaded</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </Spin>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Title="NFT History Detail"
+       Visible="@nftHistoryDetailsVisible"
+       OnOk="@nftHistoryDetailsClose"
+       OnCancel="@nftHistoryDetailsClose">
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center" style="260px;">
+                <NFT InputNFT="@selectedHistoryNFT" Address="" OwnNFT="false" HideButtons="true" />
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    bool nftHistoryDetailsVisible = false;
+
+    private string _utxo = string.Empty;
+    [Parameter]
+    public string Utxo
+    {
+        get => _utxo;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                if (value != lastutxo)
+                {
+                    nftInDetailsHistory = new List<INFT>();
+                    lastutxo = value;
+                }
+
+                if (_utxo != value)
+                {
+                    _utxo = value;
+                }
+            }
+        }
+    }
+
+    bool loadingNFTHistory = false;
+    List<INFT> nftInDetailsHistory = new List<INFT>();
+    INFT selectedHistoryNFT = new ImageNFT("");
+    string lastutxo = string.Empty;
+
+    private async Task LoadNFTHistory()
+    {
+        loadingNFTHistory = true;
+        StateHasChanged();
+        nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(_utxo);
+        loadingNFTHistory = false;
+        StateHasChanged();
+    }
+
+    private async Task nftHistoryDetailsOpen(INFT nft)
+    {
+        selectedHistoryNFT = await NFTFactory.CloneNFT(nft);
+        nftHistoryDetailsVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task nftHistoryDetailsClose(MouseEventArgs e)
+    {
+        nftHistoryDetailsVisible = false;
+        StateHasChanged();
+    }
+
+}

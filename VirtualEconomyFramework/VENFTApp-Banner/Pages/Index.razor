@@ -1,0 +1,64 @@
+﻿@using VEDriversLite.NFT
+@using Microsoft.AspNetCore.WebUtilities
+@page "/"
+@inject NavigationManager NavManager
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <h3>Neblio NFTs</h3>
+                </div>
+            </div>
+            <div class="row" style="margin-top:50px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <VENFTApp_Banner.Components.NFT InputNFT="@NFT" />
+                </div>
+            </div>
+            @if (isDogeft)
+            {
+                <div class="row" style="margin-top:50px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h6 class="text-center">This NFT was created with <a href="https://dogeft.com/" target="_blank">DOGEFT Marketplace</a></h6>
+                    </div>
+                </div>
+            }
+            <div class="row" style="margin-top:50px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small class="text-center"><a href="https://about.ve-nft.com/" target="_blank">VENFT App 2021</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private INFT NFT = new ImageNFT("");
+    private string utxo = string.Empty;
+    bool isDogeft = false;
+    protected override Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("txid", out var txid))
+        {
+            utxo = txid;
+        }
+
+        if (!string.IsNullOrEmpty(utxo))
+            Load();
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Load()
+    {
+        StateHasChanged();
+        NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, true);
+        var sender = await VEDriversLite.NeblioTransactionHelpers.GetTransactionSender(NFT.SourceTxId);
+        if (sender == "NXSy3AoBkV39rBFmV15GUwFruQSMM4gPs6")
+            isDogeft = true;
+        else
+            isDogeft = false;
+        StateHasChanged();
+    }
+}

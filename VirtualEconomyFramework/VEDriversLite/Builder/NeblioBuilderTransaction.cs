@@ -14,7 +14,7 @@ namespace VEDriversLite.Builder
     public class NewTokenTxReceiver
     {
         public string Address { get; set; } = string.Empty;
-        public string TokenId { get; set; } = NeblioTransactionHelpers.VENFTId;
+        public string TokenId { get; set; } = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         public int Amount { get; set; } = 1;
     }
     public class NewTokenTxUtxo

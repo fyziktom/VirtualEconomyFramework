@@ -24,7 +24,7 @@ namespace VEDriversLite.Builder
             var dto = new SendTokenRequest();
             try
             {
-                dto = NeblioTransactionHelpers.GetSendTokenObject(1, 20000, "DEFAULT", NeblioTransactionHelpers.VENFTId);
+                dto = NeblioTransactionHelpers.GetSendTokenObject(1, 20000, "DEFAULT", "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
 
                 dto.To = new List<To>();
 
@@ -36,7 +36,7 @@ namespace VEDriversLite.Builder
                     {
                         Address = rec.Address,
                         Amount = (double)rec.Amount,
-                        TokenId = NeblioTransactionHelpers.VENFTId
+                        TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8"
                     });
                 }
 

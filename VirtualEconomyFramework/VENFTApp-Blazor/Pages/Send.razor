@@ -60,17 +60,32 @@
                 {
                     <div class="row" style="margin-top:30px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <p>Token Type:</p>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <RadioGroup @bind-Value="@selectedTokenId" @onselectionchange="tokenTypeChangedHandler">
+                                @foreach (var t in AppData.Account.TokensSupplies)
+                                {
+                                    <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
+                                }
+                            </RadioGroup>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:30px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             <p>Amount of tokens:</p>
                         </div>
                     </div>
                     <div class="row" style="margin-top:30px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <small>Available source tokens on address: @AppData.Account.SourceTokensBalance VENFT</small>
+                            <small>Available source tokens on address: @selectedToken.Amount</small>
                         </div>
                     </div>
                     <div class="row" style="margin-top:2px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <input type="number" step="1" min="2" max="@AppData.Account.SourceTokensBalance" @bind="@AmountTokensToSend" />
+                            <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@AmountTokensToSend" />
                         </div>
                     </div>
                 }
@@ -103,6 +118,9 @@
     bool sendingTransaction = false;
     private string txid = string.Empty;
 
+    private string selectedTokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+    private TokenSupplyDto selectedToken = new TokenSupplyDto();
+
     private int AmountTokensToSend = 2;
     private double AmountToSend = 0.001;
     private int maxLoadedTransaction = 10;
@@ -118,6 +136,14 @@
                 StateHasChanged();
             }
         }
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (AppData.Account.TokensSupplies.TryGetValue(selectedTokenId, out var ts))
+            selectedToken = ts;
+
+        return base.OnAfterRenderAsync(firstRender);
     }
 
     protected override Task OnInitializedAsync()
@@ -164,6 +190,11 @@
         StateHasChanged();
     }
 
+    private void tokenTypeChangedHandler(EventArgs e)
+    {
+        StateHasChanged();
+    }
+
     private async Task SendTransaction()
     {
         switch (txType)
@@ -186,7 +217,7 @@
             var metadata = new Dictionary<string, string>();
             metadata.Add("Data", "Sent with https://ve-nft.com/");
 
-            var res = await AppData.Account.SendNeblioTokenPayment(NeblioTransactionHelpers.VENFTId, metadata, Receiver, AmountTokensToSend);
+            var res = await AppData.Account.SendNeblioTokenPayment(selectedToken.TokenId, metadata, Receiver, AmountTokensToSend);
             Console.WriteLine("Tx send result: " + res);
         }
         catch (Exception ex)

@@ -33,6 +33,7 @@ namespace VEDriversLite.NFT
             NFTOriginTxId = pnft.NFTOriginTxId;
             TypeText = pnft.TypeText;
             Utxo = pnft.Utxo;
+            TokenId = pnft.TokenId;
             UtxoIndex = pnft.UtxoIndex;
             Price = pnft.Price;
             PriceActive = pnft.PriceActive;

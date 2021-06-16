@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>VEFramework.VEDriversLite</PackageId>
-    <Version>0.1.2</Version>
+    <Version>0.1.3</Version>
     <Authors>fyziktom</Authors>
     <Company>VEFramework</Company>
     <Description>.NET Standard version of VEDrivers. Contains just minimum dependencies and now just support of Neblio and Doge blockchain.</Description>
@@ -13,6 +13,7 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>VEFramework, Cryptocurrencies, Crypto, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Blockchain, eCommerce, dApps</PackageTags>
     <Copyright>fyziktom</Copyright>
+    <PackageReleaseNotes>Added NFT Messages with encrypted content.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

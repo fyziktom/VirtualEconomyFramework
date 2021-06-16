@@ -1,0 +1,212 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+
+<div class="card" style="margin-left:10px; margin-top:10px;min-width:250px; width:250px; max-width:250px; min-height:400px; max-height:600px;">
+    <div class="card-header" style="padding: 0px;">
+        <div class="row" style="max-width: 250px;height:200px;margin: 0px;">
+            <div class="col d-flex justify-content-center align-items-center" style="padding: 0px;">
+                @switch (nft.Type)
+                {
+                    case NFTTypes.Image:
+                        @if (!string.IsNullOrEmpty(nft.ImageLink))
+                        {
+                            <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                        }
+                        else
+                        {
+                            <Spin Tip="Loading..." Style="min-width:50px;">
+                                <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
+                            </Spin>
+                        }
+                        break;
+                    case NFTTypes.Post:
+                        @if (!string.IsNullOrEmpty(nft.ImageLink))
+                        {
+                            <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                        }
+                        else
+                        {
+                            <Spin Tip="Loading..." Style="min-width:50px;">
+                                <img src="@nft.ImageLink" style="min-width:100px; max-height:200px;  max-width:250px;" />
+                            </Spin>
+                        }
+                        break;
+                    case NFTTypes.Music:
+                        @if (!string.IsNullOrEmpty(nft.Link))
+                        {
+                            <video name="media" style="max-width:250px; width:250px; margin-bottom:70px;" controls>
+                                <source src="@nft.Link" type="audio/mpeg" autostart="false">
+                            </video>
+                        }
+                        else if (!string.IsNullOrEmpty(nft.ImageLink) && string.IsNullOrEmpty(nft.Link))
+                        {
+                            <video name="media" style="max-width:250px; width:250px; margin-bottom:70px;" controls>
+                                <source src="@nft.Link" type="audio/mpeg" autostart="false">
+                            </video>
+                        }
+                        break;
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body d-flex justify-content-center align-items-end">
+        @switch (nft.Type)
+        {
+            case NFTTypes.Image:
+        <span class="badge badge-primary" style="position: absolute;right: 7px;top: 207px;">Image</span>
+                break;
+            case NFTTypes.Post:
+        <span class="badge badge-info" style="position: absolute;right: 7px;top: 207px;">Post</span>
+                break;
+            case NFTTypes.Music:
+        <span class="badge badge-warning" style="position: absolute;right: 7px;top: 207px;">Music</span>
+                break;
+        }
+        <div class="row" style="margin: 0px;">
+            <div class="col" style="padding: 0px;">
+                <div class="row text-center" style="margin: 0px;">
+                    <div class="col text-center" style="padding: 0px;">
+                        @if (nft.Name.Length > 20)
+                        {
+                        <h6 class="text-center">@nft.Name.Substring(0, 19) ...</h6>
+                        }
+                        else
+                        {
+                        <h6 class="text-center">@nft.Name</h6>
+                        }
+                    </div>
+                </div>
+                <div class="row text-center" style="margin: 0px;">
+                    <div class="col text-center" style="padding: 0px;">
+                        <small class="text-center">@nft.Author</small>
+                    </div>
+                </div>
+                <div class="row text-center" style="margin: 0px;">
+                    <div class="col text-center" style="padding: 0px;">
+                        @if (nft.Description.Length > 80)
+                        {
+                        <small>@nft.Description.Substring(0,79) ...</small>
+                        }
+                        else
+                        {
+                        <small>@nft.Description</small>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <small class="text-muted">
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="width: 50px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+                        <i class="oi oi-info" style="font-size:12px;"></i>
+                    </button>
+                </div>
+            </div>
+        </small>
+    </div>
+</div>
+
+<Modal Title="NFT Details"
+       Visible="@nftDetailsVisible"
+       OnOk="@CloseNFTDetails"
+       OnCancel="@CloseNFTDetails">
+    <NFTDetails Utxo="@nftDetailsUtxo" OwnNFT="@OwnNFT" />
+</Modal>
+
+<Modal Title="NFT Image"
+       Style="min-height:200px; min-width:200px;"
+       Visible="@modalWithImageVisible"
+       OnOk="@modalWithImageClose"
+       OnCancel="@modalWithImageClose">
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <img class="card-img-top" src="@modalWithImageLink" style="min-height:100px; height:auto; min-width:200px; width:auto;" />
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    string nftDetailsUtxo = string.Empty;
+    bool nftDetailsVisible = false;
+
+    string modalWithImageLink = string.Empty;
+    bool modalWithImageVisible = false;
+
+    [Parameter]
+    public bool HideButtons { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    private INFT nft = new ImageNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => nft;
+        set
+        {
+            if (value != null && value.Utxo != nft.Utxo)
+            {
+                nft = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    string _address = string.Empty;
+    [Parameter]
+    public string Address
+    {
+        get => _address;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                _address = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    void NFTSentHandler(string nfttx)
+    {
+        nftDetailsVisible = false;
+        NFTSent.InvokeAsync(nfttx);
+    }
+
+    private async Task CloseNFTDetails(MouseEventArgs e)
+    {
+        await nft.StopRefreshingData();
+        nftDetailsVisible = false;
+    }
+
+    private async Task ShowNFTDetails(string utxo)
+    {
+        nftDetailsUtxo = utxo;
+        StateHasChanged();
+        nftDetailsVisible = true;
+        StateHasChanged();
+    }
+
+    public async Task OpenModalWithImage(string url)
+    {
+        modalWithImageVisible = true;
+        modalWithImageLink = url;
+        StateHasChanged();
+    }
+
+    public async Task modalWithImageClose(MouseEventArgs e)
+    {
+        modalWithImageVisible = false;
+        StateHasChanged();
+    }
+}

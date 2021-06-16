@@ -33,6 +33,10 @@ namespace VEDriversLite.NFT
 
     public static class NFTHelpers
     {
+        public static List<string> AllowedTokens = new List<string>() {
+                "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
+                Coruzant.CoruzantNFTHelpers.CoruzantTokenId };
+
         public static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         private static string TokenSymbol = "VENFT";
         public static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
@@ -62,6 +66,11 @@ namespace VEDriversLite.NFT
         private static void NeblioTransactionHelpers_NewEventInfo(object sender, IEventInfo e)
         {
             NewEventInfo?.Invoke(null, e);
+        }
+
+        public static async Task InitNFTHelpers()
+        {
+            await NeblioTransactionHelpers.LoadAllowedTokensInfo(AllowedTokens);
         }
 
         /// <summary>
@@ -194,15 +203,15 @@ namespace VEDriversLite.NFT
         public static async Task<INFT> FindProfileOfAddress(string address, ICollection<Utxos> utxos = null)
         {
             if (utxos == null)
-                utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
+                utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
             INFT profile = null;
 
             foreach (var u in utxos)
                 if (u.Tokens != null && u.Tokens.Count > 0)
                     foreach (var t in u.Tokens)
-                        if (t.TokenId == TokenId && t.Amount == 1)
+                        if (t.Amount == 1)
                         {
-                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid, (double)u.Blocktime);
+                            var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (double)u.Blocktime);
                             if (nft != null)
                                 if (nft.Type == NFTTypes.Profile && profile == null)
                                     profile = nft;
@@ -219,15 +228,15 @@ namespace VEDriversLite.NFT
         public static async Task<(INFT, List<INFT>)> LoadAddressNFTsWithProfile(string address)
         {
             List<INFT> nfts = new List<INFT>();
-            var utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
+            var utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
             INFT profile = null;
 
             foreach (var u in utxos)
                 if (u.Tokens != null && u.Tokens.Count > 0)
                     foreach (var t in u.Tokens)
-                        if (t.TokenId == TokenId && t.Amount == 1)
+                        if (t.Amount == 1)
                         {
-                            var nft = await NFTFactory.GetNFT(TokenId, u.Txid, (double)u.Blocktime);
+                            var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (double)u.Blocktime);
                             if (nft != null)
                             {
                                 if (nft.Type == NFTTypes.Profile && profile == null)
@@ -253,9 +262,9 @@ namespace VEDriversLite.NFT
             List<INFT> nfts = new List<INFT>();
             ICollection<Utxos> uts = null;
             if (inutxos == null)
-                uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address);
+                uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
             else
-                uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, new GetAddressInfoResponse() { Utxos = inutxos });
+                uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens, new GetAddressInfoResponse() { Utxos = inutxos });
             var utxos = uts.OrderBy(u => u.Blocktime).Reverse().ToList();
 
             var ns = new List<INFT>();
@@ -276,10 +285,10 @@ namespace VEDriversLite.NFT
             foreach (var u in utxos)
                 if (u.Tokens != null && u.Tokens.Count > 0)
                     foreach (var t in u.Tokens)
-                        if (t.TokenId == TokenId && t.Amount == 1)
+                        if (t.Amount == 1)
                             if (TimeHelpers.UnixTimestampToDateTime((double)u.Blocktime) > lastNFTTime)
                             {
-                                var nft = await NFTFactory.GetNFT(TokenId, u.Txid, (double)u.Blocktime);
+                                var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (double)u.Blocktime);
                                 if (nft != null)
                                 {
                                     nft.UtxoIndex = (int)u.Index;
@@ -338,7 +347,7 @@ namespace VEDriversLite.NFT
                                 {
                                     try
                                     {
-                                        var nft = await NFTFactory.GetNFT(TokenId, txinfo.Txid, (double)txinfo.Blocktime, true);
+                                        var nft = await NFTFactory.GetNFT(toks[0].TokenId, txinfo.Txid, (double)txinfo.Blocktime, true);
                                         if (nft != null)
                                         {
                                             if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
@@ -447,7 +456,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address
             };
@@ -496,7 +505,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address
             };
@@ -542,7 +551,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = nft.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address
             };
@@ -588,7 +597,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address
             };
@@ -634,7 +643,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address
             };
@@ -705,7 +714,7 @@ namespace VEDriversLite.NFT
                 {
                     var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
                     {
-                        Id = TokenId, // id of token
+                        Id = NFT.TokenId, // id of token
                         Metadata = metadata,
                         SenderAddress = address,
                         ReceiverAddress = receiver
@@ -716,7 +725,7 @@ namespace VEDriversLite.NFT
                 {
                     var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
                     {
-                        Id = TokenId, // id of token
+                        Id = NFT.TokenId, // id of token
                         Metadata = metadata,
                         Amount = 1,
                         sendUtxo = new List<string>() { NFT.Utxo },
@@ -765,7 +774,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address
             };
@@ -813,7 +822,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address
             };
@@ -859,7 +868,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = nft.TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
                 sendUtxo = new List<string>() { profile.Utxo },
@@ -909,7 +918,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = nft.TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
                 sendUtxo = new List<string>() { postnft.Utxo },
@@ -969,7 +978,7 @@ namespace VEDriversLite.NFT
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
                 Amount = 1,
-                Id = TokenId, // id of token
+                Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 sendUtxo = new List<string>() { payment.NFTUtxoTxId, payment.Utxo },
                 SenderAddress = address,
@@ -1082,7 +1091,7 @@ namespace VEDriversLite.NFT
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = TokenId, // id of token
+                Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
                 sendUtxo = new List<string>() { NFT.Utxo },

@@ -310,9 +310,9 @@
             else if (nftType == NFTTypes.Profile && !string.IsNullOrEmpty(newNFT.Utxo))
                 res = await AppData.Account.ChangeProfileNFT(newNFT);
             else if (NumberOfCoppies > 0 && nftType != NFTTypes.Profile)
-                res = await AppData.Account.MintMultiNFT(NFTHelpers.TokenId, newNFT, NumberOfCoppies);
+                res = await AppData.Account.MintMultiNFT(newNFT, NumberOfCoppies);
             else
-                res = await AppData.Account.MintNFT(NFTHelpers.TokenId, newNFT);
+                res = await AppData.Account.MintNFT(newNFT);
 
             if (res.Item1)
             {

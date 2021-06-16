@@ -225,7 +225,7 @@ namespace TestVEDriversLite
                 nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmWTkVqaWn1ABZ1UMKL91pxxspzXW6yodJ9bjUn6nPLeHX";
 
             // send 10 VENFT to receiver with connected metadata
-            var res = await account.MintNFT(NFTHelpers.TokenId, nft);
+            var res = await account.MintNFT(nft);
 
             // or multimint with 5 coppies (mint 1 + 5);
             // var res = await account.MintMultiNFT(NFTHelpers.TokenId, nft, 5); 

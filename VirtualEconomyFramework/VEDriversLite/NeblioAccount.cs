@@ -11,10 +11,19 @@ using VEDriversLite.Events;
 using VEDriversLite.Messaging;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
+using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.Security;
 
 namespace VEDriversLite
 {
+    public class AccountExportDto
+    {
+        public string Address { get; set; } = string.Empty;
+        public string EKey { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
     public class NeblioAccount
     {
         public NeblioAccount()
@@ -23,7 +32,10 @@ namespace VEDriversLite
             NFTs = new List<INFT>();
             Bookmarks = new List<Bookmark>();
             InitHandlers();
+            NFTHelpers.InitNFTHelpers();
         }
+
+        public string MessagingTokensId { get; } = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         /// <summary>
         /// Neblio Address hash
         /// </summary>
@@ -70,6 +82,10 @@ namespace VEDriversLite
         /// </summary>
         public List<INFT> NFTs { get; set; } = new List<INFT>();
         /// <summary>
+        /// List of actual address Coruzant NFTs. Based on Utxos list
+        /// </summary>
+        public List<INFT> CoruzantNFTs { get; set; } = new List<INFT>();
+        /// <summary>
         /// List of all active tabs for browsing or interacting with the address. All has possibility to load own list of NFTs.
         /// </summary>
         public List<ActiveTab> Tabs { get; set; } = new List<ActiveTab>();
@@ -102,6 +118,8 @@ namespace VEDriversLite
         /// Actual loaded address info with list of Utxos. When utxos are loaded first, this is just fill with it to prevent not necessary API request.
         /// </summary>
         public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
+
+        public CoruzantBrowser CoruzantBrowserInstance { get; set; } = new CoruzantBrowser();
         
         /// <summary>
         /// This event is called whenever info about the address is reloaded. It is periodic event.
@@ -794,7 +812,7 @@ namespace VEDriversLite
         /// <returns></returns>
         public async Task ReloadCountOfNFTs()
         {
-            var nftsu = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, AddressInfoUtxos);
+            var nftsu = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens, AddressInfoUtxos);
             if (nftsu != null)
                 AddressNFTCount = nftsu.Count;
         }
@@ -805,7 +823,7 @@ namespace VEDriversLite
         /// <returns></returns>
         public async Task ReloadMintingSupply()
         {
-            var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(Address, AddressInfoUtxos);
+            var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(Address, NFTHelpers.TokenId, AddressInfoUtxos);
             SourceTokensBalance = mintingSupply.Item1;
 
         }
@@ -872,8 +890,10 @@ namespace VEDriversLite
         public async Task ReLoadNFTs()
         {
             if (!string.IsNullOrEmpty(Address))
+            {
                 NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList());
-                //NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.Values.ToList(), NFTs.ToList());
+                CoruzantNFTs = await CoruzantNFTHelpers.GetCoruzantNFTs(NFTs);
+            }
         }
 
         /// <summary>
@@ -1159,7 +1179,7 @@ namespace VEDriversLite
         /// <param name="tokenId"></param>
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
         /// <returns></returns>
-        public async Task<(bool, string)> MintNFT(string tokenId, INFT NFT)
+        public async Task<(bool, string)> MintNFT(INFT NFT)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
 
@@ -1174,7 +1194,7 @@ namespace VEDriversLite
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(tokenId, 2);
+            var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 2);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
@@ -1225,7 +1245,7 @@ namespace VEDriversLite
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
         /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
         /// <returns></returns>
-        public async Task<(bool, string)> MintMultiNFT(string tokenId, INFT NFT, int coppies)
+        public async Task<(bool, string)> MintMultiNFT(INFT NFT, int coppies)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
 
@@ -1240,7 +1260,7 @@ namespace VEDriversLite
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(tokenId, 2 + coppies);
+            var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 2 + coppies);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
@@ -1388,6 +1408,7 @@ namespace VEDriversLite
             nft.Description = message;
             nft.Name = name;
             nft.Encrypt = encrypt;
+            nft.TokenId = MessagingTokensId;
 
             if (IsLocked())
             {
@@ -1401,7 +1422,7 @@ namespace VEDriversLite
                 return (false, res.Item1);
             }
 
-            var tres = await CheckSpendableNeblioTokens(NFTHelpers.TokenId, 3);
+            var tres = await CheckSpendableNeblioTokens(MessagingTokensId, 3);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
@@ -1517,6 +1538,61 @@ namespace VEDriversLite
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Payment for NFT Sent");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
+        /// Add comment to Coruzant Post NFT or add comment and send it to new owner
+        /// </summary>
+        /// <param name="receiver">Fill when you want to send to different address</param>
+        /// <param name="NFT"></param>
+        /// <param name="commentWrite">Set this if you need to just write the comment to the NFT</param>
+        /// <param name="comment">Add your comment</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> SendCoruzantNFT(string receiver, INFT NFT, bool commentWrite, string comment = "")
+        {
+            var nft = await NFTFactory.CloneNFT(NFT);
+
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            if (string.IsNullOrEmpty(NFT.Utxo))
+            {
+                await InvokeErrorDuringSendEvent("Cannot snd NFT without provided Utxo TxId.", "Cannot send NFT");
+                return (false, "Cannot send NFT without provided Utxo TxId.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                return (false, res.Item1);
+            }
+
+            if (string.IsNullOrEmpty(receiver))
+                receiver = string.Empty;
+
+            try
+            {
+                var rtxid = await CoruzantNFTHelpers.ChangeCoruzantPostNFT(Address, AccountKey, nft, res.Item2, receiver);
+
+                if (rtxid != null)
+                {
+                    if (!commentWrite)
+                        await InvokeSendPaymentSuccessEvent(rtxid, "NFT Sent");
+                    else
+                        await InvokeSendPaymentSuccessEvent(rtxid, "Comment written to NFT");
                     return (true, rtxid);
                 }
             }

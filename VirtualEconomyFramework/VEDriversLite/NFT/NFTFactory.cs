@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NFT.Coruzant;
 
 namespace VEDriversLite.NFT
 {
@@ -43,6 +44,21 @@ namespace VEDriversLite.NFT
                         case "NFT Message":
                             type = NFTTypes.Message;
                             break;
+                        case "NFT CoruzantPost":
+                            type = NFTTypes.CoruzantPost;
+                            break;
+                        case "NFT CoruzantPremiumPost":
+                            type = NFTTypes.CoruzantPremiumPost;
+                            break;
+                        case "NFT CoruzantPodcast":
+                            type = NFTTypes.CoruzantPodcast;
+                            break;
+                        case "NFT CoruzantPremiumPodcast":
+                            type = NFTTypes.CoruzantPremiumPodcast;
+                            break;
+                        case "NFT CoruzantProfile":
+                            type = NFTTypes.CoruzantProfile;
+                            break;
                     }
                 }
                 else
@@ -79,66 +95,79 @@ namespace VEDriversLite.NFT
             else
                 PriceActive = false;
 
+            INFT nft = null;
             switch (type)
             {
                 case NFTTypes.Image:
-                    var nft = new ImageNFT(utxo);
+                    nft = new ImageNFT(utxo);
                     if (wait)
                         await nft.ParseOriginData();
                     else
                         nft.ParseOriginData();
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;
-                    nft.Time = Time;
-                    return nft;
+                    break;
                 case NFTTypes.Profile:
-                    var pnft = new ProfileNFT(utxo);
+                    nft = new ProfileNFT(utxo);
                     //await pnft.ParseOriginData();
                     if (wait)
-                        await pnft.LoadLastData(meta);
+                        await (nft as ProfileNFT).LoadLastData(meta);
                     else
-                        pnft.LoadLastData(meta);
-                    pnft.Time = Time;
-                    return pnft;
+                        (nft as ProfileNFT).LoadLastData(meta);
+                    nft.Time = Time;
+                    return nft;
                 case NFTTypes.Post:
-                    var ponft = new PostNFT(utxo);
+                    nft = new PostNFT(utxo);
                     //await ponft.ParseOriginData();
                     if (wait)
-                        await ponft.LoadLastData(meta);
+                        await (nft as PostNFT).LoadLastData(meta);
                     else
-                        ponft.LoadLastData(meta);
-                    ponft.Time = Time;
-                    return ponft;
+                        (nft as PostNFT).LoadLastData(meta);
+                    break;
                 case NFTTypes.Music:
-                    var mnft = new MusicNFT(utxo);
+                    nft = new MusicNFT(utxo);
                     //await ponft.ParseOriginData();
                     if (wait)
-                        await mnft.ParseOriginData();
+                        await nft.ParseOriginData();
                     else
-                        mnft.ParseOriginData();
-                    mnft.Price = Price;
-                    mnft.PriceActive = PriceActive;
-                    mnft.Time = Time;
-                    return mnft;
+                        nft.ParseOriginData();
+                    nft.Price = Price;
+                    nft.PriceActive = PriceActive;
+                    break;
                 case NFTTypes.Payment:
-                    var pmnft = new PaymentNFT(utxo);
+                    nft = new PaymentNFT(utxo);
                     if (wait)
-                        await pmnft.LoadLastData(meta);
+                        await (nft as PaymentNFT).LoadLastData(meta);
                     else
-                        pmnft.LoadLastData(meta);
-                    pmnft.Time = Time;
-                    return pmnft;
+                        (nft as PaymentNFT).LoadLastData(meta);
+                    break;
                 case NFTTypes.Message:
-                    var msgnft = new MessageNFT(utxo);
+                    nft = new MessageNFT(utxo);
                     if (wait)
-                        await msgnft.LoadLastData(meta);
+                        await (nft as MessageNFT).LoadLastData(meta);
                     else
-                        msgnft.LoadLastData(meta);
-                    msgnft.Time = Time;
-                    return msgnft;
+                        (nft as MessageNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.CoruzantPost:
+                    nft = new CoruzantPostNFT(utxo);
+                    if (wait)
+                        await (nft as CoruzantPostNFT).LoadLastData(meta);
+                    else
+                        (nft as CoruzantPostNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.CoruzantProfile:
+                    nft = new CoruzantProfileNFT(utxo);
+                    if (wait)
+                        await (nft as CoruzantProfileNFT).LoadLastData(meta);
+                    else
+                        (nft as CoruzantProfileNFT).LoadLastData(meta);
+                    break;
             }
 
-            return null;
+            nft.TokenId = tokenId;
+            nft.Time = Time;
+
+            return nft;
         }
 
         public static async Task<INFT> CloneNFT(INFT NFT, bool asType = false, NFTTypes type = NFTTypes.Image)
@@ -171,6 +200,14 @@ namespace VEDriversLite.NFT
                     return nft;
                 case NFTTypes.Message:
                     nft = new MessageNFT(NFT.Utxo);
+                    nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.CoruzantPost:
+                    nft = new CoruzantPostNFT(NFT.Utxo);
+                    nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.CoruzantProfile:
+                    nft = new CoruzantProfileNFT(NFT.Utxo);
                     nft.Fill(NFT);
                     return nft;
             }

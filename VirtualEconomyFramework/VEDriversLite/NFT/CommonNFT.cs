@@ -18,6 +18,7 @@ namespace VEDriversLite.NFT
         public string ImageLink { get; set; } = string.Empty;
         public string Tags { get; set; } = string.Empty;
         public string Utxo { get; set; } = string.Empty;
+        public string TokenId { get; set; } = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8"; // VENFT tokens as default
         public string SourceTxId { get; set; } = string.Empty;
         public int UtxoIndex { get; set; } = 0;
         public string NFTOriginTxId { get; set; } = string.Empty;
@@ -51,6 +52,7 @@ namespace VEDriversLite.NFT
             NFTOriginTxId = nft.NFTOriginTxId;
             TypeText = nft.TypeText;
             Utxo = nft.Utxo;
+            TokenId = nft.TokenId;
             Price = nft.Price;
             PriceActive = nft.PriceActive;
             UtxoIndex = nft.UtxoIndex;

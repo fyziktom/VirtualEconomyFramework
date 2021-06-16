@@ -15,7 +15,12 @@ namespace VEDriversLite.NFT
         YouTube,
         Spotify,
         Payment,
-        Message
+        Message,
+        CoruzantPost = 101,
+        CoruzantPremiumPost = 102,
+        CoruzantPodcast = 103,
+        CoruzantPremiumPodcast = 104,
+        CoruzantProfile = 105
     }
     public interface INFT
     {
@@ -29,6 +34,7 @@ namespace VEDriversLite.NFT
         string ImageLink { get; set; }
         string Tags { get; set; }
         string Utxo { get; set; }
+        string TokenId { get; set; }
         string SourceTxId { get; set; }
         double Price { get; set; }
         bool PriceActive { get; set; }
