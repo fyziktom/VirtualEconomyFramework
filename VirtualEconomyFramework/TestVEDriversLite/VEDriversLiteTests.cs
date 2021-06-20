@@ -148,6 +148,96 @@ namespace TestVEDriversLite
         }
 
         [TestEntry]
+        public static void SendAirdrop(string param)
+        {
+            SendAirdropAsync(param);
+        }
+        public static async Task SendAirdropAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input receiveraddress,tokenId,tokenamount,amountofneblio");
+            var receiver = split[0];
+            var tokid = split[1];
+            var tam = split[2];
+            var am = split[3];
+            var tamount = Convert.ToDouble(tam, CultureInfo.InvariantCulture);
+            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
+            var res = await account.SendAirdrop(receiver, tokid, tamount, amount);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+
+        [TestEntry]
+        public static void SendVENFTAirdrop(string param)
+        {
+            SendVENFTAirdropAsync(param);
+        }
+        public static async Task SendVENFTAirdropAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input receiveraddress");
+            var receiver = split[0];
+            var tokid = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+            var tamount = 100;
+            var amount = 0.05;
+            var res = await account.SendAirdrop(receiver, tokid, tamount, amount);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void SendVENFTAirdropFromFile(string param)
+        {
+            SendVENFTAirdropFromFileAsync(param);
+        }
+        public static async Task SendVENFTAirdropFromFileAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input filename");
+            var filename = split[0];
+            var receivers = FileHelpers.ReadTextFromFile(filename);
+            var receiversList = new List<string>();
+            var tokid = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+            var tamount = 100;
+            var amount = 0.05;
+
+            (bool,string) res = (false,string.Empty);
+
+            Console.WriteLine("----------------------------------------");
+            Console.WriteLine("Automatic VENFT Airdrop started");
+            Console.WriteLine("----------------------------------------");
+            using (var reader = new StringReader(receivers))
+            {
+                for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+                {
+                    var done = false;
+                    while (!done)
+                    {
+                        try
+                        {
+                            Console.WriteLine($"Airdrop For address: {line} started.");
+                            res = await account.SendAirdrop(line, tokid, tamount, amount);
+                            done = res.Item1;
+                        }
+                        catch(Exception ex)
+                        {
+                            // probably just waiting for enought confirmation
+                            await Task.Delay(5000);
+                        }
+                    }
+
+                    Console.WriteLine($"New Airdrop for {line} has TxId hash ");
+                    Console.WriteLine(res.Item2);
+                    Console.WriteLine("----------------------------------------");
+                }
+            }
+        }
+
+        [TestEntry]
         public static void SendTokenTransaction(string param)
         {
             SendTokenTransactionAsync(param);

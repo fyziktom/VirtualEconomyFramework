@@ -1552,6 +1552,66 @@ namespace VEDriversLite
         }
 
         /// <summary>
+        /// This function will send airdrop.
+        /// </summary>
+        /// <param name="receiver">Receiver - owner of the NFT</param>
+        /// <param name="NFT">NFT what you want to buy</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> SendAirdrop(string receiver, string tokenId, double tokenAmount, double neblioAmount)
+        {
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+
+            var res = await CheckSpendableNeblio(neblioAmount);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                return (false, res.Item1);
+            }
+            var tres = await CheckSpendableNeblioTokens(tokenId, (int)tokenAmount);
+            if (tres.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable token inputs");
+                return (false, tres.Item1);
+            }
+
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("Message", "Thank you for using VENFT. https://about.ve-nft.com/");
+
+            // fill input data for sending tx
+            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Id = tokenId, // id of token
+                Metadata = metadata,
+                Amount = tokenAmount,
+                SenderAddress = Address,
+                ReceiverAddress = receiver
+            };
+
+            try
+            {
+                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(dto, AccountKey, neblioAmount, res.Item2, tres.Item2);
+
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Airdrop Sent");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
         /// Add comment to Coruzant Post NFT or add comment and send it to new owner
         /// </summary>
         /// <param name="receiver">Fill when you want to send to different address</param>
