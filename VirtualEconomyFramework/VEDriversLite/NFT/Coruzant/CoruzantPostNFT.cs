@@ -15,7 +15,7 @@ namespace VEDriversLite.NFT.Coruzant
             TypeText = "NFT CoruzantPost";
         }
 
-        public override async Task Fill(INFT NFT) 
+        public override async Task Fill(INFT NFT)
         {
             IconLink = NFT.IconLink;
             ImageLink = NFT.ImageLink;
@@ -43,7 +43,7 @@ namespace VEDriversLite.NFT.Coruzant
         public string LastComment { get; set; } = string.Empty;
         public string LastCommentBy { get; set; } = string.Empty;
         public List<string> TagsList { get; set; } = new List<string>();
-        
+
         private void parseTags()
         {
             var split = Tags.Split(' ');
@@ -160,7 +160,7 @@ namespace VEDriversLite.NFT.Coruzant
             }
         }
 
-        public async Task LoadLastData(Dictionary<string,string> metadata)
+        public async Task LoadLastData(Dictionary<string, string> metadata)
         {
             if (metadata != null)
             {
@@ -218,6 +218,11 @@ namespace VEDriversLite.NFT.Coruzant
                 }
 
             }
+        }
+
+        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        {
+            return null;
         }
     }
 }

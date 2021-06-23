@@ -21,6 +21,18 @@
                             </Spin>
                         }
                         break;
+                    case NFTTypes.Ticket:
+                        @if (!string.IsNullOrEmpty(nft.ImageLink))
+                        {
+                            <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                        }
+                        else
+                        {
+                            <Spin Tip="Loading..." Style="min-width:50px;">
+                                <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
+                            </Spin>
+                        }
+                        break;
                     case NFTTypes.Post:
                         @if (!string.IsNullOrEmpty(nft.ImageLink))
                         {
@@ -36,7 +48,7 @@
                     case NFTTypes.Music:
                         @if (!string.IsNullOrEmpty(nft.Link))
                         {
-                            <video name="media" style="max-width:250px; width:250px; margin-bottom:70px;" controls>
+                            <video name="media" style="max-width:250px; width:250px; max-height:200px; margin-bottom:70px;" controls>
                                 <source src="@nft.Link" type="audio/mpeg" autostart="false">
                             </video>
                         }
@@ -57,6 +69,9 @@
         {
             case NFTTypes.Image:
                 <span class="badge badge-primary" style="position: absolute;right: 7px;top: 207px;">Image</span>
+                break;
+            case NFTTypes.Ticket:
+                <span class="badge badge-secondary" style="position: absolute;right: 7px;top: 207px;">Ticket</span>
                 break;
             case NFTTypes.Post:
                 <span class="badge badge-info" style="position: absolute;right: 7px;top: 207px;">Post</span>
@@ -92,7 +107,7 @@
                     <div class="col text-center" style="padding: 0px;">
                         @if (nft.Description.Length > 80)
                         {
-                            <small>@nft.Description.Substring(0,79) ...</small>
+                            <small>@nft.Description.Substring(0, 79) ...</small>
                         }
                         else
                         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
 {
@@ -170,6 +171,42 @@ namespace VEDriversLite.NFT
             Decrypted = true;
 
             return true;
+        }
+
+        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        {
+            if (string.IsNullOrEmpty(address) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(receiver))
+                throw new Exception("Wrong input. Must fill all parameters if you want to use metadata encryption.");
+
+            var edescription = string.Empty;
+            var ename = string.Empty;
+            if (Encrypt)
+            {
+                var res = await ECDSAProvider.EncryptStringWithSharedSecret(Description, receiver, key);
+                if (res.Item1)
+                    edescription = res.Item2;
+
+                res = await ECDSAProvider.EncryptStringWithSharedSecret(Name, receiver, key);
+                if (res.Item1)
+                    ename = res.Item2;
+            }
+            else
+            {
+                edescription = Description;
+                ename = Name;
+            }
+
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Type", "NFT Message");
+            metadata.Add("Name", ename);
+            metadata.Add("Author", address);
+            metadata.Add("Description", edescription);
+            metadata.Add("Image", ImageLink);
+            metadata.Add("Link", Link);
+
+            return metadata;
         }
     }
 }

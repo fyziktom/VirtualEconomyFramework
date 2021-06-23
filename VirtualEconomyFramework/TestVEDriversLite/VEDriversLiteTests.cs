@@ -147,6 +147,27 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+
+        [TestEntry]
+        public static void SendSplitTransaction(string param)
+        {
+            SendSplitTransactionAsync(param);
+        }
+        public static async Task SendSplitTransactionAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input receiveraddress,amountofneblio,count");
+            var receiver = split[0];
+            var am = split[1];
+            var cnt = split[2];
+            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
+            var count = Convert.ToInt32(cnt, CultureInfo.InvariantCulture);
+            var res = await account.SplitNeblioCoin(receiver, amount, count);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
         [TestEntry]
         public static void SendAirdrop(string param)
         {
@@ -314,11 +335,45 @@ namespace TestVEDriversLite
             else
                 nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmWTkVqaWn1ABZ1UMKL91pxxspzXW6yodJ9bjUn6nPLeHX";
 
-            // send 10 VENFT to receiver with connected metadata
+            // MintNFT
             var res = await account.MintNFT(nft);
 
             // or multimint with 5 coppies (mint 1 + 5);
             // var res = await account.MintMultiNFT(NFTHelpers.TokenId, nft, 5); 
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void MintNFTTicket(string param)
+        {
+            MintNFTTicketAsync(param);
+        }
+        public static async Task MintNFTTicketAsync(string param)
+        {
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            var nft = new TicketNFT("");
+
+            nft.Author = "fyziktom";
+            nft.Name = "Birth of the fyziktom :D";
+            nft.Description = "The moment when the fyziktom start to see the world with own eyes.";
+            nft.Tags = "fyziktom birth revolution robot timetravel";
+            nft.Link = "https://veframework.com/";
+            nft.AuthorLink = "https://fyziktom.com/";
+            nft.EventId = "531221bc8a59b5b36af8dcaf6dac317b204b89dfc3ed301d497032c3bcf5799c";
+            nft.EventDate = DateTime.Parse("1991-03-11T10:20:00");
+            nft.Location = "Brno,Czech Republic";
+            nft.LocationCoordinates = "49.175621,16.569651";
+            nft.Seat = "Row A, Seat 55";
+            nft.Price = 0.05;
+            nft.PriceInDoge = 10;
+            nft.TicketClass = ClassOfNFTTicket.VIP;
+            nft.VideoLink = "https://youtu.be/dwemJ4Sx1CA";
+            nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmQ5qNNtShVqrZstzWMTZeWXFSnDojks3RWZpja6gJy8MJ";
+
+            var res = await account.MintMultiNFT(nft,0);
+
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }

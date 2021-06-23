@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace VEDriversLite.NFT
         Spotify,
         Payment,
         Message,
+        Ticket,
         CoruzantPost = 101,
         CoruzantPremiumPost = 102,
         CoruzantPodcast = 103,
@@ -42,6 +44,7 @@ namespace VEDriversLite.NFT
         int UtxoIndex { get; set; }
         DateTime Time { get; set; }
         List<INFT> History { get; set; }
+        [JsonIgnore]
         GetTransactionInfoResponse TxDetails { get; set; }
         event EventHandler<GetTransactionInfoResponse> TxDataRefreshed;
 
@@ -51,5 +54,6 @@ namespace VEDriversLite.NFT
         Task LoadHistory();
         Task StopRefreshingData();
         Task StartRefreshingTxData();
+        Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");
     }
 }

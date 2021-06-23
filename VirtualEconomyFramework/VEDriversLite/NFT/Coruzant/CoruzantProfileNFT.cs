@@ -156,5 +156,10 @@ namespace VEDriversLite.NFT.Coruzant
 
             }
         }
+
+        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        {
+            return null;
+        }
     }
 }

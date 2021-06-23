@@ -34,6 +34,8 @@ namespace VEDriversLite.NFT
 
         public abstract Task ParseOriginData();
 
+        public abstract Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");
+
         public abstract Task Fill(INFT NFT);
         public async Task LoadHistory()
         {

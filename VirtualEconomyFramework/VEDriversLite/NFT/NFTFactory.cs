@@ -44,6 +44,9 @@ namespace VEDriversLite.NFT
                         case "NFT Message":
                             type = NFTTypes.Message;
                             break;
+                        case "NFT Ticket":
+                            type = NFTTypes.Ticket;
+                            break;
                         case "NFT CoruzantPost":
                             type = NFTTypes.CoruzantPost;
                             break;
@@ -148,6 +151,15 @@ namespace VEDriversLite.NFT
                     else
                         (nft as MessageNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.Ticket:
+                    nft = new TicketNFT(utxo);
+                    if (wait)
+                        await (nft as TicketNFT).ParseOriginData();
+                    else
+                        (nft as TicketNFT).ParseOriginData();
+                    nft.Price = Price;
+                    nft.PriceActive = PriceActive;
+                    break;
                 case NFTTypes.CoruzantPost:
                     nft = new CoruzantPostNFT(utxo);
                     if (wait)
@@ -200,6 +212,10 @@ namespace VEDriversLite.NFT
                     return nft;
                 case NFTTypes.Message:
                     nft = new MessageNFT(NFT.Utxo);
+                    nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Ticket:
+                    nft = new TicketNFT(NFT.Utxo);
                     nft.Fill(NFT);
                     return nft;
                 case NFTTypes.CoruzantPost:

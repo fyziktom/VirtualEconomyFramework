@@ -445,6 +445,8 @@ namespace VEDriversLite
 
                 await StartRefreshingData();
 
+                return true;
+
             }
             catch (Exception ex)
             {
@@ -1116,6 +1118,63 @@ namespace VEDriversLite
         }
 
         /// <summary>
+        /// Split neblio coin to smaller coins
+        /// </summary>
+        /// <param name="receiver">Receiver Neblio Address</param>
+        /// <param name="splittedAmount">Ammount of new splitted coin in Neblio</param>
+        /// <param name="count">Count of new splited couns</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> SplitNeblioCoin(string receiver, double splittedAmount, int count)
+        {
+            if (splittedAmount < 0.0005)
+                return (false, "Minimal output splitted coin amount is 0.0005 NEBL.");
+            if (count < 2 || count > 25)
+                return (false, "Minimal count of output splitted coin amount is 2. Maximum is 25.");
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var total = 0.0;
+            for (int i = 0; i < count; i++)
+                total += splittedAmount;
+
+            var res = await CheckSpendableNeblio(total + 0.0002);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                return (false, res.Item1);
+            }
+
+            // fill input data for sending tx
+            var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Amount = total,
+                SenderAddress = Address,
+                ReceiverAddress = receiver
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(dto, splittedAmount, count, AccountKey, res.Item2, 20000);
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Split Sent");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
         /// Send classic token payment. It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
         /// </summary>
         /// <param name="tokenId">Token Id hash</param>
@@ -1203,25 +1262,11 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = string.Empty;
-                switch (NFT.Type)
-                {
-                    case NFTTypes.Image:
-                        rtxid = await NFTHelpers.MintImageNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
-                        break;
-                    case NFTTypes.Post:
-                        rtxid = await NFTHelpers.MintPostNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
-                        break;
-                    case NFTTypes.Music:
-                        rtxid = await NFTHelpers.MintMusicNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
-                        break;
-                    case NFTTypes.Profile:
-                        rtxid = await NFTHelpers.MintProfileNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
-                        break;
-                }
+                var rtxid = await NFTHelpers.MintNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
+
                 if (rtxid != null)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio NFT Sent");
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio NFT Minted");
                     if (NFT.Type == NFTTypes.Profile)
                         Profile = NFT as ProfileNFT;
 
@@ -1269,19 +1314,8 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = string.Empty;
-                switch (NFT.Type)
-                {
-                    case NFTTypes.Image:
-                        rtxid = await NFTHelpers.MintMultiImageNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2);
-                        break;
-                    case NFTTypes.Post:
-                        rtxid = await NFTHelpers.MintMultiPostNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2);
-                        break;
-                    case NFTTypes.Music:
-                        rtxid = await NFTHelpers.MintMultiMusicNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2);
-                        break;
-                }
+                var rtxid = await NFTHelpers.MintMultiNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2);
+
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Neblio NFT Sent");
@@ -1329,7 +1363,7 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = await NFTHelpers.ChangeProfileNFT(Address, AccountKey, nft, res.Item2);
+                var rtxid = await NFTHelpers.ChangeNFT(Address, AccountKey, nft, res.Item2);
 
                 if (rtxid != null)
                 {
@@ -1354,7 +1388,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="NFT"></param>
         /// <returns></returns>
-        public async Task<(bool, string)> ChangePostNFT(INFT NFT)
+        public async Task<(bool, string)> ChangeNFT(INFT NFT)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
 
@@ -1377,7 +1411,7 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = await NFTHelpers.ChangePostNFT(Address, AccountKey, nft, res.Item2);
+                var rtxid = await NFTHelpers.ChangeNFT(Address, AccountKey, nft, res.Item2);
 
                 if (rtxid != null)
                 {

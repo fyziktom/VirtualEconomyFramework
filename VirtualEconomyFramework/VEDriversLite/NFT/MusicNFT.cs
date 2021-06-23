@@ -176,5 +176,21 @@ namespace VEDriversLite.NFT
 
             }
         }
+
+        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        {
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Type", "NFT Music");
+            metadata.Add("Name", Name);
+            metadata.Add("Author", Author);
+            metadata.Add("Description", Description);
+            metadata.Add("Image", ImageLink);
+            metadata.Add("Link", Link);
+            if (Price > 0)
+                metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
+            
+            return metadata;
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using log4net;
 using NBitcoin;
 using NBitcoin.Altcoins;
-using Neblio.RestApi;
+using VEDriversLite.NeblioAPI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

@@ -70,5 +70,25 @@ namespace VEDriversLite.NFT
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }
         }
+
+        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        {
+            if (string.IsNullOrEmpty(ImageLink))
+                throw new Exception("Cannot create NFT Image without image link.");
+
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Type", "NFT Image");
+            metadata.Add("Name", Name);
+            metadata.Add("Author", Author);
+            metadata.Add("Description", Description);
+            metadata.Add("Image", ImageLink);
+            metadata.Add("Link", Link);
+            if (Price > 0)
+                metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
+
+            return metadata;
+        }
     }
 }

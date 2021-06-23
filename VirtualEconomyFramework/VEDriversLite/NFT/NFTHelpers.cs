@@ -426,58 +426,7 @@ namespace VEDriversLite.NFT
         }
 
         /// <summary>
-        /// This function will new NFTs as multimint. 
-        /// It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
-        /// </summary>
-        /// <param name="address">sender address</param>
-        /// <param name="coppies">number of copies. one NFT is minted even 0 coppies is input</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="NFT">Input NFT object with data to save to metadata</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-        /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintMultiImageNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
-        {
-            if (string.IsNullOrEmpty(NFT.ImageLink))
-                throw new Exception("Cannot create NFT Image without image link.");
-
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", NFT.Name);
-            metadata.Add("Author", NFT.Author);
-            metadata.Add("Description", NFT.Description);
-            metadata.Add("Image", NFT.ImageLink);
-            metadata.Add("Link", NFT.Link);
-            if (NFT.Price > 0)
-                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
-            metadata.Add("Type", "NFT Image");
-
-            // fill input data for sending tx
-            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Id = NFT.TokenId, // id of token
-                Metadata = metadata,
-                SenderAddress = address
-            };
-
-            try
-            {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
-                if (rtxid != null)
-                    return rtxid;
-                else
-                    return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// This function will new Image NFTs. 
+        /// This function will new NFTs. 
         /// </summary>
         /// <param name="address">sender address</param>
         /// <param name="ekey">Encryption Key object of the address</param>
@@ -485,161 +434,9 @@ namespace VEDriversLite.NFT
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintImageNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<string> MintNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
-            if (string.IsNullOrEmpty(NFT.ImageLink))
-                throw new Exception("Cannot create NFT Image without image link.");
-
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", NFT.Name);
-            metadata.Add("Author", NFT.Author);
-            metadata.Add("Description", NFT.Description);
-            metadata.Add("Image", NFT.ImageLink);
-            metadata.Add("Link", NFT.Link);
-            if (NFT.Price > 0)
-                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
-            metadata.Add("Type", "NFT Image");
-
-            // fill input data for sending tx
-            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Id = NFT.TokenId, // id of token
-                Metadata = metadata,
-                SenderAddress = address
-            };
-
-            try
-            {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
-                if (rtxid != null)
-                    return rtxid;
-                else
-                    return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// This function will new Profile NFTs. 
-        /// </summary>
-        /// <param name="address">sender address</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-        /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
-        {
-            var profile = nft as ProfileNFT;
-
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", profile.Name);
-            metadata.Add("Surname", profile.Surname);
-            metadata.Add("Age", profile.Age.ToString());
-            metadata.Add("Description", profile.Description);
-            metadata.Add("Image", profile.ImageLink);
-            metadata.Add("Link", profile.Link);
-            metadata.Add("Type", "NFT Profile");
-
-            // fill input data for sending tx
-            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Id = nft.TokenId, // id of token
-                Metadata = metadata,
-                SenderAddress = address
-            };
-
-            try
-            {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
-                if (rtxid != null)
-                    return rtxid;
-                else
-                    return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// This function will new Post NFT.
-        /// </summary>
-        /// <param name="address">sender address</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="NFT">Input NFT object with data to save to metadata</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-        /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintPostNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
-        {
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", NFT.Name);
-            metadata.Add("Author", NFT.Author);
-            metadata.Add("Description", NFT.Description);
-            metadata.Add("Image", NFT.ImageLink);
-            metadata.Add("Link", NFT.Link);
-            if (NFT.Price > 0)
-                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
-            metadata.Add("Type", "NFT Post");
-
-            // fill input data for sending tx
-            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Id = NFT.TokenId, // id of token
-                Metadata = metadata,
-                SenderAddress = address
-            };
-
-            try
-            {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
-                if (rtxid != null)
-                    return rtxid;
-                else
-                    return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// This function will new Music NFT.
-        /// </summary>
-        /// <param name="address">sender address</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="NFT">Input NFT object with data to save to metadata</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-        /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintMusicNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
-        {
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", NFT.Name);
-            metadata.Add("Author", NFT.Author);
-            metadata.Add("Description", NFT.Description);
-            metadata.Add("Image", NFT.ImageLink);
-            metadata.Add("Link", NFT.Link);
-            if (NFT.Price > 0)
-                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
-            metadata.Add("Type", "NFT Music");
-
+            var metadata = await NFT.GetMetadata();
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
@@ -677,34 +474,8 @@ namespace VEDriversLite.NFT
             if (NFT.Type != NFTTypes.Message)
                 throw new Exception("This is not Message NFT.");
 
-            var nft = NFT as MessageNFT;
-            var edescription = string.Empty;
-            var ename = string.Empty;
-            if (nft.Encrypt)
-            {
-                var res = await ECDSAProvider.EncryptStringWithSharedSecret(NFT.Description, receiver, await ekey.GetEncryptedKey());
-                if (res.Item1)
-                    edescription = res.Item2;
-
-                res = await ECDSAProvider.EncryptStringWithSharedSecret(NFT.Name, receiver, await ekey.GetEncryptedKey());
-                if (res.Item1)
-                    ename = res.Item2;
-            }
-            else
-            {
-                edescription = nft.Description;
-                ename = nft.Name;
-            }
-
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", ename);
-            metadata.Add("Author", address);
-            metadata.Add("Description", edescription);
-            metadata.Add("Image", NFT.ImageLink);
-            metadata.Add("Link", NFT.Link);
-            metadata.Add("Type", "NFT Message");
+            // thanks to filled params it will return encrypted metadata with shared secret
+            var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
 
             try
             {
@@ -757,20 +528,9 @@ namespace VEDriversLite.NFT
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintMultiPostNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<string> MintMultiNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", NFT.Name);
-            metadata.Add("Author", NFT.Author);
-            metadata.Add("Description", NFT.Description);
-            metadata.Add("Image", NFT.ImageLink);
-            metadata.Add("Link", NFT.Link);
-            if (NFT.Price > 0)
-                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
-            metadata.Add("Type", "NFT Post");
-
+            var metadata = await NFT.GetMetadata();
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
@@ -795,7 +555,7 @@ namespace VEDriversLite.NFT
         }
 
         /// <summary>
-        /// This function will new Music NFTs as multimint. 
+        /// This function will new Ticket NFTs. It is multimint tx
         /// It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
         /// </summary>
         /// <param name="address">sender address</param>
@@ -805,24 +565,13 @@ namespace VEDriversLite.NFT
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintMultiMusicNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<string> MintNFTTickets(string address, int coppies, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", NFT.Name);
-            metadata.Add("Author", NFT.Author);
-            metadata.Add("Description", NFT.Description);
-            metadata.Add("Image", NFT.ImageLink);
-            metadata.Add("Link", NFT.Link);
-            if (NFT.Price > 0)
-                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
-            metadata.Add("Type", "NFT Music");
-
+            var metadata = await nft.GetMetadata();
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = NFT.TokenId, // id of token
+                Id = nft.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address
             };
@@ -843,85 +592,24 @@ namespace VEDriversLite.NFT
         }
 
         /// <summary>
-        /// This function will change Profile NFT.
+        /// This function will change NFT data.
+        /// In NFT image and music it will be not relevant because it will always search for origin data even if you will rewrite it.
         /// </summary>
         /// <param name="address">sender address</param>
         /// <param name="ekey">Encryption Key object of the address</param>
         /// <param name="nft">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> ChangeProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos)
+        public static async Task<string> ChangeNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos)
         {
-            var profile = nft as ProfileNFT;
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", profile.Name);
-            metadata.Add("Surname", profile.Surname);
-            metadata.Add("Nickname", profile.Nickname);
-            metadata.Add("Age", profile.Age.ToString());
-            metadata.Add("Description", profile.Description);
-            metadata.Add("Image", profile.ImageLink);
-            metadata.Add("Link", profile.Link);
-            metadata.Add("Type", "NFT Profile");
-
+            var metadata = await nft.GetMetadata();
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
                 Id = nft.TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
-                sendUtxo = new List<string>() { profile.Utxo },
-                SenderAddress = address,
-                ReceiverAddress = address
-            };
-
-            try
-            {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
-                if (rtxid != null)
-                    return rtxid;
-                else
-                    return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// This function will change post NFT
-        /// </summary>
-        /// <param name="address">sender address</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="nft">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-        /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> ChangePostNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos)
-        {
-            var postnft = nft as PostNFT;
-
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Name", postnft.Name);
-            metadata.Add("Author", postnft.Author);
-            metadata.Add("Description", postnft.Description);
-            metadata.Add("Image", postnft.ImageLink);
-            metadata.Add("Link", postnft.Link);
-            metadata.Add("Type", "NFT Post");
-            if (postnft.PriceActive)
-                metadata.Add("Price", postnft.Price.ToString(CultureInfo.InvariantCulture));
-
-            // fill input data for sending tx
-            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Id = nft.TokenId, // id of token
-                Metadata = metadata,
-                Amount = 1,
-                sendUtxo = new List<string>() { postnft.Utxo },
+                sendUtxo = new List<string>() { nft.Utxo },
                 SenderAddress = address,
                 ReceiverAddress = address
             };
@@ -956,22 +644,10 @@ namespace VEDriversLite.NFT
             if (NFT == null)
                 throw new Exception("Cannot find NFT in the address NFT list.");
 
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Type", NFT.TypeText);
-            
-            if (NFT.Type == NFTTypes.Post)
-            {
-                metadata.Add("Name", NFT.Name);
-                metadata.Add("Author", NFT.Author);
-                metadata.Add("Description", NFT.Description);
-                metadata.Add("Image", NFT.ImageLink);
-                metadata.Add("Link", NFT.Link);
-            }
-
+            NFT.Price = 0.0;
+            NFT.PriceActive = false;
+            var metadata = await NFT.GetMetadata();
             metadata.Add("SoldPrice", payment.Price.ToString(CultureInfo.InvariantCulture));
-
             metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
 
             // fill input data for sending tx
@@ -1016,17 +692,15 @@ namespace VEDriversLite.NFT
             if (!nft.PriceActive)
                 throw new Exception("NFT is not for sale.");
 
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Sender", address);
-            metadata.Add("NFTUtxoTxId", nft.Utxo);
-            metadata.Add("NFTUtxoIndex", nft.UtxoIndex.ToString());
-            metadata.Add("Image", nft.ImageLink);
-            metadata.Add("Link", nft.Link);
-            metadata.Add("Price", nft.Price.ToString(CultureInfo.InvariantCulture));
-            metadata.Add("Type", "NFT Payment");
+            var paymentnft = new PaymentNFT("");
+            paymentnft.Sender = address;
+            paymentnft.NFTUtxoTxId = nft.Utxo;
+            paymentnft.NFTUtxoIndex = nft.UtxoIndex;
+            paymentnft.ImageLink = nft.ImageLink;
+            paymentnft.Link = nft.Link;
+            paymentnft.Price = nft.Price;
 
+            var metadata = await paymentnft.GetMetadata();
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
@@ -1069,22 +743,18 @@ namespace VEDriversLite.NFT
             if (price < 0.0002)
                 throw new Exception("Price cannot be lower than 0.0002 NEBL.");
 
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Type", NFT.TypeText);
-
-            if (NFT.Type == NFTTypes.Post || NFT.Type == NFTTypes.Music)
+            if (priceWrite)
             {
-                metadata.Add("Name", NFT.Name);
-                metadata.Add("Author", NFT.Author);
-                metadata.Add("Description", NFT.Description);
-                metadata.Add("Image", NFT.ImageLink);
-                metadata.Add("Link", NFT.Link);
+                NFT.Price = price;
+                NFT.PriceActive = true;
+            }
+            else
+            {
+                NFT.Price = 0.0;
+                NFT.PriceActive = false;
             }
 
-            if (priceWrite)
-                metadata.Add("Price", price.ToString(CultureInfo.InvariantCulture));
+            var metadata = await NFT.GetMetadata();
 
             metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
 

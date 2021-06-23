@@ -130,6 +130,13 @@ namespace VEDrivers.Security
             }
         }
 
+        public string GetPassword()
+        {
+            if (IsPassLoaded)
+                return loadedPassword;
+            else
+                return string.Empty;
+        }
         public string GetEncryptedKey(string password = "", bool returnEncrypted = false)
         {
             if (returnEncrypted)

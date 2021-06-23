@@ -181,5 +181,20 @@ namespace VEDriversLite.NFT
                 }
             }
         }
+
+        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        {
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Type", "NFT Profile");
+            metadata.Add("Name", Name);
+            metadata.Add("Surname", Surname);
+            metadata.Add("Age", Age.ToString());
+            metadata.Add("Description", Description);
+            metadata.Add("Image", ImageLink);
+            metadata.Add("Link", Link);
+            
+            return metadata;
+        }
     }
 }

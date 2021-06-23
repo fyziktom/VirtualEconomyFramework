@@ -87,5 +87,21 @@ namespace VEDriversLite.NFT
         {
             throw new NotImplementedException();
         }
+
+        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        {
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Type", "NFT Payment");
+            metadata.Add("Sender", Sender);
+            metadata.Add("NFTUtxoTxId", NFTUtxoTxId);
+            metadata.Add("NFTUtxoIndex", NFTUtxoIndex.ToString());
+            metadata.Add("Image", ImageLink);
+            metadata.Add("Link", Link);
+            metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
+
+            return metadata;
+        }
     }
 }

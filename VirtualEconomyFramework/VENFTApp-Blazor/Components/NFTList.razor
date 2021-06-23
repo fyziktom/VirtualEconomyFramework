@@ -22,6 +22,9 @@
                         <div class="col d-flex justify-content-center align-items-center w-auto">
                             <input type="checkbox" checked="checked" @onchange="eventArgs => { displayMusicChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Music</span><br />
                         </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayTicketsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Tickets</span><br />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -39,7 +42,10 @@
                             {
                                 if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
                                 {
-                                    if ((displayImages && nft.Type == NFTTypes.Image) || (displayPosts && nft.Type == NFTTypes.Post) || (displayMusic && nft.Type == NFTTypes.Music))
+                                    if ((displayImages && nft.Type == NFTTypes.Image) || 
+                                        (displayPosts && nft.Type == NFTTypes.Post) || 
+                                        (displayMusic && nft.Type == NFTTypes.Music) || 
+                                        (displayTickets && nft.Type == NFTTypes.Ticket))
                                     {
                                         <NFT Address="@_address" InputNFT="@nft" NFTSent="@NFTSentHandler" OwnNFT="@MainAccount" />
                                     }
@@ -100,6 +106,7 @@
     bool displayImages = true;
     bool displayPosts = true;
     bool displayMusic = true;
+    bool displayTickets = true;
     bool displayYouTube = false;
     bool displaySpotify = false;
 
@@ -195,5 +202,10 @@
         displayPosts = (bool)e;
         StateHasChanged();
     }
-    
+    private async Task displayTicketsChanged(object e)
+    {
+        displayTickets = (bool)e;
+        StateHasChanged();
+    }
+
 }

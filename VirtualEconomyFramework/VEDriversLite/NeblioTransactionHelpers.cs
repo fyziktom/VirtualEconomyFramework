@@ -986,6 +986,116 @@ namespace VEDriversLite
             }
         }
 
+        public static string SplitNeblioCoinTransactionAPI(SendTxData data, double splittedCoin, int count, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
+        {
+            var res = SplitNeblioCoinTransactionAPIAsync(data, splittedCoin, count, ekey, nutxos, fee).GetAwaiter().GetResult();
+            return res;
+        }
+        /// <summary>
+        /// Function will send standard Neblio transaction
+        /// </summary>
+        /// <param name="data">Send data, please see SendTxData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="fee">Fee - 10000 minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<string> SplitNeblioCoinTransactionAPIAsync(SendTxData data, double splittedCoin, int count, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
+        {
+            var res = "ERROR";
+
+            if (data == null)
+                throw new Exception("Data cannot be null!");
+
+            if (ekey == null)
+                throw new Exception("Account cannot be null!");
+
+            if (count < 2 || count > 25)
+                throw new Exception("Count must be bigger than 2 and lower than 25.");
+
+            // create receiver address
+            BitcoinAddress recaddr = null;
+            try
+            {
+                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot send transaction. cannot create receiver address!");
+            }
+
+            // load key and address
+            BitcoinSecret key = null;
+            BitcoinAddress addressForTx = null;
+            try
+            {
+                var k = await GetAddressAndKey(ekey, data.Password);
+                key = k.Item2;
+                addressForTx = k.Item1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            // create template for new tx from last one
+            var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
+
+            try
+            {
+                // add inputs of tx
+                foreach (var utxo in nutxos)
+                {
+                    var txh = await GetTxHex(utxo.Txid);
+                    if (Transaction.TryParse(txh, Network, out var txin))
+                    {
+                        transaction.Inputs.Add(txin, (int)utxo.Index);
+                        transaction.Inputs.Last().ScriptSig = addressForTx.ScriptPubKey;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during loading inputs. " + ex.Message);
+            }
+
+            try
+            {
+                var allNeblCoins = 0.0;
+                foreach (var u in nutxos)
+                    allNeblCoins += (double)u.Value;
+
+                var totalAmount = 0.0;
+                for (int i = 0; i < count; i++)
+                    totalAmount += splittedCoin;
+
+                var amountinSat = Convert.ToUInt64(totalAmount * FromSatToMainRatio);
+                if (amountinSat > allNeblCoins)
+                    throw new Exception("Not enought neblio for splitting.");
+
+                var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
+                var splitinSat = Convert.ToUInt64(splittedCoin * FromSatToMainRatio);
+                // create outputs
+
+                for(int i = 0; i < count; i++)
+                    transaction.Outputs.Add(new Money(splitinSat), recaddr.ScriptPubKey); // add all new splitted coins
+
+                transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during creating outputs. " + ex.Message);
+            }
+
+            try
+            {
+                return await SignAndBroadcast(transaction, key, addressForTx);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// This function will send Neblio payment together with the token whichc carry some metadata
         /// </summary>
@@ -1407,6 +1517,7 @@ namespace VEDriversLite
             try
             {
                 var tx = transaction.ToString();
+                var txhx = transaction.ToHex();
 
                 transaction.Sign(key, coins);
 

@@ -1,4 +1,4 @@
-﻿using Neblio.RestApi;
+﻿using VEDriversLite.NeblioAPI;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -55,6 +55,9 @@ namespace VEDrivers.Economy.Wallets
                 return Transactions.Count;
             }
         }
+
+        [JsonIgnore]
+        public VEDriversLite.NeblioAccount VEDLNeblioAccount { get; set; } = new VEDriversLite.NeblioAccount();
 
         private double initNumberOfTx = 0;
 
@@ -281,6 +284,28 @@ namespace VEDrivers.Economy.Wallets
             catch(Exception ex)
             {
                 // todo
+            }
+        }
+
+        public async Task<string> LoadVEDLTNeblioAccount()
+        {
+            if (IsLocked())
+                return "Account is locked. Please unlock it first";
+
+            try
+            {
+                var pass = AccountKey.GetPassword();
+                var ekey = AccountKey.GetEncryptedKey("", true);
+                if (await VEDLNeblioAccount.LoadAccount(pass, ekey, Address))
+                {
+                    return "OK";
+                }
+                else
+                    return "Something Wrong";
+            }
+            catch(Exception ex)
+            {
+                return "Cannot init Account. " + ex.Message;
             }
         }
 

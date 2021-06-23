@@ -305,11 +305,9 @@
             }
 
             (bool, string) res;
-            if (nftType == NFTTypes.Post && !string.IsNullOrEmpty(newNFT.Utxo))
-                res = await AppData.Account.ChangePostNFT(newNFT);
-            else if (nftType == NFTTypes.Profile && !string.IsNullOrEmpty(newNFT.Utxo))
-                res = await AppData.Account.ChangeProfileNFT(newNFT);
-            else if (NumberOfCoppies > 0 && nftType != NFTTypes.Profile)
+            if (!string.IsNullOrEmpty(newNFT.Utxo))
+                res = await AppData.Account.ChangeNFT(newNFT);
+            else if (string.IsNullOrEmpty(newNFT.Utxo) && NumberOfCoppies > 0 && nftType != NFTTypes.Profile)
                 res = await AppData.Account.MintMultiNFT(newNFT, NumberOfCoppies);
             else
                 res = await AppData.Account.MintNFT(newNFT);
