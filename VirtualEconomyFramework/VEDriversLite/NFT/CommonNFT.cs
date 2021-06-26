@@ -32,7 +32,7 @@ namespace VEDriversLite.NFT
 
         public event EventHandler<GetTransactionInfoResponse> TxDataRefreshed;
 
-        public abstract Task ParseOriginData();
+        public abstract Task ParseOriginData(IDictionary<string, string> lastmetadata);
 
         public abstract Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");
 

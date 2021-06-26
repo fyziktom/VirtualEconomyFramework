@@ -21,7 +21,7 @@ namespace VEDriversLite.NFT
             Type = NFTTypes.Ticket;
             TypeText = "NFT Ticket";
         }
-
+        
         public override async Task Fill(INFT NFT) 
         {
             IconLink = NFT.IconLink;
@@ -64,6 +64,7 @@ namespace VEDriversLite.NFT
         public double LocationCoordinatesLat { get; set; } = 0.0;
         public double LocationCoordinatesLen { get; set; } = 0.0;
         public string Seat { get; set; } = string.Empty;
+        public bool Used { get; set; } = false;
         public string VideoLink { get; set; } = string.Empty;
         public string AuthorLink { get; set; } = string.Empty;
         public DateTime EventDate { get; set; } = DateTime.UtcNow;
@@ -75,6 +76,13 @@ namespace VEDriversLite.NFT
                 EventId = ei;
             if (meta.TryGetValue("Seat", out var seat))
                 Seat = seat;
+            if (meta.TryGetValue("Used", out var used))
+            {
+                if (used == "true")
+                    Used = true;
+                else
+                    Used = false;
+            }
             if (meta.TryGetValue("Location", out var location))
                 Location = location;
             if (meta.TryGetValue("LocationC", out var loc))
@@ -139,9 +147,9 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public override async Task ParseOriginData()
+        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
-            var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
+            var nftData = await NFTHelpers.LoadNFTOriginData(Utxo, true);
             if (nftData != null)
             {
                 if (nftData.NFTMetadata.TryGetValue("Name", out var name))
@@ -158,8 +166,8 @@ namespace VEDriversLite.NFT
                     ImageLink = imagelink;
                 if (nftData.NFTMetadata.TryGetValue("Type", out var type))
                     TypeText = type;
-                /*
-                if (nftData.NFTMetadata.TryGetValue("Price", out var price))
+                
+                if (lastmetadata.TryGetValue("Price", out var price))
                 {
                     if (!string.IsNullOrEmpty(price))
                     {
@@ -176,13 +184,14 @@ namespace VEDriversLite.NFT
                 {
                     PriceActive = false;
                 }
-                */
+                
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
 
                 ParseSpecific(nftData.NFTMetadata);
 
+                Used = nftData.Used;
                 MintAuthorAddress = await NeblioTransactionHelpers.GetTransactionSender(NFTOriginTxId);
             }
         }
@@ -320,6 +329,8 @@ namespace VEDriversLite.NFT
             if (!string.IsNullOrEmpty(Seat))
                 metadata.Add("Seat", Seat);
             metadata.Add("TicketClass", TicketClass.ToString());
+            if (Used)
+                metadata.Add("Used", "true");
 
             if (Price > 0)
                 metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));

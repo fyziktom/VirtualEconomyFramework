@@ -104,9 +104,9 @@ namespace VEDriversLite.NFT
                 case NFTTypes.Image:
                     nft = new ImageNFT(utxo);
                     if (wait)
-                        await nft.ParseOriginData();
+                        await nft.ParseOriginData(meta);
                     else
-                        nft.ParseOriginData();
+                        nft.ParseOriginData(meta);
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;
                     break;
@@ -131,9 +131,9 @@ namespace VEDriversLite.NFT
                     nft = new MusicNFT(utxo);
                     //await ponft.ParseOriginData();
                     if (wait)
-                        await nft.ParseOriginData();
+                        await nft.ParseOriginData(meta);
                     else
-                        nft.ParseOriginData();
+                        nft.ParseOriginData(meta);
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;
                     break;
@@ -153,10 +153,10 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Ticket:
                     nft = new TicketNFT(utxo);
-                    if (wait)
-                        await (nft as TicketNFT).ParseOriginData();
-                    else
-                        (nft as TicketNFT).ParseOriginData();
+                    //if (wait)
+                        await nft.ParseOriginData(meta);
+                    //else
+                    //    nft.ParseOriginData(meta);
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;
                     break;

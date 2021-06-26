@@ -36,7 +36,7 @@ namespace VEDriversLite.NFT
                 PriceActive = false;
         }
 
-        public override async Task ParseOriginData()
+        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
@@ -57,15 +57,15 @@ namespace VEDriversLite.NFT
                     IconLink = iconlink;
                 if (nftData.NFTMetadata.TryGetValue("Type", out var type))
                     TypeText = type;
-                /*
-                if (nftData.NFTMetadata.TryGetValue("Price", out var price))
+                
+                if (lastmetadata.TryGetValue("Price", out var price))
                         Price = double.Parse(price, CultureInfo.InvariantCulture);
                 
                 if (Price > 0)
                     PriceActive = true;
                 else
                     PriceActive = false;
-                */
+                
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }

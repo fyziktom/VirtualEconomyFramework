@@ -63,6 +63,8 @@ namespace VEDriversLite
         private static IClient _client;
         private static string BaseURL = "https://ntp1node.nebl.io/";
         public static double FromSatToMainRatio = 100000000;
+        public static int MaximumTokensOutpus = 20;
+        public static int MaximumNeblioOutpus = 25;
         public static Network Network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
         public static int MinimumConfirmations = 2;
         public static Dictionary<string, GetTokenMetadataResponse> TokensInfo = new Dictionary<string, GetTokenMetadataResponse>();
@@ -1547,7 +1549,7 @@ namespace VEDriversLite
         //////////////////////////////////////
         #region Multi Token Input Tx
 
-        public static async Task<string> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
+        public static async Task<string> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
         {
             var res = "ERROR";
 
@@ -1815,13 +1817,18 @@ namespace VEDriversLite
                 addressinfo = await GetClient().GetAddressInfoAsync(addr);
 
             var utxos = new List<Utxos>();
-            if (addressinfo?.Utxos != null)
-                foreach (var u in addressinfo.Utxos)
-                    if (u.Tokens != null)
-                        foreach(var tok in u.Tokens)
-                            if (allowedTokens.Contains(tok.TokenId) && tok.Amount == 1)
-                                utxos.Add(u);
-            
+            try
+            {
+                if (addressinfo?.Utxos != null)
+                    foreach (var u in addressinfo.Utxos)
+                        if (u.Tokens != null)
+                            foreach (var tok in u.Tokens)
+                                if (allowedTokens.Contains(tok.TokenId) && tok.Amount == 1)
+                                    utxos.Add(u);
+            }
+            catch (Exception ex)
+            {
+            }
             return utxos;
         }
 
@@ -2409,6 +2416,10 @@ namespace VEDriversLite
                     if (h.Address != "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA" &&
                         h.Address != "NeNE6a2YQCq4yBLoVbVpcCzx44jVEBLaUE" &&
                         h.Address != "NikErRpjtRXpryFRc3RkP5nxRzm1ApxFH8" &&
+                        h.Address != "NWHozNL3B85PcTXhipmFoBMbfonyrS9WiR" &&
+                        h.Address != "NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7" &&
+                        h.Address != "NST3h9Z2CMuHHgea5ewy1berTNMhUdXJya" &&
+                        h.Address != "NidaStEf81XCmWKuJ6G6fvsFSpvh3TgceD" &&
                         h.Address != "NZREfode8XxDHndeoLGEeQKhsfvjWfHXUU")
                     {
                         var shadd = h.Address.Substring(0, 3) + "..." + h.Address.Substring(h.Address.Length - 3);

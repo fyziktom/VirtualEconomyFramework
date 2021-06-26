@@ -65,9 +65,33 @@
                         <a href="@nft.VideoLink" target="_blank">Video Link</a>
                     </div>
                 </div>
+                @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music)
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <a href="@NFT.Link" target="_blank">Connected Link</a>
+                        </div>
+                    </div>
+                }
+                @if (nft.Used)
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span><b>This ticket is Used!</b></span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <button class="btn btn-primary" @onclick="showUseTicketDialog">Use Ticket</button>
+                        </div>
+                    </div>
+                }
 
             }
-            @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music)
+            @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music && NFT.Type != NFTTypes.Ticket)
             {
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -243,6 +267,13 @@
         <MintNFTForm NFTType="NFTTypes.Post" NFT="@NFT" RedirectToNFTsAfterMint="false" NFTMinted="@NFTMinted" />
     </Modal>
 
+    <Modal Title="Use NFT Ticket"
+           Visible="@showUseTicket"
+           OnOk="@UseTicketConfirm"
+           OnCancel="@UseTicketCancel">
+        <span class="text-center">Do you really want to use this ticket?</span>
+    </Modal>
+
     <Modal Title="Ownership QR Code"
            Visible="@showOwnershipDialogVisible"
            OnOk="@showOwnershipDialogCancel"
@@ -314,6 +345,7 @@
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
 
+    bool showUseTicket = false;
     bool createNewPostVisible = false;
     bool sendNFTDialogVisible = false;
     bool showOwnershipDialogVisible = false;
@@ -480,6 +512,36 @@
                 Console.WriteLine("Cannot read tx details. " + ex.Message);
             }
         }, new System.Threading.AutoResetEvent(false), 1000, 1000);
+    }
+
+    private async Task showUseTicketDialog(MouseEventArgs e)
+    {
+        showUseTicket = true;
+    }
+
+    private async Task UseTicketCancel(MouseEventArgs e)
+    {
+        showUseTicket = false;
+    }
+
+    private async Task UseTicketConfirm(MouseEventArgs e)
+    {
+        try
+        {
+            loading = true;
+            showUseTicket = false;
+            StateHasChanged();
+            var res = await AppData.Account.UseNFTTicket(NFT);
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
     }
 
     private async Task showOwnershipDialogCancel(MouseEventArgs e)

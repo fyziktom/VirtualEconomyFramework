@@ -929,6 +929,8 @@ namespace VEDriversLite
                 foreach (var p in pnfts)
                 {
                     var pn = NFTs.Where(n => n.Utxo == ((PaymentNFT)p).NFTUtxoTxId).FirstOrDefault();
+                    var prc = p.Price;
+                    var prcn = pn.Price;
                     if (pn != null && pn.Price > 0 && p.Price >= pn.Price)
                     {
                         try
@@ -1525,6 +1527,55 @@ namespace VEDriversLite
                         await InvokeSendPaymentSuccessEvent(rtxid, "NFT Sent");
                     else
                         await InvokeSendPaymentSuccessEvent(rtxid, "Price written to NFT");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
+        /// Write Used flag into NFT Ticket
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
+        public async Task<(bool, string)> UseNFTTicket(INFT NFT)
+        {
+            if (NFT.Type != NFTTypes.Ticket)
+                throw new Exception("This is not NFT ticket.");
+
+            var nft = await NFTFactory.CloneNFT(NFT);
+            
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            if (string.IsNullOrEmpty(NFT.Utxo))
+            {
+                await InvokeErrorDuringSendEvent("Cannot snd NFT without provided Utxo TxId.", "Cannot send NFT");
+                return (false, "Cannot send NFT without provided Utxo TxId.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                return (false, res.Item1);
+            }
+
+            try
+            { 
+                var rtxid = await NFTHelpers.UseNFTTicket(Address, AccountKey, nft, res.Item2);
+
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Ticket used.");
                     return (true, rtxid);
                 }
             }

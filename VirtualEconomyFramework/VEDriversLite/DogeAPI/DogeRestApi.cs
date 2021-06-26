@@ -15,7 +15,7 @@ namespace VEDriversLite.DogeAPI
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.10.2.0 (NJsonSchema v10.3.4.0 (Newtonsoft.Json v11.0.0.0))")]
     public partial class Client : IClient
     {
-        private string _baseUrl = "https://dogechain.info/api/v1/";
+        private string _baseUrl = "https://chain.so/api/v2/";
         private System.Net.Http.HttpClient _httpClient;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
@@ -66,7 +66,7 @@ namespace VEDriversLite.DogeAPI
                 throw new System.ArgumentNullException("Address must be filled");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/address/balance/{address}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("get_address_balance/DOGE/{address}/5");
             urlBuilder_.Replace("{address}", System.Uri.EscapeDataString(ConvertToString(address, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -148,7 +148,7 @@ namespace VEDriversLite.DogeAPI
                 throw new System.ArgumentNullException("txid");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/transaction/{txid}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/get_tx/DOGE/{txid}");
             urlBuilder_.Replace("{txid}", System.Uri.EscapeDataString(ConvertToString(txid, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -234,7 +234,7 @@ namespace VEDriversLite.DogeAPI
                 throw new System.ArgumentNullException("Address");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/unspent/{address}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/get_tx_unspent/DOGE/{address}");
             urlBuilder_.Replace("{address}", System.Uri.EscapeDataString(ConvertToString(address, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -300,6 +300,178 @@ namespace VEDriversLite.DogeAPI
             }
         }
 
+        /// <summary>Doge Address spended transactions</summary>
+        /// <param name="address">Doge Address</param>
+        /// <returns>Object containing collection of Spended transactions</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<GetAddressSpentTxsResponse> GetAddressSentTxAsync(string address)
+        {
+            return GetAddressSentTxAsync(address, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Doge Address Unspended transactions</summary>
+        /// <param name="address">Doge Address</param>
+        /// <returns>Object containing collection of Utxos</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<GetAddressSpentTxsResponse> GetAddressSentTxAsync(string address, System.Threading.CancellationToken cancellationToken)
+        {
+            if (address == null)
+                throw new System.ArgumentNullException("Address");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/get_tx_spent/DOGE/{address}");
+            urlBuilder_.Replace("{address}", System.Uri.EscapeDataString(ConvertToString(address, System.Globalization.CultureInfo.InvariantCulture)));
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<GetAddressSpentTxsResponse>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<Error>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<Error>("Unexpected error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>Doge Address received transactions</summary>
+        /// <param name="address">Doge Address</param>
+        /// <returns>Object containing collection of Spended transactions</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<GetAddressReceivedTxsResponse> GetAddressReceivedTxAsync(string address)
+        {
+            return GetAddressReceivedTxAsync(address, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Doge Address Unspended transactions</summary>
+        /// <param name="address">Doge Address</param>
+        /// <returns>Object containing collection of Utxos</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<GetAddressReceivedTxsResponse> GetAddressReceivedTxAsync(string address, System.Threading.CancellationToken cancellationToken)
+        {
+            if (address == null)
+                throw new System.ArgumentNullException("Address");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/get_tx_received/DOGE/{address}");
+            urlBuilder_.Replace("{address}", System.Uri.EscapeDataString(ConvertToString(address, System.Globalization.CultureInfo.InvariantCulture)));
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<GetAddressReceivedTxsResponse>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<Error>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<Error>("Unexpected error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
         /// <summary>Broadcasts a signed raw transaction to the network</summary>
         /// <returns>An object containing the TXID if the broadcast was successful</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -318,7 +490,11 @@ namespace VEDriversLite.DogeAPI
                 throw new System.ArgumentNullException("Add TxHex into body");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/pushtx");
+            //urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/send_tx/DOGE");
+            //var bsurl = "https://dogechain.info/api/v1/";
+            var bsurl = "https://api.blockchair.com/dogecoin/";
+            //urlBuilder_.Append(bsurl != null ? bsurl.TrimEnd('/') : "").Append("/pushtx");
+            urlBuilder_.Append(bsurl != null ? bsurl.TrimEnd('/') : "").Append("/push/transaction");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -329,6 +505,8 @@ namespace VEDriversLite.DogeAPI
                     var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
+                    //request_.Headers.Add("Access-Control-Request-Method", "POST, OPTIONS");
+                    //request_.Headers.Add("Access-Control-Request-Headers", "Authorization, Content-Type");
                     request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -729,102 +907,284 @@ namespace VEDriversLite.DogeAPI
         }
     }
 
+
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class GetAddressBalanceResponse
     {
-        /// <summary>Balance on the address</summary>
-        [Newtonsoft.Json.JsonProperty("balance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double Balance { get; set; }
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Status { get; set; }
 
         /// <summary>Success flag</summary>
-        [Newtonsoft.Json.JsonProperty("sucess", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Success { get; set; }
+        [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public GetAddressBalanceResponseData Data { get; set; }
+    }
 
-        /// <summary>Error message if any</summary>
-        [Newtonsoft.Json.JsonProperty("error", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Error { get; set; }
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class GetAddressBalanceResponseData
+    {
+        /// <summary>Balance on the address</summary>
+        [Newtonsoft.Json.JsonProperty("network", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Network { get; set; }
 
+        /// <summary>Balance on the address</summary>
+        [Newtonsoft.Json.JsonProperty("address", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Address { get; set; }
+
+        /// <summary>Balance on the address</summary>
+        [Newtonsoft.Json.JsonProperty("confirmed_balance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Balance { get; set; }
+
+        /// <summary>Balance on the address</summary>
+        [Newtonsoft.Json.JsonProperty("unconfirmed_balance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double UnconfirmedBalance { get; set; }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class GetAddressUtxosResponse
     {
-
-        /// <summary>Array of transaction outputs</summary>
-        [Newtonsoft.Json.JsonProperty("unspent_outputs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Utxo> Utxos { get; set; }
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Status { get; set; }
 
         /// <summary>Success flag</summary>
-        [Newtonsoft.Json.JsonProperty("sucess", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Success { get; set; }
+        [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public GetAddressUtxosResponseData Data { get; set; }
+    }
 
-        /// <summary>Error message if any</summary>
-        [Newtonsoft.Json.JsonProperty("error", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Error { get; set; }
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class GetAddressUtxosResponseData
+    {
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("network", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string network { get; set; }
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("address", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string address { get; set; }
+
+        /// <summary>Array of transaction outputs</summary>
+        [Newtonsoft.Json.JsonProperty("txs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<Utxo> Utxos { get; set; }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Utxo
     {
         /// <summary>TxId hash</summary>
-        [Newtonsoft.Json.JsonProperty("tx_hash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("txid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string TxId { get; set; }
         /// <summary>Script signature</summary>
-        [Newtonsoft.Json.JsonProperty("script", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("script_asm", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Script { get; set; }
+        /// <summary>Script signature</summary>
+        [Newtonsoft.Json.JsonProperty("script_hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ScriptHex { get; set; }
 
         /// <summary>Index of the output</summary>
-        [Newtonsoft.Json.JsonProperty("tx_output_n", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("output_no", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int N { get; set; }
 
         /// <summary>Value in satoshi</summary>
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double Value { get; set; }
+        public string Value { get; set; }
 
         /// <summary>Number of confirmaions</summary>
         [Newtonsoft.Json.JsonProperty("confirmations", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int Confirmations { get; set; }
+
+        /// <summary>Number of confirmaions</summary>
+        [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Time { get; set; }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class GetAddressSpentTxsResponse
+    {
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Status { get; set; }
+
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public GetAddressSpentTxsResponseData Data { get; set; }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class GetAddressSpentTxsResponseData
+    {
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("network", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string network { get; set; }
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("address", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string address { get; set; }
+
+        /// <summary>Array of transaction outputs</summary>
+        [Newtonsoft.Json.JsonProperty("txs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<SpentTx> Transactions { get; set; }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class SpentTx
+    {
+        /// <summary>TxId hash</summary>
+        [Newtonsoft.Json.JsonProperty("txid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TxId { get; set; }
+        /// <summary>Script signature</summary>
+        [Newtonsoft.Json.JsonProperty("script_asm", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Script { get; set; }
+        /// <summary>Script signature</summary>
+        [Newtonsoft.Json.JsonProperty("script_hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ScriptHex { get; set; }
+
+        /// <summary>Index of the output</summary>
+        [Newtonsoft.Json.JsonProperty("input_no", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int N { get; set; }
+
+        /// <summary>Value in satoshi</summary>
+        [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Value { get; set; }
+
+        /// <summary>Number of confirmaions</summary>
+        [Newtonsoft.Json.JsonProperty("confirmations", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Confirmations { get; set; }
+
+        /// <summary>Number of confirmaions</summary>
+        [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Time { get; set; }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class GetAddressReceivedTxsResponse
+    {
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Status { get; set; }
+
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public GetAddressReceivedTxsResponseData Data { get; set; }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class GetAddressReceivedTxsResponseData
+    {
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("network", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string network { get; set; }
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("address", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string address { get; set; }
+
+        /// <summary>Array of transaction outputs</summary>
+        [Newtonsoft.Json.JsonProperty("txs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<ReceivedTx> Transactions { get; set; }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class ReceivedTx
+    {
+        /// <summary>TxId hash</summary>
+        [Newtonsoft.Json.JsonProperty("txid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TxId { get; set; }
+        /// <summary>Script signature</summary>
+        [Newtonsoft.Json.JsonProperty("script_asm", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Script { get; set; }
+        /// <summary>Script signature</summary>
+        [Newtonsoft.Json.JsonProperty("script_hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ScriptHex { get; set; }
+
+        /// <summary>Index of the output</summary>
+        [Newtonsoft.Json.JsonProperty("output_no", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int N { get; set; }
+
+        /// <summary>Value in satoshi</summary>
+        [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Value { get; set; }
+
+        /// <summary>Number of confirmaions</summary>
+        [Newtonsoft.Json.JsonProperty("confirmations", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Confirmations { get; set; }
+
+        /// <summary>Number of confirmaions</summary>
+        [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Time { get; set; }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class BroadcastTxRequest
     {
         /// <summary>Signed raw tx hex to broadcast</summary>
-        [Newtonsoft.Json.JsonProperty("tx", Required = Newtonsoft.Json.Required.Always)]
-        public string TxHex { get; set; }
-
+        [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Always)]
+        public string data { get; set; }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class BroadcastTxResponse
     {
         /// <summary>Txid of successfully broadcasted transaction</summary>
+        [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public BTData Data { get; set; }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class BTData
+    {
+        /// <summary>Txid of successfully broadcasted transaction</summary>
+        [Newtonsoft.Json.JsonProperty("transaction_hash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TxId { get; set; }
+    }
+
+    /* for dogechain.info
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class BroadcastTxResponse
+    {
+        /// <summary>Txid of successfully broadcasted transaction</summary>
+        [Newtonsoft.Json.JsonProperty("success", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Status { get; set; }
+
+        /// <summary>Success flag</summary>
         [Newtonsoft.Json.JsonProperty("tx_hash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string TxId { get; set; }
 
-        /// <summary>Success flag</summary>
-        [Newtonsoft.Json.JsonProperty("sucess", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Success { get; set; }
+    }
+    */
+    /* for chain.so
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class BroadcastTxResponse
+    {
+        /// <summary>Txid of successfully broadcasted transaction</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Status { get; set; }
 
-        /// <summary>Error message if any</summary>
-        [Newtonsoft.Json.JsonProperty("error", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Error { get; set; }
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public BroadcastTxResponseData Data { get; set; }
+
+    }
+    */
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class BroadcastTxResponseData
+    {
+        /// <summary>Txid of successfully broadcasted transaction</summary>
+        [Newtonsoft.Json.JsonProperty("txid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TxId { get; set; }
+
+        /// <summary>Success flag</summary>
+        [Newtonsoft.Json.JsonProperty("network", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Network { get; set; }
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class GetTransactionInfoResponse
     {
-        /// <summary>Transaction object</summary>
-        [Newtonsoft.Json.JsonProperty("transaction", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public TransactionResponseObject Transaction { get; set; }
-        
         /// <summary>Success flag</summary>
-        [Newtonsoft.Json.JsonProperty("sucess", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Success { get; set; }
-
-        /// <summary>Error message if any</summary>
-        [Newtonsoft.Json.JsonProperty("error", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Error { get; set; }
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Success { get; set; }
+        /// <summary>Transaction object</summary>
+        [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public TransactionResponseObject Transaction { get; set; }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
@@ -832,20 +1192,27 @@ namespace VEDriversLite.DogeAPI
     {
 
         /// <summary>TxId of transaction</summary>
-        [Newtonsoft.Json.JsonProperty("hash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("txid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Txid { get; set; }
 
+        /// <summary>TxId of transaction</summary>
+        [Newtonsoft.Json.JsonProperty("network", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Network { get; set; }
+
         /// <summary>Blockhash of transaction</summary>
-        [Newtonsoft.Json.JsonProperty("block_hash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("blockhash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string BlockHash { get; set; }
+        /// <summary>Blockhash of transaction</summary>
+        [Newtonsoft.Json.JsonProperty("tx_hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TxHex { get; set; }
 
         /// <summary>Transaction version</summary>
         [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Version { get; set; }
+        public int Version { get; set; }
 
         /// <summary>Transaction locktime</summary>
         [Newtonsoft.Json.JsonProperty("locktime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Locktime { get; set; }
+        public int Locktime { get; set; }
 
         /// <summary>Array of transaction inputs</summary>
         [Newtonsoft.Json.JsonProperty("inputs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -857,30 +1224,15 @@ namespace VEDriversLite.DogeAPI
 
         /// <summary>Block time of this transaction</summary>
         [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Blocktime { get; set; }
+        public double? Time { get; set; }
 
         /// <summary>Block height of this transaction</summary>
-        [Newtonsoft.Json.JsonProperty("blockheight", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Blockheight { get; set; }
-
-        /// <summary>Total Doge sent in this transaction in satoshis</summary>
-        [Newtonsoft.Json.JsonProperty("outputs_value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Totalsent { get; set; }
-
-        /// <summary>Total Doge used as fee for this transcation in satoshis</summary>
-        [Newtonsoft.Json.JsonProperty("fee", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Fee { get; set; }
+        [Newtonsoft.Json.JsonProperty("size", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double? Size { get; set; }
 
         /// <summary>Number of transaction confirmations</summary>
         [Newtonsoft.Json.JsonProperty("confirmations", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Confirmations { get; set; }
-
-        /// <summary>Count of inputs</summary>
-        [Newtonsoft.Json.JsonProperty("inputs_n", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? InputsN { get; set; }
-        /// <summary>Count of outputs</summary>
-        [Newtonsoft.Json.JsonProperty("outputs_n", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? OutputsN { get; set; }
 
     }
 
@@ -888,53 +1240,37 @@ namespace VEDriversLite.DogeAPI
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Vin
     {
-        /// <summary>TxId of the input</summary>
-        [Newtonsoft.Json.JsonProperty("txid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Txid { get; set; }
-
         /// <summary> Sender Address </summary>
         [Newtonsoft.Json.JsonProperty("address", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Addr { get; set; }
 
-        /// <summary>Output index</summary>
-        [Newtonsoft.Json.JsonProperty("pos", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Vout { get; set; }
-
         /// <summary> Sender Script signature </summary>
-        [Newtonsoft.Json.JsonProperty("scriptSig", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public ScriptSig ScriptSig { get; set; }
+        [Newtonsoft.Json.JsonProperty("script", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ScriptSig { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("sequence", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Sequence { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("previous_output", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("from_output", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public PreviousOutput PreviousOutput { get; set; }
 
         /// <summary>Value of input in Doge satoshi</summary>
+        [Newtonsoft.Json.JsonProperty("input_no", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int N { get; set; }
+
+        /// <summary>Value of input in Doge satoshi</summary>
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Value { get; set; }
+        public string Value { get; set; }
 
     }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class ScriptSig
-    {
-        /// <summary> Sender Script signature in hex format </summary>
-        [Newtonsoft.Json.JsonProperty("hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Hex { get; set; }
-    }
-
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class PreviousOutput
     {
         /// <summary> Previous output TxId hash </summary>
-        [Newtonsoft.Json.JsonProperty("hash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("txid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string TxId { get; set; }
 
         /// <summary> Previous output index </summary>
-        [Newtonsoft.Json.JsonProperty("pos", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? N { get; set; }
+        [Newtonsoft.Json.JsonProperty("output_no", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int N { get; set; }
     }
 
 
@@ -943,11 +1279,11 @@ namespace VEDriversLite.DogeAPI
     {
         /// <summary>Value of the output in Doge satoshi</summary>
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Value { get; set; }
+        public string Value { get; set; }
 
         /// <summary>Output index</summary>
-        [Newtonsoft.Json.JsonProperty("pos", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? N { get; set; }
+        [Newtonsoft.Json.JsonProperty("output_no", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int N { get; set; }
 
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Type { get; set; }
@@ -956,8 +1292,11 @@ namespace VEDriversLite.DogeAPI
         [Newtonsoft.Json.JsonProperty("address", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Address { get; set; }
 
-    }
+        /// <summary> Receiver Address </summary>
+        [Newtonsoft.Json.JsonProperty("script", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Script { get; set; }
 
+    }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class RpcRequest

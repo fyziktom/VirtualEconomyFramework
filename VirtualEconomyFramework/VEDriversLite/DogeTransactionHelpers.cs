@@ -1,6 +1,7 @@
 ﻿using NBitcoin;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -89,9 +90,11 @@ namespace VEDriversLite
                 var addrutxos = await AddressUtxosAsync(address.ToString());
 
                 // add all spendable coins of this address
-                foreach (var inp in addrutxos.Utxos)
-                    coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money((int)inp.Value), address.ScriptPubKey));
-
+                foreach (var inp in addrutxos.Data.Utxos)
+                {
+                    var val = (ulong)(Convert.ToDouble(inp.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio);
+                    coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money(val), address.ScriptPubKey));
+                }
                 // add signature to inputs before signing
                 foreach (var inp in transaction.Inputs)
                     inp.ScriptSig = address.ScriptPubKey;
@@ -122,7 +125,7 @@ namespace VEDriversLite
             try
             {
                 var txhex = transaction.ToHex();
-                var res = await BroadcastTxAsync(new BroadcastTxRequest() { TxHex = txhex });
+                var res = await BroadcastTxAsync(new BroadcastTxRequest() { data = txhex });
                 return res;
             }
             catch (Exception ex)
@@ -130,7 +133,6 @@ namespace VEDriversLite
                 throw ex;
             }
         }
-
 
         public static string SendDogeTransaction(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 10000)
         {
@@ -202,14 +204,18 @@ namespace VEDriversLite
             {
                 var allNeblCoins = 0.0;
                 foreach (var u in utxos)
-                    allNeblCoins += (double)u.Value;
+                    allNeblCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio;
+
+                if (allNeblCoins < (data.Amount * FromSatToMainRatio))
+                    throw new Exception("Not enough Doge to spend.");
 
                 var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
                 var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
-                transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
             }
             catch (Exception ex)
             {
@@ -284,7 +290,7 @@ namespace VEDriversLite
             {
                 var allNeblCoins = 0.0;
                 foreach (var u in utxos)
-                    allNeblCoins += (double)u.Value;
+                    allNeblCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio;
 
                 var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
                 var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
@@ -296,7 +302,8 @@ namespace VEDriversLite
                     Value = 0,    
                     ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
                 });
-                transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
             }
             catch (Exception ex)
             {
@@ -313,6 +320,66 @@ namespace VEDriversLite
             }
         }
 
+
+        public static async Task<(bool, double)> ParseTotalSentValue(GetTransactionInfoResponse txinfo)
+        {
+            if (txinfo == null)
+                return (false, 0.0);
+            if (txinfo.Success != "success")
+                return (false, 0.0);
+            if (txinfo.Transaction.Vout == null || txinfo.Transaction.Vout.Count == 0)
+                return (false, 0.0);
+            var value = 0.0;
+            var vouts = txinfo.Transaction.Vout.ToList();
+            for (var i = 0; i < (vouts.Count - 1); i++)
+            {
+                var o = vouts[i];
+                if (!string.IsNullOrEmpty(o.Script) && !o.Script.Contains("OP_RETURN"))
+                {
+                    var v = Convert.ToDouble(o.Value, CultureInfo.InvariantCulture);
+                    value += v;
+                }
+            }
+            return (true, value);
+        }
+
+        public static async Task<(bool,string)> ParseDogeMessage(GetTransactionInfoResponse txinfo)
+        {
+            if (txinfo == null)
+                return (false, "No input data provided.");
+            if (txinfo.Success != "success")
+                return (false, "No input data provided.");
+            if (txinfo.Transaction.Vout == null || txinfo.Transaction.Vout.Count == 0)
+                return (false, "No outputs in transaction.");
+            
+            foreach(var o in txinfo.Transaction.Vout)
+            {
+                if (!string.IsNullOrEmpty(o.Script) && o.Script.Contains("OP_RETURN"))
+                {
+                    var message = o.Script.Replace("OP_RETURN ", string.Empty);
+                    var bytes = HexStringToBytes(message);
+                    var msg = Encoding.UTF8.GetString(bytes);
+                    return (true,msg);
+                }
+            }
+
+            return (false, string.Empty);
+        }
+
+        public static byte[] HexStringToBytes(string hexString)
+        {
+            if (hexString == null)
+                throw new ArgumentNullException("hexString");
+            if (hexString.Length % 2 != 0)
+                throw new ArgumentException("hexString must have an even length", "hexString");
+            var bytes = new byte[hexString.Length / 2];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                string currentHex = hexString.Substring(i * 2, 2);
+                bytes[i] = Convert.ToByte(currentHex, 16);
+            }
+            return bytes;
+        }
 
         ///////////////////////////////////////////
         // calls of Doge API and helpers
@@ -336,7 +403,7 @@ namespace VEDriversLite
         public static async Task<string> BroadcastTxAsync(BroadcastTxRequest data)
         {
             var info = await GetClient().BroadcastTxAsync(data);
-            return info.TxId;
+            return info.Data.TxId;
         }
 
         /// <summary>
@@ -362,6 +429,36 @@ namespace VEDriversLite
         }
 
         /// <summary>
+        /// Return address spended transaction list. 
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns>This object contains list of spended Txs.</returns>
+        public static async Task<List<SpentTx>> AddressSpendTxsAsync(string addr)
+        {
+            var txs = await GetClient().GetAddressSentTxAsync(addr);
+            if (txs.Data != null)
+                if (txs.Data.Transactions != null)
+                    return txs.Data.Transactions.ToList();
+
+            return new List<SpentTx>();
+        }
+
+        /// <summary>
+        /// Return address received transaction list. 
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns>This object contains list of spended Txs.</returns>
+        public static async Task<List<ReceivedTx>> AddressReceivedTxsAsync(string addr)
+        {
+            var txs = await GetClient().GetAddressReceivedTxAsync(addr);
+            if (txs.Data != null)
+                if (txs.Data.Transactions != null)
+                    return txs.Data.Transactions.ToList();
+
+            return new List<ReceivedTx>();
+        }
+
+        /// <summary>
         /// Return transaction object
         /// </summary>
         /// <param name="addr"></param>
@@ -384,22 +481,24 @@ namespace VEDriversLite
             var resp = new List<Utxo>();
 
             var addinfo = await GetClient().GetAddressUtxosAsync(addr);
-            var utxos = addinfo.Utxos;
+            var utxos = addinfo.Data.Utxos;
             if (utxos == null)
                 return resp;
             utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
 
             var founded = 0.0;
             foreach (var utx in utxos)
-                if (utx.Confirmations > MinimumConfirmations && utx.Value > 10000)
-                    if (((double)utx.Value) > (minAmount * FromSatToMainRatio))
+            {
+                var val = Convert.ToDouble(utx.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio;
+                if (utx.Confirmations > MinimumConfirmations && val > 10000)
+                    if (val > (minAmount * FromSatToMainRatio))
                     {
                         resp.Add(utx);
-                        founded += ((double)utx.Value / FromSatToMainRatio);
+                        founded += (val / FromSatToMainRatio);
                         if (founded > requiredAmount)
                             return resp;
                     }
-
+            }
             return resp;
         }
 

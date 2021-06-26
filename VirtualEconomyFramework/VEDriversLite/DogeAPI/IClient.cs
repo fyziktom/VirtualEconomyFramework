@@ -36,6 +36,21 @@ namespace VEDriversLite.DogeAPI
         System.Threading.Tasks.Task<GetAddressUtxosResponse> GetAddressUtxosAsync(string address);
         System.Threading.Tasks.Task<GetAddressUtxosResponse> GetAddressUtxosAsync(string address, System.Threading.CancellationToken cancellationToken);
 
+
+        /// <summary>Doge Address spended transactions</summary>
+        /// <param name="address">Doge Address</param>
+        /// <returns>Object containing collection of Utxos</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<GetAddressSpentTxsResponse> GetAddressSentTxAsync(string address);
+        System.Threading.Tasks.Task<GetAddressSpentTxsResponse> GetAddressSentTxAsync(string address, System.Threading.CancellationToken cancellationToken);
+
+        /// <summary>Doge Address spended transactions</summary>
+        /// <param name="address">Doge Address</param>
+        /// <returns>Object containing collection of Utxos</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<GetAddressReceivedTxsResponse> GetAddressReceivedTxAsync(string address);
+        System.Threading.Tasks.Task<GetAddressReceivedTxsResponse> GetAddressReceivedTxAsync(string address, System.Threading.CancellationToken cancellationToken);
+
     }
 
 }

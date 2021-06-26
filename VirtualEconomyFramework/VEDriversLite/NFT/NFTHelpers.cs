@@ -28,6 +28,7 @@ namespace VEDriversLite.NFT
         public string Utxo { get; set; } = string.Empty;
         public string SourceTxId { get; set; } = string.Empty;
         public string NFTOriginTxId { get; set; } = string.Empty;
+        public bool Used { get; set; } = false;
         public Dictionary<string, string> NFTMetadata { get; set; } = new Dictionary<string, string>();
     }
 
@@ -80,7 +81,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="utxo"></param>
         /// <returns></returns>
-        public static async Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo)
+        public static async Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo, bool checkIfUsed = false)
         {
             var result = new LoadNFTOriginDataDto();
             var txid = utxo;
@@ -97,6 +98,10 @@ namespace VEDriversLite.NFT
                             result.NFTMetadata = meta;
                             result.SourceTxId = check.Item2;
                             result.NFTOriginTxId = txid;
+                            if (checkIfUsed && !result.Used)
+                                if (meta.TryGetValue("Used", out var u))
+                                    if (u == "true")
+                                        result.Used = true;
                             return result;
                         }
                         else
@@ -106,6 +111,14 @@ namespace VEDriversLite.NFT
                     }
                     else
                     {
+                        if (checkIfUsed && !result.Used)
+                        {
+                            var meta = await CheckIfContainsNFTData(txid);
+                            if (meta != null && meta.TryGetValue("Used", out var u))
+                                if (u == "true")
+                                    result.Used = true;
+                        }
+
                         txid = check.Item2;
                     }
 
@@ -767,6 +780,51 @@ namespace VEDriversLite.NFT
                 sendUtxo = new List<string>() { NFT.Utxo },
                 SenderAddress = address,
                 ReceiverAddress = receiver
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+                if (rtxid != null)
+                    return rtxid;
+                else
+                    return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// This function will write Used flag to the NFT Ticket
+        /// </summary>
+        /// <param name="address">adress of sender</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata. It is NFT what you are sending.</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <returns>New Tx Id hash</returns>
+        public static async Task<string> UseNFTTicket(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos)
+        {
+            if (NFT.Type != NFTTypes.Ticket)
+                throw new Exception("This is not NFT Ticket.");
+
+            var metadata = await NFT.GetMetadata();
+
+            if (!metadata.ContainsKey("Used"))
+                metadata.Add("Used", "true");
+            metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
+
+            // fill input data for sending tx
+            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Id = NFT.TokenId, // id of token
+                Metadata = metadata,
+                Amount = 1,
+                sendUtxo = new List<string>() { NFT.Utxo },
+                SenderAddress = address,
+                ReceiverAddress = address
             };
 
             try

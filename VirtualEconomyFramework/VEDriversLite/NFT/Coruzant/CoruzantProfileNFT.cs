@@ -52,7 +52,7 @@ namespace VEDriversLite.NFT.Coruzant
             Age = pnft.Age;
         }
 
-        public override async Task ParseOriginData()
+        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
@@ -81,7 +81,6 @@ namespace VEDriversLite.NFT.Coruzant
                     Age = Convert.ToInt32(age);
                 if (nftData.NFTMetadata.TryGetValue("Type", out var type))
                     TypeText = type;
-
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;

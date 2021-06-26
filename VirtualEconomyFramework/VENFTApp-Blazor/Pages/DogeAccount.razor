@@ -51,6 +51,7 @@
                                         <input type="number" step="1" min="1" max="@AppData.DogeAccount.TotalBalance" @bind="@AmountToSend" />
                                     </div>
                                 </div>
+                                <VENFTApp_Blazor.Components.UploadImage ImageLinkChanged="@ImageLinkChanged"/>
 
                                 <div class="row" style="margin-top:20px; margin-bottom:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
@@ -62,6 +63,80 @@
                     </div>
                 </div>
             </Spin>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom:20px;">
+        <div class="col">
+            <div class="card" style="margin-top:10px;">
+                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                    <h5 class="text-center">Received Transactions</h5>
+                </div>
+                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                    <div class="row">
+                        <div class="col">
+                            <table style="width:100%;">
+                                <thead style="width:100%;">
+                                    <tr>
+                                        <th>Date Time</th>
+                                        <th>Amount</th>
+                                        <th>Confirmations</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="width:100%;">
+                                    @foreach (var tx in AppData.DogeAccount.ReceivedTransactions)
+                                    {
+                                        <tr>
+                                            <td>@TimeHelpers.UnixTimestampToDateTime(tx.Time * 1000).ToString()</td>
+                                            <td>@tx.Value</td>
+                                            <td>@tx.Confirmations</td>
+                                            <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx.TxId)"><i class="oi oi-info"></i></button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom:20px;">
+        <div class="col">
+            <div class="card" style="margin-top:10px;">
+                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                    <h5 class="text-center">Sent Transactions</h5>
+                </div>
+                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                    <div class="row">
+                        <div class="col">
+                            <table style="width:100%;">
+                                <thead style="width:100%;">
+                                    <tr>
+                                        <th>Date Time</th>
+                                        <th>Amount</th>
+                                        <th>Confirmations</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="width:100%;">
+                                    @foreach (var tx in AppData.DogeAccount.SentTransactions)
+                                    {
+                                        <tr>
+                                            <td>@TimeHelpers.UnixTimestampToDateTime(tx.Time * 1000).ToString()</td>
+                                            <td>@tx.Value</td>
+                                            <td>@tx.Confirmations</td>
+                                            <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx.TxId)"><i class="oi oi-info"></i></button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -110,11 +185,22 @@
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
+<Modal Title="Transaction Details"
+       Visible="@txDetailsVisible"
+       OnOk="@CloseTxDetails"
+       OnCancel="@CloseTxDetails">
+    <VENFTApp_Blazor.Components.DogeTransactionDetails TxId="@txDetailsTxId" />
+</Modal>
+
 @code {
+
+    string txDetailsTxId = string.Empty;
+    bool txDetailsVisible = false;
 
     private bool sendingTransaction = false;
     private double AmountToSend = 1;
     private string receiver = string.Empty;
+    private string message = string.Empty;
     public string Receiver
     {
         get => receiver;
@@ -145,6 +231,24 @@
         return base.OnInitializedAsync();
     }
 
+    void ImageLinkChanged(string newLink)
+    {
+        message = newLink;
+    }
+
+    private async Task CloseTxDetails(MouseEventArgs e)
+    {
+        txDetailsVisible = false;
+    }
+
+    private async Task ShowTxDetails(string txId)
+    {
+        txDetailsTxId = txId;
+        StateHasChanged();
+        txDetailsVisible = true;
+        StateHasChanged();
+    }
+
     private async Task SendTx()
     {
         try
@@ -152,7 +256,7 @@
             sendingTransaction = true;
             StateHasChanged();
 
-            var res = await AppData.DogeAccount.SendPayment(Receiver, AmountToSend);
+            var res = await AppData.DogeAccount.SendPayment(Receiver, AmountToSend, message);
             Console.WriteLine("Tx send result: " + res);
         }
         catch (Exception ex)

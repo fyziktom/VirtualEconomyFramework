@@ -83,7 +83,7 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public override Task ParseOriginData()
+        public override Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             throw new NotImplementedException();
         }

@@ -50,7 +50,7 @@ namespace VEDriversLite.NFT
 
         Task FillCommon(INFT nft);
         Task Fill(INFT NFT);
-        Task ParseOriginData();
+        Task ParseOriginData(IDictionary<string,string> lastmetadata);
         Task LoadHistory();
         Task StopRefreshingData();
         Task StartRefreshingTxData();

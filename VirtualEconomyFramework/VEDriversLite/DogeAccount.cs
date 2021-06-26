@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +41,16 @@ namespace VEDriversLite
         /// Actual list of all Utxos on this address.
         /// </summary>
         public List<Utxo> Utxos { get; set; } = new List<Utxo>();
+
+        /// <summary>
+        /// Actual list of last 100 Spended transactions on this address.
+        /// </summary>
+        public List<SpentTx> SentTransactions { get; set; } = new List<SpentTx>();
+
+        /// <summary>
+        /// Actual list of last 100 Received transactions on this address.
+        /// </summary>
+        public List<ReceivedTx> ReceivedTransactions { get; set; } = new List<ReceivedTx>();
 
         /// <summary>
         /// This event is called whenever info about the address is reloaded. It is periodic event.
@@ -278,7 +289,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="interval">Default interval is 3000 = 3 seconds</param>
         /// <returns></returns>
-        public async Task<string> StartRefreshingData(int interval = 3000)
+        public async Task<string> StartRefreshingData(int interval = 5000)
         {
             try
             {
@@ -297,6 +308,8 @@ namespace VEDriversLite
                     try
                     {
                         await ReloadUtxos();
+                        await GetListOfReceivedTransactions();
+                        await GetListOfSentTransactions();
                         Refreshed?.Invoke(this, null);
                     }
                     catch (Exception ex)
@@ -319,7 +332,7 @@ namespace VEDriversLite
         public async Task ReloadUtxos()
         {
             var ux = await DogeTransactionHelpers.AddressUtxosAsync(Address);
-            var ouxox = ux.Utxos.OrderBy(u => u.Confirmations).ToList();
+            var ouxox = ux.Data.Utxos.OrderBy(u => u.Confirmations).ToList();
 
             if (ouxox.Count > 0)
             {
@@ -331,17 +344,55 @@ namespace VEDriversLite
                 foreach (var u in ouxox)
                 {
                     Utxos.Add(u);
-
                     if (u.Confirmations == 0)
-                        TotalUnconfirmedBalance += ((double)u.Value / DogeTransactionHelpers.FromSatToMainRatio);
+                        TotalUnconfirmedBalance += (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture));
                     else
-                        TotalSpendableBalance += ((double)u.Value / DogeTransactionHelpers.FromSatToMainRatio);
+                        TotalSpendableBalance += (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture));
                 }
 
                 TotalBalance = TotalSpendableBalance + TotalUnconfirmedBalance;
             }
         }
 
+        /// <summary>
+        /// This function will get list of spended transaction
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public async Task<ICollection<SpentTx>> GetListOfSentTransactions()
+        {
+            try
+            {
+                var txs = await DogeTransactionHelpers.AddressSpendTxsAsync(Address);
+                SentTransactions = txs;
+                return txs;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load txs history");
+            }
+            return new List<SpentTx>();
+        }
+
+        /// <summary>
+        /// This function will get list of received transaction
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public async Task<ICollection<ReceivedTx>> GetListOfReceivedTransactions()
+        {
+            try
+            {
+                var txs = await DogeTransactionHelpers.AddressReceivedTxsAsync(Address);
+                ReceivedTransactions = txs;
+                return txs;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load txs history");
+            }
+            return new List<ReceivedTx>();
+        }
 
         /// <summary>
         /// This function will check if there is some spendable doge of specific amount and returns list of the utxos for the transaction

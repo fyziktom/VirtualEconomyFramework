@@ -39,7 +39,7 @@ namespace VEDriversLite.NFT
 
         public bool IsReceivedMessage { get; set; } = false;
 
-        public override async Task ParseOriginData()
+        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             await GetPartner();
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);

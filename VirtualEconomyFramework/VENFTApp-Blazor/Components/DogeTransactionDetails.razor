@@ -1,0 +1,240 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.DogeAPI
+@inject AppData AppData
+
+@if (txInDetails != null)
+{
+<div class="row">
+    <div class="col">
+        <Spin Tip="Loading..." Spinning="@txDetailsLoading">
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>Tx Id</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <a href="https://dogechain.info/tx/@txId" target="_blank">To Doge Explorer</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <a href="https://dogechain.info/address/@fromAddress" target="_blank">@fromAddress</a>
+                        </div>
+                    </div>
+                    @if (receivedFromAnotherAddress)
+                    {
+                        <div class="row">
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <span>Received from Another Address</span>
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>Total Send: @txvalue DOGE</span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>Time: @txInDetailsTime</span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>Confirmations: @confirmations</span>
+                        </div>
+                    </div>
+                    @if (NFTTransaction)
+                    {
+
+                        @if (ImageLinkInTransaction)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <span>This is Transaction carry the image!</span>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <img src="@NFTMessage" style="min-height:100px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <span>This is Transaction carry the message!</span>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <span>@NFTMessage</span>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </Spin>
+    </div>
+</div>
+}
+
+@code {
+
+    private string txId = string.Empty;
+    private int confirmations = 0;
+
+    [Parameter]
+    public string TxId
+    {
+        get => txId;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                txId = value;
+                if (lasttxid != value)
+                    Load();
+            }
+        }
+    }
+
+    bool txDetailsLoading = false;
+    GetTransactionInfoResponse txInDetails = new GetTransactionInfoResponse();
+
+    DateTime txInDetailsTime = DateTime.MinValue;
+    bool NFTTransaction = false;
+    bool ImageLinkInTransaction = false;
+    string NFTMessage = string.Empty;
+    string nftTxId = string.Empty;
+    string fromAddress = string.Empty;
+    bool receivedFromAnotherAddress = false;
+    private System.Threading.Timer txdetailsTimer;
+    double txvalue = 0.0;
+
+    string lasttxid = string.Empty;
+
+    protected override Task OnInitializedAsync()
+    {
+        txInDetails.Transaction = new TransactionResponseObject();
+        StartRefreshing();
+        return base.OnInitializedAsync();
+    }
+
+    async Task StartRefreshing()
+    {
+        await Load();
+        txdetailsTimer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            if (!string.IsNullOrEmpty(txId))
+            {
+                try
+                {
+                    await Load();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot read tx details. " + ex.Message);
+                }
+            }
+
+        }, new System.Threading.AutoResetEvent(false), 10000, 10000);
+    }
+
+    async Task Load()
+    {
+        try
+        {
+            txInDetails = new GetTransactionInfoResponse();
+            txInDetailsTime = DateTime.MinValue;
+            string nftTxId = string.Empty;
+            string fromAddress = string.Empty;
+
+            if (string.IsNullOrEmpty(txId))
+                return;
+
+            txDetailsLoading = true;
+            StateHasChanged();
+
+            var txinfo = await DogeTransactionHelpers.TransactionInfoAsync(txId);
+            try
+            {
+                var am = await DogeTransactionHelpers.ParseTotalSentValue(txinfo);
+                if (am.Item1)
+                    txvalue = am.Item2;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("cannot convert value of transaction.");
+            }
+
+            var msg = await DogeTransactionHelpers.ParseDogeMessage(txinfo);
+            if (msg.Item1)
+            {
+                NFTTransaction = true;
+                NFTMessage = msg.Item2;
+                if (NFTMessage.Contains("ipfs"))
+                {
+                    ImageLinkInTransaction = true;
+                }
+                else
+                {
+                    ImageLinkInTransaction = false;
+                }
+            }
+            else
+            {
+                NFTTransaction = false;
+                NFTMessage = string.Empty;
+                ImageLinkInTransaction = false;
+            }
+
+            try
+            {
+                var vins = txinfo.Transaction.Vin.ToList();
+                if (vins != null)
+                {
+                    if (vins.Count > 0)
+                    {
+                        fromAddress = vins[0].Addr;
+                        if (fromAddress == null)
+                            fromAddress = string.Empty;
+
+                        if (fromAddress != AppData.Account.Address)
+                            receivedFromAnotherAddress = true;
+                        else
+                            receivedFromAnotherAddress = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during geting the address. " + ex.Message);
+                txDetailsLoading = false;
+            }
+
+            if (txinfo != null)
+            {
+                txInDetails = txinfo;
+                txInDetailsTime = TimeHelpers.UnixTimestampToDateTime((double)txinfo.Transaction.Time * 1000);
+                confirmations = Convert.ToInt32(txinfo.Transaction.Confirmations);
+                txDetailsLoading = false;
+                StateHasChanged();
+
+                lasttxid = txId;
+            }
+        }
+        catch (Exception ex)
+        {
+            txDetailsLoading = false;
+            Console.WriteLine("Error during loading tx details. " + ex.Message);
+            StateHasChanged();
+        }
+    }
+}

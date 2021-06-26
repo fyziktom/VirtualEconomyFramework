@@ -678,7 +678,7 @@ namespace VEconomy.Controllers
 
         [HttpPut]
         [Route("MultiMintTicketNFT")]
-        public async Task<(bool, string)> MultiMintTicketNFT([FromBody] VEDLMintTicketNFTDto data)
+        public async Task<(bool,List<string>)> MultiMintTicketNFT([FromBody] VEDLMintTicketNFTDto data)
         {
             try
             {
@@ -705,8 +705,26 @@ namespace VEconomy.Controllers
                     nft.LocationCoordinates = data.locationCoordinates;
                     nft.Seat = data.seat;
                     nft.TicketClass = data.ticketClass;
-                    var res = await (account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.MintMultiNFT(nft, data.coppies);
-                    return res;
+
+                    (bool, List<string>) result = (false, new List<string>());
+                    if (data.coppies > 20)
+                    {
+                        var cps = data.coppies;
+                        var lots = 0;
+                        while(cps > 0)
+                        {
+                            lots += cps % 20;
+                            cps /= 20;
+                        }
+
+                    }
+                    else
+                    {
+                        var res = await (account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.MintMultiNFT(nft, data.coppies);
+                        result.Item1 = res.Item1;
+                        result.Item2.Add(res.Item2);
+                    }
+                    return result;
                 }
                 else
                 {

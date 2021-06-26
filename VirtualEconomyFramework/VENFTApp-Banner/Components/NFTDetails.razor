@@ -21,7 +21,65 @@
                     <span>Description: @NFT.Description</span>
                 </div>
             </div>
-            @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music)
+            @if (NFT.Type == NFTTypes.Ticket)
+            {
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Event Details</span>
+                    </div>
+                </div>
+                var nft = NFT as TicketNFT;
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <small>Date: @nft.EventDate.ToString()</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <small>Location: @nft.Location</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="http://www.google.com/maps/place/@nft.LocationCoordinates" target="_blank">Location Link</a>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(nft.Seat))
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small>Seat: @nft.Seat</small>
+                        </div>
+                    </div>
+                }
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="@nft.AuthorLink" target="_blank">Author Link</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="@nft.VideoLink" target="_blank">Video Link</a>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music)
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <a href="@NFT.Link" target="_blank">Connected Link</a>
+                        </div>
+                    </div>
+                }
+                @if (nft.Used)
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span><b>This ticket is Used!</b></span>
+                        </div>
+                    </div>
+                }
+            }
+            @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music && NFT.Type != NFTTypes.Ticket)
             {
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -56,14 +114,14 @@
                         @if (NFT.Type == NFTTypes.Music)
                         {
                             @if (!string.IsNullOrEmpty(NFT.Link))
-                            { 
-                                <video controls="" autoplay="" name="media" title="@NFT.Name">
+                            {
+                                <video controls="" autoplay="" name="media" title="@NFT.Name" style="min-height: 100px; max-height: 150px; width: auto; min-width: 150px; max-width: 250px;">
                                     <source src="@NFT.Link" type="audio/mpeg">
                                 </video>
                             }
                             else
                             {
-                                <Spin Tip="Loading..." Spinning="true" >
+                                <Spin Tip="Loading..." Spinning="true">
                                     <div style="width:100px; height:50px;"></div>
                                 </Spin>
                             }
@@ -84,6 +142,12 @@
                     </a>
                 </div>
             </div>
+            @if (NFT.PriceActive)
+            {
+                <div class="col w-100 d-flex justify-content-center align-items-center">
+                    <small class="text-muted">Setted Price: @NFT.Price NEBL</small>
+                </div>
+            }
             <NFTHistory Utxo="@NFT.Utxo" />
         </Spin>
     </div>

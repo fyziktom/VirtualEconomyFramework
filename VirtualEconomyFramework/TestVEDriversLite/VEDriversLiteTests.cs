@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -355,6 +356,7 @@ namespace TestVEDriversLite
             // create NFT object
             var nft = new TicketNFT("");
 
+            /*
             nft.Author = "fyziktom";
             nft.Name = "Birth of the fyziktom :D";
             nft.Description = "The moment when the fyziktom start to see the world with own eyes.";
@@ -371,8 +373,61 @@ namespace TestVEDriversLite
             nft.TicketClass = ClassOfNFTTicket.VIP;
             nft.VideoLink = "https://youtu.be/dwemJ4Sx1CA";
             nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmQ5qNNtShVqrZstzWMTZeWXFSnDojks3RWZpja6gJy8MJ";
+            */
 
-            var res = await account.MintMultiNFT(nft,0);
+            // count of the tickets
+            int cps = 1000;
+
+            Console.WriteLine("Start of minting tickets.");
+            int lots = 0;
+            int rest = 0;
+            rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
+            lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
+            (bool, string) res = (false, string.Empty);
+
+            if (lots > 1 || (lots == 1 && rest > 0))
+            {
+                var done = false;
+                for (int i = 0; i < lots; i++)
+                {
+                    Console.WriteLine("-----------------------------");
+                    Console.WriteLine($"Minting lot {i} from {lots}:");
+                    done = false;
+                    while (!done)
+                    { 
+                        res = await account.MintMultiNFT(nft, NeblioTransactionHelpers.MaximumTokensOutpus);
+                        done = res.Item1;
+                        if (!done)
+                        {
+                            Console.WriteLine("Waiting for spendable utxo...");
+                            await Task.Delay(5000);
+                        }
+                    }
+                    Console.WriteLine("New TxId hash is: ");
+                    Console.WriteLine(res.Item2);
+                }
+                if (rest > 0)
+                {
+                    Console.WriteLine($"Minting rest {rest} tickets:");
+                    done = false;
+                    while (!done)
+                    {
+                        res = await account.MintMultiNFT(nft, rest);
+                        done = res.Item1;
+                        if(!done)
+                        {
+                            Console.WriteLine("Waiting for spendable utxo...");
+                            await Task.Delay(5000);
+                        }
+                    }
+                    Console.WriteLine("New TxId hash is: ");
+                    Console.WriteLine(res.Item2);
+                }
+            }
+            else
+            {
+                res = await account.MintMultiNFT(nft, cps);
+            }
 
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
@@ -834,6 +889,25 @@ namespace TestVEDriversLite
             Console.WriteLine("Account Utxos:");
             dogeAccount.Utxos.ForEach(u => { Console.WriteLine($"Utxo: {u.TxId}:{u.N}"); });
             Console.WriteLine("-----------------------------------------------------");
+        }
+
+        [TestEntry]
+        public static void DogeGetTxDetails(string param)
+        {
+            DogeGetTxDetailsAsync(param);
+        }
+        public static async Task DogeGetTxDetailsAsync(string param)
+        {
+            Console.WriteLine("------------------------------------------------------");
+            Console.WriteLine("Request Tx Info");
+            var txid = param;
+            var txinfo = await DogeTransactionHelpers.TransactionInfoAsync(txid);
+            var msg = await DogeTransactionHelpers.ParseDogeMessage(txinfo);
+            Console.WriteLine("TxInfo:");
+            Console.WriteLine(JsonConvert.SerializeObject(txinfo, Formatting.Indented));
+            Console.WriteLine("-------------------------------------------------------");
+            if (msg.Item1)
+                Console.WriteLine("This Transaction contains message: " + msg.Item2);
         }
 
         [TestEntry]
