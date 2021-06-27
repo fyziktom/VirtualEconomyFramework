@@ -32,9 +32,22 @@
                         }
                         break;
                     case NFTTypes.Ticket:
+                        var tnft = nft as TicketNFT;
                         @if (!string.IsNullOrEmpty(nft.ImageLink))
                         {
-                            <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                            @if (tnft.MusicInLink)
+                            {
+                                <video name="media" style="max-width:250px; width:250px; max-height:200px; margin-bottom:70px;" controls>
+                                    <source src="@nft.ImageLink" type="audio/mpeg" autostart="false">
+                                </video>
+                            }
+                            else
+                            {
+                                @if (!string.IsNullOrEmpty(nft.ImageLink))
+                                {
+                                    <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                }
+                            }
                         }
                         else
                         {

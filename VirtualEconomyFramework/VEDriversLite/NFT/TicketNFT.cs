@@ -53,6 +53,7 @@ namespace VEDriversLite.NFT
             TicketClass = nft.TicketClass;
             EventId = nft.EventId;
             Seat = nft.Seat;
+            MusicInLink = nft.MusicInLink;
         }
 
         public double PriceInDoge { get; set; } = 0;
@@ -65,6 +66,7 @@ namespace VEDriversLite.NFT
         public double LocationCoordinatesLen { get; set; } = 0.0;
         public string Seat { get; set; } = string.Empty;
         public bool Used { get; set; } = false;
+        public bool MusicInLink { get; set; } = false;
         public string VideoLink { get; set; } = string.Empty;
         public string AuthorLink { get; set; } = string.Empty;
         public DateTime EventDate { get; set; } = DateTime.UtcNow;
@@ -82,6 +84,13 @@ namespace VEDriversLite.NFT
                     Used = true;
                 else
                     Used = false;
+            }
+            if (meta.TryGetValue("MusicInLink", out var mil))
+            {
+                if (mil == "true")
+                    MusicInLink = true;
+                else
+                    MusicInLink = false;
             }
             if (meta.TryGetValue("Location", out var location))
                 Location = location;
@@ -324,6 +333,8 @@ namespace VEDriversLite.NFT
             metadata.Add("EventDate", EventDate.ToString());
             if (!string.IsNullOrEmpty(VideoLink))
                 metadata.Add("VideoLink", VideoLink);
+            if (MusicInLink)
+                metadata.Add("MusicInLink", "true");
             metadata.Add("Location", Location);
             metadata.Add("LocationC", LocationCoordinates);
             if (!string.IsNullOrEmpty(Seat))
