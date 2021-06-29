@@ -1006,9 +1006,9 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="utxo"></param>
         /// <returns></returns>
-        public async Task<(bool, string)> ValidateNFTUtxo(string utxo)
+        public async Task<(bool, string)> ValidateNFTUtxo(string utxo, int index)
         {
-            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo);
+            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo, index);
             if (!u.Item1)
             {
                 var msg = $"Provided source tx transaction is not spendable. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmation.";
@@ -1324,6 +1324,48 @@ namespace VEDriversLite
                     if (NFT.Type == NFTTypes.Profile)
                         Profile = NFT as ProfileNFT;
 
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
+        /// This function will destroy provided NFTs. It means it will connect them again to one output/lot of tokens.
+        /// Now it is possible to destroy just same kind of tokens. The first provided NFT will define TokenId. Different tokensIds will be skipped.
+        /// Maximum to destroy in one transaction is 10 of NFTs
+        /// </summary>
+        /// <param name="tokenId">Token Id hash</param>
+        /// <param name="nfts">List of NFTs</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> DestroyNFTs(ICollection<INFT> nfts)
+        {
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                return (false, res.Item1);
+            }
+
+            try
+            {
+                // send tx
+                var rtxid = await NFTHelpers.DestroyNFTs(Address, AccountKey, nfts, res.Item2);
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "NFTs Destroyed.");
                     return (true, rtxid);
                 }
             }

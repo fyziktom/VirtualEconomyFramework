@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
 @inject AppData AppData
 @inject IJSRuntime jsRuntime
 
@@ -7,13 +8,9 @@
     <div class="card-header" style="padding: 0px;">
         <div class="row" style="max-width: 250px;height:200px;margin: 0px;">
             <div class="col d-flex justify-content-center align-items-center" style="padding: 0px;">
-                @if (DisplayCheckField)
-                {
-                    <input type="checkbox" style="position : absolute; right: 220px; top: 20px;" @onchange="eventArgs => { checkNFTChanged(eventArgs.Value); }" />
-                }
                 @switch (nft.Type)
                 {
-                    case NFTTypes.Image:
+                    case NFTTypes.CoruzantProfile:
                         @if (!string.IsNullOrEmpty(nft.ImageLink))
                         {
                             <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
@@ -25,14 +22,26 @@
                             </Spin>
                         }
                         break;
-                    case NFTTypes.Ticket:
-                        var tnft = nft as TicketNFT;
+                    case NFTTypes.CoruzantPost:
                         @if (!string.IsNullOrEmpty(nft.ImageLink))
                         {
-                            @if (tnft.MusicInLink)
+                            <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                        }
+                        else
+                        {
+                            <Spin Tip="Loading..." Style="min-width:50px;">
+                                <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
+                            </Spin>
+                        }
+                        break;
+                    case NFTTypes.CoruzantPodcast:
+                        var tnft = nft as CoruzantPostNFT;
+                        @if (!string.IsNullOrEmpty(tnft.PodcastLink) || !string.IsNullOrEmpty(tnft.ImageLink))
+                        {
+                            @if (!string.IsNullOrEmpty(tnft.PodcastLink))
                             {
                                 <video name="media" style="max-width:250px; width:250px; max-height:200px; margin-bottom:70px;" controls>
-                                    <source src="@nft.ImageLink" type="audio/mpeg" autostart="false">
+                                    <source src="@tnft.PodcastLink" type="audio/mpeg" autostart="false">
                                 </video>
                             }
                             else
@@ -50,52 +59,23 @@
                             </Spin>
                         }
                         break;
-                    case NFTTypes.Post:
-                        @if (!string.IsNullOrEmpty(nft.ImageLink))
-                        {
-                            <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
-                        }
-                        else
-                        {
-                            <Spin Tip="Loading..." Style="min-width:50px;">
-                                <img src="@nft.ImageLink" style="min-width:100px; max-height:200px;  max-width:250px;" />
-                            </Spin>
-                        }
-                        break;
-                    case NFTTypes.Music:
-                        @if (!string.IsNullOrEmpty(nft.Link))
-                        {
-                            <video name="media" style="max-width:250px; width:250px; max-height:200px; margin-bottom:70px;" controls>
-                                <source src="@nft.Link" type="audio/mpeg" autostart="false">
-                            </video>
-                        }
-                        else if (!string.IsNullOrEmpty(nft.ImageLink) && string.IsNullOrEmpty(nft.Link))
-                        {
-                            <video name="media" style="max-width:250px; width:250px; margin-bottom:70px;" controls>
-                                <source src="@nft.Link" type="audio/mpeg" autostart="false">
-                            </video>
-                        }
-                        break;
                 }
             </div>
         </div>
     </div>
-    
-    <div class="card-body d-flex justify-content-center align-items-end @NFTCheckedBgColor">
-        <span class="badge badge-warning" style="position: absolute;right: 200px;top: 207px;">VENFT</span>
+
+    <div class="card-body d-flex justify-content-center align-items-end">
+        <span class="badge badge-primary" style="position: absolute;right: 190px;top: 207px;">Coruzant</span>
         @switch (nft.Type)
         {
-            case NFTTypes.Image:
-                <span class="badge badge-primary" style="position: absolute;right: 7px;top: 207px;">Image</span>
+            case NFTTypes.CoruzantProfile:
+                <span class="badge badge-primary" style="position: absolute;right: 7px;top: 207px;">Profile</span>
                 break;
-            case NFTTypes.Ticket:
-                <span class="badge badge-secondary" style="position: absolute;right: 7px;top: 207px;">Ticket</span>
+            case NFTTypes.CoruzantPost:
+                <span class="badge badge-secondary" style="position: absolute;right: 7px;top: 207px;">Post</span>
                 break;
-            case NFTTypes.Post:
-                <span class="badge badge-info" style="position: absolute;right: 7px;top: 207px;">Post</span>
-                break;
-            case NFTTypes.Music:
-                <span class="badge badge-warning" style="position: absolute;right: 7px;top: 207px;">Music</span>
+            case NFTTypes.CoruzantPodcast:
+                <span class="badge badge-info" style="position: absolute;right: 7px;top: 207px;">Podcast</span>
                 break;
         }
         <button class="btn btn-light" @onclick="async () => ShowShareNFT(nft.Utxo)"
@@ -187,7 +167,7 @@
        Visible="@nftDetailsVisible"
        OnOk="@CloseNFTDetails"
        OnCancel="@CloseNFTDetails">
-    <VENFTApp_Blazor.Components.NFTDetails UtxoIndex="@nft.UtxoIndex" Utxo="@nftDetailsUtxo" NFTSent="@NFTSentHandler" OwnNFT="@OwnNFT" />
+    <CoruzantNFTDetails UtxoIndex="@nft.UtxoIndex" Utxo="@nftDetailsUtxo" NFTSent="@NFTSentHandler" OwnNFT="@OwnNFT" />
 </Modal>
 
 <Modal Title="NFT Image"
@@ -220,6 +200,7 @@
 
 @code {
 
+
     bool shareNFTVisible = false;
     string shareNFTUtxo = string.Empty;
 
@@ -235,16 +216,7 @@
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
 
-    [Parameter]
-    public bool DisplayCheckField { get; set; } = false;
-
-    bool NFTChecked { get; set; } = false;
-    string NFTCheckedBgColor { get; set; } = string.Empty;
-
-    [Parameter]
-    public EventCallback<(INFT,bool)> NFTCheckedChanged { get; set; }
-
-    private INFT nft = new ImageNFT("");
+    private INFT nft = new CoruzantProfileNFT("");
     [Parameter]
     public INFT InputNFT
     {
@@ -254,7 +226,6 @@
             if (value != null && value.Utxo != nft.Utxo)
             {
                 nft = value;
-                setBgColor();
                 StateHasChanged();
             }
         }
@@ -282,23 +253,6 @@
     {
         nftDetailsVisible = false;
         NFTSent.InvokeAsync(nfttx);
-    }
-
-    private async Task checkNFTChanged(object e)
-    {
-        NFTChecked = (bool)e;
-        await setBgColor();
-        await NFTCheckedChanged.InvokeAsync((nft, NFTChecked));
-        StateHasChanged();
-    }
-
-    private async Task setBgColor()
-    {
-        if (NFTChecked)
-            NFTCheckedBgColor = "bg-info";
-        else
-            NFTCheckedBgColor = string.Empty;
-        StateHasChanged();
     }
 
     private bool IsInThePayments(string utxo)

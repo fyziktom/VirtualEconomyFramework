@@ -92,7 +92,7 @@
                         <Spin Tip="Reloading..." />
                         break;
                     case LoadingImageStages.Loaded:
-                        @if (NFTType == NFTTypes.Image || NFTType == NFTTypes.Post)
+                        @if (NFTType == NFTTypes.Image || NFTType == NFTTypes.Post || NFTType == NFTTypes.Profile)
                         { 
                         <a href="@_imageLink" target="_blank"><img src="@_imageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
                         }

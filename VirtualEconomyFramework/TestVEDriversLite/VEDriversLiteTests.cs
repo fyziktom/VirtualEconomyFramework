@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -165,6 +165,35 @@ namespace TestVEDriversLite
             var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
             var count = Convert.ToInt32(cnt, CultureInfo.InvariantCulture);
             var res = await account.SplitNeblioCoin(receiver, amount, count);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void DestroyNFTs(string param)
+        {
+            DestroyNFTsAsync(param);
+        }
+        public static async Task DestroyNFTsAsync(string param)
+        {
+            var nfts = new List<INFT>();
+            var nftlist = new List<(string, int)>()
+            {
+                ("5d5ccf74b2d142c063e01bec584b98edd73e5ca529cf2810db36114eb6bfd208",0),
+                ("5d5ccf74b2d142c063e01bec584b98edd73e5ca529cf2810db36114eb6bfd208",1),
+                ("5d5ccf74b2d142c063e01bec584b98edd73e5ca529cf2810db36114eb6bfd208",2),
+                ("5d5ccf74b2d142c063e01bec584b98edd73e5ca529cf2810db36114eb6bfd208",3),
+                ("5d5ccf74b2d142c063e01bec584b98edd73e5ca529cf2810db36114eb6bfd208",4)
+            };
+
+            foreach(var nft in nftlist)
+            {
+                var n = await NFTFactory.GetNFT(NFTHelpers.TokenId, nft.Item1, 0 , true);
+                n.UtxoIndex = nft.Item2;
+                nfts.Add(n);
+            }
+
+            var res = await account.DestroyNFTs(nfts);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }

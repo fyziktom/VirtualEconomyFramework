@@ -13,6 +13,7 @@ namespace VEDriversLite.NFT.Coruzant
             Utxo = utxo;
             Type = NFTTypes.CoruzantProfile;
             TypeText = "NFT CoruzantProfile";
+            TokenId = "La9ADonmDwxsNKJGvnRWy8gmWmeo72AEeg8cK7";
         }
 
         public int Age { get; set; } = 0;
@@ -27,29 +28,36 @@ namespace VEDriversLite.NFT.Coruzant
         public override async Task Fill(INFT NFT)
         {
             var pnft = NFT as CoruzantProfileNFT;
-            IconLink = pnft.IconLink;
-            ImageLink = pnft.ImageLink;
-            Name = pnft.Name;
-            Link = pnft.Link;
-            Description = pnft.Description;
-            Author = pnft.Author;
-            SourceTxId = pnft.SourceTxId;
-            NFTOriginTxId = pnft.NFTOriginTxId;
-            TypeText = pnft.TypeText;
-            Utxo = pnft.Utxo;
-            TokenId = pnft.TokenId;
-            UtxoIndex = pnft.UtxoIndex;
-            Price = pnft.Price;
-            PriceActive = pnft.PriceActive;
-            Time = pnft.Time;
-            Name = pnft.Name;
+            await FillCommon(NFT);
+
             Surname = pnft.Surname;
             Nickname = pnft.Nickname;
             CompanyLink = pnft.CompanyLink;
             CompanyName = pnft.CompanyName;
+            PodcastLink = pnft.PodcastLink;
             PersonalPageLink = pnft.PersonalPageLink;
             WorkingPosition = pnft.WorkingPosition;
             Age = pnft.Age;
+        }
+
+        private void ParseSpecific(IDictionary<string, string> meta)
+        {
+            if (meta.TryGetValue("Surname", out var surname))
+                Surname = surname;
+            if (meta.TryGetValue("Nickname", out var nickname))
+                Nickname = nickname;
+            if (meta.TryGetValue("WorkingPosition", out var workpos))
+                WorkingPosition = workpos;
+            if (meta.TryGetValue("PodcastLink", out var pdl))
+                PodcastLink = pdl;
+            if (meta.TryGetValue("PersonalPageLink", out var ppl))
+                PersonalPageLink = ppl;
+            if (meta.TryGetValue("CompanyName", out var comn))
+                CompanyName = comn;
+            if (meta.TryGetValue("CompanyLink", out var coml))
+                CompanyLink = coml;
+            if (meta.TryGetValue("Age", out var age))
+                Age = Convert.ToInt32(age);
         }
 
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
@@ -57,33 +65,13 @@ namespace VEDriversLite.NFT.Coruzant
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
             {
-                if (nftData.NFTMetadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (nftData.NFTMetadata.TryGetValue("Surname", out var surname))
-                    Surname = surname;
-                if (nftData.NFTMetadata.TryGetValue("Nickname", out var nickname))
-                    Nickname = nickname;
-                if (nftData.NFTMetadata.TryGetValue("WorkingPosition", out var workpos))
-                    WorkingPosition = workpos;
-                if (nftData.NFTMetadata.TryGetValue("PersonalPageLink", out var ppl))
-                    PersonalPageLink = ppl;
-                if (nftData.NFTMetadata.TryGetValue("CompanyName", out var comn))
-                    CompanyName = comn;
-                if (nftData.NFTMetadata.TryGetValue("CompanyLink", out var coml))
-                    CompanyLink = coml;
-                if (nftData.NFTMetadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (nftData.NFTMetadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (nftData.NFTMetadata.TryGetValue("Age", out var age))
-                    Age = Convert.ToInt32(age);
-                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
-                    TypeText = type;
+
+                ParseCommon(nftData.NFTMetadata);
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
+
+                ParseSpecific(nftData.NFTMetadata);
             }
         }
 
@@ -92,33 +80,12 @@ namespace VEDriversLite.NFT.Coruzant
             var nftData = await NFTHelpers.LoadLastData(Utxo);
             if (nftData != null)
             {
-                if (nftData.NFTMetadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (nftData.NFTMetadata.TryGetValue("Surname", out var surname))
-                    Surname = surname;
-                if (nftData.NFTMetadata.TryGetValue("Nickname", out var nickname))
-                    Nickname = nickname;
-                if (nftData.NFTMetadata.TryGetValue("WorkingPosition", out var workpos))
-                    WorkingPosition = workpos;
-                if (nftData.NFTMetadata.TryGetValue("PersonalPageLink", out var ppl))
-                    PersonalPageLink = ppl;
-                if (nftData.NFTMetadata.TryGetValue("CompanyName", out var comn))
-                    CompanyName = comn;
-                if (nftData.NFTMetadata.TryGetValue("CompanyLink", out var coml))
-                    CompanyLink = coml;
-                if (nftData.NFTMetadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (nftData.NFTMetadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (nftData.NFTMetadata.TryGetValue("Age", out var age))
-                    Age = Convert.ToInt32(age);
-                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
-                    TypeText = type;
+                ParseCommon(nftData.NFTMetadata);
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
+
+                ParseSpecific(nftData.NFTMetadata);
             }
         }
 
@@ -126,39 +93,52 @@ namespace VEDriversLite.NFT.Coruzant
         {
             if (metadata != null)
             {
-                if (metadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (metadata.TryGetValue("Surname", out var surname))
-                    Surname = surname;
-                if (metadata.TryGetValue("Nickname", out var nickname))
-                    Nickname = nickname;
-                if (metadata.TryGetValue("WorkingPosition", out var workpos))
-                    WorkingPosition = workpos;
-                if (metadata.TryGetValue("PersonalPageLink", out var ppl))
-                    PersonalPageLink = ppl;
-                if (metadata.TryGetValue("CompanyName", out var comn))
-                    CompanyName = comn;
-                if (metadata.TryGetValue("CompanyLink", out var coml))
-                    CompanyLink = coml;
-                if (metadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (metadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (metadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (metadata.TryGetValue("Age", out var age))
-                    Age = Convert.ToInt32(age);
-                if (metadata.TryGetValue("Type", out var type))
-                    TypeText = type;
-                if (metadata.TryGetValue("SourceUtxo", out var su))
-                    NFTOriginTxId = su;
-
+                ParseCommon(metadata);
+                ParseSpecific(metadata);
             }
         }
 
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
-            return null;
+            if (string.IsNullOrEmpty(ImageLink))
+                throw new Exception("Cannot create NFT CoruzantProfile without image link.");
+            if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Surname))
+                throw new Exception("Cannot create NFT CoruzantProfile without Name or Surname");
+            if (string.IsNullOrEmpty(Author))
+                throw new Exception("Cannot create NFT CoruzantProfile without author.");
+            if (string.IsNullOrEmpty(CompanyName))
+                throw new Exception("Cannot create NFT CoruzantProfile without company name.");
+            if (string.IsNullOrEmpty(PersonalPageLink))
+                throw new Exception("Cannot create NFT CoruzantProfile without Personal Page Link.");
+
+            // create token metadata
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Type", "NFT CoruzantProfile");
+
+            metadata.Add("Name", Name);
+            metadata.Add("Surname", Surname);
+            metadata.Add("Nickname", Nickname);
+            metadata.Add("Age", Age.ToString());
+            metadata.Add("Author", Author);
+            metadata.Add("Description", Description);
+            metadata.Add("Image", ImageLink);
+            metadata.Add("Link", Link);
+            metadata.Add("PersonalPageLink", PersonalPageLink);
+            if (!string.IsNullOrEmpty(Tags))
+                metadata.Add("Tags", Tags);
+            if (!string.IsNullOrEmpty(IconLink))
+                metadata.Add("IconLink", IconLink);
+            if (!string.IsNullOrEmpty(PodcastLink))
+                metadata.Add("PodcastLink", PodcastLink);
+            if (!string.IsNullOrEmpty(CompanyName))
+                metadata.Add("CompanyName", CompanyName);
+            if (!string.IsNullOrEmpty(CompanyLink))
+                metadata.Add("CompanyLink", CompanyLink);
+            if (!string.IsNullOrEmpty(WorkingPosition))
+                metadata.Add("WorkingPosition", WorkingPosition);
+
+            return metadata;
         }
     }
 }

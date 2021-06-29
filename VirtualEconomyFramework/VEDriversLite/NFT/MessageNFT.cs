@@ -18,19 +18,7 @@ namespace VEDriversLite.NFT
 
         public override async Task Fill(INFT NFT) 
         {
-            IconLink = NFT.IconLink;
-            ImageLink = NFT.ImageLink;
-            Name = NFT.Name;
-            Link = NFT.Link;
-            Description = NFT.Description;
-            Author = NFT.Author;
-            SourceTxId = NFT.SourceTxId;
-            NFTOriginTxId = NFT.NFTOriginTxId;
-            TypeText = NFT.TypeText;
-            Utxo = NFT.Utxo;
-            TokenId = NFT.TokenId;
-            Time = NFT.Time;
-            UtxoIndex = NFT.UtxoIndex;
+            await FillCommon(NFT);
         }
 
         public bool Encrypt { get; set; } = true;
@@ -39,26 +27,18 @@ namespace VEDriversLite.NFT
 
         public bool IsReceivedMessage { get; set; } = false;
 
+        private void ParseSpecific(IDictionary<string, string> meta)
+        {
+
+        }
+
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             await GetPartner();
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
             {
-                if (nftData.NFTMetadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (nftData.NFTMetadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (nftData.NFTMetadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (nftData.NFTMetadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
-                    Tags = tags;
-                if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
-                    TypeText = type;
+                ParseCommon(nftData.NFTMetadata);
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
@@ -71,20 +51,7 @@ namespace VEDriversLite.NFT
             var nftData = await NFTHelpers.LoadLastData(Utxo);
             if (nftData != null)
             {
-                if (nftData.NFTMetadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (nftData.NFTMetadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (nftData.NFTMetadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (nftData.NFTMetadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
-                    Tags = tags;
-                if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
-                    TypeText = type;
+                ParseCommon(nftData.NFTMetadata);
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
@@ -96,20 +63,8 @@ namespace VEDriversLite.NFT
             await GetPartner();
             if (metadata != null)
             {
-                if (metadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (metadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (metadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (metadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (metadata.TryGetValue("Tags", out var tags))
-                    Tags = tags;
-                if (metadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (metadata.TryGetValue("Type", out var type))
-                    TypeText = type;
+                ParseCommon(metadata);
+
                 if (metadata.TryGetValue("SourceUtxo", out var su))
                 {
                     SourceTxId = Utxo;

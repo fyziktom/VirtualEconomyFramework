@@ -92,8 +92,11 @@ namespace VEDriversLite
                 // add all spendable coins of this address
                 foreach (var inp in addrutxos.Data.Utxos)
                 {
-                    var val = (ulong)(Convert.ToDouble(inp.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio);
-                    coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money(val), address.ScriptPubKey));
+                    if (transaction.Inputs.FirstOrDefault(i => (i.PrevOut.Hash == uint256.Parse(inp.TxId)) && i.PrevOut.N == (uint)inp.N) != null)
+                    {
+                        var val = (ulong)(Convert.ToDouble(inp.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio);
+                        coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money(val), address.ScriptPubKey));
+                    }
                 }
                 // add signature to inputs before signing
                 foreach (var inp in transaction.Inputs)
@@ -134,7 +137,7 @@ namespace VEDriversLite
             }
         }
 
-        public static string SendDogeTransaction(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 10000)
+        public static string SendDogeTransaction(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
         {
             var res = SendDogeTransactionAsync(data, ekey, utxos, fee).GetAwaiter().GetResult();
             return res;
@@ -204,18 +207,18 @@ namespace VEDriversLite
             {
                 var allNeblCoins = 0.0;
                 foreach (var u in utxos)
-                    allNeblCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio;
+                    allNeblCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture);
 
-                if (allNeblCoins < (data.Amount * FromSatToMainRatio))
+                if (allNeblCoins < (data.Amount))
                     throw new Exception("Not enough Doge to spend.");
 
                 var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
-                var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
+                var diffinSat = (Convert.ToUInt64(allNeblCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
                 if (diffinSat > 0)
-                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+                    transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
             }
             catch (Exception ex)
             {
@@ -290,10 +293,10 @@ namespace VEDriversLite
             {
                 var allNeblCoins = 0.0;
                 foreach (var u in utxos)
-                    allNeblCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio;
+                    allNeblCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture);
 
-                var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
-                var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
+                var amountinSat = Convert.ToUInt64(data.Amount) * Convert.ToUInt64(FromSatToMainRatio);
+                var diffinSat = (Convert.ToUInt64(allNeblCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
@@ -303,7 +306,7 @@ namespace VEDriversLite
                     ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
                 });
                 if (diffinSat > 0)
-                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+                    transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
             }
             catch (Exception ex)
             {
@@ -331,7 +334,7 @@ namespace VEDriversLite
                 return (false, 0.0);
             var value = 0.0;
             var vouts = txinfo.Transaction.Vout.ToList();
-            for (var i = 0; i < (vouts.Count - 1); i++)
+            for (var i = 0; i < (vouts.Count - 2); i++)
             {
                 var o = vouts[i];
                 if (!string.IsNullOrEmpty(o.Script) && !o.Script.Contains("OP_RETURN"))

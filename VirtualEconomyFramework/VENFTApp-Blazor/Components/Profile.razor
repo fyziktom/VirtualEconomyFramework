@@ -203,6 +203,14 @@
     {
         loadingProfile = false;
         createNewProfileVisible = false;
+        ReloadProfile();
+        StateHasChanged();
+    }
+
+    private async Task ReloadProfile()
+    {
+        await AppData.Account.ReLoadNFTs();
+        profileNFT = AppData.Account.Profile;
         StateHasChanged();
     }
 }

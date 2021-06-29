@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NeblioAPI;
@@ -17,6 +18,7 @@ namespace VEDriversLite.NFT
         public string IconLink { get; set; } = string.Empty;
         public string ImageLink { get; set; } = string.Empty;
         public string Tags { get; set; } = string.Empty;
+        public List<string> TagsList { get; set; } = new List<string>();
         public string Utxo { get; set; } = string.Empty;
         public string TokenId { get; set; } = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8"; // VENFT tokens as default
         public string SourceTxId { get; set; } = string.Empty;
@@ -58,6 +60,52 @@ namespace VEDriversLite.NFT
             Price = nft.Price;
             PriceActive = nft.PriceActive;
             UtxoIndex = nft.UtxoIndex;
+            Time = nft.Time;
+        }
+
+        private void parseTags()
+        {
+            var split = Tags.Split(' ');
+            TagsList.Clear();
+            if (split.Length > 0)
+                foreach (var s in split)
+                    if (!string.IsNullOrEmpty(s))
+                        TagsList.Add(s);
+        }
+
+        public void ParsePrice(IDictionary<string, string> meta)
+        {
+            if (meta.TryGetValue("Price", out var price))
+                Price = double.Parse(price, CultureInfo.InvariantCulture);
+
+            if (Price > 0)
+                PriceActive = true;
+            else
+                PriceActive = false;
+        }
+        public void ParseCommon(IDictionary<string,string> meta)
+        {
+            if (meta.TryGetValue("Name", out var name))
+                Name = name;
+            if (meta.TryGetValue("Description", out var description))
+                Description = description;
+            if (meta.TryGetValue("Author", out var author))
+                Author = author;
+            if (meta.TryGetValue("Link", out var link))
+                Link = link;
+            if (meta.TryGetValue("Image", out var imagelink))
+                ImageLink = imagelink;
+            if (meta.TryGetValue("IconLink", out var iconlink))
+                IconLink = iconlink;
+            if (meta.TryGetValue("Type", out var type))
+                TypeText = type;
+            if (meta.TryGetValue("Tags", out var tags))
+            {
+                Tags = tags;
+                parseTags();
+            }
+            if (meta.TryGetValue("SourceUtxo", out var su))
+                NFTOriginTxId = su;
         }
 
         public async Task StopRefreshingData()

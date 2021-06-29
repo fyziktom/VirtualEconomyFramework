@@ -8,6 +8,6 @@ namespace VEDriversLite.NFT.Coruzant
 {
     public abstract class CommonCoruzantNFT : CommonNFT
     {
-        public new string TokenId { get; set; } = "La9ADonmDwxsNKJGvnRWy8gmWmeo72AEeg8cK7"; // Coruzant tokens as default
+        public string PodcastLink { get; set; } = string.Empty;
     }
 }

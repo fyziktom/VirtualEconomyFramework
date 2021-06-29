@@ -13,28 +13,17 @@ namespace VEDriversLite.NFT.Coruzant
             Utxo = utxo;
             Type = NFTTypes.CoruzantPost;
             TypeText = "NFT CoruzantPost";
+            TokenId = "La9ADonmDwxsNKJGvnRWy8gmWmeo72AEeg8cK7";
         }
 
         public override async Task Fill(INFT NFT)
         {
-            IconLink = NFT.IconLink;
-            ImageLink = NFT.ImageLink;
-            Name = NFT.Name;
-            Link = NFT.Link;
-            Description = NFT.Description;
-            Author = NFT.Author;
-            SourceTxId = NFT.SourceTxId;
-            NFTOriginTxId = NFT.NFTOriginTxId;
-            TypeText = NFT.TypeText;
-            Utxo = NFT.Utxo;
-            TokenId = NFT.TokenId;
-            Time = NFT.Time;
-            UtxoIndex = NFT.UtxoIndex;
-            Price = NFT.Price;
-            PriceActive = NFT.PriceActive;
+            await FillCommon(NFT);
+
             LastComment = (NFT as CoruzantPostNFT).LastComment;
             LastCommentBy = (NFT as CoruzantPostNFT).LastCommentBy;
             FullPostLink = (NFT as CoruzantPostNFT).FullPostLink;
+            PodcastLink = (NFT as CoruzantPostNFT).PodcastLink;
             AuthorProfileUtxo = (NFT as CoruzantPostNFT).AuthorProfileUtxo;
         }
 
@@ -42,16 +31,20 @@ namespace VEDriversLite.NFT.Coruzant
         public string FullPostLink { get; set; } = string.Empty;
         public string LastComment { get; set; } = string.Empty;
         public string LastCommentBy { get; set; } = string.Empty;
-        public List<string> TagsList { get; set; } = new List<string>();
 
-        private void parseTags()
+
+        private void ParseSpecific(IDictionary<string, string> meta)
         {
-            var split = Tags.Split(' ');
-            TagsList.Clear();
-            if (split.Length > 0)
-                foreach (var s in split)
-                    if (!string.IsNullOrEmpty(s))
-                        TagsList.Add(s);
+            if (meta.TryGetValue("AuthorProfileUtxo", out var pu))
+                AuthorProfileUtxo = pu;
+            if (meta.TryGetValue("LastComment", out var lc))
+                LastComment = lc;
+            if (meta.TryGetValue("LastCommentBy", out var lcb))
+                LastCommentBy = lcb;
+            if (meta.TryGetValue("FullPostLink", out var fpl))
+                FullPostLink = fpl;
+            if (meta.TryGetValue("PodcastLink", out var pdl))
+                PodcastLink = pdl;
         }
 
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
@@ -59,31 +52,8 @@ namespace VEDriversLite.NFT.Coruzant
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
             {
-                if (nftData.NFTMetadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (nftData.NFTMetadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (nftData.NFTMetadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (nftData.NFTMetadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
-                {
-                    Tags = tags;
-                    parseTags();
-                }
-                if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (nftData.NFTMetadata.TryGetValue("AuthorProfileUtxo", out var pu))
-                    AuthorProfileUtxo = pu;
-                if (nftData.NFTMetadata.TryGetValue("LastComment", out var lc))
-                    LastComment = lc;
-                if (nftData.NFTMetadata.TryGetValue("LastCommentBy", out var lcb))
-                    LastCommentBy = lcb;
-                if (nftData.NFTMetadata.TryGetValue("FullPostLink", out var fpl))
-                    FullPostLink = fpl;
-                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
-                    TypeText = type;
+                ParseCommon(nftData.NFTMetadata);
+
                 if (lastmetadata.TryGetValue("Price", out var price))
                 {
                     if (!string.IsNullOrEmpty(price))
@@ -105,6 +75,7 @@ namespace VEDriversLite.NFT.Coruzant
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }
+            ParseSpecific(nftData.NFTMetadata);
         }
 
         public async Task GetLastData()
@@ -112,31 +83,8 @@ namespace VEDriversLite.NFT.Coruzant
             var nftData = await NFTHelpers.LoadLastData(Utxo);
             if (nftData != null)
             {
-                if (nftData.NFTMetadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (nftData.NFTMetadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (nftData.NFTMetadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (nftData.NFTMetadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
-                {
-                    Tags = tags;
-                    parseTags();
-                }
-                if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (nftData.NFTMetadata.TryGetValue("AuthorProfileUtxo", out var pu))
-                    AuthorProfileUtxo = pu;
-                if (nftData.NFTMetadata.TryGetValue("LastComment", out var lc))
-                    LastComment = lc;
-                if (nftData.NFTMetadata.TryGetValue("LastCommentBy", out var lcb))
-                    LastCommentBy = lcb;
-                if (nftData.NFTMetadata.TryGetValue("FullPostLink", out var fpl))
-                    FullPostLink = fpl;
-                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
-                    TypeText = type;
+                ParseCommon(nftData.NFTMetadata);
+
                 if (nftData.NFTMetadata.TryGetValue("Price", out var price))
                 {
                     if (!string.IsNullOrEmpty(price))
@@ -158,37 +106,15 @@ namespace VEDriversLite.NFT.Coruzant
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }
+            ParseSpecific(nftData.NFTMetadata);
         }
 
         public async Task LoadLastData(Dictionary<string, string> metadata)
         {
             if (metadata != null)
             {
-                if (metadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (metadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (metadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (metadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (metadata.TryGetValue("Tags", out var tags))
-                {
-                    Tags = tags;
-                    parseTags();
-                }
-                if (metadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (metadata.TryGetValue("AuthorProfileUtxo", out var pu))
-                    AuthorProfileUtxo = pu;
-                if (metadata.TryGetValue("LastComment", out var lc))
-                    LastComment = lc;
-                if (metadata.TryGetValue("LastCommentBy", out var lcb))
-                    LastCommentBy = lcb;
-                if (metadata.TryGetValue("FullPostLink", out var fpl))
-                    FullPostLink = fpl;
-                if (metadata.TryGetValue("Type", out var type))
-                    TypeText = type;
+                ParseCommon(metadata);
+
                 if (metadata.TryGetValue("SourceUtxo", out var su))
                 {
                     SourceTxId = Utxo;
@@ -217,12 +143,52 @@ namespace VEDriversLite.NFT.Coruzant
                     PriceActive = false;
                 }
 
+                ParseSpecific(metadata);
             }
         }
 
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
-            return null;
+            if (string.IsNullOrEmpty(ImageLink))
+                throw new Exception("Cannot create NFT CoruzantPost without image link.");
+            if (string.IsNullOrEmpty(Name))
+                throw new Exception("Cannot create NFT CoruzantPost without Name");
+            if (string.IsNullOrEmpty(Description))
+                throw new Exception("Cannot create NFT CoruzantPost without Description.");
+            if (string.IsNullOrEmpty(Author))
+                throw new Exception("Cannot create NFT CoruzantPost without author.");
+            if (string.IsNullOrEmpty(AuthorProfileUtxo))
+                throw new Exception("Cannot create NFT CoruzantPost without Author Profile Utxo.");
+            if (string.IsNullOrEmpty(FullPostLink))
+                throw new Exception("Cannot create NFT CoruzantPost without Full Post Link.");
+            if (LastComment.Length > 250)
+                throw new Exception("Cannot create NFT CoruzantPost. Comment must be shorter than 250 characters.");
+            if (Description.Length > 250)
+                throw new Exception("Cannot create NFT CoruzantPost. Description must be shorter than 250 characters.");
+
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("NFT", "true");
+            metadata.Add("Type", "NFT CoruzantPost");
+            metadata.Add("Name", Name);
+            metadata.Add("Author", Author);
+            metadata.Add("Description", Description);
+            metadata.Add("Image", ImageLink);
+            metadata.Add("Link", Link);
+            if (!string.IsNullOrEmpty(FullPostLink))
+                metadata.Add("FullPostLink", FullPostLink);
+            if (!string.IsNullOrEmpty(PodcastLink))
+                metadata.Add("PodcastLink", PodcastLink);
+            if (!string.IsNullOrEmpty(AuthorProfileUtxo))
+                metadata.Add("AuthorProfileUtxo", AuthorProfileUtxo);
+            if (!string.IsNullOrEmpty(LastCommentBy))
+                metadata.Add("LastCommentBy", LastCommentBy);
+            if (!string.IsNullOrEmpty(LastComment))
+                metadata.Add("LastComment", LastComment);
+
+            if (Price > 0)
+                metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
+
+            return metadata;
         }
     }
 }

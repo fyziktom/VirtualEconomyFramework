@@ -11,6 +11,7 @@ using VEconomy.Common;
 using VEDrivers.Common;
 using VEDrivers.Economy.Wallets.Handlers;
 using VEDriversLite.NFT;
+using VEDriversLite.NFT.Coruzant;
 using VEGameDrivers.Common;
 
 namespace VEconomy.Controllers
@@ -855,6 +856,242 @@ namespace VEconomy.Controllers
                         throw new HttpResponseException((HttpStatusCode)501, $"VEDriversLite Account is not initialized.");
 
                     var res = await (account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.SplitNeblioCoin(data.receiver, data.splittedAmount, data.count);
+                    return res;
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {data.address} NFTs, Account Not Found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get Account Balances!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {data.address} NFTs!");
+            }
+        }
+
+        #endregion
+
+        #region Coruzant
+
+        public class VEDLMintCoruzantProfileNFTDto
+        {
+            /// <summary>
+            /// Account address
+            /// Set empty string or null if new address should be created
+            /// </summary>
+            public string address { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Name of Person
+            /// </summary>
+            public string name { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Surname of Person
+            /// </summary>
+            public string surname { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Person Nickname
+            /// </summary>
+            public string nickname { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Person Age
+            /// </summary>
+            public int age { get; set; } = 0;
+            /// <summary>
+            /// Input NFT Description
+            /// </summary>
+            public string description { get; set; } = string.Empty;
+            /// <summary>
+            /// Input NFT Author
+            /// </summary>
+            public string author { get; set; } = string.Empty;
+            /// <summary>
+            /// Input NFT Link
+            /// </summary>
+            public string link { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Company Icon Link
+            /// </summary>
+            public string iconLink { get; set; } = string.Empty;
+            /// <summary>
+            /// Input link to podcast
+            /// </summary>
+            public string podcastLink { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Personal Page Link
+            /// </summary>
+            public string personalPageLink { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Company Name
+            /// </summary>
+            public string companyName { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Company Link
+            /// </summary>
+            public string companyLink { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Person working position in the company
+            /// </summary>
+            public string workingPosition { get; set; } = string.Empty;
+            /// <summary>
+            /// Input NFT Image Link
+            /// </summary>
+            public string image { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Profile tags
+            /// </summary>
+            public string tags { get; set; } = string.Empty;
+            /// <summary>
+            /// Input NFT Price
+            /// </summary>
+            public double price { get; set; } = 0.0;
+            /// <summary>
+            /// Just for the case of multimint
+            /// </summary>
+            public int coppies { get; set; } = 0;
+        }
+
+        [HttpPut]
+        [Route("MintCoruzantProfileNFT")]
+        public async Task<(bool, string)> MintCoruzantProfileNFT([FromBody] VEDLMintCoruzantProfileNFTDto data)
+        {
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(data.address, out var account))
+                {
+                    if (account.Type != VEDrivers.Economy.Wallets.AccountTypes.Neblio)
+                        throw new HttpResponseException((HttpStatusCode)501, $"This is not Neblio Account");
+                    if ((account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.Address == string.Empty)
+                        throw new HttpResponseException((HttpStatusCode)501, $"VEDriversLite Account is not initialized.");
+
+                    var nft = new CoruzantProfileNFT("");
+                    nft.Name = data.name;
+                    nft.Surname = data.surname;
+                    nft.Nickname = data.nickname;
+                    nft.Age = data.age;
+                    nft.Description = data.description;
+                    nft.Author = data.author;
+                    nft.ImageLink = data.image;
+                    nft.IconLink = data.iconLink;
+                    nft.Link = data.link;
+                    nft.PodcastLink = data.podcastLink;
+                    nft.PersonalPageLink = data.personalPageLink;
+                    nft.CompanyLink = data.companyLink;
+                    nft.CompanyName = data.companyName;
+                    nft.WorkingPosition = data.workingPosition;
+                    nft.Tags = data.tags;
+                    nft.TokenId = CoruzantNFTHelpers.CoruzantTokenId;
+                    
+                    var res = await (account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.MintNFT(nft);
+                    return res;
+                }
+                else
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {data.address} NFTs, Account Not Found!");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get Account Balances!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Account {data.address} NFTs!");
+            }
+        }
+
+        public class VEDLMintCoruzantPostNFTDto
+        {
+            /// <summary>
+            /// Account address
+            /// Set empty string or null if new address should be created
+            /// </summary>
+            public string address { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Name of Person
+            /// </summary>
+            public string name { get; set; } = string.Empty;
+            /// <summary>
+            /// Input NFT Description
+            /// </summary>
+            public string description { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Author profile Utxo (meant Utxo/txid of her/his NFT CoruzantProfile
+            /// </summary>
+            public string authorProfileUtxo { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Link to full post
+            /// </summary>
+            public string fullPostLink { get; set; } = string.Empty;
+            /// <summary>
+            /// Input link to podcast
+            /// </summary>
+            public string podcastLink { get; set; } = string.Empty;
+            /// <summary>
+            /// Input NFT Author
+            /// </summary>
+            public string author { get; set; } = string.Empty;
+            /// <summary>
+            /// Input NFT Link
+            /// </summary>
+            public string link { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Company Icon Link
+            /// </summary>
+            public string iconLink { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Author of last comment
+            /// </summary>
+            public string lastCommentBy { get; set; } = string.Empty;
+            /// <summary>
+            /// Input last comment
+            /// </summary>
+            public string lastComment { get; set; } = string.Empty;
+            /// <summary>
+            /// Input NFT Image Link
+            /// </summary>
+            public string image { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Profile tags
+            /// </summary>
+            public string tags { get; set; } = string.Empty;
+            /// <summary>
+            /// Input NFT Price
+            /// </summary>
+            public double price { get; set; } = 0.0;
+            /// <summary>
+            /// Just for the case of multimint
+            /// </summary>
+            public int coppies { get; set; } = 0;
+        }
+
+        [HttpPut]
+        [Route("MintCoruzantPostNFT")]
+        public async Task<(bool, string)> MintCoruzantPostNFT([FromBody] VEDLMintCoruzantPostNFTDto data)
+        {
+            try
+            {
+                if (EconomyMainContext.Accounts.TryGetValue(data.address, out var account))
+                {
+                    if (account.Type != VEDrivers.Economy.Wallets.AccountTypes.Neblio)
+                        throw new HttpResponseException((HttpStatusCode)501, $"This is not Neblio Account");
+                    if ((account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.Address == string.Empty)
+                        throw new HttpResponseException((HttpStatusCode)501, $"VEDriversLite Account is not initialized.");
+
+                    var nft = new CoruzantPostNFT("");
+                    nft.Name = data.name;
+                    nft.Description = data.description;
+                    nft.Author = data.author;
+                    nft.ImageLink = data.image;
+                    nft.IconLink = data.iconLink;
+                    nft.Link = data.link;
+                    nft.FullPostLink = data.fullPostLink;
+                    nft.PodcastLink = data.podcastLink;
+                    nft.LastComment = data.lastComment;
+                    nft.LastCommentBy = data.lastCommentBy;
+                    nft.AuthorProfileUtxo = data.authorProfileUtxo;
+                    nft.Price = data.price;
+                    nft.Tags = data.tags;
+                    nft.TokenId = CoruzantNFTHelpers.CoruzantTokenId;
+
+                    var res = await (account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.MintMultiNFT(nft, data.coppies);
                     return res;
                 }
                 else

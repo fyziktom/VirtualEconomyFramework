@@ -153,10 +153,10 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Ticket:
                     nft = new TicketNFT(utxo);
-                    //if (wait)
+                    if (wait)
                         await nft.ParseOriginData(meta);
-                    //else
-                    //    nft.ParseOriginData(meta);
+                    else
+                        nft.ParseOriginData(meta);
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;
                     break;

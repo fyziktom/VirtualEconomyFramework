@@ -5,9 +5,21 @@
 <div class="container-fluid overflow-auto">
     <div class="row">
         <div class="col">
-            <div class="row" style="margin-top:20px;">
+            <div class="row d-flex justify-content-end align-items-end" style="margin-top:10px;">
                 <div class="col d-flex justify-content-end align-items-end">
                     <button class="btn btn-light" @onclick="ReloadNFTs"><i class="oi oi-reload"></i></button>
+                    @if (MainAccount)
+                    {
+                        @if (NFTsSelectedForAction.Count == 0)
+                        {
+                            <button class="btn btn-light" @onclick="AllowCheckField" style="margin-left:20px;"><i class="oi oi-pencil"></i></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-light" @onclick="AllowCheckField" style="margin-left:20px;"><i class="oi oi-pencil"></i><span class="badge badge-info" style="margin-left:5px;">@NFTsSelectedForAction.Count</span></button>
+                        }
+                        <button class="btn btn-light" @onclick="DestroSelectedNFTs" style="margin-left:20px;"><i class="oi oi-trash"></i></button>
+                    }
                 </div>
             </div>
             <div class="row" style="margin-top:20px;">
@@ -40,14 +52,22 @@
                         <div class="card-group">
                             @foreach (var nft in _nfts)
                             {
-                                if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
+                                if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantPost || nft.Type == NFTTypes.CoruzantPodcast)
+                                { 
+                                    <CoruzantNFT Address="@_address" InputNFT="@nft" NFTSent="@NFTSentHandler" OwnNFT="@MainAccount" />
+                                }
+                                else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
                                 {
-                                    if ((displayImages && nft.Type == NFTTypes.Image) || 
-                                        (displayPosts && nft.Type == NFTTypes.Post) || 
-                                        (displayMusic && nft.Type == NFTTypes.Music) || 
+                                    if ((displayImages && nft.Type == NFTTypes.Image) ||
+                                        (displayPosts && nft.Type == NFTTypes.Post) ||
+                                        (displayMusic && nft.Type == NFTTypes.Music) ||
                                         (displayTickets && nft.Type == NFTTypes.Ticket))
                                     {
-                                        <NFT Address="@_address" InputNFT="@nft" NFTSent="@NFTSentHandler" OwnNFT="@MainAccount" />
+                                        <NFT Address="@_address" InputNFT="@nft" 
+                                             NFTSent="@NFTSentHandler" 
+                                             OwnNFT="@MainAccount" 
+                                             DisplayCheckField="@allowNFTCheckField" 
+                                             NFTCheckedChanged="@NFTCheckChangedHandler" />
                                     }
                                 }
                             }
@@ -59,6 +79,19 @@
     </div>
 </div>
 
+<Modal Title="Destroy NFTs"
+       Style="min-height:200px; min-width:200px;"
+       Visible="@destroyNFTsVisible"
+       OnOk="@destroyNFTsConfirm"
+       OnCancel="@destroyNFTsCancel">
+    <Spin Spinning="@destroyingNFTs" Tip="Destroying NFTs...">
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span>Do you really want to destroy selected NFTs? All will be returned back to you address as source tokens.</span>
+            </div>
+        </div>
+    </Spin>
+</Modal>
 
 @code {
 
@@ -109,15 +142,28 @@
     bool displayTickets = true;
     bool displayYouTube = false;
     bool displaySpotify = false;
+    bool allowNFTCheckField = false;
+    bool destroyNFTsVisible = false;
+    bool destroyingNFTs = false;
 
     string lastAddress = string.Empty;
 
     int refresh = 5;
 
+    private List<INFT> NFTsSelectedForAction = new List<INFT>();
+
     protected override async Task OnInitializedAsync()
     {
         if (AppData.Account != null)
             AppData.Account.Refreshed += RefreshedHandler;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && MainAccount)
+            _nfts = AppData.Account.NFTs;
+
+        base.OnAfterRender(firstRender);
     }
 
     void RefreshedHandler(object sender, EventArgs e)
@@ -138,6 +184,56 @@
         StateHasChanged();
     }
 
+    private async Task AllowCheckField(MouseEventArgs e)
+    {
+        allowNFTCheckField = !allowNFTCheckField;
+        NFTsSelectedForAction.Clear();
+        StateHasChanged();
+    }
+
+    private async Task NFTCheckChangedHandler((INFT,bool) e)
+    {
+        if (NFTsSelectedForAction.Count > 10 && e.Item2)
+            return; // todo alert messagebox
+
+        if (e.Item2 && !NFTsSelectedForAction.Contains(e.Item1))
+            NFTsSelectedForAction.Add(e.Item1);
+        else
+        {
+            if (NFTsSelectedForAction.Contains(e.Item1))
+                NFTsSelectedForAction.Remove(e.Item1);
+        }
+        StateHasChanged();
+    }
+
+    private async Task DestroSelectedNFTs(MouseEventArgs e)
+    {
+        destroyNFTsVisible = true;
+    }
+
+    private async Task destroyNFTsConfirm(MouseEventArgs e)
+    {
+        destroyingNFTs = true;
+        StateHasChanged();
+        if (NFTsSelectedForAction.Count > 0)
+        {
+            var res = await AppData.Account.DestroyNFTs(NFTsSelectedForAction);
+            if (res.Item1)
+                NFTsSelectedForAction.Clear();
+        }
+        _nfts.Clear();
+        StateHasChanged();
+        await ReloadNFTs();
+        allowNFTCheckField = false;
+        destroyingNFTs = false;
+        destroyNFTsVisible = false;
+        StateHasChanged();
+    }
+    private async Task destroyNFTsCancel(MouseEventArgs e)
+    {
+        destroyNFTsVisible = false;
+    }
+
     private async Task ReloadNFTs()
     {
         if (!string.IsNullOrEmpty(_address))
@@ -152,6 +248,7 @@
             }
             else
             {
+                _nfts.Clear();
                 await AppData.Account.ReLoadNFTs();
                 _nfts = AppData.Account.NFTs;
             }

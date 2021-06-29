@@ -35,6 +35,7 @@ namespace VEDriversLite.NFT
         string IconLink { get; set; }
         string ImageLink { get; set; }
         string Tags { get; set; }
+        List<string> TagsList { get; set; }
         string Utxo { get; set; }
         string TokenId { get; set; }
         string SourceTxId { get; set; }

@@ -17,21 +17,12 @@ namespace VEDriversLite.NFT
 
         public override async Task Fill(INFT NFT) 
         {
-            IconLink = NFT.IconLink;
-            ImageLink = NFT.ImageLink;
-            Name = NFT.Name;
-            Link = NFT.Link;
-            Description = NFT.Description;
-            Author = NFT.Author;
-            SourceTxId = NFT.SourceTxId;
-            NFTOriginTxId = NFT.NFTOriginTxId;
-            TypeText = NFT.TypeText;
-            Utxo = NFT.Utxo;
-            TokenId = NFT.TokenId;
-            UtxoIndex = NFT.UtxoIndex;
-            Price = NFT.Price;
-            Time = NFT.Time;
-            PriceActive = NFT.PriceActive;
+            await FillCommon(NFT);
+        }
+
+        private void ParseSpecific(IDictionary<string, string> meta)
+        {
+
         }
 
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
@@ -39,39 +30,10 @@ namespace VEDriversLite.NFT
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
             {
-                if (nftData.NFTMetadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (nftData.NFTMetadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (nftData.NFTMetadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (nftData.NFTMetadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
-                    Tags = tags;
-                if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
-                    TypeText = type;
-                
-                if (lastmetadata.TryGetValue("Price", out var price))
-                {
-                    if (!string.IsNullOrEmpty(price))
-                    {
-                        price = price.Replace(',', '.');
-                        Price = double.Parse(price, CultureInfo.InvariantCulture);
-                        PriceActive = true;
-                    }
-                    else
-                    {
-                        PriceActive = false;
-                    }
-                }
-                else
-                {
-                    PriceActive = false;
-                }
-                
+                ParseCommon(nftData.NFTMetadata);
+
+                ParsePrice(lastmetadata);
+
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
 
@@ -85,37 +47,9 @@ namespace VEDriversLite.NFT
             var nftData = await NFTHelpers.LoadLastData(Utxo);
             if (nftData != null)
             {
-                if (nftData.NFTMetadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (nftData.NFTMetadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (nftData.NFTMetadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (nftData.NFTMetadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
-                    Tags = tags;
-                if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
-                    TypeText = type;
-                if (nftData.NFTMetadata.TryGetValue("Price", out var price))
-                {
-                    if (!string.IsNullOrEmpty(price))
-                    {
-                        price = price.Replace(',', '.');
-                        Price = double.Parse(price, CultureInfo.InvariantCulture);
-                        PriceActive = true;
-                    }
-                    else
-                    {
-                        PriceActive = false;
-                    }
-                }
-                else
-                {
-                    PriceActive = false;
-                }
+                ParseCommon(nftData.NFTMetadata);
+
+                ParsePrice(nftData.NFTMetadata);
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
@@ -129,20 +63,8 @@ namespace VEDriversLite.NFT
         {
             if (metadata != null)
             {
-                if (metadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (metadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (metadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (metadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (metadata.TryGetValue("Tags", out var tags))
-                    Tags = tags;
-                if (metadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (metadata.TryGetValue("Type", out var type))
-                    TypeText = type;
+                ParseCommon(metadata);
+
                 if (metadata.TryGetValue("SourceUtxo", out var su))
                 {
                     SourceTxId = Utxo;
@@ -153,23 +75,8 @@ namespace VEDriversLite.NFT
                     SourceTxId = Utxo;
                     NFTOriginTxId = Utxo;
                 }
-                if (metadata.TryGetValue("Price", out var price))
-                {
-                    if (!string.IsNullOrEmpty(price))
-                    {
-                        price = price.Replace(',', '.');
-                        Price = double.Parse(price, CultureInfo.InvariantCulture);
-                        PriceActive = true;
-                    }
-                    else
-                    {
-                        PriceActive = false;
-                    }
-                }
-                else
-                {
-                    PriceActive = false;
-                }
+
+                ParsePrice(metadata);
 
                 if (string.IsNullOrEmpty(Link) && !string.IsNullOrEmpty(ImageLink))
                     Link = ImageLink;

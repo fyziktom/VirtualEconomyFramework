@@ -16,24 +16,11 @@ namespace VEDriversLite.NFT
 
         public override async Task Fill(INFT NFT)
         {
-            IconLink = NFT.IconLink;
-            ImageLink = NFT.ImageLink;
-            Name = NFT.Name;
-            Link = NFT.Link;
-            Description = NFT.Description;
-            Author = NFT.Author;
-            SourceTxId = NFT.SourceTxId;
-            NFTOriginTxId = NFT.NFTOriginTxId;
-            Utxo = NFT.Utxo;
-            TokenId = NFT.TokenId;
-            Price = NFT.Price;
-            TypeText = NFT.TypeText;
-            Time = NFT.Time;
-            UtxoIndex = NFT.UtxoIndex;
-            if (Price > 0)
-                PriceActive = true;
-            else
-                PriceActive = false;
+            await FillCommon(NFT);
+        }
+        private void ParseSpecific(IDictionary<string, string> meta)
+        {
+
         }
 
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
@@ -41,30 +28,8 @@ namespace VEDriversLite.NFT
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
             {
-                if (nftData.NFTMetadata.TryGetValue("Name", out var name))
-                    Name = name;
-                if (nftData.NFTMetadata.TryGetValue("Author", out var author))
-                    Author = author;
-                if (nftData.NFTMetadata.TryGetValue("Description", out var description))
-                    Description = description;
-                if (nftData.NFTMetadata.TryGetValue("Link", out var link))
-                    Link = link;
-                if (nftData.NFTMetadata.TryGetValue("Tags", out var tags))
-                    Tags = tags;
-                if (nftData.NFTMetadata.TryGetValue("Image", out var imagelink))
-                    ImageLink = imagelink;
-                if (nftData.NFTMetadata.TryGetValue("IconLink", out var iconlink))
-                    IconLink = iconlink;
-                if (nftData.NFTMetadata.TryGetValue("Type", out var type))
-                    TypeText = type;
-                
-                if (lastmetadata.TryGetValue("Price", out var price))
-                        Price = double.Parse(price, CultureInfo.InvariantCulture);
-                
-                if (Price > 0)
-                    PriceActive = true;
-                else
-                    PriceActive = false;
+                ParseCommon(nftData.NFTMetadata);
+                ParsePrice(lastmetadata);
                 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;

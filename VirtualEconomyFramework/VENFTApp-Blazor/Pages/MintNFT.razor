@@ -76,7 +76,11 @@
                                     if (i < AppData.Account.NFTs.Count)
                                     {
                                         var nft = AppData.Account.NFTs[i];
-                                        if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings")
+                                        if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantPost || nft.Type == NFTTypes.CoruzantPodcast)
+                                        {
+                                            <VENFTApp_Blazor.Components.CoruzantNFT Address="@AppData.Account.Address" InputNFT="@nft" OwnNFT="true" />
+                                        }
+                                        else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings")
                                         {
                                             <VENFTApp_Blazor.Components.NFT Address="@AppData.Account.Address" InputNFT="@nft" OwnNFT="true" />
                                         }

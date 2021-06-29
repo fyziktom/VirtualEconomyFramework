@@ -439,6 +439,34 @@ namespace VEDriversLite.NFT
         }
 
         /// <summary>
+        /// Calculate Neblio Fee based on total metadata length
+        /// </summary>
+        /// <param name="metadata">Dictionary with metadata</param>
+        /// <returns>20000 as default, additional 10000 for each another 900 characters</returns>
+        public static int CalculateFee(IDictionary<string,string> metadata)
+        {
+            var fee = 20000;
+            var all = string.Empty;
+            foreach (var meta in metadata)
+                all += meta.Key + meta.Value;
+
+            if (all.Length < 900)
+                fee = 20000;
+            else if (all.Length > 900)
+                fee = 30000;
+            else if (all.Length > 1900)
+                fee = 40000;
+            else if (all.Length > 2900)
+                fee = 50000;
+            else if (all.Length > 3900)
+                fee = 60000;
+            else
+                throw new Exception("Metadata length exceed allowed maximum length");
+
+            return fee;
+        }
+
+        /// <summary>
         /// This function will new NFTs. 
         /// </summary>
         /// <param name="address">sender address</param>
@@ -458,10 +486,11 @@ namespace VEDriversLite.NFT
                 SenderAddress = address
             };
 
+            var fee = CalculateFee(metadata);
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
+                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos, fee);
                 if (rtxid != null)
                     return rtxid;
                 else
@@ -489,7 +518,7 @@ namespace VEDriversLite.NFT
 
             // thanks to filled params it will return encrypted metadata with shared secret
             var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
-
+            var fee = CalculateFee(metadata);
             try
             {
                 // send tx
@@ -503,7 +532,7 @@ namespace VEDriversLite.NFT
                         SenderAddress = address,
                         ReceiverAddress = receiver
                     };
-                    rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
+                    rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos, fee);
                 }
                 else
                 {
@@ -551,11 +580,11 @@ namespace VEDriversLite.NFT
                 Metadata = metadata,
                 SenderAddress = address
             };
-
+            var fee = CalculateFee(metadata);
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
+                var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos, fee);
                 if (rtxid != null)
                     return rtxid;
                 else
@@ -588,11 +617,11 @@ namespace VEDriversLite.NFT
                 Metadata = metadata,
                 SenderAddress = address
             };
-
+            var fee = CalculateFee(metadata);
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
+                var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos, fee);
                 if (rtxid != null)
                     return rtxid;
                 else
@@ -622,15 +651,15 @@ namespace VEDriversLite.NFT
                 Id = nft.TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
-                sendUtxo = new List<string>() { nft.Utxo },
+                sendUtxo = new List<string>() { $"{nft.Utxo}:{nft.UtxoIndex}" },
                 SenderAddress = address,
                 ReceiverAddress = address
             };
-
+            var fee = CalculateFee(metadata);
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos, fee);
                 if (rtxid != null)
                     return rtxid;
                 else
@@ -669,15 +698,71 @@ namespace VEDriversLite.NFT
                 Amount = 1,
                 Id = NFT.TokenId, // id of token
                 Metadata = metadata,
-                sendUtxo = new List<string>() { payment.NFTUtxoTxId, payment.Utxo },
+                sendUtxo = new List<string>() { $"{payment.NFTUtxoTxId}:{payment.NFTUtxoIndex}", payment.Utxo },
                 SenderAddress = address,
                 ReceiverAddress = payment.Sender
             };
-
+            var fee = CalculateFee(metadata);
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendMultiTokenAPIAsync(dto, ekey, nutxos);
+                var rtxid = await NeblioTransactionHelpers.SendMultiTokenAPIAsync(dto, ekey, nutxos, fee);
+                if (!string.IsNullOrEmpty(rtxid))
+                    return rtxid;
+                else
+                    throw new Exception("Sending Multi Token Transaction was not successfull.");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// This function will destroy selected NFTs
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="payment">Payment NFT of received payment</param>
+        /// <param name="NFT">NFT for sale</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <returns></returns>
+        public static async Task<string> DestroyNFTs(string address, EncryptionKey ekey, ICollection<INFT> nfts, ICollection<Utxos> nutxos)
+        {
+            if (nfts == null || nfts.Count == 0)
+                throw new Exception("You have to add NFT Utxos list");
+            if (nfts.Count > 10)
+                throw new Exception("Limit for one NFT destroy transaction is 10 of inputs.");
+
+            var metadata = new Dictionary<string,string>();
+            metadata.Add("NFT", "false");
+            metadata.Add("Action", "Destroy of NFTs");
+
+            var nftutxos = new List<string>();
+            var tokenid = string.Empty;
+            foreach(var nft in nfts)
+            {
+                if (string.IsNullOrEmpty(tokenid))
+                    tokenid = nft.TokenId;
+
+                if (nft.TokenId == tokenid)
+                    nftutxos.Add($"{nft.Utxo}:{nft.UtxoIndex}");
+            }
+            // fill input data for sending tx
+            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Amount = nftutxos.Count,
+                Id = tokenid, // id of token
+                Metadata = metadata,
+                sendUtxo = nftutxos,
+                SenderAddress = address,
+                ReceiverAddress = address
+            };
+            var fee = CalculateFee(metadata);
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.DestroyNFTAsync(dto, ekey, nutxos, fee);
                 if (!string.IsNullOrEmpty(rtxid))
                     return rtxid;
                 else
@@ -724,11 +809,11 @@ namespace VEDriversLite.NFT
                 SenderAddress = address,
                 ReceiverAddress = receiver
             };
-
+            var fee = CalculateFee(metadata);
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, ekey, nft.Price, nutxos);
+                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, ekey, nft.Price, nutxos, fee);
                 if (rtxid != null)
                     return rtxid;
                 else
@@ -777,15 +862,15 @@ namespace VEDriversLite.NFT
                 Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
-                sendUtxo = new List<string>() { NFT.Utxo },
+                sendUtxo = new List<string>() { $"{NFT.Utxo}:{NFT.UtxoIndex}" },
                 SenderAddress = address,
                 ReceiverAddress = receiver
             };
-
+            var fee = CalculateFee(metadata);
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos, fee);
                 if (rtxid != null)
                     return rtxid;
                 else
@@ -822,15 +907,15 @@ namespace VEDriversLite.NFT
                 Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 Amount = 1,
-                sendUtxo = new List<string>() { NFT.Utxo },
+                sendUtxo = new List<string>() { $"{NFT.Utxo}:{NFT.UtxoIndex}" },
                 SenderAddress = address,
                 ReceiverAddress = address
             };
-
+            var fee = CalculateFee(metadata);
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos, fee);
                 if (rtxid != null)
                     return rtxid;
                 else
