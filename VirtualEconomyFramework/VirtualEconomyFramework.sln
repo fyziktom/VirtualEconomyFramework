@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLiteConsoleAppExam
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestVEDriversLite", "TestVEDriversLite\TestVEDriversLite.csproj", "{064B40F2-1421-4648-99B7-835AA90E4608}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VENFTApp-Banner", "VENFTApp-Banner\VENFTApp-Banner.csproj", "{42C7883E-FC38-4898-9143-27C9EEAA5B9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-Banner", "VENFTApp-Banner\VENFTApp-Banner.csproj", "{42C7883E-FC38-4898-9143-27C9EEAA5B9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

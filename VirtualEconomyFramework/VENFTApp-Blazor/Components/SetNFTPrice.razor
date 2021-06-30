@@ -30,8 +30,8 @@
 </Modal>
 
 @code {
-        string receiverAddress = string.Empty;
-        bool confirmSetPriceVisible = false;
+    string receiverAddress = string.Empty;
+    bool confirmSetPriceVisible = false;
     private double priceOfNFT { get; set; } = 0.0005;
 
     bool sendingTransaction = false;
@@ -39,6 +39,12 @@
 
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
 
     [Parameter]
     public bool SetPriceNFTDialogVisible { get; set; } = false;
@@ -103,6 +109,7 @@
             StateHasChanged();
 
             var res = await AppData.Account.SendNFT(receiverAddress, nft, priceWrite, price);
+
             if (res.Item1)
             {
                 status = res.Item2;

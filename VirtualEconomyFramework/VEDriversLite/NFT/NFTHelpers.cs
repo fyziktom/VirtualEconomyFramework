@@ -727,7 +727,7 @@ namespace VEDriversLite.NFT
         /// <param name="NFT">NFT for sale</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <returns></returns>
-        public static async Task<string> DestroyNFTs(string address, EncryptionKey ekey, ICollection<INFT> nfts, ICollection<Utxos> nutxos)
+        public static async Task<string> DestroyNFTs(string address, EncryptionKey ekey, ICollection<INFT> nfts, ICollection<Utxos> nutxos, string receiver = "")
         {
             if (nfts == null || nfts.Count == 0)
                 throw new Exception("You have to add NFT Utxos list");
@@ -748,6 +748,9 @@ namespace VEDriversLite.NFT
                 if (nft.TokenId == tokenid)
                     nftutxos.Add($"{nft.Utxo}:{nft.UtxoIndex}");
             }
+
+            if (string.IsNullOrEmpty(receiver))
+                receiver = address;
             // fill input data for sending tx
             var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
@@ -756,7 +759,7 @@ namespace VEDriversLite.NFT
                 Metadata = metadata,
                 sendUtxo = nftutxos,
                 SenderAddress = address,
-                ReceiverAddress = address
+                ReceiverAddress = receiver
             };
             var fee = CalculateFee(metadata);
             try
@@ -838,7 +841,7 @@ namespace VEDriversLite.NFT
         /// <returns>New Tx Id hash</returns>
         public static async Task<string> SendNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, bool priceWrite, ICollection<Utxos> nutxos, double price = 0.0002)
         {
-            if (price < 0.0002)
+            if (price < 0.0002 && priceWrite)
                 throw new Exception("Price cannot be lower than 0.0002 NEBL.");
 
             if (priceWrite)

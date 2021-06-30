@@ -239,6 +239,8 @@
                                     </div>
                                 </div>
                             </button>
+                            @if (!SubAccount)
+                            {
                             <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()" style="width:65px; height:65px; margin-left:20px;">
                                 <div class="row">
                                     <div class="col">
@@ -255,6 +257,7 @@
                                     </div>
                                 </div>
                             </button>
+                            }
                             <button class="btn btn-primary" @onclick="async () => await ShowOwnershipQRCode()" style="width:65px; height:65px; margin-left:20px;">
                                 <div class="row">
                                     <div class="col">
@@ -280,14 +283,26 @@
         </Spin>
     </div>
 
-    <SendNFT NFT="@NFT" NFTSent="@NFTSentHandler" @bind-SendNFTDialogVisible="sendNFTDialogVisible" />
-    <SetNFTPrice NFT="@NFT" NFTSent="@NFTSentHandler" @bind-SetPriceNFTDialogVisible="setPriceNFTDialogVisible" />
+    <SendNFT NFT="@NFT" 
+             NFTSent="@NFTSentHandler" 
+             @bind-SendNFTDialogVisible="sendNFTDialogVisible" 
+             Address="@Address"
+             SubAccount="@SubAccount"/>
+
+    <SetNFTPrice NFT="@NFT" 
+                 NFTSent="@NFTSentHandler"
+                 @bind-SetPriceNFTDialogVisible="setPriceNFTDialogVisible" />
 
     <Modal Title="Create or edit post NFT"
            Visible="@createNewPostVisible"
            OnOk="@createNewPostConfirm"
            OnCancel="@createNewPostCancel">
-        <MintNFTForm NFTType="NFTTypes.Post" NFT="@NFT" RedirectToNFTsAfterMint="false" NFTMinted="@NFTMinted" />
+        <MintNFTForm NFTType="NFTTypes.Post" 
+                     NFT="@NFT" 
+                     RedirectToNFTsAfterMint="false" 
+                     NFTMinted="@NFTMinted" 
+                     Address="@Address"
+                     SubAccount="@SubAccount"/>
     </Modal>
 
     <Modal Title="Use NFT Ticket"
@@ -378,6 +393,12 @@
 
     [Parameter]
     public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
 
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
@@ -482,26 +503,14 @@
         showOwnershipDialogLoading = true;
         StateHasChanged();
         await Task.Delay(100);
-        //var res = await AppData.Account.GetNFTVerifyCode(NFT.Utxo);
-        //var res = await OwnershipVerifier.GetCodeInDto(NFT.Utxo, AppData.Account.Secret);
-        //ownershipDialogCode = res.Signature;
-        var res = await AppData.Account.GetNFTVerifyQRCode(_utxo);
+
+        (OwnershipVerificationCodeDto, byte[]) res;
+        if (!SubAccount)
+            res = await AppData.Account.GetNFTVerifyQRCode(_utxo);
+        else
+            res = await AppData.Account.GetNFTVerifyQRCodeFromSubAccount(Address, _utxo);
         ownershipDialogCode = res.Item1.Signature;
-        //var base64 = Convert.ToBase64String(res.Item2);
-        //var imgSrc = String.Format("data:image;base64,{0}", base64);
 
-        // direct request to get qr code image data
-        //HttpResponseMessage responsePhoto = await _client.GetAsync(imgSrc);
-        //byte[] byteArrayPhoto = await responsePhoto.Content.ReadAsByteArrayAsync();
-        //var base64 = Convert.ToBase64String(byteArrayPhoto);
-        //imgSrc = String.Format("data:image;base64,{0}", base64);
-        /*
-
-        var imgSrc = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + sdto;
-
-        if (!string.IsNullOrEmpty(imgSrc))
-            ownershipDialogQRCodeImage = imgSrc;
-        */
         var sdto = JsonConvert.SerializeObject(res.Item1);
         await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { sdto, qrCodeRef });
         creatingOwnerQRCodeState = "Refreshing Key...";
@@ -568,7 +577,11 @@
             loading = true;
             showUseTicket = false;
             StateHasChanged();
-            var res = await AppData.Account.UseNFTTicket(NFT);
+            (bool, string) res;
+            if (!SubAccount)
+                res = await AppData.Account.UseNFTTicket(NFT);
+            else
+                res = await AppData.Account.UseTicketNFTOnSubAccount(Address, NFT);
         }
         catch(Exception ex)
         {

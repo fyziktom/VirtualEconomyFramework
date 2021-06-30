@@ -47,7 +47,6 @@
     [Parameter]
     public EventCallback<bool> SendNFTDialogVisibleChanged { get; set; }
 
-
     private INFT sourceNFT = new ImageNFT("");
     [Parameter]
     public INFT NFT
@@ -55,19 +54,19 @@
         get => sourceNFT;
         set
         {
-            if (value != null)
+            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != sourceNFT.Utxo)
             {
-                if (!string.IsNullOrEmpty(value.Utxo))
-                {
-                    if (value.Utxo != sourceNFT.Utxo)
-                    {
-                        sourceNFT = value;
-                        StateHasChanged();
-                    }
-                }
+                sourceNFT = value;
+                StateHasChanged();
             }
         }
     }
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
 
     private async Task HandleOk(MouseEventArgs e)
     {
@@ -110,7 +109,12 @@
 
             StateHasChanged();
 
-            var res = await AppData.Account.SendNFT(receiverAddress, nft, priceWrite, price);
+            (bool, string) res;
+            if (!SubAccount)
+                res = await AppData.Account.SendNFT(receiverAddress, nft, priceWrite, price);
+            else
+                res = await AppData.Account.SendNFTFromSubAccount(Address, receiverAddress, nft);
+
             if (res.Item1)
             {
                 status = res.Item2;

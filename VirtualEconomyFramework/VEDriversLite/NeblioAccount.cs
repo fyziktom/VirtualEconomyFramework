@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
 using VEDriversLite.Events;
 using VEDriversLite.Messaging;
+using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
@@ -90,6 +91,10 @@ namespace VEDriversLite
         /// </summary>
         public List<ActiveTab> Tabs { get; set; } = new List<ActiveTab>();
         public List<MessageTab> MessageTabs { get; set; } = new List<MessageTab>();
+        /// <summary>
+        /// Neblio Sub Accounts. Each can work with own set of NFTs. It is real blockchain address with own Private Key
+        /// </summary>
+        public Dictionary<string, NeblioSubAccount> SubAccounts { get; set; } = new Dictionary<string, NeblioSubAccount>();
         /// <summary>
         /// Received payments (means Payment NFT) of this address.
         /// </summary>
@@ -339,7 +344,7 @@ namespace VEDriversLite
         /// <param name="password">Input password, which will encrypt the Private key</param>
         /// <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
         /// <returns></returns>
-        public async Task<bool> CreateNewAccount(string password, bool saveToFile = false)
+        public async Task<bool> CreateNewAccount(string password, bool saveToFile = false, string filename = "key.txt")
         {
             try
             {
@@ -367,7 +372,7 @@ namespace VEDriversLite
                            Address = Address,
                            Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
                        };
-                       FileHelpers.WriteTextToFile("key.txt", JsonConvert.SerializeObject(kdto));
+                       FileHelpers.WriteTextToFile(filename, JsonConvert.SerializeObject(kdto));
                    }
                });
 
@@ -384,17 +389,17 @@ namespace VEDriversLite
         }
 
         /// <summary>
-        /// Load account from "key.txt" file placed in the root exe directory. Doesnt work in WABS
+        /// Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccount(string password)
+        public async Task<bool> LoadAccount(string password, string filename = "key.txt")
         {
-            if (FileHelpers.IsFileExists("key.txt"))
+            if (FileHelpers.IsFileExists(filename))
             {
                 try
                 {
-                    var k = FileHelpers.ReadTextFromFile("key.txt");
+                    var k = FileHelpers.ReadTextFromFile(filename);
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
                     AccountKey = new EncryptionKey(kdto.Key, fromDb: true);
@@ -795,6 +800,386 @@ namespace VEDriversLite
         public async Task<string> SerializeMessageTabs()
         {
             return JsonConvert.SerializeObject(MessageTabs);
+        }
+
+        #endregion
+
+        #region SubAccounts
+
+        private void Nsa_NewEventInfo(object sender, IEventInfo e)
+        {
+            NewEventInfo?.Invoke(sender, e);
+        }
+
+        /// <summary>
+        /// Load subaccounts from previous serialized string.
+        /// </summary>
+        /// <param name="subaccounts">List of SubAccountsAddressExports as json string</param>
+        /// <returns></returns>
+        public async Task<string> LoadSubAccounts(string subaccounts)
+        {
+            SubAccounts.Clear();
+            try
+            {
+                var accnts = JsonConvert.DeserializeObject<List<AccountExportDto>>(subaccounts);
+
+                if (accnts == null)
+                    return "Cannot deserialize the data.";
+
+                var firstAdd = string.Empty;
+                if (accnts.Count > 0)
+                {
+                    var first = true;
+                    foreach (var a in accnts)
+                    {
+                        var nsa = new NeblioSubAccount();
+                        var res = await nsa.LoadFromBackupDto(Secret, a);
+                        if (res.Item1)
+                        {
+                            var bkm = await IsInTheBookmarks(a.Address);
+                            if (!bkm.Item1)
+                            {
+                                await AddBookmark(a.Name, a.Address, "SubAccount");
+                                bkm = await IsInTheBookmarks(a.Address);
+                            }
+                            nsa.LoadBookmark(bkm.Item2);
+                            nsa.IsAutoRefreshActive = true;
+                            nsa.NewEventInfo += Nsa_NewEventInfo;
+                            await nsa.StartRefreshingData();
+                            SubAccounts.TryAdd(nsa.Address, nsa);
+                        }
+                    }
+                }
+                return "OK";
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorEvent(ex.Message, "Cannot deserialize the sub accounts.");
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Add new Sub Account
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="sendNeblioToAccount">Set This true if you want to load some Neblio to this address after it is created.</param>
+        /// <param name="neblioAmountToSend">Amount of neblio for initial load of the address, 0.05 is default = 250 tx</param>
+        /// <returns>true and string with serialized tabs list as json string</returns>
+        public async Task<(bool, string)> AddSubAccount(string name, bool sendNeblioToAccount = false, double neblioAmountToSend = 0.05)
+        {
+            if (!SubAccounts.Values.Any(a => a.Name == name))
+            {
+                var nsa = new NeblioSubAccount();
+                var r = await nsa.CreateAddress(Secret, name);
+                if (!r.Item1)
+                {
+                    await InvokeErrorEvent("Cannot create SubAccount Address." + r.Item2, "SubAccount Address Error");
+                    return (false, "Cannot create SubAccount Address." + r.Item2);
+                }
+                await AddBookmark(name, nsa.Address, "SubAccount");
+                var bkm = await IsInTheBookmarks(nsa.Address);
+                nsa.LoadBookmark(bkm.Item2);
+                nsa.IsAutoRefreshActive = true;
+                nsa.NewEventInfo += Nsa_NewEventInfo;
+                await nsa.StartRefreshingData();
+                SubAccounts.TryAdd(nsa.Address, nsa);
+
+                if (sendNeblioToAccount)
+                {
+                    var res = await SendNeblioPayment(nsa.Address, neblioAmountToSend);
+                }
+            }
+            else
+            {
+                await InvokeErrorEvent("Same Name Already Exists. Please select another name.", "Already Exists");
+                return (false, "Name Already Exists.");
+            }
+
+            return (true, await SerializeSubAccounts());
+        }
+
+        /// <summary>
+        /// Remove Sub Account by Neblio address if exists in the dictionary
+        /// Please remember that this function will destroy account. Please do backup first.
+        /// </summary>
+        /// <param name="address">Neblio Address which tab should be removed</param>
+        /// <returns>true and string with serialized subaccount account export dto list as json string</returns>
+        public async Task<(bool, string)> RemoveSubAccount(string address)
+        {
+            if (SubAccounts.TryGetValue(address, out var sacc))
+            {
+                sacc.NewEventInfo -= Nsa_NewEventInfo;
+                SubAccounts.Remove(address);
+            }
+
+            return (true, await SerializeSubAccounts());
+        }
+
+        public double GetSubAccounTotaltSpendableActualBalance(string address)
+        {
+            if (SubAccounts.TryGetValue(address, out var sacc))
+                return sacc.TotalSpendableBalance;
+            else
+                return 0;
+        }
+        public double GetSubAccounUnconfirmedActualBalance(string address)
+        {
+            if (SubAccounts.TryGetValue(address, out var sacc))
+                return sacc.TotalUnconfirmedBalance;
+            else
+                return 0;
+        }
+
+        /// <summary>
+        /// Change Sub Account Name if exists in the dictionary
+        /// Automatically is changed name in bookmarks too. Thats why function will return both serialized lists
+        /// </summary>
+        /// <param name="address">Neblio Address which tab should be renamed</param>
+        /// <param name="newName">New Name</param>
+        /// <returns>true and string with serialized subaccount account export dto list as json string nad bookmarks list</returns>
+        public async Task<(bool, (string, string))> ChangeSubAccountName(string address, string newName)
+        {
+            if (!SubAccounts.Values.Any(a => a.Name == newName))
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    sacc.Name = newName;
+                    await RemoveBookmark(address);
+                    await AddBookmark(newName, address, "SubAccount");
+                    Bookmarks.Find(b => b.Address == address).IsSubAccount = true;
+                }
+            }
+            else
+            {
+                await InvokeErrorEvent("Same Name Already Exists. Please select another name.", "Already Exists");
+                return (false, ("Name Already Exists.",string.Empty));
+            }
+            
+            return (true, (await SerializeSubAccounts(), await SerializeBookmarks()));
+        }
+
+        /// <summary>
+        /// Send NFT From SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="receiver">Receiver of the NFT</param>
+        /// <param name="NFT">NFT on the SubAccount which should be send</param>
+        /// <param name="sendToMainAccount">If this is set, function will rewrite receiver to main Account Address</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> SendNFTFromSubAccount(string address, string receiver, INFT NFT, bool sendToMainAccount = false)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    if (sendToMainAccount)
+                        receiver = Address;
+                    var res = await sacc.SendNFT(receiver, NFT, false, 0.0);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch(Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Change NFT on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="NFT">NFT on the SubAccount which should be changed</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> ChangeNFTOnSubAccount(string address, INFT NFT)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.ChangeNFT(NFT);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Mint NFT on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="NFT">NFT on the SubAccount which should be minted</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> MintNFTOnSubAccount(string address, INFT NFT)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.MintNFT(NFT);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get QR verification code of NFT on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="txid">NFT utxo on the SubAccount</param>
+        /// <returns>/returns>
+        public async Task<(OwnershipVerificationCodeDto, byte[])> GetNFTVerifyQRCodeFromSubAccount(string address, string txid)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.GetNFTVerifyQRCode(txid);
+                    return res;
+                }
+                else
+                    return (new OwnershipVerificationCodeDto(), new byte[0]);
+            }
+            catch (Exception ex)
+            {
+                return (new OwnershipVerificationCodeDto(), new byte[0]);
+            }
+        }
+
+        /// <summary>
+        /// Use Ticket NFT on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="NFT">NFT on the SubAccount which should be changed</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> UseTicketNFTOnSubAccount(string address, INFT NFT)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.UseNFTTicket(NFT);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Change Coruzant NFT on SubAccount or send it to another address
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="NFT">NFT on the SubAccount which should be changed</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> SendCoruzantNFTOnSubAccount(string address, INFT NFT, string comment = "", bool commentWrite = false, string receiver = "")
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.SendCoruzantNFT(receiver, NFT, commentWrite, comment);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Destroy NFTs on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="NFT">NFT on the SubAccount which should be send</param>
+        /// /// <param name="sendToMainAccount">If this is set, function will rewrite receiver to main Account Address</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> DestroyNFTOnSubAccount(string address, ICollection<INFT> NFTs, bool sendToMainAccount = false)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var receiver = string.Empty;
+                    if (sendToMainAccount)
+                        receiver = Address;
+                    var res = await sacc.DestroyNFTs(NFTs, receiver);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get NFTs on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, ICollection<INFT>)> GetNFTsOnSubAccount(string address)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                    return (true, sacc.NFTs);
+                else
+                    return (false, new List<INFT>());
+            }
+            catch (Exception ex)
+            {
+                return (false, new List<INFT>());
+            }
+        }
+
+        public async Task AllowSubAccountAutorefreshing(string address)
+        {
+            if (SubAccounts.TryGetValue(address, out var sacc))
+                sacc.IsAutoRefreshActive = true;
+        }
+        public async Task StopSubAccountAutorefreshing(string address)
+        {
+            if (SubAccounts.TryGetValue(address, out var sacc))
+                sacc.IsAutoRefreshActive = false;
+        }
+
+        /// <summary>
+        /// Returns serialized subaccount account export dto list as json string
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> SerializeSubAccounts()
+        {
+            var dtos = new List<AccountExportDto>();
+            foreach(var a in SubAccounts)
+            {
+                var dto = await a.Value.BackupAddressToDto();
+                if (dto.Item1)
+                    dtos.Add(dto.Item2);
+            }
+            return JsonConvert.SerializeObject(dtos);
         }
 
         #endregion
@@ -1345,7 +1730,7 @@ namespace VEDriversLite
         /// <param name="tokenId">Token Id hash</param>
         /// <param name="nfts">List of NFTs</param>
         /// <returns></returns>
-        public async Task<(bool, string)> DestroyNFTs(ICollection<INFT> nfts)
+        public async Task<(bool, string)> DestroyNFTs(ICollection<INFT> nfts, string receiver = "")
         {
             if (IsLocked())
             {
@@ -1362,7 +1747,7 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var rtxid = await NFTHelpers.DestroyNFTs(Address, AccountKey, nfts, res.Item2);
+                var rtxid = await NFTHelpers.DestroyNFTs(Address, AccountKey, nfts, res.Item2, receiver);
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "NFTs Destroyed.");

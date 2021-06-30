@@ -185,14 +185,20 @@
 
 @code {
 
-    bool withPrice = false;
-    bool withCoppies = false;
+        bool withPrice = false;
+        bool withCoppies = false;
 
-    [Parameter]
-    public bool RedirectToNFTsAfterMint { get; set; } = false;
+        [Parameter]
+        public bool RedirectToNFTsAfterMint { get; set; } = false;
 
-    [Parameter]
-    public EventCallback<string> NFTMinted { get; set; }
+        [Parameter]
+        public EventCallback<string> NFTMinted { get; set; }
+
+        [Parameter]
+        public bool SubAccount { get; set; } = false;
+
+        [Parameter]
+        public string Address { get; set; } = string.Empty;
 
     private NFTTypes nftType = NFTTypes.Image;
     [Parameter]
@@ -322,12 +328,25 @@
             }
 
             (bool, string) res;
+
             if (!string.IsNullOrEmpty(newNFT.Utxo))
-                res = await AppData.Account.ChangeNFT(newNFT);
+            {
+                if (!SubAccount)
+                    res = await AppData.Account.ChangeNFT(newNFT);
+                else
+                    res = await AppData.Account.ChangeNFTOnSubAccount(Address, newNFT);
+            }
             else if (string.IsNullOrEmpty(newNFT.Utxo) && NumberOfCoppies > 0 && nftType != NFTTypes.Profile)
+            {
                 res = await AppData.Account.MintMultiNFT(newNFT, NumberOfCoppies);
+            }
             else
-                res = await AppData.Account.MintNFT(newNFT);
+            {
+                if (!SubAccount)
+                    res = await AppData.Account.MintNFT(newNFT);
+                else
+                    res = await AppData.Account.MintNFTOnSubAccount(Address, newNFT);
+            }
 
             if (res.Item1)
             {

@@ -167,7 +167,12 @@
        Visible="@nftDetailsVisible"
        OnOk="@CloseNFTDetails"
        OnCancel="@CloseNFTDetails">
-    <CoruzantNFTDetails UtxoIndex="@nft.UtxoIndex" Utxo="@nftDetailsUtxo" NFTSent="@NFTSentHandler" OwnNFT="@OwnNFT" />
+    <CoruzantNFTDetails UtxoIndex="@nft.UtxoIndex" 
+                        Utxo="@nftDetailsUtxo" 
+                        NFTSent="@NFTSentHandler" 
+                        OwnNFT="@OwnNFT"
+                        Address="@Address"
+                        SubAccount="@SubAccount"/>
 </Modal>
 
 <Modal Title="NFT Image"
@@ -212,6 +217,9 @@
 
     [Parameter]
     public bool HideButtons { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
 
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }

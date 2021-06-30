@@ -192,39 +192,39 @@ namespace VEDriversLite.NFT
             {
                 case NFTTypes.Image:
                     nft = new ImageNFT(NFT.Utxo);
-                    nft.Fill(NFT);
+                    await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.Profile:
                     nft = new ProfileNFT(NFT.Utxo);
-                    nft.Fill(NFT);
+                    await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.Post:
                     nft = new PostNFT(NFT.Utxo);
-                    nft.Fill(NFT);
+                    await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.Music:
                     nft = new MusicNFT(NFT.Utxo);
-                    nft.Fill(NFT);
+                    await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.Payment:
                     nft = new PaymentNFT(NFT.Utxo);
-                    nft.Fill(NFT);
+                    await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.Message:
                     nft = new MessageNFT(NFT.Utxo);
-                    nft.Fill(NFT);
+                    await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.Ticket:
                     nft = new TicketNFT(NFT.Utxo);
-                    nft.Fill(NFT);
+                    await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.CoruzantPost:
                     nft = new CoruzantPostNFT(NFT.Utxo);
-                    nft.Fill(NFT);
+                    await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.CoruzantProfile:
                     nft = new CoruzantProfileNFT(NFT.Utxo);
-                    nft.Fill(NFT);
+                    await nft.Fill(NFT);
                     return nft;
             }
 

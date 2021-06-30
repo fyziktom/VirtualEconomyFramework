@@ -116,7 +116,12 @@
         StateHasChanged();
 
         //keyToSave = "{ Address:\"" + AppData.Account.Address + "\", EncryptedKey:\"" + ekey + "\", DecryptedKey:\"" + accountKey + "\" }";
-        keyToSave = "{ Address:\"" + addr + "\", EncryptedKey:\"" + ekey + "\" }";
+        keyToSave = "{ \"Address\":\"" + addr + "\", \"EncryptedKey\":\"" + ekey + "\" }";
+        if (!DogeAccountKey && AppData.Account.SubAccounts.Count > 0)
+        {
+            var saccnts = await AppData.Account.SerializeSubAccounts();
+            keyToSave = "{ \"Address\":\"" + addr + "\", \"EncryptedKey\":\"" + ekey + "\", \"SubAccounts\": " + saccnts + " }";
+        }
         if (!DogeAccountKey)
             filename = "Key-Export-" + addr + ".txt";
         else

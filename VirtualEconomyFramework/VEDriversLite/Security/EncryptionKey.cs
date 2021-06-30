@@ -95,6 +95,7 @@ namespace VEDriversLite.Security
             {
                 _key = key;
                 IsEncrypted = false;
+                passwordLoaded = true;
                 return true;
             }
         }

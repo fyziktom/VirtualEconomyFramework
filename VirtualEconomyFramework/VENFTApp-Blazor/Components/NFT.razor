@@ -187,7 +187,12 @@
        Visible="@nftDetailsVisible"
        OnOk="@CloseNFTDetails"
        OnCancel="@CloseNFTDetails">
-    <VENFTApp_Blazor.Components.NFTDetails UtxoIndex="@nft.UtxoIndex" Utxo="@nftDetailsUtxo" NFTSent="@NFTSentHandler" OwnNFT="@OwnNFT" />
+    <VENFTApp_Blazor.Components.NFTDetails UtxoIndex="@nft.UtxoIndex" 
+                                           Utxo="@nftDetailsUtxo" 
+                                           NFTSent="@NFTSentHandler" 
+                                           OwnNFT="@OwnNFT"
+                                           Address="@_address"
+                                           SubAccount="@SubAccount"/>
 </Modal>
 
 <Modal Title="NFT Image"
@@ -231,6 +236,9 @@
 
     [Parameter]
     public bool HideButtons { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
 
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }

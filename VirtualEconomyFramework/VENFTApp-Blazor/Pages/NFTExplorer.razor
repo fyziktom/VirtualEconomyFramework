@@ -1,0 +1,240 @@
+﻿@using System.IO;
+@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Neblio
+@using VEDriversLite.NeblioAPI
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject HttpClient _client
+@inject NavigationManager NavManager
+@page "/nftexplorer"
+
+<div class="container-fluid h-100 w-100" style="padding:5px;">
+    <Spin Tip="Loading NFT Explorer..." Spinning="@loadingBrowser">
+        <div class="row h-100 w-100" style="margin-left:0px; padding:0px;">
+            <div class="col h-100 w-100" style="margin-left:0px; padding:0px;">
+
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h3>My NFTs</h3>
+                    </div>
+                </div>
+
+                <VENFTApp_Blazor.Components.AccountBalances />
+
+                <!--<VENFTApp_Blazor.Components.MessageList Address="AppData.Account.Address"/>-->
+                <div class="row w-100" style="margin-left:0px; padding:0px;">
+                    <div class="col w-100 d-flex justify-content-center align-items-center" style="margin-left:0px; padding:0px;">
+
+                        <Collapse DefaultActiveKey="@(new[]{"Add"})" OnChange="Callback" Accordion Style="width:100%;">
+                            <Panel Header="Main Account NFTs" Key="MainAccountNFTs">
+                                <HeaderTemplate>
+                                    <span class="oi oi-home" aria-hidden="true"></span> Main Account NFTs
+                                </HeaderTemplate>
+                                <ChildContent>
+                                    <VENFTApp_Blazor.Components.NFTList MainAccount="true" 
+                                                                        NFTs="@AppData.Account.NFTs" 
+                                                                        Address="@AppData.Account.Address" />
+                                </ChildContent>
+                            </Panel>
+
+                            @foreach (var mt in AppData.Account.SubAccounts.Values)
+                            {
+                                <Panel Key="@mt.Address" Style="width:100%;">
+                                    <HeaderTemplate>
+                                        @if (mt.BookmarkFromAccount != null && !string.IsNullOrEmpty(mt.BookmarkFromAccount.Name))
+                                        {
+                                            <span class="oi oi-person" aria-hidden="true"></span> @mt.BookmarkFromAccount.Name
+                                        }
+                                        else
+                                        {
+                                            <span class="oi oi-person" aria-hidden="true"></span> @mt.Address
+                                        }
+                                    </HeaderTemplate>
+                                    <ChildContent>
+                                        <div class="row" style="min-width:300px; padding:0px;">
+                                            <div class="col w-100" style="min-width:300px; padding:0px;">
+                                                <VENFTApp_Blazor.Components.SubAccountNFTsList Address="@mt.Address"/>
+                                            </div>
+                                        </div>
+                                    </ChildContent>
+                                </Panel>
+                            }
+                            <Panel Header="Add New" Key="Add">
+                                <button @onclick="addMessageTab">Add New</button>
+                            </Panel>
+                        </Collapse>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </Spin>
+    <VENFTApp_Blazor.Components.InfoEventModal />
+</div>
+
+<Modal Title="Add New SubAccount"
+       Visible="@addSubAccountVisible"
+       OnOk="@addSubAccountConfirm"
+       OnCancel="@addSubAccountCancel">
+    <div class="row">
+        <div class="col">
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Input New Sub Account Name</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Input Placeholder="Input New Sub Account Name" @bind-Value="@newSubAccountName" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                </div>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center w-auto">
+                <input type="checkbox" checked="checked" @onchange="eventArgs => { sendInitNeblioChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Send init 0.05 NEBL to this address</span><br />
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    private bool mainNFTsTabVisible = false;
+    private string newSubAccountName = string.Empty;
+    private string selectedNewTabFromBookmarkName = "Select From Bookmark";
+    bool loadingBrowser = false;
+    bool sendInitPayment = true;
+
+    bool addSubAccountVisible = false;
+    string addressInOpenTab = string.Empty;
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    void Callback(string[] keys)
+    {
+        var key = keys.Last();
+        if (string.IsNullOrEmpty(key))
+            return;
+        if (key == "Add")
+        {
+            addSubAccountVisible = true;
+            return;
+        }
+        else if (key == "MainAccountNFTs")
+        {
+            showMainNFTsTab(null);
+            return;
+        }
+        Console.WriteLine(string.Join(',', keys));
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(AppData.Account.Address))
+            {
+                Redirect();
+            }
+            else
+            {
+                LoadStateFromMemory();
+            }
+        }
+        catch (Exception ex)
+        {
+            Redirect();
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
+
+    private async Task sendInitNeblioChanged(object e)
+    {
+        sendInitPayment = (bool)e;
+        StateHasChanged();
+    }
+
+    private async Task LoadStateFromMemory()
+    {
+        try
+        {
+            loadingBrowser = true;
+
+            try
+            {
+                var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
+                if (!string.IsNullOrEmpty(subAccounts))
+                    if (AppData.Account.SubAccounts.Count == 0)
+                        await AppData.Account.LoadSubAccounts(subAccounts);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load sub accounts from memory!" + ex.Message);
+            }
+            loadingBrowser = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            //todo
+            Console.WriteLine("Error during loading NFT Explorer. " + ex.Message);
+            loadingBrowser = false;
+        }
+    }
+
+    private async Task showMainNFTsTab(MouseEventArgs e)
+    {
+        mainNFTsTabVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task addMessageTab(MouseEventArgs e)
+    {
+        addSubAccountVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task addSubAccountConfirm(MouseEventArgs e)
+    {
+        await addSubAccount();
+    }
+    private async Task addSubAccountCancel(MouseEventArgs e)
+    {
+        addSubAccountVisible = false;
+    }
+
+    private async Task addSubAccount()
+    {
+        try
+        {
+            addSubAccountVisible = false;
+            loadingBrowser = true;
+            StateHasChanged();
+            var res = await AppData.Account.AddSubAccount(newSubAccountName, sendInitPayment);
+            await Task.Delay(50);
+            if (res.Item1)
+                await localStorage.SetItemAsync("subAccounts", res.Item2);
+        }
+        finally
+        {
+            loadingBrowser = false;
+            StateHasChanged();
+        }
+    }
+
+}
