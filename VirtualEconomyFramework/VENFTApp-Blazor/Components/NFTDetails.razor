@@ -2,6 +2,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NeblioAPI
 @using Newtonsoft.Json
+@using Markdig
 @inject AppData AppData
 @inject HttpClient _client
 @inject IJSRuntime JSRuntime
@@ -9,21 +10,67 @@
 <div class="row">
     <div class="col">
         <Spin Tip="Loading..." Spinning="@loading">
+            @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId) && !string.IsNullOrEmpty(NFT.Utxo))
+            {
+                <div style="position: absolute;right: 5px;top: -20px;">
+                    <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">
+                        <span class="badge badge-primary">Mint Info</span>
+                    </a>
+                    <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
+                        <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
+                    </a>
+                    <span class="badge badge-warning" style="margin-left:5px;">C: @NFT.TxDetails.Confirmations</span>
+                </div>
+            }
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Name: @NFT.Name</span>
+                    <span>@NFT.Name</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Author: @NFT.Author</span>
+                    <span>@NFT.Author</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Description: @NFT.Description</span>
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Description</span>
                 </div>
             </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
+                </div>
+            </div>
+            @if (NFT.TagsList.Count > 0)
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Tags</span>
+                    </div>
+                </div>
+                <div class="row d-flex justify-content-center align-items-center">
+                    @foreach (var tag in NFT.TagsList)
+                    {
+                    <div class="col d-flex justify-content-center align-items-center w-auto">
+                        <small>#@tag</small>
+                    </div>
+                    }
+                </div>
+            }
+            @if (NFT.Type == NFTTypes.Post && !string.IsNullOrEmpty(NFT.Text))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Text</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@((MarkupString) NFTmarkuptext)</span>
+                    </div>
+                </div>
+            }
             @if (NFT.Type == NFTTypes.Ticket)
             {
                 <div class="row">
@@ -83,11 +130,14 @@
                 }
                 else
                 {
+                    if (nft.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
+                    { 
                     <div class="row">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             <button class="btn btn-primary" @onclick="showUseTicketDialog">Use Ticket</button>
                         </div>
                     </div>
+                    }
                 }
 
             }
@@ -100,27 +150,6 @@
                 </div>
             }
             <hr />
-            @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId))
-            {
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">Mint Tx In Explorer</a>
-                    </div>
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(NFT.Utxo))
-            {
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">Tx In Explorer</a>
-                    </div>
-                </div>
-            }
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Confirmations: @NFT.TxDetails.Confirmations.ToString()</span>
-                </div>
-            </div>
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <a href="@NFT.ImageLink" target="_blank">
@@ -200,7 +229,7 @@
             </div>
             @if (OwnNFT)
             {
-                @if (NFT.TxDetails.Confirmations > 1)
+                @if (NFT.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
                 {
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center w-auto">
@@ -241,22 +270,22 @@
                             </button>
                             @if (!SubAccount)
                             {
-                            <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()" style="width:65px; height:65px; margin-left:20px;">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <i class="oi oi-dollar"></i>
+                                <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()" style="width:65px; height:65px; margin-left:20px;">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="row d-flex justify-content-center align-items-center">
+                                                <div class="col">
+                                                    <i class="oi oi-dollar"></i>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <span style="font-size: 12px;">Sell</span>
+                                            <div class="row d-flex justify-content-center align-items-center">
+                                                <div class="col">
+                                                    <span style="font-size: 12px;">Sell</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </button>
+                                </button>
                             }
                             <button class="btn btn-primary" @onclick="async () => await ShowOwnershipQRCode()" style="width:65px; height:65px; margin-left:20px;">
                                 <div class="row">
@@ -279,17 +308,17 @@
                 }
             }
 
-            <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" />
+            <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
         </Spin>
     </div>
 
-    <SendNFT NFT="@NFT" 
-             NFTSent="@NFTSentHandler" 
-             @bind-SendNFTDialogVisible="sendNFTDialogVisible" 
+    <SendNFT NFT="@NFT"
+             NFTSent="@NFTSentHandler"
+             @bind-SendNFTDialogVisible="sendNFTDialogVisible"
              Address="@Address"
-             SubAccount="@SubAccount"/>
+             SubAccount="@SubAccount" />
 
-    <SetNFTPrice NFT="@NFT" 
+    <SetNFTPrice NFT="@NFT"
                  NFTSent="@NFTSentHandler"
                  @bind-SetPriceNFTDialogVisible="setPriceNFTDialogVisible" />
 
@@ -297,12 +326,13 @@
            Visible="@createNewPostVisible"
            OnOk="@createNewPostConfirm"
            OnCancel="@createNewPostCancel">
-        <MintNFTForm NFTType="NFTTypes.Post" 
-                     NFT="@NFT" 
-                     RedirectToNFTsAfterMint="false" 
-                     NFTMinted="@NFTMinted" 
+        <MintNFTForm NFTType="NFTTypes.Post"
+                     NFT="@NFT"
+                     TokenId="@NFT.TokenId"
+                     RedirectToNFTsAfterMint="false"
+                     NFTMinted="@NFTMinted"
                      Address="@Address"
-                     SubAccount="@SubAccount"/>
+                     SubAccount="@SubAccount" />
     </Modal>
 
     <Modal Title="Use NFT Ticket"
@@ -356,9 +386,10 @@
     </Modal>
 </div>
 
-
-
 @code {
+
+    public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
 
     private INFT NFT { get; set; } = new ImageNFT("");
 
@@ -446,11 +477,11 @@
         StateHasChanged();
         NFT.TxDataRefreshed -= TxDataRefreshedHandler;
         await NFT.StopRefreshingData();
-        if (NFT.Type !=  NFTTypes.Music)
-            NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo);
+
+        if (NFT.Type != NFTTypes.Music)
+            NFT = await NFTFactory.GetNFT("", _utxo, _utxoIndex);
         else
-            NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo, 0, true);
-        NFT.UtxoIndex = _utxoIndex;
+            NFT = await NFTFactory.GetNFT("", _utxo, _utxoIndex, 0, true);
         if (NFT == null)
             return;
 
@@ -462,7 +493,7 @@
 
     private async Task VideoStartedPlay()
     {
-        await JSRuntime.InvokeVoidAsync("setMusicInfo", NFT.Name, NFT.Author, NFT.Description );
+        await JSRuntime.InvokeVoidAsync("setMusicInfo", NFT.Name, NFT.Author, NFT.Description);
 
         // not work - handler is not called, I had to add little hack in onafterrender
     }
@@ -583,7 +614,7 @@
             else
                 res = await AppData.Account.UseTicketNFTOnSubAccount(Address, NFT);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
         }

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>VEFramework.VEDriversLite</PackageId>
-    <Version>0.1.3</Version>
+    <Version>0.1.5</Version>
     <Authors>fyziktom</Authors>
     <Company>VEFramework</Company>
     <Description>.NET Standard version of VEDrivers. Contains just minimum dependencies and now just support of Neblio and Doge blockchain.</Description>
@@ -11,9 +11,18 @@
     <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>VEFramework, Cryptocurrencies, Crypto, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Blockchain, eCommerce, dApps</PackageTags>
+    <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps</PackageTags>
     <Copyright>fyziktom</Copyright>
-    <PackageReleaseNotes>Added NFT Messages with encrypted content.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Added SubAccounts to NeblioAccount
+- Added NFT Tickets
+- Added support of Coruzant NFTs
+- Refactor of NFTs classes
+- Changed Doge API provider to chain.so
+- Added images to Dogecoin transactions</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\VEDriversLite.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

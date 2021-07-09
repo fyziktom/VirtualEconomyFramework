@@ -2560,9 +2560,9 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="tokenId">Token Id hash</param>
         /// <returns></returns>
-        public static async Task<List<TokenOwnerDto>> GetTokenOwners(string tokenId)
+        public static async Task<List<TokenOwnerDto>> GetTokenOwners(string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
         {
-            var tokenholders = await GetClient().GetTokenHoldersAsync("La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
+            var tokenholders = await GetClient().GetTokenHoldersAsync(tokenId);
 
             var resp = new List<TokenOwnerDto>();
             var hd = tokenholders.Holders.ToList().OrderBy(h => (double)h.Amount).Reverse().ToList();
@@ -2575,17 +2575,17 @@ namespace VEDriversLite
             {
                 try
                 {
-                    if (h.Address != "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA" &&
-                        h.Address != "NeNE6a2YQCq4yBLoVbVpcCzx44jVEBLaUE" &&
-                        h.Address != "NikErRpjtRXpryFRc3RkP5nxRzm1ApxFH8" &&
-                        h.Address != "NWHozNL3B85PcTXhipmFoBMbfonyrS9WiR" &&
-                        h.Address != "NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7" &&
-                        h.Address != "NST3h9Z2CMuHHgea5ewy1berTNMhUdXJya" &&
-                        h.Address != "NidaStEf81XCmWKuJ6G6fvsFSpvh3TgceD" &&
+                    if (//h.Address != "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA" &&
+                        //h.Address != "NeNE6a2YQCq4yBLoVbVpcCzx44jVEBLaUE" &&
+                        //h.Address != "NikErRpjtRXpryFRc3RkP5nxRzm1ApxFH8" &&
+                        //h.Address != "NWHozNL3B85PcTXhipmFoBMbfonyrS9WiR" &&
+                        //h.Address != "NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7" &&
+                        //h.Address != "NST3h9Z2CMuHHgea5ewy1berTNMhUdXJya" &&
+                        //h.Address != "NidaStEf81XCmWKuJ6G6fvsFSpvh3TgceD" &&
                         h.Address != "NZREfode8XxDHndeoLGEeQKhsfvjWfHXUU")
                     {
                         var shadd = h.Address.Substring(0, 3) + "..." + h.Address.Substring(h.Address.Length - 3);
-                        var utxs = await GetAddressNFTsUtxos(h.Address, new List<string>() { "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8" });
+                        var utxs = await GetAddressNFTsUtxos(h.Address, new List<string>() { tokenId });
                         if (utxs != null)
                         {
                             if (utxs.Count > 0)
@@ -2601,7 +2601,7 @@ namespace VEDriversLite
                             }
                         }
                         i++;
-                        if (i > 100)
+                        if (i > 1000)
                             break;
                     }
                 }
@@ -2612,10 +2612,10 @@ namespace VEDriversLite
             }
 
             resp = resp.OrderBy(r => r.AmountOfNFTs).Reverse().ToList();
-
+            /*
             if (resp.Count > 50)
                 resp.RemoveRange(49, resp.Count - 50 - 1);
-
+            */
             return resp;
         }
     }

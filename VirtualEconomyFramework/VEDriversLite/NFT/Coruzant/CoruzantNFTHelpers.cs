@@ -23,9 +23,9 @@ namespace VEDriversLite.NFT.Coruzant
             if (allNFTs == null)
                 return new List<INFT>();
             else
-                return allNFTs.Where(n =>  n.Type == NFTTypes.CoruzantPost ||
+                return allNFTs.Where(n =>  n.Type == NFTTypes.CoruzantArticle ||
                                            n.Type == NFTTypes.CoruzantPodcast ||
-                                           n.Type == NFTTypes.CoruzantPremiumPost ||
+                                           n.Type == NFTTypes.CoruzantPremiumArticle ||
                                            n.Type == NFTTypes.CoruzantPremiumPodcast ||
                                            n.Type == NFTTypes.CoruzantProfile).ToList();
         }
@@ -55,7 +55,7 @@ namespace VEDriversLite.NFT.Coruzant
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintCoruzantPostNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, string profileUtxo, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
-            var cnft = NFT as CoruzantPostNFT;
+            var cnft = NFT as CoruzantArticleNFT;
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");
@@ -112,7 +112,7 @@ namespace VEDriversLite.NFT.Coruzant
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> ChangeCoruzantPostNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, string receiver = "")
         {
-            var cnft = NFT as CoruzantPostNFT;
+            var cnft = NFT as CoruzantArticleNFT;
             // create token metadata
             var metadata = new Dictionary<string, string>();
             metadata.Add("NFT", "true");

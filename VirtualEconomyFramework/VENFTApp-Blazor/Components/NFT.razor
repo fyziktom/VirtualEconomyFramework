@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
 @inject AppData AppData
 @inject IJSRuntime jsRuntime
 
@@ -82,7 +83,14 @@
     </div>
     
     <div class="card-body d-flex justify-content-center align-items-end @NFTCheckedBgColor">
-        <span class="badge badge-warning" style="position: absolute;right: 200px;top: 207px;">VENFT</span>
+        @if (nft.TokenId == NFTHelpers.TokenId)
+        {
+            <span class="badge badge-warning" style="position: absolute;right: 200px;top: 207px;">VENFT</span>
+        }
+        else if (nft.TokenId == CoruzantNFTHelpers.CoruzantTokenId)
+        {
+            <span class="badge badge-primary" style="position: absolute;right: 190px;top: 207px;">Coruzant</span>
+        }
         @switch (nft.Type)
         {
             case NFTTypes.Image:
@@ -188,7 +196,7 @@
        OnOk="@CloseNFTDetails"
        OnCancel="@CloseNFTDetails">
     <VENFTApp_Blazor.Components.NFTDetails UtxoIndex="@nft.UtxoIndex" 
-                                           Utxo="@nftDetailsUtxo" 
+                                           Utxo="@nftDetailsUtxo"
                                            NFTSent="@NFTSentHandler" 
                                            OwnNFT="@OwnNFT"
                                            Address="@_address"
@@ -219,6 +227,22 @@
     <div class="row">
         <div class="col">
             <CopyButton TextToCopy="@shareNFTUtxo" />
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col">
+            <span>Transaction Id</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="https://explorer.nebl.io/tx/@nft.Utxo" target="_blank">@nft.Utxo</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <CopyButton TextToCopy="@nft.Utxo" />
         </div>
     </div>
 </Modal>

@@ -122,7 +122,7 @@
         StateHasChanged();
         NFT.TxDataRefreshed -= TxDataRefreshedHandler;
         await NFT.StopRefreshingData();
-        NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo, 0, true);
+        NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo, 0, 0, true); // todo dynamic index. now messages has 0 always
 
         if (NFT == null)
             return;

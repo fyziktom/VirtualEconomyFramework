@@ -4,8 +4,11 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
@@ -30,6 +33,13 @@ namespace VEDriversLite.NFT
         public string NFTOriginTxId { get; set; } = string.Empty;
         public bool Used { get; set; } = false;
         public Dictionary<string, string> NFTMetadata { get; set; } = new Dictionary<string, string>();
+    }
+
+    public class IPFSResponse
+    {
+        public string Name { get; set; }
+        public string Hash { get; set; }
+        public string Size { get; set; }
     }
 
     public static class NFTHelpers
@@ -68,6 +78,102 @@ namespace VEDriversLite.NFT
         {
             NewEventInfo?.Invoke(null, e);
         }
+
+        public static async Task<string> UploadImage(Stream stream, string fileName, string fileContentType = "multipart/form-data")
+        {
+            var link = string.Empty;
+            try
+            {
+                var url = $"https://nftticketverifierapp.azurewebsites.net/api/upload";
+                
+                using var client = new HttpClient();
+                using (var content = new MultipartFormDataContent())
+                {
+                    content.Add(new StreamContent(stream)
+                    {
+                        Headers =
+                            {
+                                ContentLength = stream.Length,
+                                ContentType = new MediaTypeHeaderValue(fileContentType)
+                            }
+                    }, "file", fileName);
+                    
+                    var response = await client.PostAsync(url, content);
+                    link = await response.Content.ReadAsStringAsync();
+                    
+                    var loaded = false;
+                    var attempts = 20;
+                    while (attempts > 0 && !loaded)
+                    {
+                        try
+                        {
+                            var resp = await ipfs.FileSystem.GetAsync(link.Replace("https://gateway.ipfs.io/ipfs/",string.Empty));
+                            if (resp != null && resp.Length >= (stream.Length*0.8))
+                                loaded = true;
+                            else
+                                await Task.Delay(1000);
+                        }
+                        catch (Exception ex)
+                        {
+                            await Task.Delay(1000);
+                        }
+                        attempts--;
+                    }
+                    
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot upload the image. " + ex.Message);
+            }
+            return link;
+        }
+
+        public static async Task<string> UploadInfura(Stream stream, string fileName, string fileContentType = "multipart/form-data")
+        {
+            if (stream == null)
+                return "Error. Provided null file.";
+            try
+            {
+                if (stream.Length <= 0)
+                    return string.Empty;
+                var link = string.Empty;
+
+                var reslink = await ipfs.FileSystem.AddAsync(stream, fileName);
+
+                if (reslink != null)
+                {
+                    var hash = reslink.ToLink().Id.ToString();
+                    link = "https://gateway.ipfs.io/ipfs/" + hash;
+
+                    var loaded = false;
+                    var attempts = 50;
+                    while (attempts > 0 && !loaded)
+                    {
+                        try
+                        {
+                            var resp = await ipfs.FileSystem.GetAsync(hash);
+                            if (resp != null && resp.Length >= (stream.Length * 0.8))
+                                loaded = true;
+                            else
+                                await Task.Delay(1000);
+                        }
+                        catch (Exception ex)
+                        {
+                            await Task.Delay(1000);
+                        }
+                        attempts--;
+                    }
+                }
+                return link;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+            }
+            return string.Empty;
+        }
+
 
         public static async Task InitNFTHelpers()
         {
@@ -224,7 +330,7 @@ namespace VEDriversLite.NFT
                     foreach (var t in u.Tokens)
                         if (t.Amount == 1)
                         {
-                            var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (double)u.Blocktime);
+                            var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
                             if (nft != null)
                                 if (nft.Type == NFTTypes.Profile && profile == null)
                                     profile = nft;
@@ -249,7 +355,7 @@ namespace VEDriversLite.NFT
                     foreach (var t in u.Tokens)
                         if (t.Amount == 1)
                         {
-                            var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (double)u.Blocktime);
+                            var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
                             if (nft != null)
                             {
                                 if (nft.Type == NFTTypes.Profile && profile == null)
@@ -301,7 +407,7 @@ namespace VEDriversLite.NFT
                         if (t.Amount == 1)
                             if (TimeHelpers.UnixTimestampToDateTime((double)u.Blocktime) > lastNFTTime)
                             {
-                                var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (double)u.Blocktime);
+                                var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
                                 if (nft != null)
                                 {
                                     nft.UtxoIndex = (int)u.Index;
@@ -360,7 +466,7 @@ namespace VEDriversLite.NFT
                                 {
                                     try
                                     {
-                                        var nft = await NFTFactory.GetNFT(toks[0].TokenId, txinfo.Txid, (double)txinfo.Blocktime, true);
+                                        var nft = await NFTFactory.GetNFT(toks[0].TokenId, txinfo.Txid, 0, (double)txinfo.Blocktime, true);
                                         if (nft != null)
                                         {
                                             if (!(nfts.Any(n => n.Utxo == nft.Utxo)))
@@ -450,17 +556,17 @@ namespace VEDriversLite.NFT
             foreach (var meta in metadata)
                 all += meta.Key + meta.Value;
 
-            if (all.Length < 900)
+            if (all.Length < 400)
                 fee = 20000;
-            else if (all.Length > 900)
+            else if (all.Length >= 400 && all.Length <= 1900)
                 fee = 30000;
-            else if (all.Length > 1900)
+            else if (all.Length > 1900 && all.Length <= 2900)
                 fee = 40000;
-            else if (all.Length > 2900)
+            else if (all.Length > 2900 && all.Length <= 3900)
                 fee = 50000;
-            else if (all.Length > 3900)
+            else if (all.Length > 3900 && all.Length <= 10000)
                 fee = 60000;
-            else
+            else if (all.Length > 10000)
                 throw new Exception("Metadata length exceed allowed maximum length");
 
             return fee;
@@ -995,7 +1101,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static async Task<(bool, GetNFTOwnerDto)> GetNFTWithOwner(string txid)
         {
-            var nft = await NFTFactory.GetNFT(TokenId, txid, 0, true);
+            var nft = await NFTFactory.GetNFT(TokenId, txid, 0, 0, true); // todo utxoindex
             if (nft != null && txid == nft.Utxo)
             {
                 var txi = await NeblioTransactionHelpers.GetTransactionInfo(txid);

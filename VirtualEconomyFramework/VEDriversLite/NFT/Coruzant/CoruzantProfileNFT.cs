@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT.Coruzant
 {
+    public class BuzzsproutEpisodeDto
+    {
+        public int id { get; set; } = 0;
+        public string title { get; set; } = string.Empty;
+        public string audio_url { get; set; } = string.Empty;
+        public string artwork_url { get; set; } = string.Empty;
+        public string description { get; set; } = string.Empty;
+        public string summary { get; set; } = string.Empty;
+        public string artist { get; set; } = string.Empty;
+        public string guid { get; set; } = string.Empty;
+        public int total_plays { get; set; } = 0;
+    }
     public class CoruzantProfileNFT : CommonCoruzantNFT
     {
         public CoruzantProfileNFT(string utxo)
@@ -23,21 +35,30 @@ namespace VEDriversLite.NFT.Coruzant
         public string CompanyName { get; set; } = string.Empty;
         public string CompanyLink { get; set; } = string.Empty;
         public string WorkingPosition { get; set; } = string.Empty;
+        public string PodcastId { get; set; } = string.Empty;
+        public string Linkedin { get; set; } = string.Empty;
+        public string Twitter { get; set; } = string.Empty;
         
 
         public override async Task Fill(INFT NFT)
         {
-            var pnft = NFT as CoruzantProfileNFT;
             await FillCommon(NFT);
+            if (NFT.Type == NFTTypes.CoruzantProfile)
+            {
+                var pnft = NFT as CoruzantProfileNFT;
 
-            Surname = pnft.Surname;
-            Nickname = pnft.Nickname;
-            CompanyLink = pnft.CompanyLink;
-            CompanyName = pnft.CompanyName;
-            PodcastLink = pnft.PodcastLink;
-            PersonalPageLink = pnft.PersonalPageLink;
-            WorkingPosition = pnft.WorkingPosition;
-            Age = pnft.Age;
+                Surname = pnft.Surname;
+                Nickname = pnft.Nickname;
+                CompanyLink = pnft.CompanyLink;
+                CompanyName = pnft.CompanyName;
+                PodcastLink = pnft.PodcastLink;
+                PodcastId = pnft.PodcastId;
+                PersonalPageLink = pnft.PersonalPageLink;
+                WorkingPosition = pnft.WorkingPosition;
+                Age = pnft.Age;
+                Linkedin = pnft.Linkedin;
+                Twitter = pnft.Twitter;
+            }
         }
 
         private void ParseSpecific(IDictionary<string, string> meta)
@@ -58,6 +79,12 @@ namespace VEDriversLite.NFT.Coruzant
                 CompanyLink = coml;
             if (meta.TryGetValue("Age", out var age))
                 Age = Convert.ToInt32(age);
+            if (meta.TryGetValue("Linkedin", out var lkd))
+                Linkedin = lkd;
+            if (meta.TryGetValue("PodcastId", out var pdb))
+                PodcastId = pdb;
+            if (meta.TryGetValue("Twitter", out var twit))
+                Twitter = twit;
         }
 
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
@@ -112,21 +139,14 @@ namespace VEDriversLite.NFT.Coruzant
                 throw new Exception("Cannot create NFT CoruzantProfile without Personal Page Link.");
 
             // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Type", "NFT CoruzantProfile");
+            var metadata = await GetCommonMetadata();
 
-            metadata.Add("Name", Name);
             metadata.Add("Surname", Surname);
             metadata.Add("Nickname", Nickname);
             metadata.Add("Age", Age.ToString());
-            metadata.Add("Author", Author);
-            metadata.Add("Description", Description);
-            metadata.Add("Image", ImageLink);
-            metadata.Add("Link", Link);
+            metadata.Add("Linkedin", Linkedin);
+            metadata.Add("Twitter", Twitter);
             metadata.Add("PersonalPageLink", PersonalPageLink);
-            if (!string.IsNullOrEmpty(Tags))
-                metadata.Add("Tags", Tags);
             if (!string.IsNullOrEmpty(IconLink))
                 metadata.Add("IconLink", IconLink);
             if (!string.IsNullOrEmpty(PodcastLink))
@@ -137,7 +157,9 @@ namespace VEDriversLite.NFT.Coruzant
                 metadata.Add("CompanyLink", CompanyLink);
             if (!string.IsNullOrEmpty(WorkingPosition))
                 metadata.Add("WorkingPosition", WorkingPosition);
-
+            if (!string.IsNullOrEmpty(PodcastId))
+                metadata.Add("PodcastId", PodcastId);
+            
             return metadata;
         }
     }

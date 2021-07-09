@@ -10,7 +10,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <h3>My Account</h3>
+            <h3>Main Account</h3>
         </div>
     </div>
 
@@ -152,19 +152,36 @@
         {
             Console.WriteLine("Cannot refresh account tx list" + ex.Message);
         }
-        try
+        if (AppData.Account.Bookmarks.Count == 0)
         {
-            var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
-            if (bookmarks == "{}" || bookmarks == "[]")
-                bookmarks = string.Empty;
+            try
+            {
+                var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+                if (bookmarks == "{}" || bookmarks == "[]")
+                    bookmarks = string.Empty;
 
-            if (!string.IsNullOrEmpty(bookmarks))
-                if (AppData.Account.Bookmarks.Count == 0)
-                    await AppData.Account.LoadBookmarks(bookmarks);
+                if (!string.IsNullOrEmpty(bookmarks))
+                    if (AppData.Account.Bookmarks.Count == 0)
+                        await AppData.Account.LoadBookmarks(bookmarks);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load bookmarks!" + ex.Message);
+            }
         }
-        catch (Exception ex)
+        if (AppData.Account.SubAccounts.Count == 0)
         {
-            Console.WriteLine("Cannot load bookmarks!" + ex.Message);
+            try
+            {
+                var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
+                if (!string.IsNullOrEmpty(subAccounts))
+                    if (AppData.Account.SubAccounts.Count == 0)
+                        await AppData.Account.LoadSubAccounts(subAccounts);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load sub accounts from memory!" + ex.Message);
+            }
         }
     }
 

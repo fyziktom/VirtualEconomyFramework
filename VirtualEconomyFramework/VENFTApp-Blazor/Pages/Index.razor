@@ -67,7 +67,21 @@
            ShowIcon="true" />
 }
 
+<Modal Title="Export and Save Private Key"
+       Style="min-height:200px; min-width:200px;"
+       Visible="@savePrivateKeyVisible"
+       OnOk="@savePrivateKeyCancel"
+       OnCancel="@savePrivateKeyCancel">
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <span>Please Save your new private key to safe place. This will allow you to recovery the address.</span>
+        </div>
+    </div>
+    <VENFTApp_Blazor.Components.DisplayAccountKey />
+</Modal>
+
 @code {
+    bool savePrivateKeyVisible = false;
 
     bool accountCreated = false;
     bool accountUnlocked = false;
@@ -127,6 +141,13 @@
         }
     }
 
+    private async Task savePrivateKeyCancel(MouseEventArgs e)
+    {
+        savePrivateKeyVisible = false;
+        StateHasChanged();
+        await WaitAndRedirect();
+    }
+
     async Task WaitAndRedirect()
     {
         await Task.Delay(1000);
@@ -139,8 +160,8 @@
         accountCreated = true;
         createNewAddressModalVisible = false;
 
+        savePrivateKeyVisible = true;
         StateHasChanged();
-        WaitAndRedirect();
     }
 
     private void AccountUnlocked(string msg)

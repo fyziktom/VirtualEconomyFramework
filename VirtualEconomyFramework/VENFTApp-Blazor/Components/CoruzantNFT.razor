@@ -8,6 +8,10 @@
     <div class="card-header" style="padding: 0px;">
         <div class="row" style="max-width: 250px;height:200px;margin: 0px;">
             <div class="col d-flex justify-content-center align-items-center" style="padding: 0px;">
+                @if (DisplayCheckField)
+                {
+                    <input type="checkbox" style="position : absolute; right: 220px; top: 20px;" @onchange="eventArgs => { checkNFTChanged(eventArgs.Value); }" />
+                }
                 @switch (nft.Type)
                 {
                     case NFTTypes.CoruzantProfile:
@@ -22,7 +26,7 @@
                             </Spin>
                         }
                         break;
-                    case NFTTypes.CoruzantPost:
+                    case NFTTypes.CoruzantArticle:
                         @if (!string.IsNullOrEmpty(nft.ImageLink))
                         {
                             <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
@@ -35,7 +39,7 @@
                         }
                         break;
                     case NFTTypes.CoruzantPodcast:
-                        var tnft = nft as CoruzantPostNFT;
+                        var tnft = nft as CoruzantArticleNFT;
                         @if (!string.IsNullOrEmpty(tnft.PodcastLink) || !string.IsNullOrEmpty(tnft.ImageLink))
                         {
                             @if (!string.IsNullOrEmpty(tnft.PodcastLink))
@@ -64,15 +68,15 @@
         </div>
     </div>
 
-    <div class="card-body d-flex justify-content-center align-items-end">
+    <div class="card-body d-flex justify-content-center align-items-end @NFTCheckedBgColor">
         <span class="badge badge-primary" style="position: absolute;right: 190px;top: 207px;">Coruzant</span>
         @switch (nft.Type)
         {
             case NFTTypes.CoruzantProfile:
                 <span class="badge badge-primary" style="position: absolute;right: 7px;top: 207px;">Profile</span>
                 break;
-            case NFTTypes.CoruzantPost:
-                <span class="badge badge-secondary" style="position: absolute;right: 7px;top: 207px;">Post</span>
+            case NFTTypes.CoruzantArticle:
+                <span class="badge badge-secondary" style="position: absolute;right: 7px;top: 207px;">Arcticle</span>
                 break;
             case NFTTypes.CoruzantPodcast:
                 <span class="badge badge-info" style="position: absolute;right: 7px;top: 207px;">Podcast</span>
@@ -92,15 +96,42 @@
                         }
                         else
                         {
-                            <h6 class="text-center">@nft.Name</h6>
+                            if (nft.Type == NFTTypes.CoruzantProfile)
+                            {
+                                var pnft = nft as CoruzantProfileNFT;
+                                <h6 class="text-center">@pnft.Name @pnft.Surname</h6>
+                            }
+                            else
+                            {
+                                <h6 class="text-center">@nft.Name</h6>
+                            }
                         }
                     </div>
                 </div>
-                <div class="row text-center" style="margin: 0px;">
-                    <div class="col text-center" style="padding: 0px;">
-                        <small class="text-center">@nft.Author</small>
+                @if (nft.Type != NFTTypes.CoruzantProfile)
+                {
+                    <div class="row text-center" style="margin: 0px;">
+                        <div class="col text-center" style="padding: 0px;">
+                            <small class="text-center">@nft.Author</small>
+                        </div>
                     </div>
-                </div>
+                }
+                else
+                {
+                    var pnft = nft as CoruzantProfileNFT;
+                    <div class="row text-center" style="margin: 0px;">
+                        <div class="col text-center" style="padding: 0px;">
+                            @if (pnft.WorkingPosition.Length > 50)
+                            {
+                                <small class="text-center">@pnft.WorkingPosition.Substring(0, 49) ...</small>
+                            }
+                            else
+                            {
+                                <small class="text-center">@pnft.WorkingPosition</small>
+                            }
+                        </div>
+                    </div>
+                }
                 <div class="row text-center" style="margin: 0px;">
                     <div class="col text-center" style="padding: 0px;">
                         @if (nft.Description.Length > 80)
@@ -175,7 +206,7 @@
                         SubAccount="@SubAccount"/>
 </Modal>
 
-<Modal Title="NFT Image"
+<Modal Title="NFT"
        Style="min-height:200px; min-width:200px;"
        Visible="@modalWithImageVisible"
        OnOk="@modalWithImageClose"
@@ -185,6 +216,48 @@
             <img class="card-img-top" src="@modalWithImageLink" style="min-height:100px; height:auto; min-width:200px; width:auto;" />
         </div>
     </div>
+    @if (nft.Type == NFTTypes.CoruzantProfile)
+    {
+        var pnft = nft as CoruzantProfileNFT;
+        <div class="row text-center" style="margin: 0px;">
+            <div class="col text-center" style="padding: 0px;">
+                <span class="text-center">@pnft.Name @pnft.Surname</span>
+            </div>
+        </div>
+        <div class="row text-center" style="margin: 0px;">
+            <div class="col text-center" style="padding: 0px;">
+                <small class="text-center">@pnft.WorkingPosition</small>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col d-flex justify-content-center align-items-center">
+                <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="width: 100px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+                    Read more
+                </button>
+            </div>
+        </div>
+    }
+    @if (nft.Type == NFTTypes.CoruzantArticle)
+    {
+        var anft = nft as CoruzantArticleNFT;
+        <div class="row text-center" style="margin: 0px;">
+            <div class="col text-center" style="padding: 0px;">
+                <span class="text-center">@anft.Name</span>
+            </div>
+        </div>
+        <div class="row text-center" style="margin: 0px;">
+            <div class="col text-center" style="padding: 0px;">
+                <small class="text-center">@anft.Description</small>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col d-flex justify-content-center align-items-center">
+                <button class="btn btn-primary" @onclick="async () => ShowNFTDetails(nft.Utxo)" style="width: 100px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+                    Read more
+                </button>
+            </div>
+        </div>
+    }
 </Modal>
 
 <Modal Title="Share NFT"
@@ -199,6 +272,22 @@
     <div class="row">
         <div class="col">
             <CopyButton TextToCopy="@shareNFTUtxo" />
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col">
+            <span>Transaction Id</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="https://explorer.nebl.io/tx/@nft.Utxo" target="_blank">@nft.Utxo</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <CopyButton TextToCopy="@nft.Utxo" />
         </div>
     </div>
 </Modal>
@@ -224,6 +313,32 @@
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
 
+    [Parameter]
+    public bool DisplayCheckField { get; set; } = false;
+
+    bool NFTChecked { get; set; } = false;
+    string NFTCheckedBgColor { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<(INFT, bool)> NFTCheckedChanged { get; set; }
+
+    private INFT AuthorProfileNFT = new CoruzantProfileNFT("");
+
+    private string _nftImageTitle = "NFT"; // todo connect to UI - now throw exception on first load
+    public string nftImageTitle {
+        get
+        {
+            if (nft != null)
+            { 
+                if (nft.Type == NFTTypes.CoruzantProfile)
+                    return (nft as CoruzantProfileNFT).Name + (nft as CoruzantProfileNFT).Surname;
+                if (nft.Type == NFTTypes.CoruzantArticle)
+                    return (nft as CoruzantProfileNFT).Name;
+            }
+            return _nftImageTitle;
+        }
+    }
+
     private INFT nft = new CoruzantProfileNFT("");
     [Parameter]
     public INFT InputNFT
@@ -234,6 +349,7 @@
             if (value != null && value.Utxo != nft.Utxo)
             {
                 nft = value;
+                TryToLoadProfile();
                 StateHasChanged();
             }
         }
@@ -257,10 +373,38 @@
     [Parameter]
     public bool OwnNFT { get; set; } = false;
 
+    private async Task checkNFTChanged(object e)
+    {
+        NFTChecked = (bool)e;
+        await setBgColor();
+        await NFTCheckedChanged.InvokeAsync((nft, NFTChecked));
+        StateHasChanged();
+    }
+    private async Task setBgColor()
+    {
+        if (NFTChecked)
+            NFTCheckedBgColor = "bg-info";
+        else
+            NFTCheckedBgColor = string.Empty;
+        StateHasChanged();
+    }
+
     void NFTSentHandler(string nfttx)
     {
         nftDetailsVisible = false;
         NFTSent.InvokeAsync(nfttx);
+    }
+
+    private async Task TryToLoadProfile()
+    {
+        if (nft.Type == NFTTypes.CoruzantArticle)
+        {
+            var NFT = nft as CoruzantArticleNFT;
+            if (!string.IsNullOrEmpty(NFT.AuthorProfileUtxo) && NFT.AuthorProfileUtxo != AuthorProfileNFT.Utxo)
+            {
+                AuthorProfileNFT = await NFTFactory.GetNFT(CoruzantNFTHelpers.CoruzantTokenId, NFT.AuthorProfileUtxo);
+            }
+        }
     }
 
     private bool IsInThePayments(string utxo)
@@ -306,6 +450,7 @@
     private async Task ShowNFTDetails(string utxo)
     {
         nftDetailsUtxo = utxo;
+        modalWithImageVisible = false;
         StateHasChanged();
         nftDetailsVisible = true;
         StateHasChanged();

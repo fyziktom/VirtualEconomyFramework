@@ -92,8 +92,8 @@
                         <Spin Tip="Reloading..." />
                         break;
                     case LoadingImageStages.Loaded:
-                        @if (NFTType == NFTTypes.Image || NFTType == NFTTypes.Post || NFTType == NFTTypes.Profile)
-                        { 
+                        @if (NFTType == NFTTypes.Image || NFTType == NFTTypes.Post || NFTType == NFTTypes.Profile || NFTType == NFTTypes.CoruzantArticle || NFTType == NFTTypes.CoruzantProfile || NFTType == NFTTypes.CoruzantPodcast)
+                        {
                         <a href="@_imageLink" target="_blank"><img src="@_imageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
                         }
                         else if (NFTType == NFTTypes.Music)
@@ -117,7 +117,6 @@
     LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
     private System.Threading.Timer timer;
     private ElementReference inputTypeFileElement;
-    private static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
 
     [Parameter]
     public NFTTypes NFTType { get; set; } = NFTTypes.Image;
@@ -222,7 +221,7 @@
                 StateHasChanged();
                 timer.Dispose();
             }
-        }, new System.Threading.AutoResetEvent(false), 4000, 4000);
+        }, new System.Threading.AutoResetEvent(false), 2000, 2000);
     }
 
     public async Task ReadFile()
@@ -233,7 +232,7 @@
             uploadingImage = true;
             attemptsToDisplay = 10;
             //StateHasChanged();
-            foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
+            foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync()) 
             {
                 loadingImageStage = LoadingImageStages.Loading;
                 StateHasChanged();
@@ -244,8 +243,10 @@
                     var fileinfo = await file.ReadFileInfoAsync();
                     try
                     {
-                        var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
-                        var link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                        //var link = await NFTHelpers.UploadImage(stream, fileinfo.Name);
+                        var link = await NFTHelpers.UploadInfura(stream, fileinfo.Name);
+                        //var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
+                        //var link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
                         await CheckFile(link);
                     }
                     catch (Exception ex)

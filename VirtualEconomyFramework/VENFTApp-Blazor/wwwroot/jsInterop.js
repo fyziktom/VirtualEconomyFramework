@@ -27,6 +27,24 @@ window.setMusicInfo = (title, artist, description) => {
         });
     }
 }
+window.setCoruzantPodcastInfo = (title, artist, description) => {
+
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: title,
+            artist: artist,
+            album: description,
+            artwork: [
+                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '96x96', type: 'image/png' },
+                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '128x128', type: 'image/png' },
+                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '192x192', type: 'image/png' },
+                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '256x256', type: 'image/png' },
+                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '384x384', type: 'image/png' },
+                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '512x512', type: 'image/png' },
+            ]
+        });
+    }
+}
 
 window.jsFunctions = {
     init: function (obj) {
@@ -34,6 +52,11 @@ window.jsFunctions = {
         if (html5QrCode != null) {
             html5QrCode.clear();
         }
+    },
+    buzzsproutPodcast: function (link) {
+        var script = document.createElement('script');
+        script.src = link;
+        document.head.appendChild(script);
     },
     downloadText: function (data, filename) {
         var text = data;

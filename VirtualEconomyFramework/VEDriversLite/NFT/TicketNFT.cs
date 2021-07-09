@@ -215,17 +215,9 @@ namespace VEDriversLite.NFT
                 throw new Exception("Cannot create NFT Ticket without price.");
 
             // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Type", "NFT Ticket");
-            metadata.Add("Name", Name);
-            metadata.Add("Author", Author);
-            metadata.Add("Description", Description);
-            metadata.Add("Image", ImageLink);
-            metadata.Add("Link", Link);
+            var metadata = await GetCommonMetadata();
+
             metadata.Add("EventId", EventId);
-            if (!string.IsNullOrEmpty(Tags))
-                metadata.Add("Tags", Tags);
             if (!string.IsNullOrEmpty(AuthorLink))
                 metadata.Add("AuthorLink", AuthorLink);
             metadata.Add("EventDate", EventDate.ToString());
@@ -237,12 +229,9 @@ namespace VEDriversLite.NFT
             metadata.Add("LocationC", LocationCoordinates);
             if (!string.IsNullOrEmpty(Seat))
                 metadata.Add("Seat", Seat);
-            metadata.Add("TicketClass", TicketClass.ToString());
+            metadata.Add("TicketClass", Convert.ToInt32(TicketClass).ToString());
             if (Used)
                 metadata.Add("Used", "true");
-
-            if (Price > 0)
-                metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
             if (PriceInDoge > 0)
                 metadata.Add("PriceInDoge", Price.ToString(CultureInfo.InvariantCulture));
 

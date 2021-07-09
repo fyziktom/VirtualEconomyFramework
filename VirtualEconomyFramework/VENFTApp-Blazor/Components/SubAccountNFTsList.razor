@@ -65,7 +65,7 @@
                         <div class="card-group">
                             @foreach (var nft in _nfts)
                             {
-                                if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantPost || nft.Type == NFTTypes.CoruzantPodcast)
+                                if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast)
                                 {
                                     <CoruzantNFT Address="@_address"
                                                  InputNFT="@nft"

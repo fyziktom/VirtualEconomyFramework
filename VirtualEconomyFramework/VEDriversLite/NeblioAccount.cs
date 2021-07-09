@@ -75,6 +75,10 @@ namespace VEDriversLite
         /// </summary>
         public double SourceTokensBalance { get; set; } = 0.0;
         /// <summary>
+        /// Total balance of VENFT tokens which can be used for minting purposes.
+        /// </summary>
+        public double CoruzantSourceTokensBalance { get; set; } = 0.0;
+        /// <summary>
         /// Total number of NFT on the address. It counts also Profile NFT, etc.
         /// </summary>
         public double AddressNFTCount { get; set; } = 0.0;
@@ -960,6 +964,30 @@ namespace VEDriversLite
         }
 
         /// <summary>
+        /// Get Sub Account Keys for export
+        /// </summary>
+        /// <returns>true and dictionary with addresses and private keys</returns>
+        public async Task<(bool, Dictionary<string, string>)> GetSubAccountKeys()
+        {
+            try
+            {
+                var accskeys = new Dictionary<string, string>();
+                foreach (var sa in SubAccounts.Values)
+                {
+                    var key = await sa.AccountKey.GetEncryptedKey();
+                    if (!string.IsNullOrEmpty(key))
+                        accskeys.Add(sa.Address, key);
+                }
+
+                return (true, accskeys);
+            }
+            catch(Exception ex)
+            {
+                return (false, new Dictionary<string, string>());
+            }
+        }
+
+        /// <summary>
         /// Send NFT From SubAccount
         /// </summary>
         /// <param name="address">Neblio Address of SubAccount</param>
@@ -1191,6 +1219,8 @@ namespace VEDriversLite
         public async Task ReloadTokenSupply()
         {
             TokensSupplies = await NeblioTransactionHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
+            if (TokensSupplies.TryGetValue(CoruzantNFTHelpers.CoruzantTokenId, out var ts))
+                CoruzantSourceTokensBalance = ts.Amount;
         }
 
         /// <summary>
@@ -1276,10 +1306,17 @@ namespace VEDriversLite
         /// <returns></returns>
         public async Task ReLoadNFTs()
         {
-            if (!string.IsNullOrEmpty(Address))
+            try
             {
-                NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList());
-                CoruzantNFTs = await CoruzantNFTHelpers.GetCoruzantNFTs(NFTs);
+                if (!string.IsNullOrEmpty(Address))
+                {
+                    NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList());
+                    CoruzantNFTs = await CoruzantNFTHelpers.GetCoruzantNFTs(NFTs);
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot reload NFTs. " + ex.Message);
             }
         }
 
@@ -1290,14 +1327,21 @@ namespace VEDriversLite
         /// <returns></returns>
         public async Task RefreshAddressReceivedPayments()
         {
-            ReceivedPayments.Clear();
-            var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
-            if (pnfts.Count > 0)
+            try
             {
-                foreach (var p in pnfts)
+                ReceivedPayments.Clear();
+                var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+                if (pnfts.Count > 0)
                 {
-                    ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+                    foreach (var p in pnfts)
+                    {
+                        ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot refresh address received payments. " + ex.Message);
             }
         }
 
@@ -1308,34 +1352,42 @@ namespace VEDriversLite
         /// <returns></returns>
         public async Task CheckPayments()
         {
-            var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
-            if (pnfts.Count > 0)
+            try
             {
-                foreach (var p in pnfts)
+                var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+                if (pnfts.Count > 0)
                 {
-                    var pn = NFTs.Where(n => n.Utxo == ((PaymentNFT)p).NFTUtxoTxId).FirstOrDefault();
-                    var prc = p.Price;
-                    var prcn = pn.Price;
-                    if (pn != null && pn.Price > 0 && p.Price >= pn.Price)
+                    foreach (var p in pnfts)
                     {
-                        try
+                        var pn = NFTs.Where(n => n.Utxo == ((PaymentNFT)p).NFTUtxoTxId).FirstOrDefault();
+                        var prc = p.Price;
+
+                        var prcn = pn.Price;
+                        if (pn != null && pn.Price > 0 && p.Price >= pn.Price)
                         {
-                            var res = await CheckSpendableNeblio(0.001);
-                            if (res.Item2 != null)
+                            try
                             {
-                                var rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
-                                Console.WriteLine(rtxid);
-                                await Task.Delay(500);
-                                await ReLoadNFTs();
+                                var res = await CheckSpendableNeblio(0.001);
+                                if (res.Item2 != null)
+                                {
+                                    var rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
+                                    Console.WriteLine(rtxid);
+                                    await Task.Delay(500);
+                                    await ReLoadNFTs();
+                                }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            //await InvokeErrorDuringSendEvent($"Cannot send ordered NFT. Payment TxId: {p.Utxo}, NFT TxId: {pn.Utxo}, error message: {ex.Message}", "Cannot send ordered NFT");
-                            Console.WriteLine("Cannot send ordered NFT, payment txid: " + p.Utxo + " - " + ex.Message);
+                            catch (Exception ex)
+                            {
+                                //await InvokeErrorDuringSendEvent($"Cannot send ordered NFT. Payment TxId: {p.Utxo}, NFT TxId: {pn.Utxo}, error message: {ex.Message}", "Cannot send ordered NFT");
+                                Console.WriteLine("Cannot send ordered NFT, payment txid: " + p.Utxo + " - " + ex.Message);
+                            }
                         }
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot Check the payments. " + ex.Message);
             }
         }
 

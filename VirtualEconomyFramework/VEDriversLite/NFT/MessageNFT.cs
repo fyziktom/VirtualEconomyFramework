@@ -133,8 +133,11 @@ namespace VEDriversLite.NFT
             if (string.IsNullOrEmpty(address) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(receiver))
                 throw new Exception("Wrong input. Must fill all parameters if you want to use metadata encryption.");
 
+            var metadata = await GetCommonMetadata();
             var edescription = string.Empty;
             var ename = string.Empty;
+            var etext = string.Empty;
+            var eimagelink = string.Empty;
             if (Encrypt)
             {
                 var res = await ECDSAProvider.EncryptStringWithSharedSecret(Description, receiver, key);
@@ -144,22 +147,29 @@ namespace VEDriversLite.NFT
                 res = await ECDSAProvider.EncryptStringWithSharedSecret(Name, receiver, key);
                 if (res.Item1)
                     ename = res.Item2;
+
+                res = await ECDSAProvider.EncryptStringWithSharedSecret(Text, receiver, key);
+                if (res.Item1)
+                    etext = res.Item2;
+
+                res = await ECDSAProvider.EncryptStringWithSharedSecret(ImageLink, receiver, key);
+                if (res.Item1)
+                    eimagelink = res.Item2;
             }
             else
             {
                 edescription = Description;
                 ename = Name;
+                etext = Text;
             }
 
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Type", "NFT Message");
-            metadata.Add("Name", ename);
-            metadata.Add("Author", address);
-            metadata.Add("Description", edescription);
-            metadata.Add("Image", ImageLink);
-            metadata.Add("Link", Link);
+            metadata["Name"] = ename;
+            metadata["Author"] = address;
+            metadata["Description"] = edescription;
+            if (!string.IsNullOrEmpty(etext))
+                metadata["Text"] = etext;
+            if (!string.IsNullOrEmpty(eimagelink))
+                metadata["Image"] = eimagelink;
 
             return metadata;
         }

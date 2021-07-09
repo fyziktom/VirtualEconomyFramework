@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite;
 using VEDriversLite.NFT;
+using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.Security;
 
 namespace TestVEDriversLite
@@ -44,7 +45,7 @@ namespace TestVEDriversLite
             Console.WriteLine($"Account created.");
             Console.WriteLine($"Address: {account.Address}");
             Console.WriteLine($"Encrypted Private Key: {await account.AccountKey.GetEncryptedKey("", true)}");
-            StartRefreshingData( null);
+            StartRefreshingData(null);
         }
 
 
@@ -186,9 +187,9 @@ namespace TestVEDriversLite
                 ("5d5ccf74b2d142c063e01bec584b98edd73e5ca529cf2810db36114eb6bfd208",4)
             };
 
-            foreach(var nft in nftlist)
+            foreach (var nft in nftlist)
             {
-                var n = await NFTFactory.GetNFT(NFTHelpers.TokenId, nft.Item1, 0 , true);
+                var n = await NFTFactory.GetNFT(NFTHelpers.TokenId, nft.Item1, nft.Item2, 0, true);
                 n.UtxoIndex = nft.Item2;
                 nfts.Add(n);
             }
@@ -256,7 +257,7 @@ namespace TestVEDriversLite
             var tamount = 100;
             var amount = 0.05;
 
-            (bool,string) res = (false,string.Empty);
+            (bool, string) res = (false, string.Empty);
 
             Console.WriteLine("----------------------------------------");
             Console.WriteLine("Automatic VENFT Airdrop started");
@@ -274,7 +275,7 @@ namespace TestVEDriversLite
                             res = await account.SendAirdrop(line, tokid, tamount, amount);
                             done = res.Item1;
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             // probably just waiting for enought confirmation
                             await Task.Delay(5000);
@@ -404,8 +405,26 @@ namespace TestVEDriversLite
             nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmQ5qNNtShVqrZstzWMTZeWXFSnDojks3RWZpja6gJy8MJ";
             */
 
+            nft.Author = "Elton John";
+            nft.Name = "FAREWELL - The Final Tour";
+            nft.Description = "The Final Tour of genius of the music.";
+            nft.Tags = "eltonjohn tour genius";
+            nft.Link = "https://www.eltonjohn.com/";
+            nft.AuthorLink = "https://www.eltonjohn.com/";
+            nft.EventId = "531221bc8a59b5b36af8dcaf6dac317b204b89dfc3ed301d497032c3bcf5799c";
+            nft.EventDate = DateTime.Parse("2022-07-15T04:20:00");
+            nft.Location = "Philadelphia,The USA";
+            nft.LocationCoordinates = "39.947041,-75.165295";
+            nft.Seat = "Section A";
+            nft.Price = 10;
+            nft.PriceInDoge = 10;
+            nft.TicketClass = ClassOfNFTTicket.VIP;
+            nft.VideoLink = "https://youtu.be/ZHwVBirqD2s";
+            nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmW91e2zi7ndzgonneee7LNWRASHGPnqAS6FvxgCPThaPv";
+            nft.MusicInLink = true;
+
             // count of the tickets
-            int cps = 1000;
+            int cps = 3;
 
             Console.WriteLine("Start of minting tickets.");
             int lots = 0;
@@ -423,7 +442,7 @@ namespace TestVEDriversLite
                     Console.WriteLine($"Minting lot {i} from {lots}:");
                     done = false;
                     while (!done)
-                    { 
+                    {
                         res = await account.MintMultiNFT(nft, NeblioTransactionHelpers.MaximumTokensOutpus);
                         done = res.Item1;
                         if (!done)
@@ -443,7 +462,7 @@ namespace TestVEDriversLite
                     {
                         res = await account.MintMultiNFT(nft, rest);
                         done = res.Item1;
-                        if(!done)
+                        if (!done)
                         {
                             Console.WriteLine("Waiting for spendable utxo...");
                             await Task.Delay(5000);
@@ -471,13 +490,15 @@ namespace TestVEDriversLite
         public static async Task SendNFTAsync(string param)
         {
             var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (split.Length < 2)
-                throw new Exception("Please input receiveraddress,utxo");
-            
+            if (split.Length < 3)
+                throw new Exception("Please input receiveraddress,utxo,index");
+
             Console.WriteLine("Input NFT Utxo: ");
             var nftutxo = split[1];
+            Console.WriteLine("Input NFT Utxo Index: ");
+            var nftutxoindex = Convert.ToInt32(split[2]);
             // load existing NFT object and wait for whole data synchronisation
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, true);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, nftutxoindex, 0, true);
             // send NFT to receiver
             if (nft == null)
                 throw new Exception("NFT does not exists!");
@@ -497,16 +518,18 @@ namespace TestVEDriversLite
         {
             var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length < 2)
-                throw new Exception("Please input utxo,price");
+                throw new Exception("Please input utxo,index,price");
 
             Console.WriteLine("Input NFT Utxo: ");
             var nftutxo = split[0];
+            Console.WriteLine("Input NFT Utxo Index: ");
+            var nftutxoindex = Convert.ToInt32(split[1]);
             // load existing NFT object and wait for whole data synchronisation
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, true);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, nftutxoindex, 0, true);
             if (nft == null)
                 throw new Exception("NFT does not exists!");
             // send NFT to receiver
-            var price = Convert.ToDouble(split[1], CultureInfo.InvariantCulture);
+            var price = Convert.ToDouble(split[2], CultureInfo.InvariantCulture);
             var res = await account.SendNFT(account.Address, nft, true, price);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
@@ -520,20 +543,22 @@ namespace TestVEDriversLite
         public static async Task SendNFTPaymentAsync(string param)
         {
             var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (split.Length < 2)
-                throw new Exception("Please input utxo,price");
+            if (split.Length < 3)
+                throw new Exception("Please input utxo, utxoindex, price");
 
             Console.WriteLine("Input NFT Utxo: ");
             var nftutxo = split[0];
+            Console.WriteLine("Input NFT Utxo Index: ");
+            var nftutxoindex = Convert.ToInt32(split[1]);
             // load existing NFT object and wait for whole data synchronisation. NFT must have written price!
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, true);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, nftutxoindex, 0, true);
             if (nft == null)
                 throw new Exception("NFT does not exists!");
             if (!nft.PriceActive)
                 throw new Exception("NFT does not have setted price.");
             // send NFT to receiver
             Console.WriteLine("Receiver");
-            var receiver = split[1];
+            var receiver = split[2];
             var res = await account.SendNFTPayment(receiver, nft);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
@@ -558,10 +583,11 @@ namespace TestVEDriversLite
             Console.WriteLine(res.Signature);
             Console.WriteLine("Verifying now...");
             // res is already OwnershipVerificationCodeDto so creating new object is just example
-            var vres = await OwnershipVerifier.VerifyOwner(new OwnershipVerificationCodeDto() { 
-                                        TxId = nftutxo, 
-                                        Signature = res.Signature 
-                                        });
+            var vres = await OwnershipVerifier.VerifyOwner(new OwnershipVerificationCodeDto()
+            {
+                TxId = nftutxo,
+                Signature = res.Signature
+            });
 
             Console.WriteLine("Result of verification is: ");
             Console.WriteLine(vres.VerifyResult);
@@ -629,13 +655,15 @@ namespace TestVEDriversLite
             Console.WriteLine(txinfo.Confirmations);
             Console.WriteLine("--------------");
             Console.WriteLine("Vins:");
-            txinfo.Vin.ToList().ForEach(v => {
+            txinfo.Vin.ToList().ForEach(v =>
+            {
                 Console.WriteLine($"Vin of value: {v.ValueSat} Nebl sat. from txid: {v.Txid} and vout index {v.Vout}");
             });
             Console.WriteLine("-------------");
             Console.WriteLine("--------------");
             Console.WriteLine("Vouts:");
-            txinfo.Vout.ToList().ForEach(v => {
+            txinfo.Vout.ToList().ForEach(v =>
+            {
                 Console.WriteLine($"Vout index {v.N} of value: {v.Value} Nebl sat. to receiver scrupt pub key {v.ScriptPubKey?.Addresses?.FirstOrDefault()}");
             });
             Console.WriteLine("-------------");
@@ -649,12 +677,15 @@ namespace TestVEDriversLite
         }
         public static async Task GetNFTDetailsAsync(string param)
         {
-            if (string.IsNullOrEmpty(param))
-                throw new Exception("TxId must be filled.");
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input utxo,index");
 
             Console.WriteLine("Input NFT Tx Id Hash");
-            var txid = param;
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, txid, 0, true);
+            var txid = split[0];
+            Console.WriteLine("Input NFT Utxo Index: ");
+            var nftutxoindex = Convert.ToInt32(split[1]);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, txid, nftutxoindex, 0, true);
             // sign it with loaded account
             Console.WriteLine("Name: ");
             Console.WriteLine(nft.Name);
@@ -811,10 +842,10 @@ namespace TestVEDriversLite
         public static async Task LoadMessageNFTAsync(string param)
         {
             var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            if (split.Length < 1)
-                throw new Exception("Please input txid.");
+            if (split.Length < 2)
+                throw new Exception("Please input txid, txidindex");
 
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, split[0], 0, true);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, split[0], Convert.ToInt32(split[1]), 0, true);
             await (nft as MessageNFT).Decrypt(account.Secret);
             Console.WriteLine($"NFT TxId is: {nft.Utxo}");
             Console.WriteLine($"NFT Name is: {nft.Name}");
@@ -985,7 +1016,7 @@ namespace TestVEDriversLite
             {
                 Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
             }
-            
+
             var res = await dogeAccount.SendPayment(receiver, amount, link);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
@@ -1053,5 +1084,258 @@ namespace TestVEDriversLite
         #endregion
         ///////////////////////////////////////////////////////////////////
 
+        ///////////////////////////////////////////////////////////////////
+
+        #region Coruzant
+
+        [TestEntry]
+        public static void CoruzantCreateEmptyProfileNFTFile(string param)
+        {
+            CoruzantCreateEmptyProfileNFTFileAsync(param);
+        }
+        public static async Task CoruzantCreateEmptyProfileNFTFileAsync(string param)
+        {
+
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for CoruzantProfile NFT.");
+
+            // create NFT object
+            var nft = new CoruzantProfileNFT("");
+            // Example data
+            nft.Name = "Tomas";
+            nft.Surname = "Svoboda";
+            nft.Nickname = "fyziktom";
+            nft.Age = 30;
+            nft.Description = "Tomas Svoboda is the Founder and CTO at TechnicInsider and is a technology enthusiast. He has been working with technology since he was a kid. He studied medical electronic devices in high school, and at his university.";
+            nft.Author = "Brian E. Thomas";
+            nft.ImageLink = "https://coruzant.com/wp-content/uploads/2021/03/svoboda-tomas.jpg";
+            nft.IconLink = "https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png";
+            nft.Link = "https://fyziktom.com/";
+            nft.PodcastLink = "https://gateway.ipfs.io/ipfs/QmTWPM5cCE1wbR5Cn9yr1ZwkzYdaZ9xNSovaA6dirDYp9S";
+            nft.PersonalPageLink = "https://coruzant.com/profiles/tomas-svoboda/";
+            nft.Linkedin = "fyziktom";
+            nft.Twitter = "fyziktom";
+            nft.CompanyLink = "https://technicinsider.com/";
+            nft.CompanyName = "Technicinsider";
+            nft.WorkingPosition = "CEO";
+            nft.Tags = "fyziktom technologies industry40 blockchain neblio";
+            nft.TokenId = CoruzantNFTHelpers.CoruzantTokenId;
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void CoruzantMintProfileFormFileNFT(string param)
+        {
+            CoruzantMintProfileFormFileNFTAsync(param);
+        }
+        public static async Task CoruzantMintProfileFormFileNFTAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent);
+                if (inft.Type == NFTTypes.CoruzantProfile)
+                {
+                    var nft = JsonConvert.DeserializeObject<CoruzantProfileNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Input file is not template for Coruzant Profile NFT.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        #endregion
+        //////////////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////
+
+        #region Tools
+
+        public class IPFSLinksNFTsDto
+        {
+            public string Address { get; set; } = string.Empty;
+            public string Utxo { get; set; } = string.Empty;
+            public int Index { get; set; } = 0;
+            public string Link { get; set; } = string.Empty;
+            public string ImageLink { get; set; } = string.Empty;
+            public string PodcastLink { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
+            public NFTTypes Type { get; set; } = NFTTypes.Image;
+        }
+        [TestEntry]
+        public static void GetAllIpfsLinks(string param)
+        {
+            GetAllIpfsLinksAsync(param);
+        }
+        public static async Task GetAllIpfsLinksAsync(string param)
+        {
+
+            var owners = await NeblioTransactionHelpers.GetTokenOwners(NFTHelpers.TokenId);
+
+            var ipfsLinkNFTs = new Dictionary<string, IPFSLinksNFTsDto>();
+
+            Console.WriteLine("Starting searching the owners:");
+            Console.WriteLine("--------------------------------");
+            foreach (var own in owners)
+            {
+                Console.WriteLine("--------------------------------");
+                Console.WriteLine($"Owner {own.Address}. Loading NFTS...");
+                var addnfts = await NFTHelpers.LoadAddressNFTs(own.Address);
+                Console.WriteLine("--------------------------------");
+                Console.WriteLine($"----------{addnfts.Count} NFT Loaded------------");
+                foreach (var nft in addnfts)
+                {
+                    if (!string.IsNullOrEmpty(nft.Link) || !string.IsNullOrEmpty(nft.ImageLink))
+                    {
+                        var save = false;
+                        if (!string.IsNullOrEmpty(nft.Link))
+                            if (nft.Link.Contains("https://gateway.ipfs.io/ipfs/"))
+                                save = true;
+                        if (!string.IsNullOrEmpty(nft.ImageLink))
+                            if (nft.ImageLink.Contains("https://gateway.ipfs.io/ipfs/"))
+                                save = true;
+
+                        if (save)
+                        {
+                            var dto = new IPFSLinksNFTsDto()
+                            {
+                                Address = own.Address,
+                                Utxo = nft.Utxo,
+                                Index = nft.UtxoIndex,
+                                Link = nft.Link,
+                                ImageLink = nft.ImageLink,
+                                Name = nft.Name,
+                                Type = nft.Type
+                            };
+                            if (dto.Link == null)
+                                dto.Link = string.Empty;
+                            if (dto.ImageLink == null)
+                                dto.ImageLink = string.Empty;
+
+                            if (ipfsLinkNFTs.Values.FirstOrDefault(n => n.Link == dto.Link) != null)
+                                dto.Link = string.Empty;
+                            if (ipfsLinkNFTs.Values.FirstOrDefault(n => n.ImageLink == dto.ImageLink) != null)
+                                dto.ImageLink = string.Empty;
+                            if (ipfsLinkNFTs.Values.FirstOrDefault(n => n.PodcastLink == dto.PodcastLink) != null)
+                                dto.PodcastLink = string.Empty;
+
+                            if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast)
+                                dto.PodcastLink = (nft as CommonCoruzantNFT).PodcastLink;
+
+                            ipfsLinkNFTs.Add($"{nft.Utxo}:{nft.UtxoIndex}", dto);
+                        }
+                    }
+
+                }
+                Console.WriteLine("---------------------------------------------------------");
+                Console.WriteLine($"-------Processing of address {own.Address} done---------");
+            }
+
+            var ipfs = new Ipfs.Http.IpfsClient("http://127.0.0.1:5001");
+            foreach (var nft in ipfsLinkNFTs)
+            {
+                try
+                {
+
+                    if (!string.IsNullOrEmpty(nft.Value.ImageLink) && nft.Value.ImageLink.Contains("https://gateway.ipfs.io/ipfs/"))
+                    {
+                        Console.WriteLine("Pinning...");
+                        await ipfs.Pin.AddAsync(nft.Value.ImageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                        Console.WriteLine("Pinned. " + nft.Value.ImageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Console.WriteLine("Cannot pin " + nft.Value.ImageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                }
+                try
+                {
+                    if (!string.IsNullOrEmpty(nft.Value.Link) && nft.Value.Link.Contains("https://gateway.ipfs.io/ipfs/"))
+                    {
+                        Console.WriteLine("Pinning...");
+                        await ipfs.Pin.AddAsync(nft.Value.Link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                        Console.WriteLine("Pinned. " + nft.Value.Link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Console.WriteLine("Cannot pin " + nft.Value.Link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                }
+                try
+                {
+                    if (!string.IsNullOrEmpty(nft.Value.PodcastLink) && nft.Value.PodcastLink.Contains("https://gateway.ipfs.io/ipfs/"))
+                    {
+                        Console.WriteLine("Pinning...");
+                        await ipfs.Pin.AddAsync(nft.Value.PodcastLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                        Console.WriteLine("Pinned. " + nft.Value.PodcastLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Console.WriteLine("Cannot pin " + nft.Value.PodcastLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                }
+            }
+
+            var filename = $"{TimeHelpers.DateTimeToUnixTimestamp(DateTime.UtcNow)}-ipfsLinkNFTs.json";
+            Console.WriteLine($"Completed search. Saving file. {filename}");
+            var output = JsonConvert.SerializeObject(ipfsLinkNFTs, Formatting.Indented);
+            FileHelpers.WriteTextToFile(filename, output);
+        }
+
+        [TestEntry]
+        public static void PinIPFSFile(string param)
+        {
+            PinIPFSFileAsync(param);
+        }
+        public static async Task PinIPFSFileAsync(string param)
+        {
+            var ipfs = new Ipfs.Http.IpfsClient("http://127.0.0.1:5001");
+
+            try
+            {
+                Console.WriteLine("Start Pinning...");
+                var res = await ipfs.Pin.AddAsync(param);
+                Console.WriteLine("Pinned.");
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("Cannot pin " + param);
+            }
+            #endregion
+            ///////////////////////////////////////////////////////////////////
+        }
     }
 }

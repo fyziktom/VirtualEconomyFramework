@@ -922,6 +922,14 @@ namespace VEconomy.Controllers
             /// </summary>
             public string personalPageLink { get; set; } = string.Empty;
             /// <summary>
+            /// Input Twitter nick
+            /// </summary>
+            public string twitter { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Linkedin nick
+            /// </summary>
+            public string linkedin { get; set; } = string.Empty;
+            /// <summary>
             /// Input Company Name
             /// </summary>
             public string companyName { get; set; } = string.Empty;
@@ -976,6 +984,8 @@ namespace VEconomy.Controllers
                     nft.Link = data.link;
                     nft.PodcastLink = data.podcastLink;
                     nft.PersonalPageLink = data.personalPageLink;
+                    nft.Twitter = data.twitter;
+                    nft.Linkedin = data.linkedin;
                     nft.CompanyLink = data.companyLink;
                     nft.CompanyName = data.companyName;
                     nft.WorkingPosition = data.workingPosition;
@@ -997,7 +1007,7 @@ namespace VEconomy.Controllers
             }
         }
 
-        public class VEDLMintCoruzantPostNFTDto
+        public class VEDLMintCoruzantArticleNFTDto
         {
             /// <summary>
             /// Account address
@@ -1012,6 +1022,10 @@ namespace VEconomy.Controllers
             /// Input NFT Description
             /// </summary>
             public string description { get; set; } = string.Empty;
+            /// <summary>
+            /// Input Text
+            /// </summary>
+            public string text { get; set; } = string.Empty;
             /// <summary>
             /// Input Author profile Utxo (meant Utxo/txid of her/his NFT CoruzantProfile
             /// </summary>
@@ -1063,8 +1077,8 @@ namespace VEconomy.Controllers
         }
 
         [HttpPut]
-        [Route("MintCoruzantPostNFT")]
-        public async Task<(bool, string)> MintCoruzantPostNFT([FromBody] VEDLMintCoruzantPostNFTDto data)
+        [Route("MintCoruzantArticleNFT")]
+        public async Task<(bool, string)> MintCoruzantArticleNFT([FromBody] VEDLMintCoruzantArticleNFTDto data)
         {
             try
             {
@@ -1075,9 +1089,10 @@ namespace VEconomy.Controllers
                     if ((account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.Address == string.Empty)
                         throw new HttpResponseException((HttpStatusCode)501, $"VEDriversLite Account is not initialized.");
 
-                    var nft = new CoruzantPostNFT("");
+                    var nft = new CoruzantArticleNFT("");
                     nft.Name = data.name;
                     nft.Description = data.description;
+                    nft.Text = data.text;
                     nft.Author = data.author;
                     nft.ImageLink = data.image;
                     nft.IconLink = data.iconLink;

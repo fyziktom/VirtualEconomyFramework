@@ -77,6 +77,20 @@ namespace VEDriversLite.Neblio
         public double TotalUnconfirmedBalance { get; set; } = 0.0;
 
         /// <summary>
+        /// Total balance of VENFT tokens which can be used for minting purposes.
+        /// </summary>
+        public double SourceTokensBalance { get; set; } = 0.0;
+        /// <summary>
+        /// Total balance of VENFT tokens which can be used for minting purposes.
+        /// </summary>
+        public double CoruzantSourceTokensBalance { get; set; } = 0.0;
+
+        /// <summary>
+        /// Actual all token supplies. Consider also other tokens than VENFT.
+        /// </summary>
+        public Dictionary<string, TokenSupplyDto> TokensSupplies { get; set; } = new Dictionary<string, TokenSupplyDto>();
+
+        /// <summary>
         /// This event is called whenever some important thing happen. You can obtain success, error and info messages.
         /// </summary>
         public event EventHandler<IEventInfo> NewEventInfo;
@@ -299,6 +313,7 @@ namespace VEDriversLite.Neblio
                 AddressInfo.Transactions = new List<string>();
                 await ReloadUtxos();
                 await ReLoadNFTs();
+                await ReloadTokenSupply();
             }
             catch (Exception ex)
             {
@@ -318,6 +333,7 @@ namespace VEDriversLite.Neblio
                         {
                             await ReloadUtxos();
                             await ReLoadNFTs();
+                            await ReloadTokenSupply();
                         }
                     }
                     catch (Exception ex)
@@ -374,6 +390,17 @@ namespace VEDriversLite.Neblio
         {
             if (!string.IsNullOrEmpty(Address))
                 NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList());
+        }
+
+        /// <summary>
+        /// Reload actual token supplies based on already loaded list of address utxos
+        /// </summary>
+        /// <returns></returns>
+        public async Task ReloadTokenSupply()
+        {
+            TokensSupplies = await NeblioTransactionHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
+            if (TokensSupplies.TryGetValue(CoruzantNFTHelpers.CoruzantTokenId, out var ts))
+                CoruzantSourceTokensBalance = ts.Amount;
         }
 
         /// <summary>

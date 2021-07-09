@@ -39,7 +39,7 @@ namespace VEDriversLite.NFT
             var time = DateTime.UtcNow.ToString("dd MM yyyy hh:mm");
             var combo = txid + time;//SecurityUtils.ComputeSha256Hash(txid + time);
             var msg = String.Format("{0:X}", combo.GetHashCode());
-            return msg;
+            return combo;
         }
         public static async Task<(bool, string)> GetCode(string txid, EncryptionKey key)
         {

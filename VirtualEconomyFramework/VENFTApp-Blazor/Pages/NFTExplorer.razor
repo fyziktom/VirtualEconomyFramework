@@ -16,7 +16,7 @@
 
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <h3>My NFTs</h3>
+                        <h3>Sub Accounts</h3>
                     </div>
                 </div>
 
@@ -175,16 +175,19 @@
         {
             loadingBrowser = true;
 
-            try
+            if (AppData.Account.SubAccounts.Count == 0)
             {
-                var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
-                if (!string.IsNullOrEmpty(subAccounts))
-                    if (AppData.Account.SubAccounts.Count == 0)
-                        await AppData.Account.LoadSubAccounts(subAccounts);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot load sub accounts from memory!" + ex.Message);
+                try
+                {
+                    var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
+                    if (!string.IsNullOrEmpty(subAccounts))
+                        if (AppData.Account.SubAccounts.Count == 0)
+                            await AppData.Account.LoadSubAccounts(subAccounts);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot load sub accounts from memory!" + ex.Message);
+                }
             }
             loadingBrowser = false;
             StateHasChanged();

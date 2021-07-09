@@ -3,6 +3,7 @@
 @using VEDriversLite.NFT.Coruzant
 @using VEDriversLite.NeblioAPI
 @using Newtonsoft.Json
+@using Markdig
 @inject AppData AppData
 @inject HttpClient _client
 @inject IJSRuntime JSRuntime
@@ -10,13 +11,25 @@
 <div class="row">
     <div class="col">
         <Spin Tip="Loading..." Spinning="@loading">
+            @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId) && !string.IsNullOrEmpty(NFT.Utxo))
+            {
+                <div style="position: absolute;right: 5px;top: -20px;">
+                    <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">
+                        <span class="badge badge-primary">Mint Info</span>
+                    </a>
+                    <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
+                        <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
+                    </a>
+                    <span class="badge badge-warning" style="margin-left:5px;">C: @NFT.TxDetails.Confirmations</span>
+                </div>
+            }
             @if (NFT.Type == NFTTypes.CoruzantProfile && !string.IsNullOrEmpty(NFT.ImageLink))
             {
                 var pnft = NFT as CoruzantProfileNFT;
                 @if (!string.IsNullOrEmpty(NFT.ImageLink))
                 {
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                         </div>
                     </div>
@@ -25,105 +38,164 @@
                 {
                     <Spin Tip="Loading..." Spinning="true">
                         <div class="row">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto; min-width:50px; max-width:200px;" />
                             </div>
                         </div>
                     </Spin>
                 }
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Name: @pnft.Name @pnft.Surname (@pnft.Nickname)</span>
+                @if (!string.IsNullOrEmpty(pnft.Nickname))
+                {
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>@pnft.Name @pnft.Surname (@pnft.Nickname)</span>
+                        </div>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>@pnft.Name @pnft.Surname</span>
+                        </div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(pnft.Twitter) || !string.IsNullOrEmpty(pnft.Linkedin))
+                {
+                    <div class="row d-flex justify-content-center align-items-center">
+                        @if (!string.IsNullOrEmpty(pnft.Linkedin))
+                        {
+                            <div class="col-auto d-flex justify-content-center align-items-center" style="margin-top: 0px;width: 45px;max-width: 45px;">
+                                <a href="https://linkedin.com/in/@pnft.Linkedin" target="_blank">
+                                    <i class="icon-linkedin" style="font-size: 20px;"></i>
+                                </a>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(pnft.Twitter))
+                        {
+                            <div class="col d-flex justify-content-center align-items-center" style="padding-right: 18px;padding-left: 0px;">
+                                <iframe src="https://platform.twitter.com/widgets/follow_button.html?screen_name=@pnft.Twitter&amp;show_screen_name=true&amp;show_count=true" frameborder="0" scrolling="no" title="Follow fyziktom on Twitter" class="d-xxl-flex align-items-xxl-center" allowtransparency="true" width="250" height="30" style="margin-left: 0px;width: 100%;"></iframe>
+                            </div>
+                        }
+                    </div>
+                }
             }
             else
             {
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Name: @NFT.Name</span>
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@NFT.Name</span>
                     </div>
                 </div>
             }
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Author: @NFT.Author</span>
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small>Author: @NFT.Author</small>
                 </div>
             </div>
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Description: @NFT.Description</span>
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Description</span>
                 </div>
             </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
+                </div>
+            </div>
+            @if (NFT.Type == NFTTypes.CoruzantProfile && !string.IsNullOrEmpty(NFT.Text))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>About Person</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@((MarkupString) NFTmarkuptext)</span>
+                    </div>
+                </div>
+            }
+            else if (NFT.Type == NFTTypes.CoruzantArticle && !string.IsNullOrEmpty(NFT.Text))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Content</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@((MarkupString) NFTmarkuptext)</span>
+                    </div>
+                </div>
+                var anft = NFT as CoruzantArticleNFT;
+                if (!string.IsNullOrEmpty(anft.AuthorProfileUtxo))
+                {
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="showAuthorProfileNFT"><img style="width: 25px;margin-right: 10px;" src="@AuthorProfileNFT.ImageLink" />Show author profile NFT</button>
+                        </div>
+                    </div>
+                }
+            }
 
             @if (NFT.Type == NFTTypes.CoruzantProfile && !string.IsNullOrEmpty(NFT.ImageLink))
             {
                 var pnft = NFT as CoruzantProfileNFT;
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <a href="@pnft.PersonalPageLink" target="_blank">Profile Page Link</a>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Company: @pnft.CompanyName</span>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <a href="@pnft.CompanyLink" target="_blank">Company Link</a>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Position: @pnft.WorkingPosition</span>
                     </div>
                 </div>
             }
             <hr />
-            @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId))
-            {
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">Mint Tx In Explorer</a>
-                    </div>
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(NFT.Utxo))
-            {
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">Tx In Explorer</a>
-                    </div>
-                </div>
-            }
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Confirmations: @NFT.TxDetails.Confirmations.ToString()</span>
-                </div>
-            </div>
             <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <a href="@NFT.ImageLink" target="_blank">
                         @if (NFT.Type == NFTTypes.CoruzantProfile)
                         {
                             var tnft = NFT as CoruzantProfileNFT;
-                            @if (!string.IsNullOrEmpty(tnft.PodcastLink))
+                            @if (!string.IsNullOrEmpty(tnft.PodcastId))
                             {
-                                <video controls="" autoplay="" name="media" title="@NFT.Name" @onplay="VideoStartedPlay" style="min-height: 100px; max-height: 150px; width: auto; min-width: 150px; max-width: 250px;">
-                                    <source src="@tnft.PodcastLink" type="audio/mpeg">
-                                </video>
+                                if (!string.IsNullOrEmpty(buzzsproudLink))
+                                {
+                                    <div id="buzzsprout-player-@tnft.PodcastId"></div>
+                                }
                             }
                             else
                             {
-                                <Spin Tip="Loading..." Spinning="true">
-                                    <div style="width:100px; height:50px;"></div>
-                                </Spin>
+                                @if (!string.IsNullOrEmpty(tnft.PodcastLink))
+                                {
+                                    <video controls="" autoplay="" name="media" title="@NFT.Name" @onplay="VideoStartedPlay" style="min-height: 100px; max-height: 150px; width: auto; min-width: 150px; max-width: 250px;">
+                                        <source src="@tnft.PodcastLink" type="audio/mpeg">
+                                    </video>
+                                }
+                                else
+                                {
+                                    <Spin Tip="Loading..." Spinning="true">
+                                        <div style="width:100px; height:50px;"></div>
+                                    </Spin>
+                                }
                             }
                         }
-                        else if (NFT.Type == NFTTypes.CoruzantPost)
+                        else if (NFT.Type == NFTTypes.CoruzantArticle)
                         {
-                            var tnft = NFT as CoruzantPostNFT;
+                            var tnft = NFT as CoruzantArticleNFT;
                             @if (!string.IsNullOrEmpty(tnft.PodcastLink) || !string.IsNullOrEmpty(tnft.ImageLink))
                             {
                                 @if (!string.IsNullOrEmpty(tnft.PodcastLink))
@@ -149,11 +221,11 @@
             </div>
             @if (OwnNFT)
             {
-                @if (NFT.TxDetails.Confirmations > 1)
+                @if (NFT.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
                 {
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center w-auto">
-                            @if (NFT.Type == NFTTypes.CoruzantPost)
+                            @if (NFT.Type == NFTTypes.CoruzantArticle)
                             {
                                 <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="width:65px; height:65px; margin-right:20px;">
                                     <div class="row">
@@ -209,26 +281,41 @@
                 }
             }
 
-            <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" />
+            @if (NFT.Type != NFTTypes.CoruzantProfile)
+            {
+                <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
+            }
         </Spin>
     </div>
 
-    <SendNFT NFT="@NFT" 
-             NFTSent="@NFTSentHandler" 
+    <SendNFT NFT="@NFT"
+             NFTSent="@NFTSentHandler"
              @bind-SendNFTDialogVisible="sendNFTDialogVisible"
              Address="@Address"
-             SubAccount="@SubAccount"/>
+             SubAccount="@SubAccount" />
 
     <Modal Title="Create or edit post NFT"
            Visible="@createNewPostVisible"
            OnOk="@createNewPostConfirm"
            OnCancel="@createNewPostCancel">
-        <MintNFTForm NFTType="NFTTypes.Post" 
-                     NFT="@NFT" 
-                     RedirectToNFTsAfterMint="false" 
+        <MintNFTForm NFTType="NFTTypes.CoruzantArticle"
+                     NFT="@NFT"
+                     TokenId="@CoruzantNFTHelpers.CoruzantTokenId"
+                     RedirectToNFTsAfterMint="false"
                      NFTMinted="@NFTMinted"
                      Address="@Address"
-                     SubAccount="@SubAccount"/>
+                     SubAccount="@SubAccount" />
+    </Modal>
+
+    <Modal Title="Author Profile NFT"
+           Visible="@authorProfileNFTVisible"
+           OnOk="@authorProfileNFTCancel"
+           OnCancel="@authorProfileNFTCancel">
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <CoruzantNFT InputNFT="@AuthorProfileNFT" OwnNFT="false" HideButtons="false" />
+            </div>
+        </div>
     </Modal>
 
     <Modal Title="Ownership QR Code"
@@ -279,6 +366,7 @@
 @code {
 
     private INFT NFT { get; set; } = new CoruzantProfileNFT("");
+    private INFT AuthorProfileNFT { get; set; } = new CoruzantProfileNFT("");
 
     private string _utxo = string.Empty;
     [Parameter]
@@ -320,6 +408,8 @@
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
 
+    public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
     bool createNewPostVisible = false;
     bool sendNFTDialogVisible = false;
     bool showOwnershipDialogVisible = false;
@@ -327,6 +417,9 @@
     bool setPriceNFTDialogVisible = false;
     bool loading = false;
     bool copyTextButtonCoppied = false;
+    bool authorProfileNFTVisible = false;
+
+    string buzzsproudLink = string.Empty;
 
     private System.Threading.Timer qrCodeRefreshTimer;
     private int qrCodeRefreshCounter = 30;
@@ -350,7 +443,7 @@
     {
         if (NFT != null)
         {
-            if (NFT.Type == NFTTypes.CoruzantProfile || NFT.Type == NFTTypes.CoruzantPost || NFT.Type == NFTTypes.CoruzantPodcast)
+            if (NFT.Type == NFTTypes.CoruzantProfile || NFT.Type == NFTTypes.CoruzantArticle || NFT.Type == NFTTypes.CoruzantPodcast)
             {
                 var nft = NFT as CommonCoruzantNFT;
                 if (!string.IsNullOrEmpty(nft.PodcastLink) &&
@@ -371,16 +464,59 @@
         NFT.TxDataRefreshed -= TxDataRefreshedHandler;
         await NFT.StopRefreshingData();
 
-        NFT = await NFTFactory.GetNFT(CoruzantNFTHelpers.CoruzantTokenId, _utxo, 0, true);
-        NFT.UtxoIndex = _utxoIndex;
+        NFT = await NFTFactory.GetNFT(CoruzantNFTHelpers.CoruzantTokenId, _utxo, _utxoIndex, 0, true);
 
         if (NFT == null)
             return;
 
+        await TryToLoadProfile();
+
+        LoadBuzzproudPodcastLink();
         await NFT.StartRefreshingTxData();
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
         loading = false;
         StateHasChanged();
+    }
+
+    private async Task LoadBuzzproudPodcastLink()
+    {
+        try
+        {
+            if (NFT.Type == NFTTypes.CoruzantProfile)
+            {
+                var filename = string.Empty;
+                var pnft = NFT as CoruzantProfileNFT;
+                var req = new HttpRequestMessage(HttpMethod.Get, $"https://nftticketverifierapp.azurewebsites.net/api/GetBuzzsproutData/866092/{pnft.PodcastId}");
+                req.Headers.Add("Accept", "application/json");
+                req.Headers.Add("User-Agent", "VENFT-App");
+
+                var resp = await _client.SendAsync(req);
+                var respmsg = await resp.Content.ReadAsStringAsync();
+                if (string.IsNullOrEmpty(respmsg))
+                    return;
+                var podcastData = JsonConvert.DeserializeObject<List<BuzzsproutEpisodeDto>>(respmsg);
+                if (podcastData != null && podcastData.Count > 0)
+                {
+                    var pddto = podcastData.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(pddto.audio_url))
+                    {
+                        filename = pddto.audio_url.Replace("https://www.buzzsprout.com/866092/", string.Empty).Replace(".mp3", string.Empty);
+                        var link = $"https://www.buzzsprout.com/866092/{filename}.js?container_id=buzzsprout-player-{pnft.PodcastId}&player=small";
+                        buzzsproudLink = link;
+                        StateHasChanged();
+                        await Task.Delay(200);
+                        await JSRuntime.InvokeVoidAsync("jsFunctions.buzzsproutPodcast", buzzsproudLink);
+                        await Task.Delay(200);
+                        await JSRuntime.InvokeVoidAsync("setCoruzantPodcastInfo", pnft.Name + " " + pnft.Surname, pddto.artist, pddto.title);
+                        StateHasChanged();
+                    }
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Cannot load Buzzsprout podcast." + ex.Message);
+        }
     }
 
     private async Task VideoStartedPlay()
@@ -399,6 +535,27 @@
     {
         sendNFTDialogVisible = true;
         StateHasChanged();
+    }
+
+    private async Task TryToLoadProfile()
+    {
+        if (NFT.Type == NFTTypes.CoruzantArticle)
+        {
+            var nft = NFT as CoruzantArticleNFT;
+            if (!string.IsNullOrEmpty(nft.AuthorProfileUtxo) && nft.AuthorProfileUtxo != AuthorProfileNFT.Utxo)
+            {
+                AuthorProfileNFT = await NFTFactory.GetNFT(CoruzantNFTHelpers.CoruzantTokenId, nft.AuthorProfileUtxo);
+            }
+        }
+    }
+
+    private async Task authorProfileNFTCancel(MouseEventArgs e)
+    {
+        authorProfileNFTVisible = false;
+    }
+    private async Task showAuthorProfileNFT(MouseEventArgs e)
+    {
+        authorProfileNFTVisible = true;
     }
 
     private async Task copyCodeToClipboard(MouseEventArgs e)

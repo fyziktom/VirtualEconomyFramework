@@ -2,6 +2,7 @@
 @using VEDriversLite.NeblioAPI
 @using VEDriversLite.Bookmarks
 @using VEDriversLite.NFT
+@using Newtonsoft.Json
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient _client
 @inject AppData AppData
@@ -267,12 +268,12 @@
 </Modal>
 
 @code {
-    bool sendMessageVisible = false;
-    bool openTabBrowser = false;
-    bool loadingBrowser = false;
-    bool browsePublicAddresses = false;
-    bool copyTextButtonCoppied = false;
-    int holdersPage = 0;
+        bool sendMessageVisible = false;
+        bool openTabBrowser = false;
+        bool loadingBrowser = false;
+        bool browsePublicAddresses = false;
+        bool copyTextButtonCoppied = false;
+        int holdersPage = 0;
 
     private string selectedNewTabFromBookmarkName = "Select From Bookmark";
 
@@ -395,8 +396,8 @@
             loadingBrowser = false;
             StateHasChanged();
 
-            if (AppData.VENFTOwners.Count == 0)
-                LoadVENFTOwners();
+            //if (AppData.VENFTOwners.Count == 0)
+            await LoadVENFTOwners();
         }
         catch (Exception ex)
         {
@@ -408,8 +409,21 @@
 
     private async Task LoadVENFTOwners()
     {
-        // load on background
-        AppData.VENFTOwners = await NeblioTransactionHelpers.GetTokenOwners(NFTHelpers.TokenId);
+        var req = new HttpRequestMessage(HttpMethod.Get, $"https://nftticketverifierapp.azurewebsites.net/api/GetVENFTOwners");
+        req.Headers.Add("Accept", "application/json");
+        req.Headers.Add("User-Agent", "VENFT-App");
+
+        var resp = await _client.SendAsync(req);
+        var respmsg = await resp.Content.ReadAsStringAsync();
+        if (string.IsNullOrEmpty(respmsg))
+            return;
+        var tokowns = JsonConvert.DeserializeObject<Dictionary<string, TokenOwnerDto>>(respmsg);
+        if (tokowns != null)
+        {
+            AppData.VENFTOwners.Clear();
+            foreach (var o in tokowns.Values)
+                AppData.VENFTOwners.Add(o);
+        }
     }
 
     private void BookmarkRefreshedHandler(VEDriversLite.Bookmarks.Bookmark bookmark)

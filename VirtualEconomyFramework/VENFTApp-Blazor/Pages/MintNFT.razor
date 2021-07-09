@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
 @using VEDriversLite.NeblioAPI
 @using Tewr.Blazor.FileReader
 @using System.Threading
@@ -48,17 +49,48 @@
                 <div class="col" style="margin-top:10px;">
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span>Mint it with Source tokens:</span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            @if (AppData.Account.SourceTokensBalance > 1 || AppData.Account.CoruzantSourceTokensBalance > 1)
+                            {
+                                <RadioGroup @bind-Value="@tokenId" @onselectionchange="nftSourceTokensChangedHandler">
+                                    @foreach (var t in AppData.Account.TokensSupplies)
+                                    {
+                                        if (t.Value.Amount > 1 && NFTHelpers.AllowedTokens.Contains(t.Value.TokenId))
+                                        {
+                                        <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
+                                        }
+                                    }
+                                </RadioGroup>
+                            }
+                            else if (AppData.Account.SourceTokensBalance <= 1 || AppData.Account.CoruzantSourceTokensBalance <= 1)
+                            {
+                                <h4 class="text-danger text-center">You do not have any source tokens on the Address!</h4>
+                            }
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             <RadioGroup @bind-Value="@NFTType" @onselectionchange="nftTypeChangedHandler">
                                 <Radio Value="NFTTypes.Image">Image - Original</Radio>
                                 <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
                                 <Radio Value="NFTTypes.Music">Music - Original</Radio>
+                                @if (AppData.Account.CoruzantSourceTokensBalance > 1 && tokenId == CoruzantNFTHelpers.CoruzantTokenId)
+                                {
+                                    <Radio Value="NFTTypes.CoruzantProfile">CoruzantProfile - Original</Radio>
+                                    <Radio Value="NFTTypes.CoruzantArticle">CoruzantArticle - Reusable</Radio>
+                                    <!--<Radio Value="NFTTypes.CoruzantPodcast">CoruzantPodcast - Reusable</Radio>-->
+                                }
                             </RadioGroup>
                         </div>
                     </div>
 
                     <div class="row" style="margin-top:10px; margin-bottom:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <VENFTApp_Blazor.Components.MintNFTForm NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                            <VENFTApp_Blazor.Components.MintNFTForm TokenId="@tokenId" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
                         </div>
                     </div>
                 </div>
@@ -76,11 +108,11 @@
                                     if (i < AppData.Account.NFTs.Count)
                                     {
                                         var nft = AppData.Account.NFTs[i];
-                                        if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantPost || nft.Type == NFTTypes.CoruzantPodcast)
+                                        if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast)
                                         {
                                             <VENFTApp_Blazor.Components.CoruzantNFT Address="@AppData.Account.Address" InputNFT="@nft" OwnNFT="true" />
                                         }
-                                        else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings")
+                                        else if (nft.Type != NFTTypes.Message && nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings")
                                         {
                                             <VENFTApp_Blazor.Components.NFT Address="@AppData.Account.Address" InputNFT="@nft" OwnNFT="true" />
                                         }
@@ -140,6 +172,8 @@
     bool orderingTokens = false;
     bool orderingTokensDone = false;
 
+    string tokenId = NFTHelpers.TokenId;
+
     private CancellationTokenSource cts = new CancellationTokenSource();
     GetTokenMetadataResponse sourceTokensInfo = new GetTokenMetadataResponse();
 
@@ -178,6 +212,11 @@
     }
 
     private void nftTypeChangedHandler(EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private void nftSourceTokensChangedHandler(EventArgs e)
     {
         StateHasChanged();
     }

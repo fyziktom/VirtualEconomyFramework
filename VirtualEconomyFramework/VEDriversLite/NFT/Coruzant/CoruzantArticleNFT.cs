@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT.Coruzant
 {
-    public class CoruzantPostNFT : CommonCoruzantNFT
+    public class CoruzantArticleNFT : CommonCoruzantNFT
     {
-        public CoruzantPostNFT(string utxo)
+        public CoruzantArticleNFT(string utxo)
         {
             Utxo = utxo;
-            Type = NFTTypes.CoruzantPost;
+            Type = NFTTypes.CoruzantArticle;
             TypeText = "NFT CoruzantPost";
             TokenId = "La9ADonmDwxsNKJGvnRWy8gmWmeo72AEeg8cK7";
         }
@@ -20,11 +20,15 @@ namespace VEDriversLite.NFT.Coruzant
         {
             await FillCommon(NFT);
 
-            LastComment = (NFT as CoruzantPostNFT).LastComment;
-            LastCommentBy = (NFT as CoruzantPostNFT).LastCommentBy;
-            FullPostLink = (NFT as CoruzantPostNFT).FullPostLink;
-            PodcastLink = (NFT as CoruzantPostNFT).PodcastLink;
-            AuthorProfileUtxo = (NFT as CoruzantPostNFT).AuthorProfileUtxo;
+            if (NFT.Type == NFTTypes.CoruzantArticle)
+            {
+                var nft = NFT as CoruzantArticleNFT;
+                LastComment = nft.LastComment;
+                LastCommentBy = nft.LastCommentBy;
+                FullPostLink = nft.FullPostLink;
+                PodcastLink = nft.PodcastLink;
+                AuthorProfileUtxo = nft.AuthorProfileUtxo;
+            }
         }
 
         public string AuthorProfileUtxo { get; set; } = string.Empty;
@@ -166,14 +170,7 @@ namespace VEDriversLite.NFT.Coruzant
             if (Description.Length > 250)
                 throw new Exception("Cannot create NFT CoruzantPost. Description must be shorter than 250 characters.");
 
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Type", "NFT CoruzantPost");
-            metadata.Add("Name", Name);
-            metadata.Add("Author", Author);
-            metadata.Add("Description", Description);
-            metadata.Add("Image", ImageLink);
-            metadata.Add("Link", Link);
+            var metadata = await GetCommonMetadata();
             if (!string.IsNullOrEmpty(FullPostLink))
                 metadata.Add("FullPostLink", FullPostLink);
             if (!string.IsNullOrEmpty(PodcastLink))
@@ -184,9 +181,6 @@ namespace VEDriversLite.NFT.Coruzant
                 metadata.Add("LastCommentBy", LastCommentBy);
             if (!string.IsNullOrEmpty(LastComment))
                 metadata.Add("LastComment", LastComment);
-
-            if (Price > 0)
-                metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
 
             return metadata;
         }

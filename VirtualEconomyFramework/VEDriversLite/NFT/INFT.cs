@@ -18,8 +18,8 @@ namespace VEDriversLite.NFT
         Payment,
         Message,
         Ticket,
-        CoruzantPost = 101,
-        CoruzantPremiumPost = 102,
+        CoruzantArticle = 101,
+        CoruzantPremiumArticle = 102,
         CoruzantPodcast = 103,
         CoruzantPremiumPodcast = 104,
         CoruzantProfile = 105
@@ -31,6 +31,7 @@ namespace VEDriversLite.NFT
         string Name { get; set; }
         string Author { get; set; }
         string Description { get; set; }
+        string Text { get; set; }
         string Link { get; set; }
         string IconLink { get; set; }
         string ImageLink { get; set; }

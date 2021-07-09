@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NFT.Coruzant;
@@ -9,11 +10,31 @@ namespace VEDriversLite.NFT
 {
     public static class NFTFactory
     {
-        public static async Task<INFT> GetNFT(string tokenId, string utxo, double time = 0, bool wait = false)
+        public static async Task<INFT> GetNFT(string tokenId, string utxo, int utxoindex = 0, double time = 0, bool wait = false)
         {
             NFTTypes type = NFTTypes.Image;
 
-            var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokenId, utxo);
+            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
+            if (txinfo == null)
+                return null;
+            if (txinfo.Vout == null)
+                return null;
+            var tokid = tokenId;
+            try
+            {
+                var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0]?.TokenId;
+                tokid = tid;
+                if (string.IsNullOrEmpty(tokid))
+                {
+                    tokid = NFTHelpers.TokenId;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+            var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokid, utxo);
             
             if (meta == null)
             {
@@ -47,11 +68,11 @@ namespace VEDriversLite.NFT
                         case "NFT Ticket":
                             type = NFTTypes.Ticket;
                             break;
-                        case "NFT CoruzantPost":
-                            type = NFTTypes.CoruzantPost;
+                        case "NFT CoruzantArticle":
+                            type = NFTTypes.CoruzantArticle;
                             break;
-                        case "NFT CoruzantPremiumPost":
-                            type = NFTTypes.CoruzantPremiumPost;
+                        case "NFT CoruzantPremiumArticle":
+                            type = NFTTypes.CoruzantPremiumArticle;
                             break;
                         case "NFT CoruzantPodcast":
                             type = NFTTypes.CoruzantPodcast;
@@ -160,12 +181,12 @@ namespace VEDriversLite.NFT
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;
                     break;
-                case NFTTypes.CoruzantPost:
-                    nft = new CoruzantPostNFT(utxo);
+                case NFTTypes.CoruzantArticle:
+                    nft = new CoruzantArticleNFT(utxo);
                     if (wait)
-                        await (nft as CoruzantPostNFT).LoadLastData(meta);
+                        await (nft as CoruzantArticleNFT).LoadLastData(meta);
                     else
-                        (nft as CoruzantPostNFT).LoadLastData(meta);
+                        (nft as CoruzantArticleNFT).LoadLastData(meta);
                     break;
                 case NFTTypes.CoruzantProfile:
                     nft = new CoruzantProfileNFT(utxo);
@@ -176,8 +197,10 @@ namespace VEDriversLite.NFT
                     break;
             }
 
-            nft.TokenId = tokenId;
+            nft.TokenId = tokid;
             nft.Time = Time;
+            nft.TxDetails = txinfo;
+            nft.UtxoIndex = utxoindex;
 
             return nft;
         }
@@ -218,8 +241,8 @@ namespace VEDriversLite.NFT
                     nft = new TicketNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
-                case NFTTypes.CoruzantPost:
-                    nft = new CoruzantPostNFT(NFT.Utxo);
+                case NFTTypes.CoruzantArticle:
+                    nft = new CoruzantArticleNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.CoruzantProfile:

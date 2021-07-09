@@ -14,6 +14,7 @@ namespace VEDriversLite.NFT
         public string Name { get; set; } = string.Empty;
         public string Author { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
         public string Link { get; set; } = string.Empty;
         public string IconLink { get; set; } = string.Empty;
         public string ImageLink { get; set; } = string.Empty;
@@ -61,6 +62,8 @@ namespace VEDriversLite.NFT
             PriceActive = nft.PriceActive;
             UtxoIndex = nft.UtxoIndex;
             Time = nft.Time;
+            Tags = nft.Tags;
+            Text = nft.Text;
         }
 
         private void parseTags()
@@ -99,6 +102,8 @@ namespace VEDriversLite.NFT
                 IconLink = iconlink;
             if (meta.TryGetValue("Type", out var type))
                 TypeText = type;
+            if (meta.TryGetValue("Text", out var text))
+                Text = text;
             if (meta.TryGetValue("Tags", out var tags))
             {
                 Tags = tags;
@@ -106,6 +111,66 @@ namespace VEDriversLite.NFT
             }
             if (meta.TryGetValue("SourceUtxo", out var su))
                 NFTOriginTxId = su;
+        }
+
+        public async Task<IDictionary<string,string>> GetCommonMetadata()
+        {
+            var metadata = new Dictionary<string, string>();
+
+            metadata.Add("NFT", "true");
+            switch (Type)
+            {
+                case NFTTypes.Image:
+                    metadata.Add("Type", "NFT Image");
+                    break;
+                case NFTTypes.Post:
+                    metadata.Add("Type", "NFT Post");
+                    break;
+                case NFTTypes.Music:
+                    metadata.Add("Type", "NFT Music");
+                    break;
+                case NFTTypes.Message:
+                    metadata.Add("Type", "NFT Message");
+                    break;
+                case NFTTypes.Profile:
+                    metadata.Add("Type", "NFT Profile");
+                    break;
+                case NFTTypes.Payment:
+                    metadata.Add("Type", "NFT Payment");
+                    break;
+                case NFTTypes.Ticket:
+                    metadata.Add("Type", "NFT Ticket");
+                    break;
+                case NFTTypes.CoruzantProfile:
+                    metadata.Add("Type", "NFT CoruzantProfile");
+                    break;
+                case NFTTypes.CoruzantArticle:
+                    metadata.Add("Type", "NFT CoruzantArticle");
+                    break;
+                case NFTTypes.CoruzantPremiumArticle:
+                    metadata.Add("Type", "NFT CoruzantPremiumArticle");
+                    break;
+                case NFTTypes.CoruzantPodcast:
+                    metadata.Add("Type", "NFT CoruzantPodcast");
+                    break;
+                case NFTTypes.CoruzantPremiumPodcast:
+                    metadata.Add("Type", "NFT CoruzantPremiumPodcast");
+                    break;
+            }
+            
+            metadata.Add("Name", Name);
+            metadata.Add("Author", Author);
+            metadata.Add("Description", Description);
+            metadata.Add("Image", ImageLink);
+            if (!string.IsNullOrEmpty(Tags))
+                metadata.Add("Tags", Tags);
+            if (!string.IsNullOrEmpty(Text))
+                metadata.Add("Text", Text);
+            metadata.Add("Link", Link);
+            if (Price > 0)
+                metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
+
+            return metadata;
         }
 
         public async Task StopRefreshingData()

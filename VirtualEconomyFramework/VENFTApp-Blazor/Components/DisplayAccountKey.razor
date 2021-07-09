@@ -3,7 +3,17 @@
 
 <div class="row" style="margin-top:10px;">
     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-        <span>If your account is unlocked now you can display not encrypted private key. If account is locked the key is encrypted with your password.</span>
+        <span>Keep your Private key on safe place! Do not forget to do backup!</span>
+    </div>
+</div>
+<div class="row" style="margin-top:10px;">
+    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+        <span>Before display the Private key, be sure no one look at you!</span>
+    </div>
+</div>
+<div class="row" style="margin-top:10px;">
+    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+        <small>If your account is unlocked now you can display not encrypted private key. If account is locked the key is encrypted with your password.</small>
     </div>
 </div>
 <div class="row" style="margin-top:10px;">
@@ -32,14 +42,42 @@
                 <div class="col d-flex justify-content-center align-items-center">
                     <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@accountKey" />
                     @try
-                    { 
-                    <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="accountKey" Close="closeQRModal" />
+                    {
+                        <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="accountKey" Close="closeQRModal" />
                     }
                     catch (Exception ex)
                     {
                         //todo
                     }
                     <VENFTApp_Blazor.Components.SaveTextAsFile MarginLeft="10" TextToSave="@keyToSave" FileName="@filename" />
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center text-wrap">
+                <div class="col">
+                    <span class="text-center text-wrap">Sub Accounts</span>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center text-wrap">
+                <div class="col">
+                    @foreach (var sacc in subaccountkeys)
+                    {
+                        <div class="row d-flex justify-content-center align-items-center text-wrap">
+                            <div class="col">
+                                <small class="text-center text-wrap">Addr: @sacc.Key</small>
+                            </div>
+                            <div class="col">
+                                <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@sacc.Key" />
+                            </div>
+                        </div>
+                        <div class="row d-flex justify-content-center align-items-center text-wrap">
+                            <div class="col">
+                                <small class="text-center text-wrap text-muted">Key: @sacc.Value</small>
+                            </div>
+                            <div class="col">
+                                <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@sacc.Value" />
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -55,6 +93,7 @@
     private string ekey = string.Empty;
     private string keyToSave = string.Empty;
     private string filename = string.Empty;
+    private Dictionary<string, string> subaccountkeys = new Dictionary<string, string>();
 
     [Parameter]
     public bool DogeAccountKey { get; set; } = false;
@@ -81,6 +120,8 @@
                 try
                 {
                     accountKey = await AppData.Account.AccountKey.GetEncryptedKey();
+                    var ack = await AppData.Account.GetSubAccountKeys();
+                    subaccountkeys = ack.Item2;
                     privateKeyDialogVisible = true;
                 }
                 catch (Exception ex)

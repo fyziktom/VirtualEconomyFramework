@@ -52,9 +52,9 @@
                         <div class="card-group">
                             @foreach (var nft in _nfts)
                             {
-                                if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantPost || nft.Type == NFTTypes.CoruzantPodcast)
+                                if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast)
                                 { 
-                                    <CoruzantNFT Address="@_address" InputNFT="@nft" NFTSent="@NFTSentHandler" OwnNFT="@MainAccount" />
+                                    <CoruzantNFT Address="@_address" InputNFT="@nft" NFTSent="@NFTSentHandler" OwnNFT="@MainAccount" DisplayCheckField="@allowNFTCheckField" NFTCheckedChanged="@NFTCheckChangedHandler" />
                                 }
                                 else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
                                 {
