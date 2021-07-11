@@ -149,8 +149,8 @@
         finally
         {
             sendingTransaction = false;
-            SendNFTDialogVisibleChanged.InvokeAsync(SendNFTDialogVisible);
-            NFTSent.InvokeAsync(status);
+            await SendNFTDialogVisibleChanged.InvokeAsync(SendNFTDialogVisible);
+            await NFTSent.InvokeAsync(status);
             StateHasChanged();
         }
     }

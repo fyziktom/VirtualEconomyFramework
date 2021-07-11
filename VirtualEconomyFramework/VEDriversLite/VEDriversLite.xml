@@ -885,6 +885,13 @@
             <param name="password">Passwotd to decrypt the loaded private key</param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String)">
+            <summary>
+            Load account from filename backup from VENFT App (default "backup.json") file placed in the root exe directory. Doesnt work in WABS
+            </summary>
+            <param name="password">Passwotd to decrypt the loaded private key</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String)">
             <summary>
             Load account from password, input encrypted private key and address.
@@ -1066,6 +1073,22 @@
             <param name="NFT">NFT on the SubAccount which should be minted</param>
             <returns>true and string with new TxId</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.SplitNeblioOnSubAccount(System.String,System.Collections.Generic.List{System.String},System.Int32,System.Double)">
+            <summary>
+            Split Neblio Coin on SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="NFT">NFT on the SubAccount which should be minted</param>
+            <returns>true and string with new TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.SplitNeblioTokensOnSubAccount(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.List{System.String},System.Int32,System.Int32)">
+            <summary>
+            Split Neblio Tokens on SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="NFT">NFT on the SubAccount which should be minted</param>
+            <returns>true and string with new TxId</returns>
+        </member>
         <!-- Badly formed XML comment ignored for member "M:VEDriversLite.NeblioAccount.GetNFTVerifyQRCodeFromSubAccount(System.String,System.String)" -->
         <member name="M:VEDriversLite.NeblioAccount.UseTicketNFTOnSubAccount(System.String,VEDriversLite.NFT.INFT)">
             <summary>
@@ -1205,7 +1228,7 @@
             <param name="amount">Ammount in Neblio</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.SplitNeblioCoin(System.String,System.Double,System.Int32)">
+        <member name="M:VEDriversLite.NeblioAccount.SplitNeblioCoin(System.Collections.Generic.List{System.String},System.Int32,System.Double)">
             <summary>
             Split neblio coin to smaller coins
             </summary>
@@ -1221,6 +1244,18 @@
             <param name="tokenId">Token Id hash</param>
             <param name="metadata">Custom metadata</param>
             <param name="receiver">Receiver Neblio address</param>
+            <param name="amount">Amount of the tokens</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.SplitTokens(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.List{System.String},System.Int32,System.Int32)">
+            <summary>
+            Send split token payment. It will create multiple outputs with lots of tokens.
+            It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
+            </summary>
+            <param name="tokenId">Token Id hash</param>
+            <param name="metadata">Custom metadata</param>
+            <param name="receivers">List Receiver Neblio address</param>
+            <param name="lots">Amount of the tokens</param>
             <param name="amount">Amount of the tokens</param>
             <returns></returns>
         </member>
@@ -3192,6 +3227,19 @@
             <param name="fee">Fee - 20000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNTP1TokensAsync(System.Collections.Generic.List{System.String},System.Int32,System.Int32,System.String,System.Collections.Generic.IDictionary{System.String,System.String},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+            <summary>
+            Function will Split NTP1 tokens to smaller lots
+            receiver list - If you input 0, split will be done to sender address, if you input 1 receiver split will be done to receiver (all inputs)
+            if you will provide multiple receivers, the number of lots and receivers must match.
+            </summary>
+            <param name="receiver">List of receivers. </param>
+            <param name="ekey">Input EncryptionKey of the account</param>
+            <param name="nutxos">Optional input neblio utxo</param>
+            <param name="tutxos">Optional input token utxo</param>
+            <param name="fee">Fee - 20000 minimum</param>
+            <returns>New Transaction Hash - TxId</returns>
+        </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNFTTokenAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
             <summary>
             Function will sent exact NFT. 
@@ -3224,7 +3272,7 @@
             <param name="fee">Fee - 10000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(VEDriversLite.SendTxData,System.Double,System.Int32,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(System.String,System.Collections.Generic.List{System.String},System.Int32,System.Double,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
             <summary>
             Function will send standard Neblio transaction
             </summary>
@@ -3641,6 +3689,15 @@
             <param name="amount">Ammount in Neblio</param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.SplitNeblioCoin(System.Collections.Generic.List{System.String},System.Int32,System.Double)">
+            <summary>
+            Split neblio coin to smaller coins
+            </summary>
+            <param name="receiver">Receiver Neblio Address</param>
+            <param name="splittedAmount">Ammount of new splitted coin in Neblio</param>
+            <param name="count">Count of new splited couns</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.Neblio.NeblioSubAccount.SendNeblioTokenPayment(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)">
             <summary>
             Send classic token payment. It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
@@ -3648,6 +3705,18 @@
             <param name="tokenId">Token Id hash</param>
             <param name="metadata">Custom metadata</param>
             <param name="receiver">Receiver Neblio address</param>
+            <param name="amount">Amount of the tokens</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.SplitTokens(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.List{System.String},System.Int32,System.Int32)">
+            <summary>
+            Send split token payment. It will create multiple outputs with lots of tokens.
+            It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
+            </summary>
+            <param name="tokenId">Token Id hash</param>
+            <param name="metadata">Custom metadata</param>
+            <param name="receivers">List Receiver Neblio address</param>
+            <param name="lots">Amount of the tokens</param>
             <param name="amount">Amount of the tokens</param>
             <returns></returns>
         </member>

@@ -231,8 +231,9 @@
             errorUpload = false;
             uploadingImage = true;
             attemptsToDisplay = 10;
+            var i = 0;
             //StateHasChanged();
-            foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync()) 
+            foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
             {
                 loadingImageStage = LoadingImageStages.Loading;
                 StateHasChanged();
@@ -254,6 +255,11 @@
                         Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
                     }
                 }
+                i++;
+            }
+            if (i == 0)
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "You did not select any image.");
             }
         }
         catch (Exception ex)
@@ -261,6 +267,10 @@
             loadingImageStage = LoadingImageStages.NotStarted;
             uploadingImage = false;
             errorUpload = true;
+        }
+        finally
+        {
+            uploadingImage = false;
             StateHasChanged();
         }
     }

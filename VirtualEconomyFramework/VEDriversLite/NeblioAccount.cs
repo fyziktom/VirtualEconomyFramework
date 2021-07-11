@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
+using VEDriversLite.Dto;
 using VEDriversLite.Events;
 using VEDriversLite.Messaging;
 using VEDriversLite.Neblio;
@@ -422,6 +423,51 @@ namespace VEDriversLite
                     await StartRefreshingData();
                 }
                 catch(Exception ex)
+                {
+                    throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
+                }
+            }
+            else
+            {
+                CreateNewAccount(password);
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Load account from filename backup from VENFT App (default "backup.json") file placed in the root exe directory. Doesnt work in WABS
+        /// </summary>
+        /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <returns></returns>
+        public async Task<bool> LoadAccountFromVENFTBackup(string password, string filename = "backup.json")
+        {
+            if (FileHelpers.IsFileExists(filename))
+            {
+                try
+                {
+                    var k = FileHelpers.ReadTextFromFile(filename);
+
+                    var bdto = JsonConvert.DeserializeObject<BackupDataDto>(k);
+                    AccountKey = new EncryptionKey(bdto.Key, fromDb: true);
+                    await AccountKey.LoadPassword(password);
+                    AccountKey.IsEncrypted = true;
+                    Address = bdto.Address;
+
+                    if (!string.IsNullOrEmpty(bdto.SubAccounts))
+                        await LoadSubAccounts(bdto.SubAccounts);
+                    if (!string.IsNullOrEmpty(bdto.Bookmarks))
+                        await LoadBookmarks(bdto.Bookmarks);
+                    if (!string.IsNullOrEmpty(bdto.BrowserTabs))
+                        await LoadBookmarks(bdto.BrowserTabs);
+
+                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+                    SignMessage("init");
+
+                    await StartRefreshingData();
+                }
+                catch (Exception ex)
                 {
                     throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
                 }
@@ -1128,6 +1174,54 @@ namespace VEDriversLite
         }
 
         /// <summary>
+        /// Split Neblio Coin on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="NFT">NFT on the SubAccount which should be minted</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> SplitNeblioOnSubAccount(string address, List<string> receivers, int lots, double amount)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.SplitNeblioCoin(receivers, lots, amount);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Split Neblio Tokens on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="NFT">NFT on the SubAccount which should be minted</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> SplitNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string,string> metadata, List<string> receivers, int lots, int amount)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.SplitTokens(tokenId, metadata, receivers, lots, amount);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Get QR verification code of NFT on SubAccount
         /// </summary>
         /// <param name="address">Neblio Address of SubAccount</param>
@@ -1551,7 +1645,6 @@ namespace VEDriversLite
             try
             {
                 var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, id, amount);
-                tutxos.OrderBy(t => t.Tokens.ToArray()[0].Amount).Reverse();
                 if (tutxos == null || tutxos.Count == 0)
                     return ($"You dont have Tokens on the address. You need at least 5 for minting. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
@@ -1628,40 +1721,38 @@ namespace VEDriversLite
         /// <param name="splittedAmount">Ammount of new splitted coin in Neblio</param>
         /// <param name="count">Count of new splited couns</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SplitNeblioCoin(string receiver, double splittedAmount, int count)
+        public async Task<(bool, string)> SplitNeblioCoin(List<string> receivers, int lots, double amount)
         {
-            if (splittedAmount < 0.0005)
+            if (amount < 0.0005)
                 return (false, "Minimal output splitted coin amount is 0.0005 NEBL.");
-            if (count < 2 || count > 25)
+            if (lots < 2 || lots > NeblioTransactionHelpers.MaximumNeblioOutpus)
                 return (false, "Minimal count of output splitted coin amount is 2. Maximum is 25.");
+
+            var totalAmount = amount * lots;
+            
+            if (totalAmount >= TotalSpendableBalance)
+                return (false, $"Cannot send transaction. Total Amount is bigger than spendable neblio on this address. Total Amount {totalAmount}.");
+
+            if ((receivers.Count > 1 && lots > 1) && (receivers.Count != lots))
+                return (false, $"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receivers.Count}, Lost {lots}.");
+
             if (IsLocked())
             {
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var total = 0.0;
-            for (int i = 0; i < count; i++)
-                total += splittedAmount;
-
-            var res = await CheckSpendableNeblio(total + 0.0002);
+            
+            var res = await CheckSpendableNeblio(totalAmount + 0.0002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
                 return (false, res.Item1);
             }
 
-            // fill input data for sending tx
-            var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Amount = total,
-                SenderAddress = Address,
-                ReceiverAddress = receiver
-            };
-
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(dto, splittedAmount, count, AccountKey, res.Item2, 20000);
+                var rtxid = await NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(Address, receivers, lots, amount, AccountKey, res.Item2, 20000);
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Split Sent");
@@ -1723,6 +1814,70 @@ namespace VEDriversLite
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Token Payment Sent");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
+        /// Send split token payment. It will create multiple outputs with lots of tokens.
+        /// It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
+        /// </summary>
+        /// <param name="tokenId">Token Id hash</param>
+        /// <param name="metadata">Custom metadata</param>
+        /// <param name="receivers">List Receiver Neblio address</param>
+        /// <param name="lots">Amount of the tokens</param>
+        /// <param name="amount">Amount of the tokens</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> SplitTokens(string tokenId, IDictionary<string, string> metadata, List<string> receivers, int lots, int amount)
+        {
+            if (lots > NeblioTransactionHelpers.MaximumTokensOutpus)
+                return (false, $"Cannot create more than {NeblioTransactionHelpers.MaximumTokensOutpus} lots.");
+
+            var totalAmount = amount * lots;
+            if (!TokensSupplies.TryGetValue(tokenId, out var tsdto))
+                return (false, $"Cannot send transaction. You do not have this kind of tokens. Token Id {tokenId}.");
+            
+            if (totalAmount >= tsdto.Amount)
+                return (false, $"Cannot send transaction. Total Amount is bigger than available source. Total Amount {totalAmount}, Token Id {tokenId}.");
+
+            if ((receivers.Count > 1 && lots > 1) && (receivers.Count != lots))
+                return (false, $"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receivers.Count}, Lost {lots}.");
+
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                return (false, res.Item1);
+            }
+            var tres = await CheckSpendableNeblioTokens(tokenId, totalAmount);
+            if (tres.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable token inputs");
+                return (false, tres.Item1);
+            }
+
+            metadata.Add("VENFT App", "https://about.ve-nft.com/");
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SplitNTP1TokensAsync(receivers, lots, amount, tokenId, metadata, AccountKey, res.Item2, tres.Item2);
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Split Token Payment Sent");
                     return (true, rtxid);
                 }
             }
@@ -1913,7 +2068,7 @@ namespace VEDriversLite
                                         else
                                         {
                                             done = true;
-                                            NewMintingProcessInfo.Invoke(this, $"New Lot Minted: {txres}, Wait for processing next {i + 1} of {lots} lots.");
+                                            NewMintingProcessInfo.Invoke(this, $"New Lot Minted: {txres}, Waiting for processing next {i + 1} of {lots} lots.");
                                         }
                                     }
                                     catch (Exception ex)
@@ -1932,7 +2087,7 @@ namespace VEDriversLite
                     }
                     if (rest > 0)
                     {
-                        Console.WriteLine($"Minting rest {rest} tickets:");
+                        Console.WriteLine($"Minting rest {rest} tickets.");
                         done = false;
                         await Task.Run(async () =>
                         {
@@ -1978,6 +2133,10 @@ namespace VEDriversLite
                 {
                     await InvokeSendPaymentSuccessEvent(txres, "Neblio NFT Sent");
                     return (true, txres);
+                }
+                else
+                {
+                    NewMintingProcessInfo.Invoke(this, $"All NFTs minted...");
                 }
             }
             catch (Exception ex)

@@ -5,23 +5,8 @@
 <div class="container-fluid overflow-auto">
     <div class="row">
         <div class="col">
-            <div class="row d-flex justify-content-end align-items-end" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <a href="https://explorer.nebl.io/address/@Address" style="font-size:11px;" target="_blank">@Address</a>
-                    <CopyIcon MarginLeft="15" TextToCopy="@Address" />
-                    <QRIcon MarginLeft="10" TextToCopy="@Address" />
-                </div>
-            </div>
-            <div class="row d-flex justify-content-end align-items-end" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Total Spendable Balance: @AppData.Account.GetSubAccounTotaltSpendableActualBalance(Address) NEBL</span>
-                </div>
-            </div>
-            <div class="row d-flex justify-content-end align-items-end" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Unconfirmed Balance: @AppData.Account.GetSubAccounUnconfirmedActualBalance(Address) NEBL</span>
-                </div>
-            </div>
+            
+
             <div class="row d-flex justify-content-end align-items-end" style="margin-top:10px;">
                 <div class="col d-flex justify-content-end align-items-end">
                     @if (NFTsSelectedForAction.Count == 0)

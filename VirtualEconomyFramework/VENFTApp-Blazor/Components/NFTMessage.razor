@@ -41,15 +41,20 @@
             <hr />
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Name: @NFT.Name</span>
+                    <h6>Name</h6>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Message:</span>
+                    <span>@NFT.Name</span>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h6>Message</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <span>@NFT.Description</span>
                 </div>
@@ -64,7 +69,7 @@
                     </div>
                 </div>
             }
-            <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" IsMessageHistory="true" />
+            <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" NftType="NFTTypes.Message" IsMessageHistory="true" />
 
             @if (!string.IsNullOrEmpty(NFT.Utxo))
             {

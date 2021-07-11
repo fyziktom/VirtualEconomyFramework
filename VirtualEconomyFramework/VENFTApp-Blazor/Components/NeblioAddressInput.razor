@@ -49,6 +49,8 @@
 
     private void receiverAddressChangedHandler(EventArgs e)
     {
+        if (string.IsNullOrEmpty(receiver))
+            return;
         if (receiver.Length < 8)
             return;
 

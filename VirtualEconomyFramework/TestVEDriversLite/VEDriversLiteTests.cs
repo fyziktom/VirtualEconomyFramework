@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite;
+using VEDriversLite.Dto;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.Security;
+using VEDriversLite.UnstoppableDomains;
 
 namespace TestVEDriversLite
 {
@@ -61,6 +63,38 @@ namespace TestVEDriversLite
 
             password = param;
             await account.LoadAccount(password);
+            StartRefreshingData(null);
+        }
+
+        [TestEntry]
+        public static void LoadAccountFromFile(string param)
+        {
+            LoadAccountFromFileAsync(param);
+        }
+        public static async Task LoadAccountFromFileAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input pass,filename");
+            var pass = split[0];
+            var file = split[1];
+            await account.LoadAccount(pass, file);
+            StartRefreshingData(null);
+        }
+
+        [TestEntry]
+        public static void LoadAccountFromVENFTBackup(string param)
+        {
+            LoadAccountFromVENFTBackupAsync(param);
+        }
+        public static async Task LoadAccountFromVENFTBackupAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input pass,filename");
+            var pass = split[0];
+            var file = split[1];
+            await account.LoadAccountFromVENFTBackup(pass, file);
             StartRefreshingData(null);
         }
 
@@ -165,7 +199,7 @@ namespace TestVEDriversLite
             var cnt = split[2];
             var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
             var count = Convert.ToInt32(cnt, CultureInfo.InvariantCulture);
-            var res = await account.SplitNeblioCoin(receiver, amount, count);
+            var res = await account.SplitNeblioCoin(new List<string>() { receiver }, count, amount);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }
@@ -207,7 +241,7 @@ namespace TestVEDriversLite
         public static async Task SendAirdropAsync(string param)
         {
             var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (split.Length < 1)
+            if (split.Length < 3)
                 throw new Exception("Please input receiveraddress,tokenId,tokenamount,amountofneblio");
             var receiver = split[0];
             var tokid = split[1];
@@ -412,6 +446,7 @@ namespace TestVEDriversLite
             nft.Link = "https://www.eltonjohn.com/";
             nft.AuthorLink = "https://www.eltonjohn.com/";
             nft.EventId = "531221bc8a59b5b36af8dcaf6dac317b204b89dfc3ed301d497032c3bcf5799c";
+            nft.EventAddress = "NWHozNL3B85PcTXhipmFoBMbfonyrS9WiR";
             nft.EventDate = DateTime.Parse("2022-07-15T04:20:00");
             nft.Location = "Philadelphia,The USA";
             nft.LocationCoordinates = "39.947041,-75.165295";
@@ -481,6 +516,158 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        [TestEntry]
+        public static void MintNFTTicketFromEvent(string param)
+        {
+            MintNFTTicketFromEventAsync(param);
+        }
+        public static async Task MintNFTTicketFromEventAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input eventId,eventAddress,tickettype,receiver,amount");
+            var eventId = split[0];
+            var eventAddress = split[1];
+            var ticketType = split[2];
+            var receiver = split[3];
+            var amount = Convert.ToInt32(split[4]);
+
+            Console.WriteLine("Minting NFT");
+
+            var enft = await NFTFactory.GetNFT("", eventId, 0, 0, true, true, NFTTypes.Event);
+            if (enft == null)
+            {
+                Console.WriteLine("Cannot find event NFT. Quit...");
+                return;
+            }
+            // create NFT object
+            var nft = new TicketNFT("");
+            await nft.FillFromEventNFT(enft);
+            nft.TicketClass = (ClassOfNFTTicket)Enum.Parse(typeof(ClassOfNFTTicket), ticketType);
+
+            // count of the tickets
+            int cps = amount;
+            Console.WriteLine("Start of minting tickets.");
+            int lots = 0;
+            int rest = 0;
+            rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
+            lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
+            (bool, string) res = (false, string.Empty);
+
+            if (lots > 1 || (lots == 1 && rest > 0))
+            {
+                var done = false;
+                for (int i = 0; i < lots; i++)
+                {
+                    Console.WriteLine("-----------------------------");
+                    Console.WriteLine($"Minting lot {i} from {lots}:");
+                    done = false;
+                    while (!done)
+                    {
+                        res = await account.MintMultiNFT(nft, NeblioTransactionHelpers.MaximumTokensOutpus, receiver);
+                        done = res.Item1;
+                        if (!done)
+                        {
+                            Console.WriteLine("Waiting for spendable utxo...");
+                            await Task.Delay(5000);
+                        }
+                    }
+                    Console.WriteLine("New TxId hash is: ");
+                    Console.WriteLine(res.Item2);
+                }
+                if (rest > 0)
+                {
+                    Console.WriteLine($"Minting rest {rest} tickets:");
+                    done = false;
+                    while (!done)
+                    {
+                        res = await account.MintMultiNFT(nft, rest, receiver);
+                        done = res.Item1;
+                        if (!done)
+                        {
+                            Console.WriteLine("Waiting for spendable utxo...");
+                            await Task.Delay(5000);
+                        }
+                    }
+                    Console.WriteLine("New TxId hash is: ");
+                    Console.WriteLine(res.Item2);
+                }
+            }
+            else
+            {
+                res = await account.MintMultiNFT(nft, cps, receiver);
+            }
+
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void MintNFTEvent(string param)
+        {
+            MintNFTEventAsync(param);
+        }
+        public static async Task MintNFTEventAsync(string param)
+        {
+            Console.WriteLine("Minting NFT Event");
+            // create NFT object
+            var nft = new EventNFT("");
+
+            nft.Author = "Elton John";
+            nft.Name = "FAREWELL - The Final Tour";
+            nft.Description = "The Final Tour of genius of the music.";
+            nft.Tags = "eltonjohn tour genius";
+            nft.Link = "https://www.eltonjohn.com/";
+            nft.AuthorLink = "https://www.eltonjohn.com/";
+            nft.EventId = "";
+            nft.EventDate = DateTime.Parse("2022-07-15T04:20:00");
+            nft.Location = "Philadelphia,The USA";
+            nft.LocationCoordinates = "39.947041,-75.165295";
+            nft.Price = 10;
+            nft.PriceInDoge = 10;
+            nft.EventClass = ClassOfNFTEvent.Concert;
+            nft.VideoLink = "https://youtu.be/ZHwVBirqD2s";
+            nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmW91e2zi7ndzgonneee7LNWRASHGPnqAS6FvxgCPThaPv";
+            nft.MusicInLink = true;
+
+            Console.WriteLine("Start of minting tickets.");
+
+            var res = await account.MintNFT(nft);
+            
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void ChangeNFTEvent(string param)
+        {
+            ChangeNFTEventAsync(param);
+        }
+        public static async Task ChangeNFTEventAsync(string param)
+        {
+            Console.WriteLine("Loading NFT Event");
+
+            var NFT = await NFTFactory.GetNFT("", param, 0, 0, true);
+
+            Console.WriteLine("Changing NFT Event");
+            // create NFT object
+            var nft = NFT as EventNFT;
+
+            nft.Name = "FAREWELL - The Final Tour";
+            nft.EventId = "";
+            nft.EventDate = DateTime.UtcNow;//DateTime.Parse("2022-07-15T04:20:00");
+            nft.LocationCoordinates = "39.947041,-75.165295";
+
+            Console.WriteLine("Start of minting tickets.");
+
+            var res = await account.MintNFT(nft);
+
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+
+
 
         [TestEntry]
         public static void SendNFT(string param)
@@ -505,6 +692,54 @@ namespace TestVEDriversLite
             Console.WriteLine("Receiver");
             var receiver = split[0];
             var res = await account.SendNFT(receiver, nft, false, 0);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void SplitNeblioTokens(string param)
+        {
+            SplitNeblioTokensAsync(param);
+        }
+        public static async Task SplitNeblioTokensAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+                throw new Exception("Please input filename");
+
+            var file = FileHelpers.ReadTextFromFile(param);
+            if (string.IsNullOrEmpty(file))
+                throw new Exception("File is empty.");
+
+            var dto = JsonConvert.DeserializeObject<SplitNeblioTokensDto>(file);
+            if (dto == null)
+                throw new Exception("Cannot deserialize file content.");
+
+            var meta = new Dictionary<string, string>();
+            meta.Add("Data", "Thank you.");
+            var res = await account.SplitTokens(dto.tokenId, meta, dto.receivers, dto.lots, dto.amount);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void SplitNeblio(string param)
+        {
+            SplitNeblioAsync(param);
+        }
+        public static async Task SplitNeblioAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+                throw new Exception("Please input filename");
+
+            var file = FileHelpers.ReadTextFromFile(param);
+            if (string.IsNullOrEmpty(file))
+                throw new Exception("File is empty.");
+
+            var dto = JsonConvert.DeserializeObject<SplitNeblioDto>(file);
+            if (dto == null)
+                throw new Exception("Cannot deserialize file content.");
+
+            var res = await account.SplitNeblioCoin(dto.receivers, dto.lots, dto.amount);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }
@@ -1336,6 +1571,42 @@ namespace TestVEDriversLite
             }
             #endregion
             ///////////////////////////////////////////////////////////////////
+        }
+
+        [TestEntry]
+        public static void GetNeblioAddressFromUDomains(string param)
+        {
+            GetNeblioAddressFromUDomainsAsync(param);
+        }
+        public static async Task GetNeblioAddressFromUDomainsAsync(string param)
+        {
+            Console.WriteLine("Requesting the Unstoppable domains...");
+
+            var add = await UnstoppableDomainsHelpers.GetNeblioAddress(param);
+
+            Console.WriteLine("Neblio Address is:");
+            Console.WriteLine(add);
+            Console.WriteLine("---------------------"); 
+        }
+
+        [TestEntry]
+        public static void ValidateNeblioAddress(string param)
+        {
+            ValidateNeblioAddressAsync(param);
+        }
+        public static async Task ValidateNeblioAddressAsync(string param)
+        {
+            Console.WriteLine("Validating the Neblio Address...");
+
+            var add = await NeblioTransactionHelpers.ValidateNeblioAddress(param);
+
+            Console.WriteLine($"Neblio Address {param} is:");
+            if (add.Item1)
+                Console.WriteLine("Valid.");
+            else
+                Console.WriteLine("Not Valid.");
+
+            Console.WriteLine("---------------------");
         }
     }
 }

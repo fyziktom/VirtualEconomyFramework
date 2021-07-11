@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NeblioAPI
 @using VEDriversLite.NFT
+@using VEDriversLite.Dto
 @using Newtonsoft.Json
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient _client
@@ -249,19 +250,12 @@
     {
         downloadBackupDataVisible = false;
     }
-    private class BackupDataDto
-    {
-        public string Bookmarks { get; set; } = string.Empty;
-        public string SubAccounts { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public string Key { get; set; } = string.Empty;
-        public string DogeAddress { get; set; } = string.Empty;
-        public string DogeKey { get; set; } = string.Empty;
-    }
+
     private async Task downloadBackupData(MouseEventArgs e)
     {
         var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
         var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
+        var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
         var address = await localStorage.GetItemAsync<string>("address");
         var key = await localStorage.GetItemAsync<string>("key");
         var dogeaddress = await localStorage.GetItemAsync<string>("dogeaddress");
@@ -270,6 +264,8 @@
         var dto = new BackupDataDto();
         if (!string.IsNullOrEmpty(bookmarks))
             dto.Bookmarks = bookmarks;
+        if (!string.IsNullOrEmpty(browserTabs))
+            dto.BrowserTabs = browserTabs;
         if (!string.IsNullOrEmpty(subAccounts))
             dto.SubAccounts = subAccounts;
         if (!string.IsNullOrEmpty(address))

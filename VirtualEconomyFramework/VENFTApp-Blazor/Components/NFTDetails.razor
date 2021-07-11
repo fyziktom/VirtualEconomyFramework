@@ -806,6 +806,8 @@
                 res = await AppData.Account.UseNFTTicket(NFT);
             else
                 res = await AppData.Account.UseTicketNFTOnSubAccount(Address, NFT);
+            if (res.Item1)
+                await NFTSent.InvokeAsync(res.Item2);
         }
         catch (Exception ex)
         {
@@ -850,12 +852,14 @@
     void NFTSentHandler(string e)
     {
         sendNFTDialogVisible = false;
+        NFTSent.InvokeAsync(e);
         StateHasChanged();
     }
 
     void NFTMinted(string e)
     {
         createNewPostVisible = false;
+        NFTSent.InvokeAsync(e);
         StateHasChanged();
     }
 }

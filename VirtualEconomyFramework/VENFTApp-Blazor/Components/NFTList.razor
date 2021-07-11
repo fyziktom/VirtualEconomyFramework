@@ -277,6 +277,7 @@
             else
             {
                 _nfts.Clear();
+                StateHasChanged();
                 await AppData.Account.ReLoadNFTs();
                 _nfts = AppData.Account.NFTs;
             }
@@ -310,6 +311,7 @@
     {
         nftDetailsVisible = false;
         ReloadNFTs();
+        StateHasChanged();
     }
 
     private async Task displayImagesChanged(object e)

@@ -162,7 +162,7 @@ namespace VEDriversLite.NFT
                 PriceInDogeActive = false;
             }
 
-            LoadEventNFT();
+            //LoadEventNFT();
         }
 
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)

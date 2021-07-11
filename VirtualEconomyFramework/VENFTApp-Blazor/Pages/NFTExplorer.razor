@@ -20,7 +20,7 @@
                     </div>
                 </div>
 
-                <VENFTApp_Blazor.Components.AccountBalances />
+                <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
 
                 <!--<VENFTApp_Blazor.Components.MessageList Address="AppData.Account.Address"/>-->
                 <div class="row w-100" style="margin-left:0px; padding:0px;">
@@ -32,7 +32,7 @@
                                     <span class="oi oi-home" aria-hidden="true"></span> Main Account NFTs
                                 </HeaderTemplate>
                                 <ChildContent>
-                                    <VENFTApp_Blazor.Components.NFTList MainAccount="true" 
+                                    <VENFTApp_Blazor.Components.NFTList MainAccount="true" NFTsChanged="nftChangedHandler"
                                                                         NFTs="@AppData.Account.NFTs" 
                                                                         Address="@AppData.Account.Address" />
                                 </ChildContent>
@@ -54,14 +54,19 @@
                                     <ChildContent>
                                         <div class="row" style="min-width:300px; padding:0px;">
                                             <div class="col w-100" style="min-width:300px; padding:0px;">
-                                                <VENFTApp_Blazor.Components.SubAccountNFTsList Address="@mt.Address"/>
+                                                <VENFTApp_Blazor.Components.AccountBalances Address="@mt.Address" SubAccount="true" />
+                                            </div>
+                                        </div>
+                                        <div class="row" style="min-width:300px; padding:0px;">
+                                            <div class="col w-100" style="min-width:300px; padding:0px;">
+                                                <VENFTApp_Blazor.Components.SubAccountNFTsList Address="@mt.Address" />
                                             </div>
                                         </div>
                                     </ChildContent>
                                 </Panel>
                             }
                             <Panel Header="Add New" Key="Add">
-                                <button @onclick="addMessageTab">Add New</button>
+                                <button @onclick="addMessageTab">Add New Sub Account</button>
                             </Panel>
                         </Collapse>
                     </div>
@@ -143,6 +148,8 @@
             }
             else
             {
+                if (AppData.Account != null)
+                    AppData.Account.Refreshed += RefreshedHandler;
                 LoadStateFromMemory();
             }
         }
@@ -152,6 +159,16 @@
         }
 
         return base.OnInitializedAsync();
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    void nftChangedHandler(List<INFT> e)
+    {
+        StateHasChanged();
     }
 
     private async Task Redirect()

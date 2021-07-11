@@ -650,7 +650,7 @@ namespace VEDriversLite
 
                 if (coppies > 1)
                 {
-                    for (int i = 0; i < coppies; i++)
+                    for (int i = 1; i < coppies; i++)
                     {
                         var dummykey = new Key();
                         var dummyadd = dummykey.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
@@ -676,10 +676,18 @@ namespace VEDriversLite
             //dto.From = new List<string>() { data.SenderAddress }; //null;
             dto.From = null;
 
-            if (tutxo.Txid == nutxo.Txid && tutxo.Index == nutxo.Index)
-                throw new Exception("Same input for token and neblio. Wrong input.");
+            //add all token utxos
+            foreach (var t in tutxos)
+            {
+                if (t.Txid != nutxo.Txid)
+                    dto.Sendutxo.Add(t.Txid + ":" + ((int)t.Index).ToString());
+                else
+                {
+                    if (t.Index != nutxo.Index)
+                        dto.Sendutxo.Add(t.Txid + ":" + ((int)t.Index).ToString());
+                }
+            }
 
-            dto.Sendutxo.Add(tutxo.Txid + ":" + ((int)tutxo.Index).ToString());
             dto.Sendutxo.Add(nutxo.Txid + ":" + ((int)nutxo.Index).ToString());
 
             // create raw tx
@@ -708,6 +716,219 @@ namespace VEDriversLite
                         output.ScriptPubKey = receiverAddres.ScriptPubKey;
                     else
                         output.ScriptPubKey = addressForTx.ScriptPubKey;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            try
+            {
+                return await SignAndBroadcast(transaction, key, addressForTx);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static string SplitNTP1Tokens(List<string> receiver, int lots, int amount, string tokenId,
+                                                              IDictionary<string, string> metadata,
+                                                              EncryptionKey ekey,
+                                                              ICollection<Utxos> nutxos,
+                                                              ICollection<Utxos> tutxos,
+                                                              double fee = 20000)
+        {
+            var res = SplitNTP1TokensAsync(receiver, lots, amount, tokenId, metadata, ekey, nutxos, tutxos, fee).GetAwaiter().GetResult();
+            return res;
+        }
+        /// <summary>
+        /// Function will Split NTP1 tokens to smaller lots
+        /// receiver list - If you input 0, split will be done to sender address, if you input 1 receiver split will be done to receiver (all inputs)
+        /// if you will provide multiple receivers, the number of lots and receivers must match.
+        /// </summary>
+        /// <param name="receiver">List of receivers. </param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="tutxos">Optional input token utxo</param>
+        /// <param name="fee">Fee - 20000 minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<string> SplitNTP1TokensAsync(List<string> receiver, int lots, int amount, string tokenId, 
+                                                              IDictionary<string,string> metadata, 
+                                                              EncryptionKey ekey, 
+                                                              ICollection<Utxos> nutxos, 
+                                                              ICollection<Utxos> tutxos, 
+                                                              double fee = 20000)
+        {
+            var res = "ERROR";
+
+            if (metadata == null || metadata.Count == 0)
+                throw new Exception("Cannot send without metadata!");
+            if ((receiver.Count > 1 && lots > 1) && (receiver.Count != lots))
+                throw new Exception($"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receiver.Count}, Lost {lots}.");
+
+            // load key and address
+            BitcoinSecret key = null;
+            BitcoinAddress addressForTx = null;
+            List<BitcoinAddress> receiversAddresses = new List<BitcoinAddress>();
+            try
+            {
+                var k = await GetAddressAndKey(ekey);
+                key = k.Item2;
+                addressForTx = k.Item1;
+                if (receiver.Count > 0)
+                {
+                    foreach (var r in receiver)
+                    {
+                        try
+                        {
+                            receiversAddresses.Add(BitcoinAddress.Create(r, Network));
+                        }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine("Cannot load one of the receivers");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            if ((receiversAddresses.Count > 1 && lots > 1) && (receiversAddresses.Count != lots))
+                throw new Exception($"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receiversAddresses.Count}, Lost {lots}. Some of input address may be wrong.");
+
+            if (tutxos == null || tutxos.Count == 0)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
+
+            var tutxo = tutxos.FirstOrDefault();
+            if (tutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            if (nutxos == null || nutxos.Count == 0)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
+
+            var nutxo = nutxos.FirstOrDefault();
+            if (nutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            metadata.Add("TransactionType", "Token Split");
+            // create and init send token request dto for Neblio API
+            var dto = new SendTokenRequest();
+            try
+            {
+                if (receiversAddresses.Count == 0)
+                {
+                    var dummykey = new Key();
+                    var dummyadd = dummykey.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+                    dto = GetSendTokenObject(amount, fee, dummyadd.ToString(), tokenId);
+                }
+                else
+                    dto = GetSendTokenObject(amount, fee, receiversAddresses[0].ToString(), tokenId);                    
+
+                if (metadata != null)
+                    foreach (var d in metadata)
+                    {
+                        var obj = new JObject();
+                        obj[d.Key] = d.Value;
+                        dto.Metadata.UserData.Meta.Add(obj);
+                    }
+
+                if (lots > 1)
+                {
+                    for (int i = 1; i < lots; i++)
+                    {
+                        if (receiversAddresses.Count == 0 || receiversAddresses.Count == 1)
+                        {
+                            var dummykey = new Key();
+                            var dummyadd = dummykey.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+                            dto.To.Add(
+                            new To()
+                            {
+                                Address = dummyadd.ToString(),
+                                Amount = amount,
+                                TokenId = tokenId
+                            });
+                        }
+                        else
+                        {
+                            dto.To.Add(
+                            new To()
+                            {
+                                Address = receiversAddresses[i].ToString(),
+                                Amount = amount,
+                                TokenId = tokenId
+                            });
+                            
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            if (dto.Metadata.UserData.Meta.Count == 0)
+                throw new Exception("Cannot mint NFT without any metadata");
+
+            //dto.Sendutxo = null;
+            //dto.From = new List<string>() { data.SenderAddress }; //null;
+            dto.From = null;
+
+            //add all token utxos
+            foreach (var t in tutxos)
+            {
+                if (t.Txid != nutxo.Txid)
+                    dto.Sendutxo.Add(t.Txid + ":" + ((int)t.Index).ToString());
+                else
+                {
+                    if (t.Index != nutxo.Index)
+                        dto.Sendutxo.Add(t.Txid + ":" + ((int)t.Index).ToString());
+                }
+            }
+            // add neblio utxo
+            dto.Sendutxo.Add(nutxo.Txid + ":" + ((int)nutxo.Index).ToString());
+            if (dto.Sendutxo.Count < 2)
+                throw new Exception("Not enouht inputs sources for the split transaction.");
+
+            // create raw tx
+            var hexToSign = string.Empty;
+            try
+            {
+                //var dtostr = JsonConvert.SerializeObject(dto);
+                hexToSign = await SendRawNTP1TxAsync(dto);
+                if (string.IsNullOrEmpty(hexToSign))
+                    throw new Exception("Cannot get correct raw token hex.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during sending raw token tx" + ex.Message);
+            }
+
+            // parse raw hex to NBitcoin transaction object
+            if (!Transaction.TryParse(hexToSign, Network, out var transaction))
+                throw new Exception("Cannot parse token tx raw hex.");
+
+            var j = 0;
+            foreach (var output in transaction.Outputs)
+            {
+                if (!output.ScriptPubKey.ToString().Contains("RETURN"))
+                {
+                    if (receiversAddresses.Count == 0 || receiversAddresses.Count == 1)
+                    {
+                        if (receiversAddresses.Count == 1)
+                            output.ScriptPubKey = receiversAddresses[0].ScriptPubKey;
+                        else
+                            output.ScriptPubKey = addressForTx.ScriptPubKey;
+                    }
+                    else
+                    {
+                        output.ScriptPubKey = receiversAddresses[j].ScriptPubKey;
+                    }
+                    j++;
                 }
                 else
                 {
@@ -893,11 +1114,21 @@ namespace VEDriversLite
                 throw ex;
             }
 
-            if (tutxo.Txid == nutxo.Txid && tutxo.Index == nutxo.Index)
-                throw new Exception("Same input for token and neblio. Wrong input.");
-
-            dto.Sendutxo.Add(tutxo.Txid + ":" + ((int)tutxo.Index).ToString());
+            //add all token utxos
+            foreach (var t in tutxos)
+            {
+                if (t.Txid != nutxo.Txid)
+                    dto.Sendutxo.Add(t.Txid + ":" + ((int)t.Index).ToString());
+                else
+                {
+                    if (t.Index != nutxo.Index)
+                        dto.Sendutxo.Add(t.Txid + ":" + ((int)t.Index).ToString());
+                }
+            }
+            // add neblio utxo
             dto.Sendutxo.Add(nutxo.Txid + ":" + ((int)nutxo.Index).ToString());
+            if (dto.Sendutxo.Count < 2)
+                throw new Exception("Not enouht inputs sources for the split transaction.");
 
             // create raw tx
             var hexToSign = string.Empty;
@@ -1023,9 +1254,9 @@ namespace VEDriversLite
             }
         }
 
-        public static string SplitNeblioCoinTransactionAPI(SendTxData data, double splittedCoin, int count, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
+        public static string SplitNeblioCoinTransactionAPI(string sender, List<string> receivers, int lots, double amount, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
         {
-            var res = SplitNeblioCoinTransactionAPIAsync(data, splittedCoin, count, ekey, nutxos, fee).GetAwaiter().GetResult();
+            var res = SplitNeblioCoinTransactionAPIAsync(sender, receivers, lots, amount, ekey, nutxos, fee).GetAwaiter().GetResult();
             return res;
         }
         /// <summary>
@@ -1036,43 +1267,50 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 10000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SplitNeblioCoinTransactionAPIAsync(SendTxData data, double splittedCoin, int count, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
+        public static async Task<string> SplitNeblioCoinTransactionAPIAsync(string sender, List<string> receivers, int lots, double amount, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
         {
             var res = "ERROR";
-
-            if (data == null)
-                throw new Exception("Data cannot be null!");
 
             if (ekey == null)
                 throw new Exception("Account cannot be null!");
 
-            if (count < 2 || count > 25)
+            if ((receivers.Count > 1 && lots > 1) && (receivers.Count != lots))
+                throw new Exception($"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receivers.Count}, Lost {lots}.");
+
+            if (lots < 2 || lots > 25)
                 throw new Exception("Count must be bigger than 2 and lower than 25.");
 
             // create receiver address
-            BitcoinAddress recaddr = null;
-            try
-            {
-                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot send transaction. cannot create receiver address!");
-            }
-
-            // load key and address
             BitcoinSecret key = null;
             BitcoinAddress addressForTx = null;
+            List<BitcoinAddress> receiversAddresses = new List<BitcoinAddress>();
             try
             {
-                var k = await GetAddressAndKey(ekey, data.Password);
+                var k = await GetAddressAndKey(ekey);
                 key = k.Item2;
                 addressForTx = k.Item1;
+                if (receivers.Count > 0)
+                {
+                    foreach (var r in receivers)
+                    {
+                        try
+                        {
+                            receiversAddresses.Add(BitcoinAddress.Create(r, Network));
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Cannot load one of the receivers");
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Cannot send transaction. cannot create sender address!");
             }
+
+            if ((receiversAddresses.Count > 1 && lots > 1) && (receiversAddresses.Count != lots))
+                throw new Exception($"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receiversAddresses.Count}, Lost {lots}. Some of input address may be wrong.");
 
             // create template for new tx from last one
             var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
@@ -1102,19 +1340,32 @@ namespace VEDriversLite
                     allNeblCoins += (double)u.Value;
 
                 var totalAmount = 0.0;
-                for (int i = 0; i < count; i++)
-                    totalAmount += splittedCoin;
+                for (int i = 0; i < lots; i++)
+                    totalAmount += amount;
 
                 var amountinSat = Convert.ToUInt64(totalAmount * FromSatToMainRatio);
                 if (amountinSat > allNeblCoins)
                     throw new Exception("Not enought neblio for splitting.");
 
                 var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
-                var splitinSat = Convert.ToUInt64(splittedCoin * FromSatToMainRatio);
+                var splitinSat = Convert.ToUInt64(amount * FromSatToMainRatio);
                 // create outputs
 
-                for(int i = 0; i < count; i++)
-                    transaction.Outputs.Add(new Money(splitinSat), recaddr.ScriptPubKey); // add all new splitted coins
+                if (receivers.Count == 0)
+                {
+                    for (int i = 0; i < lots; i++)
+                        transaction.Outputs.Add(new Money(splitinSat), addressForTx.ScriptPubKey); // add all new splitted coins
+                }
+                else if (receivers.Count == 1)
+                {
+                    for (int i = 0; i < lots; i++)
+                        transaction.Outputs.Add(new Money(splitinSat), receiversAddresses[0].ScriptPubKey); // add all new splitted coins
+                }
+                else if (receivers.Count > 1)
+                {
+                    for (int i = 0; i < lots; i++)
+                        transaction.Outputs.Add(new Money(splitinSat), receiversAddresses[i].ScriptPubKey); // add all new splitted coins
+                }
 
                 transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
             }
@@ -2242,12 +2493,26 @@ namespace VEDriversLite
                             founded += (double)tok.Amount;
                             resp.Add(utx);
                             if (founded > numberToMint)
-                                return resp;
+                                break;
                         }
                     }
                 }
-        
-            return resp;
+
+            resp = resp.OrderBy(t => t.Tokens.ToArray()[0].Amount).Reverse().ToList();
+            founded = 0.0;
+            var res = new List<Utxos>();
+            foreach(var r in resp)
+            {
+                founded += (double)r.Tokens.ToList()[0].Amount;
+                res.Add(r);
+                if (founded > numberToMint)
+                    break;
+            }
+
+            if (res.Count > 10)// neblio API cannot handle more than 10 inputs
+                return new List<Utxos>();
+
+            return res;
         }
 
         /// <summary>

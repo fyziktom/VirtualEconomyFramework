@@ -15,7 +15,7 @@
                     </div>
                     <div class="row" style="margin-top:5px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add Name of the message" MaxLength="50" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            <Input Placeholder="Add Name of the message" MaxLength="50" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
                         </div>
                     </div>
 
@@ -26,7 +26,7 @@
                     </div>
                     <div class="row" style="margin-top:5px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <TextArea Placeholder="Type your message" MaxLength="160" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px; min-height:100px;" />
+                            <TextArea Placeholder="Type your message" MaxLength="160" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:100px;" />
                         </div>
                     </div>
 
@@ -107,6 +107,8 @@
     public EventCallback<string> MessageSent { get; set; }
 
     private string receiver = string.Empty;
+    private string name = string.Empty;
+    private string description = string.Empty;
     [Parameter]
     public string Receiver
     {
@@ -130,6 +132,10 @@
             {
                 newNFT.Fill(value);
                 newNFT.Description = string.Empty;
+                description = string.Empty;
+                newNFT.Name = value.Name;
+                name = value.Name;
+
                 StateHasChanged();
             }
         }
@@ -187,6 +193,9 @@
     {
         try
         {
+            newNFT.Name = name;
+            newNFT.Description = description;
+
             if (string.IsNullOrEmpty(newNFT.Name) || string.IsNullOrEmpty(newNFT.Description) || string.IsNullOrEmpty(receiver))
             {
                 emptyInfoVisible = true;

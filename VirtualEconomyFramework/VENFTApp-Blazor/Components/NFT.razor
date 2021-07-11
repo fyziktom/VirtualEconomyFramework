@@ -410,6 +410,7 @@
     void NFTSentHandler(string nfttx)
     {
         nftDetailsVisible = false;
+        StateHasChanged();
         NFTSent.InvokeAsync(nfttx);
     }
 

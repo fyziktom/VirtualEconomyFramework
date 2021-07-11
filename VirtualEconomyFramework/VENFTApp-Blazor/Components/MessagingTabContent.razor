@@ -32,8 +32,8 @@
             @if (!messageTab.PublicKeyFound)
             {
             <div class="row" style="margin-top:20px; margin-left:10px;">
-                <div class="col d-flex justify-content-end align-items-end">
-                    <small class="text-danger text-center" style="max-width:250px;">Partner Public Key not found. Partner probably has not done any trasaction yet. It will not be possible to send him encrypted message until he will send at least one transaction.</small>
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small class="text-danger text-center" style="max-width:250px;">Partner Public Key not found. Partner probably has not done any trasaction yet. It will not be possible to send him encrypted message until he will send at least one transaction. You can send him not encrypted message.</small>
                 </div>
             </div>
             }
@@ -65,8 +65,8 @@
                             {
                                 if (nft.Type == NFTTypes.Message)
                                 {
-                                    <div class="card w-100" style="margin-left:10px; margin-top:10px; width:250px; min-width:250px; max-width:250px; max-height:200px; height:200px;">
-                                        <div class="card-body w-100 d-flex justify-content-center align-items-end">
+                                    <div class="card w-100" style="margin-left:10px; margin-top:10px; width:250px; min-width:250px; max-width:250px; min-height:220px; max-height:220px; height:220px;">
+                                        <div class="card-body w-100 d-flex justify-content-center align-items-center">
 
                                             <div class="row w-100" style="margin: 0px;">
                                                 <div class="col w-100" style="padding: 0px;">
@@ -102,9 +102,9 @@
                                                     <hr />
                                                     <div class="row" style="margin: 0px;">
                                                         <div class="col" style="padding: 0px;">
-                                                            @if (nft.Name.Length > 20)
+                                                            @if (nft.Name.Length > 35)
                                                             {
-                                                                <small>@nft.Name.Substring(0, 19) ...</small>
+                                                                <small>@nft.Name.Substring(0, 34) ...</small>
                                                             }
                                                             else
                                                             {
@@ -112,11 +112,11 @@
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div class="row" style="margin: 0px;">
+                                                    <div class="row" style="margin: 0px; margin-top:5px;">
                                                         <div class="col text-center" style="padding: 0px;">
-                                                            @if (nft.Description.Length > 20)
+                                                            @if (nft.Description.Length > 60)
                                                             {
-                                                                <small>@nft.Description.Substring(0, 19) ...</small>
+                                                                <small>@nft.Description.Substring(0, 59) ...</small>
                                                             }
                                                             else
                                                             {
