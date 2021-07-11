@@ -19,7 +19,7 @@
         </div>
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <VENFTApp_Blazor.Components.AccountBalances />
+                <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
             </div>
         </div>
 
@@ -193,6 +193,7 @@
                     </Dropdown>
                 </div>
             </div>
+            
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <button @onclick="openPublicAddresses" class="btn btn-secondary" type="button">Or Browse Public Addresses</button>
@@ -205,7 +206,7 @@
             </div>
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <VENFTApp_Blazor.Components.NeblioAddressInput Receiver="@newTabAddress" AddressCheckedInputed="receiverAddressChangedHandler"/>
                     <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
                 </div>
             </div>
@@ -268,12 +269,12 @@
 </Modal>
 
 @code {
-        bool sendMessageVisible = false;
-        bool openTabBrowser = false;
-        bool loadingBrowser = false;
-        bool browsePublicAddresses = false;
-        bool copyTextButtonCoppied = false;
-        int holdersPage = 0;
+    bool sendMessageVisible = false;
+    bool openTabBrowser = false;
+    bool loadingBrowser = false;
+    bool browsePublicAddresses = false;
+    bool copyTextButtonCoppied = false;
+    int holdersPage = 0;
 
     private string selectedNewTabFromBookmarkName = "Select From Bookmark";
 
@@ -310,6 +311,17 @@
     private async Task browseTabs(MouseEventArgs e)
     {
         openTabBrowser = true;
+        StateHasChanged();
+    }
+
+    private void receiverAddressChangedHandler(string address)
+    {
+        if (address.Length < 8)
+        {
+            newTabAddress = string.Empty;
+            return;
+        }
+        newTabAddress = address;
         StateHasChanged();
     }
 

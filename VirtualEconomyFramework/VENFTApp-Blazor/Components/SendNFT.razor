@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @inject AppData AppData
+@inject IJSRuntime JSRuntime
 
 <Modal Title="Send NFT"
        Visible="@SendNFTDialogVisible"
@@ -10,13 +11,13 @@
         <div class="col">
             <Spin Tip="Sending..." Spinning="@sendingTransaction">
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         Fill Receiver Address:
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add Receiver Address" @bind-Value=@receiverAddress Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
                     </div>
                 </div>
             </Spin>
@@ -74,6 +75,17 @@
         await sendNFT(await NFTFactory.CloneNFT(NFT), false, 0.0002);
     }
 
+    private void receiverAddressChangedHandler(string address)
+    {
+        if (address.Length < 8)
+        {
+            receiverAddress = string.Empty;
+            return;
+        }
+        receiverAddress = address;
+        StateHasChanged();
+    }
+
     private void HandleCancel(MouseEventArgs e)
     {
         confirmVisible = false;
@@ -81,6 +93,11 @@
 
     private async Task sendNFTDialogOK(MouseEventArgs e)
     {
+        if (string.IsNullOrEmpty(receiverAddress))
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "Please Fill Correct Receiver.");
+            return;
+        }
         confirmVisible = true;
     }
 

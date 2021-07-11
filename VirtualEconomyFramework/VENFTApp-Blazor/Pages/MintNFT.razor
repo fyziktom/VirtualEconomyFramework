@@ -23,7 +23,6 @@
     }
     -->
 
-  
     <div class="row">
         <div class="col">
             <div class="row">
@@ -37,14 +36,60 @@
                 </div>
             </div>
 
-            <VENFTApp_Blazor.Components.AccountBalances />
-
-            <!--
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
-                    <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <Dropdown>
+                        <Overlay>
+                            <Menu>
+                                <MenuItem>
+                                    <a target="_blank" rel="noopener noreferrer" @onclick="selectMainAccount">
+                                        Main Account
+                                    </a>
+                                </MenuItem>
+                                @foreach (var acc in AppData.Account.SubAccounts.Values)
+                                {
+                                    <MenuItem>
+                                        <a rel="noopener noreferrer" @onclick="() => selectSubAddress(acc.Address)">
+                                            @if (!string.IsNullOrEmpty(acc.Name))
+                                            {
+                                                @acc.Name
+                                            }
+                                            else
+                                            {
+                                                @acc.Address
+                                            }
+                                        </a>
+                                    </MenuItem>
+                                }
+                            </Menu>
+                        </Overlay>
+                        <ChildContent>
+                            <a class="ant-dropdown-link" @onclick:preventDefault>
+                                Select Account <Icon Type="down" />
+                            </a>
+                        </ChildContent>
+                    </Dropdown>
                 </div>
-            </div>-->
+            </div>
+            @if (!string.IsNullOrEmpty(selectedAccountAddress))
+            {
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@selectedAccountAddress</span>
+                    </div>
+                </div>
+            }
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <VENFTApp_Blazor.Components.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
+                </div>
+            </div>
+            <!--
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center" style="margin-top:10px;">
+            <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
+        </div>
+    </div>-->
             <div class="row">
                 <div class="col" style="margin-top:10px;">
                     <div class="row" style="margin-top:20px;">
@@ -54,21 +99,21 @@
                     </div>
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            @if (AppData.Account.SourceTokensBalance > 1 || AppData.Account.CoruzantSourceTokensBalance > 1)
+                            @if (SelectedAccountTotalSourceVENFT > 1 || SelectedAccountTotalSourceCORZT > 1)
                             {
                                 <RadioGroup @bind-Value="@tokenId" @onselectionchange="nftSourceTokensChangedHandler">
-                                    @foreach (var t in AppData.Account.TokensSupplies)
-                                    {
-                                        if (t.Value.Amount > 1 && NFTHelpers.AllowedTokens.Contains(t.Value.TokenId))
+                                    @foreach (var t in SelectedAccountTokenSupply)
                                         {
-                                        <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
+                                            if (t.Value.Amount > 1 && NFTHelpers.AllowedTokens.Contains(t.Value.TokenId))
+                                            {
+                                            <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
+                                            }
                                         }
-                                    }
                                 </RadioGroup>
                             }
-                            else if (AppData.Account.SourceTokensBalance <= 1 || AppData.Account.CoruzantSourceTokensBalance <= 1)
+                            else if (SelectedAccountTotalSourceVENFT <= 1 || SelectedAccountTotalSourceCORZT <= 1)
                             {
-                                <h4 class="text-danger text-center">You do not have any source tokens on the Address!</h4>
+                                <span class="text-danger text-center">You do not have any source tokens on the Address!</span>
                             }
                         </div>
                     </div>
@@ -78,10 +123,12 @@
                                 <Radio Value="NFTTypes.Image">Image - Original</Radio>
                                 <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
                                 <Radio Value="NFTTypes.Music">Music - Original</Radio>
-                                @if (AppData.Account.CoruzantSourceTokensBalance > 1 && tokenId == CoruzantNFTHelpers.CoruzantTokenId)
+                                <Radio Value="NFTTypes.Event">Event</Radio>
+                                <Radio Value="NFTTypes.Ticket">Ticket</Radio>
+                                @if (SelectedAccountTotalSourceCORZT > 1 && tokenId == CoruzantNFTHelpers.CoruzantTokenId)
                                 {
-                                    <Radio Value="NFTTypes.CoruzantProfile">CoruzantProfile - Original</Radio>
-                                    <Radio Value="NFTTypes.CoruzantArticle">CoruzantArticle - Reusable</Radio>
+                                    <Radio Value="NFTTypes.CoruzantProfile">CoruzantProfile</Radio>
+                                    <Radio Value="NFTTypes.CoruzantArticle">CoruzantArticle</Radio>
                                     <!--<Radio Value="NFTTypes.CoruzantPodcast">CoruzantPodcast - Reusable</Radio>-->
                                 }
                             </RadioGroup>
@@ -90,14 +137,21 @@
 
                     <div class="row" style="margin-top:10px; margin-bottom:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <VENFTApp_Blazor.Components.MintNFTForm TokenId="@tokenId" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                            @if (NFTType != NFTTypes.Ticket && NFTType != NFTTypes.Event)
+                            {
+                                <VENFTApp_Blazor.Components.MintNFTForm TokenId="@tokenId" Address="@selectedAccountAddress" SubAccount="subAccount" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                            }
+                            else
+                            {
+                                <VENFTApp_Blazor.Components.MintEventAndTickets SubAccount="subAccount" Address="@selectedAccountAddress" TokenId="@tokenId" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                            }
                         </div>
                     </div>
                 </div>
                 <div class="col" style="margin-top:10px; margin-right:20px; max-width:250px;">
                     <div class="row" style="margin-top:10px; margin-bottom:10px;max-width:250px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <span>Last 10 Minted Items</span>
+                            <span>The 10 Newest NFTs</span>
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px; margin-bottom:10px; max-width:250px;">
@@ -105,16 +159,16 @@
                             <div class="card-group">
                                 @for (var i = 0; i < 10; i++)
                                 {
-                                    if (i < AppData.Account.NFTs.Count)
+                                    if (i < NFTs.Count)
                                     {
-                                        var nft = AppData.Account.NFTs[i];
+                                        var nft = NFTs[i];
                                         if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast)
                                         {
-                                            <VENFTApp_Blazor.Components.CoruzantNFT Address="@AppData.Account.Address" InputNFT="@nft" OwnNFT="true" />
+                                            <VENFTApp_Blazor.Components.CoruzantNFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
                                         }
                                         else if (nft.Type != NFTTypes.Message && nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings")
                                         {
-                                            <VENFTApp_Blazor.Components.NFT Address="@AppData.Account.Address" InputNFT="@nft" OwnNFT="true" />
+                                            <VENFTApp_Blazor.Components.NFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
                                         }
                                     }
                                 }
@@ -173,9 +227,76 @@
     bool orderingTokensDone = false;
 
     string tokenId = NFTHelpers.TokenId;
+    private TokenSupplyDto selectedToken = new TokenSupplyDto();
+
 
     private CancellationTokenSource cts = new CancellationTokenSource();
     GetTokenMetadataResponse sourceTokensInfo = new GetTokenMetadataResponse();
+
+    string selectedAccountAddress = string.Empty;
+    bool mainAccountSelected = false;
+    bool subAccount = false;
+
+    public double SelectedAccountTotalSpendable
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.TotalSpendableBalance;
+            return AppData.Account.TotalSpendableBalance;
+        }
+    }
+    public double SelectedAccountTotalUnconfirmed
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.TotalUnconfirmedBalance;
+            return AppData.Account.TotalUnconfirmedBalance;
+        }
+    }
+    public double SelectedAccountTotalSourceVENFT
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.SourceTokensBalance;
+            return AppData.Account.SourceTokensBalance;
+        }
+    }
+    public double SelectedAccountTotalSourceCORZT
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.CoruzantSourceTokensBalance;
+            return AppData.Account.CoruzantSourceTokensBalance;
+        }
+    }
+    public Dictionary<string, TokenSupplyDto> SelectedAccountTokenSupply
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.TokensSupplies;
+            return AppData.Account.TokensSupplies;
+        }
+    }
+    public List<INFT> NFTs
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.NFTs;
+            return AppData.Account.NFTs;
+        }
+    }
 
     protected override Task OnInitializedAsync()
     {
@@ -189,6 +310,8 @@
             {
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
+                selectedAccountAddress = AppData.Account.Address;
+                mainAccountSelected = true;
             }
         }
         catch (Exception ex)
@@ -204,6 +327,25 @@
         AppData.Account = new NeblioAccount();
         await Task.Delay(500);
         NavManager.NavigateTo("/");
+    }
+
+    private async Task selectSubAddress(string address)
+    {
+        selectedAccountAddress = address;
+        selectedToken = new TokenSupplyDto();
+        tokenId = NFTHelpers.TokenId;
+        mainAccountSelected = false;
+        subAccount = true;
+        StateHasChanged();
+    }
+    private async Task selectMainAccount(MouseEventArgs e)
+    {
+        selectedAccountAddress = AppData.Account.Address;
+        selectedToken = new TokenSupplyDto();
+        tokenId = NFTHelpers.TokenId;
+        mainAccountSelected = true;
+        subAccount = true;
+        StateHasChanged();
     }
 
     void RefreshedHandler(object sender, EventArgs e)

@@ -5,16 +5,16 @@
     <div class="col">
         <div class="row w-100">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <small>Number Of Transactions: @AppData.Account.AddressInfo.Transactions.Count</small>
+                <small>Number Of Transactions: @Transactions.Count</small>
             </div>
         </div>
         <div class="row w-100" style="margin-top:30px; min-width:300px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                @if (AppData.Account.AddressInfo.Transactions == null)
+                @if (Transactions == null)
                 {
                     <p><em><Spin Tip="Loading..." /></em></p>
                 }
-                else if (AppData.Account.AddressInfo.Transactions.Count == 0)
+                else if (Transactions.Count == 0)
                 {
                     <span>0 Transactions or cannot load now.</span>
                 }
@@ -28,20 +28,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @for (var i = 0; i < AppData.Account.AddressInfo.Transactions.Count; i++)
+                            @for (var i = 0; i < Transactions.Count; i++)
                             {
                                 @if (i < maxLoadedTxs)
                                 {
-                                    var tx = AppData.Account.AddressInfo.Transactions.ToArray()[i];
+                                    var tx = Transactions.ToArray()[i];
                                     <tr>
                                         <td>@NeblioTransactionHelpers.ShortenTxId(tx)</td>
                                         <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx)"><i class="oi oi-info"></i></button></td>
                                     </tr>
                                 }
                             }
-                            @if (maxLoadedTxs < AppData.Account.AddressInfo.Transactions.Count)
+                            @if (maxLoadedTxs < Transactions.Count)
                             {
-                                var diff = AppData.Account.AddressInfo.Transactions.Count - maxLoadedTxs;
+                                var diff = Transactions.Count - maxLoadedTxs;
                                 @if (diff < 10)
                                 {
                                     <tr><td colspan="2"> <button class="btn btn-secondary" @onclick="loadNextTx">Show Next @diff transactions</button></td></tr>
@@ -67,6 +67,9 @@
 </Modal>
 
 @code {
+
+    private ICollection<string> Transactions = new List<string>();
+
     protected override Task OnInitializedAsync()
     {
         Load();
@@ -77,10 +80,29 @@
     {
         if (AppData.Account != null)
             AppData.Account.Refreshed += RefreshedHandler;
+
+        if (!SubAccount)
+        {
+            Transactions = AppData.Account.AddressInfo.Transactions;
+        }
+        else
+        {
+            if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                Transactions = acc.AddressInfo.Transactions;
+        }
     }
 
     void RefreshedHandler(object sender, EventArgs e)
     {
+        if (!SubAccount)
+        {
+            Transactions = AppData.Account.AddressInfo.Transactions;
+        }
+        else
+        {
+            if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                Transactions = acc.AddressInfo.Transactions;
+        }
         StateHasChanged();
     }
 
@@ -93,6 +115,12 @@
     }
     [Parameter]
     public EventCallback<int> MaxLoadedTxChanged { get; set; }
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
 
     string txDetailsTxId = string.Empty;
     bool txDetailsVisible = false;

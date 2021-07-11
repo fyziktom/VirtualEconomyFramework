@@ -39,6 +39,9 @@ namespace VEDriversLite.Messaging
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         [JsonIgnore]
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
+        [JsonIgnore]
+        public PubKey PublicKey { get; set; }
+        public bool PublicKeyFound { get; set; } = false;
 
         public async Task Reload(List<INFT> innfts)
         {
@@ -57,6 +60,16 @@ namespace VEDriversLite.Messaging
 
         public async Task RefreshMessages(List<INFT> innfts)
         {
+            var bobPubKey = await NFTHelpers.GetPubKeyFromLastFoundTx(Address);
+            if (bobPubKey.Item1)
+            {
+                PublicKey = bobPubKey.Item2;
+                PublicKeyFound = true;
+            }
+            else
+            {
+                PublicKeyFound = false;
+            }
             NFTMessages.Clear();
             NFTMessages = await NFTHelpers.LoadAddressNFTMessages(Address, AccountAddress, NFTs);
 

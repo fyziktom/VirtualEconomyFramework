@@ -340,6 +340,39 @@ namespace VEDriversLite.NFT
         }
 
         /// <summary>
+        /// this function will search the utxos, get all nfts utxos (if utxos list is not loaded) and return last profile nft which is founded on the address.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="utxos">leave null if you need to obtain new utxos nft list</param>
+        /// <returns></returns>
+        public static async Task<INFT> FindEventOnTheAddress(string address, string nftOriginTxId, ICollection<Utxos> utxos = null)
+        {
+            if (utxos == null)
+                utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
+            INFT eventNFT = null;
+
+            foreach (var u in utxos)
+                if (u.Tokens != null && u.Tokens.Count > 0)
+                    foreach (var t in u.Tokens)
+                        if (t.Amount == 1)
+                        {
+                            var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, true, true, NFTTypes.Event);
+                            if (nft != null)
+                                if (nft.NFTOriginTxId == nftOriginTxId)
+                                {
+                                    eventNFT = nft;
+                                    return eventNFT;
+                                }
+                        }
+
+            if (eventNFT == null)
+            {
+                var nft = await NFTFactory.GetNFT("", nftOriginTxId, 0, 0, true, true, NFTTypes.Event);
+                eventNFT = nft;
+            }
+            return eventNFT;
+        }
+        /// <summary>
         /// This function will load NFTs and during it find the profile NFT
         /// </summary>
         /// <param name="address"></param>
@@ -581,7 +614,7 @@ namespace VEDriversLite.NFT
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<string> MintNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string receiver = "")
         {
             var metadata = await NFT.GetMetadata();
             // fill input data for sending tx
@@ -589,7 +622,8 @@ namespace VEDriversLite.NFT
             {
                 Id = NFT.TokenId, // id of token
                 Metadata = metadata,
-                SenderAddress = address
+                SenderAddress = address,
+                ReceiverAddress = receiver
             };
 
             var fee = CalculateFee(metadata);
@@ -676,7 +710,7 @@ namespace VEDriversLite.NFT
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintMultiNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<string> MintMultiNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string receiver = "")
         {
             var metadata = await NFT.GetMetadata();
             // fill input data for sending tx
@@ -684,9 +718,11 @@ namespace VEDriversLite.NFT
             {
                 Id = NFT.TokenId, // id of token
                 Metadata = metadata,
-                SenderAddress = address
+                SenderAddress = address,
+                ReceiverAddress = receiver
             };
             var fee = CalculateFee(metadata);
+
             try
             {
                 // send tx

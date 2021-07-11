@@ -18,6 +18,7 @@ namespace VEDriversLite.NFT
         Payment,
         Message,
         Ticket,
+        Event,
         CoruzantArticle = 101,
         CoruzantPremiumArticle = 102,
         CoruzantPodcast = 103,

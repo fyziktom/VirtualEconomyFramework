@@ -28,7 +28,7 @@
                 var pnft = NFT as CoruzantProfileNFT;
                 @if (!string.IsNullOrEmpty(NFT.ImageLink))
                 {
-                    <div class="row">
+                    <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                         </div>
@@ -37,7 +37,7 @@
                 else
                 {
                     <Spin Tip="Loading..." Spinning="true">
-                        <div class="row">
+                        <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
                                 <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto; min-width:50px; max-width:200px;" />
                             </div>
@@ -82,7 +82,7 @@
             }
             else
             {
-                <div class="row">
+                <div class="row" style="margin-top:10px;">
                     <div class="col d-flex justify-content-center align-items-center">
                         <span>@NFT.Name</span>
                     </div>
@@ -225,7 +225,7 @@
                 {
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center w-auto">
-                            @if (NFT.Type == NFTTypes.CoruzantArticle)
+                            @if (coruzantEditAllowed && NFT.Type == NFTTypes.CoruzantArticle)
                             {
                                 <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="width:65px; height:65px; margin-right:20px;">
                                     <div class="row">
@@ -364,6 +364,8 @@
 
 
 @code {
+
+    bool coruzantEditAllowed = false;
 
     private INFT NFT { get; set; } = new CoruzantProfileNFT("");
     private INFT AuthorProfileNFT { get; set; } = new CoruzantProfileNFT("");

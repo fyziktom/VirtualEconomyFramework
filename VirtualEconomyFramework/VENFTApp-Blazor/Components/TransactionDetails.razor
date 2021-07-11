@@ -9,61 +9,51 @@
             <div class="row">
                 <div class="col">
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <span>Tx Id</span>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <a href="https://explorer.nebl.io/tx/@txInDetails.Txid" target="_blank">To Neblio Explorer</a>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <span>@fromAddress</span>
                         </div>
                     </div>
                     @if (receivedFromAnotherAddress)
                     {
                         <div class="row">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <span>Received from Another Address</span>
                             </div>
                         </div>
                     }
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <span>Total Send: @txInDetails.Totalsent NEBL</span>
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <span>Time: @txInDetailsTime.ToString()</span>
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <span>Confirmations: @txInDetails.Confirmations.ToString()</span>
                         </div>
                     </div>
                     @if (NFTTransaction)
                     {
                         <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <span>This is NFT Transaction!</span>
                             </div>
                         </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <a href="http://explorer.nebl.io/tx/@nftTxId" target="_blank">Explore NFT</a>
-                            </div>
-                        </div>
-                    }
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <a href="http://explorer.nebl.io/tx/@txInDetails.Txid" target="_blank">Explorer</a>
-                        </div>
-                    </div>
+                     }
                 </div>
             </div>
         </Spin>
@@ -192,18 +182,9 @@
                     if (meta != null)
                     {
                         txInDetailsMetadata = meta;
-
                         if (meta.TryGetValue("NFT", out var nft))
-                        {
                             if (nft == "true")
-                            {
                                 NFTTransaction = true;
-                                if (meta.TryGetValue("SourceUtxo", out var nfttxid))
-                                    nftTxId = nfttxid;
-                                else
-                                    nftTxId = txId;
-                            }
-                        }
                     }
                 }
                 catch (Exception ex)
@@ -216,9 +197,7 @@
             if (txinfo != null)
             {
                 txInDetails = txinfo;
-
                 txInDetailsTime = TimeHelpers.UnixTimestampToDateTime((double)txinfo.Time);
-
                 txInDetails.Totalsent = await NeblioTransactionHelpers.GetSendAmount(txinfo, AppData.Account.Address);
                 txDetailsLoading = false;
                 StateHasChanged();

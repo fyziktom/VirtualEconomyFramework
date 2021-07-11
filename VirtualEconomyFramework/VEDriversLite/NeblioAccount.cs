@@ -75,7 +75,7 @@ namespace VEDriversLite
         /// </summary>
         public double SourceTokensBalance { get; set; } = 0.0;
         /// <summary>
-        /// Total balance of VENFT tokens which can be used for minting purposes.
+        /// Total balance of Coruzant tokens which can be used for minting purposes.
         /// </summary>
         public double CoruzantSourceTokensBalance { get; set; } = 0.0;
         /// <summary>
@@ -138,6 +138,11 @@ namespace VEDriversLite
         /// This event is called whenever some important thing happen. You can obtain success, error and info messages.
         /// </summary>
         public event EventHandler<IEventInfo> NewEventInfo;
+
+        /// <summary>
+        /// This event is called whenever some progress during multimint happens
+        /// </summary>
+        public event EventHandler<string> NewMintingProcessInfo;
 
         /// <summary>
         /// Carrier for encrypted private key from storage and its password.
@@ -850,6 +855,7 @@ namespace VEDriversLite
                             nsa.IsAutoRefreshActive = true;
                             nsa.NewEventInfo += Nsa_NewEventInfo;
                             await nsa.StartRefreshingData();
+                            nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
                             SubAccounts.TryAdd(nsa.Address, nsa);
                         }
                     }
@@ -863,6 +869,11 @@ namespace VEDriversLite
             return string.Empty;
         }
 
+        private void Nsa_NewMintingProcessInfo(object sender, string e)
+        {
+            NewMintingProcessInfo.Invoke(sender, e);
+        }
+
         /// <summary>
         /// Add new Sub Account
         /// </summary>
@@ -870,7 +881,7 @@ namespace VEDriversLite
         /// <param name="sendNeblioToAccount">Set This true if you want to load some Neblio to this address after it is created.</param>
         /// <param name="neblioAmountToSend">Amount of neblio for initial load of the address, 0.05 is default = 250 tx</param>
         /// <returns>true and string with serialized tabs list as json string</returns>
-        public async Task<(bool, string)> AddSubAccount(string name, bool sendNeblioToAccount = false, double neblioAmountToSend = 0.05)
+        public async Task<(bool, string)> AddSubAccount(string name, bool sendNeblioToAccount = false, double neblioAmountToSend = 0.05, bool sendTokenToAccount = false, double tokenAmountToSend = 10, string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
         {
             if (!SubAccounts.Values.Any(a => a.Name == name))
             {
@@ -887,11 +898,23 @@ namespace VEDriversLite
                 nsa.IsAutoRefreshActive = true;
                 nsa.NewEventInfo += Nsa_NewEventInfo;
                 await nsa.StartRefreshingData();
+                nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
                 SubAccounts.TryAdd(nsa.Address, nsa);
 
-                if (sendNeblioToAccount)
+                (bool, string) res = (false, string.Empty);
+                if (sendNeblioToAccount && !sendTokenToAccount)
                 {
-                    var res = await SendNeblioPayment(nsa.Address, neblioAmountToSend);
+                    res = await SendNeblioPayment(nsa.Address, neblioAmountToSend);
+                }
+                else if (sendNeblioToAccount && sendTokenToAccount)
+                {
+                    res = await SendAirdrop(nsa.Address, tokenId, tokenAmountToSend, neblioAmountToSend);
+                }
+                else if (!sendNeblioToAccount && sendTokenToAccount)
+                {
+                    var meta = new Dictionary<string, string>();
+                    meta.Add("Data", "Init token load.");
+                    res = await SendNeblioTokenPayment(tokenId, meta, nsa.Address, (int)tokenAmountToSend);
                 }
             }
             else
@@ -914,10 +937,27 @@ namespace VEDriversLite
             if (SubAccounts.TryGetValue(address, out var sacc))
             {
                 sacc.NewEventInfo -= Nsa_NewEventInfo;
+                sacc.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
                 SubAccounts.Remove(address);
             }
 
             return (true, await SerializeSubAccounts());
+        }
+
+        /// <summary>
+        /// Get sub account address by name
+        /// </summary>
+        /// <param name="name">Neblio Sub Account Name</param>
+        /// <returns>true and string with serialized subaccount account export dto list as json string</returns>
+        public async Task<(bool, string)> GetSubAccountAddressByName(string name)
+        {
+            var acc = SubAccounts.Values.FirstOrDefault(a => a.Name == name);
+            if (acc != null)
+            {
+                return (true, acc.Address);
+            }
+
+            return (false, string.Empty);
         }
 
         public double GetSubAccounTotaltSpendableActualBalance(string address)
@@ -1045,13 +1085,37 @@ namespace VEDriversLite
         /// <param name="address">Neblio Address of SubAccount</param>
         /// <param name="NFT">NFT on the SubAccount which should be minted</param>
         /// <returns>true and string with new TxId</returns>
-        public async Task<(bool, string)> MintNFTOnSubAccount(string address, INFT NFT)
+        public async Task<(bool, string)> MintNFTOnSubAccount(string address, INFT NFT, string receiver = "")
         {
             try
             {
                 if (SubAccounts.TryGetValue(address, out var sacc))
                 {
-                    var res = await sacc.MintNFT(NFT);
+                    var res = await sacc.MintNFT(NFT, receiver);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Multi Mint of large amount of NFTs on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="NFT">NFT on the SubAccount which should be minted</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> MultimintNFTLargeOnSubAccount(string address, INFT NFT, int coppies, string receiver = "")
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.MintMultiNFTLargeAmount(NFT, coppies, receiver);
                     return res;
                 }
                 else
@@ -1487,6 +1551,7 @@ namespace VEDriversLite
             try
             {
                 var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, id, amount);
+                tutxos.OrderBy(t => t.Tokens.ToArray()[0].Amount).Reverse();
                 if (tutxos == null || tutxos.Count == 0)
                     return ($"You dont have Tokens on the address. You need at least 5 for minting. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
@@ -1677,7 +1742,7 @@ namespace VEDriversLite
         /// <param name="tokenId"></param>
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
         /// <returns></returns>
-        public async Task<(bool, string)> MintNFT(INFT NFT)
+        public async Task<(bool, string)> MintNFT(INFT NFT, string receiver = "")
         {
             var nft = await NFTFactory.CloneNFT(NFT);
 
@@ -1692,16 +1757,16 @@ namespace VEDriversLite
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 2);
+            var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 3);
             if (tres.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs. You need 3 tokens as minimum input.");
                 return (false, tres.Item1);
             }
 
             try
             {
-                var rtxid = await NFTHelpers.MintNFT(Address, AccountKey, nft, res.Item2, tres.Item2);
+                var rtxid = await NFTHelpers.MintNFT(Address, AccountKey, nft, res.Item2, tres.Item2, receiver);
 
                 if (rtxid != null)
                 {
@@ -1729,7 +1794,7 @@ namespace VEDriversLite
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
         /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
         /// <returns></returns>
-        public async Task<(bool, string)> MintMultiNFT(INFT NFT, int coppies)
+        public async Task<(bool, string)> MintMultiNFT(INFT NFT, int coppies, string receiver = "")
         {
             var nft = await NFTFactory.CloneNFT(NFT);
 
@@ -1753,7 +1818,7 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = await NFTHelpers.MintMultiNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2);
+                var rtxid = await NFTHelpers.MintMultiNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2, receiver);
 
                 if (rtxid != null)
                 {
@@ -1773,6 +1838,158 @@ namespace VEDriversLite
             await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
         }
+
+        
+        private async Task<(bool, (ICollection<Utxos>, ICollection<Utxos>))> MultimintSourceCheck(string tokenId, int coppies)
+        {
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null || res.Item2.Count == 0)
+            {
+                //await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                return (false, (null,null));
+            }
+            var tres = await CheckSpendableNeblioTokens(tokenId, 3 + coppies);
+            if (tres.Item2 == null || tres.Item2.Count == 0)
+            {
+                //await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs. You need 3 tokens as minimum input.");
+                return (false, (null,null));
+            }
+            return (true, (res.Item2, tres.Item2));
+
+        }
+
+        /// <summary>
+        /// Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
+        /// </summary>
+        /// <param name="tokenId"></param>
+        /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
+        /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> MintMultiNFTLargeAmount(INFT NFT, int coppies, string receiver = "")
+        {
+            var nft = await NFTFactory.CloneNFT(NFT);
+            try
+            {
+                if (IsLocked())
+                {
+                    await InvokeAccountLockedEvent();
+                    return (false, "Account is locked.");
+                }
+
+                int cps = coppies;
+
+                Console.WriteLine("Start of minting.");
+                int lots = 0;
+                int rest = 0;
+                rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
+                lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
+                (bool, string) res = (false, string.Empty);
+                string txres = string.Empty;
+                NewMintingProcessInfo.Invoke(this, $"Minting of {lots} lots started...");
+
+                if (lots > 1 || (lots == 1 && rest > 0))
+                {
+                    var done = false;
+                    for (int i = 0; i < lots; i++)
+                    {
+                        Console.WriteLine("-----------------------------");
+                        Console.WriteLine($"Minting lot {i} from {lots}:");
+                        done = false;
+                        await Task.Run(async () =>
+                        {
+                            while (!done)
+                            {
+                                var sres = await MultimintSourceCheck(NFT.TokenId, NeblioTransactionHelpers.MaximumTokensOutpus);
+                                if (sres.Item1)
+                                {
+                                    try
+                                    {
+                                        txres = await NFTHelpers.MintMultiNFT(Address, NeblioTransactionHelpers.MaximumTokensOutpus - 1, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                                        if (string.IsNullOrEmpty(txres))
+                                        {
+                                            Console.WriteLine("Waiting for spendable utxo...");
+                                            await Task.Delay(5000);
+                                        }
+                                        else
+                                        {
+                                            done = true;
+                                            NewMintingProcessInfo.Invoke(this, $"New Lot Minted: {txres}, Wait for processing next {i + 1} of {lots} lots.");
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        await Task.Delay(5000);
+                                        done = false;
+                                    }
+                                }
+                                else
+                                {
+                                    await Task.Delay(5000);
+                                    done = false;
+                                }
+                            }
+                        });
+                    }
+                    if (rest > 0)
+                    {
+                        Console.WriteLine($"Minting rest {rest} tickets:");
+                        done = false;
+                        await Task.Run(async () =>
+                        {
+                            while (!done)
+                            {
+                                var sres = await MultimintSourceCheck(NFT.TokenId, rest);
+                                if (sres.Item1)
+                                {
+                                    txres = await NFTHelpers.MintMultiNFT(Address, rest, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                                    if (string.IsNullOrEmpty(txres))
+                                    {
+                                        Console.WriteLine("Waiting for spendable utxo...");
+                                        await Task.Delay(5000);
+                                    }
+                                    else
+                                    {
+                                        done = true;
+                                        NewMintingProcessInfo.Invoke(this, $"Rest of {rest} NFTs of total {coppies} NFTs was Minted: {txres}");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Waiting for spendable utxo...");
+                                    await Task.Delay(5000);
+                                }
+                            }
+                        });
+                    }
+                }
+                else
+                {
+                    var sres = await MultimintSourceCheck(NFT.TokenId, NeblioTransactionHelpers.MaximumTokensOutpus);
+                    if (sres.Item1)
+                        txres = await NFTHelpers.MintMultiNFT(Address, cps, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                    else
+                    {
+                        await InvokeErrorDuringSendEvent("Cannot Mint NFTs", "Not enough spendable source.");
+                        return (false, "Not enough spendable source.");
+                    }
+                }
+
+                if (txres != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(txres, "Neblio NFT Sent");
+                    return (true, txres);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
 
         /// <summary>
         /// This function will destroy provided NFTs. It means it will connect them again to one output/lot of tokens.

@@ -385,6 +385,24 @@ namespace VEDriversLite
         }
 
         ///////////////////////////////////////////
+        // Tools for addresses
+
+        public static async Task<(bool, string)> ValidateDogeAddress(string dogeAddress)
+        {
+            try
+            {
+                var add = BitcoinAddress.Create(dogeAddress, Network);
+                if (!string.IsNullOrEmpty(add.ToString()))
+                    return (true, add.ToString());
+            }
+            catch (Exception ex)
+            {
+                return (false, string.Empty);
+            }
+            return (false, string.Empty);
+        }
+
+        ///////////////////////////////////////////
         // calls of Doge API and helpers
 
         /// <summary>

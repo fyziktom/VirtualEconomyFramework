@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.NeblioAPI
+@using VEDriversLite.UnstoppableDomains
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject AppData AppData
@@ -14,17 +15,66 @@
         <div class="row">
             <div class="col">
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <h3>Send Payment</h3>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <VENFTApp_Blazor.Components.AccountBalances />
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <Dropdown>
+                            <Overlay>
+                                <Menu>
+                                    <MenuItem>
+                                        <a target="_blank" rel="noopener noreferrer" @onclick="selectMainAccount">
+                                            Main Account
+                                        </a>
+                                    </MenuItem>
+                                    @foreach (var acc in AppData.Account.SubAccounts.Values)
+                                    {
+                                        <MenuItem>
+                                            <a rel="noopener noreferrer" @onclick="() => selectSubAddress(acc.Address)">
+                                                @if (!string.IsNullOrEmpty(acc.Name))
+                                                {
+                                                    @acc.Name
+                                                }
+                                                else
+                                                {
+                                                    @acc.Address
+                                                }
+                                            </a>
+                                        </MenuItem>
+                                    }
+                                </Menu>
+                            </Overlay>
+                            <ChildContent>
+                                <a class="ant-dropdown-link" @onclick:preventDefault>
+                                    Select Account <Icon Type="down" />
+                                </a>
+                            </ChildContent>
+                        </Dropdown>
                     </div>
                 </div>
+                @if (!string.IsNullOrEmpty(selectedAccountAddress))
+                {
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Selected Account:</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>@selectedAccountAddress</span>
+                        </div>
+                    </div>
+                }
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
+                    </div>
+                </div>
+                
                 <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <RadioGroup @bind-Value="@txType" @onselectionchange="txTypeChangedHandler">
                             <Radio Value="TxType.Neblio">Neblio</Radio>
                             <Radio Value="TxType.Tokens">Tokens</Radio>
@@ -32,72 +82,123 @@
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <p>To Address:</p>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Add receiver address" @bind-Value=@Receiver Style="font-size:12px; min-width:250px;max-width:350px;" />
-                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
                     </div>
                 </div>
-
                 @if (txType == TxType.Neblio)
                 {
                     <div class="row" style="margin-top:30px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <p>Amount of Nebl:</p>
                         </div>
                     </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@AmountToSend" />
+                    if (mainAccountSelected)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@AmountToSend" />
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="number" step="0.0001" min="0.0001" max="@SelectedAccountTotalSpendable" @bind="@AmountToSend" />
+                            </div>
+                        </div>
+                    }
                 }
                 else
                 {
                     <div class="row" style="margin-top:30px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <p>Token Type:</p>
                         </div>
                     </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <RadioGroup @bind-Value="@selectedTokenId" @onselectionchange="tokenTypeChangedHandler">
-                                @foreach (var t in AppData.Account.TokensSupplies)
-                                {
-                                    <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
-                                }
-                            </RadioGroup>
+                    @if (mainAccountSelected)
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <RadioGroup @bind-Value="@selectedTokenId" @onselectionchange="tokenTypeChangedHandler">
+                                    @foreach (var t in AppData.Account.TokensSupplies)
+                                            {
+                                        <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
+                                            }
+                                </RadioGroup>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else if (!string.IsNullOrEmpty(selectedAccountAddress) && !mainAccountSelected)
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <RadioGroup @bind-Value="@selectedTokenId" @onselectionchange="tokenTypeChangedHandler">
+                                    @foreach (var t in SelectedAccountTokenSupply)
+                                            {
+                                        <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
+                                            }
+                                </RadioGroup>
+                            </div>
+                        </div>
+                    }
                     <div class="row" style="margin-top:30px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <p>Amount of tokens:</p>
                         </div>
                     </div>
                     <div class="row" style="margin-top:30px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <small>Available source tokens on address: @selectedToken.Amount</small>
                         </div>
                     </div>
                     <div class="row" style="margin-top:2px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@AmountTokensToSend" />
                         </div>
                     </div>
                 }
 
-                <div class="row" style="margin-top:20px; margin-bottom:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <button class="btn btn-primary" @onclick="SendTransaction">Send</button>
+                @if ((selectedToken.Amount == 0 && txType == TxType.Tokens) || (mainAccountSelected && (AppData.Account.TotalSpendableBalance <= AmountToSend && txType == TxType.Neblio)) || (!mainAccountSelected && (SelectedAccountTotalSpendable <= AmountToSend && txType == TxType.Neblio)))
+                {
+                    <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary disabled" @onclick="SendTransaction">Wrong Amount</button>
+                        </div>
                     </div>
-                </div>
+                }
+                else if (string.IsNullOrEmpty(receiver))
+                {
+                    <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary disabled" @onclick="SendTransaction">Wrong Receiver</button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="SendTransaction">Send</button>
+                        </div>
+                    </div>
+                }
             </div>
             <div class="col w-25">
-                <VENFTApp_Blazor.Components.TransactionsList @bind-MaxLoadedTx="maxLoadedTransaction" />
+                @if (mainAccountSelected)
+                {
+                    <VENFTApp_Blazor.Components.TransactionsList SubAccount="false" Address="@AppData.Account.Address" @bind-MaxLoadedTx="maxLoadedTransaction" />
+                }
+                else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
+                {
+                    <VENFTApp_Blazor.Components.TransactionsList SubAccount="true" Address="@selectedAccountAddress" @bind-MaxLoadedTx="maxLoadedTransaction" />
+                }
             </div>
         </div>
 
@@ -118,8 +219,12 @@
     bool sendingTransaction = false;
     private string txid = string.Empty;
 
-    private string selectedTokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+    private string selectedTokenId = NFTHelpers.TokenId;
     private TokenSupplyDto selectedToken = new TokenSupplyDto();
+
+    string selectedAccountAddress = string.Empty;
+    bool mainAccountSelected = false;
+    bool subAccount = false;
 
     private int AmountTokensToSend = 2;
     private double AmountToSend = 0.001;
@@ -135,6 +240,56 @@
                 receiver = value;
                 StateHasChanged();
             }
+        }
+    }
+    public double SelectedAccountTotalSourceVENFT
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.SourceTokensBalance;
+            return 0.0;
+        }
+    }
+    public double SelectedAccountTotalSourceCORZT
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.CoruzantSourceTokensBalance;
+            return 0.0;
+        }
+    }
+    public double SelectedAccountTotalSpendable
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.TotalSpendableBalance;
+            return 0.0;
+        }
+    }
+    public double SelectedAccountTotalUnconfirmed
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.TotalUnconfirmedBalance;
+            return 0.0;
+        }
+    }
+    public Dictionary<string,TokenSupplyDto> SelectedAccountTokenSupply
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    return acc.TokensSupplies;
+            return new Dictionary<string, TokenSupplyDto>();
         }
     }
 
@@ -158,6 +313,8 @@
             {
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
+                selectedAccountAddress = AppData.Account.Address;
+                mainAccountSelected = true;
             }
         }
         catch(Exception ex)
@@ -175,6 +332,25 @@
         NavManager.NavigateTo("/");
     }
 
+    private async Task selectSubAddress(string address)
+    {
+        selectedAccountAddress = address;
+        selectedToken = new TokenSupplyDto();
+        selectedTokenId = string.Empty;
+        mainAccountSelected = false;
+        subAccount = true;
+        StateHasChanged();
+    }
+    private async Task selectMainAccount(MouseEventArgs e)
+    {
+        selectedAccountAddress = AppData.Account.Address;
+        selectedToken = new TokenSupplyDto();
+        selectedTokenId = string.Empty;
+        mainAccountSelected = true;
+        subAccount = false;
+        StateHasChanged();
+    }
+
     private async Task QRTextReaded(string text)
     {
         Receiver = text;
@@ -185,6 +361,17 @@
         StateHasChanged();
     }
 
+    private void receiverAddressChangedHandler(string address)
+    {
+        if (address.Length < 8)
+        {
+            Receiver = string.Empty;
+            return;
+        }
+        Receiver = address;
+        StateHasChanged();
+    }
+
     private void txTypeChangedHandler(EventArgs e)
     {
         StateHasChanged();
@@ -192,6 +379,23 @@
 
     private void tokenTypeChangedHandler(EventArgs e)
     {
+        if (mainAccountSelected)
+        {
+            if (AppData.Account.TokensSupplies.TryGetValue(selectedTokenId, out var dto))
+                selectedToken = dto;
+            else
+                selectedToken = new TokenSupplyDto();
+        }
+        else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
+        {
+            if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+            {
+                if (acc.TokensSupplies.TryGetValue(selectedTokenId, out var dto))
+                    selectedToken = dto;
+                else
+                    selectedToken = new TokenSupplyDto();
+            }
+        }
         StateHasChanged();
     }
 
@@ -217,8 +421,13 @@
             var metadata = new Dictionary<string, string>();
             metadata.Add("Data", "Sent with https://ve-nft.com/");
 
-            var res = await AppData.Account.SendNeblioTokenPayment(selectedToken.TokenId, metadata, Receiver, AmountTokensToSend);
-            Console.WriteLine("Tx send result: " + res);
+            (bool, string) res = (false, string.Empty);
+            if(mainAccountSelected)
+                res = await AppData.Account.SendNeblioTokenPayment(selectedToken.TokenId, metadata, Receiver, AmountTokensToSend);
+            else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    res = await acc.SendNeblioTokenPayment(selectedToken.TokenId, metadata, Receiver, AmountTokensToSend);
+            Console.WriteLine("Tx send result: " + res.Item2);
         }
         catch (Exception ex)
         {
@@ -238,8 +447,13 @@
             sendingTransaction = true;
             StateHasChanged();
 
-            var res = await AppData.Account.SendNeblioPayment(Receiver, AmountToSend);
-            Console.WriteLine("Tx send result: " + res);
+            (bool, string) res = (false, string.Empty);
+            if (mainAccountSelected)
+                res = await AppData.Account.SendNeblioPayment(Receiver, AmountToSend);
+            else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
+                if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+                    res = await acc.SendNeblioPayment(Receiver, AmountToSend);
+            Console.WriteLine("Tx send result: " + res.Item2);
         }
         catch (Exception ex)
         {

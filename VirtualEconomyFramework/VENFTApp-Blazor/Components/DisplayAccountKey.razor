@@ -61,9 +61,19 @@
                 <div class="col">
                     @foreach (var sacc in subaccountkeys)
                     {
+                        <hr />
                         <div class="row d-flex justify-content-center align-items-center text-wrap">
                             <div class="col">
-                                <small class="text-center text-wrap">Addr: @sacc.Key</small>
+                                <div class="row">
+                                    <div class="col">
+                                        <small class="text-center text-wrap">Address</small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <small class="text-center text-wrap">@sacc.Key</small>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col">
                                 <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@sacc.Key" />
@@ -71,7 +81,16 @@
                         </div>
                         <div class="row d-flex justify-content-center align-items-center text-wrap">
                             <div class="col">
-                                <small class="text-center text-wrap text-muted">Key: @sacc.Value</small>
+                                <div class="row">
+                                    <div class="col">
+                                        <small class="text-center text-wrap">Key</small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <small class="text-center text-wrap">@sacc.Value</small>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col">
                                 <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@sacc.Value" />

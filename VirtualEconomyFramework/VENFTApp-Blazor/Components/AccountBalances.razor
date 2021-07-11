@@ -6,36 +6,93 @@
         <div class="row">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <span style="font-size:11px;">
-                    <a href="https://explorer.nebl.io/address/@AppData.Account.Address" style="font-size:11px;" target="_blank">@AppData.Account.Address</a>
+                    <a href="https://explorer.nebl.io/address/@Address" style="font-size:11px;" target="_blank">@Address</a>
                 </span>
-                <CopyIcon MarginLeft="15" FontSize="16" TextToCopy="@AppData.Account.Address" />
-                <QRIcon MarginLeft="10" FontSize="16" TextToCopy="@AppData.Account.Address" />
+                <CopyIcon MarginLeft="15" FontSize="16" TextToCopy="@Address" />
+                <QRIcon MarginLeft="10" FontSize="16" TextToCopy="@Address" />
             </div>
         </div>
         <div class="row" style="margin-top:10px;margin-bottom:2px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <span style="font-size:10px;">Actual Balance: @AppData.Account.TotalBalance NEBL</span>
+                <span style="font-size:10px;">Actual Balance: @Math.Round(SelectedAccountTotalSpendable, 10).ToString() NEBL</span>
             </div>
         </div>
         <div class="row" style="margin-top:2px;margin-bottom:2px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <span style="font-size:8px;">Unconfirmed Balance: @AppData.Account.TotalUnconfirmedBalance NEBL</span>
+                <span style="font-size:8px;">Unconfirmed Balance: @Math.Round(SelectedAccountTotalUnconfirmed, 10).ToString() NEBL</span>
             </div>
         </div>
         <div class="row" style="margin-top:2px;margin-bottom:2px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <span style="font-size:8px;">Source Tokens Balance: @AppData.Account.SourceTokensBalance VENFT/ @AppData.Account.CoruzantSourceTokensBalance CORZT</span>
+                <span style="font-size:8px;">Source Tokens Balance: @SelectedAccountTotalSourceVENFT VENFT/ @SelectedAccountTotalSourceCORZT CORZT</span>
             </div>
         </div>
         <div class="row" style="margin-top:2px;margin-bottom:2px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <span style="font-size:8px;">NFTs: @AppData.Account.AddressNFTCount</span>
+                <span style="font-size:8px;">NFTs: @SelectedAccountNFTCount</span>
             </div>
         </div>
     </div>
 </div>
 
 @code {
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    public double SelectedAccountTotalSpendable
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.TotalSpendableBalance;
+            return AppData.Account.TotalSpendableBalance;
+        }
+    }
+    public double SelectedAccountTotalUnconfirmed
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.TotalUnconfirmedBalance;
+            return AppData.Account.TotalUnconfirmedBalance;
+        }
+    }
+    public double SelectedAccountTotalSourceVENFT
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.SourceTokensBalance;
+            return AppData.Account.SourceTokensBalance;
+        }
+    }
+    public double SelectedAccountTotalSourceCORZT
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.CoruzantSourceTokensBalance;
+            return AppData.Account.CoruzantSourceTokensBalance;
+        }
+    }
+    public int SelectedAccountNFTCount
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.NFTs.Count;
+            return AppData.Account.NFTs.Count;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

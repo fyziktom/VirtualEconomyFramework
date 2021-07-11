@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NeblioAPI
 @using VEDriversLite.NFT
+@using Newtonsoft.Json
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient _client
 @inject AppData AppData
@@ -14,7 +15,7 @@
         </div>
     </div>
 
-    <VENFTApp_Blazor.Components.AccountBalances />
+    <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
 
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -40,7 +41,7 @@
                     <VENFTApp_Blazor.Components.TokenSupplies />
                 </div>
             </div>
-            
+
             <div class="card" style="margin-top:10px;">
                 <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                     <h5 class="text-center">Lock Unlock Account</h5>
@@ -62,6 +63,27 @@
                                 </div>
                             </div>
                             <VENFTApp_Blazor.Components.DisplayAccountKey DogeAccountKey="false" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="margin-top:10px;">
+                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                    <h5 class="text-center">Download backup file</h5>
+                </div>
+                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <span class="text-center">Here you can download file with backup of VENFT App data</span>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <button class="btn btn-primary" @onclick="downloadBackupData">Download VENFT App data</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -115,12 +137,38 @@
         </div>
     </div>
 
+    <Modal Title="Your Private Key"
+           Visible="@downloadBackupDataVisible"
+           OnOk="@DownloadBackupDataCancel"
+           OnCancel="@DownloadBackupDataCancel">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Download Backup File</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@backupData" />
+                        
+                        <VENFTApp_Blazor.Components.SaveTextAsFile MarginLeft="10" TextToSave="@backupData" FileName="@filename" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Modal>
+
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
 @code {
 
     private int maxLoadedTransaction = 10;
+    string backupData = string.Empty;
+    string filename = string.Empty;
+    bool downloadBackupDataVisible = false;
+
 
     protected override Task OnInitializedAsync()
     {
@@ -131,7 +179,7 @@
             else
                 Load();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Redirect();
         }
@@ -148,7 +196,7 @@
         {
             await AppData.Account.ReloadAccountInfo();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine("Cannot refresh account tx list" + ex.Message);
         }
@@ -196,4 +244,46 @@
         await Task.Delay(500);
         NavManager.NavigateTo("/");
     }
+
+    private async Task DownloadBackupDataCancel(MouseEventArgs e)
+    {
+        downloadBackupDataVisible = false;
+    }
+    private class BackupDataDto
+    {
+        public string Bookmarks { get; set; } = string.Empty;
+        public string SubAccounts { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string Key { get; set; } = string.Empty;
+        public string DogeAddress { get; set; } = string.Empty;
+        public string DogeKey { get; set; } = string.Empty;
+    }
+    private async Task downloadBackupData(MouseEventArgs e)
+    {
+        var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+        var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
+        var address = await localStorage.GetItemAsync<string>("address");
+        var key = await localStorage.GetItemAsync<string>("key");
+        var dogeaddress = await localStorage.GetItemAsync<string>("dogeaddress");
+        var dogekey = await localStorage.GetItemAsync<string>("dogekey");
+
+        var dto = new BackupDataDto();
+        if (!string.IsNullOrEmpty(bookmarks))
+            dto.Bookmarks = bookmarks;
+        if (!string.IsNullOrEmpty(subAccounts))
+            dto.SubAccounts = subAccounts;
+        if (!string.IsNullOrEmpty(address))
+            dto.Address = address;
+        if (!string.IsNullOrEmpty(key))
+            dto.Key = key;
+        if (!string.IsNullOrEmpty(dogeaddress))
+            dto.DogeAddress = dogeaddress;
+        if (!string.IsNullOrEmpty(dogekey))
+            dto.DogeKey = dogekey;
+
+        filename = "Backup-Export-" + AppData.Account.Address + "-" + DateTime.UtcNow.ToString("dd-MM-yyyyThh_mm_ss") + ".txt";
+        backupData = JsonConvert.SerializeObject(dto);
+        downloadBackupDataVisible = true;
+    }
+
 }

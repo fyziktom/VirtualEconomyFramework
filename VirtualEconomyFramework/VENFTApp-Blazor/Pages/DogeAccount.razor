@@ -3,6 +3,7 @@
 @inject HttpClient _client
 @inject AppData AppData
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 @page "/dogeaccount"
 
 <div class="container-fluid">
@@ -37,7 +38,7 @@
                                 </div>
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <Input Placeholder="Add receiver address" @bind-Value=@Receiver Style="font-size:12px; min-width:250px;max-width:350px;" />
+                                        <VENFTApp_Blazor.Components.DogeAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
                                         <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
                                     </div>
                                 </div>
@@ -51,7 +52,7 @@
                                         <input type="number" step="1" min="1" max="@AppData.DogeAccount.TotalBalance" @bind="@AmountToSend" />
                                     </div>
                                 </div>
-                                <VENFTApp_Blazor.Components.UploadImage ImageLinkChanged="@ImageLinkChanged"/>
+                                <VENFTApp_Blazor.Components.UploadImage ImageLinkChanged="@ImageLinkChanged" />
 
                                 <div class="row" style="margin-top:20px; margin-bottom:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
@@ -249,8 +250,25 @@
         StateHasChanged();
     }
 
+
+    private void receiverAddressChangedHandler(string address)
+    {
+        if (address.Length < 8)
+        {
+            Receiver = string.Empty;
+            return;
+        }
+        Receiver = address;
+        StateHasChanged();
+    }
+
     private async Task SendTx()
     {
+        if (string.IsNullOrEmpty(receiver))
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "Please Fill Correct Receiver.");
+            return;
+        }
         try
         {
             sendingTransaction = true;

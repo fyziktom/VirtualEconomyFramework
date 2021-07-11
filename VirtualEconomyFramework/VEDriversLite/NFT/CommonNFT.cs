@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -28,9 +29,12 @@ namespace VEDriversLite.NFT
         public double Price { get; set; } = 0.0;
         public bool PriceActive { get; set; } = false;
         public DateTime Time { get; set; } = DateTime.UtcNow;
+        [JsonIgnore]
         public List<INFT> History { get; set; } = new List<INFT>();
 
+        [JsonIgnore]
         public GetTransactionInfoResponse TxDetails { get; set; } = new GetTransactionInfoResponse();
+        [JsonIgnore]
         private System.Threading.Timer txdetailsTimer;
 
         public event EventHandler<GetTransactionInfoResponse> TxDataRefreshed;
@@ -109,8 +113,8 @@ namespace VEDriversLite.NFT
                 Tags = tags;
                 parseTags();
             }
-            if (meta.TryGetValue("SourceUtxo", out var su))
-                NFTOriginTxId = su;
+            //if (meta.TryGetValue("SourceUtxo", out var su))
+                //NFTOriginTxId = su;
         }
 
         public async Task<IDictionary<string,string>> GetCommonMetadata()
@@ -140,6 +144,9 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Ticket:
                     metadata.Add("Type", "NFT Ticket");
+                    break;
+                case NFTTypes.Event:
+                    metadata.Add("Type", "NFT Event");
                     break;
                 case NFTTypes.CoruzantProfile:
                     metadata.Add("Type", "NFT CoruzantProfile");

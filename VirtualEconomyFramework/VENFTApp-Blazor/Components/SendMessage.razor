@@ -9,35 +9,35 @@
             <div class="row">
                 <div class="col">
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <small>Name of message</small>
                         </div>
                     </div>
                     <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <Input Placeholder="Add Name of the message" MaxLength="50" @bind-Value=@newNFT.Name Style="font-size:12px; min-width:250px; max-width:350px;" />
                         </div>
                     </div>
 
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <small>Message</small>
                         </div>
                     </div>
                     <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <TextArea Placeholder="Type your message" MaxLength="160" @bind-Value=@newNFT.Description Style="font-size:12px; min-width:250px; max-width:350px; min-height:100px;" />
                         </div>
                     </div>
 
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <small>Receiver</small>
                         </div>
                     </div>
                     <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <Input Placeholder="Add Receiver" MaxLength="160" @bind-Value=@receiver Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <VENFTApp_Blazor.Components.NeblioAddressInput Receiver="@receiver" AddressCheckedInputed="receiverAddressChangedHandler" />
                         </div>
                     </div>
 
@@ -45,7 +45,7 @@
                     @if (newNFT.Description.Length >= 500)
                     {
                         <div class="row" style="margin-top:2px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <small>Maximum length is 500 characters</small>
                             </div>
                         </div>
@@ -54,22 +54,33 @@
                     else
                     {
                         <div class="row" style="margin-top:20px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <input type="checkbox" checked="checked" @onchange="eventArgs => { encryptChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Encrypt</span><br />
                             </div>
                         </div>
                     }
                     <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <small class="text-center">Sending costs 0.0002 NEBL (fee) and 1 VENFT (carrier, just in case of new message).</small>
                         </div>
                     </div>
 
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <button class="btn btn-primary" @onclick="ShowMintConfirm">Send Message</button>
+                    @if (string.IsNullOrEmpty(receiver))
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary disabled" @onclick="ShowMintConfirm">Wrong Receiver</button>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary" @onclick="ShowMintConfirm">Send Message</button>
+                            </div>
+                        </div>
+                    }
 
                 </div>
             </div>
@@ -129,6 +140,17 @@
     bool uploadingImage = false;
     bool confirmVisible = false;
     bool processingSending = false;
+
+    private void receiverAddressChangedHandler(string address)
+    {
+        if (address.Length < 8)
+        {
+            Receiver = string.Empty;
+            return;
+        }
+        Receiver = address;
+        StateHasChanged();
+    }
 
     void ImageLinkChanged(string newLink)
     {

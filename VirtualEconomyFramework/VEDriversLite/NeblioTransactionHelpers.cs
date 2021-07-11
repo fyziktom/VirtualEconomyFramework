@@ -63,7 +63,7 @@ namespace VEDriversLite
         private static IClient _client;
         private static string BaseURL = "https://ntp1node.nebl.io/";
         public static double FromSatToMainRatio = 100000000;
-        public static int MaximumTokensOutpus = 20;
+        public static int MaximumTokensOutpus = 5;
         public static int MaximumNeblioOutpus = 25;
         public static Network Network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
         public static int MinimumConfirmations = 2;
@@ -598,11 +598,16 @@ namespace VEDriversLite
             // load key and address
             BitcoinSecret key = null;
             BitcoinAddress addressForTx = null;
+            BitcoinAddress receiverAddres = null;
             try
             {
                 var k = await GetAddressAndKey(ekey);
                 key = k.Item2;
                 addressForTx = k.Item1;
+                if (!string.IsNullOrEmpty(data.ReceiverAddress))
+                {
+                    receiverAddres = BitcoinAddress.Create(data.ReceiverAddress, Network);
+                }
             }
             catch (Exception ex)
             {
@@ -630,7 +635,10 @@ namespace VEDriversLite
             var dto = new SendTokenRequest();
             try
             {
-                dto = GetSendTokenObject(1, fee, data.SenderAddress, data.Id);
+                if (!string.IsNullOrEmpty(data.ReceiverAddress))
+                    dto = GetSendTokenObject(1, fee, data.ReceiverAddress, data.Id);
+                else
+                    dto = GetSendTokenObject(1, fee, data.SenderAddress, data.Id);
 
                 if (data.Metadata != null)
                     foreach (var d in data.Metadata)
@@ -678,6 +686,7 @@ namespace VEDriversLite
             var hexToSign = string.Empty;
             try
             {
+                //var dtostr = JsonConvert.SerializeObject(dto);
                 hexToSign = await SendRawNTP1TxAsync(dto);
                 if (string.IsNullOrEmpty(hexToSign))
                     throw new Exception("Cannot get correct raw token hex.");
@@ -694,9 +703,16 @@ namespace VEDriversLite
             foreach(var output in transaction.Outputs)
             {
                 if (!output.ScriptPubKey.ToString().Contains("RETURN"))
-                    output.ScriptPubKey = addressForTx.ScriptPubKey;
+                {
+                    if (!string.IsNullOrEmpty(data.ReceiverAddress))
+                        output.ScriptPubKey = receiverAddres.ScriptPubKey;
+                    else
+                        output.ScriptPubKey = addressForTx.ScriptPubKey;
+                }
                 else
+                {
                     break;
+                }
             }
 
             try
@@ -1837,6 +1853,24 @@ namespace VEDriversLite
         #endregion
 
 
+        ///////////////////////////////////////////
+        // Tools for addresses
+
+        public static async Task<(bool, string)> ValidateNeblioAddress(string neblioAddress)
+        {
+            try
+            {
+                var add = BitcoinAddress.Create(neblioAddress, Network);
+                if (!string.IsNullOrEmpty(add.ToString()))
+                    return (true, add.ToString());
+            }
+            catch (Exception ex)
+            {
+                return (false, string.Empty);
+            }
+            return (false, string.Empty);
+        }
+
 
         ///////////////////////////////////////////
         // calls of Neblio API and helpers
@@ -1888,6 +1922,8 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<GetAddressResponse> AddressInfoAsync(string addr)
         {
+            if (string.IsNullOrEmpty(addr))
+                return new GetAddressResponse();
             var address = await GetClient().GetAddressAsync(addr);
             return address;
         }
@@ -1899,6 +1935,8 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<GetAddressInfoResponse> AddressInfoUtxosAsync(string addr)
         {
+            if (string.IsNullOrEmpty(addr))
+                return new GetAddressInfoResponse();
             var address = await GetClient().GetAddressInfoAsync(addr);
             return address;
         }
@@ -1910,6 +1948,8 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<ICollection<Anonymous>> GetAddressUtxos(string addr)
         {
+            if (string.IsNullOrEmpty(addr))
+                return new List<Anonymous>();
             var utxos = await GetClient().GetAddressUtxosAsync(addr);
             return utxos;
         }
@@ -1921,6 +1961,8 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<ICollection<Utxos>> GetAddressUtxosObjects(string addr)
         {
+            if (string.IsNullOrEmpty(addr))
+                return new List<Utxos>();
             try
             {
                 var addinfo = await GetClient().GetAddressInfoAsync(addr);
@@ -1941,6 +1983,9 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<ICollection<Utxos>> GetAddressTokensUtxos(string addr, GetAddressInfoResponse addressinfo = null)
         {
+            if (string.IsNullOrEmpty(addr))
+                return new List<Utxos>();
+
             if (addressinfo == null)
                 addressinfo = await GetClient().GetAddressInfoAsync(addr);
 
@@ -1960,6 +2005,8 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<string> GetTxHex(string txid)
         {
+            if (string.IsNullOrEmpty(txid))
+                return string.Empty;
             var tx = await GetClient().GetTransactionInfoAsync(txid);
             if (tx != null)
                 return tx.Hex;
@@ -1975,6 +2022,8 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<ICollection<Utxos>> GetAddressNFTsUtxos(string addr, List<string> allowedTokens, GetAddressInfoResponse addressinfo = null)
         {
+            if (string.IsNullOrEmpty(addr))
+                return new List<Utxos>();
             if (addressinfo == null)
                 addressinfo = await GetClient().GetAddressInfoAsync(addr);
 
@@ -2185,7 +2234,7 @@ namespace VEDriversLite
                 if (utx.Blockheight > 0 && utx.Tokens.Count > 0)
                 {
                     var tok = utx.Tokens.ToArray()?[0];
-                    if (tok != null && tok.TokenId == tokenId && tok?.Amount > 1)
+                    if (tok != null && tok.TokenId == tokenId && tok?.Amount > 3)
                     {
                         var tx = await _client.GetTransactionInfoAsync(utx.Txid);
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
@@ -2245,6 +2294,9 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<Dictionary<string, string>> GetTransactionMetadata(string tokenid, string txid)
         {
+            if (string.IsNullOrEmpty(txid))
+                return new Dictionary<string, string>();
+
             var resp = new Dictionary<string, string>();
             var info = await GetClient().GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
             
@@ -2271,6 +2323,8 @@ namespace VEDriversLite
         /// <returns>NBitcoin Transaction object</returns>
         public static async Task<Transaction> GetLastSentTransaction(string address)
         {
+            if (string.IsNullOrEmpty(address))
+                return null;
             try
             {
                 var addinfo = await GetClient().GetAddressAsync(address);
@@ -2302,6 +2356,8 @@ namespace VEDriversLite
         /// <returns>Neblio API GetTransactionInfo object</returns>
         public static async Task<GetTransactionInfoResponse> GetTransactionInfo(string txid)
         {
+            if (string.IsNullOrEmpty(txid))
+                return new GetTransactionInfoResponse();
             try
             {
                 var info = await GetClient().GetTransactionInfoAsync(txid);
@@ -2321,6 +2377,8 @@ namespace VEDriversLite
         /// <returns>Sender address</returns>
         public static async Task<string> GetTransactionSender(string txid, GetTransactionInfoResponse txinfo = null)
         {
+            if (string.IsNullOrEmpty(txid))
+                return string.Empty;
             try
             {
                 if (txinfo == null)
@@ -2342,6 +2400,8 @@ namespace VEDriversLite
         /// <returns>Sender address</returns>
         public static async Task<string> GetTransactionReceiver(string txid, GetTransactionInfoResponse txinfo = null)
         {
+            if (string.IsNullOrEmpty(txid))
+                return string.Empty;
             try
             {
                 if (txinfo == null)
@@ -2462,6 +2522,8 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<GetTokenMetadataResponse> GetTokenMetadata(string tokenId)
         {
+            if (string.IsNullOrEmpty(tokenId))
+                return new GetTokenMetadataResponse();
             try
             {
                 var tokeninfo = await GetClient().GetTokenMetadataAsync(tokenId, 0);

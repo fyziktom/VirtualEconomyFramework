@@ -10,7 +10,7 @@ namespace VEDriversLite.NFT
 {
     public static class NFTFactory
     {
-        public static async Task<INFT> GetNFT(string tokenId, string utxo, int utxoindex = 0, double time = 0, bool wait = false)
+        public static async Task<INFT> GetNFT(string tokenId, string utxo, int utxoindex = 0, double time = 0, bool wait = false, bool loadJustType = false, NFTTypes justType = NFTTypes.Image)
         {
             NFTTypes type = NFTTypes.Image;
 
@@ -68,6 +68,9 @@ namespace VEDriversLite.NFT
                         case "NFT Ticket":
                             type = NFTTypes.Ticket;
                             break;
+                        case "NFT Event":
+                            type = NFTTypes.Event;
+                            break;
                         case "NFT CoruzantArticle":
                             type = NFTTypes.CoruzantArticle;
                             break;
@@ -101,6 +104,10 @@ namespace VEDriversLite.NFT
                     return null;
                 }
             }
+
+            if (loadJustType)
+                if (justType != type)
+                    return null;
 
             var Time = TimeHelpers.UnixTimestampToDateTime(time);
 
@@ -181,6 +188,16 @@ namespace VEDriversLite.NFT
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;
                     break;
+                case NFTTypes.Event:
+                    nft = new EventNFT(utxo);
+                    //if (wait)
+                        await nft.ParseOriginData(meta);
+                    //else
+                    //    nft.ParseOriginData(meta);
+                    //await (nft as EventNFT).LoadLastData(meta);
+                    nft.Price = Price;
+                    nft.PriceActive = PriceActive;
+                    break;
                 case NFTTypes.CoruzantArticle:
                     nft = new CoruzantArticleNFT(utxo);
                     if (wait)
@@ -239,6 +256,10 @@ namespace VEDriversLite.NFT
                     return nft;
                 case NFTTypes.Ticket:
                     nft = new TicketNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Event:
+                    nft = new EventNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.CoruzantArticle:

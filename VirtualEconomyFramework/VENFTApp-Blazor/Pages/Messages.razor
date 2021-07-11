@@ -7,6 +7,7 @@
 @inject AppData AppData
 @inject HttpClient _client
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 @page "/messages"
 
 <div class="container-fluid h-100 w-100" style="padding:5px;">
@@ -15,7 +16,7 @@
             <div class="col h-100 w-100" style="margin-left:0px; padding:0px;">
 
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <h3>My Messages</h3>
                     </div>
                 </div>
@@ -27,7 +28,7 @@
                         <Collapse DefaultActiveKey="@(new[]{"Add"})" OnChange="Callback" Accordion Style="width:100%;">
                             <Panel Header="All My Received" Key="AllMyReceived">
                                 <HeaderTemplate>
-                                        <span class="oi oi-home" aria-hidden="true"></span> All My Received
+                                    <span class="oi oi-home" aria-hidden="true"></span> All My Received
                                 </HeaderTemplate>
                                 <ChildContent>
                                     <VENFTApp_Blazor.Components.MessageList NFTs="@AppData.Account.NFTs" Address="@AppData.Account.Address" />
@@ -49,7 +50,7 @@
                                     <ChildContent>
                                         <div class="row" style="min-width:300px; padding:0px;">
                                             <div class="col w-100" style="min-width:300px; padding:0px;">
-                                                 <VENFTApp_Blazor.Components.MessagingTabContent InMessageTab="@selectedMessageTab" ReloadRequest="ReloadMessages" />
+                                                <VENFTApp_Blazor.Components.MessagingTabContent InMessageTab="@selectedMessageTab" ReloadRequest="ReloadMessages" />
                                             </div>
                                         </div>
                                     </ChildContent>
@@ -76,12 +77,12 @@
     <div class="row">
         <div class="col">
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <span>Select from Bookmarks</span>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
                         <Overlay>
                             <Menu>
@@ -103,13 +104,13 @@
             </div>
 
             <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <span>Or Input Neblio Address</span>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                <div class="col d-flex justify-content-center align-items-center">
+                    <VENFTApp_Blazor.Components.NeblioAddressInput AddressCheckedInputed="newTabAddressChangedHandler" />
                     <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
                 </div>
             </div>
@@ -177,6 +178,17 @@
         }
 
         return base.OnInitializedAsync();
+    }
+
+    private void newTabAddressChangedHandler(string address)
+    {
+        if (address.Length < 8)
+        {
+            newTabAddress = string.Empty;
+            return;
+        }
+        newTabAddress = address;
+        StateHasChanged();
     }
 
     private async Task Redirect()
@@ -256,6 +268,11 @@
 
     private async Task addMessageTabConfirm(MouseEventArgs e)
     {
+        if (string.IsNullOrEmpty(newTabAddress))
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "Please Fill Correct Receiver.");
+            return;
+        }
         await addNewMessageTab();
     }
     private async Task addMessageTabCancel(MouseEventArgs e)

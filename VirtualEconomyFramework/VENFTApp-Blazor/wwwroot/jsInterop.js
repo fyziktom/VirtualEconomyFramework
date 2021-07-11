@@ -35,15 +35,14 @@ window.setCoruzantPodcastInfo = (title, artist, description) => {
             artist: artist,
             album: description,
             artwork: [
-                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '96x96', type: 'image/png' },
-                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '128x128', type: 'image/png' },
-                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '192x192', type: 'image/png' },
-                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '256x256', type: 'image/png' },
-                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '384x384', type: 'image/png' },
-                { src: 'https://ntp1-icons.ams3.digitaloceanspaces.com/6e05f020d88f8490190a9d9a625f37b649b7dae0.png', sizes: '512x512', type: 'image/png' },
+                { src: 'https://ve-nft.com/CoruzantTokenLogo-256x256.png', sizes: '256x256', type: 'image/png' }
             ]
         });
     }
+}
+
+window.alertMessage = (text) => {
+    alert(text);
 }
 
 window.jsFunctions = {

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -7,27 +6,30 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT
 {
-    public enum ClassOfNFTTicket
+    public enum ClassOfNFTEvent
     {
-        Economy,
-        Standard,
-        VIP,
-        VIPPlus
+        PersonalEvent,
+        OnlineMeeting,
+        CorporateMeeting,
+        Festival,
+        Concert,
+        Birthday,
+        PlaneFlight
     }
-    public class TicketNFT : CommonNFT
+    public class EventNFT : CommonNFT
     {
-        public TicketNFT(string utxo)
+        public EventNFT(string utxo)
         {
             Utxo = utxo;
-            Type = NFTTypes.Ticket;
-            TypeText = "NFT Ticket";
+            Type = NFTTypes.Event;
+            TypeText = "NFT Event";
         }
         
         public override async Task Fill(INFT NFT) 
         {
             await FillCommon(NFT);
 
-            var nft = NFT as TicketNFT;
+            var nft = NFT as EventNFT;
             PriceInDoge = nft.PriceInDoge;
             PriceInDogeActive = nft.PriceInDogeActive;
             Location = nft.Location;
@@ -37,54 +39,30 @@ namespace VEDriversLite.NFT
             VideoLink = nft.VideoLink;
             AuthorLink = nft.AuthorLink;
             EventDate = nft.EventDate;
-            TicketClass = nft.TicketClass;
+            EventClass = nft.EventClass;
             EventId = nft.EventId;
-            EventAddress = nft.EventAddress;
-            Seat = nft.Seat;
             MusicInLink = nft.MusicInLink;
         }
 
         public double PriceInDoge { get; set; } = 0;
         public bool PriceInDogeActive { get; set; } = false;
         public string MintAuthorAddress { get; set; } = string.Empty;
-        public string EventAddress { get; set; } = string.Empty;
         public string EventId { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
         public string LocationCoordinates { get; set; } = string.Empty;
         public double LocationCoordinatesLat { get; set; } = 0.0;
         public double LocationCoordinatesLen { get; set; } = 0.0;
-        public string Seat { get; set; } = string.Empty;
         public bool Used { get; set; } = false;
         public bool MusicInLink { get; set; } = false;
         public string VideoLink { get; set; } = string.Empty;
         public string AuthorLink { get; set; } = string.Empty;
         public DateTime EventDate { get; set; } = DateTime.UtcNow;
-        public ClassOfNFTTicket TicketClass { get; set; } = ClassOfNFTTicket.Standard;
-        [JsonIgnore]
-        public EventNFT EventNFTForTheTicket { get; set; } = new EventNFT("");
-
-        public async Task FillFromEventNFT(INFT nft)
-        {
-            await FillCommon(nft);
-
-            EventId = (nft as EventNFT).NFTOriginTxId;
-            EventDate = (nft as EventNFT).EventDate;
-            Location = (nft as EventNFT).Location;
-            LocationCoordinates = (nft as EventNFT).LocationCoordinates;
-            LocationCoordinatesLat = (nft as EventNFT).LocationCoordinatesLat;
-            LocationCoordinatesLen = (nft as EventNFT).LocationCoordinatesLen;
-            VideoLink = (nft as EventNFT).VideoLink;
-            AuthorLink = (nft as EventNFT).AuthorLink;
-        }
+        public ClassOfNFTEvent EventClass { get; set; } = ClassOfNFTEvent.PersonalEvent;
 
         private void ParseSpecific(IDictionary<string,string> meta)
         {
             if (meta.TryGetValue("EventId", out var ei))
                 EventId = ei;
-            if (meta.TryGetValue("EventAddress", out var ea))
-                EventAddress = ea;
-            if (meta.TryGetValue("Seat", out var seat))
-                Seat = seat;
             if (meta.TryGetValue("Used", out var used))
             {
                 if (used == "true")
@@ -133,15 +111,15 @@ namespace VEDriversLite.NFT
                     Console.WriteLine("Cannot parse NFT Ticket Event Date");
                 }
             }
-            if (meta.TryGetValue("TicketClass", out var tc))
+            if (meta.TryGetValue("EventClass", out var tc))
             {
                 try
                 {
-                    TicketClass = (ClassOfNFTTicket)Convert.ToInt32(tc);
+                    EventClass = (ClassOfNFTEvent)Convert.ToInt32(tc);
                 }
                 catch(Exception ex)
                 {
-                    TicketClass = ClassOfNFTTicket.Standard;
+                    EventClass = ClassOfNFTEvent.PersonalEvent;
                 }
             }
             if (meta.TryGetValue("PriceInDoge", out var priced))
@@ -161,8 +139,6 @@ namespace VEDriversLite.NFT
             {
                 PriceInDogeActive = false;
             }
-
-            LoadEventNFT();
         }
 
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
@@ -170,14 +146,16 @@ namespace VEDriversLite.NFT
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo, true);
             if (nftData != null)
             {
-                ParseCommon(nftData.NFTMetadata);
+                //ParseCommon(nftData.NFTMetadata);
+                ParseCommon(lastmetadata);
 
                 ParsePrice(lastmetadata);
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
 
-                ParseSpecific(nftData.NFTMetadata);
+                //ParseSpecific(nftData.NFTMetadata);
+                ParseSpecific(lastmetadata);
 
                 Used = nftData.Used;
                 MintAuthorAddress = await NeblioTransactionHelpers.GetTransactionSender(NFTOriginTxId);
@@ -209,12 +187,14 @@ namespace VEDriversLite.NFT
                 if (metadata.TryGetValue("SourceUtxo", out var su))
                 {
                     SourceTxId = Utxo;
-                    NFTOriginTxId = su;
+                    //if (string.IsNullOrEmpty(NFTOriginTxId))
+                        //NFTOriginTxId = su;
                 }
                 else
                 {
                     SourceTxId = Utxo;
-                    NFTOriginTxId = Utxo;
+                    //if (string.IsNullOrEmpty(NFTOriginTxId))
+                        //NFTOriginTxId = Utxo;
                 }
 
                 ParsePrice(metadata);
@@ -222,34 +202,21 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public async Task LoadEventNFT()
-        {
-            if (string.IsNullOrEmpty(NFTOriginTxId))
-                return;
-
-            var nft = await NFTHelpers.FindEventOnTheAddress(EventAddress, EventId);
-            if (nft != null)
-                EventNFTForTheTicket = nft as EventNFT;
-        }
-
         public override async Task<IDictionary<string,string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
+            if (string.IsNullOrEmpty(Name))
+                throw new Exception("Cannot create NFT Event without name.");
             if (string.IsNullOrEmpty(ImageLink))
-                throw new Exception("Cannot create NFT Ticket without image link.");
-            if (string.IsNullOrEmpty(EventId))
-                throw new Exception("Cannot create NFT Ticket without event Id.");
-            if (string.IsNullOrEmpty(EventAddress))
-                throw new Exception("Cannot create NFT Ticket without event Address.");
+                throw new Exception("Cannot create NFT Event without image link.");
             if (string.IsNullOrEmpty(Author))
-                throw new Exception("Cannot create NFT Ticket without author.");
+                throw new Exception("Cannot create NFT Event without author.");
             if (string.IsNullOrEmpty(LocationCoordinates) || string.IsNullOrEmpty(Location))
-                throw new Exception("Cannot create NFT Ticket without location.");
+                throw new Exception("Cannot create NFT Event without location.");
 
             // create token metadata
             var metadata = await GetCommonMetadata();
 
             metadata.Add("EventId", EventId);
-            metadata.Add("EventAddress", EventAddress);
             if (!string.IsNullOrEmpty(AuthorLink))
                 metadata.Add("AuthorLink", AuthorLink);
             metadata.Add("EventDate", EventDate.ToString());
@@ -259,9 +226,7 @@ namespace VEDriversLite.NFT
                 metadata.Add("MusicInLink", "true");
             metadata.Add("Location", Location);
             metadata.Add("LocationC", LocationCoordinates);
-            if (!string.IsNullOrEmpty(Seat))
-                metadata.Add("Seat", Seat);
-            metadata.Add("TicketClass", Convert.ToInt32(TicketClass).ToString());
+            metadata.Add("EventClass", Convert.ToInt32(EventClass).ToString());
             if (Used)
                 metadata.Add("Used", "true");
             if (PriceInDoge > 0)

@@ -39,6 +39,18 @@
                 <div class="col d-flex justify-content-center align-items-center">
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayVENFTChanged(eventArgs.Value); }" /><span style="margin-left:10px;">VENFT</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayCoruzantChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Coruzant</span><br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
                             <input type="checkbox" checked="checked" @onchange="eventArgs => { displayImagesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Images</span><br />
                         </div>
                         <div class="col d-flex justify-content-center align-items-center w-auto">
@@ -65,27 +77,34 @@
                         <div class="card-group">
                             @foreach (var nft in _nfts)
                             {
-                                if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast)
+                                if (displayCoruzant && (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast))
                                 {
                                     <CoruzantNFT Address="@_address"
                                                  InputNFT="@nft"
                                                  NFTSent="@NFTSentHandler"
                                                  OwnNFT="@true"
-                                                 SubAccount="true" />
+                                                 SubAccount="true"
+                                                 DisplayCheckField="@allowNFTCheckField"
+                                                 NFTCheckedChanged="@NFTCheckChangedHandler" />
                                 }
                                 else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
                                 {
                                     if ((displayImages && nft.Type == NFTTypes.Image) ||
                                         (displayPosts && nft.Type == NFTTypes.Post) ||
                                         (displayMusic && nft.Type == NFTTypes.Music) ||
-                                        (displayTickets && nft.Type == NFTTypes.Ticket))
+                                        (displayTickets && nft.Type == NFTTypes.Ticket) ||
+                                        (displayTickets && nft.Type == NFTTypes.Event))
                                     {
+                                        if ((displayVENFT && nft.TokenId == NFTHelpers.TokenId) ||
+                                            (!displayVENFT && nft.TokenId != NFTHelpers.TokenId))
+                                        {
                                         <NFT Address="@_address" InputNFT="@nft"
                                              NFTSent="@NFTSentHandler"
                                              OwnNFT="@true"
                                              SubAccount="true"
                                              DisplayCheckField="@allowNFTCheckField"
                                              NFTCheckedChanged="@NFTCheckChangedHandler" />
+                                        }
                                     }
                                 }
                             }
@@ -141,6 +160,8 @@
     bool displayPosts = true;
     bool displayMusic = true;
     bool displayTickets = true;
+    bool displayVENFT = true;
+    bool displayCoruzant = true;
     bool displayYouTube = false;
     bool displaySpotify = false;
     bool allowNFTCheckField = false;
@@ -255,6 +276,16 @@
     private async Task displayTicketsChanged(object e)
     {
         displayTickets = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayVENFTChanged(object e)
+    {
+        displayVENFT = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayCoruzantChanged(object e)
+    {
+        displayCoruzant = (bool)e;
         StateHasChanged();
     }
 

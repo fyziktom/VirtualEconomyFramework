@@ -29,6 +29,14 @@
 
                 </div>
             </div>
+            @if (!messageTab.PublicKeyFound)
+            {
+            <div class="row" style="margin-top:20px; margin-left:10px;">
+                <div class="col d-flex justify-content-end align-items-end">
+                    <small class="text-danger text-center" style="max-width:250px;">Partner Public Key not found. Partner probably has not done any trasaction yet. It will not be possible to send him encrypted message until he will send at least one transaction.</small>
+                </div>
+            </div>
+            }
             <div class="row" style="margin-top:20px;">
                 <div class="col d-flex justify-content-center align-items-center">
                     <div class="row" style="margin-top:20px;">
@@ -58,73 +66,73 @@
                                 if (nft.Type == NFTTypes.Message)
                                 {
                                     <div class="card w-100" style="margin-left:10px; margin-top:10px; width:250px; min-width:250px; max-width:250px; max-height:200px; height:200px;">
-                                            <div class="card-body w-100 d-flex justify-content-center align-items-end">
+                                        <div class="card-body w-100 d-flex justify-content-center align-items-end">
 
-                                                <div class="row w-100" style="margin: 0px;">
-                                                    <div class="col w-100" style="padding: 0px;">
-                                                        @if ((nft as MessageNFT).IsReceivedMessage)
-                                                        {
-                                                            <span class="badge badge-primary" style="position: absolute;right: -10px;top: 5px;">Received</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="badge badge-success" style="position: absolute;right: -10px;top: 5px;">Sent</span>
-                                                        }
-                                                        <div class="row" style="margin: 0px;">
-                                                            <div class="col" style="padding: 0px;">
-                                                                <small class="text-center">@nft.Time</small>
-                                                            </div>
-                                                        </div>
-                                                        @if (nft.Author == AppData.Account.Address)
-                                                        {
-                                                            <div class="row" style="margin: 0px;">
-                                                                <div class="col" style="padding: 0px;">
-                                                                    <small class="text-center text-muted mb-2">Sender: Me</small>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                        else
-                                                        {
-                                                            <div class="row" style="margin: 0px;">
-                                                                <div class="col" style="padding: 0px;">
-                                                                    <small class="text-center text-muted mb-2">Sender: @IsSenderInTheBookmarks(nft.Author)</small>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                        <hr />
-                                                        <div class="row" style="margin: 0px;">
-                                                            <div class="col" style="padding: 0px;">
-                                                                @if (nft.Name.Length > 20)
-                                                                {
-                                                                    <small>@nft.Name.Substring(0, 19) ...</small>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <small>@nft.Name</small>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                        <div class="row" style="margin: 0px;">
-                                                            <div class="col text-center" style="padding: 0px;">
-                                                                @if (nft.Description.Length > 20)
-                                                                {
-                                                                    <small>@nft.Description.Substring(0, 19) ...</small>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <small>@nft.Description</small>
-                                                                }
-                                                            </div>
+                                            <div class="row w-100" style="margin: 0px;">
+                                                <div class="col w-100" style="padding: 0px;">
+                                                    @if ((nft as MessageNFT).IsReceivedMessage)
+                                                    {
+                                                        <span class="badge badge-primary" style="position: absolute;right: -10px;top: 5px;">Received</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-success" style="position: absolute;right: -10px;top: 5px;">Sent</span>
+                                                    }
+                                                    <div class="row" style="margin: 0px;">
+                                                        <div class="col" style="padding: 0px;">
+                                                            <small class="text-center">@nft.Time</small>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="row" style="margin-top:20px;">
-                                                    <div class="col d-flex justify-content-end align-items-end">
-                                                        <button class="btn btn-light" @onclick="() => showMessageDetails(nft.Utxo)"><i class="oi oi-envelope-open"></i></button>
+                                                    @if (nft.Author == AppData.Account.Address)
+                                                    {
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col" style="padding: 0px;">
+                                                                <small class="text-center text-muted mb-2">Sender: Me</small>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col" style="padding: 0px;">
+                                                                <small class="text-center text-muted mb-2">Sender: @IsSenderInTheBookmarks(nft.Author)</small>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <hr />
+                                                    <div class="row" style="margin: 0px;">
+                                                        <div class="col" style="padding: 0px;">
+                                                            @if (nft.Name.Length > 20)
+                                                            {
+                                                                <small>@nft.Name.Substring(0, 19) ...</small>
+                                                            }
+                                                            else
+                                                            {
+                                                                <small>@nft.Name</small>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" style="margin: 0px;">
+                                                        <div class="col text-center" style="padding: 0px;">
+                                                            @if (nft.Description.Length > 20)
+                                                            {
+                                                                <small>@nft.Description.Substring(0, 19) ...</small>
+                                                            }
+                                                            else
+                                                            {
+                                                                <small>@nft.Description</small>
+                                                            }
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="row" style="margin-top:20px;">
+                                                <div class="col d-flex justify-content-end align-items-end">
+                                                    <button class="btn btn-light" @onclick="() => showMessageDetails(nft.Utxo)"><i class="oi oi-envelope-open"></i></button>
+                                                </div>
+                                            </div>
                                         </div>
+                                    </div>
                                 }
                             }
                         </div>

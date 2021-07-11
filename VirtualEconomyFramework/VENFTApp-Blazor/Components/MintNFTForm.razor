@@ -320,6 +320,9 @@
                             <div class="col d-flex justify-content-center align-items-center">
                                 <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
                             </div>
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Mint To Another Address</span><br />
+                            </div>
                         </div>
 
                         @if (withPrice)
@@ -350,6 +353,24 @@
                                 </div>
                             </div>
                         }
+                        @if (toAnotherAddres)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Fill Receiver Address</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <VENFTApp_Blazor.Components.CreateNeblioSubAccount NewAddressCreated="newSubAccountCreated" />
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:15px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <NeblioAddressInput AddressCheckedInputed="mintReceiverAddressChecked" Receiver="@mintReceiverAddress" />
+                                </div>
+                            </div>
+                        }
                     }
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center">
@@ -371,6 +392,14 @@
                                 <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
                             </div>
                         </div>
+                        @if (!string.IsNullOrEmpty(multimintStatus))
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <span>@multimintStatus</span>
+                                </div>
+                            </div>
+                        }
                     }
                 </div>
             </div>
@@ -382,6 +411,14 @@
                OnCancel="@HandleCancel">
             <p>"Do you realy want to mint this NFT?"</p>
         </Modal>
+
+        <Modal Title="Mint To Another Address"
+               Visible="@mintToAnotherAddressConfirmModalVisible"
+               OnOk="@MintToAnotherAddressOk"
+               OnCancel="@MintToAnotherAddressCancel">
+            <p>"You selected another address as receiver of these NFTs. Is it correct?"</p>
+        </Modal>
+
     </div>
 </div>
 
@@ -473,11 +510,30 @@
     string companyLink = string.Empty;
     string podcastId = string.Empty;
 
+    string multimintStatus = string.Empty;
+
+    bool toAnotherAddres = false;
+    string mintReceiverAddress = string.Empty;
+
+    bool mintToAnotherAddressConfirmModalVisible = false;
+
     protected override async Task OnInitializedAsync()
     {
         if (AppData.Account != null)
             if (!string.IsNullOrEmpty(AppData.Account.Profile.Nickname))
                 nickname = AppData.Account.Profile.Nickname;
+
+        if (!string.IsNullOrEmpty(AppData.Account.Address))
+        {
+            AppData.Account.NewMintingProcessInfo -= multimintStateChangedHandler;
+            AppData.Account.NewMintingProcessInfo += multimintStateChangedHandler;
+        }
+    }
+
+    private void multimintStateChangedHandler(object sender, string e)
+    {
+        multimintStatus = e;
+        StateHasChanged();
     }
 
     void ImageLinkChanged(string newLink)
@@ -494,6 +550,28 @@
     {
         if(nftType == NFTTypes.CoruzantProfile || nftType == NFTTypes.CoruzantArticle)
             podcastLink = newLink;
+    }
+
+    private void newSubAccountCreated(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            mintReceiverAddress = address;
+        }
+        StateHasChanged();
+    }
+    private void mintReceiverAddressChecked(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            mintReceiverAddress = address;
+        }
+        StateHasChanged();
+    }
+    private async Task toAnotherAddressChanged(object e)
+    {
+        toAnotherAddres = (bool)e;
+        StateHasChanged();
     }
 
     private async Task withPriceChanged(object e)
@@ -513,12 +591,25 @@
 
     void ShowMintConfirm()
     {
-        confirmVisible = true;
+        if (!string.IsNullOrEmpty(mintReceiverAddress))
+            mintToAnotherAddressConfirmModalVisible = true;
+        else
+            confirmVisible = true;
     }
 
     private async Task HandleOk(MouseEventArgs e)
     {
         await MintNewNFT();
+    }
+
+    private async Task MintToAnotherAddressOk(MouseEventArgs e)
+    {
+        mintToAnotherAddressConfirmModalVisible = false;
+        confirmVisible = true;
+    }
+    private void MintToAnotherAddressCancel(MouseEventArgs e)
+    {
+        mintToAnotherAddressConfirmModalVisible = false;
     }
 
     private void HandleCancel(MouseEventArgs e)
@@ -648,7 +739,10 @@
             }
             else if (string.IsNullOrEmpty(newNFT.Utxo) && NumberOfCoppies > 0 && nftType != NFTTypes.Profile)
             {
-                res = await AppData.Account.MintMultiNFT(newNFT, NumberOfCoppies);
+                if (!SubAccount)
+                    res = await AppData.Account.MintMultiNFT(newNFT, NumberOfCoppies);
+                else
+                    res = await AppData.Account.MultimintNFTLargeOnSubAccount(Address, newNFT, NumberOfCoppies);
             }
             else
             {

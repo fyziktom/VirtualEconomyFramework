@@ -725,7 +725,7 @@
         </member>
         <member name="P:VEDriversLite.NeblioAccount.CoruzantSourceTokensBalance">
             <summary>
-            Total balance of VENFT tokens which can be used for minting purposes.
+            Total balance of Coruzant tokens which can be used for minting purposes.
             </summary>
         </member>
         <member name="P:VEDriversLite.NeblioAccount.AddressNFTCount">
@@ -796,6 +796,11 @@
         <member name="E:VEDriversLite.NeblioAccount.NewEventInfo">
             <summary>
             This event is called whenever some important thing happen. You can obtain success, error and info messages.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.NeblioAccount.NewMintingProcessInfo">
+            <summary>
+            This event is called whenever some progress during multimint happens
             </summary>
         </member>
         <member name="P:VEDriversLite.NeblioAccount.AccountKey">
@@ -988,7 +993,7 @@
             <param name="subaccounts">List of SubAccountsAddressExports as json string</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.AddSubAccount(System.String,System.Boolean,System.Double)">
+        <member name="M:VEDriversLite.NeblioAccount.AddSubAccount(System.String,System.Boolean,System.Double,System.Boolean,System.Double,System.String)">
             <summary>
             Add new Sub Account
             </summary>
@@ -1003,6 +1008,13 @@
             Please remember that this function will destroy account. Please do backup first.
             </summary>
             <param name="address">Neblio Address which tab should be removed</param>
+            <returns>true and string with serialized subaccount account export dto list as json string</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.GetSubAccountAddressByName(System.String)">
+            <summary>
+            Get sub account address by name
+            </summary>
+            <param name="name">Neblio Sub Account Name</param>
             <returns>true and string with serialized subaccount account export dto list as json string</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.ChangeSubAccountName(System.String,System.String)">
@@ -1038,9 +1050,17 @@
             <param name="NFT">NFT on the SubAccount which should be changed</param>
             <returns>true and string with new TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.MintNFTOnSubAccount(System.String,VEDriversLite.NFT.INFT)">
+        <member name="M:VEDriversLite.NeblioAccount.MintNFTOnSubAccount(System.String,VEDriversLite.NFT.INFT,System.String)">
             <summary>
             Mint NFT on SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="NFT">NFT on the SubAccount which should be minted</param>
+            <returns>true and string with new TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.MultimintNFTLargeOnSubAccount(System.String,VEDriversLite.NFT.INFT,System.Int32,System.String)">
+            <summary>
+            Multi Mint of large amount of NFTs on SubAccount
             </summary>
             <param name="address">Neblio Address of SubAccount</param>
             <param name="NFT">NFT on the SubAccount which should be minted</param>
@@ -1204,7 +1224,7 @@
             <param name="amount">Amount of the tokens</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.MintNFT(VEDriversLite.NFT.INFT)">
+        <member name="M:VEDriversLite.NeblioAccount.MintNFT(VEDriversLite.NFT.INFT,System.String)">
             <summary>
             Mint new NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input
             </summary>
@@ -1212,7 +1232,16 @@
             <param name="NFT">Input carrier of NFT data. It must specify the type</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.MintMultiNFT(VEDriversLite.NFT.INFT,System.Int32)">
+        <member name="M:VEDriversLite.NeblioAccount.MintMultiNFT(VEDriversLite.NFT.INFT,System.Int32,System.String)">
+            <summary>
+            Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
+            </summary>
+            <param name="tokenId"></param>
+            <param name="NFT">Input carrier of NFT data. It must specify the type</param>
+            <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.MintMultiNFTLargeAmount(VEDriversLite.NFT.INFT,System.Int32,System.String)">
             <summary>
             Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
             </summary>
@@ -3514,7 +3543,7 @@
         </member>
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.CoruzantSourceTokensBalance">
             <summary>
-            Total balance of VENFT tokens which can be used for minting purposes.
+            Total balance of Coruzant tokens which can be used for minting purposes.
             </summary>
         </member>
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.TokensSupplies">
@@ -3525,6 +3554,11 @@
         <member name="E:VEDriversLite.Neblio.NeblioSubAccount.NewEventInfo">
             <summary>
             This event is called whenever some important thing happen. You can obtain success, error and info messages.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Neblio.NeblioSubAccount.NewMintingProcessInfo">
+            <summary>
+            This event is called whenever some progress during multimint happens
             </summary>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioSubAccount.InvokeSendPaymentSuccessEvent(System.String,System.String)">
@@ -3599,12 +3633,39 @@
             <param name="amount"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.MintNFT(VEDriversLite.NFT.INFT)">
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.SendNeblioPayment(System.String,System.Double)">
+            <summary>
+            Send classic neblio payment
+            </summary>
+            <param name="receiver">Receiver Neblio Address</param>
+            <param name="amount">Ammount in Neblio</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.SendNeblioTokenPayment(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)">
+            <summary>
+            Send classic token payment. It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
+            </summary>
+            <param name="tokenId">Token Id hash</param>
+            <param name="metadata">Custom metadata</param>
+            <param name="receiver">Receiver Neblio address</param>
+            <param name="amount">Amount of the tokens</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.MintNFT(VEDriversLite.NFT.INFT,System.String)">
             <summary>
             Mint new NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input
             </summary>
             <param name="tokenId"></param>
             <param name="NFT">Input carrier of NFT data. It must specify the type</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.MintMultiNFTLargeAmount(VEDriversLite.NFT.INFT,System.Int32,System.String)">
+            <summary>
+            Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
+            </summary>
+            <param name="tokenId"></param>
+            <param name="NFT">Input carrier of NFT data. It must specify the type</param>
+            <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioSubAccount.DestroyNFTs(System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.String)">
@@ -3815,6 +3876,14 @@
             <param name="utxos">leave null if you need to obtain new utxos nft list</param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.FindEventOnTheAddress(System.String,System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+            <summary>
+            this function will search the utxos, get all nfts utxos (if utxos list is not loaded) and return last profile nft which is founded on the address.
+            </summary>
+            <param name="address"></param>
+            <param name="utxos">leave null if you need to obtain new utxos nft list</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile(System.String)">
             <summary>
             This function will load NFTs and during it find the profile NFT
@@ -3846,7 +3915,7 @@
             <param name="metadata">Dictionary with metadata</param>
             <returns>20000 as default, additional 10000 for each another 900 characters</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.MintNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.MintNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
             <summary>
             This function will new NFTs. 
             </summary>
@@ -3868,7 +3937,7 @@
             <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.MintMultiNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.MintMultiNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
             <summary>
             This function will new Post NFTs as multimint. 
             It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
@@ -4108,6 +4177,46 @@
             </summary>
             <param name="dateTime"></param>
             <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.UnstoppableDomains.IClient.GetAddressDetailsAsync(System.String)">
+            <summary>Returns the Details of Unstoppable Domain address</summary>
+            <param name="address">Crypto address</param>
+            <returns>Object containing address details, empty object is returned.</returns>
+            <exception cref="T:VEDriversLite.UnstoppableDomains.ApiException">A server side error occurred.</exception>
+        </member>
+        <member name="M:VEDriversLite.UnstoppableDomains.Client.GetAddressDetailsAsync(System.String)">
+            <summary>Returns the doge balance</summary>
+            <param name="address">Doge address</param>
+            <returns>Object containing doge balance, if address symbol does not exist on network, empty object is returned.</returns>
+            <exception cref="T:VEDriversLite.UnstoppableDomains.ApiException">A server side error occurred.</exception>
+        </member>
+        <member name="M:VEDriversLite.UnstoppableDomains.Client.GetAddressDetailsAsync(System.String,System.Threading.CancellationToken)">
+            <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+            <summary>Returns the doge balance</summary>
+            <param name="address">Doge address</param>
+            <returns>Object containing doge balance, if address symbol does not exist on network, empty object is returned.</returns>
+            <exception cref="T:VEDriversLite.UnstoppableDomains.ApiException">A server side error occurred.</exception>
+        </member>
+        <member name="P:VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.Addresses">
+            <summary>Success flag</summary>
+        </member>
+        <member name="P:VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.IPFS">
+            <summary>Success flag</summary>
+        </member>
+        <member name="P:VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.Records">
+            <summary>Success flag</summary>
+        </member>
+        <member name="P:VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.Meta">
+            <summary>Success flag</summary>
+        </member>
+        <member name="P:VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.Social">
+            <summary>Success flag</summary>
+        </member>
+        <member name="P:VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.MultiCoinAddresses">
+            <summary>Success flag</summary>
+        </member>
+        <member name="P:VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.WhoIs">
+            <summary>Success flag</summary>
         </member>
     </members>
 </doc>

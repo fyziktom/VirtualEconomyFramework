@@ -1,0 +1,94 @@
+﻿@using VEDriversLite
+@using VEDriversLite.UnstoppableDomains
+
+<div class="row">
+    <div class="col d-flex justify-content-center align-items-center">
+        <Input Placeholder="Add receiver address" @bind-Value=@Receiver @onfocusout="receiverAddressChangedHandler" Style="font-size:12px; min-width:300px;max-width:350px;" />
+        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+        @if (unstoppableDomainAddressUsed)
+        {
+            <img style="width:16px; margin-left: 10px;" src="images/unstoppableDomainsLogo.png" />
+        }
+        @if (validAddress)
+        {
+            <i class="oi oi-check text-success" style="font-size:12px; margin-left:10px;"></i>
+        }
+        else
+        {
+            <i class="oi oi-x text-danger" style="font-size:12px; margin-left:10px;"></i>
+        }
+    </div>
+</div>
+
+@code {
+    bool validAddress = false;
+    bool unstoppableDomainAddressUsed = false;
+    string unstoppableDomainAddress = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> AddressCheckedInputed { get; set; }
+
+    private string receiver = string.Empty;
+    public string Receiver
+    {
+        get => receiver;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                receiver = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void receiverAddressChangedHandler(EventArgs e)
+    {
+        if (receiver.Length < 8)
+            return;
+
+        var rec = receiver;
+        checkAddress(rec);
+        StateHasChanged();
+    }
+    private async Task checkAddress(string address)
+    {
+        if (string.IsNullOrEmpty(address))
+            return;
+
+        var add = string.Empty;
+        if (address.Contains(".crypto") || address.Contains(".coin") || address.Contains(".wallet") || address.Contains(".nft") || address.Contains(".bitcoin"))
+        {
+            add = await UnstoppableDomainsHelpers.GetDOGEAddress(address);
+            if (!string.IsNullOrEmpty(add))
+            {
+                unstoppableDomainAddressUsed = true;
+                unstoppableDomainAddress = add;
+            }
+            else
+            {
+                unstoppableDomainAddressUsed = false;
+                unstoppableDomainAddress = string.Empty;
+            }
+        }
+        else
+        {
+            add = address;
+            unstoppableDomainAddress = string.Empty;
+            unstoppableDomainAddressUsed = false;
+        }
+        var res = await DogeTransactionHelpers.ValidateDogeAddress(add);
+        if (res.Item1)
+        {
+            validAddress = true;
+            Receiver = res.Item2;
+            await AddressCheckedInputed.InvokeAsync(receiver);
+        }
+        else
+        {
+            validAddress = false;
+            await AddressCheckedInputed.InvokeAsync(string.Empty);
+        }
+        StateHasChanged();
+    }
+}
