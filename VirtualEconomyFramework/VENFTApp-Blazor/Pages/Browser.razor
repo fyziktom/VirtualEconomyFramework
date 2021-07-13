@@ -144,7 +144,7 @@
                                                 <div class="col">
                                                     @if (tab.Selected)
                                                     {
-                                                        <VENFTApp_Blazor.Components.NFTList Address="@tab.Address" MainAccount="@false" />
+                                                        <VENFTApp_Blazor.Components.NFTList Address="@tab.Address" MainAccount="@false" InBrowser="true" NFTsChanged="nftChangedHandler" />
                                                     }
                                                 </div>
                                             </div>
@@ -301,6 +301,11 @@
         }
 
         return base.OnInitializedAsync();
+    }
+
+    void nftChangedHandler(List<INFT> e)
+    {
+        StateHasChanged();
     }
 
     void RefreshedHandler(object sender, EventArgs e)

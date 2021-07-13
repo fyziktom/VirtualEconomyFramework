@@ -13,7 +13,14 @@
             </div>
             <div class="row" style="margin-top:50px;">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Banner.Components.NFT InputNFT="@NFT" />
+                    @if (NFT.Type != NFTTypes.CoruzantProfile && NFT.Type != NFTTypes.CoruzantArticle)
+                    {
+                        <VENFTApp_Banner.Components.NFT InputNFT="@NFT" />
+                    }
+                    else 
+                    { 
+                        <VENFTApp_Banner.Components.CoruzantNFT InputNFT="@NFT" />
+                    }
                 </div>
             </div>
             @if (isDogeft)
@@ -53,7 +60,7 @@
     private async Task Load()
     {
         StateHasChanged();
-        NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, true);
+        NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, true);
         var sender = await VEDriversLite.NeblioTransactionHelpers.GetTransactionSender(NFT.SourceTxId);
         if (sender == "NXSy3AoBkV39rBFmV15GUwFruQSMM4gPs6")
             isDogeft = true;

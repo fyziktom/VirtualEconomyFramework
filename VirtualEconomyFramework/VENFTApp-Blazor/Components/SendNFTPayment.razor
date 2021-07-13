@@ -2,6 +2,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NeblioAPI
 @inject AppData AppData
+@inject IJSRuntime JSRuntime
 
 <Spin Tip="Sending..." Spinning="@sendingTransaction">
     <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="width: 40px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
@@ -12,27 +13,27 @@
        Visible="@sendNFTDialogVisible"
        OnOk="@sendNFTDialogOK"
        OnCancel="@sendNFTDialogCancel">
-        <div class="row">
-            <div class="col">
-                <Spin Tip="Sending..." Spinning="@sendingTransaction">
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            This dialog will process the order and payment of this NFT
-                        </div>
+    <div class="row">
+        <div class="col">
+            <Spin Tip="Sending..." Spinning="@sendingTransaction">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        This dialog will process the order and payment of this NFT
                     </div>
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            Receiver Address: @receiverAddress
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        Receiver Address: @receiverAddress
                     </div>
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            Price @Price
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        Price @Price
                     </div>
-                </Spin>
-            </div>
+                </div>
+            </Spin>
         </div>
+    </div>
 </Modal>
 
 <Modal Title="@confirmTitle"
@@ -121,10 +122,12 @@
             var res = await AppData.Account.SendNFTPayment(receiverAddress, NFT);
             if (res.Item1)
                 status = res.Item2;
+            else
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
 
             NFTSent.InvokeAsync(res.Item2);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             status = ex.Message;
             Console.WriteLine(ex.Message);

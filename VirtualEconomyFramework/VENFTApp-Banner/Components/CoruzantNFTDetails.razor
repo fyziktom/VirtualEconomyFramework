@@ -4,7 +4,6 @@
 @using VEDriversLite.NeblioAPI
 @using Newtonsoft.Json
 @using Markdig
-@inject AppData AppData
 @inject HttpClient _client
 @inject IJSRuntime JSRuntime
 
@@ -206,7 +205,7 @@
                                 }
                                 else if (string.IsNullOrEmpty(tnft.PodcastLink) && !string.IsNullOrEmpty(tnft.ImageLink))
                                 {
-                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; max-width:250px; min-width:50px;" />
+                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto;" />
                                 }
                             }
                             else
@@ -219,93 +218,13 @@
                     </a>
                 </div>
             </div>
-            @if (OwnNFT)
-            {
-                @if (NFT.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
-                {
-                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center w-auto">
-                            @if (coruzantEditAllowed && NFT.Type == NFTTypes.CoruzantArticle)
-                            {
-                                <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="width:65px; height:65px; margin-right:20px;">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="row d-flex justify-content-center align-items-center">
-                                                <div class="col">
-                                                    <i class="oi oi-pencil"></i>
-                                                </div>
-                                            </div>
-                                            <div class="row d-flex justify-content-center align-items-center">
-                                                <div class="col">
-                                                    <span style="font-size: 12px;">Edit</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </button>
-                            }
-                            <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog()" style="width:65px; height:65px;">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <i class="oi oi-location"></i>
-                                            </div>
-                                        </div>
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <span style="font-size: 12px;">Send</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            <button class="btn btn-primary" @onclick="async () => await ShowOwnershipQRCode()" style="width:65px; height:65px; margin-left:20px;">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <i class="oi oi-grid-four-up"></i>
-                                            </div>
-                                        </div>
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <span style="font-size: 12px;">QR</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                }
-            }
 
             @if (NFT.Type != NFTTypes.CoruzantProfile)
             {
-                <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
+                <NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
             }
         </Spin>
     </div>
-
-    <SendNFT NFT="@NFT"
-             NFTSent="@NFTSentHandler"
-             @bind-SendNFTDialogVisible="sendNFTDialogVisible"
-             Address="@Address"
-             SubAccount="@SubAccount" />
-
-    <Modal Title="Create or edit post NFT"
-           Visible="@createNewPostVisible"
-           OnOk="@createNewPostConfirm"
-           OnCancel="@createNewPostCancel">
-        <MintNFTForm NFTType="NFTTypes.CoruzantArticle"
-                     NFT="@NFT"
-                     TokenId="@CoruzantNFTHelpers.CoruzantTokenId"
-                     RedirectToNFTsAfterMint="false"
-                     NFTMinted="@NFTMinted"
-                     Address="@Address"
-                     SubAccount="@SubAccount" />
-    </Modal>
 
     <Modal Title="Author Profile NFT"
            Visible="@authorProfileNFTVisible"
@@ -317,55 +236,10 @@
             </div>
         </div>
     </Modal>
-
-    <Modal Title="Ownership QR Code"
-           Visible="@showOwnershipDialogVisible"
-           OnOk="@showOwnershipDialogCancel"
-           Style="width:auto; max-width:300px;"
-           OnCancel="@showOwnershipDialogCancel">
-        <Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span class="text-center">Code is valid for: @qrCodeRefreshCounter s</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <small>Signature</small>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <h6 class="text-center">@ownershipDialogCode</h6>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <!--<img src="@ownershipDialogQRCodeImage" style="max-width:250px;" />-->
-                    <!--<div id="qrCodeRef"></div>-->
-                    <div @ref=qrCodeRef></div>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    @if (!copyTextButtonCoppied)
-                    {
-                        <button class="btn btn-light" @onclick="copyCodeToClipboard">Copy <i class="oi oi-share"></i></button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-light" @onclick="copyCodeToClipboard">Copied <i class="oi oi-check"></i></button>
-                    }
-                </div>
-            </div>
-        </Spin>
-    </Modal>
 </div>
 
 
 @code {
-
-    bool coruzantEditAllowed = false;
 
     private INFT NFT { get; set; } = new CoruzantProfileNFT("");
     private INFT AuthorProfileNFT { get; set; } = new CoruzantProfileNFT("");
@@ -406,9 +280,6 @@
 
     [Parameter]
     public bool OwnNFT { get; set; } = false;
-
-    [Parameter]
-    public EventCallback<string> NFTSent { get; set; }
 
     public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
     public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
@@ -515,7 +386,7 @@
                 }
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine("Cannot load Buzzsprout podcast." + ex.Message);
         }
@@ -533,12 +404,6 @@
         StateHasChanged();
     }
 
-    private async Task ShowSendNFTDialog()
-    {
-        sendNFTDialogVisible = true;
-        StateHasChanged();
-    }
-
     private async Task TryToLoadProfile()
     {
         if (NFT.Type == NFTTypes.CoruzantArticle)
@@ -546,7 +411,7 @@
             var nft = NFT as CoruzantArticleNFT;
             if (!string.IsNullOrEmpty(nft.AuthorProfileUtxo) && nft.AuthorProfileUtxo != AuthorProfileNFT.Utxo)
             {
-                AuthorProfileNFT = await NFTFactory.GetNFT(CoruzantNFTHelpers.CoruzantTokenId, nft.AuthorProfileUtxo);
+                AuthorProfileNFT = await NFTFactory.GetNFT(CoruzantNFTHelpers.CoruzantTokenId, nft.AuthorProfileUtxo, 0, 0, true, true, NFTTypes.CoruzantProfile);
             }
         }
     }
@@ -580,106 +445,4 @@
         StateHasChanged();
     }
 
-    private async Task RefreshQRCode()
-    {
-        showOwnershipDialogLoading = true;
-        StateHasChanged();
-        await Task.Delay(100);
-
-        (OwnershipVerificationCodeDto, byte[]) res;
-        if (!SubAccount)
-            res = await AppData.Account.GetNFTVerifyQRCode(_utxo);
-        else
-            res = await AppData.Account.GetNFTVerifyQRCodeFromSubAccount(Address, _utxo);
-        ownershipDialogCode = res.Item1.Signature;
-
-        var sdto = JsonConvert.SerializeObject(res.Item1);
-        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { sdto, qrCodeRef });
-        creatingOwnerQRCodeState = "Refreshing Key...";
-        showOwnershipDialogLoading = false;
-        StateHasChanged();
-    }
-    private async Task ShowOwnershipQRCode()
-    {
-        creatingOwnerQRCodeState = "Initializing Verification Module...";
-        showOwnershipDialogVisible = true;
-        StateHasChanged();
-        await Task.Delay(50);
-        await RefreshQRCode();
-
-        if (qrCodeRefreshTimer != null)
-        {
-            qrCodeRefreshTimer.Dispose();
-        }
-
-        qrCodeRefreshTimer = new System.Threading.Timer(async (object stateInfo) =>
-        {
-            try
-            {
-                var utc = DateTime.UtcNow;
-                if ((utc.Second >= 0 && utc.Second < 50) && !qrrefreshed)
-                {
-                    await RefreshQRCode();
-                    qrCodeRefreshCounter = 60 - utc.Second;
-                    qrrefreshed = true;
-                }
-                else if (utc.Second > 50 && utc.Second < 55)
-                {
-                    qrrefreshed = false;
-                    qrCodeRefreshCounter--;
-                }
-                else
-                {
-                    qrCodeRefreshCounter--;
-                }
-
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot read tx details. " + ex.Message);
-            }
-        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
-    }
-
-    private async Task showOwnershipDialogCancel(MouseEventArgs e)
-    {
-        showOwnershipDialogVisible = false;
-        StateHasChanged();
-    }
-
-    private async Task ShowSetPriceNFTDialog()
-    {
-        setPriceNFTDialogVisible = true;
-        StateHasChanged();
-    }
-
-    private async Task ShowUpdatePostNFTDialog()
-    {
-        createNewPostVisible = true;
-        StateHasChanged();
-    }
-
-    private async Task createNewPostConfirm(MouseEventArgs e)
-    {
-        createNewPostVisible = false;
-        StateHasChanged();
-    }
-
-    private async Task createNewPostCancel(MouseEventArgs e)
-    {
-        createNewPostVisible = false;
-    }
-
-    void NFTSentHandler(string e)
-    {
-        sendNFTDialogVisible = false;
-        StateHasChanged();
-    }
-
-    void NFTMinted(string e)
-    {
-        createNewPostVisible = false;
-        StateHasChanged();
-    }
 }

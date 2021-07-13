@@ -2,6 +2,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NeblioAPI
 @using Newtonsoft.Json
+@using Markdig
 
 <div class="row">
     <div class="col">
@@ -28,19 +29,62 @@
                     <span>Author: @NFT.Author</span>
                 </div>
             </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <span>Description: @NFT.Description</span>
+            @if (!string.IsNullOrEmpty(NFT.Description))
+            {
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Description</span>
+                    </div>
                 </div>
-            </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
+                    </div>
+                </div>
+            }
+            @if (NFT.TagsList.Count > 0)
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Tags</span>
+                    </div>
+                </div>
+                <div class="row d-flex justify-content-center align-items-center">
+                    @foreach (var tag in NFT.TagsList)
+                    {
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <small>#@tag</small>
+                        </div>
+                    }
+                </div>
+            }
+            @if ((NFT.Type == NFTTypes.Post && !string.IsNullOrEmpty(NFT.Text)) ||
+             (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Text</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@((MarkupString) NFTmarkuptext)</span>
+                    </div>
+                </div>
+            }
             @if (NFT.Type == NFTTypes.Ticket)
             {
+                var nft = NFT as TicketNFT;
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <span>Event Details</span>
                     </div>
                 </div>
-                var nft = NFT as TicketNFT;
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="ShowEvent">Check Event NFT</button>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <small>Date: @nft.EventDate.ToString()</small>
@@ -64,6 +108,57 @@
                         </div>
                     </div>
                 }
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Ticket Type</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        @switch (nft.TicketDuration)
+                        {
+                            case DurationOfNFTTicket.Day:
+                                <span class="badge badge-secondary">1 Day</span>
+                                break;
+                            case DurationOfNFTTicket.TwoDays:
+                                <span class="badge badge-primary">2 Days</span>
+                                break;
+                            case DurationOfNFTTicket.ThreeDays:
+                                <span class="badge badge-success">3 Days</span>
+                                break;
+                            case DurationOfNFTTicket.FourDays:
+                                <span class="badge badge-info">4 Days</span>
+                                break;
+                            case DurationOfNFTTicket.FiveDays:
+                                <span class="badge badge-warning">5 Days</span>
+                                break;
+                        }
+                        @switch (nft.TicketClass)
+                        {
+                            case ClassOfNFTTicket.Economy:
+                                <span class="badge badge-secondary">Economy</span>
+                                break;
+                            case ClassOfNFTTicket.Standard:
+                                <span class="badge badge-primary">Standard</span>
+                                break;
+                            case ClassOfNFTTicket.VIP:
+                                <span class="badge badge-success">VIP</span>
+                                break;
+                            case ClassOfNFTTicket.VIPPlus:
+                                <span class="badge badge-info">VIP+</span>
+                                break;
+                            case ClassOfNFTTicket.General:
+                                <span class="badge badge-primary">General</span>
+                                break;
+                            case ClassOfNFTTicket.Family:
+                                <span class="badge badge-warning">Family</span>
+                                break;
+                            case ClassOfNFTTicket.Children:
+                                <span class="badge badge-warning">Children</span>
+                                break;
+                        }
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <a href="@nft.AuthorLink" target="_blank">Author Link</a>
@@ -91,6 +186,80 @@
                     </div>
                 }
             }
+            @if (NFT.Type == NFTTypes.Event)
+            {
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Event Details</span>
+                    </div>
+                </div>
+                var nft = NFT as EventNFT;
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <small>Date: @nft.EventDate.ToString()</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <small>Location: @nft.Location</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="http://www.google.com/maps/place/@nft.LocationCoordinates" target="_blank">Location Link</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="@nft.AuthorLink" target="_blank">Author Link</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <a href="@nft.VideoLink" target="_blank">Video Link</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Event Type</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        @switch (nft.EventClass)
+                        {
+                            case ClassOfNFTEvent.PersonalEvent:
+                                <span class="badge badge-secondary">Personal</span>
+                                break;
+                            case ClassOfNFTEvent.Birthday:
+                                <span class="badge badge-primary">Birthday</span>
+                                break;
+                            case ClassOfNFTEvent.Concert:
+                                <span class="badge badge-success">Concert</span>
+                                break;
+                            case ClassOfNFTEvent.Festival:
+                                <span class="badge badge-info">Festival</span>
+                                break;
+                            case ClassOfNFTEvent.PlaneFlight:
+                                <span class="badge badge-warning">Plane Flight</span>
+                                break;
+                            case ClassOfNFTEvent.OnlineMeeting:
+                                <span class="badge badge-light">e-Meeting</span>
+                                break;
+                        }
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music)
+                {
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <a href="@NFT.Link" target="_blank">Connected Link</a>
+                        </div>
+                    </div>
+                }
+            }
+
             @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music && NFT.Type != NFTTypes.Ticket)
             {
                 <div class="row">
@@ -115,7 +284,30 @@
                                 }
                                 else
                                 {
-                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto;" />
+                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
+                                }
+                            }
+                            else
+                            {
+                                <Spin Tip="Loading..." Spinning="true">
+                                    <div style="width:100px; height:50px;"></div>
+                                </Spin>
+                            }
+                        }
+                        else if (NFT.Type == NFTTypes.Event)
+                        {
+                            var enft = NFT as EventNFT;
+                            @if (!string.IsNullOrEmpty(NFT.ImageLink))
+                            {
+                                @if (enft.MusicInLink)
+                                {
+                                    <video controls="" autoplay="" name="media" title="@NFT.Name" style="min-height: 100px; max-height: 150px; width: auto; min-width: 150px; max-width: 250px;">
+                                        <source src="@NFT.ImageLink" type="audio/mpeg">
+                                    </video>
+                                }
+                                else
+                                {
+                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
                                 }
                             }
                             else
@@ -162,12 +354,34 @@
                     <small class="text-muted">Setted Price: @NFT.Price NEBL</small>
                 </div>
             }
-            <NFTHistory Utxo="@NFT.Utxo" />
+            <NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
         </Spin>
     </div>
 </div>
 
+<Modal Title="Event Details"
+       Visible="@eventNFTDetailsVisible"
+       OnOk="@eventNFTDetailsClose"
+       OnCancel="@eventNFTDetailsClose">
+    <Spin Tip="Loading Event Data..." Spinning="@loadingEventData">
+        @if (!string.IsNullOrEmpty(loadedEventNFT.Utxo))
+        {
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <NFT InputNFT="@loadedEventNFT" OwnNFT="false"/>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div style="min-width:100px; min-height:50px;"></div>
+        }
+    </Spin>
+</Modal>
+
 @code {
+    public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
 
     private INFT NFT { get; set; } = new ImageNFT("");
 
@@ -196,6 +410,11 @@
     string status = string.Empty;
     private string songName = string.Empty;
 
+    INFT loadedEventNFT = new EventNFT("");
+    bool eventNFTDetailsVisible = false;
+    bool loadingEventData = false;
+
+
     protected override Task OnInitializedAsync()
     {
         if (!string.IsNullOrEmpty(_utxo))
@@ -218,10 +437,10 @@
         StateHasChanged();
         NFT.TxDataRefreshed -= TxDataRefreshedHandler;
         await NFT.StopRefreshingData();
-        if (NFT.Type !=  NFTTypes.Music)
+        if (NFT.Type != NFTTypes.Music)
             NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo);
         else
-            NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo, 0, true);
+            NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo, 0, 0, true);
 
         if (NFT == null)
             return;
@@ -230,6 +449,30 @@
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
         loading = false;
         StateHasChanged();
+    }
+
+    private async Task ShowEvent(MouseEventArgs e)
+    {
+        if (NFT.Type != NFTTypes.Ticket)
+            return;
+        var nft = NFT as TicketNFT;
+        eventNFTDetailsVisible = true;
+        loadingEventData = true;
+        StateHasChanged();
+
+        loadedEventNFT = await NFTHelpers.FindEventOnTheAddress(nft.EventAddress, nft.EventId);
+        loadingEventData = false;
+        if (loadedEventNFT == null)
+        {
+            loadedEventNFT = new EventNFT("");
+            eventNFTDetailsVisible = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task eventNFTDetailsClose(MouseEventArgs e)
+    {
+        eventNFTDetailsVisible = false;
     }
 
     private void TxDataRefreshedHandler(object sender, GetTransactionInfoResponse info)

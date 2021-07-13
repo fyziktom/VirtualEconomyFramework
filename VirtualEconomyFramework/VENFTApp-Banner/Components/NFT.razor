@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
 
 <div class="card" style="margin-left:10px; margin-top:10px;min-width:250px; width:250px; max-width:250px; min-height:400px; max-height:600px;">
     <div class="card-header" style="padding: 0px;">
@@ -56,6 +57,31 @@
                             </Spin>
                         }
                         break;
+                    case NFTTypes.Event:
+                        var enft = nft as EventNFT;
+                        @if (!string.IsNullOrEmpty(nft.ImageLink))
+                        {
+                            @if (enft.MusicInLink)
+                            {
+                                <video name="media" style="max-width:250px; width:250px; max-height:200px; margin-bottom:70px;" controls>
+                                    <source src="@nft.ImageLink" type="audio/mpeg" autostart="false">
+                                </video>
+                            }
+                            else
+                            {
+                                @if (!string.IsNullOrEmpty(nft.ImageLink))
+                                {
+                                    <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <Spin Tip="Loading..." Style="min-width:50px;">
+                                <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
+                            </Spin>
+                        }
+                        break;
                     case NFTTypes.Music:
                         @if (!string.IsNullOrEmpty(nft.Link))
                         {
@@ -76,21 +102,106 @@
     </div>
 
     <div class="card-body d-flex justify-content-center align-items-end">
+        @if (nft.TokenId == NFTHelpers.TokenId)
+        {
+            <span class="badge badge-warning" style="position: absolute;right: 200px;top: 207px;">VENFT</span>
+        }
+        else if (nft.TokenId == CoruzantNFTHelpers.CoruzantTokenId)
+        {
+            <span class="badge badge-primary" style="position: absolute;right: 190px;top: 207px;">Coruzant</span>
+        }
+    <div style="position: absolute;right: 7px;top: 207px; padding:0px; margin:0px;">
+        @if (nft.Type == NFTTypes.Ticket)
+        {
+            var tnft = nft as TicketNFT;
+            @switch (tnft.TicketDuration)
+            {
+                case DurationOfNFTTicket.Day:
+                    <span class="badge badge-secondary">1 Day</span>
+                    break;
+                case DurationOfNFTTicket.TwoDays:
+                    <span class="badge badge-primary">2 Days</span>
+                    break;
+                case DurationOfNFTTicket.ThreeDays:
+                    <span class="badge badge-success">3 Days</span>
+                    break;
+                case DurationOfNFTTicket.FourDays:
+                    <span class="badge badge-info">4 Days</span>
+                    break;
+                case DurationOfNFTTicket.FiveDays:
+                    <span class="badge badge-warning">5 Days</span>
+                    break;
+            }
+            @switch (tnft.TicketClass)
+            {
+                case ClassOfNFTTicket.Economy:
+                    <span class="badge badge-secondary">Economy</span>
+                    break;
+                case ClassOfNFTTicket.Standard:
+                    <span class="badge badge-primary">Standard</span>
+                    break;
+                case ClassOfNFTTicket.VIP:
+                    <span class="badge badge-success">VIP</span>
+                    break;
+                case ClassOfNFTTicket.VIPPlus:
+                    <span class="badge badge-info">VIP+</span>
+                    break;
+                case ClassOfNFTTicket.General:
+                    <span class="badge badge-primary">General</span>
+                    break;
+                case ClassOfNFTTicket.Family:
+                    <span class="badge badge-warning">Family</span>
+                    break;
+                case ClassOfNFTTicket.Children:
+                    <span class="badge badge-warning">Children</span>
+                    break;
+            }
+        }
+        else if (nft.Type == NFTTypes.Event)
+        {
+            var enft = nft as EventNFT;
+            @switch (enft.EventClass)
+            {
+                case ClassOfNFTEvent.PersonalEvent:
+                    <span class="badge badge-secondary">Personal</span>
+                    break;
+                case ClassOfNFTEvent.Birthday:
+                    <span class="badge badge-primary">Birthday</span>
+                    break;
+                case ClassOfNFTEvent.Concert:
+                    <span class="badge badge-success">Concert</span>
+                    break;
+                case ClassOfNFTEvent.Festival:
+                    <span class="badge badge-info">Festival</span>
+                    break;
+                case ClassOfNFTEvent.PlaneFlight:
+                    <span class="badge badge-warning">Plane Flight</span>
+                    break;
+                case ClassOfNFTEvent.OnlineMeeting:
+                    <span class="badge badge-light">e-Meeting</span>
+                    break;
+            }
+        }
         @switch (nft.Type)
         {
             case NFTTypes.Image:
-                <span class="badge badge-primary" style="position: absolute;right: 7px;top: 207px;">Image</span>
-                break;
-            case NFTTypes.Post:
-                <span class="badge badge-info" style="position: absolute;right: 7px;top: 207px;">Post</span>
+                <span class="badge badge-primary">Image</span>
                 break;
             case NFTTypes.Ticket:
-                <span class="badge badge-secondary" style="position: absolute;right: 7px;top: 207px;">Ticket</span>
+                <span class="badge badge-secondary">Ticket</span>
+                break;
+            case NFTTypes.Event:
+                <span class="badge badge-success">Event</span>
+                break;
+            case NFTTypes.Post:
+                <span class="badge badge-info">Post</span>
                 break;
             case NFTTypes.Music:
-                <span class="badge badge-warning" style="position: absolute;right: 7px;top: 207px;">Music</span>
+                <span class="badge badge-warning">Music</span>
                 break;
         }
+    </div>
+
         <div class="row" style="margin: 0px;">
             <div class="col" style="padding: 0px;">
                 <div class="row text-center" style="margin: 0px;">
@@ -107,7 +218,17 @@
                 </div>
                 <div class="row text-center" style="margin: 0px;">
                     <div class="col text-center" style="padding: 0px;">
-                        <small class="text-center">@nft.Author</small>
+                        @if (!string.IsNullOrEmpty(nft.Description))
+                        {
+                            @if (nft.Author.Length > 30)
+                            {
+                                <small class="text-center">@nft.Author.Substring(0, 29) ...</small>
+                            }
+                            else
+                            {
+                                <small class="text-center">@nft.Author</small>
+                            }
+                        }
                     </div>
                 </div>
                 <div class="row text-center" style="margin: 0px;">

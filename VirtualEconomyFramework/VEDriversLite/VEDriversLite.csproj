@@ -21,7 +21,7 @@
 - Added images to Dogecoin transactions</PackageReleaseNotes>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup>
     <DocumentationFile>C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\VEDriversLite.xml</DocumentationFile>
   </PropertyGroup>
 

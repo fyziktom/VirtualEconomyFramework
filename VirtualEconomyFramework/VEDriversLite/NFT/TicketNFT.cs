@@ -10,9 +10,26 @@ namespace VEDriversLite.NFT
     public enum ClassOfNFTTicket
     {
         Economy,
+        General,
         Standard,
         VIP,
-        VIPPlus
+        VIPPlus,
+        Family,
+        Children
+    }
+    public enum DurationOfNFTTicket
+    {
+        OneMinute,
+        OneHour,
+        Day,
+        TwoDays,
+        ThreeDays,
+        FourDays,
+        FiveDays,
+        Week,
+        Weekend,
+        Month,
+        Year
     }
     public class TicketNFT : CommonNFT
     {
@@ -38,6 +55,7 @@ namespace VEDriversLite.NFT
             AuthorLink = nft.AuthorLink;
             EventDate = nft.EventDate;
             TicketClass = nft.TicketClass;
+            TicketDuration = nft.TicketDuration;
             EventId = nft.EventId;
             EventAddress = nft.EventAddress;
             Seat = nft.Seat;
@@ -60,6 +78,7 @@ namespace VEDriversLite.NFT
         public string AuthorLink { get; set; } = string.Empty;
         public DateTime EventDate { get; set; } = DateTime.UtcNow;
         public ClassOfNFTTicket TicketClass { get; set; } = ClassOfNFTTicket.Standard;
+        public DurationOfNFTTicket TicketDuration { get; set; } = DurationOfNFTTicket.Day;
         [JsonIgnore]
         public EventNFT EventNFTForTheTicket { get; set; } = new EventNFT("");
 
@@ -142,6 +161,17 @@ namespace VEDriversLite.NFT
                 catch(Exception ex)
                 {
                     TicketClass = ClassOfNFTTicket.Standard;
+                }
+            }
+            if (meta.TryGetValue("TicketDuration", out var td))
+            {
+                try
+                {
+                    TicketDuration = (DurationOfNFTTicket)Convert.ToInt32(td);
+                }
+                catch (Exception ex)
+                {
+                    TicketDuration = DurationOfNFTTicket.Day;
                 }
             }
             if (meta.TryGetValue("PriceInDoge", out var priced))
@@ -262,6 +292,7 @@ namespace VEDriversLite.NFT
             if (!string.IsNullOrEmpty(Seat))
                 metadata.Add("Seat", Seat);
             metadata.Add("TicketClass", Convert.ToInt32(TicketClass).ToString());
+            metadata.Add("TicketDuration", Convert.ToInt32(TicketDuration).ToString());
             if (Used)
                 metadata.Add("Used", "true");
             if (PriceInDoge > 0)

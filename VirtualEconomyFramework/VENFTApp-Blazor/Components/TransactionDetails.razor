@@ -33,7 +33,7 @@
                     }
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <span>Total Send: @txInDetails.Totalsent NEBL</span>
+                            <span>Total Send: @txInDetails.Totalsent <img style="width: 12px;margin-right: 10px;" src="images/neblio-icon.png" /></span>
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
@@ -72,6 +72,8 @@
         {
             if (!string.IsNullOrEmpty(value))
             {
+                if (txId != value)
+                    Load();
                 txId = value;
             }
         }
@@ -87,7 +89,6 @@
     string fromAddress = string.Empty;
     bool receivedFromAnotherAddress = false;
     private System.Threading.Timer txdetailsTimer;
-
 
     string lasttxid = string.Empty;
 

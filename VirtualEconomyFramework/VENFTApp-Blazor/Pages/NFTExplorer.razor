@@ -32,8 +32,7 @@
                                     <span class="oi oi-home" aria-hidden="true"></span> Main Account NFTs
                                 </HeaderTemplate>
                                 <ChildContent>
-                                    <VENFTApp_Blazor.Components.NFTList MainAccount="true" NFTsChanged="nftChangedHandler"
-                                                                        NFTs="@AppData.Account.NFTs" 
+                                    <VENFTApp_Blazor.Components.NFTList MainAccount="true" NFTsChanged="nftChangedHandler" SubAccount="false" InBrowser="false"
                                                                         Address="@AppData.Account.Address" />
                                 </ChildContent>
                             </Panel>
@@ -59,7 +58,7 @@
                                         </div>
                                         <div class="row" style="min-width:300px; padding:0px;">
                                             <div class="col w-100" style="min-width:300px; padding:0px;">
-                                                <VENFTApp_Blazor.Components.SubAccountNFTsList Address="@mt.Address" />
+                                                <VENFTApp_Blazor.Components.SubAccountNFTsList Address="@mt.Address" NFTsChanged="nftChangedHandler" />
                                             </div>
                                         </div>
                                     </ChildContent>

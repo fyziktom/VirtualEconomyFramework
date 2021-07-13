@@ -241,6 +241,8 @@
     void NFTSentHandler(string nfttx)
     {
         nftDetailsVisible = false;
+        StateHasChanged();
+        NFTsChanged.InvokeAsync(_nfts);
     }
 
     private async Task displayImagesChanged(object e)

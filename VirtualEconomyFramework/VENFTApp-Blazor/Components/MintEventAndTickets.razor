@@ -33,6 +33,14 @@
                                 <Input Placeholder="Add Event NFT TxId" MaxLength="100" @onfocusout="eventIdFilled" @bind-Value=@eventId Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
+                        @if (string.IsNullOrEmpty(eventId))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
                                 <small>Event Address</small>
@@ -43,6 +51,14 @@
                                 <Input Placeholder="Add Event NFT Address" MaxLength="100" @bind-Value=@eventAddress Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
+                        @if (string.IsNullOrEmpty(eventAddress))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
                         @if (!string.IsNullOrEmpty(eventId) && !string.IsNullOrEmpty(eventAddress))
                         {
                             <div class="row" style="margin-top:10px;">
@@ -103,6 +119,21 @@
                                     </RadioGroup>
                                 </div>
                             </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Ticket Duration</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <RadioGroup @bind-Value="@durationOfTicketName" @onselectionchange="stateChangedHandler">
+                                        @foreach (var ev in Enum.GetNames(typeof(DurationOfNFTTicket)))
+                                                {
+                                            <Radio Value="ev">@ev</Radio>
+                                                }
+                                    </RadioGroup>
+                                </div>
+                            </div>
                         }
 
                         <hr />
@@ -116,6 +147,14 @@
                                 <Input Placeholder="Type Name" MaxLength="100" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
+                        @if (string.IsNullOrEmpty(name))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
                                 <small>Author</small>
@@ -126,6 +165,14 @@
                                 <Input Placeholder="Add Author of the NFT" MaxLength="100" @bind-Value=@author Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
+                        @if (string.IsNullOrEmpty(author))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
                                 <small>Author Link</small>
@@ -143,10 +190,25 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <TextArea Placeholder="Add Description of the NFT" MaxLength="160" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
+                                <TextArea Placeholder="Add Description of the NFT" MaxLength="300" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
                             </div>
                         </div>
-
+                        @if (!string.IsNullOrEmpty(description))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field</small>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(description))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-info">Remaining @(300-description.Length) from 300 characters.</small>
+                                </div>
+                            </div>
+                        }
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
                                 <small>Text</small>
@@ -163,6 +225,14 @@
                                 </div>
                             }
                         </div>
+                        @if (!string.IsNullOrEmpty(text))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-info">Remaining @(5000-text.Length) from 5000 characters.</small>
+                                </div>
+                            </div>
+                        }
 
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
@@ -186,6 +256,14 @@
                                 <Input Placeholder="Add Location Name" MaxLength="100" @bind-Value=@location Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
+                        @if (string.IsNullOrEmpty(location) && string.IsNullOrEmpty(locationCoordinates))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field or fill Location Coordinates.</small>
+                                </div>
+                            </div>
+                        }
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
                                 <small>Location Coordinates (example: "39.947041,-75.165295")</small>
@@ -196,6 +274,14 @@
                                 <Input Placeholder="Add Location Coordinates" MaxLength="100" @bind-Value=@locationCoordinates Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
+                        @if (string.IsNullOrEmpty(locationCoordinates) && string.IsNullOrEmpty(location))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field or fill Location field.</small>
+                                </div>
+                            </div>
+                        }
                         @if (!string.IsNullOrEmpty(locationCoordinates))
                         {
                             <div class="row" style="margin-top:10px;">
@@ -401,24 +487,24 @@
 
 @code {
 
-        bool withPrice = false;
-        bool withCoppies = false;
-        bool eventDataLoaded = false;
+    bool withPrice = false;
+    bool withCoppies = false;
+    bool eventDataLoaded = false;
 
-        [Parameter]
-        public bool RedirectToNFTsAfterMint { get; set; } = false;
+    [Parameter]
+    public bool RedirectToNFTsAfterMint { get; set; } = false;
 
-        [Parameter]
-        public EventCallback<string> NFTMinted { get; set; }
+    [Parameter]
+    public EventCallback<string> NFTMinted { get; set; }
 
-        [Parameter]
-        public bool SubAccount { get; set; } = false;
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
 
-        [Parameter]
-        public string Address { get; set; } = string.Empty;
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
 
-        [Parameter]
-        public string TokenId { get; set; } = string.Empty;
+    [Parameter]
+    public string TokenId { get; set; } = string.Empty;
 
     private NFTTypes nftType = NFTTypes.Event;
     [Parameter]
@@ -475,8 +561,10 @@
     bool musicInLink = false;
     string classOfEventName = string.Empty;
     string classOfTicketName = string.Empty;
+    string durationOfTicketName = string.Empty;
     ClassOfNFTEvent classOfEvent = ClassOfNFTEvent.PersonalEvent;
     ClassOfNFTTicket classOfTicket = ClassOfNFTTicket.Standard;
+    DurationOfNFTTicket durationOfTicket = DurationOfNFTTicket.Day;
     string multimintStatus = string.Empty;
 
     bool loadingEventData = false;
@@ -613,6 +701,7 @@
         if (loadedEventNFT == null)
             return;
 
+        eventId = loadedEventNFT.NFTOriginTxId;
         eventDate = (loadedEventNFT as EventNFT).EventDate;
         location = (loadedEventNFT as EventNFT).Location;
         locationCoordinates = (loadedEventNFT as EventNFT).LocationCoordinates;
@@ -673,6 +762,7 @@
                     classOfTicket = (newNFT as TicketNFT).TicketClass;
                     authorLink = (newNFT as TicketNFT).AuthorLink;
                     classOfTicketName = (newNFT as TicketNFT).TicketClass.ToString();
+                    durationOfTicketName = (newNFT as TicketNFT).TicketDuration.ToString();
                     break;
                 case NFTTypes.Event:
                     eventId = (newNFT as EventNFT).EventId;
@@ -710,29 +800,32 @@
             switch (nftType)
             {
                 case NFTTypes.Ticket:
-                    newNFT = new TicketNFT("");
-                    (newNFT as TicketNFT).EventId = eventId;
-                    (newNFT as TicketNFT).EventDate = eventDate;
-                    (newNFT as TicketNFT).EventAddress = eventAddress;
-                    (newNFT as TicketNFT).Location = location;
-                    (newNFT as TicketNFT).LocationCoordinates = locationCoordinates;
-                    (newNFT as TicketNFT).VideoLink = videoLink;
-                    (newNFT as TicketNFT).Seat = seat;
-                    (newNFT as TicketNFT).TicketClass = classOfTicket;
-                    (newNFT as TicketNFT).AuthorLink = authorLink;
+                    newNFT = new TicketNFT("")
+                    {
+                        EventId = eventId,
+                        EventDate = eventDate,
+                        EventAddress = eventAddress,
+                        Location = location,
+                        LocationCoordinates = locationCoordinates,
+                        VideoLink = videoLink,
+                        Seat = seat,
+                        TicketClass = classOfTicket,
+                        AuthorLink = authorLink,
+                    };
                     (newNFT as TicketNFT).TicketClass = (ClassOfNFTTicket)Enum.Parse(typeof(ClassOfNFTTicket), classOfTicketName);
+                    (newNFT as TicketNFT).TicketDuration = (DurationOfNFTTicket)Enum.Parse(typeof(DurationOfNFTTicket), durationOfTicketName);
                     break;
                 case NFTTypes.Event:
-                    //newNFT.Type = NFTTypes.Event; // set as basic type just to coppy basic data
-                    //var pnft = await NFTFactory.CloneNFT(newNFT, true, NFTTypes.Event);
-                    newNFT = new EventNFT("");//pnft; // hotfix
-                    (newNFT as EventNFT).EventId = eventId;
-                    (newNFT as EventNFT).EventDate = eventDate;
-                    (newNFT as EventNFT).Location = location;
-                    (newNFT as EventNFT).LocationCoordinates = locationCoordinates;
-                    (newNFT as EventNFT).VideoLink = videoLink;
-                    (newNFT as EventNFT).EventClass = classOfEvent;
-                    (newNFT as EventNFT).AuthorLink = authorLink;
+                    newNFT = new EventNFT("")
+                    {
+                        EventId = eventId,
+                        EventDate = eventDate,
+                        Location = location,
+                        LocationCoordinates = locationCoordinates,
+                        VideoLink = videoLink,
+                        EventClass = classOfEvent,
+                        AuthorLink = authorLink,
+                    };
                     (newNFT as EventNFT).EventClass = (ClassOfNFTEvent)Enum.Parse(typeof(ClassOfNFTEvent), classOfEventName);
                     break;
             }
@@ -795,6 +888,10 @@
                     await Task.Delay(500);
                     NavManager.NavigateTo("/nfts");
                 }
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
             }
         }
         catch (Exception ex)

@@ -8,6 +8,7 @@
 @inject AppData AppData
 @inject HttpClient _client
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 @page "/send"
 
 <div class="container-fluid">
@@ -76,7 +77,7 @@
 
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <RadioGroup @bind-Value="@txType" @onselectionchange="txTypeChangedHandler">
+                        <RadioGroup @bind-Value="@txType">
                             <Radio Value="TxType.Neblio">Neblio</Radio>
                             <Radio Value="TxType.Tokens">Tokens</Radio>
                             <Radio Value="TxType.SplitNeblio">Split Neblio</Radio>
@@ -108,7 +109,7 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@AmountToSend" />
+                                <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@AmountToSend" /> <img style="width: 25px;margin-right: 10px;" src="images/neblio-icon.png" />
                             </div>
                         </div>
                     }
@@ -116,7 +117,7 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="0.0001" min="0.0001" max="@SelectedAccountTotalSpendable" @bind="@AmountToSend" />
+                                <input type="number" step="0.0001" min="0.0001" max="@SelectedAccountTotalSpendable" @bind="@AmountToSend" /> <img style="width: 25px;margin-right: 10px;" src="images/neblio-icon.png" />
                             </div>
                         </div>
                     }
@@ -132,7 +133,7 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@splitNeblioDto.amount" />
+                                <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@splitNeblioDto.amount" /> <img style="width: 25px;margin-right: 10px;" src="images/neblio-icon.png" />
                             </div>
                         </div>
                     }
@@ -140,7 +141,7 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="0.0001" min="0.0001" max="@SelectedAccountTotalSpendable" @bind="@splitNeblioDto.amount" />
+                                <input type="number" step="0.0001" min="0.0001" max="@SelectedAccountTotalSpendable" @bind="@splitNeblioDto.amount" /> <img style="width: 25px;margin-right: 10px;" src="images/neblio-icon.png" />
                             </div>
                         </div>
                     }
@@ -248,54 +249,28 @@
                             <p>Token Type:</p>
                         </div>
                     </div>
-                    @if (mainAccountSelected)
-                    {
-                        <div class="row" style="margin-top:20px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <RadioGroup @bind-Value="@selectedTokenId" @onselectionchange="tokenTypeChangedHandler">
-                                    @foreach (var t in AppData.Account.TokensSupplies)
-                                            {
-                                        <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
-                                            }
-                                </RadioGroup>
-                            </div>
+                    
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <RadioGroup @bind-Value="@selectedTokenId" OnChange="tokenTypeChangedHandler" TValue="string">
+                                @foreach (var t in SelectedAccountTokenSupply)
+                                        {
+                                    <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
+                                        }
+                            </RadioGroup>
                         </div>
-                    }
-                    else if (!string.IsNullOrEmpty(selectedAccountAddress) && !mainAccountSelected)
-                    {
-                        <div class="row" style="margin-top:20px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <RadioGroup @bind-Value="@selectedTokenId" @onselectionchange="tokenTypeChangedHandler">
-                                    @foreach (var t in SelectedAccountTokenSupply)
-                                            {
-                                        <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
-                                            }
-                                </RadioGroup>
-                            </div>
-                        </div>
-                    }
+                    </div>
+                    
                     <div class="row" style="margin-top:30px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <p>Amount of Tokens:</p>
                         </div>
                     </div>
-                    if (mainAccountSelected)
-                    {
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@splitNeblioTokenDto.amount" />
-                            </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@splitNeblioTokenDto.amount" /> <img style="width: 25px;margin-right: 10px;" src="@selectedToken.ImageUrl" />
                         </div>
-                    }
-                    else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
-                    {
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@splitNeblioTokenDto.amount" />
-                            </div>
-                        </div>
-                    }
-                    <div class="row" style="margin-top:30px;">
+                    </div>                    <div class="row" style="margin-top:30px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <p>Number of Lots:</p>
                         </div>
@@ -399,32 +374,16 @@
                             <p>Token Type:</p>
                         </div>
                     </div>
-                    @if (mainAccountSelected)
-                    {
-                        <div class="row" style="margin-top:20px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <RadioGroup @bind-Value="@selectedTokenId" @onselectionchange="tokenTypeChangedHandler">
-                                    @foreach (var t in AppData.Account.TokensSupplies)
-                                            {
-                                        <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
-                                            }
-                                </RadioGroup>
-                            </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <RadioGroup @bind-Value="@selectedTokenId" OnChange="tokenTypeChangedHandler" TValue="string">
+                                @foreach (var t in SelectedAccountTokenSupply)
+                                        {
+                                    <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
+                                        }
+                            </RadioGroup>
                         </div>
-                    }
-                    else if (!string.IsNullOrEmpty(selectedAccountAddress) && !mainAccountSelected)
-                    {
-                        <div class="row" style="margin-top:20px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <RadioGroup @bind-Value="@selectedTokenId" @onselectionchange="tokenTypeChangedHandler">
-                                    @foreach (var t in SelectedAccountTokenSupply)
-                                            {
-                                        <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
-                                            }
-                                </RadioGroup>
-                            </div>
-                        </div>
-                    }
+                    </div>
                     <div class="row" style="margin-top:30px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <p>Amount of tokens:</p>
@@ -437,7 +396,7 @@
                     </div>
                     <div class="row" style="margin-top:2px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@AmountTokensToSend" />
+                            <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@AmountTokensToSend" /> <img style="width: 25px;margin-right: 10px;" src="@selectedToken.ImageUrl" />
                         </div>
                     </div>
                 }
@@ -501,7 +460,7 @@
 
 
 @code {
-    private enum TxType
+    public enum TxType
     {
         Neblio,
         Tokens,
@@ -547,7 +506,7 @@
             if (!string.IsNullOrEmpty(selectedAccountAddress))
                 if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
                     return acc.SourceTokensBalance;
-            return 0.0;
+            return AppData.Account.SourceTokensBalance;
         }
     }
     public double SelectedAccountTotalSourceCORZT
@@ -557,7 +516,7 @@
             if (!string.IsNullOrEmpty(selectedAccountAddress))
                 if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
                     return acc.CoruzantSourceTokensBalance;
-            return 0.0;
+            return AppData.Account.CoruzantSourceTokensBalance;
         }
     }
     public double SelectedAccountTotalSpendable
@@ -567,7 +526,7 @@
             if (!string.IsNullOrEmpty(selectedAccountAddress))
                 if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
                     return acc.TotalSpendableBalance;
-            return 0.0;
+            return AppData.Account.TotalSpendableBalance;
         }
     }
     public double SelectedAccountTotalUnconfirmed
@@ -577,26 +536,18 @@
             if (!string.IsNullOrEmpty(selectedAccountAddress))
                 if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
                     return acc.TotalUnconfirmedBalance;
-            return 0.0;
+            return AppData.Account.TotalUnconfirmedBalance;
         }
     }
-    public Dictionary<string,TokenSupplyDto> SelectedAccountTokenSupply
+    public Dictionary<string, TokenSupplyDto> SelectedAccountTokenSupply
     {
         get
         {
             if (!string.IsNullOrEmpty(selectedAccountAddress))
                 if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
                     return acc.TokensSupplies;
-            return new Dictionary<string, TokenSupplyDto>();
+            return AppData.Account.TokensSupplies;
         }
-    }
-
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (AppData.Account.TokensSupplies.TryGetValue(selectedTokenId, out var ts))
-            selectedToken = ts;
-
-        return base.OnAfterRenderAsync(firstRender);
     }
 
     protected override Task OnInitializedAsync()
@@ -613,13 +564,25 @@
                     AppData.Account.Refreshed += RefreshedHandler;
                 selectedAccountAddress = AppData.Account.Address;
                 mainAccountSelected = true;
+                if (AppData.Account.TokensSupplies.TryGetValue(selectedTokenId, out var dto))
+                {
+                    selectedToken = dto;
+                }
+                else
+                {
+                    var ts = AppData.Account.TokensSupplies.Values.FirstOrDefault();
+                    if (ts != null)
+                    {
+                        selectedToken = ts;
+                        selectedTokenId = ts.TokenId;
+                    }
+                }
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Redirect();
         }
-
         return base.OnInitializedAsync();
     }
 
@@ -719,12 +682,12 @@
         StateHasChanged();
     }
 
-    private void txTypeChangedHandler(EventArgs e)
+    private void txTypeChangedHandler(TxType type)
     {
         StateHasChanged();
     }
 
-    private void tokenTypeChangedHandler(EventArgs e)
+    private async Task tokenTypeChangedHandler(string tokid)
     {
         if (mainAccountSelected)
         {
@@ -743,7 +706,7 @@
                     selectedToken = new TokenSupplyDto();
             }
         }
-        splitNeblioTokenDto.tokenId = selectedToken.TokenId;
+        splitNeblioTokenDto.tokenId = selectedTokenId;
         StateHasChanged();
     }
 
@@ -768,7 +731,8 @@
 
     private async Task SendTokenTx()
     {
-        try {
+        try
+        {
             sendingTransaction = true;
             StateHasChanged();
 
@@ -776,12 +740,16 @@
             metadata.Add("Data", "Sent with https://ve-nft.com/");
 
             (bool, string) res = (false, string.Empty);
-            if(mainAccountSelected)
+            if (mainAccountSelected)
                 res = await AppData.Account.SendNeblioTokenPayment(selectedToken.TokenId, metadata, Receiver, AmountTokensToSend);
             else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
                 if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
                     res = await acc.SendNeblioTokenPayment(selectedToken.TokenId, metadata, Receiver, AmountTokensToSend);
             Console.WriteLine("Tx send result: " + res.Item2);
+            if (!res.Item1)
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
+            }
         }
         catch (Exception ex)
         {

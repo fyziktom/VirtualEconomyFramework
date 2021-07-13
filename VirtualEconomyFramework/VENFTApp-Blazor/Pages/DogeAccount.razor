@@ -276,6 +276,10 @@
 
             var res = await AppData.DogeAccount.SendPayment(Receiver, AmountToSend, message);
             Console.WriteLine("Tx send result: " + res);
+            if (!res.Item1)
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
+            }
         }
         catch (Exception ex)
         {

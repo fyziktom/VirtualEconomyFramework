@@ -138,6 +138,7 @@
             }
             else
             {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
                 status = res.Item2;
             }
         }

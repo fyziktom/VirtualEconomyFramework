@@ -58,14 +58,14 @@
 
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    @if (_nfts.Count == 0)
+                    @if (NFTsList.Count == 0)
                     {
                         <p><em><Spin Tip="Loading...No NFTs found yet" Style="min-width:100px;"></Spin></em></p>
                     }
                     else
                     {
                         <div class="card-group">
-                            @foreach (var nft in _nfts)
+                            @foreach (var nft in NFTsList)
                             {
                                 if (displayCoruzant && (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast))
                                 {
@@ -131,6 +131,32 @@
         }
     }
 
+    public List<INFT> NFTsList
+    {
+        get
+        {
+            if (MainAccount)
+            {
+                return AppData.Account.NFTs;
+            }
+            else if (SubAccount)
+            {
+                var nfts = AppData.Account.GetNFTsOnSubAccount(Address).GetAwaiter().GetResult();
+                if (nfts.Item1)
+                    return nfts.Item2.ToList();
+            }
+            else if (InBrowser)
+            {
+                var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
+                if (tab != null && tab.NFTs != null)
+                    return tab.NFTs;
+                 
+            }
+
+            return new List<INFT>();
+        }
+    }
+
     [Parameter]
     public EventCallback<List<INFT>> NFTsChanged { get; set; }
 
@@ -141,24 +167,23 @@
         get => _address;
         set
         {
-            if (!string.IsNullOrEmpty(value) && _address != value && !MainAccount)
+            if (!string.IsNullOrEmpty(value) && _address != value)
             {
-                _nfts = new List<INFT>();
                 _address = value;
                 LoadNFTs();
-            }
-            else if (!string.IsNullOrEmpty(value) && _address != value && MainAccount)
-            {
-                _nfts = new List<INFT>();
-                _address = value;
-                _nfts = AppData.Account.NFTs;
-                StateHasChanged();
             }
         }
     }
 
     [Parameter]
     public bool MainAccount { get; set; } = false;
+
+    [Parameter]
+    public bool InBrowser { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
 
     bool nftDetailsVisible = false;
     bool displayImages = true;
@@ -183,32 +208,49 @@
     protected override async Task OnInitializedAsync()
     {
         if (AppData.Account != null)
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
             AppData.Account.Refreshed += RefreshedHandler;
+        }
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && MainAccount)
-            _nfts = AppData.Account.NFTs;
-
         base.OnAfterRender(firstRender);
     }
 
     void RefreshedHandler(object sender, EventArgs e)
     {
+        
         if (MainAccount)
         {
-            if (_nfts.Count != AppData.Account.NFTs.Count || refresh < 0)
+            var nf = _nfts.FirstOrDefault();
+            var anf = AppData.Account.NFTs.FirstOrDefault();
+            if (anf != null)
             {
-                _nfts = AppData.Account.NFTs;
-                refresh = 10;
-            }
-            else
-            {
-                refresh--;
+                if (nf == null)
+                {
+                    Task.Delay(500).Wait();
+                    _nfts.Clear();
+                    StateHasChanged();
+                    _nfts = AppData.Account.NFTs;
+                }
+                else if (nf != null && (nf.Time != anf.Time))
+                {
+                    Task.Delay(500).Wait();
+                    _nfts.Clear();
+                    StateHasChanged();
+                    _nfts = AppData.Account.NFTs;
+                }
+                else if (_nfts.Count != AppData.Account.NFTs.Count)
+                {
+                    Task.Delay(500).Wait();
+                    _nfts.Clear();
+                    StateHasChanged();
+                    _nfts = AppData.Account.NFTs;
+                }
             }
         }
-
         StateHasChanged();
     }
 
@@ -251,7 +293,7 @@
         }
         _nfts.Clear();
         StateHasChanged();
-        await ReloadNFTs();
+        await LoadNFTs();
         allowNFTCheckField = false;
         destroyingNFTs = false;
         destroyNFTsVisible = false;
@@ -268,17 +310,34 @@
         {
             if (!MainAccount)
             {
-                var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
-                if (tab != null)
-                    await tab.Reload();
-
-                _nfts = tab.NFTs;
+                if (InBrowser)
+                {
+                    var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
+                    if (tab != null)
+                    {
+                        _nfts.Clear();
+                        StateHasChanged();
+                        await tab.Reload();
+                        if (tab.NFTs != null)
+                            _nfts = tab.NFTs;
+                    }
+                }
+                else if (SubAccount && !string.IsNullOrEmpty(Address))
+                {
+                    var nfts = await AppData.Account.GetNFTsOnSubAccount(Address);
+                    if (nfts.Item1)
+                    {
+                        _nfts.Clear();
+                        StateHasChanged();
+                        _nfts = nfts.Item2.ToList();
+                    }
+                }
             }
             else
             {
                 _nfts.Clear();
                 StateHasChanged();
-                await AppData.Account.ReLoadNFTs();
+                //await AppData.Account.ReLoadNFTs();
                 _nfts = AppData.Account.NFTs;
             }
 
@@ -292,25 +351,43 @@
     {
         if (!string.IsNullOrEmpty(_address))
         {
-            if (!MainAccount)
+            _nfts.Clear();
+            StateHasChanged();
+            if (!MainAccount && InBrowser)
             {
                 var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
                 if (tab != null)
                     if (tab.NFTs.Count == 0)
                         await tab.Reload();
-                _nfts = tab.NFTs;
+                if (tab.NFTs != null)
+                    _nfts = tab.NFTs;
 
                 lastAddress = _address;
-                await Task.Delay(50);
-                StateHasChanged();
+
             }
+            else if (SubAccount && !string.IsNullOrEmpty(Address))
+            {
+                var nfts = await AppData.Account.GetNFTsOnSubAccount(Address);
+                if (nfts.Item1)
+                    _nfts = nfts.Item2.ToList();
+            }
+            else if (MainAccount)
+            {
+                await Task.Delay(500); // wait before close all nft details windows.
+                _nfts.Clear();
+                StateHasChanged();
+                _nfts = AppData.Account.NFTs;
+            }
+
+            await Task.Delay(50);
+            StateHasChanged();
         }
     }
 
     void NFTSentHandler(string nfttx)
     {
         nftDetailsVisible = false;
-        ReloadNFTs();
+        LoadNFTs();
         StateHasChanged();
     }
 

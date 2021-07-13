@@ -62,7 +62,7 @@
                 </div>
             }
             @if ((NFT.Type == NFTTypes.Post && !string.IsNullOrEmpty(NFT.Text)) ||
-       (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
+                (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
             {
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
@@ -121,6 +121,24 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
+                        @switch (nft.TicketDuration)
+                        {
+                            case DurationOfNFTTicket.Day:
+                                <span class="badge badge-secondary">1 Day</span>
+                                break;
+                            case DurationOfNFTTicket.TwoDays:
+                                <span class="badge badge-primary">2 Days</span>
+                                break;
+                            case DurationOfNFTTicket.ThreeDays:
+                                <span class="badge badge-success">3 Days</span>
+                                break;
+                            case DurationOfNFTTicket.FourDays:
+                                <span class="badge badge-info">4 Days</span>
+                                break;
+                            case DurationOfNFTTicket.FiveDays:
+                                <span class="badge badge-warning">5 Days</span>
+                                break;
+                        }
                         @switch (nft.TicketClass)
                         {
                             case ClassOfNFTTicket.Economy:
@@ -134,6 +152,15 @@
                                 break;
                             case ClassOfNFTTicket.VIPPlus:
                                 <span class="badge badge-info">VIP+</span>
+                                break;
+                            case ClassOfNFTTicket.General:
+                                <span class="badge badge-primary">General</span>
+                                break;
+                            case ClassOfNFTTicket.Family:
+                                <span class="badge badge-warning">Family</span>
+                                break;
+                            case ClassOfNFTTicket.Children:
+                                <span class="badge badge-warning">Children</span>
                                 break;
                         }
                     </div>
@@ -274,7 +301,7 @@
                                 }
                                 else
                                 {
-                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto;" />
+                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
                                 }
                             }
                             else
@@ -297,7 +324,7 @@
                                 }
                                 else
                                 {
-                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto;" />
+                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
                                 }
                             }
                             else
@@ -326,7 +353,7 @@
                         {
                             @if (!string.IsNullOrEmpty(NFT.ImageLink))
                             {
-                                <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto;" />
+                                <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; max-width:250px; min-width:50px;" />
                             }
                             else
                             {
@@ -852,6 +879,7 @@
     void NFTSentHandler(string e)
     {
         sendNFTDialogVisible = false;
+        sendNFTDialogVisible = false;
         NFTSent.InvokeAsync(e);
         StateHasChanged();
     }
@@ -859,6 +887,7 @@
     void NFTMinted(string e)
     {
         createNewPostVisible = false;
+        sendNFTDialogVisible = false;
         NFTSent.InvokeAsync(e);
         StateHasChanged();
     }

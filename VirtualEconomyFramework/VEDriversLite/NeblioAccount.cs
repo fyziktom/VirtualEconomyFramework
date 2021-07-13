@@ -412,9 +412,19 @@ namespace VEDriversLite
                     var k = FileHelpers.ReadTextFromFile(filename);
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
-                    AccountKey = new EncryptionKey(kdto.Key, fromDb: true);
-                    await AccountKey.LoadPassword(password);
-                    AccountKey.IsEncrypted = true;
+                    if (!string.IsNullOrEmpty(password))
+                    {
+                        AccountKey = new EncryptionKey(kdto.Key, fromDb: true);
+                    }
+                    else
+                    {
+                        AccountKey = new EncryptionKey(kdto.Key, fromDb: false);
+                    }
+                    if (!string.IsNullOrEmpty(password))
+                    {
+                        await AccountKey.LoadPassword(password);
+                        AccountKey.IsEncrypted = true;
+                    }
                     Address = kdto.Address;
 
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
@@ -495,9 +505,19 @@ namespace VEDriversLite
             {
                 await Task.Run(async () =>
                 {
-                    AccountKey = new EncryptionKey(encryptedKey, fromDb: true);
-                    await AccountKey.LoadPassword(password);
-                    AccountKey.IsEncrypted = true;
+                    if (!string.IsNullOrEmpty(password))
+                    {
+                        AccountKey = new EncryptionKey(encryptedKey, fromDb: true);
+                    }
+                    else
+                    {
+                        AccountKey = new EncryptionKey(encryptedKey, fromDb: false);
+                    }
+                    if (!string.IsNullOrEmpty(password))
+                    {
+                        await AccountKey.LoadPassword(password);
+                        AccountKey.IsEncrypted = true;
+                    }
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
                     SignMessage("init");
                     Address = address;

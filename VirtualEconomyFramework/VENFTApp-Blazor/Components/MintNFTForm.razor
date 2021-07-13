@@ -3,7 +3,8 @@
 @using VEDriversLite.NFT.Coruzant
 @using Markdig
 @inject AppData AppData
-@inject NavigationManager NavManager 
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 
 <div class="row">
     <div class="col">
@@ -21,17 +22,13 @@
                             {
                                 <Input Placeholder="Type your Name" MaxLength="50" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
                             }
-                            else if (nftType == NFTTypes.CoruzantProfile)
-                            {
-                                <Input Placeholder="Type Name" MaxLength="50" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            }
                             else
                             {
                                 <Input Placeholder="Add Name of the NFT" MaxLength="100" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
                             }
                         </div>
                     </div>
-                    @if (nftType == NFTTypes.Profile || nftType == NFTTypes.CoruzantProfile)
+                    @if (nftType == NFTTypes.Profile)
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
@@ -53,19 +50,6 @@
                                 <Input MaxLength="50" Placeholder="Type your nickname" @bind-Value=@nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
-                        if (nftType == NFTTypes.CoruzantProfile)
-                        {
-                            <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex justify-content-center align-items-center">
-                                    <small>Author</small>
-                                </div>
-                            </div>
-                            <div class="row" style="margin-top:5px;">
-                                <div class="col d-flex justify-content-center align-items-center">
-                                    <Input Placeholder="Add Author of the NFT" MaxLength="50" @bind-Value=@author Style="font-size:12px; min-width:250px; max-width:350px;" />
-                                </div>
-                            </div>
-                        }
                     }
                     else
                     {
@@ -80,7 +64,7 @@
                             </div>
                         </div>
                     }
-                    @if (nftType != NFTTypes.Profile && nftType != NFTTypes.CoruzantProfile)
+                    @if (nftType != NFTTypes.Profile)
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
@@ -106,6 +90,14 @@
                             </div>
                         </div>
                     }
+                    @if (newNFT.Description.Length >= 159)
+                    {
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Maximum length is 160 characters</small>
+                            </div>
+                        </div>
+                    }
                     @if (nftType == NFTTypes.Post)
                     {
                         <div class="row" style="margin-top:10px;">
@@ -125,153 +117,7 @@
                             }
                         </div>
                     }
-                    @if (nftType == NFTTypes.CoruzantProfile)
-                    {
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Text about person</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <TextArea Placeholder="Add Text About Person" MaxLength="8000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
-                            </div>
-                            @if (!string.IsNullOrEmpty(text))
-                            {
-                                <div class="col d-flexjustify-content-center align-items-center" style="width: 350px; min-height:400px; max-width:350px;">
-                                    <span class="border-light">@((MarkupString)NFTmarkuptext)</span>
-                                </div>
-                            }
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Company Name</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add Company Name" MaxLength="200" @bind-Value=@companyName Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Company Link</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add Company Link" MaxLength="200" @bind-Value=@companyLink Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Working Position</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add Working Position" MaxLength="200" @bind-Value=@workingPosition Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Personal Page Link</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add Personal Page Link" MaxLength="200" @bind-Value=@personalPageLink Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Podcast Id</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add PodcastId" MaxLength="200" @bind-Value=@podcastId Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Twitter</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add Twitter nickname" MaxLength="200" @bind-Value=@twitter Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Linkedin</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add Linkedin link name" MaxLength="200" @bind-Value=@linkedin Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
 
-                    }
-                    @if (nftType == NFTTypes.CoruzantArticle)
-                    {
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Text of the Article</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <TextArea Placeholder="Add Text of the NFT Article" MaxLength="8000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
-                            </div>
-                            @if (!string.IsNullOrEmpty(text))
-                            {
-                                <div class="col d-flexjustify-content-center align-items-center" style="width: 350px; min-height:400px; max-width:350px;">
-                                    <span class="border-light">@((MarkupString)NFTmarkuptext)</span>
-                                </div>
-                            }
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Full Post Link</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add full post link if exists" MaxLength="200" @bind-Value=@fullPostLink Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Podcast Link</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add podcast link if exists" MaxLength="200" @bind-Value=@podcastLink Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Coruzant Profile of Author</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add txid of NFT Coruzant Profile" MaxLength="200" @bind-Value=@authorProfileUtxo Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                    }
-                    @if (newNFT.Description.Length >= 159)
-                    {
-                        <div class="row" style="margin-top:2px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Maximum length is 160 characters</small>
-                            </div>
-                        </div>
-                    }
 
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
@@ -283,16 +129,6 @@
                             <Input Placeholder="Add Tags - splitted by space" MaxLength="200" @bind-Value=@tags Style="font-size:12px; min-width:250px; max-width:350px;" />
                         </div>
                     </div>
-
-                    @if (nftType == NFTTypes.CoruzantProfile || nftType == NFTTypes.CoruzantArticle)
-                    {
-                        <div class="row" style="margin-top:2px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Uplod Podcast</small>
-                            </div>
-                        </div>
-                        <VENFTApp_Blazor.Components.UploadImage NFTType="@NFTTypes.Music" ImageLink="@podcastLink" ImageLinkChanged="@PodcastLinkChanged" />
-                    }
 
                     @if (nftType == NFTTypes.Music)
                     {
@@ -460,20 +296,7 @@
             if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != newNFT.Utxo)
             {
                 sourceNFT = value;
-                if (value.Type == NFTTypes.Profile)
-                {
-                    newNFT.FillCommon(value);
-                    name = sourceNFT.Name;
-                    surname = (sourceNFT as ProfileNFT).Surname;
-                    nickname = (sourceNFT as ProfileNFT).Nickname;
-                    imagelink = sourceNFT.ImageLink;
-                    description = sourceNFT.Description;
-                    newProfileNFT.Fill(value);
-                }
-                else
-                {
-                    newNFT.Fill(value);
-                }
+                newNFT.Fill(value);
                 LoadData();
                 StateHasChanged();
             }
@@ -498,17 +321,6 @@
     string author = string.Empty;
     string imagelink = string.Empty;
     string link = string.Empty;
-    string fullPostLink = string.Empty;
-    string podcastLink = string.Empty;
-    string authorProfileUtxo = string.Empty;
-    string twitter = string.Empty;
-    string linkedin = string.Empty;
-    string age = string.Empty;
-    string workingPosition = string.Empty;
-    string personalPageLink = string.Empty;
-    string companyName = string.Empty;
-    string companyLink = string.Empty;
-    string podcastId = string.Empty;
 
     string multimintStatus = string.Empty;
 
@@ -544,12 +356,6 @@
     void LinkChanged(string newLink)
     {
         link = newLink;
-    }
-
-    void PodcastLinkChanged(string newLink)
-    {
-        if(nftType == NFTTypes.CoruzantProfile || nftType == NFTTypes.CoruzantArticle)
-            podcastLink = newLink;
     }
 
     private void newSubAccountCreated(string address)
@@ -631,25 +437,6 @@
 
             switch (newNFT.Type)
             {
-                case NFTTypes.CoruzantArticle:
-                    podcastLink = (newNFT as CoruzantArticleNFT).PodcastLink;
-                    authorProfileUtxo = (newNFT as CoruzantArticleNFT).AuthorProfileUtxo;
-                    TokenId = CoruzantNFTHelpers.CoruzantTokenId;
-                    break;
-                case NFTTypes.CoruzantProfile:
-                    podcastLink = (newNFT as CoruzantProfileNFT).PodcastLink;
-                    surname = (newNFT as CoruzantProfileNFT).Surname;
-                    nickname = (newNFT as CoruzantProfileNFT).Nickname;
-                    workingPosition = (newNFT as CoruzantProfileNFT).WorkingPosition;
-                    companyLink = (newNFT as CoruzantProfileNFT).CompanyLink;
-                    companyName = (newNFT as CoruzantProfileNFT).CompanyName;
-                    age = (newNFT as CoruzantProfileNFT).Age.ToString();
-                    personalPageLink = (newNFT as CoruzantProfileNFT).PersonalPageLink;
-                    linkedin = (newNFT as CoruzantProfileNFT).Linkedin;
-                    twitter = (newNFT as CoruzantProfileNFT).Twitter;
-                    podcastId = (newNFT as CoruzantProfileNFT).PodcastId;
-                    TokenId = CoruzantNFTHelpers.CoruzantTokenId;
-                    break;
                 case NFTTypes.Profile:
                     surname = (newNFT as ProfileNFT).Surname;
                     nickname = (newNFT as ProfileNFT).Nickname;
@@ -677,42 +464,22 @@
             switch (nftType)
             {
                 case NFTTypes.Profile:
-                    await newProfileNFT.FillCommon(newNFT);
-                    newProfileNFT.Surname = surname;
-                    newProfileNFT.Nickname = nickname;
-                    newNFT = newProfileNFT;
+                    newNFT = new ProfileNFT("")
+                    {
+                        Surname = surname,
+                        Nickname = nickname,
+                    };
                     break;
                 case NFTTypes.Music:
-                    var nft = await NFTFactory.CloneNFT(newNFT, true, NFTTypes.Music);
-                    newNFT = nft; // hotfix
+                    newNFT = new MusicNFT("");
                     break;
                 case NFTTypes.Post:
                     //
                     break;
-                case NFTTypes.CoruzantArticle:
-                    newNFT.Type = NFTTypes.Image; // set as basic type just to coppy basic data
-                    var anft = await NFTFactory.CloneNFT(newNFT, true, NFTTypes.CoruzantArticle);
-                    newNFT = anft; // hotfix
-                    (newNFT as CoruzantArticleNFT).FullPostLink = fullPostLink;
-                    (newNFT as CoruzantArticleNFT).PodcastLink = podcastLink;
-                    (newNFT as CoruzantArticleNFT).AuthorProfileUtxo = authorProfileUtxo;
-                    newNFT.TokenId = CoruzantNFTHelpers.CoruzantTokenId;
-                    break;
-                case NFTTypes.CoruzantProfile:
-                    newNFT.Type = NFTTypes.Image; // set as basic type just to coppy basic data
-                    var pnft = await NFTFactory.CloneNFT(newNFT, true, NFTTypes.CoruzantProfile);
-                    newNFT = pnft; // hotfix
-                    (newNFT as CoruzantProfileNFT).CompanyLink = companyLink;
-                    (newNFT as CoruzantProfileNFT).CompanyName = companyName;
-                    (newNFT as CoruzantProfileNFT).WorkingPosition = workingPosition;
-                    (newNFT as CoruzantProfileNFT).Twitter = twitter;
-                    (newNFT as CoruzantProfileNFT).Linkedin = linkedin;
-                    (newNFT as CoruzantProfileNFT).PodcastLink = podcastLink;
-                    (newNFT as CoruzantProfileNFT).PersonalPageLink = personalPageLink;
-                    (newNFT as CoruzantProfileNFT).PodcastId = podcastId;
-                    newNFT.TokenId = CoruzantNFTHelpers.CoruzantTokenId;
-                    break;
             }
+
+            if (!string.IsNullOrEmpty(TokenId))
+                newNFT.TokenId = TokenId;
 
             if (name != null)
                 newNFT.Name = name;
@@ -763,6 +530,10 @@
                     await Task.Delay(500);
                     NavManager.NavigateTo("/nfts");
                 }
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
             }
         }
         catch (Exception ex)

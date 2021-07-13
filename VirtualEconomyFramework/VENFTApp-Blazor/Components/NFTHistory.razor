@@ -48,84 +48,98 @@
                                         {
                                             @foreach (var nft in nftInDetailsHistory)
                                             {
-                                                <tr>
-                                                    @if (IsMessageHistory)
-                                                    {
-                                                        @if ((nft as MessageNFT).IsReceivedMessage)
-                                                        {
-                                                            <td style="min-width:70px;"><span class="badge badge-primary">Received</span></td>
-                                                        }
-                                                        else
-                                                        {
-                                                            <td style="min-width:70px;"><span class="badge badge-success">Sent</span></td>
-                                                        }
-                                                    }
-                                                    @if (nft.Name.Length > 30)
-                                                    {
-                                                        <td style="min-width:70px;">@nft.Name.Substring(0, 29) ... </td>
-                                                    }
-                                                    else
-                                                    {
-                                                        <td style="min-width:70px;">@nft.Name </td>
-                                                    }
-                                                    @if (nft.Description.Length > 160)
-                                                    {
-                                                        <td>@nft.Description.Substring(0, 159) ...</td>
-                                                    }
-                                                    else
-                                                    {
-                                                        <td>@nft.Description</td>
-                                                    }
-                                                    @switch (NftType)
-                                                    { 
-                                                        case NFTTypes.Image:
-                                                        <td>
-                                                            <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
-                                                                <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
-                                                            </a>
-                                                        </td>
-                                                        break;
-                                                        case NFTTypes.Post:
-                                                        <td>
-                                                            <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
-                                                                <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
-                                                            </a>
-                                                        </td>
-                                                        break;
-                                                        case NFTTypes.CoruzantArticle:
-                                                        <td>
-                                                            <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
-                                                                <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
-                                                            </a>
-                                                        </td>
-                                                        break;
-                                                        case NFTTypes.Music:
-                                                        <td>
-                                                            <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
-                                                                <i class="oi oi-musical-note"></i>
-                                                            </a>
-                                                        </td>
-                                                        break;
-                                                        case NFTTypes.Message:
-                                                        <td>
-                                                            <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank" class="text-center">
-                                                                <i class="oi oi-envelope-open"></i>
-                                                            </a>
-                                                        </td>
-                                                        break;
-                                                    }
-                                                </tr>
+                                    <tr>
+                                        @if (IsMessageHistory)
+                                        {
+                                            @if ((nft as MessageNFT).IsReceivedMessage)
+                                            {
+                                                <td style="min-width:70px;"><span class="badge badge-primary">Received</span></td>
                                             }
+                                            else
+                                            {
+                                                <td style="min-width:70px;"><span class="badge badge-success">Sent</span></td>
+                                            }
+                                        }
+                                        @if (nft.Name.Length > 30)
+                                        {
+                                            <td style="min-width:70px;">@nft.Name.Substring(0, 29) ... </td>
                                         }
                                         else
                                         {
-                                            <tr>
-                                                <td colspan="4">History Not Loaded</td>
-                                            </tr>
+                                            <td style="min-width:70px;">@nft.Name </td>
+                                        }
+                                        @if (nft.Description.Length > 160)
+                                        {
+                                            <td>@nft.Description.Substring(0, 159) ...</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@nft.Description</td>
+                                        }
+                                        @switch (NftType)
+                                        {
+                                            case NFTTypes.Image:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                            case NFTTypes.Post:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                            case NFTTypes.Ticket:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                            case NFTTypes.Event:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                            case NFTTypes.CoruzantArticle:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                            case NFTTypes.Music:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <i class="oi oi-musical-note"></i>
+                                                    </a>
+                                                </td>
+                                                break;
+                                            case NFTTypes.Message:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank" class="text-center">
+                                                        <i class="oi oi-envelope-open"></i>
+                                                    </a>
+                                                </td>
+                                                break;
+                                         }
+                                        </tr>
                                         }
                                     }
-                                </tbody>
-                            </table>
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="4">History Not Loaded</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
                         }
                         else
                         {
@@ -149,7 +163,7 @@
                 <NFT InputNFT="@selectedHistoryNFT" Address="" OwnNFT="false" HideButtons="true" />
             }
             else
-                                                    {
+            {
                 <NFTMessage Utxo="@selectedHistoryNFT.Utxo" />
             }
         </div>
@@ -158,72 +172,72 @@
 
 @code {
 
-                                                        bool nftHistoryDetailsVisible = false;
+        bool nftHistoryDetailsVisible = false;
 
     private string _utxo = string.Empty;
-                                                    [Parameter]
-                                                    public string Utxo
-                                                    {
-                                                        get => _utxo;
-                                                        set
-                                                        {
-                                                            if (!string.IsNullOrEmpty(value))
-                                                            {
-                                                                if (value != lastutxo)
-                                                                {
-                                                                    nftInDetailsHistory = new List<INFT>();
-                                                                    lastutxo = value;
-                                                                }
+    [Parameter]
+    public string Utxo
+    {
+        get => _utxo;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                if (value != lastutxo)
+                {
+                    nftInDetailsHistory = new List<INFT>();
+                    lastutxo = value;
+                }
 
-                                                                if (_utxo != value)
-                                                                {
-                                                                    _utxo = value;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
+                if (_utxo != value)
+                {
+                    _utxo = value;
+                }
+            }
+        }
+    }
 
-                                                    [Parameter]
-                                                    public bool IsMessageHistory { get; set; } = false;
+    [Parameter]
+    public bool IsMessageHistory { get; set; } = false;
 
-                                                    [Parameter]
-                                                    public NFTTypes NftType { get; set; } = NFTTypes.Image;
+    [Parameter]
+    public NFTTypes NftType { get; set; } = NFTTypes.Image;
 
-                                                    bool loadingNFTHistory = false;
-                                                    List<INFT> nftInDetailsHistory = new List<INFT>();
-                                                    INFT selectedHistoryNFT = new ImageNFT("");
-                                                    string lastutxo = string.Empty;
+    bool loadingNFTHistory = false;
+    List<INFT> nftInDetailsHistory = new List<INFT>();
+    INFT selectedHistoryNFT = new ImageNFT("");
+    string lastutxo = string.Empty;
 
-                                                    private async Task LoadNFTHistory()
-                                                    {
-                                                        loadingNFTHistory = true;
-                                                        StateHasChanged();
-                                                        nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(_utxo);
-                                                        if (IsMessageHistory)
-                                                            await DecryptMessages();
-                                                        loadingNFTHistory = false;
-                                                        StateHasChanged();
-                                                    }
+    private async Task LoadNFTHistory()
+    {
+        loadingNFTHistory = true;
+        StateHasChanged();
+        nftInDetailsHistory = await NFTHelpers.LoadNFTsHistory(_utxo);
+        if (IsMessageHistory)
+            await DecryptMessages();
+        loadingNFTHistory = false;
+        StateHasChanged();
+    }
 
-                                                    private async Task DecryptMessages()
-                                                    {
-                                                        foreach (var m in nftInDetailsHistory)
-                                                            if (m.Type == NFTTypes.Message)
-                                                                await (m as MessageNFT).Decrypt(AppData.Account.Secret);
-                                                        StateHasChanged();
-                                                    }
+    private async Task DecryptMessages()
+    {
+        foreach (var m in nftInDetailsHistory)
+            if (m.Type == NFTTypes.Message)
+                await (m as MessageNFT).Decrypt(AppData.Account.Secret);
+        StateHasChanged();
+    }
 
-                                                    private async Task nftHistoryDetailsOpen(INFT nft)
-                                                    {
-                                                        selectedHistoryNFT = await NFTFactory.CloneNFT(nft);
-                                                        nftHistoryDetailsVisible = true;
-                                                        StateHasChanged();
-                                                    }
+    private async Task nftHistoryDetailsOpen(INFT nft)
+    {
+        selectedHistoryNFT = await NFTFactory.CloneNFT(nft);
+        nftHistoryDetailsVisible = true;
+        StateHasChanged();
+    }
 
-                                                    private async Task nftHistoryDetailsClose(MouseEventArgs e)
-                                                    {
-                                                        nftHistoryDetailsVisible = false;
-                                                        StateHasChanged();
-                                                    }
+    private async Task nftHistoryDetailsClose(MouseEventArgs e)
+    {
+        nftHistoryDetailsVisible = false;
+        StateHasChanged();
+    }
 
 }

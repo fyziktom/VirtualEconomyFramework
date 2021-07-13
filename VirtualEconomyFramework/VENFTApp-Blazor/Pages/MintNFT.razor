@@ -101,7 +101,7 @@
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             @if (SelectedAccountTotalSourceVENFT > 1 || SelectedAccountTotalSourceCORZT > 1)
                             {
-                                <RadioGroup @bind-Value="@tokenId" @onselectionchange="nftSourceTokensChangedHandler">
+                                <RadioGroup @bind-Value="@tokenId" OnChange="nftSourceTokensChangedHandler" TValue="string">
                                     @foreach (var t in SelectedAccountTokenSupply)
                                         {
                                             if (t.Value.Amount > 1 && NFTHelpers.AllowedTokens.Contains(t.Value.TokenId))
@@ -119,7 +119,7 @@
                     </div>
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <RadioGroup @bind-Value="@NFTType" @onselectionchange="nftTypeChangedHandler">
+                            <RadioGroup @bind-Value="@NFTType">
                                 <Radio Value="NFTTypes.Image">Image - Original</Radio>
                                 <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
                                 <Radio Value="NFTTypes.Music">Music - Original</Radio>
@@ -137,9 +137,13 @@
 
                     <div class="row" style="margin-top:10px; margin-bottom:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            @if (NFTType != NFTTypes.Ticket && NFTType != NFTTypes.Event)
+                            @if (NFTType != NFTTypes.Ticket && NFTType != NFTTypes.Event && NFTType != NFTTypes.CoruzantArticle && NFTType != NFTTypes.CoruzantProfile)
                             {
                                 <VENFTApp_Blazor.Components.MintNFTForm TokenId="@tokenId" Address="@selectedAccountAddress" SubAccount="subAccount" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                            }
+                            else if (NFTType == NFTTypes.CoruzantArticle || NFTType == NFTTypes.CoruzantProfile)
+                            {
+                                <VENFTApp_Blazor.Components.MintCoruzantNFTForm SubAccount="subAccount" Address="@selectedAccountAddress" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
                             }
                             else
                             {
@@ -353,12 +357,12 @@
         StateHasChanged();
     }
 
-    private void nftTypeChangedHandler(EventArgs e)
+    private async Task nftTypeChangedHandler(NFTTypes type)
     {
         StateHasChanged();
     }
 
-    private void nftSourceTokensChangedHandler(EventArgs e)
+    private void nftSourceTokensChangedHandler(string tokid)
     {
         StateHasChanged();
     }

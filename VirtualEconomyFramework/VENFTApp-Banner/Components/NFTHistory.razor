@@ -42,12 +42,58 @@
                                             { 
                                                 <td>@nft.Description</td>
                                             }
-                                            <td>
-                                                <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
-                                                    <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
-                                                </a>
-                                            </td>
-                                            
+                                            @switch (NftType)
+                                            { 
+                                                case NFTTypes.Image:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                                case NFTTypes.Post:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                                case NFTTypes.Ticket:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                                    case NFTTypes.Event:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                                case NFTTypes.CoruzantArticle:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <img src="@nft.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                    </a>
+                                                </td>
+                                                break;
+                                                case NFTTypes.Music:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank">
+                                                        <i class="oi oi-musical-note"></i>
+                                                    </a>
+                                                </td>
+                                                break;
+                                                case NFTTypes.Message:
+                                                <td>
+                                                    <a @onclick="async () => await nftHistoryDetailsOpen(nft)" target="_blank" class="text-center">
+                                                        <i class="oi oi-envelope-open"></i>
+                                                    </a>
+                                                </td>
+                                                break;
+                                            }
                                         </tr>
                                     }
                                 }
@@ -80,6 +126,9 @@
 @code {
 
     bool nftHistoryDetailsVisible = false;
+
+    [Parameter]
+    public NFTTypes NftType { get; set; } = NFTTypes.Image;
 
     private string _utxo = string.Empty;
     [Parameter]

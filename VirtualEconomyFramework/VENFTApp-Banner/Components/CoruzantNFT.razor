@@ -1,17 +1,13 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Coruzant
-@inject AppData AppData
 @inject IJSRuntime jsRuntime
 
 <div class="card" style="margin-left:10px; margin-top:10px;min-width:250px; width:250px; max-width:250px; min-height:400px; max-height:600px;">
     <div class="card-header" style="padding: 0px;">
         <div class="row" style="max-width: 250px;height:200px;margin: 0px;">
             <div class="col d-flex justify-content-center align-items-center" style="padding: 0px;">
-                @if (DisplayCheckField)
-                {
-                    <input type="checkbox" style="position : absolute; right: 220px; top: 20px;" @onchange="eventArgs => { checkNFTChanged(eventArgs.Value); }" />
-                }
+
                 @switch (nft.Type)
                 {
                     case NFTTypes.CoruzantProfile:
@@ -82,10 +78,7 @@
                 <span class="badge badge-info" style="position: absolute;right: 7px;top: 207px;">Podcast</span>
                 break;
         }
-        <button class="btn btn-light" @onclick="async () => ShowShareNFT(nft.Utxo)"
-                style="position:absolute; right: 7px;top: 230px; width: 30px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
-            <i class="oi oi-share" style="font-size:12px;"></i>
-        </button>
+
         <div class="row" style="margin: 0px;">
             <div class="col" style="padding: 0px;">
                 <div class="row text-center" style="margin: 0px;">
@@ -112,7 +105,17 @@
                 {
                     <div class="row text-center" style="margin: 0px;">
                         <div class="col text-center" style="padding: 0px;">
-                            <small class="text-center">@nft.Author</small>
+                            @if (!string.IsNullOrEmpty(nft.Author))
+                            {
+                                @if (nft.Author.Length > 30)
+                                {
+                                    <small class="text-center">@nft.Author.Substring(0, 29) ...</small>
+                                }
+                                else
+                                {
+                                    <small class="text-center">@nft.Author</small>
+                                }
+                            }
                         </div>
                     </div>
                 }
@@ -147,12 +150,12 @@
             </div>
         </div>
         <!--
-    <div class="row">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <VENFTApp_Blazor.Components.NFTThumbnail Name="nft.Name" Type="nft.Type" Author="nft.Author" Description="nft.Description" />
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <VENFTApp_Blazor.Components.NFTThumbnail Name="nft.Name" Type="nft.Type" Author="nft.Author" Description="nft.Description" />
+            </div>
         </div>
-    </div>
-    -->
+        -->
     </div>
     @if (!HideButtons)
     {
@@ -164,30 +167,6 @@
                             <i class="oi oi-info" style="font-size:12px;"></i>
                         </button>
                     </div>
-
-                    @if (!IsInThePayments(nft.Utxo) && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
-                    {
-                        <div class="col d-flex w-auto" style="margin-left:15px;">
-                            <SendNFTPayment Utxo="@nft.Utxo" UtxoIndex="@nft.UtxoIndex" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
-                        </div>
-                    }
-                </div>
-                <div class="row d-flex justify-content-center align-items-center">
-                    @if (!IsInThePayments(nft.Utxo))
-                    {
-                        @if (OwnNFT && nft.PriceActive)
-                        {
-                            <div class="col">
-                                <small class="text-muted">Setted Price: @nft.Price NEBL</small>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="col">
-                            <small class="text-muted">Sold. Waiting for processing.</small>
-                        </div>
-                    }
                 </div>
             </small>
         </div>
@@ -198,12 +177,11 @@
        Visible="@nftDetailsVisible"
        OnOk="@CloseNFTDetails"
        OnCancel="@CloseNFTDetails">
-    <CoruzantNFTDetails UtxoIndex="@nft.UtxoIndex" 
-                        Utxo="@nftDetailsUtxo" 
-                        NFTSent="@NFTSentHandler" 
+    <CoruzantNFTDetails UtxoIndex="@nft.UtxoIndex"
+                        Utxo="@nftDetailsUtxo"
                         OwnNFT="@OwnNFT"
                         Address="@Address"
-                        SubAccount="@SubAccount"/>
+                        SubAccount="@SubAccount" />
 </Modal>
 
 <Modal Title="NFT"
@@ -260,38 +238,6 @@
     }
 </Modal>
 
-<Modal Title="Share NFT"
-       Visible="@shareNFTVisible"
-       OnOk="@CloseShareNFT"
-       OnCancel="@CloseShareNFT">
-    <div class="row">
-        <div class="col">
-            <a href="@shareNFTUtxo" target="_blank">@shareNFTUtxo</a>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <CopyButton TextToCopy="@shareNFTUtxo" />
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col">
-            <span>Transaction Id</span>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <a href="https://explorer.nebl.io/tx/@nft.Utxo" target="_blank">@nft.Utxo</a>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <CopyButton TextToCopy="@nft.Utxo" />
-        </div>
-    </div>
-</Modal>
-
 @code {
 
 
@@ -310,26 +256,18 @@
     [Parameter]
     public bool SubAccount { get; set; } = false;
 
-    [Parameter]
-    public EventCallback<string> NFTSent { get; set; }
-
-    [Parameter]
-    public bool DisplayCheckField { get; set; } = false;
-
     bool NFTChecked { get; set; } = false;
     string NFTCheckedBgColor { get; set; } = string.Empty;
-
-    [Parameter]
-    public EventCallback<(INFT, bool)> NFTCheckedChanged { get; set; }
 
     private INFT AuthorProfileNFT = new CoruzantProfileNFT("");
 
     private string _nftImageTitle = "NFT"; // todo connect to UI - now throw exception on first load
-    public string nftImageTitle {
+    public string nftImageTitle
+    {
         get
         {
             if (nft != null)
-            { 
+            {
                 if (nft.Type == NFTTypes.CoruzantProfile)
                     return (nft as CoruzantProfileNFT).Name + (nft as CoruzantProfileNFT).Surname;
                 if (nft.Type == NFTTypes.CoruzantArticle)
@@ -373,28 +311,6 @@
     [Parameter]
     public bool OwnNFT { get; set; } = false;
 
-    private async Task checkNFTChanged(object e)
-    {
-        NFTChecked = (bool)e;
-        await setBgColor();
-        await NFTCheckedChanged.InvokeAsync((nft, NFTChecked));
-        StateHasChanged();
-    }
-    private async Task setBgColor()
-    {
-        if (NFTChecked)
-            NFTCheckedBgColor = "bg-info";
-        else
-            NFTCheckedBgColor = string.Empty;
-        StateHasChanged();
-    }
-
-    void NFTSentHandler(string nfttx)
-    {
-        nftDetailsVisible = false;
-        NFTSent.InvokeAsync(nfttx);
-    }
-
     private async Task TryToLoadProfile()
     {
         if (nft.Type == NFTTypes.CoruzantArticle)
@@ -405,29 +321,6 @@
                 AuthorProfileNFT = await NFTFactory.GetNFT(CoruzantNFTHelpers.CoruzantTokenId, NFT.AuthorProfileUtxo, 0, 0, true, true, NFTTypes.CoruzantProfile);
             }
         }
-    }
-
-    private bool IsInThePayments(string utxo)
-    {
-        if (OwnNFT)
-        {
-            if (AppData.Account.ReceivedPayments.TryGetValue(utxo, out var mnft))
-                if ((mnft as PaymentNFT).NFTUtxoIndex == nft.UtxoIndex)
-                    return true;
-
-        }
-        else
-        {
-            if (!string.IsNullOrEmpty(_address))
-            {
-                var tab = AppData.Account.Tabs.Find(t => t.Address == _address);
-                if (tab != null && tab.ReceivedPayments.TryGetValue(utxo, out var nnft))
-                    if ((nnft as PaymentNFT).NFTUtxoIndex == nft.UtxoIndex)
-                        return true;
-            }
-        }
-
-        return false;
     }
 
     private async Task CloseNFTDetails(MouseEventArgs e)

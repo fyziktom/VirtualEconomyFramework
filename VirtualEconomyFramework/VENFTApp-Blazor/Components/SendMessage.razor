@@ -2,6 +2,7 @@
 @using VEDriversLite.NFT
 @inject AppData AppData
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 
 <div class="row">
     <div class="col">
@@ -216,6 +217,10 @@
                     await AppData.Account.AddMessageTab(receiver);
                 }
                 await MessageSent.InvokeAsync(res.Item2);
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
             }
         }
         catch (Exception ex)

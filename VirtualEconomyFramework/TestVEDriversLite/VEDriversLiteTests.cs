@@ -63,7 +63,6 @@ namespace TestVEDriversLite
 
             password = param;
             await account.LoadAccount(password);
-            StartRefreshingData(null);
         }
 
         [TestEntry]
@@ -79,7 +78,97 @@ namespace TestVEDriversLite
             var pass = split[0];
             var file = split[1];
             await account.LoadAccount(pass, file);
-            StartRefreshingData(null);
+        }
+
+        [TestEntry]
+        public static void LoadAccountFromFileAndDestroyAllNFTs(string param)
+        {
+            LoadAccountFromFileAndDestroyAllNFTsAsync(param);
+        }
+        public static async Task LoadAccountFromFileAndDestroyAllNFTsAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input pass,filename");
+            var file = string.Empty;
+            var pass = string.Empty;
+
+            if (split.Length == 1)
+                file = split[0];
+            else if (split.Length == 2)
+            {
+                pass = split[0];
+                file = split[1];
+            }
+            else
+            {
+                Console.WriteLine("wrong input.");
+                return;
+            }
+            await account.LoadAccount(pass, file);
+
+            Console.WriteLine("Loading account NFTs...");
+            var attempts = 100;
+            while(account.NFTs.Count == 0)
+            {
+                await Task.Delay(1000);
+                if (attempts < 0)
+                {
+                    Console.WriteLine("Cannot find any NFTs on this address.");
+                    return;
+                }
+                else
+                {
+                    attempts--;
+                }
+            }
+
+            Console.WriteLine($"NFTs found. There are {account.NFTs.Count} to destroy. Starting now...");
+            while (account.NFTs.Count > 1)
+            {
+                var nftsToDestroy = new List<INFT>();
+
+                if (account.NFTs.Count >= 10)
+                    for (var i = 0; i < 10; i++)
+                        nftsToDestroy.Add(account.NFTs[i]);
+                else
+                    foreach (var nft in account.NFTs)
+                        nftsToDestroy.Add(nft);
+
+                if (nftsToDestroy.Count == 0)
+                    break;
+
+                Console.WriteLine($"Starting to destroy lot of {nftsToDestroy.Count} NFts from rest of {account.NFTs.Count}. ");
+                var done = false;
+                while (!done)
+                {
+                    try
+                    {
+                        var res = await account.DestroyNFTs(nftsToDestroy);
+                        done = res.Item1;
+                        if (!done)
+                        {
+                            await Task.Delay(5000);
+                            Console.WriteLine("Probably waiting for enough confirmations." + res.Item2);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Another NFTs destroyed. TxId:" + res.Item2);
+                            await Task.Delay(7000); // wait to until main account update.
+                        }
+                        if (nftsToDestroy.Count == 0 || account.NFTs.Count == 0)
+                            break;
+                    }
+                    catch (Exception ex)
+                    {
+                        await Task.Delay(5000);
+                        Console.WriteLine("Probably .Waiting for enough confirmations." + ex.Message);
+                    }
+                }
+            }
+
+            Console.WriteLine("All NFTs destroyed.");
+
         }
 
         [TestEntry]
@@ -126,7 +215,6 @@ namespace TestVEDriversLite
             var ekey = split[1];
             var addr = split[2];
             await account.LoadAccount(pass, ekey, addr);
-            StartRefreshingData(null);
         }
 
         [TestEntry]

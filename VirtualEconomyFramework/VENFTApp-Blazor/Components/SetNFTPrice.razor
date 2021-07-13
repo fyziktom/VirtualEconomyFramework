@@ -1,6 +1,8 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @inject AppData AppData
+@inject IJSRuntime JSRuntime
+
 <Modal Title="Set Price of NFT"
        Visible="@SetPriceNFTDialogVisible"
        OnOk="@setPriceNFTDialogOK"
@@ -116,6 +118,7 @@
             }
             else
             {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
                 status = res.Item2;
             }
         }
