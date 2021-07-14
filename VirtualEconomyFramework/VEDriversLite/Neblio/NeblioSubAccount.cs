@@ -34,6 +34,11 @@ namespace VEDriversLite.Neblio
         [JsonIgnore]
         public List<INFT> NFTs { get; set; } = new List<INFT>();
         /// <summary>
+        /// List of actual address Coruzant NFTs. Based on Utxos list
+        /// </summary>
+        [JsonIgnore]
+        public List<INFT> CoruzantNFTs { get; set; } = new List<INFT>();
+        /// <summary>
         /// Actual list of all Utxos on this address.
         /// </summary>
         [JsonIgnore]
@@ -94,6 +99,12 @@ namespace VEDriversLite.Neblio
         /// This event is called whenever some important thing happen. You can obtain success, error and info messages.
         /// </summary>
         public event EventHandler<IEventInfo> NewEventInfo;
+
+        /// <summary>
+        /// This event is called whenever the list of NFTs is changed
+        /// </summary>
+        public event EventHandler<string> NFTsChanged;
+
         /// <summary>
         /// This event is called whenever some progress during multimint happens
         /// </summary>
@@ -311,34 +322,37 @@ namespace VEDriversLite.Neblio
                 return await Task.FromResult("Please fill subaccount Address and Key first.");
             }
 
-            try
-            {
-                AddressInfo = new GetAddressResponse();
-                AddressInfo.Transactions = new List<string>();
-                await ReloadUtxos();
-                await ReLoadNFTs();
-                await ReloadTokenSupply();
-            }
-            catch (Exception ex)
-            {
-                // todo
-            }
-
-            var minorRefresh = 5;
-
             // todo cancelation token
             _ = Task.Run(async () =>
             {
+                var minorRefresh = 5;
+                var firstLoad = true;
+
+                try
+                {
+                    AddressInfo = new GetAddressResponse();
+                    AddressInfo.Transactions = new List<string>();
+                    await ReloadUtxos();
+                    await ReLoadNFTs();
+                    await ReloadTokenSupply();
+                }
+                catch (Exception ex)
+                {
+                    // todo
+                }
+
                 while (true)
                 {
                     try
                     {
-                        if (IsAutoRefreshActive)
+                        if (IsAutoRefreshActive && !firstLoad)
                         {
                             await ReloadUtxos();
                             await ReLoadNFTs();
                             await ReloadTokenSupply();
                         }
+                        if (firstLoad)
+                            firstLoad = false;
                     }
                     catch (Exception ex)
                     {
@@ -392,8 +406,35 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReLoadNFTs()
         {
-            if (!string.IsNullOrEmpty(Address))
-                NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList());
+            try
+            {
+                if (!string.IsNullOrEmpty(Address))
+                {
+                    var lastnft = NFTs.FirstOrDefault();
+                    var lastcount = NFTs.Count;
+                    NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList());
+                    if (lastnft != null)
+                    {
+                        if (NFTs.Count != lastcount)
+                            NFTsChanged.Invoke(this, "Changed");
+                        var nft = NFTs.FirstOrDefault();
+                        Console.WriteLine("Last time: " + lastnft.Time.ToString());
+                        Console.WriteLine("Newest time: " + nft.Time.ToString());
+                        if (nft != null)
+                            if (nft.Time != lastnft.Time)
+                                NFTsChanged.Invoke(this, "Changed");
+                    }
+                    else if (lastnft == null && NFTs.Count > 0)
+                    {
+                        NFTsChanged.Invoke(this, "Changed");
+                    }
+                    CoruzantNFTs = await CoruzantNFTHelpers.GetCoruzantNFTs(NFTs);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot reload NFTs. " + ex.Message);
+            }
         }
 
         /// <summary>

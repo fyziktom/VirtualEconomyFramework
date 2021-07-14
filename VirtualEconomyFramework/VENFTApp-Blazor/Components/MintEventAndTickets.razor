@@ -193,7 +193,7 @@
                                 <TextArea Placeholder="Add Description of the NFT" MaxLength="300" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
                             </div>
                         </div>
-                        @if (!string.IsNullOrEmpty(description))
+                        @if (string.IsNullOrEmpty(description))
                         {
                             <div class="row" style="margin-top:2px;">
                                 <div class="col d-flex justify-content-center align-items-center">

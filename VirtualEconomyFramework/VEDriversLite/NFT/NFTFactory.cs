@@ -37,9 +37,9 @@ namespace VEDriversLite.NFT
             var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokid, utxo);
             
             if (meta == null)
-            {
                 return null;
-            }
+            else if (meta.Count == 0 || meta.Count == 1)
+                return null;
 
             if (meta.TryGetValue("Type", out var t))
             {
@@ -190,10 +190,10 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Event:
                     nft = new EventNFT(utxo);
-                    //if (wait)
+                    if (wait)
                         await nft.ParseOriginData(meta);
-                    //else
-                    //    nft.ParseOriginData(meta);
+                    else
+                        nft.ParseOriginData(meta);
                     //await (nft as EventNFT).LoadLastData(meta);
                     nft.Price = Price;
                     nft.PriceActive = PriceActive;

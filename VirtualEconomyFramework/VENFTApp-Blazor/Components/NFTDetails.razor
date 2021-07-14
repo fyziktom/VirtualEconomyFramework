@@ -24,7 +24,7 @@
             }
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h6>@NFT.Name</h6>
+                    <h6>@NFT.Name @(NFT.Type == NFTTypes.Profile ? (NFT as ProfileNFT).Surname : string.Empty)</h6>
                 </div>
             </div>
             <div class="row">
@@ -32,11 +32,24 @@
                     <small>@NFT.Author</small>
                 </div>
             </div>
-            @if (!string.IsNullOrEmpty(NFT.Description))
+            @if (!string.IsNullOrEmpty(NFT.Description) && NFT.Type != NFTTypes.Profile)
             {
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex justify-content-center align-items-center">
                         <span>Description</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
+                    </div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(NFT.Description) && NFT.Type == NFTTypes.Profile)
+            {
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Bio</span>
                     </div>
                 </div>
                 <div class="row">
@@ -62,7 +75,7 @@
                 </div>
             }
             @if ((NFT.Type == NFTTypes.Post && !string.IsNullOrEmpty(NFT.Text)) ||
-                (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
+              (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
             {
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
@@ -391,7 +404,7 @@
                 {
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center w-auto">
-                            @if (NFT.Type == NFTTypes.Post || NFT.Type == NFTTypes.Event)
+                            @if (NFT.Type == NFTTypes.Post || NFT.Type == NFTTypes.Event || NFT.Type == NFTTypes.Profile)
                             {
                                 <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="width:65px; height:65px; margin-right:20px;">
                                     <div class="row">

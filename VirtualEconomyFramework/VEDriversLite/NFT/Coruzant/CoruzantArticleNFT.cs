@@ -56,7 +56,7 @@ namespace VEDriversLite.NFT.Coruzant
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
             {
-                ParseCommon(nftData.NFTMetadata);
+                ParseCommon(lastmetadata);
 
                 if (lastmetadata.TryGetValue("Price", out var price))
                 {
@@ -79,7 +79,7 @@ namespace VEDriversLite.NFT.Coruzant
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }
-            ParseSpecific(nftData.NFTMetadata);
+            ParseSpecific(lastmetadata);
         }
 
         public async Task GetLastData()
@@ -118,17 +118,9 @@ namespace VEDriversLite.NFT.Coruzant
             if (metadata != null)
             {
                 ParseCommon(metadata);
+                ParseSpecific(metadata);
+                ParseOriginData(metadata);
 
-                if (metadata.TryGetValue("SourceUtxo", out var su))
-                {
-                    SourceTxId = Utxo;
-                    NFTOriginTxId = su;
-                }
-                else
-                {
-                    SourceTxId = Utxo;
-                    NFTOriginTxId = Utxo;
-                }
                 if (metadata.TryGetValue("Price", out var price))
                 {
                     if (!string.IsNullOrEmpty(price))
@@ -146,8 +138,6 @@ namespace VEDriversLite.NFT.Coruzant
                 {
                     PriceActive = false;
                 }
-
-                ParseSpecific(metadata);
             }
         }
 

@@ -9,5 +9,7 @@ namespace VEDriversLite.Dto
         public List<string> receivers { get; set; } = new List<string>();
         public int lots { get; set; } = 2;
         public double amount { get; set; } = 0.05;
+
+        public double TotalAmount => amount * lots;
     }
 }

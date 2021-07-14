@@ -141,9 +141,19 @@ namespace VEDriversLite
         public event EventHandler<IEventInfo> NewEventInfo;
 
         /// <summary>
+        /// This event is called whenever the list of NFTs is changed
+        /// </summary>
+        public event EventHandler<string> NFTsChanged;
+
+        /// <summary>
         /// This event is called whenever some progress during multimint happens
         /// </summary>
         public event EventHandler<string> NewMintingProcessInfo;
+
+        /// <summary>
+        /// This event is called whenever profile nft is updated or found
+        /// </summary>
+        public event EventHandler<INFT> ProfileUpdated;
 
         /// <summary>
         /// Carrier for encrypted private key from storage and its password.
@@ -281,10 +291,10 @@ namespace VEDriversLite
                 AddressInfo = new GetAddressResponse();
                 AddressInfo.Transactions = new List<string>();
                 //await ReloadAccountInfo();
-                await ReloadUtxos();
-                await ReloadMintingSupply();
-                await ReloadCountOfNFTs();
-                await ReloadTokenSupply();
+                //await ReloadUtxos();
+                //await ReloadMintingSupply();
+                //await ReloadCountOfNFTs();
+                //await ReloadTokenSupply();
             }
             catch (Exception ex)
             {
@@ -292,14 +302,18 @@ namespace VEDriversLite
             }
 
             var minorRefresh = 5;
-
+            var firstLoad = true;
             // todo cancelation token
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    await ReLoadNFTs();
-                    Profile = await NFTHelpers.FindProfileNFT(NFTs);
+                    await ReloadUtxos();
+                    await ReloadMintingSupply();
+                    await ReloadTokenSupply();
+                    Refreshed?.Invoke(this, null);
+                    await ReLoadNFTs(true);
+                    await ReloadCountOfNFTs();
                     await CheckPayments();
                     await RefreshAddressReceivedPayments();
                     
@@ -308,30 +322,38 @@ namespace VEDriversLite
                 {
                     // todo
                 }
-                var lastNFTcount = AddressNFTCount;
+
                 while (true)
                 {
                     try
                     {
                         //await ReloadAccountInfo();
-                        await ReloadUtxos();
-                        await ReloadMintingSupply();
-                        await ReloadCountOfNFTs();
-                        await ReloadTokenSupply();
+                        if (!firstLoad)
+                        {
+                            await ReloadUtxos();
+                            await ReloadMintingSupply();
+                            await ReLoadNFTs();
+                            await ReloadCountOfNFTs();
+                            await ReloadTokenSupply();
 
-                        //if (lastNFTcount != AddressNFTCount)
-                        await ReLoadNFTs();
-
+                            if (Utxos.FirstOrDefault(u => u.Txid == Profile.Utxo && u.Index == Profile.UtxoIndex) == null)
+                            {
+                                Profile = await NFTHelpers.FindProfileNFT(NFTs);
+                                if (!string.IsNullOrEmpty(Profile.Utxo))
+                                    ProfileUpdated.Invoke(this, Profile);
+                            }
+                        }
+                        else
+                        {
+                            firstLoad = false;
+                        }
                         minorRefresh--;
                         if (minorRefresh < 0)
                         {
-                            Profile = await NFTHelpers.FindProfileNFT(NFTs);
                             await CheckPayments();
                             await RefreshAddressReceivedPayments();
                             minorRefresh = 10;
                         }
-
-                        lastNFTcount = AddressNFTCount;
 
                         Refreshed?.Invoke(this, null);
                     }
@@ -922,6 +944,8 @@ namespace VEDriversLite
                             nsa.NewEventInfo += Nsa_NewEventInfo;
                             await nsa.StartRefreshingData();
                             nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
+                            nsa.NFTsChanged += Nsa_NFTsChanged;
+                            nsa.Name = nsa.BookmarkFromAccount.Name;
                             SubAccounts.TryAdd(nsa.Address, nsa);
                         }
                     }
@@ -933,6 +957,11 @@ namespace VEDriversLite
                 await InvokeErrorEvent(ex.Message, "Cannot deserialize the sub accounts.");
             }
             return string.Empty;
+        }
+
+        private void Nsa_NFTsChanged(object sender, string e)
+        {
+            NFTsChanged.Invoke(sender, (sender as NeblioSubAccount).Address);
         }
 
         private void Nsa_NewMintingProcessInfo(object sender, string e)
@@ -947,7 +976,12 @@ namespace VEDriversLite
         /// <param name="sendNeblioToAccount">Set This true if you want to load some Neblio to this address after it is created.</param>
         /// <param name="neblioAmountToSend">Amount of neblio for initial load of the address, 0.05 is default = 250 tx</param>
         /// <returns>true and string with serialized tabs list as json string</returns>
-        public async Task<(bool, string)> AddSubAccount(string name, bool sendNeblioToAccount = false, double neblioAmountToSend = 0.05, bool sendTokenToAccount = false, double tokenAmountToSend = 10, string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
+        public async Task<(bool, string)> AddSubAccount(string name, 
+                                                        bool sendNeblioToAccount = false, 
+                                                        double neblioAmountToSend = 0.05, 
+                                                        bool sendTokenToAccount = false, 
+                                                        double tokenAmountToSend = 10, 
+                                                        string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
         {
             if (!SubAccounts.Values.Any(a => a.Name == name))
             {
@@ -965,6 +999,8 @@ namespace VEDriversLite
                 nsa.NewEventInfo += Nsa_NewEventInfo;
                 await nsa.StartRefreshingData();
                 nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
+                nsa.NFTsChanged += Nsa_NFTsChanged;
+                nsa.Name = name;
                 SubAccounts.TryAdd(nsa.Address, nsa);
 
                 (bool, string) res = (false, string.Empty);
@@ -1003,7 +1039,8 @@ namespace VEDriversLite
             if (SubAccounts.TryGetValue(address, out var sacc))
             {
                 sacc.NewEventInfo -= Nsa_NewEventInfo;
-                sacc.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
+                sacc.NewMintingProcessInfo -= Nsa_NewMintingProcessInfo;
+                sacc.NFTsChanged -= Nsa_NFTsChanged;
                 SubAccounts.Remove(address);
             }
 
@@ -1021,6 +1058,22 @@ namespace VEDriversLite
             if (acc != null)
             {
                 return (true, acc.Address);
+            }
+
+            return (false, string.Empty);
+        }
+
+        /// <summary>
+        /// Get sub account name by address
+        /// </summary>
+        /// <param name="name">Neblio Sub Account Name</param>
+        /// <returns>true and string with serialized subaccount account export dto list as json string</returns>
+        public async Task<(bool, string)> GetSubAccountNameByAddress(string address)
+        {
+            var acc = SubAccounts.Values.FirstOrDefault(a => a.Address == address);
+            if (acc != null)
+            {
+                return (true, acc.Name);
             }
 
             return (false, string.Empty);
@@ -1431,11 +1484,7 @@ namespace VEDriversLite
         {
             var ux = await NeblioTransactionHelpers.GetAddressUtxosObjects(Address);
             var ouxox = ux.OrderBy(u => u.Blocktime).Reverse().ToList();
-            AddressInfoUtxos = new GetAddressInfoResponse()
-            {
-                Utxos = ouxox
-            };
-
+            
             if (ouxox.Count > 0)
             {
                 Utxos.Clear();
@@ -1446,7 +1495,6 @@ namespace VEDriversLite
                 foreach (var u in ouxox)
                 {
                     Utxos.Add(u);
-
                     if (u.Blockheight <= 0)
                         TotalUnconfirmedBalance += ((double)u.Value / NeblioTransactionHelpers.FromSatToMainRatio);
                     else
@@ -1455,6 +1503,10 @@ namespace VEDriversLite
 
                 TotalBalance = TotalSpendableBalance + TotalUnconfirmedBalance;
             }
+            AddressInfoUtxos = new GetAddressInfoResponse()
+            {
+                Utxos = Utxos
+            };
         }
         /// <summary>
         /// This function will load actual address info an adress utxos. It is used mainly for loading list of all transactions.
@@ -1482,13 +1534,36 @@ namespace VEDriversLite
         /// This function will reload changes in the NFTs list based on provided list of already loaded utxos.
         /// </summary>
         /// <returns></returns>
-        public async Task ReLoadNFTs()
+        public async Task ReLoadNFTs(bool fireProfileEvent = false)
         {
             try
             {
                 if (!string.IsNullOrEmpty(Address))
                 {
-                    NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList());
+                    if (fireProfileEvent)
+                    {
+                        NFTHelpers.ProfileNFTFound -= NFTHelpers_ProfileNFTFound;
+                        NFTHelpers.ProfileNFTFound += NFTHelpers_ProfileNFTFound;
+                    }
+                    var lastnft = NFTs.FirstOrDefault();
+                    var lastcount = NFTs.Count;
+                    NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList(), fireProfileEvent);
+                    if (lastnft != null)
+                    {
+                        if (NFTs.Count != lastcount)
+                            NFTsChanged.Invoke(this, "Changed");
+                        var nft = NFTs.FirstOrDefault();
+                        Console.WriteLine("Last time: " + lastnft.Time.ToString());
+                        Console.WriteLine("Newest time: " + nft.Time.ToString());
+                        if (nft != null)
+                            if (nft.Time != lastnft.Time)
+                                NFTsChanged.Invoke(this, "Changed");
+                    }
+                    else if (lastnft == null && NFTs.Count > 0)
+                    {
+                        NFTsChanged.Invoke(this, "Changed");
+                    }
+                    
                     CoruzantNFTs = await CoruzantNFTHelpers.GetCoruzantNFTs(NFTs);
                 }
             }
@@ -1496,6 +1571,17 @@ namespace VEDriversLite
             {
                 Console.WriteLine("Cannot reload NFTs. " + ex.Message);
             }
+            finally
+            {
+                if (fireProfileEvent)
+                    NFTHelpers.ProfileNFTFound -= NFTHelpers_ProfileNFTFound;
+            }
+        }
+
+        private void NFTHelpers_ProfileNFTFound(object sender, INFT e)
+        {
+            Profile = e as ProfileNFT;
+            ProfileUpdated.Invoke(this, e);
         }
 
         /// <summary>

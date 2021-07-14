@@ -11,5 +11,7 @@ namespace VEDriversLite.Dto
         public int lots { get; set; } = 2;
         public int amount { get; set; } = 25;
         public string tokenId { get; set; } = NFTHelpers.TokenId;
+
+        public int TotalAmount => amount * lots;
     }
 }

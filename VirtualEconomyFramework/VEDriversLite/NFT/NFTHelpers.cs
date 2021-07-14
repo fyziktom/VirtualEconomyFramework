@@ -55,6 +55,11 @@ namespace VEDriversLite.NFT
         public static event EventHandler<IEventInfo> NewEventInfo;
 
         /// <summary>
+        /// This event is called profile nft is found in the list of nfts
+        /// </summary>
+        public static event EventHandler<INFT> ProfileNFTFound;
+
+        /// <summary>
         /// Init handler to receive event info messages from Neblio Transaction Helpers class
         /// </summary>
         public static void InitHandlers()
@@ -409,8 +414,9 @@ namespace VEDriversLite.NFT
         /// <param name="inutxos"></param>
         /// <param name="innfts"></param>
         /// <returns></returns>
-        public static async Task<List<INFT>> LoadAddressNFTs(string address, ICollection<Utxos> inutxos = null, ICollection<INFT> innfts = null)
+        public static async Task<List<INFT>> LoadAddressNFTs(string address, ICollection<Utxos> inutxos = null, ICollection<INFT> innfts = null, bool fireProfileEvent = false)
         {
+            var fireProfileEventTmp = fireProfileEvent;
             List<INFT> nfts = new List<INFT>();
             ICollection<Utxos> uts = null;
             if (inutxos == null)
@@ -420,13 +426,14 @@ namespace VEDriversLite.NFT
             var utxos = uts.OrderBy(u => u.Blocktime).Reverse().ToList();
 
             var ns = new List<INFT>();
-            if (innfts != null && utxos.Count <= innfts.Count)
+            if (innfts != null)// && utxos.Count <= innfts.Count)
             {
                 innfts.ToList().ForEach(n =>
                 {
                     if (utxos.Any(u => (u.Txid == n.Utxo && u.Index == n.UtxoIndex)))
                         ns.Add(n);
                 });
+                innfts.Clear();
                 innfts = ns.ToList();
             }
 
@@ -435,20 +442,44 @@ namespace VEDriversLite.NFT
                 lastNFTTime = innfts.FirstOrDefault().Time;
 
             foreach (var u in utxos)
-                if (u.Tokens != null && u.Tokens.Count > 0)
-                    foreach (var t in u.Tokens)
-                        if (t.Amount == 1)
-                            if (TimeHelpers.UnixTimestampToDateTime((double)u.Blocktime) > lastNFTTime)
+            {
+                if (TimeHelpers.UnixTimestampToDateTime((double)u.Blocktime) > lastNFTTime)
+                {
+                    if (u.Tokens != null && u.Tokens.Count > 0)
+                    {
+                        foreach (var t in u.Tokens)
+                        {
+                            if (t.Amount == 1)
                             {
-                                var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
-                                if (nft != null)
+                                try
                                 {
-                                    nft.UtxoIndex = (int)u.Index;
-                                    //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
-                                    nfts.Add(nft);
+                                    var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
+                                    if (nft != null)
+                                    {
+                                        if (fireProfileEventTmp && nft.Type == NFTTypes.Profile)
+                                        {
+                                            ProfileNFTFound.Invoke(null, nft);
+                                            fireProfileEventTmp = false;
+                                        }
+                                        nft.UtxoIndex = (int)u.Index;
+                                        //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
+                                        nfts.Add(nft);
+                                    }
+                                }
+                                catch(Exception ex)
+                                {
+                                    Console.WriteLine("Some trouble with loading NFT." + ex.Message);
                                 }
                             }
-
+                        }
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
             if (innfts == null)
                 return nfts;
             else

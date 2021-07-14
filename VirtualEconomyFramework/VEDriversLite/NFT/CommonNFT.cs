@@ -110,6 +110,9 @@ namespace VEDriversLite.NFT
                 Text = text;
             if (meta.TryGetValue("Tags", out var tags))
             {
+                tags = tags.Replace("#", string.Empty);
+                tags = tags.Replace(",", string.Empty);
+                tags = tags.Replace(";", string.Empty);
                 Tags = tags;
                 parseTags();
             }
@@ -169,6 +172,9 @@ namespace VEDriversLite.NFT
             metadata.Add("Author", Author);
             metadata.Add("Description", Description);
             metadata.Add("Image", ImageLink);
+            Tags = Tags.Replace("#", string.Empty);
+            Tags = Tags.Replace(",", string.Empty);
+            Tags = Tags.Replace(";", string.Empty);
             if (!string.IsNullOrEmpty(Tags))
                 metadata.Add("Tags", Tags);
             if (!string.IsNullOrEmpty(Text))

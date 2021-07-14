@@ -2122,6 +2122,21 @@ namespace VEDriversLite
             return (false, string.Empty);
         }
 
+        public static async Task<(bool, string)> GetNeblioAddressFromScriptPubKey(string scriptPubKey)
+        {
+            try
+            {
+                var add = BitcoinAddress.Create(scriptPubKey, Network);
+                if (!string.IsNullOrEmpty(add.ToString()))
+                    return (true, add.ToString());
+            }
+            catch (Exception ex)
+            {
+                return (false, string.Empty);
+            }
+            return (false, string.Empty);
+        }
+
 
         ///////////////////////////////////////////
         // calls of Neblio API and helpers
@@ -2798,6 +2813,36 @@ namespace VEDriversLite
             {
                 Console.WriteLine("Cannot load token metadata. " + ex.Message);
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Get token info. Contains image url, issuer, and other info
+        /// </summary>
+        /// <param name="tokenId">token id hash</param>
+        /// <returns></returns>
+        public static async Task<TokenSupplyDto> GetTokenInfo(string tokenId)
+        {
+            if (string.IsNullOrEmpty(tokenId))
+                return new TokenSupplyDto();
+            var t = new TokenSupplyDto();
+            try
+            {
+                var info = await GetClient().GetTokenMetadataAsync(tokenId, 0);
+                t.TokenSymbol = info.MetadataOfIssuance.Data.TokenName;
+                var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance.Data.Urls));
+
+                var tu = tus.FirstOrDefault();
+                if (tu != null)
+                    t.ImageUrl = tu.url;
+                t.TokenSymbol = info.TokenName;
+                t.TokenId = tokenId;
+                return t;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load token metadata. " + ex.Message);
+                return new TokenSupplyDto();
             }
         }
 

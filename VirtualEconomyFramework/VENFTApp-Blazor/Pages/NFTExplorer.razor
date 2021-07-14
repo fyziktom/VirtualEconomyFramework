@@ -32,7 +32,7 @@
                                     <span class="oi oi-home" aria-hidden="true"></span> Main Account NFTs
                                 </HeaderTemplate>
                                 <ChildContent>
-                                    <VENFTApp_Blazor.Components.NFTList MainAccount="true" NFTsChanged="nftChangedHandler" SubAccount="false" InBrowser="false"
+                                    <VENFTApp_Blazor.Components.NFTList MainAccount="true" SubAccount="false" InBrowser="false"
                                                                         Address="@AppData.Account.Address" />
                                 </ChildContent>
                             </Panel>
@@ -58,7 +58,7 @@
                                         </div>
                                         <div class="row" style="min-width:300px; padding:0px;">
                                             <div class="col w-100" style="min-width:300px; padding:0px;">
-                                                <VENFTApp_Blazor.Components.SubAccountNFTsList Address="@mt.Address" NFTsChanged="nftChangedHandler" />
+                                                <VENFTApp_Blazor.Components.NFTList SubAccount="true" MainAccount="false" InBrowser="false" Address="@mt.Address" />
                                             </div>
                                         </div>
                                     </ChildContent>
@@ -161,11 +161,6 @@
     }
 
     void RefreshedHandler(object sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
-
-    void nftChangedHandler(List<INFT> e)
     {
         StateHasChanged();
     }

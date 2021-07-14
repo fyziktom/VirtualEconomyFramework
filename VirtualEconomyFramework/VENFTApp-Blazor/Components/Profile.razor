@@ -8,44 +8,31 @@
 @inject HttpClient _client
 
 <Spin spinning="@loadingProfile" tip="Loading Profile...">
-    <div class="row">
+    <div class="row d-flex justify-content-center" style="min-width:250px;">
         <div class="col">
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h3>Profile</h3>
+                <div class="col d-flex justify-content-center align-items-center">
+                    <img src="@profileNFT.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                 </div>
             </div>
-            <div class="row bg-light">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <img src="@profileNFT.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
-                        </div>
-                    </div>
-                    <div class="row" style="margin-left:20px;">
-                        <div class="col">
-                            <div class="row">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <span>Name: @profileNFT.Name @profileNFT.Surname</span>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    Nick: @profileNFT.Nickname
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <span class="text-center" style="max-width:100px;">Bio: @profileNFT.Description</span>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <a href="@profileNFT.Link" target="_blank">Webpage</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="row" style="margin-top:15px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@profileNFT.Name @profileNFT.Surname</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small class="text-muted"> @profileNFT.Nickname </small>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span class="text-center" style="max-width:150px;">@profileNFT.Description</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="@profileNFT.Link" target="_blank">Webpage</a>
                 </div>
             </div>
             @if (!ReadOnlyProfile)
@@ -53,7 +40,7 @@
                 @if (createNewProfile)
                 {
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <button class="btn btn-secondary" @onclick="showNewProfileDialog" style="margin-top:20px;">Create New Profile</button>
                         </div>
                     </div>
@@ -61,7 +48,7 @@
                 else
                 {
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <button class="btn btn-secondary" @onclick="showNewProfileDialog" style="margin-top:20px;">Edit Profile</button>
                         </div>
                     </div>
@@ -75,7 +62,7 @@
        Visible="@createNewProfileVisible"
        OnOk="@createNewProfileConfirm"
        OnCancel="@createNewProfileCancel">
-        <MintNFTForm NFTType="NFTTypes.Profile" NFT="@profileNFT" RedirectToNFTsAfterMint="false" NFTMinted="ProfileChanged" />
+        <MintNFTForm NFTType="NFTTypes.Profile" NFT="@profileNFT" RedirectToNFTsAfterMint="false" NFTMinted="ProfileChanged" TokenId="@tokenIdForProfile" />
 </Modal>
 
 @code {
@@ -84,6 +71,7 @@
     bool createNewProfile = false;
 
     bool processingMinting = false;
+    string tokenIdForProfile = NFTHelpers.TokenId;
 
     [Parameter]
     public bool ReadOnlyProfile { get; set; } = true;
@@ -142,7 +130,10 @@
     protected override async Task OnInitializedAsync()
     {
         if (AppData.Account != null)
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
             AppData.Account.Refreshed += RefreshedHandler;
+        }
         await LoadProfile();
     }
 
@@ -175,7 +166,7 @@
         {
             try
             {
-                var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, profileNFT.Utxo);
+                var nft = await NFTFactory.GetNFT("", profileNFT.Utxo, 0, 0, true);
                 newProfileNFT = nft as ProfileNFT;
                 StateHasChanged();
             }
@@ -184,6 +175,21 @@
                 loadingProfile = false;
                 processingMinting = false;
                 Console.WriteLine("Cannot load last profile. " + ex.Message);
+            }
+        }
+        else
+        {
+            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.TokenId, out var ts))
+            {
+                tokenIdForProfile = ts.TokenId;
+            }
+            else
+            {
+                var to = AppData.Account.TokensSupplies.Values.FirstOrDefault(t => t.Amount > 5);
+                if (to != null)
+                    tokenIdForProfile = to.TokenId;
+                else
+                    return;
             }
         }
         createNewProfileVisible = true;

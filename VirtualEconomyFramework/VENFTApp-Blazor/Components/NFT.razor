@@ -30,6 +30,18 @@
                                 </Spin>
                             }
                             break;
+                        case NFTTypes.Profile:
+                            @if (!string.IsNullOrEmpty(nft.ImageLink))
+                            {
+                                <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                            }
+                            else
+                            {
+                                <Spin Tip="Loading..." Style="min-width:50px;">
+                                    <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
+                                </Spin>
+                            }
+                            break;
                         case NFTTypes.Ticket:
                             var tnft = nft as TicketNFT;
                             @if (!string.IsNullOrEmpty(nft.ImageLink))
@@ -206,6 +218,9 @@
                     break;
                 case NFTTypes.Post:
                     <span class="badge badge-info">Post</span>
+                    break;
+                case NFTTypes.Profile:
+                    <span class="badge badge-light">Profile</span>
                     break;
                 case NFTTypes.Music:
                     <span class="badge badge-warning">Music</span>
@@ -438,7 +453,7 @@
     {
         nftDetailsVisible = false;
         StateHasChanged();
-        //NFTSent.InvokeAsync(nfttx);
+        NFTSent.InvokeAsync(nfttx);
     }
 
     private async Task checkNFTChanged(object e)

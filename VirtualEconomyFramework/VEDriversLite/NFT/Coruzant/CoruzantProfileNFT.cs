@@ -93,12 +93,12 @@ namespace VEDriversLite.NFT.Coruzant
             if (nftData != null)
             {
 
-                ParseCommon(nftData.NFTMetadata);
+                ParseCommon(lastmetadata);
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
 
-                ParseSpecific(nftData.NFTMetadata);
+                ParseSpecific(lastmetadata);
             }
         }
 
@@ -122,6 +122,7 @@ namespace VEDriversLite.NFT.Coruzant
             {
                 ParseCommon(metadata);
                 ParseSpecific(metadata);
+                ParseOriginData(metadata);
             }
         }
 

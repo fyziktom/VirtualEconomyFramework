@@ -798,9 +798,19 @@
             This event is called whenever some important thing happen. You can obtain success, error and info messages.
             </summary>
         </member>
+        <member name="E:VEDriversLite.NeblioAccount.NFTsChanged">
+            <summary>
+            This event is called whenever the list of NFTs is changed
+            </summary>
+        </member>
         <member name="E:VEDriversLite.NeblioAccount.NewMintingProcessInfo">
             <summary>
             This event is called whenever some progress during multimint happens
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.NeblioAccount.ProfileUpdated">
+            <summary>
+            This event is called whenever profile nft is updated or found
             </summary>
         </member>
         <member name="P:VEDriversLite.NeblioAccount.AccountKey">
@@ -1024,6 +1034,13 @@
             <param name="name">Neblio Sub Account Name</param>
             <returns>true and string with serialized subaccount account export dto list as json string</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.GetSubAccountNameByAddress(System.String)">
+            <summary>
+            Get sub account name by address
+            </summary>
+            <param name="name">Neblio Sub Account Name</param>
+            <returns>true and string with serialized subaccount account export dto list as json string</returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.ChangeSubAccountName(System.String,System.String)">
             <summary>
             Change Sub Account Name if exists in the dictionary
@@ -1158,7 +1175,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.ReLoadNFTs">
+        <member name="M:VEDriversLite.NeblioAccount.ReLoadNFTs(System.Boolean)">
             <summary>
             This function will reload changes in the NFTs list based on provided list of already loaded utxos.
             </summary>
@@ -3505,6 +3522,13 @@
             <param name="tokenId">token id hash</param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenInfo(System.String)">
+            <summary>
+            Get token info. Contains image url, issuer, and other info
+            </summary>
+            <param name="tokenId">token id hash</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetActualMintingSupply(System.String,System.String,VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
             <summary>
             check actual supply for minting on some address. It is just for VENFT tokens now. 
@@ -3542,6 +3566,11 @@
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.NFTs">
             <summary>
             List of actual address NFTs. Based on Utxos list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Neblio.NeblioSubAccount.CoruzantNFTs">
+            <summary>
+            List of actual address Coruzant NFTs. Based on Utxos list
             </summary>
         </member>
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.Utxos">
@@ -3602,6 +3631,11 @@
         <member name="E:VEDriversLite.Neblio.NeblioSubAccount.NewEventInfo">
             <summary>
             This event is called whenever some important thing happen. You can obtain success, error and info messages.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Neblio.NeblioSubAccount.NFTsChanged">
+            <summary>
+            This event is called whenever the list of NFTs is changed
             </summary>
         </member>
         <member name="E:VEDriversLite.Neblio.NeblioSubAccount.NewMintingProcessInfo">
@@ -3888,6 +3922,11 @@
             <param name="receiver">Fill when you want to send NFT to another address</param>
             <returns>New Tx Id Hash</returns>
         </member>
+        <member name="E:VEDriversLite.NFT.NFTHelpers.ProfileNFTFound">
+            <summary>
+            This event is called profile nft is found in the list of nfts
+            </summary>
+        </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.InitHandlers">
             <summary>
             Init handler to receive event info messages from Neblio Transaction Helpers class
@@ -3960,7 +3999,7 @@
             <param name="address"></param>
             <returns>profile NFT and list of all NFTs</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Boolean)">
             <summary>
             This function will find all NFTs and load them to the carriers. 
             If you already have list of utxos and NFTs you can provide it and it will load just the changes.

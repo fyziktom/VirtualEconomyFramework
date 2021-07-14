@@ -2,7 +2,7 @@
 @using VEDriversLite.NFT
 @inject AppData AppData
 
-<div class="row">
+<div class="row d-flex justify-content-center align-items-center">
     <div class="col">
         <table style="min-width:250px;">
             <thead>
@@ -24,7 +24,7 @@
                             <td><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioTransactionHelpers.ShortenAddress(pnft.Sender)</a></td>
                             <td style="margin-left:10px;"><a href="https://explorer.nebl.io/tx/@pnft.NFTUtxoTxId" target="_blank"><img class="img-thumbnail" style="max-height:80px; max-width:80px;" src="@pnft.ImageLink" /></a></td>
                             <td>@pnft.Price NEBL</td>
-                            <td style="margin-left:5px;"><a href="https://explorer.nebl.io/tx/@pnft.Utxo" target="_blank"><i class="oi oi-info"></i></a></td>
+                            <td class="text-center" style="margin-left:5px;"><a href="https://explorer.nebl.io/tx/@pnft.Utxo" target="_blank"><i class="oi oi-info"></i></a></td>
                         </tr>
                     }
                 }

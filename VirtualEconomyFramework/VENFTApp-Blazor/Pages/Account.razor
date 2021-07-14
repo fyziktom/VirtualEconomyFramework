@@ -9,6 +9,8 @@
 @inject NavigationManager NavManager
 @page "/account"
 
+@if (AppData.Account != null && !string.IsNullOrEmpty(AppData.Account.Address))
+{
 <div class="container-fluid">
     <div class="row">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -29,7 +31,7 @@
                 <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                     <h5 class="text-center">Profile</h5>
                 </div>
-                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                <div class="card-body d-flex justify-content-center w-100">
                     <VENFTApp_Blazor.Components.Profile ReadOnlyProfile="@false" NFT="@AppData.Account.Profile" />
                 </div>
             </div>
@@ -109,7 +111,7 @@
                         <div class="col">
                             <div class="row" style="margin-top:30px; min-width:350px;">
                                 <div class="col w-100 d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <VENFTApp_Blazor.Components.TransactionsList @bind-MaxLoadedTx="maxLoadedTransaction" />
+                                    <VENFTApp_Blazor.Components.TransactionsList @bind-MaxLoadedTx="maxLoadedTransaction" Address="@AppData.Account.Address" SubAccount="@false" />
                                 </div>
                             </div>
                         </div>
@@ -162,7 +164,7 @@
 
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
-
+}
 @code {
 
     private int maxLoadedTransaction = 10;
@@ -191,7 +193,12 @@
     private async Task Load()
     {
         if (AppData.Account != null)
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
             AppData.Account.Refreshed += RefreshedHandler;
+            AppData.Account.ProfileUpdated -= ProfileRefreshedHandler;
+            AppData.Account.ProfileUpdated += ProfileRefreshedHandler;
+        }
 
         try
         {
@@ -235,6 +242,11 @@
     }
 
     void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    void ProfileRefreshedHandler(object sender, INFT e)
     {
         StateHasChanged();
     }

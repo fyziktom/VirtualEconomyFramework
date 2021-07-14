@@ -109,7 +109,7 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@AmountToSend" /> <img style="width: 25px;margin-right: 10px;" src="images/neblio-icon.png" />
+                                <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@AmountToSend" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
                             </div>
                         </div>
                     }
@@ -117,7 +117,7 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="0.0001" min="0.0001" max="@SelectedAccountTotalSpendable" @bind="@AmountToSend" /> <img style="width: 25px;margin-right: 10px;" src="images/neblio-icon.png" />
+                                <input type="number" step="0.0001" min="0.0001" max="@SelectedAccountTotalSpendable" @bind="@AmountToSend" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
                             </div>
                         </div>
                     }
@@ -133,7 +133,7 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="0.0001" min="0.0001" max="@AppData.Account.TotalBalance" @bind="@splitNeblioDto.amount" /> <img style="width: 25px;margin-right: 10px;" src="images/neblio-icon.png" />
+                                <input type="number" step="0.0001" min="0.0001" max="@Math.Round((AppData.Account.TotalBalance/splitNeblioDto.lots),5)" @bind="@splitNeblioDto.amount" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
                             </div>
                         </div>
                     }
@@ -141,7 +141,7 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="0.0001" min="0.0001" max="@SelectedAccountTotalSpendable" @bind="@splitNeblioDto.amount" /> <img style="width: 25px;margin-right: 10px;" src="images/neblio-icon.png" />
+                                <input type="number" step="0.0001" min="0.0001" max="@Math.Round((SelectedAccountTotalSpendable/splitNeblioDto.lots),5)" @bind="@splitNeblioDto.amount" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
                             </div>
                         </div>
                     }
@@ -155,6 +155,19 @@
                             <input type="number" step="1" min="2" max="@NeblioTransactionHelpers.MaximumNeblioOutpus" @bind="@splitNeblioDto.lots" />
                         </div>
                     </div>
+                    <div class="row" style="margin-top:30px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <p>Total Amount is: @splitNeblioDto.TotalAmount NEBL <img style="width: 12px;margin-left: 5px; margin-bottom:4px;" src="images/neblio-icon.png" /> </p>
+                        </div>
+                    </div>
+                    @if (splitNeblioDto.TotalAmount > SelectedAccountTotalSpendable)
+                    {
+                        <div class="row" style="margin-top:30px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-danger">Total Amount is bigger than total account balance.</small>
+                            </div>
+                        </div>
+                    }
                     <div class="row" style="margin-top:30px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <p>Receivers:</p>
@@ -249,18 +262,18 @@
                             <p>Token Type:</p>
                         </div>
                     </div>
-                    
+
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <RadioGroup @bind-Value="@selectedTokenId" OnChange="tokenTypeChangedHandler" TValue="string">
                                 @foreach (var t in SelectedAccountTokenSupply)
-                                        {
+                                {
                                     <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
-                                        }
+                                }
                             </RadioGroup>
                         </div>
                     </div>
-                    
+
                     <div class="row" style="margin-top:30px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <p>Amount of Tokens:</p>
@@ -268,18 +281,31 @@
                     </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@splitNeblioTokenDto.amount" /> <img style="width: 25px;margin-right: 10px;" src="@selectedToken.ImageUrl" />
+                            <input type="number" step="1" min="2" max="@Math.Round((selectedToken.Amount/splitNeblioTokenDto.lots),0)" @bind="@splitNeblioTokenDto.amount" /> <img style="width: 25px;margin-left: 10px;" src="@selectedToken.ImageUrl" />
                         </div>
-                    </div>                    <div class="row" style="margin-top:30px;">
+                    </div> <div class="row" style="margin-top:30px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <p>Number of Lots:</p>
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <input type="number" step="1" min="2" max="@NeblioTransactionHelpers.MaximumNeblioOutpus" @bind="@splitNeblioTokenDto.lots" />
+                            <input type="number" step="1" min="2" max="@NeblioTransactionHelpers.MaximumTokensOutpus" @bind="@splitNeblioTokenDto.lots" />
                         </div>
                     </div>
+                    <div class="row" style="margin-top:30px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <p>Total Amount is: @splitNeblioTokenDto.TotalAmount @selectedToken.TokenSymbol <img style="width: 12px;margin-right: 10px; margin-bottom:3px;" src="@selectedToken.ImageUrl" /> </p>
+                        </div>
+                    </div>
+                    @if (splitNeblioTokenDto.TotalAmount > selectedToken.Amount)
+                    {
+                        <div class="row" style="margin-top:30px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-danger">Total Amount is bigger than total account balance.</small>
+                            </div>
+                        </div>
+                    }
                     <div class="row" style="margin-top:30px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <p>Receivers:</p>
@@ -378,9 +404,9 @@
                         <div class="col d-flex justify-content-center align-items-center">
                             <RadioGroup @bind-Value="@selectedTokenId" OnChange="tokenTypeChangedHandler" TValue="string">
                                 @foreach (var t in SelectedAccountTokenSupply)
-                                        {
-                                    <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
-                                        }
+                                {
+                                    <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-left: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
+                                }
                             </RadioGroup>
                         </div>
                     </div>
@@ -396,7 +422,7 @@
                     </div>
                     <div class="row" style="margin-top:2px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@AmountTokensToSend" /> <img style="width: 25px;margin-right: 10px;" src="@selectedToken.ImageUrl" />
+                            <input type="number" step="1" min="2" max="@selectedToken.Amount" @bind="@AmountTokensToSend" /> <img style="width: 25px;margin-left: 10px;" src="@selectedToken.ImageUrl" />
                         </div>
                     </div>
                 }
@@ -435,11 +461,46 @@
                 }
                 else
                 {
-                    <div class="row" style="margin-top:20px; margin-bottom:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <button class="btn btn-primary" @onclick="SendTransaction">Send</button>
+                    @if (txType == TxType.Neblio && (AmountToSend >= SelectedAccountTotalSpendable))
+                    {
+                        <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary disabled" @onclick="SendTransaction">Not enough Neblio</button>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else if (txType == TxType.Tokens && (AmountTokensToSend >= selectedToken.Amount))
+                    {
+                        <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary disabled" @onclick="SendTransaction">Not enough Tokens</button>
+                            </div>
+                        </div>
+                    }
+                    else if (txType == TxType.SplitNeblio && (splitNeblioDto.TotalAmount >= SelectedAccountTotalSpendable))
+                    {
+                        <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary disabled" @onclick="SendTransaction">Not enough Neblio</button>
+                            </div>
+                        </div>
+                    }
+                    else if (txType == TxType.SplitTokens && (splitNeblioTokenDto.TotalAmount >= selectedToken.Amount))
+                    {
+                        <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary disabled" @onclick="SendTransaction">Not enough Tokens</button>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary" @onclick="SendTransaction">Send</button>
+                            </div>
+                        </div>
+                    }
                 }
             </div>
             <div class="col w-25">

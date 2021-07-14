@@ -68,6 +68,24 @@
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
+                                <small>Webpage</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add your webpage" MaxLength="50" @bind-Value=@link Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(link))
+                        {
+                            <div class="row" style="margin-top:3px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <a href=="@link" target="_blank" class="text-info">Test the link</a>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <small>Description</small>
                             </div>
                         </div>
@@ -86,15 +104,15 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <TextArea Placeholder="Type your Bio" MaxLength="160" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
+                                <TextArea Placeholder="Type your Bio" MaxLength="300" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
                             </div>
                         </div>
                     }
-                    @if (newNFT.Description.Length >= 159)
+                    @if (!string.IsNullOrEmpty(description))
                     {
                         <div class="row" style="margin-top:2px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small>Maximum length is 160 characters</small>
+                                <small class="text-info">Remaining @(300-description.Length) from 300 characters.</small>
                             </div>
                         </div>
                     }
@@ -116,6 +134,14 @@
                                 </div>
                             }
                         </div>
+                        @if (!string.IsNullOrEmpty(text))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-info">Remaining @(8000-text.Length) from 8000 characters.</small>
+                                </div>
+                            </div>
+                        }
                     }
 
 
@@ -293,10 +319,10 @@
         get => sourceNFT;
         set
         {
-            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != newNFT.Utxo)
+            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != sourceNFT.Utxo)
             {
+                sourceNFT = null;
                 sourceNFT = value;
-                newNFT.Fill(value);
                 LoadData();
                 StateHasChanged();
             }
@@ -425,23 +451,27 @@
 
     private async Task LoadData()
     {
-        if (newNFT != null)
+        if (sourceNFT != null)
         {
-            description = newNFT.Description;
-            text = newNFT.Text;
-            tags = newNFT.Tags;
-            name = newNFT.Name;
-            author = newNFT.Author;
-            imagelink = newNFT.ImageLink;
-            link = newNFT.Link;
-
-            switch (newNFT.Type)
+            switch (sourceNFT.Type)
             {
                 case NFTTypes.Profile:
-                    surname = (newNFT as ProfileNFT).Surname;
-                    nickname = (newNFT as ProfileNFT).Nickname;
+                    newNFT = new ProfileNFT("");
+                    surname = (sourceNFT as ProfileNFT).Surname;
+                    nickname = (sourceNFT as ProfileNFT).Nickname;
+                    break;
+                case NFTTypes.Post:
+                    newNFT = new PostNFT("");
                     break;
             }
+            description = sourceNFT.Description;
+            text = sourceNFT.Text;
+            tags = sourceNFT.Tags;
+            name = sourceNFT.Name;
+            author = sourceNFT.Author;
+            imagelink = sourceNFT.ImageLink;
+            link = sourceNFT.Link;
+            StateHasChanged();
         }
     }
 
