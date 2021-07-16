@@ -49,11 +49,30 @@
                                 </div>
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <input type="number" step="1" min="1" max="@AppData.DogeAccount.TotalBalance" @bind="@AmountToSend" />
+                                        <input type="number" step="1" min="1" max="@AppData.DogeAccount.TotalBalance" @bind="@AmountToSend" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
                                     </div>
                                 </div>
-                                <VENFTApp_Blazor.Components.UploadImage ImageLinkChanged="@ImageLinkChanged" />
+                                <div class="row" style="margin-top:20px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <input type="checkbox" @onchange="eventArgs => { withMessageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Message</span><br />
+                                    </div>
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <input type="checkbox" @onchange="eventArgs => { withImageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Image</span><br />
+                                    </div>
+                                </div>
 
+                                @if (withMessage)
+                                {
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <Input Placeholder="Add Your Message" MaxLength="82" @bind-Value=@message Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                        </div>
+                                    </div>
+                                }
+                                @if (withImage)
+                                {
+                                    <VENFTApp_Blazor.Components.UploadImage ImageLink="@message" ImageLinkChanged="@ImageLinkChanged" />
+                                }
                                 <div class="row" style="margin-top:20px; margin-bottom:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
                                         <button class="btn btn-primary" @onclick="SendTx">Send</button>
@@ -198,6 +217,9 @@
     string txDetailsTxId = string.Empty;
     bool txDetailsVisible = false;
 
+    bool withMessage = false;
+    bool withImage = false;
+
     private bool sendingTransaction = false;
     private double AmountToSend = 1;
     private string receiver = string.Empty;
@@ -230,6 +252,25 @@
         }
 
         return base.OnInitializedAsync();
+    }
+
+    private async Task withMessageChanged(object e)
+    {
+        if (withMessage != (bool)e)
+            message = string.Empty;
+        withMessage = (bool)e;
+        if (withImage)
+            withImage = false;
+        StateHasChanged();
+    }
+    private async Task withImageChanged(object e)
+    {
+        if (withImage != (bool)e)
+            message = string.Empty;
+        withImage = (bool)e;
+        if (withMessage)
+            withMessage = false;
+        StateHasChanged();
     }
 
     void ImageLinkChanged(string newLink)

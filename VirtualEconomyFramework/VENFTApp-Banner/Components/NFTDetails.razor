@@ -59,7 +59,7 @@
                 </div>
             }
             @if ((NFT.Type == NFTTypes.Post && !string.IsNullOrEmpty(NFT.Text)) ||
-             (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
+            (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
             {
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
@@ -351,7 +351,13 @@
             @if (NFT.PriceActive)
             {
                 <div class="col w-100 d-flex justify-content-center align-items-center">
-                    <small class="text-muted">Setted Price: @NFT.Price NEBL</small>
+                    <small class="text-muted">Setted Price: @NFT.Price NEBL</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
+                </div>
+            }
+            @if (NFT.DogePriceActive)
+            {
+                <div class="col w-100 d-flex justify-content-center align-items-center">
+                    <small class="text-muted">Setted Price: @NFT.DogePrice DOGE</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/doge.jpg" />
                 </div>
             }
             <NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />

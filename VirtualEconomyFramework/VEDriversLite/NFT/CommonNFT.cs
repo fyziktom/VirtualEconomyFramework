@@ -28,6 +28,9 @@ namespace VEDriversLite.NFT
         public string NFTOriginTxId { get; set; } = string.Empty;
         public double Price { get; set; } = 0.0;
         public bool PriceActive { get; set; } = false;
+        public double DogePrice { get; set; } = 0.0;
+        public bool DogePriceActive { get; set; } = false;
+        public string ShortHash => $"{NeblioTransactionHelpers.ShortenTxId(Utxo, false, 16)}:{UtxoIndex}";
         public DateTime Time { get; set; } = DateTime.UtcNow;
         [JsonIgnore]
         public List<INFT> History { get; set; } = new List<INFT>();
@@ -64,6 +67,8 @@ namespace VEDriversLite.NFT
             TokenId = nft.TokenId;
             Price = nft.Price;
             PriceActive = nft.PriceActive;
+            DogePrice = nft.DogePrice;
+            DogePriceActive = nft.DogePriceActive;
             UtxoIndex = nft.UtxoIndex;
             Time = nft.Time;
             Tags = nft.Tags;
@@ -83,12 +88,26 @@ namespace VEDriversLite.NFT
         public void ParsePrice(IDictionary<string, string> meta)
         {
             if (meta.TryGetValue("Price", out var price))
+            {
+                price = price.Replace(',', '.');
                 Price = double.Parse(price, CultureInfo.InvariantCulture);
+            }
 
             if (Price > 0)
                 PriceActive = true;
             else
                 PriceActive = false;
+
+            if (meta.TryGetValue("DogePrice", out var dprice))
+            {
+                dprice = dprice.Replace(',', '.');
+                DogePrice = double.Parse(dprice, CultureInfo.InvariantCulture);
+            }
+
+            if (DogePrice > 0)
+                DogePriceActive = true;
+            else
+                DogePriceActive = false;
         }
         public void ParseCommon(IDictionary<string,string> meta)
         {
@@ -182,6 +201,8 @@ namespace VEDriversLite.NFT
             metadata.Add("Link", Link);
             if (Price > 0)
                 metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
+            if (DogePrice > 0)
+                metadata.Add("DogePrice", DogePrice.ToString(CultureInfo.InvariantCulture));
 
             return metadata;
         }

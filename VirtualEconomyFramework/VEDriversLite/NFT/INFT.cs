@@ -43,8 +43,11 @@ namespace VEDriversLite.NFT
         string SourceTxId { get; set; }
         double Price { get; set; }
         bool PriceActive { get; set; }
+        double DogePrice { get; set; }
+        bool DogePriceActive { get; set; }
         string NFTOriginTxId { get; set; }
         int UtxoIndex { get; set; }
+        string ShortHash { get; }
         DateTime Time { get; set; }
         List<INFT> History { get; set; }
         [JsonIgnore]

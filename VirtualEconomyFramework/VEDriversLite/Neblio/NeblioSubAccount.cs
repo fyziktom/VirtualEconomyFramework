@@ -11,6 +11,7 @@ using System.Linq;
 using VEDriversLite.Events;
 using NBitcoin;
 using VEDriversLite.NFT.Coruzant;
+using VEDriversLite.Dto;
 
 namespace VEDriversLite.Neblio
 {
@@ -89,6 +90,11 @@ namespace VEDriversLite.Neblio
         /// Total balance of Coruzant tokens which can be used for minting purposes.
         /// </summary>
         public double CoruzantSourceTokensBalance { get; set; } = 0.0;
+
+        /// <summary>
+        /// If there is some Doge address in same project which should be searched for the payments triggers fill it here
+        /// </summary>
+        public string ConnectedDogeAccountAddress { get; set; } = string.Empty;
 
         /// <summary>
         /// Actual all token supplies. Consider also other tokens than VENFT.
@@ -418,8 +424,8 @@ namespace VEDriversLite.Neblio
                         if (NFTs.Count != lastcount)
                             NFTsChanged.Invoke(this, "Changed");
                         var nft = NFTs.FirstOrDefault();
-                        Console.WriteLine("Last time: " + lastnft.Time.ToString());
-                        Console.WriteLine("Newest time: " + nft.Time.ToString());
+                        //Console.WriteLine("Last time: " + lastnft.Time.ToString());
+                        //Console.WriteLine("Newest time: " + nft.Time.ToString());
                         if (nft != null)
                             if (nft.Time != lastnft.Time)
                                 NFTsChanged.Invoke(this, "Changed");

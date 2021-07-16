@@ -63,6 +63,11 @@ namespace VEDriversLite
         public event EventHandler<IEventInfo> NewEventInfo;
 
         /// <summary>
+        /// This event is called whenever new doge transaction is received
+        /// </summary>
+        public event EventHandler<IEventInfo> NewDogeUtxos;
+
+        /// <summary>
         /// Carrier for encrypted private key from storage and its password.
         /// </summary>
         [JsonIgnore]
@@ -233,6 +238,7 @@ namespace VEDriversLite
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
                     SignMessage("init");
                     await StartRefreshingData();
+                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -271,6 +277,7 @@ namespace VEDriversLite
                 });
 
                 await StartRefreshingData();
+                return true;
 
             }
             catch (Exception ex)
@@ -331,6 +338,7 @@ namespace VEDriversLite
         /// <returns></returns>
         public async Task ReloadUtxos()
         {
+            var count = Utxos.Count;
             var ux = await DogeTransactionHelpers.AddressUtxosAsync(Address);
             var ouxox = ux.Data.Utxos.OrderBy(u => u.Confirmations).ToList();
 
@@ -352,6 +360,11 @@ namespace VEDriversLite
 
                 TotalBalance = TotalSpendableBalance + TotalUnconfirmedBalance;
             }
+
+            if (count != Utxos.Count)
+                NewDogeUtxos?.Invoke(this, await EventFactory.GetEvent(EventType.Info,
+                                                "New Doge Transactions",
+                                                "Received new dogecoin transactions."));
         }
 
         /// <summary>
@@ -421,7 +434,7 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "")
+        public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "", UInt64 fee = 100000000, string utxo = "", int N = 0)
         {
             if (IsLocked())
             {
@@ -435,6 +448,14 @@ namespace VEDriversLite
                 return (false, res.Item1);
             }
 
+            if (!string.IsNullOrEmpty(utxo))
+            {
+                res.Item2 = new List<Utxo>() { new Utxo()
+                {
+                     N = N,
+                     TxId = utxo
+                }};
+            }
             // fill input data for sending tx
             var dto = new SendTxData() // please check SendTxData for another properties such as specify source UTXOs
             {
@@ -449,9 +470,9 @@ namespace VEDriversLite
                 // send tx
                 var rtxid = string.Empty;
                 if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
                 else 
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
 
                 if (rtxid != null)
                 {

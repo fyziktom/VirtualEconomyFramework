@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,17 +16,10 @@ using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.Security;
+using VEDriversLite.WooCommerce;
 
 namespace VEDriversLite
 {
-    public class AccountExportDto
-    {
-        public string Address { get; set; } = string.Empty;
-        public string EKey { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
-
     public class NeblioAccount
     {
         public NeblioAccount()
@@ -84,6 +78,15 @@ namespace VEDriversLite
         /// </summary>
         public double AddressNFTCount { get; set; } = 0.0;
         /// <summary>
+        /// When main refreshing loop is running this is set
+        /// </summary>
+        public bool IsRefreshingRunning { get; set; } = false;
+        /// <summary>
+        /// If there is some Doge address in same project which should be searched for the payments triggers fill it here
+        /// </summary>
+        public string ConnectedDogeAccountAddress { get; set; } = string.Empty;
+        public string LastCheckedDogePaymentUtxo { get; set; } = string.Empty;
+        /// <summary>
         /// List of actual address NFTs. Based on Utxos list
         /// </summary>
         public List<INFT> NFTs { get; set; } = new List<INFT>();
@@ -130,7 +133,7 @@ namespace VEDriversLite
         public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
 
         public CoruzantBrowser CoruzantBrowserInstance { get; set; } = new CoruzantBrowser();
-        
+
         /// <summary>
         /// This event is called whenever info about the address is reloaded. It is periodic event.
         /// </summary>
@@ -316,41 +319,46 @@ namespace VEDriversLite
                     await ReloadCountOfNFTs();
                     await CheckPayments();
                     await RefreshAddressReceivedPayments();
-                    
+
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     // todo
                 }
+                IsRefreshingRunning = true;
 
                 while (true)
                 {
                     try
                     {
                         //await ReloadAccountInfo();
-                        if (!firstLoad)
-                        {
-                            await ReloadUtxos();
-                            await ReloadMintingSupply();
-                            await ReLoadNFTs();
-                            await ReloadCountOfNFTs();
-                            await ReloadTokenSupply();
 
-                            if (Utxos.FirstOrDefault(u => u.Txid == Profile.Utxo && u.Index == Profile.UtxoIndex) == null)
+                        await ReloadUtxos();
+                        await ReloadMintingSupply();
+                        await ReLoadNFTs();
+                        await ReloadCountOfNFTs();
+                        await ReloadTokenSupply();
+
+                        try
+                        {
+                            if (Utxos.FirstOrDefault(u => u != null && u.Txid == Profile.Utxo && u.Index == Profile.UtxoIndex) == null)
                             {
                                 Profile = await NFTHelpers.FindProfileNFT(NFTs);
                                 if (!string.IsNullOrEmpty(Profile.Utxo))
-                                    ProfileUpdated.Invoke(this, Profile);
+                                    ProfileUpdated?.Invoke(this, Profile);
                             }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            firstLoad = false;
+                            //todo
                         }
                         minorRefresh--;
                         if (minorRefresh < 0)
                         {
                             await CheckPayments();
+                            if (!string.IsNullOrEmpty(ConnectedDogeAccountAddress))
+                                await CheckDogePayments();
+
                             await RefreshAddressReceivedPayments();
                             minorRefresh = 10;
                         }
@@ -364,7 +372,7 @@ namespace VEDriversLite
 
                     await Task.Delay(interval);
                 }
-
+                IsRefreshingRunning = false;
             });
 
             return await Task.FromResult("RUNNING");
@@ -380,33 +388,33 @@ namespace VEDriversLite
         {
             try
             {
-               await Task.Run(async () =>
-               {
-                   Key privateKey = new Key(); // generate a random private key
+                await Task.Run(async () =>
+                {
+                    Key privateKey = new Key(); // generate a random private key
                     PubKey publicKey = privateKey.PubKey;
-                   BitcoinSecret privateKeyFromNetwork = privateKey.GetBitcoinSecret(NeblioTransactionHelpers.Network);
-                   var address = publicKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
-                   Address = address.ToString();
+                    BitcoinSecret privateKeyFromNetwork = privateKey.GetBitcoinSecret(NeblioTransactionHelpers.Network);
+                    var address = publicKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
+                    Address = address.ToString();
 
-                    // todo load already encrypted key
+                   // todo load already encrypted key
                    AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
-                   AccountKey.PublicKey = Address;
-                   Secret = privateKeyFromNetwork;
-                   if (!string.IsNullOrEmpty(password))
-                       AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(password);
-                   SignMessage("init");
-                   
-                   if (saveToFile)
-                   {
-                        // save to file
-                        var kdto = new KeyDto()
-                       {
-                           Address = Address,
-                           Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
-                       };
-                       FileHelpers.WriteTextToFile(filename, JsonConvert.SerializeObject(kdto));
-                   }
-               });
+                    AccountKey.PublicKey = Address;
+                    Secret = privateKeyFromNetwork;
+                    if (!string.IsNullOrEmpty(password))
+                        AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(password);
+                    SignMessage("init");
+
+                    if (saveToFile)
+                    {
+                       // save to file
+                       var kdto = new KeyDto()
+                        {
+                            Address = Address,
+                            Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
+                        };
+                        FileHelpers.WriteTextToFile(filename, JsonConvert.SerializeObject(kdto));
+                    }
+                });
 
                 await StartRefreshingData();
 
@@ -451,10 +459,13 @@ namespace VEDriversLite
 
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
                     SignMessage("init");
-                   
-                    await StartRefreshingData();
+
+                    if (!IsRefreshingRunning)
+                        await StartRefreshingData();
+
+                    return true;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
                 }
@@ -467,37 +478,96 @@ namespace VEDriversLite
             return false;
         }
 
+        /// <summary>
+        /// Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
+        /// </summary>
+        /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <returns></returns>
+        public async Task<bool> LoadAccountWithDummyKey(string password, string address)
+        {
+            try
+            {
+                Key k = new Key();
+                if (!string.IsNullOrEmpty(password))
+                {
+                    AccountKey = new EncryptionKey(k.ToString(), fromDb: true);
+                }
+                else
+                {
+                    AccountKey = new EncryptionKey(k.ToString(), fromDb: false);
+                }
+                if (!string.IsNullOrEmpty(password))
+                {
+                    await AccountKey.LoadPassword(password);
+                    AccountKey.IsEncrypted = true;
+                }
+
+                Secret = new BitcoinSecret(k.ToString(), NeblioTransactionHelpers.Network);
+                Address = address;//Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+
+                SignMessage("init");
+
+                if (!IsRefreshingRunning)
+                    await StartRefreshingData();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address! " + ex.Message);
+            }
+        }
 
         /// <summary>
         /// Load account from filename backup from VENFT App (default "backup.json") file placed in the root exe directory. Doesnt work in WABS
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountFromVENFTBackup(string password, string filename = "backup.json")
+        public async Task<bool> LoadAccountFromVENFTBackup(string password, string fromString = "", string filename = "backup.json")
         {
-            if (FileHelpers.IsFileExists(filename))
+            if (FileHelpers.IsFileExists(filename) || !string.IsNullOrEmpty(fromString))
             {
                 try
                 {
-                    var k = FileHelpers.ReadTextFromFile(filename);
+                    BackupDataDto bdto = null;
+                    if (string.IsNullOrEmpty(fromString))
+                    {
+                        var k = FileHelpers.ReadTextFromFile(filename);
+                        bdto = JsonConvert.DeserializeObject<BackupDataDto>(k);
+                    }
+                    else
+                    {
+                        bdto = JsonConvert.DeserializeObject<BackupDataDto>(fromString);
+                    }
 
-                    var bdto = JsonConvert.DeserializeObject<BackupDataDto>(k);
                     AccountKey = new EncryptionKey(bdto.Key, fromDb: true);
                     await AccountKey.LoadPassword(password);
                     AccountKey.IsEncrypted = true;
-                    Address = bdto.Address;
+                    if (Address != bdto.Address)
+                        Address = bdto.Address;
+
+                    if (!string.IsNullOrEmpty(bdto.DogeAddress))
+                    {
+                        var dogeacc = new DogeAccount();
+                        if (await dogeacc.LoadAccount(password, bdto.DogeKey, bdto.DogeAddress))
+                            VEDLDataContext.DogeAccounts.TryAdd(dogeacc.Address, dogeacc);
+                    }
 
                     if (!string.IsNullOrEmpty(bdto.SubAccounts))
                         await LoadSubAccounts(bdto.SubAccounts);
                     if (!string.IsNullOrEmpty(bdto.Bookmarks))
                         await LoadBookmarks(bdto.Bookmarks);
                     if (!string.IsNullOrEmpty(bdto.BrowserTabs))
-                        await LoadBookmarks(bdto.BrowserTabs);
+                        await LoadTabs(bdto.BrowserTabs);
 
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
-                    SignMessage("init");
 
-                    await StartRefreshingData();
+                    if (!IsRefreshingRunning)
+                    {
+                        SignMessage("init");
+                        await StartRefreshingData();
+                    }
+
+                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -545,7 +615,8 @@ namespace VEDriversLite
                     Address = address;
                 });
 
-                await StartRefreshingData();
+                if (!IsRefreshingRunning)
+                    await StartRefreshingData();
 
                 return true;
 
@@ -574,7 +645,7 @@ namespace VEDriversLite
                 if (bkm != null)
                     Bookmarks = bkm;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await InvokeErrorEvent(ex.Message, "Cannot deserialize the bookmarks.");
             }
@@ -587,7 +658,7 @@ namespace VEDriversLite
         /// <param name="address">Neblio Address</param>
         /// <param name="note">optional note</param>
         /// <returns>Serialized list in string for save</returns>
-        public async Task<(bool,string)> AddBookmark(string name, string address, string note)
+        public async Task<(bool, string)> AddBookmark(string name, string address, string note)
         {
             if (!Bookmarks.Any(b => b.Address == address))
             {
@@ -618,7 +689,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="address"></param>
         /// <returns>Serialized list in string for save</returns>
-        public async Task<(bool,string)> RemoveBookmark(string address)
+        public async Task<(bool, string)> RemoveBookmark(string address)
         {
             var bk = Bookmarks.Find(b => b.Address == address);
             if (bk != null)
@@ -635,7 +706,7 @@ namespace VEDriversLite
             var mt = MessageTabs.Find(t => t.Address == address);
             if (mt != null)
                 mt.ClearBookmark();
-            return (true,JsonConvert.SerializeObject(Bookmarks));
+            return (true, JsonConvert.SerializeObject(Bookmarks));
         }
 
         /// <summary>
@@ -693,7 +764,7 @@ namespace VEDriversLite
                             firstAdd = t.Address;
                         }
                         //else
-                            //t.Reload();
+                        //t.Reload();
                     }
                     Tabs.FirstOrDefault().Selected = true;
                 }
@@ -929,24 +1000,27 @@ namespace VEDriversLite
                     var first = true;
                     foreach (var a in accnts)
                     {
-                        var nsa = new NeblioSubAccount();
-                        var res = await nsa.LoadFromBackupDto(Secret, a);
-                        if (res.Item1)
+                        if (!SubAccounts.TryGetValue(a.Address, out var sacc))
                         {
-                            var bkm = await IsInTheBookmarks(a.Address);
-                            if (!bkm.Item1)
+                            var nsa = new NeblioSubAccount();
+                            var res = await nsa.LoadFromBackupDto(Secret, a);
+                            if (res.Item1)
                             {
-                                await AddBookmark(a.Name, a.Address, "SubAccount");
-                                bkm = await IsInTheBookmarks(a.Address);
+                                var bkm = await IsInTheBookmarks(a.Address);
+                                if (!bkm.Item1)
+                                {
+                                    await AddBookmark(a.Name, a.Address, "SubAccount");
+                                    bkm = await IsInTheBookmarks(a.Address);
+                                }
+                                nsa.LoadBookmark(bkm.Item2);
+                                nsa.IsAutoRefreshActive = true;
+                                nsa.NewEventInfo += Nsa_NewEventInfo;
+                                await nsa.StartRefreshingData();
+                                nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
+                                nsa.NFTsChanged += Nsa_NFTsChanged;
+                                nsa.Name = nsa.BookmarkFromAccount.Name;
+                                SubAccounts.TryAdd(nsa.Address, nsa);
                             }
-                            nsa.LoadBookmark(bkm.Item2);
-                            nsa.IsAutoRefreshActive = true;
-                            nsa.NewEventInfo += Nsa_NewEventInfo;
-                            await nsa.StartRefreshingData();
-                            nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
-                            nsa.NFTsChanged += Nsa_NFTsChanged;
-                            nsa.Name = nsa.BookmarkFromAccount.Name;
-                            SubAccounts.TryAdd(nsa.Address, nsa);
                         }
                     }
                 }
@@ -961,12 +1035,12 @@ namespace VEDriversLite
 
         private void Nsa_NFTsChanged(object sender, string e)
         {
-            NFTsChanged.Invoke(sender, (sender as NeblioSubAccount).Address);
+            NFTsChanged?.Invoke(sender, (sender as NeblioSubAccount).Address);
         }
 
         private void Nsa_NewMintingProcessInfo(object sender, string e)
         {
-            NewMintingProcessInfo.Invoke(sender, e);
+            NewMintingProcessInfo?.Invoke(sender, e);
         }
 
         /// <summary>
@@ -976,11 +1050,11 @@ namespace VEDriversLite
         /// <param name="sendNeblioToAccount">Set This true if you want to load some Neblio to this address after it is created.</param>
         /// <param name="neblioAmountToSend">Amount of neblio for initial load of the address, 0.05 is default = 250 tx</param>
         /// <returns>true and string with serialized tabs list as json string</returns>
-        public async Task<(bool, string)> AddSubAccount(string name, 
-                                                        bool sendNeblioToAccount = false, 
-                                                        double neblioAmountToSend = 0.05, 
-                                                        bool sendTokenToAccount = false, 
-                                                        double tokenAmountToSend = 10, 
+        public async Task<(bool, string)> AddSubAccount(string name,
+                                                        bool sendNeblioToAccount = false,
+                                                        double neblioAmountToSend = 0.05,
+                                                        bool sendTokenToAccount = false,
+                                                        double tokenAmountToSend = 10,
                                                         string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
         {
             if (!SubAccounts.Values.Any(a => a.Name == name))
@@ -1116,9 +1190,9 @@ namespace VEDriversLite
             else
             {
                 await InvokeErrorEvent("Same Name Already Exists. Please select another name.", "Already Exists");
-                return (false, ("Name Already Exists.",string.Empty));
+                return (false, ("Name Already Exists.", string.Empty));
             }
-            
+
             return (true, (await SerializeSubAccounts(), await SerializeBookmarks()));
         }
 
@@ -1140,7 +1214,7 @@ namespace VEDriversLite
 
                 return (true, accskeys);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return (false, new Dictionary<string, string>());
             }
@@ -1168,7 +1242,7 @@ namespace VEDriversLite
                 else
                     return (false, "SubAccount is not in the list.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return (false, ex.Message);
             }
@@ -1276,7 +1350,7 @@ namespace VEDriversLite
         /// <param name="address">Neblio Address of SubAccount</param>
         /// <param name="NFT">NFT on the SubAccount which should be minted</param>
         /// <returns>true and string with new TxId</returns>
-        public async Task<(bool, string)> SplitNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string,string> metadata, List<string> receivers, int lots, int amount)
+        public async Task<(bool, string)> SplitNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string, string> metadata, List<string> receivers, int lots, int amount)
         {
             try
             {
@@ -1432,13 +1506,135 @@ namespace VEDriversLite
         public async Task<string> SerializeSubAccounts()
         {
             var dtos = new List<AccountExportDto>();
-            foreach(var a in SubAccounts)
+            foreach (var a in SubAccounts)
             {
                 var dto = await a.Value.BackupAddressToDto();
                 if (dto.Item1)
                     dtos.Add(dto.Item2);
             }
             return JsonConvert.SerializeObject(dtos);
+        }
+
+        #endregion
+
+        #region DogePaymentsHandling
+
+        public async Task ConnectDogeAccount(string address)
+        {
+            ConnectedDogeAccountAddress = address;
+            if (VEDLDataContext.DogeAccounts.TryGetValue(address, out var doge))
+            {
+                doge.NewDogeUtxos += Doge_NewDogeUtxos;
+                await CheckDogePayments();
+            }
+        }
+
+        public async Task DisconnectDogeAccount()
+        {
+            if (VEDLDataContext.DogeAccounts.TryGetValue(ConnectedDogeAccountAddress, out var doge))
+            {
+                doge.NewDogeUtxos -= Doge_NewDogeUtxos;
+            }
+            ConnectedDogeAccountAddress = string.Empty;
+        }
+
+        private void Doge_NewDogeUtxos(object sender, IEventInfo e)
+        {
+            CheckDogePayments();
+        }
+
+        private async Task CheckDogePayments()
+        {
+            if (VEDLDataContext.DogeAccounts.TryGetValue(ConnectedDogeAccountAddress, out var doge))
+            {
+                foreach (var u in doge.Utxos)
+                {
+                    if (u.TxId == LastCheckedDogePaymentUtxo)
+                        break;
+                    if (u.Confirmations > 2)
+                    {
+                        var info = await DogeTransactionHelpers.TransactionInfoAsync(u.TxId);
+                        if (info != null && info.Transaction != null)
+                        {
+                            var msg = await DogeTransactionHelpers.ParseDogeMessage(info);
+                            if (msg.Item1)
+                            {
+                                var split = msg.Item2.Split('-');
+                                if (split != null && split.Length == 2 && !string.IsNullOrEmpty(split[1]) && split[1].Contains(":") && split[1].Length == 18)
+                                {
+                                    var nft = NFTs.FirstOrDefault(n => n.ShortHash == split[1]);
+                                    if (nft == null)
+                                    {
+                                        foreach (var s in SubAccounts.Values)
+                                        {
+                                            nft = s.NFTs.FirstOrDefault(n => n.ShortHash == split[1]);
+                                            if (nft != null)
+                                                break;
+                                        }
+                                    }
+
+                                    if (nft != null)
+                                    {
+                                        if (nft.DogePriceActive && nft.DogePrice == Convert.ToDouble(u.Value, CultureInfo.InvariantCulture))
+                                        {
+                                                var addver = await NeblioTransactionHelpers.ValidateNeblioAddress(split[0]);
+                                            if (addver.Item1)
+                                            {
+                                                var done = false;
+                                                (bool, string) res = (false, string.Empty);
+                                                (bool, string) dres = (false, string.Empty);
+                                                var attempts = 50;
+                                                while (!done)
+                                                {
+                                                    try
+                                                    {
+                                                        res = await SendNFT(addver.Item2, nft, false, 0.0002);
+                                                        done = res.Item1;
+                                                        if (!res.Item1) await Task.Delay(5000);
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        await Task.Delay(5000);
+                                                    }
+                                                    attempts--;
+                                                    if (attempts < 0) break;
+                                                }
+                                                if (res.Item1 && done)
+                                                {
+                                                    LastCheckedDogePaymentUtxo = u.TxId;
+                                                    done = false;
+                                                    attempts = 50;
+                                                    while (!done)
+                                                    {
+                                                        try
+                                                        {
+                                                            dres = await doge.SendPayment(doge.Address,
+                                                                                          Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) - 1,
+                                                                                          "NFT:" + res.Item2);
+                                                            done = dres.Item1;
+                                                            if (!dres.Item1) await Task.Delay(5000);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            await Task.Delay(5000);
+                                                        }
+                                                        attempts--;
+                                                        if (attempts < 0) break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    LastCheckedDogePaymentUtxo = u.TxId;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         #endregion
@@ -1484,7 +1680,7 @@ namespace VEDriversLite
         {
             var ux = await NeblioTransactionHelpers.GetAddressUtxosObjects(Address);
             var ouxox = ux.OrderBy(u => u.Blocktime).Reverse().ToList();
-            
+
             if (ouxox.Count > 0)
             {
                 Utxos.Clear();
@@ -1551,23 +1747,23 @@ namespace VEDriversLite
                     if (lastnft != null)
                     {
                         if (NFTs.Count != lastcount)
-                            NFTsChanged.Invoke(this, "Changed");
+                            NFTsChanged?.Invoke(this, "Changed");
                         var nft = NFTs.FirstOrDefault();
-                        Console.WriteLine("Last time: " + lastnft.Time.ToString());
-                        Console.WriteLine("Newest time: " + nft.Time.ToString());
+                        //Console.WriteLine("Last time: " + lastnft.Time.ToString());
+                        //Console.WriteLine("Newest time: " + nft.Time.ToString());
                         if (nft != null)
                             if (nft.Time != lastnft.Time)
-                                NFTsChanged.Invoke(this, "Changed");
+                                NFTsChanged?.Invoke(this, "Changed");
                     }
                     else if (lastnft == null && NFTs.Count > 0)
                     {
-                        NFTsChanged.Invoke(this, "Changed");
+                        NFTsChanged?.Invoke(this, "Changed");
                     }
-                    
+
                     CoruzantNFTs = await CoruzantNFTHelpers.GetCoruzantNFTs(NFTs);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Cannot reload NFTs. " + ex.Message);
             }
@@ -1581,7 +1777,7 @@ namespace VEDriversLite
         private void NFTHelpers_ProfileNFTFound(object sender, INFT e)
         {
             Profile = e as ProfileNFT;
-            ProfileUpdated.Invoke(this, e);
+            ProfileUpdated?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1595,15 +1791,10 @@ namespace VEDriversLite
             {
                 ReceivedPayments.Clear();
                 var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
-                if (pnfts.Count > 0)
-                {
-                    foreach (var p in pnfts)
-                    {
-                        ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
-                    }
-                }
+                foreach (var p in pnfts)
+                    ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Cannot refresh address received payments. " + ex.Message);
             }
@@ -1649,7 +1840,7 @@ namespace VEDriversLite
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Cannot Check the payments. " + ex.Message);
             }
@@ -1660,7 +1851,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public async Task<(bool,double)> HasSomeSpendableNeblio(double amount = 0.0002)
+        public async Task<(bool, double)> HasSomeSpendableNeblio(double amount = 0.0002)
         {
             var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0001, amount);
             if (nutxos.Count == 0)
@@ -1734,7 +1925,7 @@ namespace VEDriversLite
                 else
                     return ("OK", nutxos);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ("Cannot check spendable Neblio. " + ex.Message, null);
             }
@@ -1790,7 +1981,7 @@ namespace VEDriversLite
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
                 return (false, res.Item1);
-            }            
+            }
 
             // fill input data for sending tx
             var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
@@ -1835,7 +2026,7 @@ namespace VEDriversLite
                 return (false, "Minimal count of output splitted coin amount is 2. Maximum is 25.");
 
             var totalAmount = amount * lots;
-            
+
             if (totalAmount >= TotalSpendableBalance)
                 return (false, $"Cannot send transaction. Total Amount is bigger than spendable neblio on this address. Total Amount {totalAmount}.");
 
@@ -1847,7 +2038,7 @@ namespace VEDriversLite
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            
+
             var res = await CheckSpendableNeblio(totalAmount + 0.0002);
             if (res.Item2 == null)
             {
@@ -1883,7 +2074,7 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver Neblio address</param>
         /// <param name="amount">Amount of the tokens</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendNeblioTokenPayment(string tokenId, IDictionary<string,string> metadata, string receiver, int amount)
+        public async Task<(bool, string)> SendNeblioTokenPayment(string tokenId, IDictionary<string, string> metadata, string receiver, int amount)
         {
             if (IsLocked())
             {
@@ -1951,7 +2142,7 @@ namespace VEDriversLite
             var totalAmount = amount * lots;
             if (!TokensSupplies.TryGetValue(tokenId, out var tsdto))
                 return (false, $"Cannot send transaction. You do not have this kind of tokens. Token Id {tokenId}.");
-            
+
             if (totalAmount >= tsdto.Amount)
                 return (false, $"Cannot send transaction. Total Amount is bigger than available source. Total Amount {totalAmount}, Token Id {tokenId}.");
 
@@ -2100,20 +2291,20 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
-        
+
         private async Task<(bool, (ICollection<Utxos>, ICollection<Utxos>))> MultimintSourceCheck(string tokenId, int coppies)
         {
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null || res.Item2.Count == 0)
             {
                 //await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
-                return (false, (null,null));
+                return (false, (null, null));
             }
             var tres = await CheckSpendableNeblioTokens(tokenId, 3 + coppies);
             if (tres.Item2 == null || tres.Item2.Count == 0)
             {
                 //await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs. You need 3 tokens as minimum input.");
-                return (false, (null,null));
+                return (false, (null, null));
             }
             return (true, (res.Item2, tres.Item2));
 
@@ -2148,6 +2339,7 @@ namespace VEDriversLite
                 string txres = string.Empty;
                 NewMintingProcessInfo.Invoke(this, $"Minting of {lots} lots started...");
 
+                var txsidsres = string.Empty;
                 if (lots > 1 || (lots == 1 && rest > 0))
                 {
                     var done = false;
@@ -2174,6 +2366,7 @@ namespace VEDriversLite
                                         else
                                         {
                                             done = true;
+                                            txsidsres += txres + "-";
                                             NewMintingProcessInfo.Invoke(this, $"New Lot Minted: {txres}, Waiting for processing next {i + 1} of {lots} lots.");
                                         }
                                     }
@@ -2211,6 +2404,7 @@ namespace VEDriversLite
                                     else
                                     {
                                         done = true;
+                                        txsidsres += txres + "-";
                                         NewMintingProcessInfo.Invoke(this, $"Rest of {rest} NFTs of total {coppies} NFTs was Minted: {txres}");
                                     }
                                 }
@@ -2233,12 +2427,14 @@ namespace VEDriversLite
                         await InvokeErrorDuringSendEvent("Cannot Mint NFTs", "Not enough spendable source.");
                         return (false, "Not enough spendable source.");
                     }
+                    if (!string.IsNullOrEmpty(txres)) txsidsres += txres;
+                    txsidsres = txsidsres.Trim('-');
                 }
 
                 if (txres != null)
                 {
-                    await InvokeSendPaymentSuccessEvent(txres, "Neblio NFT Sent");
-                    return (true, txres);
+                    await InvokeSendPaymentSuccessEvent(txsidsres, "Neblio NFT Sent");
+                    return (true, txsidsres);
                 }
                 else
                 {
@@ -2454,7 +2650,7 @@ namespace VEDriversLite
         /// <param name="priceWrite">Set this if you need to just write the price to the NFT</param>
         /// <param name="price">Price must be bigger than 0.0002 NEBL</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite, double price)
+        public async Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite = false, double price = 0.0002, bool withDogePrice = false, double dogeprice = 1)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
 
@@ -2480,7 +2676,7 @@ namespace VEDriversLite
 
             try
             {
-                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, nft, priceWrite, res.Item2, price);
+                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, nft, priceWrite, res.Item2, price, withDogePrice, dogeprice);
 
                 if (rtxid != null)
                 {
@@ -2742,6 +2938,26 @@ namespace VEDriversLite
                 return (false, "Owner did not activate the function. He must have filled the profile.");
             else
                 return await ECDSAProvider.VerifyMessage(message, signature, ownerpubkey.Item2);
+        }
+
+        /// <summary>
+        /// Encrypt message with use of ECDSA
+        /// </summary>
+        /// <param name="message">Input message</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> EncryptMessage(string message)
+        {
+            return await ECDSAProvider.EncryptMessage(message, Secret.PubKey.ToString());
+        }
+
+        /// <summary>
+        /// Decrypt message with use of ECDSA
+        /// </summary>
+        /// <param name="message">Input message</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> DecryptMessage(string emessage)
+        {
+            return await ECDSAProvider.DecryptMessage(emessage, Secret);
         }
 
         /// <summary>

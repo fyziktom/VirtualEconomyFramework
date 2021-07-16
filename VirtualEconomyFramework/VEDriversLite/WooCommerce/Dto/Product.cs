@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace VEDriversLite.WooCommerce.Dto
+{
+    public class CategoryOfDownloads
+    {
+        public int id { get; set; } = 0;
+    }
+    public class DownloadsObject
+    {
+        public string name { get; set; } = string.Empty;
+        public string file { get; set; } = string.Empty;
+        public string external_url { get; set; } = string.Empty;
+        public List<CategoryOfDownloads> categories { get; set; } = new List<CategoryOfDownloads>();
+    }
+    public class ImageObject
+    {
+        public string src { get; set; } = string.Empty;
+    }
+    public class ProductMetadata
+    {
+        public int id { get; set; } = 0;
+        public string key { get; set; } = string.Empty;
+        public string value { get; set; } = string.Empty;
+    }
+    public enum StockStatus
+    {
+        instock,
+        outofstock,
+        onbackorder
+    }
+    public class Product
+    {
+        public int id { get; set; } = 0;
+        public string name { get; set; } = string.Empty;
+        public string permalink { get; set; } = string.Empty;
+        public string slug { get; set; } = string.Empty;
+        public string description { get; set; } = string.Empty;
+        public string regular_price { get; set; } = "0.0";
+        public string status { get; set; } = "publish";
+        public bool _virtual { get; set; } = true;
+        public bool enable_html_description { get; set; } = false;
+        public bool downloadable { get; set; } = true;
+        public string type { get; set; } = "simple";
+        public int? stock_quantity { get; set; } = 1;
+        public bool manage_stock { get; set; } = true;
+        public string stock_status { get; set; } = "instock";
+        public StockStatus stock_status_enum 
+        {
+            get => (StockStatus)Enum.Parse(typeof(StockStatus), stock_status);
+            set => stock_status = value.ToString();
+        }
+        public string short_description { get; set; } = string.Empty;
+        public List<DownloadsObject> downloads { get; set; } = new List<DownloadsObject>();
+        public List<ImageObject> images { get; set; } = new List<ImageObject>();
+        public List<ProductMetadata> meta_data { get; set; } = new List<ProductMetadata>();
+    }
+}

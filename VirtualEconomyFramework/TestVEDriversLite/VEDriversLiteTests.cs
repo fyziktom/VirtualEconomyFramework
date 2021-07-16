@@ -12,6 +12,7 @@ using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.Security;
 using VEDriversLite.UnstoppableDomains;
+using VEDriversLite.WooCommerce;
 
 namespace TestVEDriversLite
 {
@@ -1046,6 +1047,40 @@ namespace TestVEDriversLite
         }
 
         [TestEntry]
+        public static void EncryptTextFileContent(string param)
+        {
+            EncryptTextFileContentAsync(param);
+        }
+        public static async Task EncryptTextFileContentAsync(string param)
+        {
+            var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input address,filename.");
+
+            if (string.IsNullOrEmpty(account.Address))
+                throw new Exception("Account is not initialized.");
+            if (account.IsLocked())
+                throw new Exception("Account is locked.");
+            if (string.IsNullOrEmpty(split[0]))
+                throw new Exception("Please input address.");
+            if (!FileHelpers.IsFileExists(split[1]))
+                throw new Exception("File does not exists.");
+
+            var filecontent = FileHelpers.ReadTextFromFile(split[1]);
+            if (string.IsNullOrEmpty(filecontent))
+                throw new Exception("File is empty.");
+
+            var pk = await NFTHelpers.GetPubKeyFromLastFoundTx(split[0]);
+            if (!pk.Item1)
+                throw new Exception("Cannot load public key of this address. Probably does not have any spended transaction.");
+            var res = await ECDSAProvider.EncryptMessage(filecontent, pk.Item2.ToHex());
+            if (res.Item1)
+                FileHelpers.WriteTextToFile("encrypted-" + split[1], res.Item2);
+            Console.WriteLine("Encrypted message is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
         public static void DecryptMessage(string param)
         {
             DecryptMessageAsync(param);
@@ -1307,6 +1342,27 @@ namespace TestVEDriversLite
             var am = split[1];
             var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
             var res = await dogeAccount.SendPayment(receiver, amount);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void DogeSendTransactionWithMessage(string param)
+        {
+            DogeSendTransactionWithMessageAsync(param);
+        }
+        public static async Task DogeSendTransactionWithMessageAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 4)
+                throw new Exception("Please input receiveraddress,amountofdoge,fee,message");
+            var receiver = split[0];
+            var am = split[1];
+            var f = split[2];
+            var message = split[3];
+            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
+            var fee = Convert.ToUInt64(f, CultureInfo.InvariantCulture);
+            var res = await dogeAccount.SendPayment(receiver, amount, message, fee);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }
@@ -1696,5 +1752,193 @@ namespace TestVEDriversLite
 
             Console.WriteLine("---------------------");
         }
+
+        //////////////////////////////////////////////
+        #region WooCommerce
+
+        [TestEntry]
+        public static void WoCInitWooCommerceShop(string param)
+        {
+            WoCInitWooCommerceShopAsync(param);
+        }
+        public static async Task WoCInitWooCommerceShopAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input apiurl,apikey,apisecret");
+            var apiurl = split[0];
+            var apikey = split[1];
+            var secret = split[2];
+
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("---------WooCommerce Shop Init----------");
+            Console.WriteLine("-----------------------------------------");
+            Console.WriteLine("API Url: " + apiurl);
+            Console.WriteLine("-----------------------------------------");
+
+            var res = await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, secret);
+
+            await WoCGetShopStatsAsync(string.Empty);
+        }
+
+        [TestEntry]
+        public static void WoCGetShopStats(string param)
+        {
+            WoCGetShopStatsAsync(param);
+        }
+        public static async Task WoCGetShopStatsAsync(string param)
+        {
+            if (!WooCommerceHelpers.IsInitialized)
+            {
+                Console.WriteLine("Shop is not initialized.");
+                return;
+            }
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("---------WooCommerce Shop Init----------");
+            Console.WriteLine("-----------------------------------------");
+            Console.WriteLine("API Url: " + WooCommerceHelpers.Shop.WooCommerceStoreUrl);
+            Console.WriteLine("-----------------------------------------");
+
+            Console.WriteLine($"---------Products {WooCommerceHelpers.Shop.Products.Count}----------");
+
+            foreach (var p in WooCommerceHelpers.Shop.Products.Values)
+                Console.WriteLine($"Product {p.id} - {p.name}, image url: {p.images.FirstOrDefault()?.src}, price {p.regular_price}.");
+
+            Console.WriteLine($"---------Orders {WooCommerceHelpers.Shop.Orders.Count}---------");
+
+            foreach (var o in WooCommerceHelpers.Shop.Orders.Values)
+            {
+                Console.WriteLine($"========Order {o.order_key}========");
+                Console.WriteLine($"ID: {o.id}");
+                Console.WriteLine($"Status: {o.status}");
+                Console.WriteLine($"Price: {o.total} {o.currency}.");
+                Console.WriteLine($"Items - {o.line_items.Count}:");
+                var txid = !string.IsNullOrEmpty(o.transaction_id) ? o.transaction_id : "none";
+                Console.WriteLine($"Transaction: {txid}.");
+
+                foreach (var pr in o.line_items)
+                    Console.WriteLine($"  - Item {pr.name}, product id {pr.product_id} - price {pr.price}, qty {pr.quantity}.");
+
+                Console.WriteLine("========================");
+                if (!string.IsNullOrEmpty(o.billing.first_name))
+                {
+                    Console.WriteLine("---------");
+                    Console.WriteLine($"Billing:");
+                    Console.WriteLine(JsonConvert.SerializeObject(o.billing, Formatting.Indented));
+                }
+                if (!string.IsNullOrEmpty(o.shipping.first_name))
+                {
+                    Console.WriteLine("---------");
+                    Console.WriteLine($"Shipping:");
+                    Console.WriteLine(JsonConvert.SerializeObject(o.shipping, Formatting.Indented));
+                }
+                Console.WriteLine("=========================");
+            }
+
+            Console.WriteLine("------------------------------");
+            Console.WriteLine("-----------End-----------");
+            /*
+            var wait = 20;
+            while(true)
+            {
+                await Task.Delay(10000);
+               
+                if (wait < 0)
+                {
+                    Console.WriteLine("Continue?");
+                    var c = Console.ReadLine();
+                    if (c != "" && c != "y" && c != "Y")
+                        break;
+                }
+            }*/
+            //Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void WoCUpdateOrderStatus(string param)
+        {
+            WoCUpdateOrderStatusAsync(param);
+        }
+        public static async Task WoCUpdateOrderStatusAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input orderid,status");
+            var orderkey = split[0];
+            
+            Console.WriteLine($"Order Key: {orderkey}");
+            
+            var res = await WooCommerceHelpers.Shop.UpdateOrderStatus(orderkey, split[1]);
+            Console.WriteLine($"Actual status: {res.statusclass}");
+            Console.WriteLine($"New Status status: {split[1]}");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            await WoCGetOrderAsync(res.id.ToString());
+            //await WoCGetShopStatsAsync("");
+        }
+
+        [TestEntry]
+        public static void WoCUpdateOrderTransactionId(string param)
+        {
+            WoCUpdateOrderTransactionIdAsync(param);
+        }
+        public static async Task WoCUpdateOrderTransactionIdAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input orderid,txid");
+            var orderkey = split[0];
+
+            Console.WriteLine($"Order Key: {orderkey}");
+            var res = await WooCommerceHelpers.Shop.UpdateOrderTxId(orderkey, split[1]);
+            Console.WriteLine($"Transaction Id: {res.transaction_id}");
+            Console.WriteLine("");  
+            Console.WriteLine("");
+            await WoCGetOrderAsync(res.id.ToString());
+            //await WoCGetShopStatsAsync("");
+        }
+
+        [TestEntry]
+        public static void WoCGetProduct(string param)
+        {
+            WoCGetProductAsync(param);
+        }
+        public static async Task WoCGetProductAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input productid");
+            var productid = Convert.ToInt32(split[0]);
+
+            Console.WriteLine($"Product Id: {productid}");
+            var res = await WooCommerceHelpers.Shop.GetProduct(productid);
+            Console.WriteLine($"Name: {res.name}");
+            Console.WriteLine($"Transaction Id: {res.regular_price}");
+            Console.WriteLine("");
+            Console.WriteLine("");
+        }
+
+        [TestEntry]
+        public static void WoCGetOrder(string param)
+        {
+            WoCGetOrderAsync(param);
+        }
+        public static async Task WoCGetOrderAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input orderid");
+            var orderid = Convert.ToInt32(split[0]);
+
+            Console.WriteLine($"Order Id: {orderid}");
+            var res = await WooCommerceHelpers.Shop.GetOrder(orderid);
+            Console.WriteLine($"Order Key: {res.order_key}");
+            Console.WriteLine($"Status: {res.status}");
+            Console.WriteLine($"Total: {res.total} {res.currency}");
+            Console.WriteLine($"TxId: {res.transaction_id}");
+            Console.WriteLine("");
+            Console.WriteLine("");
+        }
+        #endregion
     }
 }

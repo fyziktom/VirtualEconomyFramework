@@ -4,6 +4,35 @@
         <name>VEDriversLite</name>
     </assembly>
     <members>
+        <member name="M:VEDriversLite.AccountHandler.LoadVENFTBackup(VEDriversLite.Admin.Dto.AdminActionBase,VEDriversLite.Admin.Dto.EncryptedBackupDto,System.Boolean)">
+            <summary>
+            Decrypt and oad file from VENFT app to account
+            If account already exists, the data is updates.
+            If account do not exists, it will create new one and fill with the data
+            All accounts are stored in VEDLDataContext static class
+            After upload of the data, the local backup file is created. It is ecnrypted with private key, so key.json file is still required for the restart
+            </summary>
+            <param name="baseInfo"></param>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Admin.Dto.ConnectDogeAccountDto.adminCredentials">
+            <summary>
+            Admin credentials info
+            Include Admin Address, Message and Signature of this message
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Admin.Dto.ImportBackupDto.adminCredentials">
+            <summary>
+            Admin credentials info
+            Include Admin Address, Message and Signature of this message
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Admin.Dto.ImportBackupDto.dto">
+            <summary>
+            Data dto
+            </summary>
+        </member>
         <member name="P:VEDriversLite.DogeAccount.Address">
             <summary>
             Doge Address hash
@@ -52,6 +81,11 @@
         <member name="E:VEDriversLite.DogeAccount.NewEventInfo">
             <summary>
             This event is called whenever some important thing happen. You can obtain success, error and info messages.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.DogeAccount.NewDogeUtxos">
+            <summary>
+            This event is called whenever new doge transaction is received
             </summary>
         </member>
         <member name="P:VEDriversLite.DogeAccount.AccountKey">
@@ -158,7 +192,7 @@
             <param name="amount"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.DogeAccount.SendPayment(System.String,System.Double,System.String)">
+        <member name="M:VEDriversLite.DogeAccount.SendPayment(System.String,System.Double,System.String,System.UInt64,System.String,System.Int32)">
             <summary>
             Send Doge payment
             </summary>
@@ -733,6 +767,16 @@
             Total number of NFT on the address. It counts also Profile NFT, etc.
             </summary>
         </member>
+        <member name="P:VEDriversLite.NeblioAccount.IsRefreshingRunning">
+            <summary>
+            When main refreshing loop is running this is set
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NeblioAccount.ConnectedDogeAccountAddress">
+            <summary>
+            If there is some Doge address in same project which should be searched for the payments triggers fill it here
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NeblioAccount.NFTs">
             <summary>
             List of actual address NFTs. Based on Utxos list
@@ -895,7 +939,14 @@
             <param name="password">Passwotd to decrypt the loaded private key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccountWithDummyKey(System.String,System.String)">
+            <summary>
+            Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
+            </summary>
+            <param name="password">Passwotd to decrypt the loaded private key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String,System.String)">
             <summary>
             Load account from filename backup from VENFT App (default "backup.json") file placed in the root exe directory. Doesnt work in WABS
             </summary>
@@ -1333,7 +1384,7 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.SendNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double)">
+        <member name="M:VEDriversLite.NeblioAccount.SendNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double,System.Boolean,System.Double)">
             <summary>
             Send input NFT to new owner, or use it just for price write and resend it to yourself with new metadata about the price.
             </summary>
@@ -1390,6 +1441,20 @@
             <param name="message">Input message</param>
             <param name="signature">Signature of this message created by owner of some address.</param>
             <param name="address">Neblio address which should sign the message and should be verified.</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.EncryptMessage(System.String)">
+            <summary>
+            Encrypt message with use of ECDSA
+            </summary>
+            <param name="message">Input message</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.DecryptMessage(System.String)">
+            <summary>
+            Decrypt message with use of ECDSA
+            </summary>
+            <param name="message">Input message</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.GetNFTVerifyCode(System.String)">
@@ -3172,11 +3237,12 @@
             <param name="address"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.ShortenTxId(System.String)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.ShortenTxId(System.String,System.Boolean,System.Int32)">
             <summary>
             Create short version of txid hash, 3 chars on start...3 chars on end
             </summary>
             <param name="txid"></param>
+            <param name="withDots">default true. add .... between start and end of the tx hash</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressAndKey(VEDriversLite.Security.EncryptionKey,System.String)">
@@ -3621,6 +3687,11 @@
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.CoruzantSourceTokensBalance">
             <summary>
             Total balance of Coruzant tokens which can be used for minting purposes.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Neblio.NeblioSubAccount.ConnectedDogeAccountAddress">
+            <summary>
+            If there is some Doge address in same project which should be searched for the payments triggers fill it here
             </summary>
         </member>
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.TokensSupplies">
@@ -4115,7 +4186,7 @@
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.SendNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Boolean,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.SendNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Boolean,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double,System.Boolean,System.Double)">
             <summary>
             This function will send NFT. It can be also used for write the price of the NFT.
             </summary>
@@ -4325,6 +4396,22 @@
         </member>
         <member name="P:VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.WhoIs">
             <summary>Success flag</summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.ConnectedDogeAccountAddress">
+            <summary>
+            If there is some Doge address in same project which should be searched for the payments triggers fill it here
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.ConnectedNeblioAccountAddress">
+            <summary>
+            If there is some Neblio address in same project which should be searched for the payments triggers fill it here
+            This address is used as main address for processing NFT orders
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.WooCommerce.WooCommerceShop.Refreshed">
+            <summary>
+            This event is called whenever info about the shop is reloaded. It is periodic event.
+            </summary>
         </member>
     </members>
 </doc>

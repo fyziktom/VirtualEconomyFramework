@@ -1,0 +1,10 @@
+[
+	{
+		"Address": "NEBLIO ADDRESS",
+		"EKey": "YOUR ENCRYPTED KEY (OR RAW for empty password)",
+		"Name": "YOUR ACCOUNT NAME",
+		"Password": "YOUR PASSWORD",
+		"IsDogeAccount": false,
+		"ConnectToMainShop": false
+	}
+]

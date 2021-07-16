@@ -191,10 +191,10 @@ namespace VEconomy.Controllers
         }
 
         /// <summary>
-        /// Get Neblio account NFTs. 
+        /// Get NFT by id.
         /// This data is loaded from VEDriversLite
         /// </summary>
-        /// <returns>Account Balance Response Dto</returns>
+        /// <returns>NFT</returns>
         [HttpGet]
         [Route("GetNFT/{utxo}")]
         public async Task<INFT> GetNFT(string utxo)
@@ -203,7 +203,33 @@ namespace VEconomy.Controllers
             {
                 if(!string.IsNullOrEmpty(utxo))
                 {
-                    var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, true);
+                    var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, true);
+                    return nft;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Cannot get Account Balances!", ex);
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get NFT {utxo}!");
+            }
+        }
+
+        /// <summary>
+        /// Get NFT by id and index
+        /// This data is loaded from VEDriversLite
+        /// </summary>
+        /// <returns>NFT</returns>
+        [HttpGet]
+        [Route("GetNFT/{utxo}/{index}")]
+        public async Task<INFT> GetNFT(string utxo, int index)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(utxo))
+                {
+                    var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, index, 0, true);
                     return nft;
                 }
 
@@ -783,6 +809,10 @@ namespace VEconomy.Controllers
             /// </summary>
             public string NFTUtox { get; set; } = string.Empty;
             /// <summary>
+            /// Input NFT Utxo
+            /// </summary>
+            public int NFTUtoxIndex { get; set; } = 0;
+            /// <summary>
             /// Set if you want to write price.
             /// </summary>
             public bool PriceWrite { get; set; } = false;
@@ -805,7 +835,7 @@ namespace VEconomy.Controllers
                     if ((account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.Address == string.Empty)
                         throw new HttpResponseException((HttpStatusCode)501, $"VEDriversLite Account is not initialized.");
 
-                    var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, data.NFTUtox, 0, true);
+                    var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, data.NFTUtox, data.NFTUtoxIndex, 0, true);
                     var res = await (account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.SendNFT(data.receiver, nft, data.PriceWrite, data.Price);
                     return res;
                 }
@@ -855,7 +885,7 @@ namespace VEconomy.Controllers
                     if ((account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.Address == string.Empty)
                         throw new HttpResponseException((HttpStatusCode)501, $"VEDriversLite Account is not initialized.");
 
-                    var res = await (account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.SplitNeblioCoin(data.receiver, data.splittedAmount, data.count);
+                    var res = await (account as VEDrivers.Economy.Wallets.NeblioAccount).VEDLNeblioAccount.SplitNeblioCoin(new List<string>(){ data.receiver}, data.count, data.splittedAmount);
                     return res;
                 }
                 else

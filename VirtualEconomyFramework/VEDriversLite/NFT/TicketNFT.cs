@@ -45,8 +45,6 @@ namespace VEDriversLite.NFT
             await FillCommon(NFT);
 
             var nft = NFT as TicketNFT;
-            PriceInDoge = nft.PriceInDoge;
-            PriceInDogeActive = nft.PriceInDogeActive;
             Location = nft.Location;
             LocationCoordinates = nft.LocationCoordinates;
             LocationCoordinatesLat = nft.LocationCoordinatesLat;
@@ -174,23 +172,6 @@ namespace VEDriversLite.NFT
                     TicketDuration = DurationOfNFTTicket.Day;
                 }
             }
-            if (meta.TryGetValue("PriceInDoge", out var priced))
-            {
-                if (!string.IsNullOrEmpty(priced))
-                {
-                    priced = priced.Replace(',', '.');
-                    PriceInDoge = double.Parse(priced, CultureInfo.InvariantCulture);
-                    PriceInDogeActive = true;
-                }
-                else
-                {
-                    PriceInDogeActive = false;
-                }
-            }
-            else
-            {
-                PriceInDogeActive = false;
-            }
 
             //LoadEventNFT();
         }
@@ -295,9 +276,7 @@ namespace VEDriversLite.NFT
             metadata.Add("TicketDuration", Convert.ToInt32(TicketDuration).ToString());
             if (Used)
                 metadata.Add("Used", "true");
-            if (PriceInDoge > 0)
-                metadata.Add("PriceInDoge", Price.ToString(CultureInfo.InvariantCulture));
-
+            
             return metadata;
         }
     }

@@ -1,0 +1,188 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.WooCommerce
+@using VEDriversLite.WooCommerce.Dto
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject NavigationManager NavManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col">
+        <Spin spinning="@processingSending" tip="Sending...">
+            <div class="row">
+                <div class="col">
+
+                    @if (initialized)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Get Product</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Fill product Id" MaxLength="200" @bind-Value=@productId Style="font-size:12px; min-width:250px; max-width:250px;" />
+                            </div>
+                        </div>
+                        @if (product != null && !string.IsNullOrEmpty(product.name))
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>New product Id: @product.id</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Product Data</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <textarea style="min-width:200px; min-height:100px;">@JsonConvert.SerializeObject(product, Formatting.Indented)</textarea>
+                                </div>
+                            </div>
+                        }
+                    }
+                    }
+                </div>
+            </div>
+        </Spin>
+
+        <Modal Title="Add product to WooCommerce Shop"
+               Visible="@confirmVisible"
+               OnOk="@HandleOk"
+               OnCancel="@HandleCancel">
+            <p>Do you really want to upload this product to your store?</p>
+        </Modal>
+
+        <Modal Title="NFT Details"
+               Visible="@showNFTDetailsVisible"
+               OnOk="@showNFTDetailsCancel"
+               OnCancel="@showNFTDetailsCancel">
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    @if (loadedNFT != null)
+                    {
+                        @if (loadedNFT.Type == NFTTypes.CoruzantArticle || loadedNFT.Type == NFTTypes.CoruzantProfile)
+                        {
+                            <CoruzantNFT InputNFT="@loadedNFT"
+                                         OwnNFT="@true"
+                                         Address="@AppData.Account.Address"
+                                         SubAccount="@false" />
+                        }
+                        else
+                        {
+                            <NFT InputNFT="@loadedNFT"
+                                 OwnNFT="@true"
+                                 Address="@AppData.Account.Address"
+                                 SubAccount="@false" />
+                        }
+                    }
+                </div>
+            </div>
+        </Modal>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> WooCommerceAPIConnected { get; set; }
+
+    private string apiurl = string.Empty;
+    private string apikey = string.Empty;
+    private string apisecret = string.Empty;
+    private string txid = string.Empty;
+    private string productId = string.Empty;
+
+    Product product = new Product();
+
+    bool confirmVisible = false;
+    bool processingSending = false;
+    bool initialized = false;
+    bool showNFTDetailsVisible = false;
+
+    INFT loadedNFT = new ImageNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => loadedNFT;
+        set => loadedNFT = value;
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        init();
+        return base.OnInitializedAsync();
+    }
+
+    private async Task init()
+    {
+        if (!WooCommerceHelpers.IsInitialized)
+        {
+            apiurl = await localStorage.GetItemAsync<string>("woocom-apiurl");
+            if (apiurl == null) apiurl = string.Empty;
+            apikey = await localStorage.GetItemAsync<string>("woocom-apikey");
+            if (apikey == null) apikey = string.Empty;
+            apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
+            if (apisecret == null) apisecret = string.Empty;
+            await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret);
+        }
+        StateHasChanged();
+    }
+
+    void ShowConfirm()
+    {
+        confirmVisible = true;
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        await AddProduct();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    private async Task showNFTDetails(MouseEventArgs e)
+    {
+        showNFTDetailsVisible = true;
+    }
+    private async Task showNFTDetailsCancel(MouseEventArgs e)
+    {
+        showNFTDetailsVisible = false;
+    }
+
+    private async Task AddProduct()
+    {
+        try
+        {
+            var nft = await NFTFactory.GetNFT("", txid, 0, 0, true);
+            if (nft == null)
+                return;
+
+            processingSending = true;
+            confirmVisible = false;
+            StateHasChanged();
+
+            var prd = await WooCommerceHelpers.AddNewProduct(nft);
+
+            if (prd == null)
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during try to connect.");
+            product = prd;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            processingSending = false;
+            StateHasChanged();
+        }
+    }
+}

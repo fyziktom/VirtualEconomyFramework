@@ -45,6 +45,10 @@ window.alertMessage = (text) => {
     alert(text);
 }
 
+window.clearElementHTMLContentById = (id) => {
+    document.getElementById(id).innerHTML = '';
+}
+
 window.jsFunctions = {
     init: function (obj) {
         dotnetRef = obj;

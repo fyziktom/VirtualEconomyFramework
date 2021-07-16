@@ -124,6 +124,22 @@ namespace VEDriversLite.Security
             }
         }
 
+        public static async Task<(bool, string)> DecryptMessage(string cryptedMessage, BitcoinSecret secret)
+        {
+            if (string.IsNullOrEmpty(cryptedMessage) || secret == null)
+                return (false, "Input parameters cannot be empty or null.");
+
+            try
+            {
+                var msg = secret.PrivateKey.Decrypt(cryptedMessage);
+                return (true, msg);
+            }
+            catch (Exception ex)
+            {
+                return (false, "Wrong input. Cannot sign the message.");
+            }
+        }
+
         public static async Task<(bool, string)> EncryptMessage(string message, string publicKey)
         {
             if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(publicKey))

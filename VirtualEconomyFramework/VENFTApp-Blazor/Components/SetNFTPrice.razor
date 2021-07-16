@@ -10,16 +10,40 @@
     <div class="row">
         <div class="col">
             <Spin Tip="Sending..." Spinning="@sendingTransaction">
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
+                    </div>
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
+                    </div>
+                </div>
+                @if (withPrice)
+                {
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         Fill Price in Neblio:
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <input type="number" step="0.0001" min="0.0005" @bind="@priceOfNFT" />
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <input type="number" step="0.0001" min="0.0005" @bind="@price" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
                     </div>
                 </div>
+                }
+                @if (withDogePrice)
+                {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        Fill Price in Doge:
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <input type="number" step="1" min="2" max="10000000000" @bind="@dogePrice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                    </div>
+                </div>
+                }
             </Spin>
         </div>
     </div>
@@ -34,7 +58,6 @@
 @code {
     string receiverAddress = string.Empty;
     bool confirmSetPriceVisible = false;
-    private double priceOfNFT { get; set; } = 0.0005;
 
     bool sendingTransaction = false;
     string status = string.Empty;
@@ -68,10 +91,28 @@
         }
     }
 
+    double dogePrice = 0.0;
+    double price = 0.0;
+    bool withDogePrice = false;
+    bool withPrice = false;
+
+    private async Task withDogePriceChanged(object e)
+    {
+        withDogePrice = (bool)e;
+        if (!withDogePrice) dogePrice = 0.0;
+        StateHasChanged();
+    }
+    private async Task withPriceChanged(object e)
+    {
+        withPrice = (bool)e;
+        if (!withPrice) price = 0.0;
+        StateHasChanged();
+    }
+
     private async Task setPriceNFTDialogConfirm(MouseEventArgs e)
     {
         confirmSetPriceVisible = false;
-        await sendNFT(NFT, true, priceOfNFT);
+        await sendNFT(NFT, true, price);
     }
 
     private async Task setPriceNFTDialogOK(MouseEventArgs e)
@@ -100,17 +141,26 @@
 
             sendingTransaction = true;
 
-            if (priceWrite)
+            if (withPrice || withDogePrice)
             {
                 confirmSetPriceVisible = false;
                 receiverAddress = AppData.Account.Address;
             }
 
+            if (withPrice && price > 0)
+                nft.Price = price;
+            if (price > 0)
+                nft.PriceActive = true;
+            if (withDogePrice && dogePrice > 0)
+                nft.DogePrice = dogePrice;
+            if (dogePrice > 0)
+                nft.DogePriceActive = true;
+
             status = "Sending...";
 
             StateHasChanged();
 
-            var res = await AppData.Account.SendNFT(receiverAddress, nft, priceWrite, price);
+            var res = await AppData.Account.SendNFT(receiverAddress, nft, withPrice, price, withDogePrice, dogePrice);
 
             if (res.Item1)
             {

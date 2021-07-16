@@ -2,6 +2,8 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Coruzant
 @using VEDriversLite.NeblioAPI
+@using VEDriversLite.WooCommerce
+@using VEDriversLite.WooCommerce.Dto
 @using Tewr.Blazor.FileReader
 @using System.Threading
 @using System.Threading.Tasks
@@ -312,6 +314,7 @@
             }
             else
             {
+                InitWooCom();
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
                 selectedAccountAddress = AppData.Account.Address;
@@ -324,6 +327,21 @@
         }
 
         return base.OnInitializedAsync();
+    }
+
+    private async Task InitWooCom()
+    {
+        if (!WooCommerceHelpers.IsInitialized)
+        {
+            var apiurl = await localStorage.GetItemAsync<string>("woocom-apiurl");
+            if (apiurl == null) apiurl = string.Empty;
+            var apikey = await localStorage.GetItemAsync<string>("woocom-apikey");
+            if (apikey == null) apikey = string.Empty;
+            var apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
+            if (apisecret == null) apisecret = string.Empty;
+            if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(apisecret))
+                await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret);
+        }
     }
 
     private async Task Redirect()

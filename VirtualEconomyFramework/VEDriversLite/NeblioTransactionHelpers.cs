@@ -63,7 +63,7 @@ namespace VEDriversLite
         private static IClient _client;
         private static string BaseURL = "https://ntp1node.nebl.io/";
         public static double FromSatToMainRatio = 100000000;
-        public static int MaximumTokensOutpus = 5;
+        public static int MaximumTokensOutpus = 10;
         public static int MaximumNeblioOutpus = 25;
         public static Network Network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
         public static int MinimumConfirmations = 2;
@@ -86,11 +86,25 @@ namespace VEDriversLite
         /// Create short version of txid hash, 3 chars on start...3 chars on end
         /// </summary>
         /// <param name="txid"></param>
+        /// <param name="withDots">default true. add .... between start and end of the tx hash</param>
         /// <returns></returns>
-        public static string ShortenTxId(string txid)
+        public static string ShortenTxId(string txid, bool withDots = true, int len = 10)
         {
-            var txids = txid.Remove(5, txid.Length - 5) + "....." + txid.Remove(0, txid.Length - 5);
-            return txids;
+            if (string.IsNullOrEmpty(txid))
+                return string.Empty;
+            if (txid.Length < 10)
+                return txid;
+
+            if (withDots)
+            {
+                var txids = txid.Remove(((int)(len / 2)), txid.Length - ((int)(len/2))) + "....." + txid.Remove(0, txid.Length - ((int)(len / 2)));
+                return txids;
+            }
+            else
+            {
+                var txids = txid.Remove(((int)(len / 2)), txid.Length - ((int)(len / 2))) + txid.Remove(0, txid.Length - ((int)(len / 2)));
+                return txids;
+            }
         }
 
         public static async Task LoadAllowedTokensInfo(List<string> tokenIds)
@@ -2258,7 +2272,7 @@ namespace VEDriversLite
             var utxos = new List<Utxos>();
             if (addressinfo?.Utxos != null)
                 foreach (var u in addressinfo.Utxos)
-                    if (u.Tokens.Count > 0)
+                    if (u != null && u.Tokens.Count > 0)
                         utxos.Add(u);
 
             return utxos;
@@ -2298,7 +2312,7 @@ namespace VEDriversLite
             {
                 if (addressinfo?.Utxos != null)
                     foreach (var u in addressinfo.Utxos)
-                        if (u.Tokens != null)
+                        if (u != null && u.Tokens != null)
                             foreach (var tok in u.Tokens)
                                 if (allowedTokens.Contains(tok.TokenId) && tok.Amount == 1)
                                     utxos.Add(u);

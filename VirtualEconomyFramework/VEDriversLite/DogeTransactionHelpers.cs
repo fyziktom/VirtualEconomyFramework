@@ -300,11 +300,14 @@ namespace VEDriversLite
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
-                var bytes = Encoding.UTF8.GetBytes(data.CustomMessage); 
-                transaction.Outputs.Add(new TxOut(){ 
-                    Value = 0,    
+                
+                var bytes = Encoding.UTF8.GetBytes(data.CustomMessage);
+                transaction.Outputs.Add(new TxOut()
+                {
+                    Value = 0,
                     ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
                 });
+                
                 if (diffinSat > 0)
                     transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
             }
@@ -312,7 +315,6 @@ namespace VEDriversLite
             {
                 throw new Exception("Exception during creating outputs. " + ex.Message);
             }
-
             try
             {
                 return await SignAndBroadcast(transaction, key, addressForTx);

@@ -339,6 +339,9 @@
                                     <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
                                 </div>
                                 <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
+                                </div>
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
                                 </div>
                                 <div class="col d-flex justify-content-center align-items-center">
@@ -356,7 +359,21 @@
 
                                 <div class="row" style="margin-top:5px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@newNFT.Price" />
+                                        <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@price" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
+                                    </div>
+                                </div>
+                            }
+                            @if (withDogePrice)
+                            {
+                                <div class="row" style="margin-top:20px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <small>Price in Doge</small>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top:5px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <input type="number" step="1" min="2" max="1000000000" @bind="@dogeprice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
                                     </div>
                                 </div>
                             }
@@ -487,8 +504,6 @@
 
 @code {
 
-    bool withPrice = false;
-    bool withCoppies = false;
     bool eventDataLoaded = false;
 
     [Parameter]
@@ -567,6 +582,13 @@
     DurationOfNFTTicket durationOfTicket = DurationOfNFTTicket.Day;
     string multimintStatus = string.Empty;
 
+    bool withPrice = false;
+    bool withDogePrice = false;
+    bool withCoppies = false;
+
+    double price = 0.0;
+    double dogeprice = 0.0;
+
     bool loadingEventData = false;
     bool eventNFTDetailsVisible = false;
 
@@ -581,6 +603,10 @@
         {
             AppData.Account.NewMintingProcessInfo -= multimintStateChangedHandler;
             AppData.Account.NewMintingProcessInfo += multimintStateChangedHandler;
+            if (!string.IsNullOrEmpty(AppData.Account.Profile.Nickname))
+                nickname = AppData.Account.Profile.Nickname;
+            if (!string.IsNullOrEmpty(AppData.Account.Profile.Name))
+                author = AppData.Account.Profile.Name + " " + AppData.Account.Profile.Surname;
         }
     }
 
@@ -650,9 +676,18 @@
     {
         withPrice = (bool)e;
         if (withPrice)
-            newNFT.Price = 0.0005;
+            price = 0.0005;
         else
-            newNFT.Price = 0;
+            price = 0;
+        StateHasChanged();
+    }
+    private async Task withDogePriceChanged(object e)
+    {
+        withDogePrice = (bool)e;
+        if (withDogePrice)
+            dogeprice = 2;
+        else
+            dogeprice = 0;
         StateHasChanged();
     }
     private async Task withCoppiesChanged(object e)
@@ -851,12 +886,23 @@
             if (imagelink != null)
                 newNFT.ImageLink = imagelink;
 
-            (bool, string) res;
+            newNFT.Price = price;
+            if (price > 0)
+                newNFT.PriceActive = true;
+            newNFT.DogePrice = dogeprice;
+            if (dogeprice > 0)
+                newNFT.DogePriceActive = true;
+
             if (!string.IsNullOrEmpty(sourceNFT.Utxo))
             {
                 newNFT.Utxo = sourceNFT.Utxo;
                 newNFT.UtxoIndex = sourceNFT.UtxoIndex;
                 newNFT.NFTOriginTxId = sourceNFT.NFTOriginTxId;
+            }
+
+            (bool, string) res;
+            if (!string.IsNullOrEmpty(newNFT.Utxo))
+            {
                 if (!SubAccount)
                     res = await AppData.Account.ChangeNFT(newNFT);
                 else

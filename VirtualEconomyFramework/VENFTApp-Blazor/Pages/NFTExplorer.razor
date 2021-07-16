@@ -3,6 +3,8 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.Neblio
 @using VEDriversLite.NeblioAPI
+@using VEDriversLite.WooCommerce
+@using VEDriversLite.WooCommerce.Dto
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 @inject HttpClient _client
@@ -147,6 +149,7 @@
             }
             else
             {
+                InitWooCom();
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
                 LoadStateFromMemory();
@@ -158,6 +161,21 @@
         }
 
         return base.OnInitializedAsync();
+    }
+
+    private async Task InitWooCom()
+    {
+        if (!WooCommerceHelpers.IsInitialized)
+        {
+            var apiurl = await localStorage.GetItemAsync<string>("woocom-apiurl");
+            if (apiurl == null) apiurl = string.Empty;
+            var apikey = await localStorage.GetItemAsync<string>("woocom-apikey");
+            if (apikey == null) apikey = string.Empty;
+            var apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
+            if (apisecret == null) apisecret = string.Empty;
+            if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(apisecret))
+                await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret);
+        }
     }
 
     void RefreshedHandler(object sender, EventArgs e)

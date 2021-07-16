@@ -1,0 +1,274 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.WooCommerce
+@using VEDriversLite.WooCommerce.Dto
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject NavigationManager NavManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col">
+        <Spin spinning="@processingSending" tip="Sending...">
+            <div class="row">
+                <div class="col">
+                    @if (WooCommerceHelpers.IsInitialized)
+                    {
+                        @if (product == null && string.IsNullOrEmpty(product.name))
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Get Product</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <Input Placeholder="Fill product Id" MaxLength="200" @bind-Value=@productId Style="font-size:12px; min-width:250px; max-width:250px;" />
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:30px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary" @onclick="GetProduct">Get Product</button>
+                                </div>
+                            </div>
+                        }
+                        @if (product != null && !string.IsNullOrEmpty(product.name))
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Product Id: @product.id</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Product Price: @product.regular_price</small>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Availability</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    @switch (product.stock_status_enum)
+                                    {
+                                        case StockStatus.instock:
+                                            <small>In the Stock</small>
+                                            break;
+                                        case StockStatus.onbackorder:
+                                            <small>On Backorder</small>
+                                            break;
+                                        case StockStatus.outofstock:
+                                            <small>Out of the stock</small>
+                                            break;
+                                    }
+
+                                </div>
+                            </div>
+                            @if (product.stock_status_enum == StockStatus.instock)
+                            {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Available On Stock: @product.stock_quantity</small>
+                                </div>
+                            </div>
+                            }
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Product Data</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <textarea style="min-width:300px; min-height:400px;">@JsonConvert.SerializeObject(product, Formatting.Indented)</textarea>
+                                </div>
+                            </div>
+                            @if (loadedNFT != null)
+                            {
+                                @if (!string.IsNullOrEmpty(loadedNFT.Utxo))
+                                {
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <small>Founded NFT</small>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:5px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <small>@loadedNFT.Name</small>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-primary" @onclick="showNFTDetails">Show NFT Details</button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            @if (!string.IsNullOrEmpty(product.permalink))
+                            {
+                                <div class="row" style="padding:0px; margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center w-100 h-100" style="padding:0px;">
+                                        <a href="@product.permalink" target="_blank" class="text-info">Try the link to page of your new product.</a>
+                                    </div>
+                                </div>
+                                <!--
+                <div class="row" style="padding:0px; margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center w-100 h-100" style="padding:0px;">
+                        <iframe src="product.permalink" style="min-height:400px; min-width:400px;" frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="row" style="padding:0px; margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center w-100 h-100" style="padding:0px;">
+                        <small class="text-center text-muted">Your store maybe block the use in iframe. If you do not see your shop, please use the link.</small>
+                    </div>
+                </div>-->
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </Spin>
+
+        <Modal Title="NFT Details"
+               Visible="@showNFTDetailsVisible"
+               OnOk="@showNFTDetailsCancel"
+               OnCancel="@showNFTDetailsCancel">
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    @if (loadedNFT != null)
+                    {
+                        @if (loadedNFT.Type == NFTTypes.CoruzantArticle || loadedNFT.Type == NFTTypes.CoruzantProfile)
+                        {
+                            <CoruzantNFT InputNFT="@loadedNFT"
+                                         OwnNFT="@true"
+                                         Address="@AppData.Account.Address"
+                                         SubAccount="@false" />
+                        }
+                        else
+                        {
+                            <NFT InputNFT="@loadedNFT"
+                                 OwnNFT="@true"
+                                 Address="@AppData.Account.Address"
+                                 SubAccount="@false" />
+                        }
+                    }
+                </div>
+            </div>
+        </Modal>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> WooCommerceAPIConnected { get; set; }
+
+    private string apiurl = string.Empty;
+    private string apikey = string.Empty;
+    private string apisecret = string.Empty;
+    private string txid = string.Empty;
+    private int index = 0;
+    private string productId = string.Empty;
+
+    Product product = new Product();
+    [Parameter]
+    public Product InputProduct
+    {
+        get => product;
+        set => product = value;
+    }
+
+    bool processingSending = false;
+    bool initialized = false;
+    bool showNFTDetailsVisible = false;
+
+    INFT loadedNFT = new ImageNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => loadedNFT;
+        set => loadedNFT = value;
+    }
+
+    public string ProductShopLink => VEDLDataContext.WooCommerceStoreUrl + "product/" + product.slug;
+
+    protected override Task OnInitializedAsync()
+    {
+        init();
+        return base.OnInitializedAsync();
+    }
+
+    private async Task init()
+    {
+        if (!WooCommerceHelpers.IsInitialized)
+        {
+            apiurl = await localStorage.GetItemAsync<string>("woocom-apiurl");
+            if (apiurl == null) apiurl = string.Empty;
+            apikey = await localStorage.GetItemAsync<string>("woocom-apikey");
+            if (apikey == null) apikey = string.Empty;
+            apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
+            if (apisecret == null) apisecret = string.Empty;
+            await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret);
+        }
+        StateHasChanged();
+    }
+
+    private async Task showNFTDetails(MouseEventArgs e)
+    {
+        showNFTDetailsVisible = true;
+    }
+    private async Task showNFTDetailsCancel(MouseEventArgs e)
+    {
+        showNFTDetailsVisible = false;
+    }
+
+    private async Task LoadNFT()
+    {
+        loadedNFT = null;
+        loadedNFT = await NFTFactory.GetNFT("", txid, index, 0, true);
+        if (loadedNFT != null)
+        {
+            //await showNFTDetails(null);
+        }
+        StateHasChanged();
+    }
+
+    private async Task GetProduct()
+    {
+        try
+        {
+            processingSending = true;
+            StateHasChanged();
+
+            var prd = await WooCommerceHelpers.GetProduct(productId);
+
+            if (prd == null)
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during try to connect.");
+            }
+            else
+            {
+                product = prd;
+                product.meta_data.ForEach(m =>
+                {
+                    if (m.key == "Utxo") txid = m.value;
+                    else if (m.key == "Utxoindex") index = Convert.ToInt32(m.value);
+                });
+
+                LoadNFT();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            processingSending = false;
+            StateHasChanged();
+        }
+    }
+}

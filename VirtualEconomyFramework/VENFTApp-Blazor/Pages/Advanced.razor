@@ -1,0 +1,410 @@
+﻿@using System.IO;
+@using System.Text;
+@using VEDriversLite
+@using VEDriversLite.Dto
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@using VEDriversLite.Admin.Dto
+@using Newtonsoft.Json
+@using Tewr.Blazor.FileReader
+
+@inject IFileReaderService fileReaderService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject HttpClient _client
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavManager
+@page "/advanced"
+
+<div class="container-fluid">
+    <Spin Tip="Sending..." Spinning="@sending">
+        <div class="row">
+            <div class="col">
+
+                <div class="row" style="margin-bottom:20px;">
+                    <div class="col">
+
+                        <div class="card-group">
+
+                            <div class="card" style="margin-top:10px; min-width:300px; max-width:350px; margin-left:20px;">
+                                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                                    <h5 class="text-center">VENFT Server Connection</h5>
+                                </div>
+                                <div class="card-body w-100">
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <small class="text-muted text-center">Most of these actions requires your own instance of the VENFT Server. If you do not have it you cannot use it now.</small>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <span>Api Address</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <Input @bind-Value="@apiAddress" Style="font-size:12px; min-width:250px; max-width:250px;" />
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-primary" @onclick="getAdminActionTokenServer">Get Admin Action Token Manualy</button>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <small class="text-muted text-center">You can use it as a test of connection with your server.</small>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <span>API Action Request Token</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <small class="text-wrap text-center" style="max-width:300px;">@apiToken</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card" style="margin-top:10px; min-width:300px; max-width:350px; margin-left:20px;">
+                                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                                    <h5 class="text-center">Upload Backup of This Account To Server</h5>
+                                </div>
+                                <div class="card-body w-100">
+
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <span>Password (your password to the VENFT App)</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <InputPassword @bind-Value="@password" Style="font-size:12px; min-width:250px; max-width:250px;" />
+                                        </div>
+                                    </div>
+                                    @if (string.IsNullOrEmpty(password))
+                                    {
+                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                            <div class="col w-100 d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-secondary disabled" @onclick="uploadMainAccountBackupToServer">Please fill your password</button>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                            <div class="col w-100 d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-primary" @onclick="uploadMainAccountBackupToServer">Upload Backup Data</button>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <span>Server response: @serverResponse</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card" style="margin-top:10px; min-width:300px; max-width:350px; margin-left:20px;">
+                                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                                    <h5 class="text-center">Upload Backup To Server from file</h5>
+                                </div>
+                                <div class="card-body w-100">
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <span>Load the backup file</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:10px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <input type="file" @ref=inputTypeFileElement @onchange="ReadFile" />
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(addressForBackupUpload))
+                                    {
+                                        <div class="row" style="margin-top:10px; min-width:350px;">
+                                            <div class="col w-100 d-flex justify-content-center align-items-center">
+                                                <small class="text-info">Address: @addressForBackupUpload</small>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <span>Password to this backup</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <InputPassword @bind-Value="@passwordToFileBackup" Style="font-size:12px; min-width:250px; max-width:250px;" />
+                                        </div>
+                                    </div>
+                                    @if (string.IsNullOrEmpty(passwordToFileBackup))
+                                    {
+                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                            <div class="col w-100 d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-secondary disabled" @onclick="uploadAccountBackupToServer">Please fill your password</button>
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (string.IsNullOrEmpty(backupData))
+                                    {
+                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                            <div class="col w-100 d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-secondary disabled" @onclick="uploadAccountBackupToServer">Please select backup file</button>
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (string.IsNullOrEmpty(addressForBackupUpload))
+                                    {
+                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                            <div class="col w-100 d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-secondary disabled" @onclick="uploadAccountBackupToServer">Please input address for the backup</button>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                            <div class="col w-100 d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-primary" @onclick="uploadAccountBackupToServer">Upload Backup Data</button>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <span>Server response: @serverResponse</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card" style="margin-top:10px; min-width:300px; max-width:350px; margin-left:20px;">
+                                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                                    <h5 class="text-center">WooCommerce Connection</h5>
+                                </div>
+                                <div class="card-body w-100">
+                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                                            <VENFTApp_Blazor.Components.WooCommerceConnection />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <VENFTApp_Blazor.Components.InfoEventModal />
+    </Spin>
+</div>
+
+@code {
+    private string apiAddress = "https://localhost:5001/api/";
+    private string apiToken = string.Empty;
+    private string password = string.Empty;
+    private string passwordToFileBackup = string.Empty;
+    private string addressForBackupUpload = string.Empty;
+    private string backupData = string.Empty;
+    private string serverResponse = string.Empty;
+    private bool sending = false;
+
+    private ElementReference inputTypeFileElement;
+
+    private async Task getAdminActionTokenServer(MouseEventArgs e)
+    {
+        try
+        {
+            sending = true;
+            StateHasChanged();
+            var req = new HttpRequestMessage(HttpMethod.Get, $"{apiAddress}RequestAdminAction/{AppData.Account.Address}/{AppData.Account.Address}/2");
+            req.Headers.Add("Accept", "application/json");
+            req.Headers.Add("User-Agent", "VENFT-App");
+
+            var resp = await _client.SendAsync(req);
+            var respmsg = await resp.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(respmsg))
+                return;
+            apiToken = (respmsg as string).Replace("\"", string.Empty);
+            sending = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot upload backup to the server. " + ex.Message);
+            serverResponse = ex.Message;
+        }
+        finally
+        {
+            sending = false;
+            StateHasChanged();
+        }
+    }
+    private async Task uploadMainAccountBackupToServer(MouseEventArgs e)
+    {
+        await getAdminActionTokenServer(null);
+        await uploadBackupToServer(await getBackupData(), AppData.Account.Address, password);
+    }
+
+    private async Task uploadAccountBackupToServer(MouseEventArgs e)
+    {
+        await getAdminActionTokenServer(null);
+        await uploadBackupToServer(backupData, addressForBackupUpload, passwordToFileBackup);
+    }
+
+    private async Task uploadBackupToServer(string backup, string address, string pass)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(apiToken))
+                return;
+
+            sending = true;
+            StateHasChanged();
+            var url = $"{apiAddress}ImportBackup";
+            var dto = new ImportBackupDto();
+            dto.adminCredentials.Admin = AppData.Account.Address;
+            dto.adminCredentials.Message = apiToken;
+
+            var sign = await AppData.Account.SignMessage(apiToken);
+            if (!sign.Item1)
+                return;
+            dto.adminCredentials.Signature = sign.Item2;
+
+            var eadd = await AppData.Account.EncryptMessage(address);
+            if (!eadd.Item1)
+                return;
+            dto.dto.eadd = eadd.Item2;
+
+            var epass = await AppData.Account.EncryptMessage(pass);
+            if (!epass.Item1)
+                return;
+            dto.dto.epass = epass.Item2;
+
+            var edata = await AppData.Account.EncryptMessage(backup);
+            if (!edata.Item1)
+                return;
+            dto.dto.edata = edata.Item2;
+
+            _client.DefaultRequestHeaders.Add("Accept", "application/json");
+            _client.DefaultRequestHeaders.Add("User-Agent", "VENFT-App");
+            var resp = await _client.PostAsJsonAsync<ImportBackupDto>(url, dto);
+            var respmsg = await resp.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(respmsg))
+                return;
+
+            serverResponse = (respmsg as string).Replace("\"", string.Empty);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot upload backup to the server. " + ex.Message);
+            serverResponse = ex.Message;
+        }
+        finally
+        {
+            sending = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<string> getBackupData()
+    {
+        var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+        var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
+        var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
+        var address = await localStorage.GetItemAsync<string>("address");
+        var key = await localStorage.GetItemAsync<string>("key");
+        var dogeaddress = await localStorage.GetItemAsync<string>("dogeaddress");
+        var dogekey = await localStorage.GetItemAsync<string>("dogekey");
+
+        var dto = new BackupDataDto();
+        if (!string.IsNullOrEmpty(bookmarks))
+            dto.Bookmarks = bookmarks;
+        if (!string.IsNullOrEmpty(browserTabs))
+            dto.BrowserTabs = browserTabs;
+        if (!string.IsNullOrEmpty(subAccounts))
+            dto.SubAccounts = subAccounts;
+        if (!string.IsNullOrEmpty(address))
+            dto.Address = address;
+        if (!string.IsNullOrEmpty(key))
+            dto.Key = key;
+        if (!string.IsNullOrEmpty(dogeaddress))
+            dto.DogeAddress = dogeaddress;
+        if (!string.IsNullOrEmpty(dogekey))
+            dto.DogeKey = dogekey;
+
+        var backupData = JsonConvert.SerializeObject(dto);
+        return backupData;
+    }
+
+    private void addressForBackupInputed(string address)
+    {
+        addressForBackupUpload = address;
+        StateHasChanged();
+    }
+
+    public async Task ReadFile()
+    {
+        try
+        {
+            foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
+            {
+                // Read into buffer and act (uses less memory)
+                await using (Stream stream = await file.OpenReadAsync())
+                {
+                    var fileinfo = await file.ReadFileInfoAsync();
+                    try
+                    {
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            await stream.CopyToAsync(ms);
+                            var filecontent = Encoding.UTF8.GetString(ms.GetBuffer());
+                            try
+                            {
+                                var bdto = JsonConvert.DeserializeObject<BackupDataDto>(filecontent);
+                                if (bdto != null && !string.IsNullOrEmpty(bdto.Address))
+                                {
+                                    addressForBackupUpload = bdto.Address;
+                                    backupData = filecontent;
+                                    StateHasChanged();
+                                }
+                                else
+                                {
+                                    await JSRuntime.InvokeVoidAsync("alertMessage", "This is not valid VENFT Backup file.");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                await JSRuntime.InvokeVoidAsync("alertMessage", "This is not valid VENFT Backup file. " + ex.Message);
+                                return;
+                            }
+                            //Console.WriteLine("Loaded file content: ");
+                            //Console.WriteLine("--------------------------------------");
+                            //Console.WriteLine(filecontent);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", ex.Message);
+
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}

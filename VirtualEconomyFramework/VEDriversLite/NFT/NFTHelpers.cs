@@ -1012,9 +1012,9 @@ namespace VEDriversLite.NFT
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="price">Price must be higher than 0.0002 Neblio</param>
         /// <returns>New Tx Id hash</returns>
-        public static async Task<string> SendNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, bool priceWrite, ICollection<Utxos> nutxos, double price = 0.0002)
+        public static async Task<string> SendNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, bool priceWrite, ICollection<Utxos> nutxos, double price = 0.0002, bool withDogePrice = false, double dogeprice = 1)
         {
-            if (price < 0.0002 && priceWrite)
+            if ((price < 0.0002 && priceWrite) && !withDogePrice)
                 throw new Exception("Price cannot be lower than 0.0002 NEBL.");
 
             if (priceWrite)
@@ -1026,6 +1026,17 @@ namespace VEDriversLite.NFT
             {
                 NFT.Price = 0.0;
                 NFT.PriceActive = false;
+            }
+
+            if (withDogePrice)
+            {
+                NFT.DogePrice = dogeprice;
+                NFT.DogePriceActive = true;
+            }
+            else
+            {
+                NFT.DogePrice = 0.0;
+                NFT.DogePriceActive = false;
             }
 
             var metadata = await NFT.GetMetadata();
