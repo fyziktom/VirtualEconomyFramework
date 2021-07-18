@@ -17,10 +17,12 @@ namespace VEDriversLite.Bookmarks
             ShortAddress = NeblioTransactionHelpers.ShortenAddress(address);
         }
 
+        [JsonIgnore]
         public bool Selected { get; set; } = false;
         public string Address { get; set; } = string.Empty;
         public string ShortAddress { get; set; } = string.Empty;
         public bool IsInBookmark { get; set; } = false;
+        [JsonIgnore]
         public bool IsRefreshingRunning { get; set; } = false;
         [JsonIgnore]
         public List<INFT> NFTs { get; set; } = new List<INFT>();
@@ -36,29 +38,34 @@ namespace VEDriversLite.Bookmarks
             if (!IsRefreshingRunning)
             {
                 IsRefreshingRunning = true;
-                while (true)
+
+                _ = Task.Run(async () =>
                 {
-                    try
+                    while (true)
                     {
-                        if (Selected)
+                        try
                         {
-                            NFTs = await NFTHelpers.LoadAddressNFTs(Address, null, NFTs.ToList());
-                            if (NFTs == null)
-                                NFTs = new List<INFT>();
+                            if (Selected)
+                            {
+                                NFTs = await NFTHelpers.LoadAddressNFTs(Address, null, NFTs.ToList());
+                                if (NFTs == null)
+                                    NFTs = new List<INFT>();
 
-                            if (NFTs.Count > 0)
-                                Profile = await NFTHelpers.FindProfileNFT(NFTs);
+                                if (NFTs.Count > 0)
+                                    Profile = await NFTHelpers.FindProfileNFT(NFTs);
 
-                            await RefreshAddressReceivedPayments();
+                                //await RefreshAddressReceivedPayments();
+                                await Task.Delay(5000);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
                             await Task.Delay(5000);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        await Task.Delay(5000);
-                    }
-                }
-                IsRefreshingRunning = false;
+
+                    IsRefreshingRunning = false;
+                });
             }
         }
         public async Task RefreshAddressReceivedPayments()

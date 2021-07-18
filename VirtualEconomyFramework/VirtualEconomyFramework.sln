@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestVEDriversLite", "TestVE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-Banner", "VENFTApp-Banner\VENFTApp-Banner.csproj", "{42C7883E-FC38-4898-9143-27C9EEAA5B9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VENFTApp-Server", "VENFTApp-Server\VENFTApp-Server.csproj", "{FA116F0E-F37C-4B16-8710-2F9C7A1970FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-Server", "VENFTApp-Server\VENFTApp-Server.csproj", "{FA116F0E-F37C-4B16-8710-2F9C7A1970FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

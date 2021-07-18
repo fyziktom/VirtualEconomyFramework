@@ -262,7 +262,7 @@ namespace VEDriversLite
         /// <param name="encryptedKey"></param>
         /// <param name="address"></param>
         /// <returns></returns>
-        public async Task<bool> LoadAccount(string password, string encryptedKey, string address)
+        public async Task<bool> LoadAccount(string password, string encryptedKey, string address = "")
         {
             try
             {
@@ -272,7 +272,16 @@ namespace VEDriversLite
                     await AccountKey.LoadPassword(password);
                     AccountKey.IsEncrypted = true;
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
-                    Address = address;
+                    if (string.IsNullOrEmpty(address))
+                    {
+                        var add = await DogeTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
+                        if (add.Item1) Address = add.Item2;
+                    }
+                    else
+                    {
+                        Address = address;
+                    }
+
                     SignMessage("init");
                 });
 
@@ -281,7 +290,7 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                await InvokeErrorEvent(ex.Message, "Cannot Load Account");
+                //await InvokeErrorEvent(ex.Message, "Cannot Load Account");
                 //throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
             }
 

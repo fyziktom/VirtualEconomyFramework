@@ -1,4 +1,6 @@
 ﻿@using VEDriversLite
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Globalization
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient _client
 @inject AppData AppData
@@ -38,7 +40,7 @@
                                 </div>
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <VENFTApp_Blazor.Components.DogeAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
+                                        <VENFTApp_Blazor.Components.DogeAddressInput Receiver="@receiver" AddressCheckedInputed="receiverAddressChangedHandler" />
                                         <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
                                     </div>
                                 </div>
@@ -54,7 +56,14 @@
                                 </div>
                                 <div class="row" style="margin-top:20px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <input type="checkbox" @onchange="eventArgs => { withMessageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Message</span><br />
+                                        @if (withMessage)
+                                        {
+                                            <input type="checkbox" checked="checked" @onchange="eventArgs => { withMessageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Message</span><br />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" @onchange="eventArgs => { withMessageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Message</span><br />
+                                        }
                                     </div>
                                     <div class="col d-flex justify-content-center align-items-center">
                                         <input type="checkbox" @onchange="eventArgs => { withImageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Image</span><br />
@@ -202,6 +211,9 @@
         </div>
     </div>
     -->
+
+    <VENFTApp_Blazor.Components.UnlockAccount Visible="@unlockAcocuntModalVisible" AccountUnlocked="AccountUnlocked" />
+
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
@@ -219,6 +231,10 @@
 
     bool withMessage = false;
     bool withImage = false;
+
+    bool accountUnlocked = true;
+
+    bool unlockAcocuntModalVisible = false;
 
     private bool sendingTransaction = false;
     private double AmountToSend = 1;
@@ -242,7 +258,7 @@
         try
         {
             if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
-                Redirect();
+                TryLogin();
             else
                 Load();
         }
@@ -252,6 +268,37 @@
         }
 
         return base.OnInitializedAsync();
+    }
+
+    private void AccountUnlocked(string msg)
+    {
+        accountUnlocked = true;
+        unlockAcocuntModalVisible = false;
+        StateHasChanged();
+        Load();
+    }
+
+    private async Task TryLogin()
+    {
+        try
+        {
+            var key = await localStorage.GetItemAsync<string>("key");
+            if (!string.IsNullOrEmpty(key))
+            {
+                unlockAcocuntModalVisible = true;
+                await Task.Delay(50);
+                StateHasChanged();
+            }
+            else
+            {
+                Redirect();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Redirect();
+        }
     }
 
     private async Task withMessageChanged(object e)
@@ -335,6 +382,21 @@
 
     private async Task Load()
     {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("add", out var add))
+        {
+            receiver = add;
+        }
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("msg", out var msg))
+        {
+            message = msg;
+            withMessage = true;
+        }
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("amnt", out var amnt))
+        {
+            AmountToSend = Convert.ToDouble(amnt, CultureInfo.InvariantCulture);
+        }
+
         if (AppData.DogeAccount != null)
             AppData.DogeAccount.Refreshed += RefreshedHandler;
     }

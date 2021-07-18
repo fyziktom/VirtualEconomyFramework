@@ -217,6 +217,28 @@
 
     private ElementReference inputTypeFileElement;
 
+    protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(AppData.Account.Address))
+                Redirect();
+        }
+        catch (Exception ex)
+        {
+            Redirect();
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
+
     private async Task getAdminActionTokenServer(MouseEventArgs e)
     {
         try

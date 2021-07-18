@@ -300,20 +300,23 @@
                             </button>
                         </div>
 
-                        @if (!IsInThePayments(nft.Utxo) && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
+                        <!--
+                        if (!IsInThePayments(nft.Utxo) && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
                         {
                             <div class="col d-flex w-auto" style="margin-left:15px;">
-                                <SendNFTPayment Utxo="@nft.Utxo" UtxoIndex="@nft.UtxoIndex" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
+                                <SendNFTPayment Utxo="nft.Utxo" UtxoIndex="nft.UtxoIndex" OwnNFT="false" Receiver="_address" Price="nft.Price" NFTSent="NFTSent" />
                             </div>
                         }
+                        -->
                     </div>
+                    <!--
                     <div class="row d-flex justify-content-center align-items-center">
-                        @if (!IsInThePayments(nft.Utxo))
+                        if (!IsInThePayments(nft.Utxo))
                         {
-                            @if (OwnNFT && nft.PriceActive)
+                            if (OwnNFT && nft.PriceActive)
                             {
                                 <div class="col">
-                                    <small class="text-muted">Setted Price: @nft.Price NEBL</small>
+                                    <small class="text-muted">Setted Price: nft.Price NEBL</small>
                                 </div>
                             }
                         }
@@ -324,6 +327,7 @@
                             </div>
                         }
                     </div>
+                    -->
                 </small>
             </div>
         }

@@ -384,6 +384,8 @@
         try
         {
             loadingBrowser = true;
+            StateHasChanged();
+            await Task.Delay(50);
             try
             {
                 var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
@@ -410,8 +412,6 @@
             {
                 Console.WriteLine("Cannot load tabs history!" + ex.Message);
             }
-            loadingBrowser = false;
-            StateHasChanged();
 
             //if (AppData.VENFTOwners.Count == 0)
             await LoadVENFTOwners();
@@ -421,6 +421,11 @@
             //todo
             Console.WriteLine("Error during loading browser. " + ex.Message);
             loadingBrowser = false;
+        }
+        finally
+        {
+            loadingBrowser = false;
+            StateHasChanged();
         }
     }
 

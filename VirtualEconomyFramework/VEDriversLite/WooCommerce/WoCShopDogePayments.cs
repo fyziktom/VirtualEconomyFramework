@@ -63,84 +63,66 @@ namespace VEDriversLite.WooCommerce
                                 var msg = await DogeTransactionHelpers.ParseDogeMessage(info);
                                 if (msg.Item1)
                                 {
-                                    var split = msg.Item2.Split('-');
-                                    if (split != null && split.Length == 2 && !string.IsNullOrEmpty(split[1]) && split[1].Length > 0)
+                                    //var split = msg.Item2.Split('-');
+                                    var ordkey = msg.Item2;
+                                    if (!string.IsNullOrEmpty(ordkey))
                                     {
-                                        var addver = await NeblioTransactionHelpers.ValidateNeblioAddress(split[0]);
-                                        if (addver.Item1)
+                                        if (WooCommerceHelpers.Shop.Orders.TryGetValue(ordkey, out var ord))
                                         {
-                                            if (WooCommerceHelpers.Shop.Orders.TryGetValue(split[1], out var ord))
+                                            if (ord.statusclass == OrderStatus.pending && ord.currency == "DGC") // && ord.payment_method == "cod")
                                             {
-                                                if (ord.statusclass == OrderStatus.pending && ord.payment_method == "cod")
+                                                Console.WriteLine($"Order {ord.id}, {ord.order_key} received DOGE payment in value {u.Value}.");
+                                                try
                                                 {
-                                                    Console.WriteLine($"Order {ord.id}, {ord.order_key} received DOGE payment in value {u.Value}.");
-                                                    try
+                                                    if (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) >= Convert.ToDouble(ord.total, CultureInfo.InvariantCulture))
                                                     {
-                                                        if (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) >= Convert.ToDouble(ord.total, CultureInfo.InvariantCulture))
+                                                        Console.WriteLine($"Order {ord.id}, {ord.order_key} payment has correct amount and it is moved to processing state.");
+                                                        var add = await GetNeblioAddressFromOrderMetadata(ord);
+                                                        if (add.Item1)
                                                         {
-                                                            Console.WriteLine($"Order {ord.id}, {ord.order_key} payment has correct amount and it is moved to processing state.");
-                                                            var add = await GetNeblioAddressFromOrderMetadata(ord);
-                                                            if (add.Item1)
-                                                            {
-                                                                if (add.Item2 == addver.Item2)
-                                                                {
-                                                                    Console.WriteLine($"Order {ord.id}, {ord.order_key} received Neblio Address in DOGE Payment message matchs with Address in the order.");
-                                                                    ord.statusclass = OrderStatus.processing;
-                                                                    ord.transaction_id = $"{u.TxId}:{u.N}";
-                                                                    ord.date_paid = TimeHelpers.UnixTimestampToDateTime(u.Time * 1000);
-                                                                    var o = await WooCommerceHelpers.Shop.UpdateOrder(ord);
-                                                                }
-                                                                else
-                                                                {
-                                                                    Console.WriteLine($"Order {ord.id}, {ord.order_key} received Neblio Address in DOGE Payment message does not match with Address in the order.");
-                                                                    ord.statusclass = OrderStatus.failed;
-                                                                    ord.transaction_id = $"{u.TxId}:{u.N}";
-                                                                    ord.meta_data.Add(new ProductMetadata() { 
-                                                                        key = "Incorrect Received Payment", 
-                                                                        value = $"received Neblio Address {addver.Item2} in DOGE Payment message does not match with Address in the order {add.Item2}." 
-                                                                    });
-                                                                    ord.date_paid = TimeHelpers.UnixTimestampToDateTime(u.Time * 1000);
-                                                                    var o = await WooCommerceHelpers.Shop.UpdateOrder(ord);
-                                                                }
-                                                            }
+                                                            Console.WriteLine($"Order {ord.id}, {ord.order_key} received Neblio Address in DOGE Payment message matchs with Address in the order.");
+                                                            ord.statusclass = OrderStatus.processing;
+                                                            ord.transaction_id = $"{u.TxId}:{u.N}";
+                                                            ord.date_paid = TimeHelpers.UnixTimestampToDateTime(u.Time * 1000);
+                                                            var o = await WooCommerceHelpers.Shop.UpdateOrder(ord);
                                                         }
-                                                        else
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) > 2)
                                                         {
-                                                            if (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) > 1)
+                                                            Console.WriteLine($"Order {ord.id}, {ord.order_key} payment is not correct amount. It is sent back to the sender.");
+                                                            var done = false;
+                                                            var attempts = 50;
+                                                            while (!done)
                                                             {
-                                                                Console.WriteLine($"Order {ord.id}, {ord.order_key} payment is not correct amount. It is sent back to the sender.");
-                                                                var done = false;
-                                                                var attempts = 50;
-                                                                while (!done)
+                                                                try
                                                                 {
-                                                                    try
+                                                                    var dres = await doge.SendPayment(doge.Address,
+                                                                                                  Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) - 1,
+                                                                                                  $"Order {ord.order_key} cannot be processed. Wrong sent amount.");
+                                                                    done = dres.Item1;
+                                                                    if (done)
                                                                     {
-                                                                        var dres = await doge.SendPayment(doge.Address,
-                                                                                                      Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) - 1,
-                                                                                                      $"Order {ord.order_key} cannot be processed. Wrong sent amount.");
-                                                                        done = dres.Item1;
-                                                                        if (done)
-                                                                        {
-                                                                            Console.WriteLine($"Order {ord.id}, {ord.order_key} incorrect received payment sent back with txid: {dres.Item2}");
-                                                                            ord.meta_data.Add(new ProductMetadata() { key = "Incorrect Received Payment", value = $"DOGE-{dres.Item2}" });
-                                                                            var o = await WooCommerceHelpers.Shop.UpdateOrder(ord);
-                                                                        }
-                                                                        if (!dres.Item1) await Task.Delay(5000);
+                                                                        Console.WriteLine($"Order {ord.id}, {ord.order_key} incorrect received payment sent back with txid: {dres.Item2}");
+                                                                        ord.meta_data.Add(new ProductMetadata() { key = "Incorrect Received Payment", value = $"DOGE-{dres.Item2}" });
+                                                                        var o = await WooCommerceHelpers.Shop.UpdateOrder(ord);
                                                                     }
-                                                                    catch (Exception ex)
-                                                                    {
-                                                                        await Task.Delay(5000);
-                                                                    }
-                                                                    attempts--;
-                                                                    if (attempts < 0) break;
+                                                                    if (!dres.Item1) await Task.Delay(5000);
                                                                 }
+                                                                catch (Exception ex)
+                                                                {
+                                                                    await Task.Delay(5000);
+                                                                }
+                                                                attempts--;
+                                                                if (attempts < 0) break;
                                                             }
                                                         }
                                                     }
-                                                    catch (Exception ex)
-                                                    {
-                                                        Console.WriteLine("Cannot send update of the order." + ex.Message);
-                                                    }
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    Console.WriteLine("Cannot send update of the order." + ex.Message);
                                                 }
                                             }
                                         }

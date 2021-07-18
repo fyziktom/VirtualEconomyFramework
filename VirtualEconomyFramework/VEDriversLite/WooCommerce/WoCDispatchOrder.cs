@@ -31,7 +31,7 @@ namespace VEDriversLite.WooCommerce
                             var validateNeblioAddress = await GetNeblioAddressFromOrderMetadata(order);
                             if (validateNeblioAddress.Item1)
                             {
-                                Console.WriteLine($"Order {order.order_key} processing...moving item id {item.product_id}({sh}) to dispatch list.");
+                                Console.WriteLine($"Order {order.id}, {order.order_key} processing...moving item id {item.product_id}({sh}) to dispatch list.");
                                 if (!string.IsNullOrEmpty(cat))
                                 {
                                     NFTOrdersToDispatchList.Enqueue(new NFTOrderToDispatch()

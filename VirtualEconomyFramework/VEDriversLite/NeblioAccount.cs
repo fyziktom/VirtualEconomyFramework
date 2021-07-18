@@ -84,6 +84,11 @@ namespace VEDriversLite
         /// </summary>
         public bool IsRefreshingRunning { get; set; } = false;
         /// <summary>
+        /// If you want to run account without NFTs set this up. 
+        /// Whenever during run you can clear this flag and NFTs will start loading
+        /// </summary>
+        public bool WithoutNFTs { get; set; } = false;
+        /// <summary>
         /// If there is some Doge address in same project which should be searched for the payments triggers fill it here
         /// </summary>
         public string ConnectedDogeAccountAddress { get; set; } = string.Empty;
@@ -300,8 +305,11 @@ namespace VEDriversLite
                 await ReloadMintingSupply();
                 await ReloadTokenSupply();
                 Refreshed?.Invoke(this, null);
-                await ReLoadNFTs(true);
-                await ReloadCountOfNFTs();
+                if (!WithoutNFTs)
+                {
+                    await ReLoadNFTs(true);
+                    await ReloadCountOfNFTs();
+                }
             }
             catch (Exception ex)
             {
@@ -315,15 +323,17 @@ namespace VEDriversLite
             {
                 try
                 {
-                    await ReloadUtxos();
-                    await ReloadMintingSupply();
-                    await ReloadTokenSupply();
+                    //await ReloadUtxos();
+                    //await ReloadMintingSupply();
+                    //await ReloadTokenSupply();
                     Refreshed?.Invoke(this, null);
-                    await ReLoadNFTs(true);
-                    await ReloadCountOfNFTs();
-                    await CheckPayments();
-                    await RefreshAddressReceivedPayments();
-
+                    if (!WithoutNFTs)
+                    {
+                        await ReLoadNFTs(true);
+                        await ReloadCountOfNFTs();
+                        await CheckPayments();
+                        await RefreshAddressReceivedPayments();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -339,34 +349,36 @@ namespace VEDriversLite
 
                         await ReloadUtxos();
                         await ReloadMintingSupply();
-                        await ReLoadNFTs();
-                        await ReloadCountOfNFTs();
                         await ReloadTokenSupply();
-
-                        try
+                        if (!WithoutNFTs)
                         {
-                            if (Utxos.FirstOrDefault(u => u != null && u.Txid == Profile.Utxo && u.Index == Profile.UtxoIndex) == null)
+                            await ReLoadNFTs();
+                            await ReloadCountOfNFTs();
+                            
+                            try
                             {
-                                Profile = await NFTHelpers.FindProfileNFT(NFTs);
-                                if (!string.IsNullOrEmpty(Profile.Utxo))
-                                    ProfileUpdated?.Invoke(this, Profile);
+                                if (Utxos.FirstOrDefault(u => u != null && u.Txid == Profile.Utxo && u.Index == Profile.UtxoIndex) == null)
+                                {
+                                    Profile = await NFTHelpers.FindProfileNFT(NFTs);
+                                    if (!string.IsNullOrEmpty(Profile.Utxo))
+                                        ProfileUpdated?.Invoke(this, Profile);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                //todo
+                            }
+                            minorRefresh--;
+                            if (minorRefresh < 0)
+                            {
+                                await CheckPayments();
+                                if (!string.IsNullOrEmpty(ConnectedDogeAccountAddress))
+                                    await CheckDogePayments();
+
+                                await RefreshAddressReceivedPayments();
+                                minorRefresh = 10;
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            //todo
-                        }
-                        minorRefresh--;
-                        if (minorRefresh < 0)
-                        {
-                            await CheckPayments();
-                            if (!string.IsNullOrEmpty(ConnectedDogeAccountAddress))
-                                await CheckDogePayments();
-
-                            await RefreshAddressReceivedPayments();
-                            minorRefresh = 10;
-                        }
-
                         Refreshed?.Invoke(this, null);
                     }
                     catch (Exception ex)
@@ -438,7 +450,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccount(string password, string filename = "key.txt")
+        public async Task<bool> LoadAccount(string password, string filename = "key.txt", bool withoutNFTs = false)
         {
             if (FileHelpers.IsFileExists(filename))
             {
@@ -465,6 +477,7 @@ namespace VEDriversLite
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
                     SignMessage("init");
 
+                    WithoutNFTs = withoutNFTs;
                     if (!IsRefreshingRunning)
                         await StartRefreshingData();
 
@@ -488,7 +501,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountWithDummyKey(string password, string address)
+        public async Task<bool> LoadAccountWithDummyKey(string password, string address, bool withoutNFTs = false)
         {
             try
             {
@@ -512,6 +525,7 @@ namespace VEDriversLite
 
                 SignMessage("init");
 
+                WithoutNFTs = withoutNFTs;
                 if (!IsRefreshingRunning)
                     await StartRefreshingData();
                 return true;
@@ -527,7 +541,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountFromVENFTBackup(string password, string fromString = "", string filename = "backup.json")
+        public async Task<bool> LoadAccountFromVENFTBackup(string password, string fromString = "", string filename = "backup.json", bool withoutNFTs = false)
         {
             if (FileHelpers.IsFileExists(filename) || !string.IsNullOrEmpty(fromString))
             {
@@ -566,6 +580,8 @@ namespace VEDriversLite
 
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
 
+                    WithoutNFTs = withoutNFTs;
+
                     if (!IsRefreshingRunning)
                     {
                         SignMessage("init");
@@ -596,7 +612,7 @@ namespace VEDriversLite
         /// <param name="encryptedKey"></param>
         /// <param name="address"></param>
         /// <returns></returns>
-        public async Task<bool> LoadAccount(string password, string encryptedKey, string address)
+        public async Task<bool> LoadAccount(string password, string encryptedKey, string address = "", bool withoutNFTs = false)
         {
             try
             {
@@ -617,9 +633,18 @@ namespace VEDriversLite
                     }
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
                     SignMessage("init");
-                    Address = address;
+                    if (string.IsNullOrEmpty(address))
+                    {
+                        var add = await NeblioTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
+                        if (add.Item1) Address = add.Item2;
+                    }
+                    else
+                    {
+                        Address = address;
+                    }
                 });
 
+                WithoutNFTs = withoutNFTs;
                 if (!IsRefreshingRunning)
                     await StartRefreshingData();
 
@@ -758,17 +783,14 @@ namespace VEDriversLite
                     var first = true;
                     foreach (var t in Tabs)
                     {
-                        t.Selected = false;
                         var bkm = await IsInTheBookmarks(t.Address);
                         t.LoadBookmark(bkm.Item2);
                         if (first)
                         {
-                            await t.Reload();
+                            t.Reload();
                             first = false;
                             firstAdd = t.Address;
                         }
-                        //else
-                        //t.Reload();
                     }
                     Tabs.FirstOrDefault().Selected = true;
                 }

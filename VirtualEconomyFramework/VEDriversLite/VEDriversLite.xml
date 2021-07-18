@@ -772,6 +772,12 @@
             When main refreshing loop is running this is set
             </summary>
         </member>
+        <member name="P:VEDriversLite.NeblioAccount.WithoutNFTs">
+            <summary>
+            If you want to run account without NFTs set this up. 
+            Whenever during run you can clear this flag and NFTs will start loading
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NeblioAccount.ConnectedDogeAccountAddress">
             <summary>
             If there is some Doge address in same project which should be searched for the payments triggers fill it here
@@ -932,28 +938,28 @@
             <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.Boolean)">
             <summary>
             Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
             </summary>
             <param name="password">Passwotd to decrypt the loaded private key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccountWithDummyKey(System.String,System.String)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccountWithDummyKey(System.String,System.String,System.Boolean)">
             <summary>
             Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
             </summary>
             <param name="password">Passwotd to decrypt the loaded private key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String,System.String)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String,System.String,System.Boolean)">
             <summary>
             Load account from filename backup from VENFT App (default "backup.json") file placed in the root exe directory. Doesnt work in WABS
             </summary>
             <param name="password">Passwotd to decrypt the loaded private key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String,System.Boolean)">
             <summary>
             Load account from password, input encrypted private key and address.
             It expect the private key is encrypted by the password.

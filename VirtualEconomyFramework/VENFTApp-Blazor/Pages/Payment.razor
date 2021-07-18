@@ -1,0 +1,329 @@
+﻿@using VEDriversLite
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Globalization
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject HttpClient _client
+@inject AppData AppData
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+@page "/payment"
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <h3>Payment Gateway</h3>
+        </div>
+    </div>
+
+    <VENFTApp_Blazor.Components.DogeAccountBalance />
+
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex justify-content-center align-items-center">
+            <hr />
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom:20px;">
+        <div class="col">
+            <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
+                <div class="card" style="margin-top:10px;">
+                    <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                        <h5 class="text-center">Send Doge Transaction</h5>
+                    </div>
+                    <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <p>Receiver:</p>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        @receiver
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:30px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <p>Amount of Doge:</p>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <p>@AmountToSend DOGE <img style="width: 16px;margin-left: 10px;" src="images/doge.jpg" /></p>
+                                    </div>
+                                </div>
+                                <!--
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <input type="number" step="1" min="1" max="@AppData.DogeAccount.TotalBalance" @bind="@AmountToSend" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                                    </div>
+                                </div>
+                                -->
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <p>Payment Message:</p>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        @message
+                                    </div>
+                                </div>
+                                <!--
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <Input Placeholder="Add Your Message" MaxLength="82" bind-Value=message Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                    </div>
+                                </div>
+                                    -->
+                                <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <button class="btn btn-primary" @onclick="SendTx">Send</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Spin>
+        </div>
+    </div>
+
+    <VENFTApp_Blazor.Components.InfoEventModal />
+</div>
+
+<Modal Title="Unlock Account"
+       Visible="@unlockAcocuntModalVisible"
+       OnOk="@UnlockAccountConfirm"
+       OnCancel="@UnclockAccountCancel">
+    <div class="row">
+        <div class="col">
+            <Spin Tip="Unlocking..." Spinning="@unlockingAccount">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Input password</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@unlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+
+                @if (unlockOrClearCashMessage)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Unlock account."
+                           ShowIcon="true" />
+                }
+                @if (accountUnlockingError)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Wrong Password."
+                           ShowIcon="true" />
+                }
+            </Spin>
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    bool accountUnlocked = true;
+    bool unlockAcocuntModalVisible = false;
+    string unlockPassword = string.Empty;
+    bool unlockOrClearCashMessage = false;
+    bool unlockingAccount = false;
+    bool accountUnlockingError = false;
+
+    private bool sendingTransaction = false;
+    private double AmountToSend = 1;
+    private string receiver = string.Empty;
+    private string message = string.Empty;
+    private string currency = string.Empty;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("add", out var add))
+                {
+                    receiver = add;
+                }
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("msg", out var msg))
+                {
+                    message = msg;
+                }
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("curr", out var curr))
+                {
+                    currency = curr;
+                }
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("amnt", out var amnt))
+                {
+                    AmountToSend = Convert.ToDouble(amnt, CultureInfo.InvariantCulture);
+                }
+
+                if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                    TryLogin();
+            }
+            catch (Exception ex)
+            {
+                Redirect();
+            }
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.DogeAccount = new VEDriversLite.DogeAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
+
+    private async Task TryLogin()
+    {
+        try
+        {
+            var key = await localStorage.GetItemAsync<string>("key");
+            if (!string.IsNullOrEmpty(key))
+            {
+                unlockAcocuntModalVisible = true;
+                await Task.Delay(50);
+                StateHasChanged();
+            }
+            else
+            {
+                await Redirect();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await Redirect();
+        }
+    }
+
+    private async Task SendTx()
+    {
+        if (string.IsNullOrEmpty(receiver))
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "Please Fill Correct Receiver.");
+            return;
+        }
+        try
+        {
+            sendingTransaction = true;
+            StateHasChanged();
+
+            var res = await AppData.DogeAccount.SendPayment(receiver, AmountToSend, message);
+            Console.WriteLine("Tx send result: " + res);
+            if (!res.Item1)
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task UnlockAccountConfirm(MouseEventArgs e)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(unlockPassword))
+                return;
+            if (unlockPassword.Length < 5)
+                return;
+
+            unlockingAccount = true;
+            StateHasChanged();
+
+            var pass = unlockPassword;
+
+            if (!await LoadDogeAccount())
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot load the account.");
+                await Redirect();
+            }
+            unlockAcocuntModalVisible = false;
+            unlockingAccount = false;
+            accountUnlockingError = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            accountUnlockingError = true;
+        }
+        finally
+        {
+            unlockingAccount = false;
+            unlockOrClearCashMessage = false;
+            StateHasChanged();
+        }
+    }
+
+    public void UnlockAccountEnter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            StateHasChanged();
+            UnlockAccountConfirm(null);
+        }
+    }
+
+    private void UnclockAccountCancel(MouseEventArgs e)
+    {
+        accountUnlockingError = false;
+        unlockOrClearCashMessage = false;
+        unlockAcocuntModalVisible = true;
+        unlockOrClearCashMessage = true;
+    }
+
+    public async Task<bool> LoadDogeAccount()
+    {
+        if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
+        {
+            var key = await localStorage.GetItemAsync<string>("dogekey");
+            if (!string.IsNullOrEmpty(key))
+            {
+                await Task.Delay(100);
+                if (!await AppData.DogeAccount.LoadAccount(unlockPassword, key))
+                {
+                    await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot unlock the doge account.");
+                }
+                else
+                {
+                    if (AppData.DogeAccount != null)
+                        AppData.DogeAccount.Refreshed += RefreshedHandler;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}
