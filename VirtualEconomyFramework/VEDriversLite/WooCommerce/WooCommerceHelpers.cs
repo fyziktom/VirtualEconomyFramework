@@ -73,8 +73,8 @@ namespace VEDriversLite.WooCommerce
                 apiurl = GetFullAPIUrl("products");
 
             Product p = null;
-            var link = nft.ImageLink;
-            
+            var link = nft.ImageLink; 
+
             if (nft.Type == NFTTypes.Music)
             {
                 link = nft.Link;
@@ -91,7 +91,7 @@ namespace VEDriversLite.WooCommerce
                 name = nft.Name,
                 description = nft.Text,
                 regular_price = price,
-                images = new List<ImageObject>() { new ImageObject() { src = link } },
+                //images = new List<ImageObject>() { new ImageObject() { src = link } },
                 status = "publish",
                 downloadable = true,
                 stock_quantity = quantity,

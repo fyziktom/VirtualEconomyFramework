@@ -24,6 +24,20 @@
                     </div>
                 </div>
 
+                @if (removeAccountCounter > 60)
+                {
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <span class="text-danger">Want to delete account?</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small>Click @(100-removeAccountCounter) more and you can delete existing account!</small>
+                        </div>
+                    </div>
+               }
+
                 @if (unlockOrClearCashMessage)
                 {
                     <Alert Type="@AlertType.Error"
@@ -39,6 +53,42 @@
                            ShowIcon="true" />
                 }
             </Spin>
+        </div>
+    </div>
+</Modal>
+
+<Modal Title="Remove Saved Account?"
+       Visible="@removeExistingAccountVisible"
+       OnOk="@RemoveExistingAccountOk"
+       OnCancel="@RemoveExistingAccountCancel">
+    <p>Do you really want to remove existing saved account?</p>
+    <p>If you do not have backup you will not be able to restore it.</p>
+</Modal>
+
+<Modal Title="Remove Saved Account???"
+       Visible="@removeExistingAccountSecondVisible"
+       OnOk="@RemoveExistingAccountSecondOk"
+       OnCancel="@RemoveExistingAccountSecondCancel">
+    <p>Are you really sure to remove existing account?</p>
+</Modal>
+
+<Modal Title="Remove Saved Account Last Chance"
+       Visible="@removeExistingAccountCountdownVisible"
+       OnOk="@removeExistingAccountCountdownCancel"
+       OnCancel="@removeExistingAccountCountdownCancel">
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <p>Delete of existing account will happen in:</p>
+       </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+           <h6>@deleteOfAccountCountdown seconds</h6>
+       </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <button class="btn btn-danger" style="width:200px;height:100px;margin-top:30px;" @onclick="removeExistingAccountCountdownCancel">STOP IT</button>
         </div>
     </div>
 </Modal>
@@ -62,6 +112,92 @@
     bool unlockOrClearCashMessage = false;
     bool unlockingAccount = false;
     bool accountUnlockingError = false;
+    bool removeExistingAccountVisible = false;
+    bool removeExistingAccountSecondVisible = false;
+    bool removeExistingAccountCountdownVisible = false;
+
+    bool cancelDeleteOfAccount = false;
+    int deleteOfAccountCountdown = 60;
+    private System.Threading.Timer txDeleteAccount;
+
+    int removeAccountCounter = 0;
+
+    private void RemoveExistingAccountOk(MouseEventArgs e)
+    {
+        removeExistingAccountVisible = false;
+        removeExistingAccountSecondVisible = true;
+    }
+
+    private void RemoveExistingAccountCancel(MouseEventArgs e)
+    {
+        removeExistingAccountVisible = false;
+        removeAccountCounter = 0;
+    }
+
+    private void removeExistingAccountCountdownCancel(MouseEventArgs e)
+    {
+        cancelDeleteOfAccount = true;
+        txDeleteAccount.Dispose();
+        deleteOfAccountCountdown = 60;
+        removeExistingAccountCountdownVisible = false;
+    }
+
+    private void RemoveExistingAccountSecondOk(MouseEventArgs e)
+    {
+        deleteOfAccountCountdown = 60;
+        cancelDeleteOfAccount = false;
+        txDeleteAccount = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            if (cancelDeleteOfAccount)
+            {
+                deleteOfAccountCountdown = 60;
+                removeExistingAccountCountdownVisible = false;
+                txDeleteAccount.Dispose();
+            }
+            if (!cancelDeleteOfAccount && deleteOfAccountCountdown < 0)
+            {
+                try
+                {
+                    await localStorage.SetItemAsync<string>("bookmarks", string.Empty);
+                    await localStorage.SetItemAsync<string>("subAccounts", string.Empty);
+                    await localStorage.SetItemAsync<string>("browserTabs", string.Empty);
+                    await localStorage.SetItemAsync<string>("messageTabs", string.Empty);
+                    await localStorage.SetItemAsync<string>("address", string.Empty);
+                    await localStorage.SetItemAsync<string>("key", string.Empty);
+                    await localStorage.SetItemAsync<string>("dogekey", string.Empty);
+                    await localStorage.SetItemAsync<string>("dogeaddress", string.Empty);
+                    await localStorage.SetItemAsync<string>("woocom-apiurl", string.Empty);
+                    await localStorage.SetItemAsync<string>("woocom-apikey", string.Empty);
+                    await localStorage.SetItemAsync<string>("woocom-apisecret", string.Empty);
+
+                    removeExistingAccountCountdownVisible = false;
+                    await JSRuntime.InvokeVoidAsync("alertMessage", "Account deleted, please refresh whole page.");
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot read tx details. " + ex.Message);
+                }
+            }
+            else if (!cancelDeleteOfAccount && deleteOfAccountCountdown >= 0)
+            {
+                deleteOfAccountCountdown--;
+            }
+            StateHasChanged();
+
+        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
+
+        removeExistingAccountCountdownVisible = true;
+        removeExistingAccountVisible = false;
+        removeExistingAccountSecondVisible = false;
+        removeAccountCounter = 0;
+    }
+
+    private void RemoveExistingAccountSecondCancel(MouseEventArgs e)
+    {
+        removeExistingAccountSecondVisible = false;
+        removeAccountCounter = 0;
+    }
 
     private async Task UnlockAccountConfirm(MouseEventArgs e)
     {
@@ -148,6 +284,10 @@
 
     private void UnclockAccountCancel(MouseEventArgs e)
     {
+        removeAccountCounter++;
+        if (removeAccountCounter > 100)
+            removeExistingAccountVisible = true;
+
         accountUnlockingError = false;
         unlockOrClearCashMessage = false;
         unlockAcocuntModalVisible = true;

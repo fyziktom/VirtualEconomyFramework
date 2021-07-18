@@ -123,18 +123,18 @@
 
                     }
 
-                    @if (initialized && products != null && products.Count > 0)
+                    @if (initialized && WooCommerceHelpers.Shop != null && WooCommerceHelpers.Shop.Products != null && WooCommerceHelpers.Shop.Products.Count > 0)
                     {
-                        <div class="row" style="margin-top:5px;">
+                        <div class="row" style="margin-top:5px; margin-bottom:20px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                Products
+                                <span>Products:</span>
                             </div>
                         </div>
-                        @foreach (var p in products)
+                        @foreach (var p in WooCommerceHelpers.Shop.Products.Values)
                         {
                             <div class="row" style="margin-top:5px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    @p.name
+                                    <small>@p.name</small>
                                 </div>
                             </div>
                             if (p.images.Count > 0)
@@ -151,6 +151,13 @@
                 </div>
             </div>
         </Spin>
+
+        <Modal Title="Woo Commerce Product"
+               Visible="@showWooComProductVisible"
+               OnOk="@showWooComProductCancel"
+               OnCancel="@showWooComProductCancel">
+                <WooCommerceProduct NFT="@loadedNFT" InputProduct="@product" />
+        </Modal>
 
         <Modal Title="Mint New NFT"
                Visible="@confirmVisible"
@@ -214,6 +221,7 @@
     bool processingSending = false;
     bool initialized = false;
     bool showNFTDetailsVisible = false;
+    bool showWooComProductVisible = false;
 
     INFT loadedNFT = new ImageNFT("");
 
@@ -263,6 +271,10 @@
     private void HandleCancel(MouseEventArgs e)
     {
         confirmVisible = false;
+    }
+    private async Task showWooComProductCancel(MouseEventArgs e)
+    {
+        showWooComProductVisible = false;
     }
 
     private void HandleEmptyInfoCancel(MouseEventArgs e)
@@ -329,12 +341,13 @@
             confirmVisible = false;
             StateHasChanged();
 
-            var prd = await WooCommerceHelpers.GetProduct(productId);
+            var prd = await WooCommerceHelpers.Shop.GetProduct(Convert.ToInt32(productId));
 
             if (prd == null)
                 await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during try to connect.");
             else
-                product = prd;
+                product.Fill(prd);
+            showWooComProductVisible = true;
         }
         catch (Exception ex)
         {

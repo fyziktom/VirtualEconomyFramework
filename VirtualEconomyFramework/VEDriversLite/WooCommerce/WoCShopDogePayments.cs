@@ -106,31 +106,34 @@ namespace VEDriversLite.WooCommerce
                                                         }
                                                         else
                                                         {
-                                                            Console.WriteLine($"Order {ord.id}, {ord.order_key} payment is not correct amount. It is sent back to the sender.");
-                                                            var done = false;
-                                                            var attempts = 50;
-                                                            while (!done)
+                                                            if (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) > 1)
                                                             {
-                                                                try
+                                                                Console.WriteLine($"Order {ord.id}, {ord.order_key} payment is not correct amount. It is sent back to the sender.");
+                                                                var done = false;
+                                                                var attempts = 50;
+                                                                while (!done)
                                                                 {
-                                                                    var dres = await doge.SendPayment(doge.Address,
-                                                                                                  Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) - 1,
-                                                                                                  $"Order {ord.order_key} cannot be processed. Wrong sent amount.");
-                                                                    done = dres.Item1;
-                                                                    if (done) 
+                                                                    try
                                                                     {
-                                                                        Console.WriteLine($"Order {ord.id}, {ord.order_key} incorrect received payment sent back with txid: {dres.Item2}");
-                                                                        ord.meta_data.Add(new ProductMetadata() { key = "Incorrect Received Payment", value = $"DOGE-{dres.Item2}" });
-                                                                        var o = await WooCommerceHelpers.Shop.UpdateOrder(ord);
+                                                                        var dres = await doge.SendPayment(doge.Address,
+                                                                                                      Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) - 1,
+                                                                                                      $"Order {ord.order_key} cannot be processed. Wrong sent amount.");
+                                                                        done = dres.Item1;
+                                                                        if (done)
+                                                                        {
+                                                                            Console.WriteLine($"Order {ord.id}, {ord.order_key} incorrect received payment sent back with txid: {dres.Item2}");
+                                                                            ord.meta_data.Add(new ProductMetadata() { key = "Incorrect Received Payment", value = $"DOGE-{dres.Item2}" });
+                                                                            var o = await WooCommerceHelpers.Shop.UpdateOrder(ord);
+                                                                        }
+                                                                        if (!dres.Item1) await Task.Delay(5000);
                                                                     }
-                                                                    if (!dres.Item1) await Task.Delay(5000);
+                                                                    catch (Exception ex)
+                                                                    {
+                                                                        await Task.Delay(5000);
+                                                                    }
+                                                                    attempts--;
+                                                                    if (attempts < 0) break;
                                                                 }
-                                                                catch (Exception ex)
-                                                                {
-                                                                    await Task.Delay(5000);
-                                                                }
-                                                                attempts--;
-                                                                if (attempts < 0) break;
                                                             }
                                                         }
                                                     }

@@ -2121,11 +2121,58 @@ namespace VEDriversLite
         ///////////////////////////////////////////
         // Tools for addresses
 
+        public static async Task<(bool, BitcoinSecret)> IsPrivateKeyValid(string privatekey)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(privatekey))
+                    return (false, null);
+                if (privatekey.Length < 52)
+                    return (false, null);
+                if (privatekey[0] != 'T')
+                    return (false, null);
+
+                var sec = new BitcoinSecret(privatekey, Network);
+
+                if (sec != null)
+                    return (true, sec);
+            }
+            catch (Exception ex)
+            {
+                return (false, null);
+            }
+            return (false, null);
+        }
+        public static async Task<(bool, string)> GetAddressFromPrivateKey(string privatekey)
+        {
+            try
+            {
+                var p = await IsPrivateKeyValid(privatekey);
+                if (p.Item1)
+                {
+                    var address = p.Item2.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+                    if (address != null)
+                        return (true, address.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, string.Empty);
+            }
+            return (false, string.Empty);
+        }
 
         public static async Task<(bool, string)> ValidateNeblioAddress(string neblioAddress)
         {
             try
             {
+                if (string.IsNullOrEmpty(neblioAddress))
+                    return (false, string.Empty);
+                if (neblioAddress.Length < 34)
+                    return (false, string.Empty);
+                if (neblioAddress[0] != 'N')
+                    return (false, string.Empty);
+
                 var add = BitcoinAddress.Create(neblioAddress, Network);
                 if (!string.IsNullOrEmpty(add.ToString()))
                     return (true, add.ToString());

@@ -278,7 +278,6 @@ namespace VEDriversLite
 
                 await StartRefreshingData();
                 return true;
-
             }
             catch (Exception ex)
             {

@@ -17,6 +17,7 @@ namespace VEDriversLite.WooCommerce.Dto
     }
     public class ImageObject
     {
+        public int id { get; set; } = 0;
         public string src { get; set; } = string.Empty;
     }
     public class ProductMetadata

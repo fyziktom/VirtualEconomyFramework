@@ -1,9 +1,16 @@
-﻿@using VEDriversLite
+﻿@using System.IO;
+@using System.Text;
+@using VEDriversLite
+@using VEDriversLite.Dto
 @using VEDriversLite.NeblioAPI
 @using VEDriversLite.Security
+@using Newtonsoft.Json
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@using Tewr.Blazor.FileReader
+@inject IFileReaderService fileReaderService
 @inject AppData AppData
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 
 <Modal Title="Import Account"
        Visible="@importAccountVisible"
@@ -14,66 +21,63 @@
             <Spin spinning="@creatingAddressSpinner" tip="Importing Address...">
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Please Input Neblio Address</span>
+                        <h6>Option 1</h6>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:30px; min-width:200px;">
+                    <div class="col w-100 d-flex justify-content-center align-items-center">
+                        <span>Load the VENFT App backup file.</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px; min-width:200px;">
+                    <div class="col w-100 d-flex justify-content-center align-items-center">
+                        <input type="file" @ref=inputTypeFileElement @onchange="ReadFile" />
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <h6>Option 2</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Input Neblio Private Key</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <small>Leave empty if you do not have any and app will create new one automatically.</small>
+                        <small>Leave empty if you do not have any Neblio Address, app will create new one automatically.</small>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Input address" @bind-Value="@importAccountAddress" style="font-size:12px;min-width:150px; max-width:250px;" />
-                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input encrypted private key" @bind-Value="@importAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <InputPassword Placeholder="Input private key" @bind-Value="@importAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
                         <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
                     </div>
                 </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Please Input Doge Address</span>
+                        <span>Please Input Doge Private Key</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <small>Leave empty if you do not have any and app will create new one automatically.</small>
+                        <small>Leave empty if you do not have any Dogecoin Address, app will create new one automatically.</small>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Input Placeholder="Input address" @bind-Value="@importDogeAccountAddress" style="font-size:12px;min-width:150px; max-width:250px;" />
+                        <InputPassword Placeholder="Input private key" @bind-Value="@importDogeAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
                         <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
                     </div>
                 </div>
-                <div class="row" style="margin-top:10px;">
+                <hr />
+                <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword Placeholder="Input encrypted private key" @bind-Value="@importDogeAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
-                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
+                        <span>Please Input Password</span>
                     </div>
                 </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Is your key already encrypted with the password or not?</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:5px;">
-                    <div class="col d-flex justify-content-center align-items-center text-center">
-                        <small>If this is checked private keys (both if you input doge too) must be encrypted with AES with provided password.</small>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <Checkbox Checked="@importKeyAlreadyEncrypted" CheckedChange="@ToggleChecked">
-                            @($"{(importKeyAlreadyEncrypted ? "Already Encrypted Key" : "Not Encrypted Key")}")
-                        </Checkbox>
-                    </div>
-                </div>
-
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <InputPassword Placeholder="Input password" @bind-Value="@importAccountPass" style="font-size:12px; min-width:150px; max-width:250px;" />
@@ -82,6 +86,11 @@
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <span>Confirm Password:</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:2px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <small class="text-muted">Please input same pass just to be sure it is typed right.</small>
                     </div>
                 </div>
                 <div class="row">
@@ -135,6 +144,8 @@
 
 
 @code {
+    private ElementReference inputTypeFileElement;
+
     bool importAccountVisible = false;
     [Parameter]
     public bool Visible
@@ -148,6 +159,8 @@
 
     string key = string.Empty;
     string address = string.Empty;
+    string dogekey = string.Empty;
+    string dogeaddress = string.Empty;
 
     bool creatingAddressSpinner = false;
 
@@ -160,6 +173,9 @@
     private string passwordConfirm = string.Empty;
     bool passwordsMatch = false;
     bool readingQROfKey = false;
+
+    BackupDataDto backupData = new BackupDataDto();
+    string backupDataString = string.Empty;
 
     bool importKeyAlreadyEncrypted = true;
     void ToggleChecked(bool value)
@@ -203,6 +219,7 @@
         {
             creatingAddressSpinner = true;
             StateHasChanged();
+            await Task.Delay(50);
 
             var res = await LoadNeblioAccount();
 
@@ -227,11 +244,15 @@
             accountImportError = true;
             // todo
         }
+        finally
+        {
+            creatingAddressSpinner = false;
+        }
     }
 
     public async Task<bool> LoadNeblioAccount()
     {
-        if (string.IsNullOrEmpty(importAccountAddress) || string.IsNullOrEmpty(importAccountKey))
+        if (string.IsNullOrEmpty(importAccountKey))
         {
             await AppData.Account.CreateNewAccount(importAccountPass, false);
             // save neblio address and key
@@ -243,20 +264,64 @@
         }
         else
         {
-            key = importAccountKey;
-            address = importAccountAddress;
-
-            if (!importKeyAlreadyEncrypted)
-                key = await SymetricProvider.EncryptString(importAccountPass, key);
-
-            await AppData.Account.LoadAccount(importAccountPass, key, address); // put here your password
-
-            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
-            if (!string.IsNullOrEmpty(kt))
+            var res = await NeblioTransactionHelpers.IsPrivateKeyValid(importAccountKey);
+            if (!res.Item1)
             {
-                await localStorage.SetItemAsync("address", address);
-                await localStorage.SetItemAsync("key", key);
-                return true;
+                try
+                {
+                    key = await SymetricProvider.DecryptString(importAccountPass, importAccountKey);
+                }
+                catch (Exception ex)
+                {
+                    await JSRuntime.InvokeVoidAsync("alertMessage", "Private Key is not valid.");
+                    return false;
+                }
+            }
+            else
+            {
+                key = importAccountKey;
+            }
+
+            var add = await NeblioTransactionHelpers.GetAddressFromPrivateKey(key);
+            if (add.Item1)
+            {
+                address = add.Item2;
+                var accountLoaded = false;
+                if (!string.IsNullOrEmpty(backupData.Address) && add.Item2 == backupData.Address)
+                {
+                    accountLoaded = await AppData.Account.LoadAccountFromVENFTBackup(importAccountPass, backupDataString);
+                    if (accountLoaded)
+                    {
+                        await localStorage.SetItemAsync<string>("bookmarks", backupData.Bookmarks);
+                        await localStorage.SetItemAsync<string>("subAccounts", backupData.SubAccounts);
+                        await localStorage.SetItemAsync<string>("browserTabs", backupData.BrowserTabs);
+                        await localStorage.SetItemAsync<string>("messageTabs", backupData.MessageTabs);
+                        await localStorage.SetItemAsync<string>("woocom-apiurl", backupData.WoCAPIUrl);
+                        await localStorage.SetItemAsync<string>("woocom-apikey", backupData.WoCAPIKey);
+                        await localStorage.SetItemAsync<string>("woocom-apisecret",backupData.WoCAPISecret);
+                        key = await SymetricProvider.EncryptString(importAccountPass, key);
+                    }
+                    else
+                    {
+                        await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot load VENFT Backup file.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    key = await SymetricProvider.EncryptString(importAccountPass, key);
+                    accountLoaded = await AppData.Account.LoadAccount(importAccountPass, key, address); // put here your password
+                }
+                if (accountLoaded && !string.IsNullOrEmpty(key))
+                {
+                    await localStorage.SetItemAsync("address", address);
+                    await localStorage.SetItemAsync("key", key);
+                    return true;
+                }
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot get Neblio address from the private key.");
             }
         }
         return false;
@@ -264,7 +329,7 @@
 
     public async Task LoadDogeAccount()
     {
-        if (string.IsNullOrEmpty(importDogeAccountAddress) || string.IsNullOrEmpty(importDogeAccountKey))
+        if (string.IsNullOrEmpty(importDogeAccountKey))
         {
             // create and save doge address and key
             await AppData.DogeAccount.CreateNewAccount(importAccountPass, false);
@@ -275,18 +340,40 @@
         }
         else
         {
-            var addr = importDogeAccountAddress;
-            var k = importDogeAccountKey;
-            if (!importKeyAlreadyEncrypted)
-                k = await SymetricProvider.EncryptString(importAccountPass, k);
-            await AppData.DogeAccount.LoadAccount(importAccountPass, k, addr); // put here your password
-            var kt = await AppData.DogeAccount.AccountKey.GetEncryptedKey();
-            if (!string.IsNullOrEmpty(kt))
+            var res = await DogeTransactionHelpers.IsPrivateKeyValid(importDogeAccountKey);
+            if (!res.Item1)
             {
-                await Task.Delay(50);
-                StateHasChanged();
-                await localStorage.SetItemAsync("dogeaddress", addr);
-                await localStorage.SetItemAsync("dogekey", k);
+                try
+                {
+                    dogekey = await SymetricProvider.DecryptString(importAccountPass, importDogeAccountKey);
+                }
+                catch (Exception ex)
+                {
+                    await JSRuntime.InvokeVoidAsync("alertMessage", "Private Key is not valid.");
+                    return;
+                }
+            }
+            else
+            {
+                dogekey = importDogeAccountKey;
+            }
+
+            var add = await DogeTransactionHelpers.GetAddressFromPrivateKey(dogekey);
+            if (add.Item1)
+            {
+                dogeaddress = add.Item2;
+                dogekey = await SymetricProvider.EncryptString(importAccountPass, dogekey);
+                var accountLoaded = await AppData.DogeAccount.LoadAccount(importAccountPass, dogekey, dogeaddress); // put here your password
+
+                if (accountLoaded && !string.IsNullOrEmpty(dogekey))
+                {
+                    await localStorage.SetItemAsync("dogeaddress", dogeaddress);
+                    await localStorage.SetItemAsync("dogekey", dogekey);
+                }
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot get Doge address from the private key.");
             }
         }
     }
@@ -294,5 +381,66 @@
     private async Task importAccountCancel(MouseEventArgs e)
     {
         importAccountVisible = false;
+    }
+
+    public async Task ReadFile()
+    {
+        try
+        {
+            foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
+            {
+                // Read into buffer and act (uses less memory)
+                await using (Stream stream = await file.OpenReadAsync())
+                {
+                    var fileinfo = await file.ReadFileInfoAsync();
+                    try
+                    {
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            await stream.CopyToAsync(ms);
+                            var filecontent = Encoding.UTF8.GetString(ms.GetBuffer());
+                            try
+                            {
+                                var bdto = JsonConvert.DeserializeObject<BackupDataDto>(filecontent);
+                                if (bdto != null && !string.IsNullOrEmpty(bdto.Address))
+                                {
+                                    importAccountKey = bdto.Key;
+                                    importDogeAccountKey = bdto.DogeKey;
+                                    backupData = bdto;
+                                    backupDataString = filecontent;
+                                    StateHasChanged();
+                                }
+                                else
+                                {
+                                    await JSRuntime.InvokeVoidAsync("alertMessage", "This is not valid VENFT Backup file.");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                await JSRuntime.InvokeVoidAsync("alertMessage", "This is not valid VENFT Backup file. " + ex.Message);
+                                return;
+                            }
+                            //Console.WriteLine("Loaded file content: ");
+                            //Console.WriteLine("--------------------------------------");
+                            //Console.WriteLine(filecontent);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", ex.Message);
+
+        }
+        finally
+        {
+            StateHasChanged();
+        }
     }
 }

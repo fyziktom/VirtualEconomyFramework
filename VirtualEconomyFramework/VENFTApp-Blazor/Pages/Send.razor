@@ -504,14 +504,19 @@
                 }
             </div>
             <div class="col w-25">
-                @if (mainAccountSelected)
-                {
-                    <VENFTApp_Blazor.Components.TransactionsList SubAccount="false" Address="@AppData.Account.Address" @bind-MaxLoadedTx="maxLoadedTransaction" />
-                }
-                else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
-                {
-                    <VENFTApp_Blazor.Components.TransactionsList SubAccount="true" Address="@selectedAccountAddress" @bind-MaxLoadedTx="maxLoadedTransaction" />
-                }
+                <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+
+                        @if (mainAccountSelected)
+                        {
+                            <VENFTApp_Blazor.Components.TransactionsList SubAccount="false" Address="@AppData.Account.Address" @bind-MaxLoadedTx="maxLoadedTransaction" />
+                        }
+                        else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
+                        {
+                            <VENFTApp_Blazor.Components.TransactionsList SubAccount="true" Address="@selectedAccountAddress" @bind-MaxLoadedTx="maxLoadedTransaction" />
+                        }
+                    </div>
+                </div>
             </div>
         </div>
 

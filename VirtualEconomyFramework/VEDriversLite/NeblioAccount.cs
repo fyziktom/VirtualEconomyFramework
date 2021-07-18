@@ -624,11 +624,10 @@ namespace VEDriversLite
                     await StartRefreshingData();
 
                 return true;
-
             }
             catch (Exception ex)
             {
-                await InvokeErrorEvent(ex.Message, "Cannot Load Account");
+                //await InvokeErrorEvent(ex.Message, "Cannot Load Account");
                 //throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
             }
 

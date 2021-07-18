@@ -393,9 +393,57 @@ namespace VEDriversLite
         {
             try
             {
+                if (string.IsNullOrEmpty(dogeAddress))
+                    return (false, string.Empty);
+                if (dogeAddress.Length < 34)
+                    return (false, string.Empty);
+                if (dogeAddress[0] != 'D')
+                    return (false, string.Empty);
+
                 var add = BitcoinAddress.Create(dogeAddress, Network);
                 if (!string.IsNullOrEmpty(add.ToString()))
                     return (true, add.ToString());
+            }
+            catch (Exception ex)
+            {
+                return (false, string.Empty);
+            }
+            return (false, string.Empty);
+        }
+
+        public static async Task<(bool, BitcoinSecret)> IsPrivateKeyValid(string privatekey)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(privatekey))
+                    return (false, null);
+                if (privatekey.Length < 52)
+                    return (false, null);
+                if (privatekey[0] != 'Q')
+                    return (false, null);
+
+                var sec = new BitcoinSecret(privatekey, Network);
+
+                if (sec != null)
+                    return (true, sec);
+            }
+            catch (Exception ex)
+            {
+                return (false, null);
+            }
+            return (false, null);
+        }
+        public static async Task<(bool, string)> GetAddressFromPrivateKey(string privatekey)
+        {
+            try
+            {
+                var p = await IsPrivateKeyValid(privatekey);
+                if (p.Item1)
+                {
+                    var address = p.Item2.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+                    if (address != null)
+                        return (true, address.ToString());
+                }
             }
             catch (Exception ex)
             {

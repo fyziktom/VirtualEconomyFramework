@@ -68,17 +68,13 @@ namespace VEDriversLite.WooCommerce.Dto
         {
             get
             {
-                try
+                if (!string.IsNullOrEmpty(status))
                 {
-                    var s = Enum.Parse(typeof(OrderStatus), status);
+                    var st = status.Replace("on-hold", "onhold");
+                    var s = Enum.Parse(typeof(OrderStatus), st);
                     return (OrderStatus)s;
                 }
-                catch
-                {
-                    if (status == "on-hold")
-                        return OrderStatus.onhold;
-                }
-                return OrderStatus.pending;
+                return OrderStatus.onhold;
             }
             set
             {
