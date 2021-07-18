@@ -328,6 +328,17 @@ namespace VEDriversLite.Neblio
                 return await Task.FromResult("Please fill subaccount Address and Key first.");
             }
 
+            try
+            {
+                await ReloadUtxos();
+                await ReLoadNFTs();
+                await ReloadTokenSupply();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Problem during first load of subaccount. " + ex.Message);
+            }
+
             // todo cancelation token
             _ = Task.Run(async () =>
             {
@@ -422,7 +433,7 @@ namespace VEDriversLite.Neblio
                     if (lastnft != null)
                     {
                         if (NFTs.Count != lastcount)
-                            NFTsChanged.Invoke(this, "Changed");
+                            NFTsChanged?.Invoke(this, "Changed");
                         var nft = NFTs.FirstOrDefault();
                         //Console.WriteLine("Last time: " + lastnft.Time.ToString());
                         //Console.WriteLine("Newest time: " + nft.Time.ToString());
@@ -432,7 +443,7 @@ namespace VEDriversLite.Neblio
                     }
                     else if (lastnft == null && NFTs.Count > 0)
                     {
-                        NFTsChanged.Invoke(this, "Changed");
+                        NFTsChanged?.Invoke(this, "Changed");
                     }
                     CoruzantNFTs = await CoruzantNFTHelpers.GetCoruzantNFTs(NFTs);
                 }

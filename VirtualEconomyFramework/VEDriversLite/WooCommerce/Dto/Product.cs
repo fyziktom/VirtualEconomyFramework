@@ -21,7 +21,6 @@ namespace VEDriversLite.WooCommerce.Dto
     }
     public class ProductMetadata
     {
-        public int id { get; set; } = 0;
         public string key { get; set; } = string.Empty;
         public string value { get; set; } = string.Empty;
     }
@@ -47,7 +46,7 @@ namespace VEDriversLite.WooCommerce.Dto
         public int? stock_quantity { get; set; } = 1;
         public bool manage_stock { get; set; } = true;
         public string stock_status { get; set; } = "instock";
-        public StockStatus stock_status_enum 
+        public StockStatus stock_status_enum
         {
             get => (StockStatus)Enum.Parse(typeof(StockStatus), stock_status);
             set => stock_status = value.ToString();
@@ -56,5 +55,27 @@ namespace VEDriversLite.WooCommerce.Dto
         public List<DownloadsObject> downloads { get; set; } = new List<DownloadsObject>();
         public List<ImageObject> images { get; set; } = new List<ImageObject>();
         public List<ProductMetadata> meta_data { get; set; } = new List<ProductMetadata>();
+        public void Fill(Product product)
+        {
+            id = product.id;
+            name = product.name;
+            slug = product.slug;
+            permalink = product.permalink;
+            status = product.status;
+            description = product.description;
+            regular_price = product.regular_price;
+            _virtual = product._virtual;
+            enable_html_description = product.enable_html_description;
+            downloadable = product.downloadable;
+            type = product.type;
+            stock_quantity = product.stock_quantity;
+            manage_stock = product.manage_stock;
+            stock_status = product.stock_status;
+            stock_status_enum = product.stock_status_enum;
+            short_description = product.short_description;
+            downloads = product.downloads;
+            images = product.images;
+            meta_data = product.meta_data;
+        }
     }
 }

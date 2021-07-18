@@ -1157,7 +1157,14 @@
             <param name="NFT">NFT on the SubAccount which should be minted</param>
             <returns>true and string with new TxId</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:VEDriversLite.NeblioAccount.GetNFTVerifyQRCodeFromSubAccount(System.String,System.String)" -->
+        <member name="M:VEDriversLite.NeblioAccount.GetNFTVerifyQRCodeFromSubAccount(System.String,System.String)">
+            <summary>
+            Get QR verification code of NFT on SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="txid">NFT utxo on the SubAccount</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.UseTicketNFTOnSubAccount(System.String,VEDriversLite.NFT.INFT)">
             <summary>
             Use Ticket NFT on SubAccount

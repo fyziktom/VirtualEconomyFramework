@@ -26,42 +26,42 @@
 
                         <div class="card-group">
 
-                            <div class="card" style="margin-top:10px; min-width:300px; max-width:350px; margin-left:20px;">
+                            <div class="card" style="margin-top:10px; min-width:200px; max-width:350px; margin-left:20px;">
                                 <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                                     <h5 class="text-center">VENFT Server Connection</h5>
                                 </div>
                                 <div class="card-body w-100">
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <small class="text-muted text-center">Most of these actions requires your own instance of the VENFT Server. If you do not have it you cannot use it now.</small>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <span>Api Address</span>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <Input @bind-Value="@apiAddress" Style="font-size:12px; min-width:250px; max-width:250px;" />
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <button class="btn btn-primary" @onclick="getAdminActionTokenServer">Get Admin Action Token Manualy</button>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <small class="text-muted text-center">You can use it as a test of connection with your server.</small>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <span>API Action Request Token</span>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <small class="text-wrap text-center" style="max-width:300px;">@apiToken</small>
                                         </div>
@@ -75,19 +75,19 @@
                                 </div>
                                 <div class="card-body w-100">
 
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <span>Password (your password to the VENFT App)</span>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
-                                            <InputPassword @bind-Value="@password" Style="font-size:12px; min-width:250px; max-width:250px;" />
+                                            <InputPassword @bind-Value="@password" Style="font-size:12px; min-width:200px; max-width:200px;" />
                                         </div>
                                     </div>
                                     @if (string.IsNullOrEmpty(password))
                                     {
-                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="row" style="margin-top:30px; min-width:250px;">
                                             <div class="col w-100 d-flex justify-content-center align-items-center">
                                                 <button class="btn btn-secondary disabled" @onclick="uploadMainAccountBackupToServer">Please fill your password</button>
                                             </div>
@@ -95,13 +95,13 @@
                                     }
                                     else
                                     {
-                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="row" style="margin-top:30px; min-width:250px;">
                                             <div class="col w-100 d-flex justify-content-center align-items-center">
                                                 <button class="btn btn-primary" @onclick="uploadMainAccountBackupToServer">Upload Backup Data</button>
                                             </div>
                                         </div>
                                     }
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <span>Server response: @serverResponse</span>
                                         </div>
@@ -109,42 +109,42 @@
                                 </div>
                             </div>
 
-                            <div class="card" style="margin-top:10px; min-width:300px; max-width:350px; margin-left:20px;">
+                            <div class="card" style="margin-top:10px; min-width:200px; max-width:350px; margin-left:20px;">
                                 <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                                     <h5 class="text-center">Upload Backup To Server from file</h5>
                                 </div>
                                 <div class="card-body w-100">
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:200px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <span>Load the backup file</span>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:10px; min-width:350px;">
+                                    <div class="row" style="margin-top:10px; min-width:200px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <input type="file" @ref=inputTypeFileElement @onchange="ReadFile" />
                                         </div>
                                     </div>
                                     @if (!string.IsNullOrEmpty(addressForBackupUpload))
                                     {
-                                        <div class="row" style="margin-top:10px; min-width:350px;">
+                                        <div class="row" style="margin-top:10px; min-width:200px;">
                                             <div class="col w-100 d-flex justify-content-center align-items-center">
                                                 <small class="text-info">Address: @addressForBackupUpload</small>
                                             </div>
                                         </div>
                                     }
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:200px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <span>Password to this backup</span>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:200px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
-                                            <InputPassword @bind-Value="@passwordToFileBackup" Style="font-size:12px; min-width:250px; max-width:250px;" />
+                                            <InputPassword @bind-Value="@passwordToFileBackup" Style="font-size:12px; min-width:200px; max-width:200px;" />
                                         </div>
                                     </div>
                                     @if (string.IsNullOrEmpty(passwordToFileBackup))
                                     {
-                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="row" style="margin-top:30px; min-width:250px;">
                                             <div class="col w-100 d-flex justify-content-center align-items-center">
                                                 <button class="btn btn-secondary disabled" @onclick="uploadAccountBackupToServer">Please fill your password</button>
                                             </div>
@@ -152,7 +152,7 @@
                                     }
                                     else if (string.IsNullOrEmpty(backupData))
                                     {
-                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="row" style="margin-top:30px; min-width:250px;">
                                             <div class="col w-100 d-flex justify-content-center align-items-center">
                                                 <button class="btn btn-secondary disabled" @onclick="uploadAccountBackupToServer">Please select backup file</button>
                                             </div>
@@ -160,7 +160,7 @@
                                     }
                                     else if (string.IsNullOrEmpty(addressForBackupUpload))
                                     {
-                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="row" style="margin-top:30px; min-width:250px;">
                                             <div class="col w-100 d-flex justify-content-center align-items-center">
                                                 <button class="btn btn-secondary disabled" @onclick="uploadAccountBackupToServer">Please input address for the backup</button>
                                             </div>
@@ -168,13 +168,13 @@
                                     }
                                     else
                                     {
-                                        <div class="row" style="margin-top:30px; min-width:350px;">
+                                        <div class="row" style="margin-top:30px; min-width:250px;">
                                             <div class="col w-100 d-flex justify-content-center align-items-center">
                                                 <button class="btn btn-primary" @onclick="uploadAccountBackupToServer">Upload Backup Data</button>
                                             </div>
                                         </div>
                                     }
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <span>Server response: @serverResponse</span>
                                         </div>
@@ -182,12 +182,12 @@
                                 </div>
                             </div>
 
-                            <div class="card" style="margin-top:10px; min-width:300px; max-width:350px; margin-left:20px;">
+                            <div class="card" style="margin-top:10px; min-width:200px; max-width:350px; margin-left:20px;">
                                 <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                                     <h5 class="text-center">WooCommerce Connection</h5>
                                 </div>
                                 <div class="card-body w-100">
-                                    <div class="row" style="margin-top:30px; min-width:350px;">
+                                    <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
                                             <VENFTApp_Blazor.Components.WooCommerceConnection />
                                         </div>

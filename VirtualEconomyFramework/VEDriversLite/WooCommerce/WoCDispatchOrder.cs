@@ -12,70 +12,67 @@ namespace VEDriversLite.WooCommerce
     {
         private async Task CheckReceivedPaymentsToDispatch()
         {
-            while (!ReceivedPaymentsForOrdersToProcess.IsEmpty)
+            var processingOrders = Orders.Values.Where(o => o.statusclass == OrderStatus.processing).ToList();
+            foreach (var order in processingOrders)
             {
-                if (ReceivedPaymentsForOrdersToProcess.TryDequeue(out var dto))
+                order.line_items.ForEach(async (item) =>
                 {
-                    if (Orders.TryGetValue(dto.OrderKey, out var order))
+                    var sh = string.Empty;
+                    var cat = string.Empty;
+                    if (WooCommerceHelpers.Shop.Products.TryGetValue(item.product_id, out var prod))
                     {
-                        if (order.statusclass == OrderStatus.processing)
+                        prod.meta_data.ForEach(m =>
                         {
-                            order.line_items.ForEach(item =>
+                            if (m.key == "ShortHash") sh = m.value;
+                            if (m.key == "Category") cat = m.value;
+                        });
+                        if (VEDLDataContext.NFTHashs.TryGetValue(sh, out var nfth))
+                        {
+                            var validateNeblioAddress = await GetNeblioAddressFromOrderMetadata(order);
+                            if (validateNeblioAddress.Item1)
                             {
-                                var sh = string.Empty;
-                                var cat = string.Empty;
-                                item.meta_data.ForEach(m =>
+                                Console.WriteLine($"Order {order.order_key} processing...moving item id {item.product_id}({sh}) to dispatch list.");
+                                if (!string.IsNullOrEmpty(cat))
                                 {
-                                    if (m.key == "ShortHash") sh = m.value;
-                                    if (m.key == "Category") cat = m.value;
-                                });
-                                if (VEDLDataContext.NFTHashs.TryGetValue(sh, out var nfth))
-                                {
-                                    if (!string.IsNullOrEmpty(cat))
+                                    NFTOrdersToDispatchList.Enqueue(new NFTOrderToDispatch()
                                     {
-                                        NFTOrdersToDispatchList.Enqueue(new NFTOrderToDispatch()
-                                        {
-                                            CustomerAddress = dto.CustomerAddress,
-                                            NeblioCustomerAddress = dto.NeblioCustomerAddress,
-                                            Category = cat,
-                                            Quantity = item.quantity,
-                                            IsCategory = true,
-                                            IsUnique = false,
-                                            ShortHash = sh,
-                                            OrderId = order.id,
-                                            OrderKey = order.order_key,
-                                            PaymentId = order.transaction_id,
-                                            Utxo = nfth.TxId,
-                                            UtxoIndex = nfth.Index,
-                                            OwnerMainAccount = nfth.MainAddress,
-                                            OwnerSubAccount = nfth.SubAccountAddress
-                                        });
-                                    }
-                                    else if (!string.IsNullOrEmpty(sh))
-                                    {
-                                        NFTOrdersToDispatchList.Enqueue(new NFTOrderToDispatch()
-                                        {
-                                            CustomerAddress = dto.CustomerAddress,
-                                            NeblioCustomerAddress = dto.NeblioCustomerAddress,
-                                            Category = string.Empty,
-                                            IsCategory = false,
-                                            IsUnique = true,
-                                            ShortHash = sh,
-                                            OrderId = order.id,
-                                            OrderKey = order.order_key,
-                                            PaymentId = order.transaction_id,
-                                            Utxo = nfth.TxId,
-                                            UtxoIndex = nfth.Index,
-                                            OwnerMainAccount = nfth.MainAddress,
-                                            OwnerSubAccount = nfth.SubAccountAddress
-                                        });
-                                    }
+                                        NeblioCustomerAddress = validateNeblioAddress.Item2, // todo take from order
+                                        Category = cat,
+                                        Quantity = item.quantity,
+                                        IsCategory = true,
+                                        IsUnique = false,
+                                        ShortHash = sh,
+                                        OrderId = order.id,
+                                        OrderKey = order.order_key,
+                                        PaymentId = order.transaction_id,
+                                        Utxo = nfth.TxId,
+                                        UtxoIndex = nfth.Index,
+                                        OwnerMainAccount = nfth.MainAddress,
+                                        OwnerSubAccount = nfth.SubAccountAddress
+                                    });
                                 }
-
-                            });
+                                else if (!string.IsNullOrEmpty(sh))
+                                {
+                                    NFTOrdersToDispatchList.Enqueue(new NFTOrderToDispatch()
+                                    {
+                                        NeblioCustomerAddress = validateNeblioAddress.Item2, // todo take from order
+                                        Category = string.Empty,
+                                        IsCategory = false,
+                                        IsUnique = true,
+                                        ShortHash = sh,
+                                        OrderId = order.id,
+                                        OrderKey = order.order_key,
+                                        PaymentId = order.transaction_id,
+                                        Utxo = nfth.TxId,
+                                        UtxoIndex = nfth.Index,
+                                        OwnerMainAccount = nfth.MainAddress,
+                                        OwnerSubAccount = nfth.SubAccountAddress
+                                    });
+                                }
+                            }
                         }
                     }
-                }
+                });
             }
         }
 
@@ -112,6 +109,8 @@ namespace VEDriversLite.WooCommerce
                                 });
                                 if (!check)
                                 {
+                                    Console.WriteLine($"Order {order.id}, {order.order_key}. Sending NFT {dto.ShortHash} to Address https://explorer.nebl.io/address/{dto.NeblioCustomerAddress}");
+
                                     var attempts = 20;
                                     while (!done)
                                     {
@@ -125,7 +124,10 @@ namespace VEDriversLite.WooCommerce
                                             if (!res.Item1)
                                                 await Task.Delay(5000);
                                             else
+                                            {
                                                 order.meta_data.Add(new ProductMetadata() { key = dto.Category, value = res.Item2 });
+                                                Console.WriteLine($"Order {order.id}, {order.order_key}. NFT {dto.ShortHash} sent in tx: https://explorer.nebl.io/tx/{res.Item2}");
+                                            }
                                         }
                                         catch (Exception ex)
                                         {
@@ -146,6 +148,8 @@ namespace VEDriversLite.WooCommerce
                                 });
                                 if (!check)
                                 {
+                                    Console.WriteLine($"Order {order.id}, {order.order_key}. Sending NFT {dto.ShortHash} to Address https://explorer.nebl.io/address/{dto.NeblioCustomerAddress}");
+
                                     var attempts = 20;
                                     while (!done)
                                     {
@@ -159,7 +163,10 @@ namespace VEDriversLite.WooCommerce
                                             if (!res.Item1)
                                                 await Task.Delay(5000);
                                             else
+                                            {
                                                 order.meta_data.Add(new ProductMetadata() { key = dto.ShortHash, value = res.Item2 });
+                                                Console.WriteLine($"Order {order.id}, {order.order_key}. NFT {dto.ShortHash} sent in tx: https://explorer.nebl.io/tx/{res.Item2}");
+                                            }
                                         }
                                         catch (Exception ex)
                                         {
@@ -170,42 +177,40 @@ namespace VEDriversLite.WooCommerce
                                     }
                                 }
                             }
-                            if (done)
+                            var complete = 0;
+                            order.line_items.ForEach(item =>
                             {
-                                var complete = true;
-                                order.line_items.ForEach(item =>
+                                var sh = string.Empty;
+                                var cat = string.Empty;
+                                if (Products.TryGetValue(item.product_id, out var product))
                                 {
-                                    var sh = string.Empty;
-                                    var cat = string.Empty;
-                                    item.meta_data.ForEach(m =>
+                                    product.meta_data.ForEach(m =>
                                     {
                                         if (m.key == "ShortHash") sh = dto.ShortHash;
                                         if (m.key == "Category") cat = dto.Category;
                                     });
                                     if (!string.IsNullOrEmpty(cat))
                                     {
-                                        var check = false;
                                         order.meta_data.ForEach(m =>
                                         {
-                                            if (m.key == cat)
-                                                check = true;
+                                            if (m.key.Contains(cat)) complete++;
                                         });
-                                        complete = check;
                                     }
                                     else if (string.IsNullOrEmpty(cat) && !string.IsNullOrEmpty(sh))
                                     {
-                                        var check = false;
                                         order.meta_data.ForEach(m =>
                                         {
-                                            if (m.key == sh)
-                                                check = true;
+                                            if (m.key.Contains(sh)) complete++;
                                         });
-                                        complete = check;
                                     }
-                                });
-                                if (complete) order.statusclass = OrderStatus.completed;
-                                await UpdateOrder(order);
+                                }
+                            });
+                            if (complete == order.line_items.Count)
+                            {
+                                Console.WriteLine($"Order {order.id}, {order.order_key}. Is complete. All items was sent.");
+                                order.statusclass = OrderStatus.completed;
                             }
+                            await UpdateOrder(order);
                         }
                     }
                 }

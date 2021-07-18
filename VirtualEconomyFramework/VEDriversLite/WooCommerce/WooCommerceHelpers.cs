@@ -204,6 +204,7 @@ namespace VEDriversLite.WooCommerce
             {
                 if (IsInitialized && string.IsNullOrEmpty(apiurl))
                     apiurl = GetFullAPIUrl("products");
+                apiurl += "&per_page=100";
                 var res = await httpClient.GetAsync(apiurl);
                 var resmsg = await res.Content.ReadAsStringAsync();
                 //Console.WriteLine(resmsg);
@@ -221,6 +222,7 @@ namespace VEDriversLite.WooCommerce
             {
                 if (IsInitialized && string.IsNullOrEmpty(apiurl))
                     apiurl = GetFullAPIUrl("orders");
+                apiurl += "&per_page=100";
                 var res = await httpClient.GetAsync(apiurl);
                 var resmsg = await res.Content.ReadAsStringAsync();
                 //Console.WriteLine(resmsg);

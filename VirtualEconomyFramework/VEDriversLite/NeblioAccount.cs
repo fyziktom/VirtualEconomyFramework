@@ -31,6 +31,8 @@ namespace VEDriversLite
             NFTHelpers.InitNFTHelpers();
         }
 
+        private static object _lock { get; set; } = new object();
+
         public string MessagingTokensId { get; } = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         /// <summary>
         /// Neblio Address hash
@@ -293,11 +295,13 @@ namespace VEDriversLite
             {
                 AddressInfo = new GetAddressResponse();
                 AddressInfo.Transactions = new List<string>();
-                //await ReloadAccountInfo();
-                //await ReloadUtxos();
-                //await ReloadMintingSupply();
-                //await ReloadCountOfNFTs();
-                //await ReloadTokenSupply();
+
+                await ReloadUtxos();
+                await ReloadMintingSupply();
+                await ReloadTokenSupply();
+                Refreshed?.Invoke(this, null);
+                await ReLoadNFTs(true);
+                await ReloadCountOfNFTs();
             }
             catch (Exception ex)
             {
@@ -367,6 +371,7 @@ namespace VEDriversLite
                     }
                     catch (Exception ex)
                     {
+                        Console.WriteLine("Exception in nebmlio main loop. " + ex.Message);
                         //await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
                     }
 
@@ -1373,7 +1378,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="address">Neblio Address of SubAccount</param>
         /// <param name="txid">NFT utxo on the SubAccount</param>
-        /// <returns>/returns>
+        /// <returns></returns>
         public async Task<(OwnershipVerificationCodeDto, byte[])> GetNFTVerifyQRCodeFromSubAccount(string address, string txid)
         {
             try
@@ -1547,72 +1552,57 @@ namespace VEDriversLite
         {
             if (VEDLDataContext.DogeAccounts.TryGetValue(ConnectedDogeAccountAddress, out var doge))
             {
-                foreach (var u in doge.Utxos)
+                var utxos = new DogeAPI.Utxo[doge.Utxos.Count];
+                lock (_lock)
                 {
-                    if (u.TxId == LastCheckedDogePaymentUtxo)
-                        break;
-                    if (u.Confirmations > 2)
+                    doge.Utxos.CopyTo(utxos);
+                }
+                foreach (var u in utxos)
+                {
+                    if (u != null)
                     {
-                        var info = await DogeTransactionHelpers.TransactionInfoAsync(u.TxId);
-                        if (info != null && info.Transaction != null)
+                        if (u.TxId == LastCheckedDogePaymentUtxo)
+                            break;
+                        if (u.Confirmations > 2)
                         {
-                            var msg = await DogeTransactionHelpers.ParseDogeMessage(info);
-                            if (msg.Item1)
+                            var info = await DogeTransactionHelpers.TransactionInfoAsync(u.TxId);
+                            if (info != null && info.Transaction != null)
                             {
-                                var split = msg.Item2.Split('-');
-                                if (split != null && split.Length == 2 && !string.IsNullOrEmpty(split[1]) && split[1].Contains(":") && split[1].Length == 18)
+                                var msg = await DogeTransactionHelpers.ParseDogeMessage(info);
+                                if (msg.Item1)
                                 {
-                                    var nft = NFTs.FirstOrDefault(n => n.ShortHash == split[1]);
-                                    if (nft == null)
+                                    var split = msg.Item2.Split('-');
+                                    if (split != null && split.Length == 2 && !string.IsNullOrEmpty(split[1]) && split[1].Contains(":") && split[1].Length == 18)
                                     {
-                                        foreach (var s in SubAccounts.Values)
+                                        var nft = NFTs.FirstOrDefault(n => n.ShortHash == split[1]);
+                                        if (nft == null)
                                         {
-                                            nft = s.NFTs.FirstOrDefault(n => n.ShortHash == split[1]);
-                                            if (nft != null)
-                                                break;
-                                        }
-                                    }
-
-                                    if (nft != null)
-                                    {
-                                        if (nft.DogePriceActive && nft.DogePrice == Convert.ToDouble(u.Value, CultureInfo.InvariantCulture))
-                                        {
-                                                var addver = await NeblioTransactionHelpers.ValidateNeblioAddress(split[0]);
-                                            if (addver.Item1)
+                                            foreach (var s in SubAccounts.Values)
                                             {
-                                                var done = false;
-                                                (bool, string) res = (false, string.Empty);
-                                                (bool, string) dres = (false, string.Empty);
-                                                var attempts = 50;
-                                                while (!done)
+                                                nft = s.NFTs.FirstOrDefault(n => n.ShortHash == split[1]);
+                                                if (nft != null)
+                                                    break;
+                                            }
+                                        }
+
+                                        if (nft != null)
+                                        {
+                                            if (nft.DogePriceActive && nft.DogePrice == Convert.ToDouble(u.Value, CultureInfo.InvariantCulture))
+                                            {
+                                                var addver = await NeblioTransactionHelpers.ValidateNeblioAddress(split[0]);
+                                                if (addver.Item1)
                                                 {
-                                                    try
-                                                    {
-                                                        res = await SendNFT(addver.Item2, nft, false, 0.0002);
-                                                        done = res.Item1;
-                                                        if (!res.Item1) await Task.Delay(5000);
-                                                    }
-                                                    catch (Exception ex)
-                                                    {
-                                                        await Task.Delay(5000);
-                                                    }
-                                                    attempts--;
-                                                    if (attempts < 0) break;
-                                                }
-                                                if (res.Item1 && done)
-                                                {
-                                                    LastCheckedDogePaymentUtxo = u.TxId;
-                                                    done = false;
-                                                    attempts = 50;
+                                                    var done = false;
+                                                    (bool, string) res = (false, string.Empty);
+                                                    (bool, string) dres = (false, string.Empty);
+                                                    var attempts = 50;
                                                     while (!done)
                                                     {
                                                         try
                                                         {
-                                                            dres = await doge.SendPayment(doge.Address,
-                                                                                          Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) - 1,
-                                                                                          "NFT:" + res.Item2);
-                                                            done = dres.Item1;
-                                                            if (!dres.Item1) await Task.Delay(5000);
+                                                            res = await SendNFT(addver.Item2, nft, false, 0.0002);
+                                                            done = res.Item1;
+                                                            if (!res.Item1) await Task.Delay(5000);
                                                         }
                                                         catch (Exception ex)
                                                         {
@@ -1621,14 +1611,37 @@ namespace VEDriversLite
                                                         attempts--;
                                                         if (attempts < 0) break;
                                                     }
+                                                    if (res.Item1 && done)
+                                                    {
+                                                        LastCheckedDogePaymentUtxo = u.TxId;
+                                                        done = false;
+                                                        attempts = 50;
+                                                        while (!done)
+                                                        {
+                                                            try
+                                                            {
+                                                                dres = await doge.SendPayment(doge.Address,
+                                                                                              Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) - 1,
+                                                                                              "NFT:" + res.Item2);
+                                                                done = dres.Item1;
+                                                                if (!dres.Item1) await Task.Delay(5000);
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                await Task.Delay(5000);
+                                                            }
+                                                            attempts--;
+                                                            if (attempts < 0) break;
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    LastCheckedDogePaymentUtxo = u.TxId;
+                                    else
+                                    {
+                                        LastCheckedDogePaymentUtxo = u.TxId;
+                                    }
                                 }
                             }
                         }
@@ -2337,7 +2350,7 @@ namespace VEDriversLite
                 lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
                 (bool, string) res = (false, string.Empty);
                 string txres = string.Empty;
-                NewMintingProcessInfo.Invoke(this, $"Minting of {lots} lots started...");
+                NewMintingProcessInfo?.Invoke(this, $"Minting of {lots} lots started...");
 
                 var txsidsres = string.Empty;
                 if (lots > 1 || (lots == 1 && rest > 0))
@@ -2367,7 +2380,7 @@ namespace VEDriversLite
                                         {
                                             done = true;
                                             txsidsres += txres + "-";
-                                            NewMintingProcessInfo.Invoke(this, $"New Lot Minted: {txres}, Waiting for processing next {i + 1} of {lots} lots.");
+                                            NewMintingProcessInfo?.Invoke(this, $"New Lot Minted: {txres}, Waiting for processing next {i + 1} of {lots} lots.");
                                         }
                                     }
                                     catch (Exception ex)
@@ -2405,7 +2418,7 @@ namespace VEDriversLite
                                     {
                                         done = true;
                                         txsidsres += txres + "-";
-                                        NewMintingProcessInfo.Invoke(this, $"Rest of {rest} NFTs of total {coppies} NFTs was Minted: {txres}");
+                                        NewMintingProcessInfo?.Invoke(this, $"Rest of {rest} NFTs of total {coppies} NFTs was Minted: {txres}");
                                     }
                                 }
                                 else
@@ -2438,7 +2451,7 @@ namespace VEDriversLite
                 }
                 else
                 {
-                    NewMintingProcessInfo.Invoke(this, $"All NFTs minted...");
+                    NewMintingProcessInfo?.Invoke(this, $"All NFTs minted...");
                 }
             }
             catch (Exception ex)

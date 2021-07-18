@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Admin.Dto;
+using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
 
 namespace VEDriversLite
@@ -186,6 +189,60 @@ namespace VEDriversLite
         }
 
         #region NFTs
+
+        public static async Task<bool> ReloadNFTHashes()
+        {
+            try
+            {
+                var nhs = new ConcurrentDictionary<string, NFTHash>();
+                VEDLDataContext.Accounts.Values.ToList()
+                    .ForEach(a => a.NFTs
+                    .ForEach(n => nhs.TryAdd(NFTHash.GetShortHash(n.Utxo, n.UtxoIndex), new NFTHash()
+                    {
+                        TxId = n.Utxo,
+                        Index = n.UtxoIndex,
+                        Type = n.Type,
+                        MainAddress = a.Address,
+                        SubAccountAddress = string.Empty,
+                        Description = n.Description,
+                        Name = n.Name,
+                        Image = n.ImageLink,
+                        Link = n.Link,
+                        Price = n.Price,
+                        DogePrice = n.DogePrice
+                    })));
+
+                VEDLDataContext.Accounts.Values.ToList()
+                    .ForEach(a => a.SubAccounts.Values.ToList()
+                    .ForEach(s => s.NFTs
+                    .ForEach(n => nhs.TryAdd(NFTHash.GetShortHash(n.Utxo, n.UtxoIndex), new NFTHash()
+                    {
+                        TxId = n.Utxo,
+                        Index = n.UtxoIndex,
+                        Type = n.Type,
+                        MainAddress = a.Address,
+                        SubAccountAddress = s.Address,
+                        Description = n.Description,
+                        Name = n.Name,
+                        Image = n.ImageLink,
+                        Link = n.Link,
+                        Price = n.Price,
+                        DogePrice = n.DogePrice
+                    }))));
+
+                if (nhs != null)
+                {
+                    VEDLDataContext.NFTHashs.Clear();
+                    VEDLDataContext.NFTHashs = nhs;
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot refresh NFTHashes.");
+            }
+            return false;
+        }
 
         #endregion
 

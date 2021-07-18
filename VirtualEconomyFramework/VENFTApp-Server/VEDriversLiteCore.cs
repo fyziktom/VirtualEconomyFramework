@@ -62,6 +62,7 @@ namespace VENFTApp_Server
                         {
                             if (!k.IsDogeAccount)
                             {
+                                Console.WriteLine("");
                                 Console.WriteLine("=========Neblio Main Account========");
                                 Console.WriteLine($"Loading Neblio address {k.Address}...");
                                 if (string.IsNullOrEmpty(k.Name))
@@ -121,6 +122,7 @@ namespace VENFTApp_Server
                             }
                             else
                             {
+                                Console.WriteLine("");
                                 Console.WriteLine("========Dogecoin Main Account=======");
                                 Console.WriteLine($"Loading Dogecoin address {k.Address}...");
                                 var dogeacc = new DogeAccount();
@@ -139,6 +141,14 @@ namespace VENFTApp_Server
                 Console.WriteLine("Cannot load the keys." + ex.Message);
             }
 
+            await Task.Delay(2500);
+
+            Console.WriteLine("------------------------------------");
+            Console.WriteLine("Loading NFT Hashes...");
+            await AccountHandler.ReloadNFTHashes();
+            Console.WriteLine($"Count of NFTHashes: {VEDLDataContext.NFTHashs.Count}.");
+
+            Console.WriteLine("");  
             Console.WriteLine("------------------------------------");
             Console.WriteLine("---------WooCommerce Shop-----------");
             Console.WriteLine("------------------------------------");
@@ -220,55 +230,8 @@ namespace VENFTApp_Server
 
                         if (NFTHashsRefresh <= 0)
                         {
-                            try
-                            {
-                                var nhs = new ConcurrentDictionary<string, NFTHash>();
-                                VEDLDataContext.Accounts.Values.ToList()
-                                    .ForEach(a => a.NFTs
-                                    .ForEach(n => nhs.TryAdd(NFTHash.GetShortHash(n.Utxo, n.UtxoIndex), new NFTHash()
-                                    {
-                                        TxId = n.Utxo,
-                                        Index = n.UtxoIndex,
-                                        Type = n.Type,
-                                        MainAddress = a.Address,
-                                        SubAccountAddress = string.Empty,
-                                        Description = n.Description,
-                                        Name = n.Name,
-                                        Image = n.ImageLink,
-                                        Link = n.Link,
-                                        Price = n.Price,
-                                        DogePrice = n.DogePrice
-                                    })));
-
-                                VEDLDataContext.Accounts.Values.ToList()
-                                    .ForEach(a => a.SubAccounts.Values.ToList()
-                                    .ForEach(s => s.NFTs
-                                    .ForEach(n => nhs.TryAdd(NFTHash.GetShortHash(n.Utxo, n.UtxoIndex), new NFTHash()
-                                    {
-                                        TxId = n.Utxo,
-                                        Index = n.UtxoIndex,
-                                        Type = n.Type,
-                                        MainAddress = a.Address,
-                                        SubAccountAddress = s.Address,
-                                        Description = n.Description,
-                                        Name = n.Name,
-                                        Image = n.ImageLink,
-                                        Link = n.Link,
-                                        Price = n.Price,
-                                        DogePrice = n.DogePrice
-                                    }))));
-
-                                if (nhs != null)
-                                {
-                                    VEDLDataContext.NFTHashs.Clear();
-                                    VEDLDataContext.NFTHashs = nhs;
-                                    NFTHashsRefresh = NFTHashsRefreshDefault;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("Cannot refresh VENFT Owners");
-                            }
+                            if(await AccountHandler.ReloadNFTHashes())
+                                NFTHashsRefresh = NFTHashsRefreshDefault;
                         }
                         else
                         {
