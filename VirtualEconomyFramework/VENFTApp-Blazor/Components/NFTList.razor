@@ -69,12 +69,12 @@
                             {
                                 if (displayCoruzant && (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast))
                                 {
-                                    <CoruzantNFT Address="@_address" 
-                                                 InputNFT="@nft" 
-                                                 NFTSent="@NFTSentHandler" 
-                                                 OwnNFT="@OwnNFT" 
+                                    <CoruzantNFT Address="@_address"
+                                                 InputNFT="@nft"
+                                                 NFTSent="@NFTSentHandler"
+                                                 OwnNFT="@OwnNFT"
                                                  SubAccount="@SubAccount"
-                                                 DisplayCheckField="@allowNFTCheckField" 
+                                                 DisplayCheckField="@allowNFTCheckField"
                                                  NFTCheckedChanged="@NFTCheckChangedHandler" />
                                 }
                                 else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
@@ -102,6 +102,16 @@
                     }
                 </div>
             </div>
+
+            <!--
+            if (InBrowser && canLoadMore && NFTsList.Count > 0)
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" onclick="LoadMoreNFTs" style="width:120px;">Load more NFTs</button>
+                    </div>
+                </div>
+            }-->
         </div>
     </div>
 </div>
@@ -125,6 +135,8 @@
     public bool Clear { get; set; } = false;
     public bool OwnNFT => MainAccount || SubAccount;
 
+    bool canLoadMore = false;
+
     private List<INFT> _NFTsList = new List<INFT>();
 
     private List<INFT> NFTsList
@@ -144,7 +156,10 @@
             {
                 var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
                 if (tab != null && tab.NFTs != null)
+                {
+                    canLoadMore = tab.CanLoadMore;
                     return tab.NFTs;
+                }
             }
             return new List<INFT>();
         }
@@ -172,7 +187,10 @@
         {
             var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
             if (tab != null && tab.NFTs != null)
+            {
+                canLoadMore = tab.CanLoadMore;
                 _NFTsList = tab.NFTs;
+            }
         }
         StateHasChanged();
     }
@@ -190,7 +208,6 @@
             if (!string.IsNullOrEmpty(value) && _address != value)
             {
                 _address = value;
-                //Clear = true;
                 refreshNFTs();
             }
         }

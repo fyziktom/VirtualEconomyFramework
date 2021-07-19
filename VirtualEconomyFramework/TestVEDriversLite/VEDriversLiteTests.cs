@@ -78,7 +78,7 @@ namespace TestVEDriversLite
                 throw new Exception("Please input pass,filename");
             var pass = split[0];
             var file = split[1];
-            await account.LoadAccount(pass, file);
+            await account.LoadAccount(pass, file, false);
         }
 
         [TestEntry]
@@ -106,7 +106,7 @@ namespace TestVEDriversLite
                 Console.WriteLine("wrong input.");
                 return;
             }
-            await account.LoadAccount(pass, file);
+            await account.LoadAccount(pass, file, false);
 
             Console.WriteLine("Loading account NFTs...");
             var attempts = 100;
@@ -268,6 +268,25 @@ namespace TestVEDriversLite
             var am = split[1];
             var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
             var res = await account.SendNeblioPayment(receiver, amount);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void SendTransactionWithMessage(string param)
+        {
+            SendTransactionWithMessageAsync(param);
+        }
+        public static async Task SendTransactionWithMessageAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input receiveraddress,amountofneblio,message");
+            var receiver = split[0];
+            var am = split[1];
+            var msg = split[2];
+            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
+            var res = await account.SendNeblioPayment(receiver, amount, msg);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }
@@ -1764,11 +1783,12 @@ namespace TestVEDriversLite
         public static async Task WoCInitWooCommerceShopAsync(string param)
         {
             var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (split.Length < 3)
-                throw new Exception("Please input apiurl,apikey,apisecret");
+            if (split.Length < 4)
+                throw new Exception("Please input apiurl,apikey,apisecret,jwt");
             var apiurl = split[0];
             var apikey = split[1];
             var secret = split[2];
+            var jwt = split[3];
 
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("---------WooCommerce Shop Init----------");
@@ -1776,7 +1796,7 @@ namespace TestVEDriversLite
             Console.WriteLine("API Url: " + apiurl);
             Console.WriteLine("-----------------------------------------");
 
-            var res = await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, secret);
+            var res = await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, secret, jwt);
 
             await WoCGetShopStatsAsync(string.Empty);
         }
@@ -1938,6 +1958,23 @@ namespace TestVEDriversLite
             Console.WriteLine($"TxId: {res.transaction_id}");
             Console.WriteLine("");
             Console.WriteLine("");
+        }
+
+        [TestEntry]
+        public static void UploadImageToWPFromIPFS(string param)
+        {
+            UploadImageToWPFromIPFSAsync(param);
+        }
+        public static async Task UploadImageToWPFromIPFSAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input link,filename");
+            var link = split[0];
+            var filename = split[1];
+            var res = await WooCommerceHelpers.UploadIFPSImageToWP(link, filename);
+            Console.WriteLine("New Url is: ");
+            Console.WriteLine(res.Item2);
         }
         #endregion
     }

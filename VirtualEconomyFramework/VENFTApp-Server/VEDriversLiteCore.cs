@@ -158,16 +158,19 @@ namespace VENFTApp_Server
                 VEDLDataContext.WooCommerceStoreUrl = settings.GetValue<string>("WooCommerceStoreUrl");
                 VEDLDataContext.WooCommerceStoreAPIKey = settings.GetValue<string>("WooCommerceStoreAPIKey");
                 VEDLDataContext.WooCommerceStoreSecret = settings.GetValue<string>("WooCommerceStoreSecret");
+                VEDLDataContext.WooCommerceStoreJWTToken = settings.GetValue<string>("WooCommerceStoreJWT");
 
                 if (!string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreUrl) &&
                     !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreAPIKey) &&
-                    !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreSecret))
+                    !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreSecret) &&
+                    !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreJWTToken))
                 {
                     Console.WriteLine("Initializing WooCommerce Shop...");
                     Console.WriteLine("API Url: " + VEDLDataContext.WooCommerceStoreUrl);
                     if (await WooCommerceHelpers.InitStoreApiConnection(VEDLDataContext.WooCommerceStoreUrl,
                                                                     VEDLDataContext.WooCommerceStoreAPIKey,
-                                                                    VEDLDataContext.WooCommerceStoreSecret))
+                                                                    VEDLDataContext.WooCommerceStoreSecret,
+                                                                    VEDLDataContext.WooCommerceStoreJWTToken, true))
                     {
                         Console.WriteLine("WooCommerce Shop Initialized correctly.");
                         Console.WriteLine($"- Number of Products: {WooCommerceHelpers.Shop.Products.Count}");

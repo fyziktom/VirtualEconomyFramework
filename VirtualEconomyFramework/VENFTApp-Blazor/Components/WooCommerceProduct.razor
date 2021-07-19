@@ -169,6 +169,7 @@
     private string apiurl = string.Empty;
     private string apikey = string.Empty;
     private string apisecret = string.Empty;
+    private string jwt = string.Empty;
     private string txid = string.Empty;
     private int index = 0;
     private string productId = string.Empty;
@@ -211,7 +212,9 @@
             if (apikey == null) apikey = string.Empty;
             apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
             if (apisecret == null) apisecret = string.Empty;
-            await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret);
+            jwt = await localStorage.GetItemAsync<string>("woocom-apisecret");
+            if (jwt == null) jwt = string.Empty;
+            await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt);
         }
         StateHasChanged();
     }

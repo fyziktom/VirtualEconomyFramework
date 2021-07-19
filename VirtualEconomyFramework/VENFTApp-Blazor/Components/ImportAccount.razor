@@ -299,6 +299,7 @@
                         await localStorage.SetItemAsync<string>("woocom-apiurl", backupData.WoCAPIUrl);
                         await localStorage.SetItemAsync<string>("woocom-apikey", backupData.WoCAPIKey);
                         await localStorage.SetItemAsync<string>("woocom-apisecret",backupData.WoCAPISecret);
+                        await localStorage.SetItemAsync<string>("woocom-jwt",backupData.WoCAPIJWT);
                         key = await SymetricProvider.EncryptString(importAccountPass, key);
                     }
                     else

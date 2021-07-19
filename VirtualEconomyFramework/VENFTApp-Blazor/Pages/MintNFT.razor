@@ -339,8 +339,9 @@
             if (apikey == null) apikey = string.Empty;
             var apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
             if (apisecret == null) apisecret = string.Empty;
-            if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(apisecret))
-                await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret);
+            var jwt = await localStorage.GetItemAsync<string>("woocom-apisecret");
+            if (jwt == null) jwt = string.Empty;
+            await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt);
         }
     }
 

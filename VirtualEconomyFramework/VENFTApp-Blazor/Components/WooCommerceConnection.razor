@@ -43,7 +43,16 @@
                             <Input Placeholder="Add your API Key" MaxLength="200" @bind-Value=@apisecret Style="font-size:12px; min-width:250px; max-width:250px;" />
                         </div>
                     </div>
-
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>JWT Token</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add your JWT Token" MaxLength="200" @bind-Value=@jwt Style="font-size:12px; min-width:250px; max-width:250px;" />
+                        </div>
+                    </div>
 
 
                     @if (string.IsNullOrEmpty(apiurl))
@@ -210,6 +219,7 @@
     private string apiurl = string.Empty;
     private string apikey = string.Empty;
     private string apisecret = string.Empty;
+    private string jwt = string.Empty;
     private string txid = string.Empty;
     private string productId = string.Empty;
 
@@ -239,6 +249,8 @@
         if (apikey == null) apikey = string.Empty;
         apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
         if (apisecret == null) apisecret = string.Empty;
+        jwt = await localStorage.GetItemAsync<string>("woocom-jwt");
+        if (jwt == null) jwt = string.Empty;
         await InitConnection();
         StateHasChanged();
     }
@@ -304,12 +316,13 @@
             confirmVisible = false;
             StateHasChanged();
 
-            if (await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret))
+            if (await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt))
             {
                 initialized = true;
                 await localStorage.SetItemAsync("woocom-apiurl", apiurl);
                 await localStorage.SetItemAsync("woocom-apikey", apikey);
                 await localStorage.SetItemAsync("woocom-apisecret", apisecret);
+                await localStorage.SetItemAsync("woocom-jwt", jwt);
             }
             else
             {
@@ -364,7 +377,7 @@
     {
         try
         {
-            if (string.IsNullOrEmpty(apiurl) || string.IsNullOrEmpty(apikey) || string.IsNullOrEmpty(apisecret) || string.IsNullOrEmpty(txid))
+            if (string.IsNullOrEmpty(apiurl) || string.IsNullOrEmpty(apikey) || string.IsNullOrEmpty(apisecret) || string.IsNullOrEmpty(jwt) || string.IsNullOrEmpty(txid))
             {
                 emptyInfoVisible = true;
                 return;

@@ -414,7 +414,12 @@ namespace VEDriversLite.NFT
         /// <param name="inutxos"></param>
         /// <param name="innfts"></param>
         /// <returns></returns>
-        public static async Task<List<INFT>> LoadAddressNFTs(string address, ICollection<Utxos> inutxos = null, ICollection<INFT> innfts = null, bool fireProfileEvent = false)
+        public static async Task<List<INFT>> LoadAddressNFTs(string address, 
+                                                             ICollection<Utxos> inutxos = null, 
+                                                             ICollection<INFT> innfts = null, 
+                                                             bool fireProfileEvent = false, 
+                                                             int maxLoadedItems = 0,
+                                                             bool withoutMessages = false)
         {
             var fireProfileEventTmp = fireProfileEvent;
             List<INFT> nfts = new List<INFT>();
@@ -443,6 +448,8 @@ namespace VEDriversLite.NFT
 
             foreach (var u in utxos)
             {
+                if (maxLoadedItems > 0 && nfts.Count > maxLoadedItems) break;
+
                 if (TimeHelpers.UnixTimestampToDateTime((double)u.Blocktime) > lastNFTTime)
                 {
                     if (u.Tokens != null && u.Tokens.Count > 0)
@@ -453,7 +460,11 @@ namespace VEDriversLite.NFT
                             {
                                 try
                                 {
-                                    var nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
+                                    INFT nft = null;
+                                    if (!withoutMessages)
+                                        nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
+                                    else
+                                        nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, skipTheType:true, skipType:NFTTypes.Message);
                                     if (nft != null)
                                     {
                                         if (fireProfileEventTmp && nft.Type == NFTTypes.Profile)

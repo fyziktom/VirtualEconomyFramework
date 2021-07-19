@@ -22,6 +22,8 @@
                 <span style="font-size:8px;">Unconfirmed Balance: @Math.Round(SelectedAccountTotalUnconfirmed, 10).ToString() NEBL <img style="width: 8px;margin-left: 4px; margin-bottom:1px;" src="images/neblio-icon.png" /></span>
             </div>
         </div>
+        @if (!HideNFTs)
+        {
         <div class="row" style="margin-top:2px;margin-bottom:2px;">
             <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                 <span style="font-size:8px;">Source Tokens Balance: @SelectedAccountTotalSourceVENFT VENFT/ @SelectedAccountTotalSourceCORZT CORZT</span>
@@ -32,6 +34,7 @@
                 <span style="font-size:8px;">NFTs: @SelectedAccountNFTCount</span>
             </div>
         </div>
+        }
     </div>
 </div>
 
@@ -42,6 +45,9 @@
 
     [Parameter]
     public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool HideNFTs { get; set; } = false;
 
     public double SelectedAccountTotalSpendable
     {

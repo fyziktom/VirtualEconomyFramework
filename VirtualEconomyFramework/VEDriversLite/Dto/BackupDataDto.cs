@@ -17,6 +17,7 @@ namespace VEDriversLite.Dto
         public string WoCAPIUrl { get; set; } = string.Empty;
         public string WoCAPIKey { get; set; } = string.Empty;
         public string WoCAPISecret { get; set; } = string.Empty;
+        public string WoCAPIJWT { get; set; } = string.Empty;
 
     }
 }

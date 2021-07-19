@@ -15,15 +15,17 @@ namespace VEDriversLite.WooCommerce
         public WooCommerceShop()
         {
         }
-        public WooCommerceShop(string apiurl, string apikey, string secret)
+        public WooCommerceShop(string apiurl, string apikey, string secret, string jwt)
         {
             WooCommerceStoreUrl = apiurl;
             WooCommerceStoreAPIKey = apikey;
             WooCommerceStoreSecret = secret;
+            WooCommerceStoreJWTToken = jwt;
         }
         public string WooCommerceStoreUrl { get; set; } = string.Empty;
         public string WooCommerceStoreAPIKey { get; set; } = string.Empty;
         public string WooCommerceStoreSecret { get; set; } = string.Empty;
+        public string WooCommerceStoreJWTToken { get; set; } = string.Empty;
         public bool IsRefreshingRunning { get; set; } = false;
         public bool AllowDispatchNFTOrders { get; set; } = true;
         /// <summary>
@@ -46,6 +48,53 @@ namespace VEDriversLite.WooCommerce
         /// This event is called whenever info about the shop is reloaded. It is periodic event.
         /// </summary>
         public event EventHandler Refreshed;
+
+        private System.Timers.Timer refreshTimer = new System.Timers.Timer();
+
+        public async Task StartRefreshingData(double interval = 5000)
+        {
+            await Reload();
+            refreshTimer.Interval = interval;
+            refreshTimer.AutoReset = true;
+            refreshTimer.Elapsed += RefreshTimer_Elapsed;
+            refreshTimer.Enabled = true;
+            refreshTimer.Start();
+        }
+
+        public async Task StopRefreshingData()
+        {
+            refreshTimer.Stop();
+            refreshTimer.Enabled = false;
+            refreshTimer.Elapsed += RefreshTimer_Elapsed;
+        }
+
+        private void RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Reload();
+        }
+
+        public async Task Reload()
+        {
+            try
+            {
+                await ReLoadProducts();
+                await ReLoadOrders();
+                if (!string.IsNullOrEmpty(ConnectedDogeAccountAddress))
+                {
+                    await CheckDogePayments();
+                }
+                if (AllowDispatchNFTOrders)
+                {
+                    await CheckReceivedPaymentsToDispatch();
+                    await SendOrdersToCustomer();
+                }
+                Refreshed?.Invoke(this, null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot process standard cycle. " + ex.Message);
+            }
+        }
 
         public async Task ReLoadOrders()
         {
@@ -168,6 +217,7 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /*
         public async Task<string> StartRefreshingData(int interval = 10000)
         {
             await ReLoadProducts();
@@ -243,6 +293,7 @@ namespace VEDriversLite.WooCommerce
 
             return await Task.FromResult("RUNNING");
         }
+        */
 
         public async Task<Order> UpdateOrderStatus(string orderkey, string status)
         {

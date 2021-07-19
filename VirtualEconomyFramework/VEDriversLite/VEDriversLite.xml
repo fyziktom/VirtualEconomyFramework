@@ -33,6 +33,16 @@
             Data dto
             </summary>
         </member>
+        <member name="E:VEDriversLite.Bookmarks.ActiveTab.NFTsChanged">
+            <summary>
+            This event is called whenever the list of NFTs is changed
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Bookmarks.ActiveTab.ProfileUpdated">
+            <summary>
+            This event is called whenever profile nft is updated or found
+            </summary>
+        </member>
         <member name="P:VEDriversLite.DogeAccount.Address">
             <summary>
             Doge Address hash
@@ -1301,7 +1311,7 @@
             <param name="amount"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.SendNeblioPayment(System.String,System.Double)">
+        <member name="M:VEDriversLite.NeblioAccount.SendNeblioPayment(System.String,System.Double,System.String)">
             <summary>
             Send classic neblio payment
             </summary>
@@ -4083,7 +4093,7 @@
             <param name="address"></param>
             <returns>profile NFT and list of all NFTs</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Boolean)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Boolean,System.Int32,System.Boolean)">
             <summary>
             This function will find all NFTs and load them to the carriers. 
             If you already have list of utxos and NFTs you can provide it and it will load just the changes.

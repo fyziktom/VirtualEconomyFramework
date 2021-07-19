@@ -15,7 +15,14 @@
         </div>
     </div>
 
-    <VENFTApp_Blazor.Components.DogeAccountBalance />
+    @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+    {
+        <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" HideNFTs="true" />
+    }
+    else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+    {
+        <VENFTApp_Blazor.Components.DogeAccountBalance />
+    }
 
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex justify-content-center align-items-center">
@@ -28,60 +35,125 @@
             <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
                 <div class="card" style="margin-top:10px;">
                     <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
-                        <h5 class="text-center">Send Doge Transaction</h5>
+                        @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                        {
+                            <h5 class="text-center">Send Neblio Payment</h5>
+                        }
+                        else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                        {
+                            <h5 class="text-center">Send Doge Payment</h5>
+                        }
                     </div>
                     <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
                         <div class="row">
                             <div class="col">
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <p>Receiver:</p>
+                                        <span>Receiver Address:</span>
+                                        <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@receiver" MarginLeft="10" />
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        @receiver
+                                        @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                                        {
+                                            <a href="https://explorer.nebl.io/address/@receiver" target="_blank">@receiver</a>
+                                        }
+                                        else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                                        {
+                                            <a href="https://dogechain.info/address/@receiver" target="_blank">@receiver</a>
+                                        }
                                     </div>
                                 </div>
-                                <div class="row" style="margin-top:30px;">
+                                @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                                {
+                                    <div class="row" style="margin-top:30px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>Amount of Neblio:</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>@AmountToSend NEBL <img style="width: 20px;margin-left: 10px;" src="images/neblio-icon.png" /></span>
+                                        </div>
+                                    </div>
+                                }
+                                else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                                {
+                                    <div class="row" style="margin-top:30px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>Amount of Dogecoin:</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>@AmountToSend DOGE <img style="width: 20px;margin-left: 10px;" src="images/doge.jpg" /></span>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <p>Amount of Doge:</p>
+                                        <span>Payment Message:</span>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <p>@AmountToSend DOGE <img style="width: 16px;margin-left: 10px;" src="images/doge.jpg" /></p>
+                                        <span>@message</span>
+                                        <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@message" MarginLeft="10" />
                                     </div>
                                 </div>
-                                <!--
-                                <div class="row" style="margin-top:10px;">
-                                    <div class="col d-flex justify-content-center align-items-center">
-                                        <input type="number" step="1" min="1" max="@AppData.DogeAccount.TotalBalance" @bind="@AmountToSend" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+
+                                @if (currecncy == Currecncy.DGC && AmountToSend >= AppData.DogeAccount.TotalSpendableBalance)
+                                {
+                                    <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-secondary disabled" @onclick="SendTx">Not enought Doge</button>
+                                        </div>
                                     </div>
-                                </div>
-                                -->
-                                <div class="row" style="margin-top:10px;">
-                                    <div class="col d-flex justify-content-center align-items-center">
-                                        <p>Payment Message:</p>
+                                }
+                                else if (currecncy == Currecncy.NBL && AmountToSend >= AppData.Account.TotalSpendableBalance)
+                                {
+                                    <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-secondary" disabled @onclick="SendTx">Not enought Neblio</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row" style="margin-top:10px;">
-                                    <div class="col d-flex justify-content-center align-items-center">
-                                        @message
+                                }
+                                else
+                                {
+                                    <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-primary" @onclick="SendTx">Send</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <!--
-                                <div class="row" style="margin-top:10px;">
-                                    <div class="col d-flex justify-content-center align-items-center">
-                                        <Input Placeholder="Add Your Message" MaxLength="82" bind-Value=message Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                }
+
+                                @if (sucessfullSend)
+                                {
+                                    <hr />
+                                    <Alert Type="@AlertType.Success"
+                                           Message="Payment Sent."
+                                           Description="Your payment has been sent :)"
+                                           ShowIcon="true" />
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>Transaction Id</span>
+                                        </div>
                                     </div>
-                                </div>
-                                    -->
-                                <div class="row" style="margin-top:20px; margin-bottom:10px;">
-                                    <div class="col d-flex justify-content-center align-items-center">
-                                        <button class="btn btn-primary" @onclick="SendTx">Send</button>
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                                            {
+                                                <a href="https://explorer.nebl.io/tx/@txid" target="_blank">@txid</a>
+                                            }
+                                            else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                                            {
+                                                <a href="https://dogechain.info/tx/@txid" target="_blank">@txid</a>
+                                            }
+                                            <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@txid" MarginLeft="10" />
+                                        </div>
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -132,6 +204,15 @@
 
 @code {
 
+    private enum Currecncy
+    {
+        NBL,
+        DGC,
+        BTC
+    }
+
+    Currecncy currecncy = Currecncy.NBL;
+
     bool accountUnlocked = true;
     bool unlockAcocuntModalVisible = false;
     string unlockPassword = string.Empty;
@@ -140,10 +221,12 @@
     bool accountUnlockingError = false;
 
     private bool sendingTransaction = false;
+    private bool sucessfullSend = false;
     private double AmountToSend = 1;
     private string receiver = string.Empty;
     private string message = string.Empty;
     private string currency = string.Empty;
+    private string txid = string.Empty;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -162,7 +245,10 @@
                 }
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("curr", out var curr))
                 {
-                    currency = curr;
+                    if (curr == "DGC") currecncy = Currecncy.DGC;
+                    if (curr == "DOGE") currecncy = Currecncy.DGC;
+                    if (curr == "NEBL") currecncy = Currecncy.NBL;
+                    if (curr == "NBL") currecncy = Currecncy.NBL;
                 }
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("amnt", out var amnt))
                 {
@@ -207,7 +293,6 @@
             {
                 await Redirect();
             }
-
         }
         catch (Exception ex)
         {
@@ -226,12 +311,28 @@
         {
             sendingTransaction = true;
             StateHasChanged();
+            (bool, string) res = (false, string.Empty);
+            switch (currecncy)
+            {
+                case Currecncy.NBL:
+                    res = await AppData.Account.SendNeblioPayment(receiver, AmountToSend, message);
+                    break;
+                case Currecncy.DGC:
+                    res = await AppData.DogeAccount.SendPayment(receiver, AmountToSend, message);
+                    break;
+            }
 
-            var res = await AppData.DogeAccount.SendPayment(receiver, AmountToSend, message);
-            Console.WriteLine("Tx send result: " + res);
+            Console.WriteLine("Tx send result: " + res.Item2);
             if (!res.Item1)
             {
+                txid = string.Empty;
+                sucessfullSend = false;
                 await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
+            }
+            else
+            {
+                txid = res.Item2;
+                sucessfullSend = true;
             }
         }
         catch (Exception ex)
@@ -264,15 +365,33 @@
 
             var pass = unlockPassword;
 
-            if (!await LoadDogeAccount())
+            var load = false;
+            switch(currecncy)
+            {
+                case Currecncy.NBL:
+                    load = await LoadNeblioAccount();
+                    break;
+                case Currecncy.DGC:
+                    load = await LoadDogeAccount();
+                    break;
+            }
+            if (!load)
             {
                 await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot load the account.");
+                unlockAcocuntModalVisible = false;
+                unlockingAccount = false;
+                accountUnlockingError = false;
+                StateHasChanged();
+                await Task.Delay(50);
                 await Redirect();
             }
-            unlockAcocuntModalVisible = false;
-            unlockingAccount = false;
-            accountUnlockingError = false;
-            StateHasChanged();
+            else
+            {
+                unlockAcocuntModalVisible = false;
+                unlockingAccount = false;
+                accountUnlockingError = false;
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {
@@ -319,6 +438,30 @@
                 {
                     if (AppData.DogeAccount != null)
                         AppData.DogeAccount.Refreshed += RefreshedHandler;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public async Task<bool> LoadNeblioAccount()
+    {
+        if (string.IsNullOrEmpty(AppData.Account.Address))
+        {
+            var key = await localStorage.GetItemAsync<string>("key");
+            if (!string.IsNullOrEmpty(key))
+            {
+                await Task.Delay(100);
+                if (!await AppData.Account.LoadAccount(unlockPassword, key, "", withoutNFTs: true))
+                {
+                    await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot unlock the doge account.");
+                }
+                else
+                {
+                    if (AppData.Account != null)
+                        AppData.Account.Refreshed += RefreshedHandler;
                     return true;
                 }
             }

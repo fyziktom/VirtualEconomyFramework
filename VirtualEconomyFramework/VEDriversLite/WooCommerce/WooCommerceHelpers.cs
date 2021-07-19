@@ -1,13 +1,17 @@
-﻿using Newtonsoft.Json;
+﻿using Ipfs.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NFT;
 using VEDriversLite.WooCommerce.Dto;
+using WordPressPCL;
 
 namespace VEDriversLite.WooCommerce
 {
@@ -16,11 +20,38 @@ namespace VEDriversLite.WooCommerce
         public static bool IsInitialized { get; set; } = false;
         private static HttpClient httpClient = new HttpClient();
         public static WooCommerceShop Shop { get; set; } = new WooCommerceShop();
+
+        public static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
+        public static WordPressClient wpClient { get; set; }
         private static void RequestFilter(HttpWebRequest request)
         {
             request.UserAgent = "VENFT App";
         }
-        public static async Task<bool> InitStoreApiConnection(string apiurl, string apikey, string secret)
+
+        public static async Task<(bool,string)> UploadIFPSImageToWP(string imageLink, string filename)
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                var msg = await client.GetAsync(imageLink);
+                await using (Stream stream = await msg.Content.ReadAsStreamAsync())
+                {
+                    var media = await wpClient.Media.Create(stream, filename);
+                    if (media != null)
+                    {
+                        return (true, media.SourceUrl);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Cannot upload the image {imageLink} to WP. " + ex.Message);
+            }
+            return (false, string.Empty);
+        }
+
+
+        public static async Task<bool> InitStoreApiConnection(string apiurl, string apikey, string secret, string jwt, bool withRefreshing = false)
         {
             try
             {
@@ -29,6 +60,7 @@ namespace VEDriversLite.WooCommerce
                     VEDLDataContext.WooCommerceStoreUrl = apiurl;
                     VEDLDataContext.WooCommerceStoreAPIKey = apikey;
                     VEDLDataContext.WooCommerceStoreSecret = secret;
+                    VEDLDataContext.WooCommerceStoreJWTToken = jwt;
 
                     var res = await httpClient.GetAsync(GetFullAPIUrl(""));
                     var resmsg = await res.Content.ReadAsStringAsync();
@@ -36,8 +68,13 @@ namespace VEDriversLite.WooCommerce
                     {
                         //Console.WriteLine(resmsg);
                         IsInitialized = true;
-                        Shop = new WooCommerceShop(apiurl, apikey, secret);
-                        await Shop.StartRefreshingData();
+                        wpClient = new WordPressClient(VEDLDataContext.WooCommerceStoreUrl.Replace("wc/v3/", string.Empty));
+                        wpClient.AuthMethod = WordPressPCL.Models.AuthMethod.JWT;
+                        wpClient.SetJWToken(jwt);
+                        var isvalid = await wpClient.IsValidJWToken();
+
+                        Shop = new WooCommerceShop(apiurl, apikey, secret, jwt);
+                        if (withRefreshing) await Shop.StartRefreshingData();
                         return true;
                     }
                     else

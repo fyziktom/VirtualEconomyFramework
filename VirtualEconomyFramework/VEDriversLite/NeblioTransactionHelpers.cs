@@ -1242,15 +1242,31 @@ namespace VEDriversLite
 
             try
             {
+                
+                if (!string.IsNullOrEmpty(data.CustomMessage) && fee == 10000)
+                {
+                    fee = 10000;
+                }
+
                 var allNeblCoins = 0.0;
                 foreach (var u in nutxos)
                     allNeblCoins += (double)u.Value;
 
                 var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
                 var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
-
+                
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
+                if (!string.IsNullOrEmpty(data.CustomMessage))
+                {
+                    diffinSat -= 10000;
+                    var bytes = Encoding.UTF8.GetBytes(data.CustomMessage);
+                    transaction.Outputs.Add(new TxOut()
+                    {
+                        Value = 10000,
+                        ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
+                    });
+                }
                 transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
             }
             catch (Exception ex)

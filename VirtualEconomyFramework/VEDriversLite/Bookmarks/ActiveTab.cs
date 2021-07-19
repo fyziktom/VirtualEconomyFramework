@@ -5,12 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
 
 namespace VEDriversLite.Bookmarks
 {
     public class ActiveTab
     {
+        private static object _lock = new object();
         public ActiveTab(string address)
         {
             Address = address;
@@ -22,50 +24,96 @@ namespace VEDriversLite.Bookmarks
         public string Address { get; set; } = string.Empty;
         public string ShortAddress { get; set; } = string.Empty;
         public bool IsInBookmark { get; set; } = false;
+        
+        public bool CanLoadMore { get; set; } = false;
         [JsonIgnore]
         public bool IsRefreshingRunning { get; set; } = false;
         [JsonIgnore]
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        public ICollection<Utxos> UtxosList { get; set; } = new List<Utxos>();
         [JsonIgnore]
         public Bookmark BookmarkFromAccount { get; set; } = new Bookmark();
         [JsonIgnore]
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         [JsonIgnore]
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
+        /// <summary>
+        /// This event is called whenever the list of NFTs is changed
+        /// </summary>
+        public event EventHandler<string> NFTsChanged;
+        /// <summary>
+        /// This event is called whenever profile nft is updated or found
+        /// </summary>
+        public event EventHandler<INFT> ProfileUpdated;
+
+        private System.Timers.Timer refreshTimer = new System.Timers.Timer();
+        private int MaxLoadedNFTItems = 40;
+
+        public async Task StartRefreshing(double interval = 5000)
+        {
+            Selected = true;
+            refreshTimer.Interval = interval;
+            refreshTimer.AutoReset = true;
+            refreshTimer.Elapsed -= RefreshTimer_Elapsed;
+            refreshTimer.Elapsed += RefreshTimer_Elapsed;
+            refreshTimer.Enabled = true;
+            IsRefreshingRunning = true;
+            await Reload();
+        }
+
+        public async Task StopRefreshing()
+        {
+            IsRefreshingRunning = false;
+            Selected = false;
+            refreshTimer.Stop();
+            refreshTimer.Enabled = false;
+            refreshTimer.Elapsed -= RefreshTimer_Elapsed;
+        }
+
+        private void RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            refreshTimer.Stop();
+            Reload();
+        }
 
         public async Task Reload()
         {
-            if (!IsRefreshingRunning)
+            try
             {
-                IsRefreshingRunning = true;
-
-                _ = Task.Run(async () =>
+                UtxosList = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens);
+                List<INFT> ns;
+                lock (_lock)
                 {
-                    while (true)
+                    ns = NFTs.ToList();
+                }
+                var _NFTs = await NFTHelpers.LoadAddressNFTs(Address, UtxosList, ns, false, MaxLoadedNFTItems, true);
+                if (_NFTs != null)
+                {
+                    /*
+                    if (_NFTs.Count < UtxosList.Count && MaxLoadedNFTItems < UtxosList.Count)
                     {
-                        try
-                        {
-                            if (Selected)
-                            {
-                                NFTs = await NFTHelpers.LoadAddressNFTs(Address, null, NFTs.ToList());
-                                if (NFTs == null)
-                                    NFTs = new List<INFT>();
-
-                                if (NFTs.Count > 0)
-                                    Profile = await NFTHelpers.FindProfileNFT(NFTs);
-
-                                //await RefreshAddressReceivedPayments();
-                                await Task.Delay(5000);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            await Task.Delay(5000);
-                        }
+                        MaxLoadedNFTItems += 10;
+                        CanLoadMore = true;
                     }
+                    else
+                    {
+                        CanLoadMore = false;
+                    }*/
+                    lock (_lock)
+                    {
+                        NFTs = new List<INFT>(_NFTs);
+                    }
+                }
+                if (_NFTs.Count > 0)
+                    Profile = await NFTHelpers.FindProfileNFT(_NFTs);
 
-                    IsRefreshingRunning = false;
-                });
+                //await RefreshAddressReceivedPayments();
+                NFTsChanged?.Invoke(this, Address);
+                refreshTimer?.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot reload the tab content. " + ex.Message);
             }
         }
         public async Task RefreshAddressReceivedPayments()

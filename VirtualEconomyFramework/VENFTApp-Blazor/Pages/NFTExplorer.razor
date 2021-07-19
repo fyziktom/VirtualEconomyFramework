@@ -173,8 +173,10 @@
             if (apikey == null) apikey = string.Empty;
             var apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
             if (apisecret == null) apisecret = string.Empty;
+            var jwt = await localStorage.GetItemAsync<string>("woocom-jwt");
+            if (jwt == null) jwt = string.Empty;
             if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(apisecret))
-                await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret);
+                await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt);
         }
     }
 

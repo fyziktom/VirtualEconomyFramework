@@ -277,6 +277,7 @@
         var wocapiurl = await localStorage.GetItemAsync<string>("woocom-apiurl");
         var wocapikey = await localStorage.GetItemAsync<string>("woocom-apikey");
         var wocapisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
+        var wocapijwt = await localStorage.GetItemAsync<string>("woocom-jwt");
 
         var dto = new BackupDataDto();
         if (!string.IsNullOrEmpty(bookmarks))
@@ -301,6 +302,8 @@
             dto.WoCAPIKey = wocapikey;
         if (!string.IsNullOrEmpty(wocapisecret))
             dto.WoCAPISecret = wocapisecret;
+        if (!string.IsNullOrEmpty(wocapijwt))
+            dto.WoCAPIJWT = wocapijwt;
 
         filename = "Backup-Export-" + AppData.Account.Address + "-" + DateTime.UtcNow.ToString("dd-MM-yyyyThh_mm_ss") + ".txt";
         backupData = JsonConvert.SerializeObject(dto);

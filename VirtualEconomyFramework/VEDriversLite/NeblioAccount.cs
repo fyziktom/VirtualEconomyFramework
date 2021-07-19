@@ -331,7 +331,7 @@ namespace VEDriversLite
                     {
                         await ReLoadNFTs(true);
                         await ReloadCountOfNFTs();
-                        await CheckPayments();
+                        //await CheckPayments();
                         await RefreshAddressReceivedPayments();
                     }
                 }
@@ -371,7 +371,7 @@ namespace VEDriversLite
                             minorRefresh--;
                             if (minorRefresh < 0)
                             {
-                                await CheckPayments();
+                                //await CheckPayments();
                                 if (!string.IsNullOrEmpty(ConnectedDogeAccountAddress))
                                     await CheckDogePayments();
 
@@ -787,12 +787,12 @@ namespace VEDriversLite
                         t.LoadBookmark(bkm.Item2);
                         if (first)
                         {
-                            t.Reload();
+                            await t.StartRefreshing();
                             first = false;
                             firstAdd = t.Address;
                         }
+                        t.NFTsChanged += T_NFTsChanged;
                     }
-                    Tabs.FirstOrDefault().Selected = true;
                 }
                 return firstAdd;
             }
@@ -801,6 +801,11 @@ namespace VEDriversLite
                 await InvokeErrorEvent(ex.Message, "Cannot deserialize the tabs.");
             }
             return string.Empty;
+        }
+
+        private void T_NFTsChanged(object sender, string e)
+        {
+            NFTsChanged?.Invoke(sender, e);
         }
 
         /// <summary>
@@ -816,11 +821,12 @@ namespace VEDriversLite
                 var tab = new ActiveTab(address);
                 tab.BookmarkFromAccount = bkm.Item2;
                 tab.Selected = true;
+                tab.NFTsChanged += T_NFTsChanged;
 
                 foreach (var t in Tabs)
-                    t.Selected = false;
+                    await t.StopRefreshing();
 
-                await tab.Reload();
+                await tab.StartRefreshing();
                 Tabs.Add(tab);
             }
             else
@@ -841,7 +847,10 @@ namespace VEDriversLite
         {
             var tab = Tabs.Find(t => t.Address == address);
             if (tab != null)
+            {
+                tab.NFTsChanged -= T_NFTsChanged;
                 Tabs.Remove(tab);
+            }
             else
             {
                 await InvokeErrorEvent("Tab Not Found.", "Not Found");
@@ -849,20 +858,19 @@ namespace VEDriversLite
             }
 
             foreach (var t in Tabs)
-                t.Selected = false;
-            Tabs.FirstOrDefault().Selected = true;
+                await t.StopRefreshing();
+            await Tabs.FirstOrDefault().StartRefreshing();
 
             return (true, JsonConvert.SerializeObject(Tabs));
         }
         public async Task SelectTab(string address)
         {
-            foreach (var t in Tabs)
-                t.Selected = false;
-            var tab = Tabs.Find(t => t.Address == address);
-            if (tab != null)
-                tab.Selected = true;
-            if (tab.NFTs.Count == 0)
-                await tab.Reload();
+            Tabs.ForEach(async (t) => {
+                if (t.Address == address)
+                    if (!t.IsRefreshingRunning) await t.StartRefreshing();
+                else
+                    await t.StopRefreshing();
+            });
         }
 
         /// <summary>
@@ -2003,7 +2011,7 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver Neblio Address</param>
         /// <param name="amount">Ammount in Neblio</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendNeblioPayment(string receiver, double amount)
+        public async Task<(bool, string)> SendNeblioPayment(string receiver, double amount, string message = "")
         {
             if (IsLocked())
             {
@@ -2022,7 +2030,8 @@ namespace VEDriversLite
             {
                 Amount = amount,
                 SenderAddress = Address,
-                ReceiverAddress = receiver
+                ReceiverAddress = receiver,
+                CustomMessage = message
             };
 
             try

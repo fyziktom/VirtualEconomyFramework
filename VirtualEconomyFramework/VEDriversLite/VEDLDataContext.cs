@@ -20,5 +20,6 @@ namespace VEDriversLite
         public static string WooCommerceStoreUrlWithCred => WooCommerceStoreUrl.Replace("https://", $"https://{WooCommerceStoreAPIKey}:{WooCommerceStoreSecret}@");
         public static string WooCommerceStoreAPIKey { get; set; } = string.Empty;
         public static string WooCommerceStoreSecret { get; set; } = string.Empty;
+        public static string WooCommerceStoreJWTToken { get; set; } = string.Empty;
     }
 }

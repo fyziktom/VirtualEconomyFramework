@@ -66,32 +66,28 @@
                         }
                         <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => addNewTabModal()"><i class="oi oi-plus" style="font-size: 20px;"></i></a></li>
                     </ul>
-                    <div class="tab-content" id="shopTabsContent">
 
-                        @foreach (var tab in AppData.Account.Tabs)
-                        {
-                            if (tab.Selected)
-                            {
+                    <div class="tab-content" id="shopTabsContent">
                                 <div role="tabpanel" class="tab-pane active" style="min-height: 200px;">
                                     <div class="row">
                                         <div class="col">
                                             <div class="row" style="margin-top: 10px;">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                    @if (!string.IsNullOrEmpty(tab.BookmarkFromAccount.Name))
+                                                    @if (!string.IsNullOrEmpty(tabBookmark.Name))
                                                     {
-                                                        <span>@tab.BookmarkFromAccount.Name - @NeblioTransactionHelpers.ShortenAddress(tab.Address)</span>
+                                                        <span>@tabBookmark.Name - @NeblioTransactionHelpers.ShortenAddress(addressInOpenTab)</span>
                                                     }
                                                     else
                                                     {
-                                                        <span>@tab.Address</span>
+                                                        <span>@addressInOpenTab</span>
                                                     }
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-top: 10px;">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                    <VENFTApp_Blazor.Components.CopyIcon MarginLeft="15" TextToCopy="@tab.Address" />
-                                                    <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="@tab.Address" />
-                                                    <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@tab.IsInBookmark"
+                                                    <VENFTApp_Blazor.Components.CopyIcon MarginLeft="15" TextToCopy="@addressInOpenTab" />
+                                                    <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="@addressInOpenTab" />
+                                                    <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@IsTabInBookmark"
                                                                                          Address="@addressInOpenTab"
                                                                                          BookmarkRefreshed="@BookmarkRefreshedHandler" />
                                                     <i class="oi oi-envelope-closed" style="margin-left:10px; margin-top:0px; font-size:14px;" @onclick="showSendMessage"></i>
@@ -107,31 +103,31 @@
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                                                     <div class="row">
                                                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                            <img src="@tab.Profile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                                            <img src="@tabProfile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                                                         </div>
                                                     </div>
                                                     <div class="row" style="margin-left:20px;">
                                                         <div class="col">
                                                             <div class="row">
                                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                    <span>Name: @tab.Profile.Name @tab.Profile.Surname</span>
+                                                                    <span>Name: @tabProfile.Name @tabProfile.Surname</span>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                    Nick: @tab.Profile.Nickname
+                                                                    Nick: @tabProfile.Nickname
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                    Bio: @tab.Profile.Description
+                                                                    Bio: @tabProfile.Description
                                                                 </div>
                                                             </div>
-                                                            @if (!string.IsNullOrEmpty(tab.Profile.Link))
+                                                            @if (!string.IsNullOrEmpty(tabProfile.Link))
                                                             {
                                                                 <div class="row">
                                                                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                                        <a href="@tab.Profile.Link" target="_blank">Webpage</a>
+                                                                        <a href="@tabProfile.Link" target="_blank">Webpage</a>
                                                                     </div>
                                                                 </div>
                                                             }
@@ -142,17 +138,12 @@
 
                                             <div class="row" style="margin-top:20px">
                                                 <div class="col">
-                                                    @if (tab.Selected)
-                                                    {
-                                                        <VENFTApp_Blazor.Components.NFTList Address="@tab.Address" MainAccount="@false" InBrowser="true" NFTsChanged="nftChangedHandler" />
-                                                    }
+                                                        <VENFTApp_Blazor.Components.NFTList Address="@addressInOpenTab" SubAccount="false" MainAccount="@false" InBrowser="true"/>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            }
-                        }
                     </div>
                 </div>
             </div>
@@ -282,6 +273,17 @@
     string addressInOpenTab = string.Empty;
     private string newTabAddress = string.Empty;
 
+    ProfileNFT tabProfile = new ProfileNFT("");
+    VEDriversLite.Bookmarks.Bookmark tabBookmark = new VEDriversLite.Bookmarks.Bookmark();
+
+    public bool IsTabInBookmark
+    {
+        get
+        {
+            return !string.IsNullOrEmpty(tabBookmark.Name);
+        }
+    }
+
     protected override Task OnInitializedAsync()
     {
         try
@@ -292,7 +294,10 @@
             {
                 LoadBookmarksAndState();
                 if (AppData.Account != null)
+                {
                     AppData.Account.Refreshed += RefreshedHandler;
+                    AppData.Account.NFTsChanged += NFTsRefreshedHandler;
+                }
             }
         }
         catch (Exception ex)
@@ -303,13 +308,18 @@
         return base.OnInitializedAsync();
     }
 
-    void nftChangedHandler(List<INFT> e)
+    void RefreshedHandler(object sender, EventArgs e)
     {
         StateHasChanged();
     }
-
-    void RefreshedHandler(object sender, EventArgs e)
+    void NFTsRefreshedHandler(object sender, string e)
     {
+        var tab = AppData.Account.Tabs.Find(t => t.Address == addressInOpenTab);
+        if (tab != null)
+        {
+            tabBookmark = tab.BookmarkFromAccount;
+            tabProfile = tab.Profile;
+        }
         StateHasChanged();
     }
 
@@ -404,9 +414,12 @@
             {
                 var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
                 if (!string.IsNullOrEmpty(browserTabs))
+                {
                     if (AppData.Account.Tabs.Count == 0)
                         addressInOpenTab = await AppData.Account.LoadTabs(browserTabs);
-
+                    else
+                        addressInOpenTab = AppData.Account.Tabs.FirstOrDefault(t => t.Selected).Address;
+                }
             }
             catch (Exception ex)
             {
@@ -424,6 +437,7 @@
         }
         finally
         {
+            await selectTab(addressInOpenTab);
             loadingBrowser = false;
             StateHasChanged();
         }
@@ -480,6 +494,12 @@
         loadingBrowser = true;
         StateHasChanged();
         var res = await AppData.Account.AddTab(newTabAddress);
+        tab = AppData.Account.Tabs.Find(t => t.Address == newTabAddress);
+        if (tab != null)
+        {
+            tabBookmark = tab.BookmarkFromAccount;
+            tabProfile = tab.Profile;
+        }
         await Task.Delay(50);
         if (res.Item1)
             await localStorage.SetItemAsync("browserTabs", res.Item2);
@@ -497,8 +517,14 @@
     {
         loadingBrowser = true;
         StateHasChanged();
-        await AppData.Account.SelectTab(address);
         addressInOpenTab = address;
+        await AppData.Account.SelectTab(address);
+        var tab = AppData.Account.Tabs.Find(t => t.Address == addressInOpenTab);
+        if (tab != null)
+        {
+            tabBookmark = tab.BookmarkFromAccount;
+            tabProfile = tab.Profile;
+        }
         loadingBrowser = false;
         await Task.Delay(50);
         StateHasChanged();

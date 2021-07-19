@@ -10,7 +10,15 @@ namespace VEDriversLite.NFT
 {
     public static class NFTFactory
     {
-        public static async Task<INFT> GetNFT(string tokenId, string utxo, int utxoindex = 0, double time = 0, bool wait = false, bool loadJustType = false, NFTTypes justType = NFTTypes.Image)
+        public static async Task<INFT> GetNFT(string tokenId, 
+                                              string utxo, 
+                                              int utxoindex = 0, 
+                                              double time = 0, 
+                                              bool wait = false, 
+                                              bool loadJustType = false, 
+                                              NFTTypes justType = NFTTypes.Image,
+                                              bool skipTheType = false,
+                                              NFTTypes skipType = NFTTypes.Image)
         {
             NFTTypes type = NFTTypes.Image;
 
@@ -107,6 +115,9 @@ namespace VEDriversLite.NFT
 
             if (loadJustType)
                 if (justType != type)
+                    return null;
+            if (skipTheType)
+                if (skipType == type)
                     return null;
 
             var Time = TimeHelpers.UnixTimestampToDateTime(time);
