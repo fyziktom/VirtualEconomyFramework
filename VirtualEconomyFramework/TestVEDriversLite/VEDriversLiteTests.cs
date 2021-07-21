@@ -1802,6 +1802,33 @@ namespace TestVEDriversLite
         }
 
         [TestEntry]
+        public static void WoCGetWPJWTToken(string param)
+        {
+            WoCGetWPJWTTokenAsync(param);
+        }
+        public static async Task WoCGetWPJWTTokenAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input apiurl,wplogin,wppass");
+            var apiurl = split[0];
+            var wplogin = split[1];
+            var wppass = split[2];
+
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("-------WordPress JWT Token Request-------");
+            Console.WriteLine("-----------------------------------------");
+            Console.WriteLine("API Url: " + apiurl);
+            Console.WriteLine("-----------------------------------------");
+
+            var res = await WooCommerceHelpers.GetJWTToken(apiurl, wplogin, wppass);
+            if (res.Item1) 
+                Console.WriteLine("Token received from the server.");
+            Console.WriteLine("");
+            Console.WriteLine(res.Item2);
+        }
+
+        [TestEntry]
         public static void WoCGetShopStats(string param)
         {
             WoCGetShopStatsAsync(param);
@@ -1972,6 +1999,7 @@ namespace TestVEDriversLite
                 throw new Exception("Please input link,filename");
             var link = split[0];
             var filename = split[1];
+            //var res = await WooCommerceHelpers.UploadIFPSImageToWPByAPI(link, filename);
             var res = await WooCommerceHelpers.UploadIFPSImageToWP(link, filename);
             Console.WriteLine("New Url is: ");
             Console.WriteLine(res.Item2);

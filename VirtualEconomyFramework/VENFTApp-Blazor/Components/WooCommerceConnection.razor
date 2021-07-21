@@ -45,15 +45,38 @@
                     </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <small>JWT Token</small>
+                            <small>WP Login</small>
                         </div>
                     </div>
                     <div class="row" style="margin-top:5px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add your JWT Token" MaxLength="200" @bind-Value=@jwt Style="font-size:12px; min-width:250px; max-width:250px;" />
+                            <Input Placeholder="Add your WordPress Login" MaxLength="200" @bind-Value=@wplogin Style="font-size:12px; min-width:250px; max-width:250px;" />
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>WP Pass</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <InputPassword Placeholder="Add your WordPress Pass" MaxLength="200" @bind-Value=@wppass Style="font-size:12px; min-width:250px; max-width:250px;" />
                         </div>
                     </div>
 
+                    <div class="row" style="margin-top:30px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="GetJWTToken">Get WP JWT Token</button>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(jwt))
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>JWT Token Loaded</small>
+                            </div>
+                        </div>
+                    }
 
                     @if (string.IsNullOrEmpty(apiurl))
                     {
@@ -65,11 +88,22 @@
                     }
                     else
                     {
-                        <div class="row" style="margin-top:20px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <button class="btn btn-primary" @onclick="ShowConfirm">Init connection</button>
+                        @if (!string.IsNullOrEmpty(jwt))
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary" @onclick="ShowConfirm">Init connection</button>
+                                </div>
                             </div>
-                        </div>
+                        }
+                        else
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-info">Please obtain JWT Token before initialization.</small>
+                                </div>
+                            </div>
+                        }
 
                         @if (initialized)
                         {
@@ -220,6 +254,8 @@
     private string apikey = string.Empty;
     private string apisecret = string.Empty;
     private string jwt = string.Empty;
+    private string wplogin = string.Empty;
+    private string wppass = string.Empty;
     private string txid = string.Empty;
     private string productId = string.Empty;
 
@@ -300,6 +336,41 @@
     private async Task showNFTDetailsCancel(MouseEventArgs e)
     {
         showNFTDetailsVisible = false;
+    }
+
+    private async Task GetJWTToken()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(wppass) || string.IsNullOrEmpty(wplogin) || string.IsNullOrEmpty(apiurl))
+            {
+                emptyInfoVisible = true;
+                return;
+            }
+
+            processingSending = true;
+            confirmVisible = false;
+            StateHasChanged();
+            var res = await WooCommerceHelpers.GetJWTToken(apiurl, wplogin, wppass);
+            if (res.Item1)
+            {
+                jwt = res.Item2;
+                await localStorage.SetItemAsync("woocom-jwt", res.Item2);
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", res.Item2);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            processingSending = false;
+            StateHasChanged();
+        }
     }
 
     private async Task InitConnection()

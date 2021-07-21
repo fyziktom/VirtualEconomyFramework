@@ -28,7 +28,7 @@ namespace VEDriversLite.WooCommerce
             request.UserAgent = "VENFT App";
         }
 
-        public static async Task<(bool,string)> UploadIFPSImageToWP(string imageLink, string filename)
+        public static async Task<(bool,string)> UploadIFPSImageToWP(string imageLink, string name)
         {
             try
             {
@@ -36,7 +36,11 @@ namespace VEDriversLite.WooCommerce
                 var msg = await client.GetAsync(imageLink);
                 await using (Stream stream = await msg.Content.ReadAsStreamAsync())
                 {
-                    var media = await wpClient.Media.Create(stream, filename);
+                    var type = msg.Content.Headers.ContentType.ToString();
+                    var typesplit = type.Split('/');
+                    if (typesplit.Length > 1 && !string.IsNullOrEmpty(typesplit[1]))
+                        name += "." + typesplit[1];
+                    var media = await wpClient.Media.Create(stream, name);
                     if (media != null)
                     {
                         return (true, media.SourceUrl);
@@ -50,11 +54,75 @@ namespace VEDriversLite.WooCommerce
             return (false, string.Empty);
         }
 
+        public static async Task<(bool, string)> UploadIFPSImageToWPByAPI(string imageLink, string filename)
+        {
+            try
+            {
+                var fileContentType = "multipart/form-data";
+                var url = VEDLDataContext.WooCommerceStoreUrl.Replace("wc/v3","wp/v2") + "media";
+                HttpClient client = new HttpClient();
+                var msg = await client.GetAsync(imageLink);
+                if (msg.IsSuccessStatusCode)
+                {
+                    await using (Stream stream = await msg.Content.ReadAsStreamAsync())
+                    {
+                        using (var content = new MultipartFormDataContent())
+                        {
+                            content.Add(new StreamContent(stream)
+                            {
+                                Headers =
+                                {
+                                    ContentLength = stream.Length,
+                                    ContentType = msg.Content.Headers.ContentType
+                                }
+                            }, "file", filename);
+                            content.Add(new StringContent($"title={Path.GetFileName(filename)}"));
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", VEDLDataContext.WooCommerceStoreJWTToken);
+                            
+                            var resp = await client.PostAsync(url, content);
+                            var m = await resp.Content.ReadAsStringAsync();
+                            if (m != null)
+                            {
+                                return (true, m);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Cannot upload the image {imageLink} to WP. " + ex.Message);
+            }
+            return (false, string.Empty);
+        }
+
+        public static async Task<(bool,string)> GetJWTToken(string apiurl, string wplogin, string wppass)
+        {
+            try
+            {
+                wpClient = new WordPressClient(apiurl.Replace("wc/v3/", string.Empty));
+                wpClient.AuthMethod = WordPressPCL.Models.AuthMethod.JWT;
+                await wpClient.RequestJWToken(wplogin, wppass);
+                var isvalid = await wpClient.IsValidJWToken();
+                var token = wpClient.GetToken();
+                VEDLDataContext.WooCommerceStoreJWTToken = token;
+
+                Console.WriteLine(token);
+                return (true,token);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot get JWT token. " + ex.Message);
+                return (false, "Cannot get JWT Token. " + ex.Message);
+            }
+        }
 
         public static async Task<bool> InitStoreApiConnection(string apiurl, string apikey, string secret, string jwt, bool withRefreshing = false)
         {
             try
             {
+                if (string.IsNullOrEmpty(jwt)) return false;
+                    //throw new Exception("Please obtain JWT token first. It is important for upload of images to the eshop. ");
                 if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(secret))
                 {
                     VEDLDataContext.WooCommerceStoreUrl = apiurl;
@@ -68,12 +136,8 @@ namespace VEDriversLite.WooCommerce
                     {
                         //Console.WriteLine(resmsg);
                         IsInitialized = true;
-                        wpClient = new WordPressClient(VEDLDataContext.WooCommerceStoreUrl.Replace("wc/v3/", string.Empty));
-                        wpClient.AuthMethod = WordPressPCL.Models.AuthMethod.JWT;
-                        wpClient.SetJWToken(jwt);
-                        var isvalid = await wpClient.IsValidJWToken();
 
-                        Shop = new WooCommerceShop(apiurl, apikey, secret, jwt);
+                        Shop = new WooCommerceShop(apiurl, apikey, secret, VEDLDataContext.WooCommerceStoreJWTToken);
                         if (withRefreshing) await Shop.StartRefreshingData();
                         return true;
                     }
@@ -101,7 +165,7 @@ namespace VEDriversLite.WooCommerce
             if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(secret))
                 return apiurl + $"{command}?consumer_key={apikey}&consumer_secret={secret}";
             else
-                return VEDLDataContext.WooCommerceStoreUrl + $"products?consumer_key={VEDLDataContext.WooCommerceStoreAPIKey}&consumer_secret={VEDLDataContext.WooCommerceStoreSecret}";
+                return VEDLDataContext.WooCommerceStoreUrl + $"{command}?consumer_key={VEDLDataContext.WooCommerceStoreAPIKey}&consumer_secret={VEDLDataContext.WooCommerceStoreSecret}";
         }
 
         public static async Task<Product> AddNewProduct(INFT nft, int quantity = 1, string apiurl = "", Dictionary<string,string> options = null)
@@ -109,6 +173,8 @@ namespace VEDriversLite.WooCommerce
             if (IsInitialized && string.IsNullOrEmpty(apiurl))
                 apiurl = GetFullAPIUrl("products");
 
+            if (wpClient == null) throw new Exception("Please init the connection and obtain JWT Token first.");
+            
             Product p = null;
             var link = nft.ImageLink; 
 
@@ -122,13 +188,17 @@ namespace VEDriversLite.WooCommerce
                 price = Convert.ToString(nft.DogePrice, CultureInfo.InvariantCulture).Replace(",", ".");
             else if (nft.PriceActive)
                 price = Convert.ToString(nft.Price, CultureInfo.InvariantCulture).Replace(",", ".");
-            
+
+            var resi = await UploadIFPSImageToWP(nft.ImageLink, nft.Name.Replace(" ", "_"));
+            var imagelink = string.Empty;
+            if (resi.Item1) imagelink = resi.Item2;
+
             p = new Product()
             {
                 name = nft.Name,
                 description = nft.Text,
                 regular_price = price,
-                //images = new List<ImageObject>() { new ImageObject() { src = link } },
+                images = new List<ImageObject>() { new ImageObject() { src = imagelink } },
                 status = "publish",
                 downloadable = true,
                 stock_quantity = quantity,
