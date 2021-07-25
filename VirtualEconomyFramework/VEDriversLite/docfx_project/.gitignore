@@ -6,4 +6,6 @@
 /**/packages/
 /**/bin/
 /**/obj/
+/**/_site/
+_site/
 _site
