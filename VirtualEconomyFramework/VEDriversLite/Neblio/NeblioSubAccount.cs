@@ -117,6 +117,11 @@ namespace VEDriversLite.Neblio
         public event EventHandler<string> NewMintingProcessInfo;
 
         /// <summary>
+        /// This event is called during first loading of the account to keep updated the user
+        /// </summary>
+        public event EventHandler<string> FirsLoadingStatus;
+
+        /// <summary>
         /// Invoke Success message info event
         /// </summary>
         /// <param name="txid">new tx id hash</param>
@@ -330,6 +335,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
+                FirsLoadingStatus?.Invoke(this, "Loading of Sub Account data started.");
                 AddressInfo = new GetAddressResponse();
                 AddressInfo.Transactions = new List<string>();
                 await ReloadUtxos();
@@ -416,6 +422,9 @@ namespace VEDriversLite.Neblio
             {
                 if (!string.IsNullOrEmpty(Address))
                 {
+                    NFTHelpers.NFTLoadingStateChanged -= NFTHelpers_LoadingStateChangedHandler;
+                    NFTHelpers.NFTLoadingStateChanged += NFTHelpers_LoadingStateChangedHandler;
+
                     var lastnft = NFTs.FirstOrDefault();
                     var lastcount = NFTs.Count;
                     NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList());
@@ -440,6 +449,19 @@ namespace VEDriversLite.Neblio
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot reload NFTs. " + ex.Message);
+            }
+            finally
+            {
+                NFTHelpers.NFTLoadingStateChanged -= NFTHelpers_LoadingStateChangedHandler;
+            }
+        }
+
+        private void NFTHelpers_LoadingStateChangedHandler(object sender, string e)
+        {
+            var add = sender as string;
+            if (!string.IsNullOrEmpty(add) && add == Address)
+            {
+                FirsLoadingStatus?.Invoke(this, "SubAccount - " + e);
             }
         }
 

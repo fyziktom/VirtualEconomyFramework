@@ -166,6 +166,11 @@ namespace VEDriversLite
         public event EventHandler<INFT> ProfileUpdated;
 
         /// <summary>
+        /// This event is called during first loading of the account to keep updated the user
+        /// </summary>
+        public event EventHandler<string> FirsLoadingStatus;
+
+        /// <summary>
         /// Carrier for encrypted private key from storage and its password.
         /// </summary>
         [JsonIgnore]
@@ -298,18 +303,22 @@ namespace VEDriversLite
         {
             try
             {
+                FirsLoadingStatus?.Invoke(this, "Loading of address data started.");
                 AddressInfo = new GetAddressResponse();
                 AddressInfo.Transactions = new List<string>();
 
                 await ReloadUtxos();
                 await ReloadMintingSupply();
                 await ReloadTokenSupply();
+                FirsLoadingStatus?.Invoke(this, "Utxos loaded");
                 Refreshed?.Invoke(this, null);
                 if (!WithoutNFTs)
                 {
-                    await ReLoadNFTs(true);
+                    FirsLoadingStatus?.Invoke(this, "Loading NFTs started.");
+                    await ReLoadNFTs(true, true);
                     await ReloadCountOfNFTs();
                     Refreshed?.Invoke(this, null);
+                    FirsLoadingStatus?.Invoke(this, "Main Account NFTs Loaded.");
                 }
             }
             catch (Exception ex)
@@ -328,7 +337,6 @@ namespace VEDriversLite
                 {
                     try
                     {
-
                         if (!firstLoad)
                         {
                             await ReloadUtxos();
@@ -342,10 +350,6 @@ namespace VEDriversLite
                             {
                                 await ReLoadNFTs();
                                 await ReloadCountOfNFTs();
-                            }
-                            else
-                            {
-                                firstLoad = false;
                             }
                             
                             try
@@ -380,7 +384,15 @@ namespace VEDriversLite
                         //await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
                     }
 
-                    await Task.Delay(interval);
+                    if (firstLoad)
+                    {
+                        await Task.Delay(interval * 5);
+                        firstLoad = false;
+                    }
+                    else
+                    {
+                        await Task.Delay(interval);
+                    }
                 }
                 IsRefreshingRunning = false;
             });
@@ -1066,6 +1078,7 @@ namespace VEDriversLite
                                 await nsa.StartRefreshingData();
                                 nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
                                 nsa.NFTsChanged += Nsa_NFTsChanged;
+                                nsa.FirsLoadingStatus += Nsa_NFTLoadingStateChangedHandler;
                                 nsa.Name = nsa.BookmarkFromAccount.Name;
                                 SubAccounts.TryAdd(nsa.Address, nsa);
                             }
@@ -1089,6 +1102,11 @@ namespace VEDriversLite
         private void Nsa_NewMintingProcessInfo(object sender, string e)
         {
             NewMintingProcessInfo?.Invoke(sender, e);
+        }
+
+        private void Nsa_NFTLoadingStateChangedHandler(object sender, string e)
+        {
+            FirsLoadingStatus?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1122,6 +1140,7 @@ namespace VEDriversLite
                 await nsa.StartRefreshingData();
                 nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
                 nsa.NFTsChanged += Nsa_NFTsChanged;
+                nsa.FirsLoadingStatus += Nsa_NFTLoadingStateChangedHandler;
                 nsa.Name = name;
                 SubAccounts.TryAdd(nsa.Address, nsa);
 
@@ -1163,6 +1182,7 @@ namespace VEDriversLite
                 sacc.NewEventInfo -= Nsa_NewEventInfo;
                 sacc.NewMintingProcessInfo -= Nsa_NewMintingProcessInfo;
                 sacc.NFTsChanged -= Nsa_NFTsChanged;
+                sacc.FirsLoadingStatus -= Nsa_NFTLoadingStateChangedHandler;
                 SubAccounts.Remove(address);
             }
 
@@ -1786,7 +1806,7 @@ namespace VEDriversLite
         /// This function will reload changes in the NFTs list based on provided list of already loaded utxos.
         /// </summary>
         /// <returns></returns>
-        public async Task ReLoadNFTs(bool fireProfileEvent = false)
+        public async Task ReLoadNFTs(bool fireProfileEvent = false, bool withoutMessages = false)
         {
             try
             {
@@ -1797,9 +1817,13 @@ namespace VEDriversLite
                         NFTHelpers.ProfileNFTFound -= NFTHelpers_ProfileNFTFound;
                         NFTHelpers.ProfileNFTFound += NFTHelpers_ProfileNFTFound;
                     }
+
+                    NFTHelpers.NFTLoadingStateChanged -= NFTHelpers_LoadingStateChangedHandler;
+                    NFTHelpers.NFTLoadingStateChanged += NFTHelpers_LoadingStateChangedHandler;
+
                     var lastnft = NFTs.FirstOrDefault();
                     var lastcount = NFTs.Count;
-                    NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList(), fireProfileEvent);
+                    NFTs = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList(), fireProfileEvent, withoutMessages:withoutMessages);
                     if (lastnft != null)
                     {
                         if (NFTs.Count != lastcount)
@@ -1827,13 +1851,26 @@ namespace VEDriversLite
             {
                 if (fireProfileEvent)
                     NFTHelpers.ProfileNFTFound -= NFTHelpers_ProfileNFTFound;
+                NFTHelpers.NFTLoadingStateChanged -= NFTHelpers_LoadingStateChangedHandler;
             }
         }
 
         private void NFTHelpers_ProfileNFTFound(object sender, INFT e)
         {
-            Profile = e as ProfileNFT;
-            ProfileUpdated?.Invoke(this, e);
+            var add = sender as string;
+            if (!string.IsNullOrEmpty(add) && add == Address)
+            {
+                Profile = e as ProfileNFT;
+                ProfileUpdated?.Invoke(this, e);
+            }
+        }
+        private void NFTHelpers_LoadingStateChangedHandler(object sender, string e)
+        {
+            var add = sender as string;
+            if (!string.IsNullOrEmpty(add) && add == Address)
+            {
+                FirsLoadingStatus?.Invoke(this, e);
+            }
         }
 
         /// <summary>

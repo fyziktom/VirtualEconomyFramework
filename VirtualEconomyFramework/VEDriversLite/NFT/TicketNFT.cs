@@ -245,8 +245,8 @@ namespace VEDriversLite.NFT
 
         public override async Task<IDictionary<string,string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
-            if (string.IsNullOrEmpty(ImageLink))
-                throw new Exception("Cannot create NFT Ticket without image link.");
+            if (string.IsNullOrEmpty(ImageLink) && string.IsNullOrEmpty(Link))
+                throw new Exception("Cannot create NFT Ticket without image link or music link.");
             if (string.IsNullOrEmpty(EventId))
                 throw new Exception("Cannot create NFT Ticket without event Id.");
             if (string.IsNullOrEmpty(EventAddress))

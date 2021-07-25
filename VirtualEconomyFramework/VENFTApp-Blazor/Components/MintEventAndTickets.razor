@@ -796,6 +796,7 @@
                     seat = (newNFT as TicketNFT).Seat;
                     classOfTicket = (newNFT as TicketNFT).TicketClass;
                     authorLink = (newNFT as TicketNFT).AuthorLink;
+                    musicInLink = (newNFT as TicketNFT).MusicInLink;
                     classOfTicketName = (newNFT as TicketNFT).TicketClass.ToString();
                     durationOfTicketName = (newNFT as TicketNFT).TicketDuration.ToString();
                     break;
@@ -807,6 +808,7 @@
                     videoLink = (newNFT as EventNFT).VideoLink;
                     classOfEvent = (newNFT as EventNFT).EventClass;
                     authorLink = (newNFT as EventNFT).AuthorLink;
+                    musicInLink = (newNFT as EventNFT).MusicInLink;
                     classOfEventName = (newNFT as EventNFT).EventClass.ToString();
                     break;
             }
@@ -844,6 +846,7 @@
                         LocationCoordinates = locationCoordinates,
                         VideoLink = videoLink,
                         Seat = seat,
+                        MusicInLink = musicInLink,
                         TicketClass = classOfTicket,
                         AuthorLink = authorLink,
                     };
@@ -856,6 +859,7 @@
                         EventId = eventId,
                         EventDate = eventDate,
                         Location = location,
+                        MusicInLink = musicInLink,
                         LocationCoordinates = locationCoordinates,
                         VideoLink = videoLink,
                         EventClass = classOfEvent,

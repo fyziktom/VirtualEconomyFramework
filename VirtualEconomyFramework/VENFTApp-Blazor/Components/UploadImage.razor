@@ -13,6 +13,7 @@
         <div class="row" style="margin-top:20px;">
             <div class="col">
                 <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
+
                     <div class="row">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             @if (NFTType == NFTTypes.Music)
@@ -23,24 +24,29 @@
                             {
                                 <span>Upload Image</span>
                             }
-                            
+
                         </div>
                     </div>
-                    
+
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             @if (NFTType == NFTTypes.Music)
                             {
-                            <input type="file" @ref=inputTypeFileElement /> <!--accept="audio/*" />-->
+                                <input type="file" @ref=inputTypeFileElement /> <!--accept="audio/*" />-->
                             }
                             else
                             {
-                            <input type="file" @ref=inputTypeFileElement /> <!--accept="image/*" />-->
+                                <input type="file" @ref=inputTypeFileElement /> <!--accept="image/*" />-->
                             }
-                            
+
                         </div>
                     </div>
-                    
+                    <div class="row" style="margin-top:3px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <small class="text-info">Upload limit size is 10 MB.</small>
+                        </div>
+                    </div>
+
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                             @if (NFTType == NFTTypes.Music)
@@ -53,7 +59,7 @@
                             }
                         </div>
                     </div>
-                    
+
                 </Spin>
             </div>
         </div>
@@ -130,7 +136,10 @@
         {
             if (_imageLink == value) return;
             _imageLink = value;
-            loadingImageStage = LoadingImageStages.Loaded;
+            if (!string.IsNullOrEmpty(value))
+                loadingImageStage = LoadingImageStages.Loaded;
+            else
+                loadingImageStage = LoadingImageStages.NotStarted;
             StateHasChanged();
         }
     }
@@ -243,11 +252,20 @@
             {
                 loadingImageStage = LoadingImageStages.Loading;
                 StateHasChanged();
-
                 // Read into buffer and act (uses less memory)
                 await using (Stream stream = await file.OpenReadAsync())
                 {
                     var fileinfo = await file.ReadFileInfoAsync();
+                    var sizeInMB = fileinfo.Size / (1024 * 1024);
+                    if (sizeInMB > 10)
+                    {
+                        await JSRuntime.InvokeVoidAsync("alertMessage", "Upload limit size is 10 MB.");
+                        uploadingImage = false;
+                        loadingImageStage = LoadingImageStages.NotStarted;
+                        fileReaderService.CreateReference(inputTypeFileElement).ClearValue();
+                        StateHasChanged();
+                        return;
+                    }
                     try
                     {
                         //var link = await NFTHelpers.UploadImage(stream, fileinfo.Name);

@@ -97,9 +97,14 @@
     private List<string> Transactions = new List<string>();
     private List<TxDetails> TransactionsDetails = new List<TxDetails>();
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) Load();
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
     protected override Task OnInitializedAsync()
     {
-        Load();
         return base.OnInitializedAsync();
     }
 
@@ -113,14 +118,14 @@
         if (!SubAccount)
         {
             var inf = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
-            Transactions = inf.Transactions.Reverse().ToList();
+            Transactions = inf.Transactions?.Reverse().ToList();
         }
         else
         {
             if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
             {
                 var inf = await NeblioTransactionHelpers.AddressInfoAsync(Address);
-                Transactions = inf.Transactions.Reverse().ToList();
+                Transactions = inf.Transactions?.Reverse().ToList();
             }
         }
 

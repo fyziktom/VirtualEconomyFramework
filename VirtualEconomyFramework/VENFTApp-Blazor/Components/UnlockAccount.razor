@@ -12,7 +12,7 @@
        OnCancel="@UnclockAccountCancel">
     <div class="row">
         <div class="col">
-            <Spin Tip="Unlocking..." Spinning="@unlockingAccount">
+            <Spin Tip="@state" Spinning="@unlockingAccount">
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <span>Please Input password</span>
@@ -119,7 +119,7 @@
     bool cancelDeleteOfAccount = false;
     int deleteOfAccountCountdown = 60;
     private System.Threading.Timer txDeleteAccount;
-
+    string state = "Unlocking Account...";
     int removeAccountCounter = 0;
 
     private void RemoveExistingAccountOk(MouseEventArgs e)
@@ -199,15 +199,24 @@
         removeAccountCounter = 0;
     }
 
+    private void FirstLoadingStatusHandler(object sender, string e)
+    {
+        if (!string.IsNullOrEmpty(e)) state = e;
+        StateHasChanged();
+    }
+
     private async Task UnlockAccountConfirm(MouseEventArgs e)
     {
         try
         {
+            AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
+            AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
             if (string.IsNullOrEmpty(unlockPassword))
                 return;
             if (unlockPassword.Length < 5)
                 return;
 
+            state = "Unlocking Account...";
             unlockingAccount = true;
             StateHasChanged();
 
@@ -218,14 +227,21 @@
 
             await Task.Delay(100);
 
-            await AppData.Account.LoadAccount(pass, key, address, awaitFirstLoad:true); // put here your password
-
+            await AppData.Account.LoadAccount(pass, key, address, awaitFirstLoad: true); // put here your password
+            await Task.Delay(100);
+            StateHasChanged();
             var kt = await AppData.Account.AccountKey.GetEncryptedKey();
             if (!string.IsNullOrEmpty(kt))
             {
+                state = "Loading SubAccounts...";
+                StateHasChanged();
+                await LoadSubAccounts();
+                await Task.Delay(100);
+                state = "Unlocking Doge Account...";
+                StateHasChanged();
                 await LoadDogeAccount();
 
-                await Task.Delay(1000);
+                await Task.Delay(100);
                 unlockAcocuntModalVisible = false;
                 unlockingAccount = false;
 
@@ -234,7 +250,6 @@
 
                 StateHasChanged();
                 await AccountUnlocked.InvokeAsync("OK");
-
             }
             else
             {
@@ -244,9 +259,13 @@
         catch (Exception ex)
         {
             accountUnlockingError = true;
+            // todo
+        }
+        finally
+        {
+            AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
             unlockingAccount = false;
             StateHasChanged();
-            // todo
         }
     }
 
@@ -272,6 +291,25 @@
                 await AppData.DogeAccount.LoadAccount(pass, k, address);
             }
         }
+    }
+
+    private async Task LoadSubAccounts()
+    {
+        if (AppData.Account.SubAccounts.Count == 0)
+        {
+            try
+            {
+                var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
+                if (!string.IsNullOrEmpty(subAccounts))
+                    if (AppData.Account.SubAccounts.Count == 0)
+                        await AppData.Account.LoadSubAccounts(subAccounts);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load sub accounts from memory!" + ex.Message);
+            }
+        }
+
     }
 
     public void UnlockAccountEnter(KeyboardEventArgs e)

@@ -58,6 +58,10 @@ namespace VEDriversLite.NFT
         /// This event is called profile nft is found in the list of nfts
         /// </summary>
         public static event EventHandler<INFT> ProfileNFTFound;
+        /// <summary>
+        /// This event is called profile nft is found in the list of nfts
+        /// </summary>
+        public static event EventHandler<string> NFTLoadingStateChanged;
 
         /// <summary>
         /// Init handler to receive event info messages from Neblio Transaction Helpers class
@@ -446,6 +450,8 @@ namespace VEDriversLite.NFT
             if (innfts != null && innfts.Count > 0)
                 lastNFTTime = innfts.FirstOrDefault().Time;
 
+            NFTLoadingStateChanged?.Invoke(address, "Loading of the NFTs Started.");
+
             foreach (var u in utxos)
             {
                 if (maxLoadedItems > 0 && nfts.Count > maxLoadedItems) break;
@@ -469,12 +475,13 @@ namespace VEDriversLite.NFT
                                     {
                                         if (fireProfileEventTmp && nft.Type == NFTTypes.Profile)
                                         {
-                                            ProfileNFTFound.Invoke(null, nft);
+                                            ProfileNFTFound.Invoke(address, nft);
                                             fireProfileEventTmp = false;
                                         }
                                         nft.UtxoIndex = (int)u.Index;
                                         //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
                                         nfts.Add(nft);
+                                        NFTLoadingStateChanged?.Invoke(address, $"Loaded {nfts.Count} NFT of {utxos.Count}.");
                                     }
                                 }
                                 catch(Exception ex)
@@ -490,7 +497,7 @@ namespace VEDriversLite.NFT
                     break;
                 }
             }
-            
+
             if (innfts == null)
                 return nfts;
             else
@@ -498,6 +505,7 @@ namespace VEDriversLite.NFT
                     if (!innfts.Any(i => i.Utxo == n.Utxo && i.UtxoIndex == n.UtxoIndex))
                         innfts.Add(n);
                 });
+            //NFTLoadingStateChanged?.Invoke(address, "All NFTs Loaded.");
             return innfts.OrderByDescending(n => n.Time).ToList();
         }
 

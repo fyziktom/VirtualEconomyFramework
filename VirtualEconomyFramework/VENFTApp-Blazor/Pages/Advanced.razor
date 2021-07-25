@@ -345,6 +345,10 @@
         var key = await localStorage.GetItemAsync<string>("key");
         var dogeaddress = await localStorage.GetItemAsync<string>("dogeaddress");
         var dogekey = await localStorage.GetItemAsync<string>("dogekey");
+        var apiurl = await localStorage.GetItemAsync<string>("woocom-apiurl");
+        var apikey = await localStorage.GetItemAsync<string>("woocom-apikey");
+        var apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
+        var apijwt = await localStorage.GetItemAsync<string>("woocom-jwt");
 
         var dto = new BackupDataDto();
         if (!string.IsNullOrEmpty(bookmarks))
@@ -363,6 +367,15 @@
             dto.DogeAddress = dogeaddress;
         if (!string.IsNullOrEmpty(dogekey))
             dto.DogeKey = dogekey;
+
+        if (!string.IsNullOrEmpty(apiurl))
+            dto.WoCAPIUrl = apiurl;
+        if (!string.IsNullOrEmpty(apikey))
+            dto.WoCAPIKey = apikey;
+        if (!string.IsNullOrEmpty(apisecret))
+            dto.WoCAPISecret = apisecret;
+        if (!string.IsNullOrEmpty(apijwt))
+            dto.WoCAPIJWT = apijwt;
 
         var backupData = JsonConvert.SerializeObject(dto);
         return backupData;

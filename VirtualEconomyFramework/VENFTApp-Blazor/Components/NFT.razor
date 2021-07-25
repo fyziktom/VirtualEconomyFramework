@@ -44,12 +44,12 @@
                             break;
                         case NFTTypes.Ticket:
                             var tnft = nft as TicketNFT;
-                            @if (!string.IsNullOrEmpty(nft.ImageLink))
+                            @if (!string.IsNullOrEmpty(nft.ImageLink) || !string.IsNullOrEmpty(nft.Link))
                             {
                                 @if (tnft.MusicInLink)
                                 {
                                     <video name="media" style="max-width:250px; width:250px; max-height:200px; margin-bottom:70px;" controls>
-                                        <source src="@nft.ImageLink" type="audio/mpeg" autostart="false">
+                                        <source src="@nft.Link" type="audio/mpeg" autostart="false">
                                     </video>
                                 }
                                 else
@@ -69,12 +69,12 @@
                             break;
                         case NFTTypes.Event:
                             var enft = nft as EventNFT;
-                            @if (!string.IsNullOrEmpty(nft.ImageLink))
+                            @if (!string.IsNullOrEmpty(nft.ImageLink) || !string.IsNullOrEmpty(nft.Link))
                             {
                                 @if (enft.MusicInLink)
                                 {
                                     <video name="media" style="max-width:250px; width:250px; max-height:200px; margin-bottom:70px;" controls>
-                                        <source src="@nft.ImageLink" type="audio/mpeg" autostart="false">
+                                        <source src="@nft.Link" type="audio/mpeg" autostart="false">
                                     </video>
                                 }
                                 else

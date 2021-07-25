@@ -37,6 +37,8 @@ namespace VEDriversLite.WooCommerce
                 await using (Stream stream = await msg.Content.ReadAsStreamAsync())
                 {
                     var type = msg.Content.Headers.ContentType.ToString();
+                    if (type.Contains("mp3") || type.Contains("mp4") || type.Contains("avi"))
+                        return (false, "Cannot use mp3,mp4, or avi as the product image.");
                     var typesplit = type.Split('/');
                     if (typesplit.Length > 1 && !string.IsNullOrEmpty(typesplit[1]))
                         name += "." + typesplit[1];
@@ -117,6 +119,24 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        public static async Task<(bool, string)> InitWPAPI(string apiurl, string jwt)
+        {
+            try
+            {
+                wpClient = new WordPressClient(apiurl.Replace("wc/v3/", string.Empty));
+                wpClient.AuthMethod = WordPressPCL.Models.AuthMethod.JWT;
+                wpClient.SetJWToken(jwt);
+                var isvalid = await wpClient.IsValidJWToken();
+                Console.WriteLine(jwt);
+                return (true, jwt);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot get JWT token. " + ex.Message);
+                return (false, "Cannot get JWT Token. " + ex.Message);
+            }
+        }
+
         public static async Task<bool> InitStoreApiConnection(string apiurl, string apikey, string secret, string jwt, bool withRefreshing = false)
         {
             try
@@ -134,6 +154,15 @@ namespace VEDriversLite.WooCommerce
                     var resmsg = await res.Content.ReadAsStringAsync();
                     if (res.StatusCode == HttpStatusCode.OK)
                     {
+                        if (!string.IsNullOrEmpty(jwt))
+                        {
+                            var apir = await InitWPAPI(apiurl, jwt);
+                            if (!apir.Item1)
+                            {
+                                Console.WriteLine("Saved JWT Token is not correct.");
+                                return false;
+                            }
+                        }
                         //Console.WriteLine(resmsg);
                         IsInitialized = true;
 
@@ -174,13 +203,19 @@ namespace VEDriversLite.WooCommerce
                 apiurl = GetFullAPIUrl("products");
 
             if (wpClient == null) throw new Exception("Please init the connection and obtain JWT Token first.");
+            if (string.IsNullOrEmpty(nft.ImageLink)) throw new Exception("Image link cannot be empty.");
             
             Product p = null;
             var link = nft.ImageLink; 
+            var productlink = nft.ImageLink;
+            var desc = nft.Description;
 
-            if (nft.Type == NFTTypes.Music)
+            if (nft.Type == NFTTypes.Music || 
+                (nft.Type == NFTTypes.Ticket && (nft as TicketNFT).MusicInLink) || 
+                (nft.Type == NFTTypes.Event && (nft as EventNFT).MusicInLink))
             {
-                link = nft.Link;
+                productlink = nft.Link;
+                desc += " - This NFT contains music which is available after your order is finished.";
             }
 
             var price = "0.0";
@@ -189,10 +224,10 @@ namespace VEDriversLite.WooCommerce
             else if (nft.PriceActive)
                 price = Convert.ToString(nft.Price, CultureInfo.InvariantCulture).Replace(",", ".");
 
-            var resi = await UploadIFPSImageToWP(nft.ImageLink, nft.Name.Replace(" ", "_"));
+            var resi = await UploadIFPSImageToWP(link, nft.Name.Replace(" ", "_")); // todo add illegal chars check/cleanup
             var imagelink = string.Empty;
             if (resi.Item1) imagelink = resi.Item2;
-
+            
             p = new Product()
             {
                 name = nft.Name,
@@ -205,7 +240,7 @@ namespace VEDriversLite.WooCommerce
                 stock_status_enum = StockStatus.instock,
                 _virtual = true,
                 type = "simple",
-                short_description = nft.Description,
+                short_description = desc,
                 meta_data = new List<ProductMetadata>() {
                         new ProductMetadata() { key = "Utxo", value =  nft.Utxo },
                         new ProductMetadata() { key = "Utxoindex", value =  nft.UtxoIndex.ToString() },
@@ -214,7 +249,7 @@ namespace VEDriversLite.WooCommerce
                 downloads = new List<DownloadsObject>() {
                         new DownloadsObject() {
                             name = "NFT on IPFS",
-                            file = link,
+                            file = productlink,
                             external_url = $"https://nft.ve-nft.com/?txid={nft.Utxo}",
                             categories = new List<CategoryOfDownloads>() {
                                 new CategoryOfDownloads() { id = 3 }

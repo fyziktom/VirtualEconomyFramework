@@ -125,6 +125,44 @@
                 </div>
             </div>
         }
+
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+            <div class="col">
+                <span>Setted price</span>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+            @if (loadedNFT.PriceActive)
+            {
+                <div class="col w-100 d-flex justify-content-center align-items-center">
+                    <small class="text-muted">Setted Price: @loadedNFT.Price NEBL</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
+                </div>
+            }
+            @if (loadedNFT.DogePriceActive)
+            {
+                <div class="col w-100 d-flex justify-content-center align-items-center">
+                    <small class="text-muted">Setted Price: @loadedNFT.DogePrice DOGE</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/doge.jpg" />
+                </div>
+            }
+        </div>
+
+        @if (needNewImage)
+        {
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <div class="col">
+                    <span>This NFT does not contains image. Please upload the image.</span>
+                </div>
+            </div>
+            <UploadImage ImageLinkChanged="@NewImageLinkChanged" />
+        }
+        else
+        {
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <input type="checkbox" @onchange="eventArgs => { overrideImageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Override Image</span><br />
+                </div>
+            </div>
+        }
     </Spin>
 </Modal>
 
@@ -174,6 +212,7 @@
     private string productId = string.Empty;
     private string category = string.Empty;
     private string errorMeesage = string.Empty;
+    private string newImageLink = string.Empty;
     private int maxsupply = 1;
 
     Product product = new Product();
@@ -186,6 +225,7 @@
     bool withoutPriceVisible = false;
     bool validCategoryName = false;
     bool error = false;
+    bool needNewImage = false;
 
     INFT loadedNFT = new ImageNFT("");
     [Parameter]
@@ -221,7 +261,7 @@
             if (apikey == null) apikey = string.Empty;
             apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
             if (apisecret == null) apisecret = string.Empty;
-            jwt = await localStorage.GetItemAsync<string>("woocom-apisecret");
+            jwt = await localStorage.GetItemAsync<string>("woocom-jwt");
             if (jwt == null) jwt = string.Empty;
             await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt);
         }
@@ -230,6 +270,11 @@
 
     void ShowConfirm()
     {
+        if (string.IsNullOrEmpty(loadedNFT.ImageLink))
+            needNewImage = true;
+        else
+            needNewImage = false;
+
         confirmVisible = true;
     }
 
@@ -245,6 +290,19 @@
         else
             validCategoryName = true;
         StateHasChanged();
+    }
+
+    private async Task overrideImageChanged(object e)
+    {
+        needNewImage = (bool)e;
+        newImageLink = string.Empty;
+        StateHasChanged();
+    }
+
+    private void NewImageLinkChanged(string link)
+    {
+        if (!string.IsNullOrEmpty(link))
+            newImageLink = link;
     }
 
     private async Task showWooComProductCancel(MouseEventArgs e)
@@ -285,6 +343,12 @@
 
     private async Task AddProduct()
     {
+        if (needNewImage && string.IsNullOrEmpty(newImageLink))
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "This product does not contains Image. Please add new Image.");
+            return;
+        }
+
         try
         {
             if (loadedNFT == null)
@@ -293,6 +357,7 @@
             processingSending = true;
             StateHasChanged();
             Product prd = null;
+            if (needNewImage && !string.IsNullOrEmpty(newImageLink)) loadedNFT.ImageLink = newImageLink;
 
             if (productUploadNFTType == ProductUploadNFTType.Unique)
             {
