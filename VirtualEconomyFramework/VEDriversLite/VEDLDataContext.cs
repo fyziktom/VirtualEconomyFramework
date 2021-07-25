@@ -21,5 +21,6 @@ namespace VEDriversLite
         public static string WooCommerceStoreAPIKey { get; set; } = string.Empty;
         public static string WooCommerceStoreSecret { get; set; } = string.Empty;
         public static string WooCommerceStoreJWTToken { get; set; } = string.Empty;
+        public static bool AllowDispatchNFTOrders { get; set; } = false;
     }
 }

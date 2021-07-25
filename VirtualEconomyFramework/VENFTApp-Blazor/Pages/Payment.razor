@@ -140,7 +140,7 @@
                                             <span>Transaction Id</span>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top:10px;">
+                                    <div class="row" style="margin-top:5px;">
                                         <div class="col d-flex justify-content-center align-items-center">
                                             @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
                                             {
@@ -153,6 +153,16 @@
                                             <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@txid" MarginLeft="10" />
                                         </div>
                                     </div>
+                                    <hr />
+                                    @if (!string.IsNullOrEmpty(redirect))
+                                    { 
+                                    <div class="row" style="margin-top:10px; margin-bottom:20px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-primary" @onclick="GoBackToShop">Go Back to the Shop</button>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    }
                                 }
                             </div>
                         </div>
@@ -202,6 +212,35 @@
     </div>
 </Modal>
 
+<Modal Title="Unlock Account"
+       Visible="@redirectingBackToShopVisible"
+        Footer="null">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>You will be redirected back to the Shop in </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h6>@redirectingBackToShopCountDown @((redirectingBackToShopCountDown > 1)? "seconds" : "second")</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Redirect address:</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>@redirect</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
 @code {
 
     private enum Currecncy
@@ -219,6 +258,8 @@
     bool unlockOrClearCashMessage = false;
     bool unlockingAccount = false;
     bool accountUnlockingError = false;
+    bool redirectingBackToShopVisible = false;
+    int redirectingBackToShopCountDown = 5;
 
     private bool sendingTransaction = false;
     private bool sucessfullSend = false;
@@ -226,6 +267,7 @@
     private string receiver = string.Empty;
     private string message = string.Empty;
     private string currency = string.Empty;
+    private string redirect = string.Empty;
     private string txid = string.Empty;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -242,6 +284,10 @@
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("msg", out var msg))
                 {
                     message = msg;
+                }
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("rdc", out var rdc))
+                {
+                    redirect = rdc;
                 }
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("curr", out var curr))
                 {
@@ -343,6 +389,22 @@
         {
             sendingTransaction = false;
             StateHasChanged();
+        }
+    }
+
+    public async Task GoBackToShop(MouseEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(redirect))
+        {
+            redirectingBackToShopVisible = true;
+            StateHasChanged();
+            while (redirectingBackToShopCountDown > 0)
+            {
+                await Task.Delay(1000);
+                redirectingBackToShopCountDown--;
+                StateHasChanged();
+            }
+            NavManager.NavigateTo(redirect);
         }
     }
 

@@ -236,7 +236,7 @@ namespace VEDriversLite
                     Address = kdto.Address;
 
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
-                    SignMessage("init");
+                    //SignMessage("init");
                     await StartRefreshingData();
                     return true;
                 }
@@ -282,7 +282,7 @@ namespace VEDriversLite
                         Address = address;
                     }
 
-                    SignMessage("init");
+                    //SignMessage("init");
                 });
 
                 await StartRefreshingData();
@@ -480,6 +480,64 @@ namespace VEDriversLite
                 if (string.IsNullOrEmpty(message))
                     rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
                 else 
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
+
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
+        /// Send Doge payment with multiple inputs
+        /// </summary>
+        /// <param name="receiver">Receiver Doge Address</param>
+        /// <param name="amount">Ammount in Doge</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> SendMultipleInputPayment(string receiver, double amount, List<Utxo> utxos, string message = "", UInt64 fee = 200000000)
+        {
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableDoge(amount);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                return (false, res.Item1);
+            }
+
+            if (utxos.Count > 0)
+            {
+                res.Item2 = utxos;
+            }
+            // fill input data for sending tx
+            var dto = new SendTxData() // please check SendTxData for another properties such as specify source UTXOs
+            {
+                Amount = amount,
+                SenderAddress = Address,
+                ReceiverAddress = receiver,
+                CustomMessage = message
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = string.Empty;
+                if (string.IsNullOrEmpty(message))
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
+                else
                     rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
 
                 if (rtxid != null)

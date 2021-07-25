@@ -12,5 +12,7 @@ namespace VEDriversLite.Dto
         public string Password { get; set; } = string.Empty;
         public bool IsDogeAccount { get; set; } = false;
         public bool ConnectToMainShop { get; set; } = false;
+        public bool IsReceivingAccount { get; set; } = false;
+        public bool IsDepositAccount { get; set; } = false;
     }
 }

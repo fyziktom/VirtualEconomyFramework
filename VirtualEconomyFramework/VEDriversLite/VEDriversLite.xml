@@ -210,6 +210,14 @@
             <param name="amount">Ammount in Doge</param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.DogeAccount.SendMultipleInputPayment(System.String,System.Double,System.Collections.Generic.List{VEDriversLite.DogeAPI.Utxo},System.String,System.UInt64)">
+            <summary>
+            Send Doge payment with multiple inputs
+            </summary>
+            <param name="receiver">Receiver Doge Address</param>
+            <param name="amount">Ammount in Doge</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.DogeAccount.BuyNFT(System.String,System.String,VEDriversLite.NFT.INFT)">
             <summary>
             Send Doge payment
@@ -670,7 +678,7 @@
             <param name="addr"></param>
             <returns>This object contains list of spended Txs.</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.TransactionInfoAsync(System.String)">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.TransactionInfoAsync(System.String,System.Boolean)">
             <summary>
             Return transaction object
             </summary>
@@ -940,7 +948,7 @@
             <param name="interval">Default interval is 3000 = 3 seconds</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.CreateNewAccount(System.String,System.Boolean,System.String)">
+        <member name="M:VEDriversLite.NeblioAccount.CreateNewAccount(System.String,System.Boolean,System.String,System.Boolean)">
             <summary>
             This function will create new account - Neblio address and its Private key.
             </summary>
@@ -948,28 +956,28 @@
             <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
             </summary>
             <param name="password">Passwotd to decrypt the loaded private key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccountWithDummyKey(System.String,System.String,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccountWithDummyKey(System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
             </summary>
             <param name="password">Passwotd to decrypt the loaded private key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String,System.String,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             Load account from filename backup from VENFT App (default "backup.json") file placed in the root exe directory. Doesnt work in WABS
             </summary>
             <param name="password">Passwotd to decrypt the loaded private key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
             Load account from password, input encrypted private key and address.
             It expect the private key is encrypted by the password.
@@ -1317,6 +1325,15 @@
             </summary>
             <param name="receiver">Receiver Neblio Address</param>
             <param name="amount">Ammount in Neblio</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.SendMultipleInputNeblioPayment(System.String,System.Double,System.Collections.Generic.List{VEDriversLite.NeblioAPI.Utxos},System.String)">
+            <summary>
+            Send multiuple input neblio payment
+            </summary>
+            <param name="receiver">Receiver Neblio Address</param>
+            <param name="amount">Ammount in Neblio</param>
+            <param name="utxos">Input utxos</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.SplitNeblioCoin(System.Collections.Generic.List{System.String},System.Int32,System.Double)">
@@ -4425,9 +4442,25 @@
             If there is some Doge address in same project which should be searched for the payments triggers fill it here
             </summary>
         </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.ConnectedDepositDogeAccountAddress">
+            <summary>
+            If there is some Doge address in same project which should be used as deposit account for completed orders payments fill it here
+            This helps to keep low amount of utxos on main doge account address where the new payments are searched. 
+            </summary>
+        </member>
         <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.ConnectedNeblioAccountAddress">
             <summary>
             If there is some Neblio address in same project which should be searched for the payments triggers fill it here
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.ConnectedDepositNeblioAccountAddress">
+            <summary>
+            If there is some Neblio address in same project which should be used as deposit account for completed orders payments fill it here
+            This helps to keep low amount of utxos on main neblio account address where the new payments are searched. 
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.ConnectedNFTWarehouseNeblioAccountAddress">
+            <summary>
             This address is used as main address for processing NFT orders
             </summary>
         </member>

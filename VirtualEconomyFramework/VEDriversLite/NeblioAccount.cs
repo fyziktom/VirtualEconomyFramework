@@ -309,6 +309,7 @@ namespace VEDriversLite
                 {
                     await ReLoadNFTs(true);
                     await ReloadCountOfNFTs();
+                    Refreshed?.Invoke(this, null);
                 }
             }
             catch (Exception ex)
@@ -321,39 +322,31 @@ namespace VEDriversLite
             // todo cancelation token
             _ = Task.Run(async () =>
             {
-                try
-                {
-                    //await ReloadUtxos();
-                    //await ReloadMintingSupply();
-                    //await ReloadTokenSupply();
-                    Refreshed?.Invoke(this, null);
-                    if (!WithoutNFTs)
-                    {
-                        await ReLoadNFTs(true);
-                        await ReloadCountOfNFTs();
-                        //await CheckPayments();
-                        await RefreshAddressReceivedPayments();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // todo
-                }
                 IsRefreshingRunning = true;
 
                 while (true)
                 {
                     try
                     {
-                        //await ReloadAccountInfo();
 
-                        await ReloadUtxos();
-                        await ReloadMintingSupply();
-                        await ReloadTokenSupply();
+                        if (!firstLoad)
+                        {
+                            await ReloadUtxos();
+                            await ReloadMintingSupply();
+                            await ReloadTokenSupply();
+                        }
+
                         if (!WithoutNFTs)
                         {
-                            await ReLoadNFTs();
-                            await ReloadCountOfNFTs();
+                            if (!firstLoad)
+                            {
+                                await ReLoadNFTs();
+                                await ReloadCountOfNFTs();
+                            }
+                            else
+                            {
+                                firstLoad = false;
+                            }
                             
                             try
                             {
@@ -375,7 +368,7 @@ namespace VEDriversLite
                                 if (!string.IsNullOrEmpty(ConnectedDogeAccountAddress))
                                     await CheckDogePayments();
 
-                                await RefreshAddressReceivedPayments();
+                                //await RefreshAddressReceivedPayments();
                                 minorRefresh = 10;
                             }
                         }
@@ -401,7 +394,7 @@ namespace VEDriversLite
         /// <param name="password">Input password, which will encrypt the Private key</param>
         /// <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
         /// <returns></returns>
-        public async Task<bool> CreateNewAccount(string password, bool saveToFile = false, string filename = "key.txt")
+        public async Task<bool> CreateNewAccount(string password, bool saveToFile = false, string filename = "key.txt", bool awaitFirstLoad = false)
         {
             try
             {
@@ -433,7 +426,10 @@ namespace VEDriversLite
                     }
                 });
 
-                await StartRefreshingData();
+                if (awaitFirstLoad)
+                    await StartRefreshingData();
+                else   
+                    StartRefreshingData();
 
                 return true;
             }
@@ -450,7 +446,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccount(string password, string filename = "key.txt", bool withoutNFTs = false)
+        public async Task<bool> LoadAccount(string password, string filename = "key.txt", bool withoutNFTs = false, bool awaitFirstLoad = false)
         {
             if (FileHelpers.IsFileExists(filename))
             {
@@ -479,7 +475,12 @@ namespace VEDriversLite
 
                     WithoutNFTs = withoutNFTs;
                     if (!IsRefreshingRunning)
-                        await StartRefreshingData();
+                    {
+                        if (awaitFirstLoad)
+                            await StartRefreshingData();
+                        else
+                            StartRefreshingData();
+                    }
 
                     return true;
                 }
@@ -501,7 +502,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountWithDummyKey(string password, string address, bool withoutNFTs = false)
+        public async Task<bool> LoadAccountWithDummyKey(string password, string address, bool withoutNFTs = false, bool awaitFirstLoad = false)
         {
             try
             {
@@ -527,7 +528,12 @@ namespace VEDriversLite
 
                 WithoutNFTs = withoutNFTs;
                 if (!IsRefreshingRunning)
-                    await StartRefreshingData();
+                {
+                    if (awaitFirstLoad)
+                        await StartRefreshingData();
+                    else    
+                        StartRefreshingData();
+                }
                 return true;
             }
             catch (Exception ex)
@@ -541,7 +547,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountFromVENFTBackup(string password, string fromString = "", string filename = "backup.json", bool withoutNFTs = false)
+        public async Task<bool> LoadAccountFromVENFTBackup(string password, string fromString = "", string filename = "backup.json", bool withoutNFTs = false, bool awaitFirstLoad = false)
         {
             if (FileHelpers.IsFileExists(filename) || !string.IsNullOrEmpty(fromString))
             {
@@ -585,7 +591,10 @@ namespace VEDriversLite
                     if (!IsRefreshingRunning)
                     {
                         SignMessage("init");
-                        await StartRefreshingData();
+                        if (awaitFirstLoad)
+                            await StartRefreshingData();
+                        else
+                            StartRefreshingData();
                     }
 
                     return true;
@@ -612,7 +621,7 @@ namespace VEDriversLite
         /// <param name="encryptedKey"></param>
         /// <param name="address"></param>
         /// <returns></returns>
-        public async Task<bool> LoadAccount(string password, string encryptedKey, string address = "", bool withoutNFTs = false)
+        public async Task<bool> LoadAccount(string password, string encryptedKey, string address = "", bool withoutNFTs = false, bool awaitFirstLoad = false)
         {
             try
             {
@@ -632,7 +641,7 @@ namespace VEDriversLite
                         AccountKey.IsEncrypted = true;
                     }
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
-                    SignMessage("init");
+                    //SignMessage("init");
                     if (string.IsNullOrEmpty(address))
                     {
                         var add = await NeblioTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
@@ -646,7 +655,12 @@ namespace VEDriversLite
 
                 WithoutNFTs = withoutNFTs;
                 if (!IsRefreshingRunning)
-                    await StartRefreshingData();
+                {
+                    if (awaitFirstLoad)
+                        await StartRefreshingData();
+                    else
+                        StartRefreshingData();
+                }
 
                 return true;
             }
@@ -2038,6 +2052,56 @@ namespace VEDriversLite
             {
                 // send tx
                 var rtxid = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, res.Item2);
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Payment Sent");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
+        /// Send multiuple input neblio payment
+        /// </summary>
+        /// <param name="receiver">Receiver Neblio Address</param>
+        /// <param name="amount">Ammount in Neblio</param>
+        /// <param name="utxos">Input utxos</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> SendMultipleInputNeblioPayment(string receiver, double amount, List<Utxos> utxos, string message = "")
+        {
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(amount);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                return (false, res.Item1);
+            }
+
+            // fill input data for sending tx
+            var dto = new SendTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Amount = amount,
+                SenderAddress = Address,
+                ReceiverAddress = receiver,
+                CustomMessage = message
+            };
+
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, utxos, 20000);
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Payment Sent");

@@ -2778,6 +2778,41 @@ namespace VEDriversLite
             }
         }
 
+        public static async Task<(bool, string)> ParseNeblioMessage(GetTransactionInfoResponse txinfo)
+        {
+            if (txinfo == null)
+                return (false, "No input data provided.");
+            if (txinfo.Vout == null || txinfo.Vout.Count == 0)
+                return (false, "No outputs in transaction.");
+
+            foreach (var o in txinfo.Vout)
+            {
+                if (!string.IsNullOrEmpty(o.ScriptPubKey.Asm) && o.ScriptPubKey.Asm.Contains("OP_RETURN"))
+                {
+                    var message = o.ScriptPubKey.Asm.Replace("OP_RETURN ", string.Empty);
+                    var bytes = HexStringToBytes(message);
+                    var msg = Encoding.UTF8.GetString(bytes);
+                    return (true, msg);
+                }
+            }
+
+            return (false, string.Empty);
+        }
+        public static byte[] HexStringToBytes(string hexString)
+        {
+            if (hexString == null)
+                throw new ArgumentNullException("hexString");
+            if (hexString.Length % 2 != 0)
+                throw new ArgumentException("hexString must have an even length", "hexString");
+            var bytes = new byte[hexString.Length / 2];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                string currentHex = hexString.Substring(i * 2, 2);
+                bytes[i] = Convert.ToByte(currentHex, 16);
+            }
+            return bytes;
+        }
+
         /// <summary>
         /// Not recommended to use now. It split tokens to lots, but doing it in separated transactions. Will be changed to do it in one tx soon.
         /// </summary>

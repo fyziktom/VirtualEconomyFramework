@@ -1,5 +1,6 @@
 ﻿using NBitcoin;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -20,6 +21,8 @@ namespace VEDriversLite
         public static double FromSatToMainRatio = 100000000;
         public static Network Network = NBitcoin.Altcoins.Dogecoin.Instance.Mainnet;
         public static int MinimumConfirmations = 2;
+
+        private static ConcurrentDictionary<string, GetTransactionInfoResponse> transactionDetails = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
 
         /// <summary>
         /// Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
@@ -534,10 +537,43 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="addr"></param>
         /// <returns></returns>
-        public static async Task<GetTransactionInfoResponse> TransactionInfoAsync(string txid)
+        public static async Task<GetTransactionInfoResponse> TransactionInfoAsync(string txid, bool fromMemory = false)
         {
-            var tx = await GetClient().GetTransactionInfoAsync(txid);
-            return tx;
+            try
+            {
+                if (fromMemory)
+                {
+                    if (transactionDetails.TryGetValue(txid, out var txinfo))
+                    {
+                        if (txinfo.Transaction.Confirmations > 3)
+                        {
+                            return txinfo;
+                        }
+                        else
+                        {
+                            var tx = await GetClient().GetTransactionInfoAsync(txid);
+                            if (tx != null) transactionDetails.TryUpdate(txid, tx, txinfo);
+                            return tx;
+                        }
+                    }
+                    else
+                    {
+                        var tx = await GetClient().GetTransactionInfoAsync(txid);
+                        if (tx != null) transactionDetails.TryAdd(txid, tx);
+                        return tx;
+                    }
+                }
+                else
+                {
+                    var tx = await GetClient().GetTransactionInfoAsync(txid);
+                    return tx;
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot obtain the data about the transaction from the API. " + ex.Message);
+            }
+            return new GetTransactionInfoResponse();
         }
 
         /// <summary>

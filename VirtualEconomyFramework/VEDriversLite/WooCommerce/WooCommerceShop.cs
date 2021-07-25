@@ -15,12 +15,13 @@ namespace VEDriversLite.WooCommerce
         public WooCommerceShop()
         {
         }
-        public WooCommerceShop(string apiurl, string apikey, string secret, string jwt)
+        public WooCommerceShop(string apiurl, string apikey, string secret, string jwt, bool allowDispatchNFTOrders)
         {
             WooCommerceStoreUrl = apiurl;
             WooCommerceStoreAPIKey = apikey;
             WooCommerceStoreSecret = secret;
             WooCommerceStoreJWTToken = jwt;
+            AllowDispatchNFTOrders = allowDispatchNFTOrders;
         }
         public string WooCommerceStoreUrl { get; set; } = string.Empty;
         public string WooCommerceStoreAPIKey { get; set; } = string.Empty;
@@ -33,10 +34,23 @@ namespace VEDriversLite.WooCommerce
         /// </summary>
         public string ConnectedDogeAccountAddress { get; set; } = string.Empty;
         /// <summary>
+        /// If there is some Doge address in same project which should be used as deposit account for completed orders payments fill it here
+        /// This helps to keep low amount of utxos on main doge account address where the new payments are searched. 
+        /// </summary>
+        public string ConnectedDepositDogeAccountAddress { get; set; } = string.Empty;
+        /// <summary>
         /// If there is some Neblio address in same project which should be searched for the payments triggers fill it here
-        /// This address is used as main address for processing NFT orders
         /// </summary>
         public string ConnectedNeblioAccountAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// If there is some Neblio address in same project which should be used as deposit account for completed orders payments fill it here
+        /// This helps to keep low amount of utxos on main neblio account address where the new payments are searched. 
+        /// </summary>
+        public string ConnectedDepositNeblioAccountAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// This address is used as main address for processing NFT orders
+        /// </summary>
+        public string ConnectedNFTWarehouseNeblioAccountAddress { get; set; } = string.Empty;
 
         public ConcurrentDictionary<string, Order> Orders { get; set; } = new ConcurrentDictionary<string, Order>();
         public ConcurrentDictionary<int, Product> Products { get; set; } = new ConcurrentDictionary<int, Product>();
@@ -83,6 +97,11 @@ namespace VEDriversLite.WooCommerce
                 {
                     await CheckDogePayments();
                 }
+                else if (!string.IsNullOrEmpty(ConnectedNeblioAccountAddress))
+                {
+                    await CheckNeblioPayments();
+                }
+
                 if (AllowDispatchNFTOrders)
                 {
                     await CheckReceivedPaymentsToDispatch();
@@ -115,11 +134,19 @@ namespace VEDriversLite.WooCommerce
                     {
                         if (o.line_items.Count > 0)
                         {
-                            var validateNeblioAddress = await GetNeblioAddressFromOrderMetadata(o);
-                            if (validateNeblioAddress.Item1)
+                            var valid = false;
+                            var add = string.Empty;
+                            if (AllowDispatchNFTOrders)
+                            {
+                                var validateNeblioAddress = await GetNeblioAddressFromOrderMetadata(o);
+                                valid = validateNeblioAddress.Item1;
+                                add = validateNeblioAddress.Item2;
+                            }
+
+                            if (valid && AllowDispatchNFTOrders)
                             {
                                 Console.WriteLine($"New Order received:{o.id}, {o.order_key}");
-                                Console.WriteLine($"Order {o.id}, {o.order_key} contains valid Neblio Address for receiving NFTs https://explorer.nebl.io/address/{validateNeblioAddress.Item2}");
+                                Console.WriteLine($"Order {o.id}, {o.order_key} contains valid Neblio Address for receiving NFTs https://explorer.nebl.io/address/{add}");
                                 var validNFTItems = true;
                                 o.line_items.ForEach(async (item) =>
                                 {
@@ -148,25 +175,59 @@ namespace VEDriversLite.WooCommerce
                                     {
                                         Console.WriteLine($"Order {o.id}, {o.order_key} failed because NFT items not found in the stock.");
                                         o.statusclass = OrderStatus.failed;
-                                        o.meta_data.Add(new ProductMetadata() { 
-                                            key = "Message from VENFT Server", 
-                                            value = "Cannot find the NFTs for the items in the order." 
+                                        o.meta_data.Add(new ProductMetadata()
+                                        {
+                                            key = "Message from VENFT Server",
+                                            value = "Cannot find the NFTs for the items in the order."
                                         });
                                     }
-                                    try
-                                    {
-                                        await UpdateOrder(o);
-                                    }
-                                    catch(Exception ex)
-                                    {
-                                        Console.WriteLine("Cannot update the order. " + ex.Message);
-                                    }
                                 });
+                                try
+                                {
+                                    await UpdateOrder(o);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Cannot update the order. " + ex.Message);
+                                }
+                            }
+                            else if (!AllowDispatchNFTOrders)
+                            {
+                               Console.WriteLine($"New Order received:{o.id}, {o.order_key}");
+                                try
+                                {
+                                    o.statusclass = OrderStatus.pending;
+                                    Orders.TryAdd(o.order_key, o);
+                                    await UpdateOrder(o);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Cannot update the order. " + ex.Message);
+                                }
+                            }
+                            else if (AllowDispatchNFTOrders && !valid)
+                            {
+                                Console.WriteLine($"Order {o.id}, {o.order_key} does not contains valid Neblio address.");
+                                o.statusclass = OrderStatus.failed;
+                                o.meta_data.Add(new ProductMetadata()
+                                {
+                                    key = "Message from VENFT Server",
+                                    value = "Does not contains valid Neblio address."
+                                });
+                                try
+                                {
+                                    await UpdateOrder(o, true);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Cannot update the order. " + ex.Message);
+                                }
                             }
                         }
                     }
-                    else if (o.statusclass == OrderStatus.pending || o.statusclass == OrderStatus.processing)
+                    else if (o.statusclass == OrderStatus.pending || o.statusclass == OrderStatus.processing)// || o.statusclass == OrderStatus.completed)
                     {
+                        Console.WriteLine($"Order {o.id}, {o.order_key} is already in the {o.status} state. Just adding to the list.");
                         ord = new Order();
                         ord.Fill(o);
                         Orders.TryAdd(ord.order_key, ord);
@@ -332,19 +393,32 @@ namespace VEDriversLite.WooCommerce
                 throw new Exception("Cannot find the order.");
             }
         }
-        public async Task<Order> UpdateOrder(Order order)
+        public async Task<Order> UpdateOrder(Order order, bool withoutListCheck = false)
         {
-            if (Orders.TryGetValue(order.order_key, out var ord))
+            if (!withoutListCheck)
             {
-                var o = await WooCommerceHelpers.UpdateOrder(order,
-                    WooCommerceHelpers.GetFullAPIUrl(
-                        $"orders/{ord.id}", WooCommerceStoreUrl, WooCommerceStoreAPIKey, WooCommerceStoreSecret)
-                    );
-                return order;
+                if (Orders.TryGetValue(order.order_key, out var ord))
+                {
+                    var o = await WooCommerceHelpers.UpdateOrder(order,
+                        WooCommerceHelpers.GetFullAPIUrl(
+                            $"orders/{ord.id}", WooCommerceStoreUrl, WooCommerceStoreAPIKey, WooCommerceStoreSecret)
+                        );
+                    ord.Fill(o);
+                    return ord;
+                }
+                else
+                {
+                    throw new Exception("Cannot find the order.");
+                }
             }
             else
             {
-                throw new Exception("Cannot find the order.");
+                var o = await WooCommerceHelpers.UpdateOrder(order,
+                        WooCommerceHelpers.GetFullAPIUrl(
+                            $"orders/{order.id}", WooCommerceStoreUrl, WooCommerceStoreAPIKey, WooCommerceStoreSecret)
+                        );
+                order.Fill(o);
+                return order;
             }
         }
 
@@ -382,7 +456,7 @@ namespace VEDriversLite.WooCommerce
                         $"orders/{orderid}", WooCommerceStoreUrl, WooCommerceStoreAPIKey, WooCommerceStoreSecret)
                     );
             if (Orders.TryGetValue(ord.order_key, out var o))
-                o = ord;
+                o.Fill(ord);
             return ord;
         }
 

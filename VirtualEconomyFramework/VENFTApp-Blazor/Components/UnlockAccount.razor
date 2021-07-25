@@ -218,13 +218,14 @@
 
             await Task.Delay(100);
 
-            await AppData.Account.LoadAccount(pass, key, address); // put here your password
+            await AppData.Account.LoadAccount(pass, key, address, awaitFirstLoad:true); // put here your password
 
             var kt = await AppData.Account.AccountKey.GetEncryptedKey();
             if (!string.IsNullOrEmpty(kt))
             {
                 await LoadDogeAccount();
 
+                await Task.Delay(1000);
                 unlockAcocuntModalVisible = false;
                 unlockingAccount = false;
 

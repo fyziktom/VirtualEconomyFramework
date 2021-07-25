@@ -35,7 +35,7 @@
         get => receiver;
         set
         {
-            if (!string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(value) && receiver != value)
             {
                 receiver = value;
                 checkAddress(receiver);

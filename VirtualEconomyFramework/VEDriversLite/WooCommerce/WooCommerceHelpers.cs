@@ -121,7 +121,7 @@ namespace VEDriversLite.WooCommerce
         {
             try
             {
-                if (string.IsNullOrEmpty(jwt)) return false;
+                //if (string.IsNullOrEmpty(jwt)) return false;
                     //throw new Exception("Please obtain JWT token first. It is important for upload of images to the eshop. ");
                 if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(secret))
                 {
@@ -137,7 +137,7 @@ namespace VEDriversLite.WooCommerce
                         //Console.WriteLine(resmsg);
                         IsInitialized = true;
 
-                        Shop = new WooCommerceShop(apiurl, apikey, secret, VEDLDataContext.WooCommerceStoreJWTToken);
+                        Shop = new WooCommerceShop(apiurl, apikey, secret, VEDLDataContext.WooCommerceStoreJWTToken, VEDLDataContext.AllowDispatchNFTOrders);
                         if (withRefreshing) await Shop.StartRefreshingData();
                         return true;
                     }
@@ -251,6 +251,7 @@ namespace VEDriversLite.WooCommerce
         {
             if (IsInitialized && string.IsNullOrEmpty(apiurl))
                 apiurl = GetFullAPIUrl($"orders/{order.id}");
+            if (order.currency != "DGC") order.currency = "DGC";
 
             var ord = JsonConvert.SerializeObject(order);
             var content = new StringContent(ord, Encoding.UTF8, "application/json");

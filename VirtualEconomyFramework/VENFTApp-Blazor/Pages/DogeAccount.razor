@@ -245,7 +245,7 @@
         get => receiver;
         set
         {
-            if (!string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(value) && receiver != value)
             {
                 receiver = value;
                 StateHasChanged();
@@ -346,7 +346,8 @@
             Receiver = string.Empty;
             return;
         }
-        Receiver = address;
+        if (receiver != address)
+            receiver = address;
         StateHasChanged();
     }
 

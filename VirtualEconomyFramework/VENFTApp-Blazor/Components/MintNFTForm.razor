@@ -73,14 +73,14 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add your webpage" MaxLength="50" @bind-Value=@link Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                <Input Placeholder="Add your webpage" MaxLength="200" @bind-Value=@link Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
                         @if (!string.IsNullOrEmpty(link))
                         {
                             <div class="row" style="margin-top:3px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <a href= ="@link" target="_blank" class="text-info">Test the link</a>
+                                    <a href="@link" target="_blank" class="text-info">Test the link</a>
                                 </div>
                             </div>
                         }
@@ -183,7 +183,7 @@
                                 <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
                             </div>
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
+                                <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Copies</span><br />
                             </div>
                             <div class="col d-flex justify-content-center align-items-center">
                                 <input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Mint To Another Address</span><br />
@@ -223,7 +223,7 @@
                         {
                             <div class="row" style="margin-top:10px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <small>Coppies</small>
+                                    <small>Copies</small>
                                 </div>
                             </div>
                             <div class="row" style="margin-top:5px;">
@@ -251,11 +251,22 @@
                             </div>
                         }
                     }
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
+                    @if (string.IsNullOrEmpty(sourceUtxo))
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-center">Edit costs 0.0002 NEBL (fee).</small>
+                            </div>
+                        </div>
+                    }
                     @if ((string.IsNullOrEmpty(imagelink) && (nftType == NFTTypes.Image)) || (string.IsNullOrEmpty(link) && (nftType == NFTTypes.Music)))
                     {
                         <div class="row" style="margin-top:20px;">
@@ -268,7 +279,7 @@
                     {
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
+                                <button class="btn btn-primary" @onclick="ShowMintConfirm">@(string.IsNullOrEmpty(sourceUtxo)? "Create NFT" : "Edit NFT")</button>
                             </div>
                         </div>
                         @if (!string.IsNullOrEmpty(multimintStatus))
@@ -303,20 +314,20 @@
 
 @code {
 
-        [Parameter]
-        public bool RedirectToNFTsAfterMint { get; set; } = false;
+    [Parameter]
+    public bool RedirectToNFTsAfterMint { get; set; } = false;
 
-        [Parameter]
-        public EventCallback<string> NFTMinted { get; set; }
+    [Parameter]
+    public EventCallback<string> NFTMinted { get; set; }
 
-        [Parameter]
-        public bool SubAccount { get; set; } = false;
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
 
-        [Parameter]
-        public string Address { get; set; } = string.Empty;
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
 
-        [Parameter]
-        public string TokenId { get; set; } = string.Empty;
+    [Parameter]
+    public string TokenId { get; set; } = string.Empty;
 
     private NFTTypes nftType = NFTTypes.Image;
     [Parameter]
@@ -338,6 +349,7 @@
                 sourceNFT = null;
                 sourceNFT = value;
                 LoadData();
+                sourceUtxo = value.Utxo;
                 StateHasChanged();
             }
         }
@@ -361,6 +373,7 @@
     string author = string.Empty;
     string imagelink = string.Empty;
     string link = string.Empty;
+    string sourceUtxo = string.Empty;
 
     bool withPrice = false;
     bool withDogePrice = false;
@@ -504,6 +517,9 @@
             author = sourceNFT.Author;
             imagelink = sourceNFT.ImageLink;
             link = sourceNFT.Link;
+            newNFT.Utxo = sourceNFT.Utxo;
+            newNFT.UtxoIndex = sourceNFT.UtxoIndex;
+            sourceUtxo = newNFT.Utxo;
             StateHasChanged();
         }
     }

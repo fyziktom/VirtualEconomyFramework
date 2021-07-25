@@ -595,8 +595,13 @@ namespace VEDriversLite.DogeAPI
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
-                    var message = "Could not deserialize the response body string as " + typeof(T).FullName + ".";
-                    throw new ApiException(message, (int)response.StatusCode, responseText, headers, exception);
+                    var message = string.Empty;
+                    if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                        message = "Too many requests to API. please wait before next request.";
+                    else
+                        message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
+                    System.Console.WriteLine(message);
+                    throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }
             else
@@ -614,7 +619,12 @@ namespace VEDriversLite.DogeAPI
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
-                    var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
+                    var message = string.Empty;
+                    if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                        message = "Too many requests to API. please wait before next request.";
+                    else
+                        message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
+                    System.Console.WriteLine(message);
                     throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }
             }

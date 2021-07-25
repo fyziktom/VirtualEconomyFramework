@@ -19,7 +19,7 @@ namespace VEDriversLite.WooCommerce
                 {
                     var sh = string.Empty;
                     var cat = string.Empty;
-                    if (WooCommerceHelpers.Shop.Products.TryGetValue(item.product_id, out var prod))
+                    if (Products.TryGetValue(item.product_id, out var prod))
                     {
                         prod.meta_data.ForEach(m =>
                         {
@@ -186,8 +186,8 @@ namespace VEDriversLite.WooCommerce
                                 {
                                     product.meta_data.ForEach(m =>
                                     {
-                                        if (m.key == "ShortHash") sh = dto.ShortHash;
-                                        if (m.key == "Category") cat = dto.Category;
+                                        if (m.key == "ShortHash") sh = m.value;
+                                        if (m.key == "Category") cat = m.value;
                                     });
                                     if (!string.IsNullOrEmpty(cat))
                                     {
@@ -210,7 +210,8 @@ namespace VEDriversLite.WooCommerce
                                 Console.WriteLine($"Order {order.id}, {order.order_key}. Is complete. All items was sent.");
                                 order.statusclass = OrderStatus.completed;
                             }
-                            await UpdateOrder(order);
+                            var o = await UpdateOrder(order);
+                            order.Fill(o);
                         }
                     }
                 }

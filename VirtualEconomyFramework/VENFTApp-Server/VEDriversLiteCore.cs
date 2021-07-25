@@ -35,25 +35,39 @@ namespace VENFTApp_Server
         protected override async Task ExecuteAsync(CancellationToken stopToken)
         {
             await Task.Delay(1);
-            var addressForShop = string.Empty;
+            var neblioAddressForShop = string.Empty;
+            var neblioDepositAddressForShop = string.Empty;
+            var dogeAddressForShop = string.Empty;
+            var dogeDepositAddressForShop = string.Empty;
 
             MainDataContext.IpfsSecret = settings.GetValue<string>("IpfsSecret", string.Empty);
             MainDataContext.IpfsProjectID = settings.GetValue<string>("IpfsProjectID", string.Empty);
             MainDataContext.IsAPIWithCredentials = settings.GetValue<bool>("IsAPIWithCredentials", false);
-
+            
             try
             {
+                /*
                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "keys.json");
                 if (!FileHelpers.IsFileExists(path))
                 {
                     Console.WriteLine("Missing keys.json file. Cannot continue without at least one root Neblio account.");
                     return;
                 }
+                var skeys = FileHelpers.ReadTextFromFile(path);
+                var keys = JsonConvert.DeserializeObject<List<AccountExportDto>>(skeys);
+                */
+                var keys = new List<AccountExportDto>();
+                settings.GetSection("keys").Bind(keys);
+                if (keys == null || keys.Count == 0)
+                {
+                    Console.WriteLine("Missing keys in settigns. Cannot continue without at least one root Neblio account.");
+                    return;
+                }
+
                 Console.WriteLine("------------------------------------");
                 Console.WriteLine("-----------Loading Accounts---------");
                 Console.WriteLine("------------------------------------");
-                var skeys = FileHelpers.ReadTextFromFile(path);
-                var keys = JsonConvert.DeserializeObject<List<AccountExportDto>>(skeys);
+                
                 if (keys != null)
                 {
                     foreach (var k in keys)
@@ -82,41 +96,48 @@ namespace VENFTApp_Server
 
                                 (bool, string) dbackup = (false, string.Empty);
                                 (bool, string) dpass = (false, string.Empty);
-                                await account.LoadAccount(k.Password, k.EKey, k.Address); // fill your password
-                                if (bckp != null)
+                                if (await account.LoadAccount(k.Password, k.EKey, k.Address, awaitFirstLoad: true)) // fill your password
                                 {
-                                    var dadd = await ECDSAProvider.DecryptMessage(bckp.eadd, account.Secret);
-                                    dbackup = await ECDSAProvider.DecryptMessage(bckp.edata, account.Secret);
-                                    dpass = await ECDSAProvider.DecryptMessage(bckp.epass, account.Secret);
-                                    if (dpass.Item1 && dadd.Item1 && dadd.Item1)
-                                    {
-                                        Console.WriteLine($"Loading Neblio address {k.Address} from VENFT Backup...");
-                                        if(await account.LoadAccountFromVENFTBackup(dpass.Item2, dbackup.Item2))
-                                            Console.WriteLine($"Neblio address {k.Address} initialized.");
-                                        else
-                                            Console.WriteLine($"Cannot load VENFT backup for address {k.Address}.");
-                                    }
-                                }
-                                VEDLDataContext.Accounts.TryAdd(k.Address, account);
-                                VEDLDataContext.AdminAddresses.Add(k.Address);
+                                    if (k.ConnectToMainShop && k.IsReceivingAccount)
+                                        neblioAddressForShop = k.Address;
+                                    else if (k.ConnectToMainShop && k.IsDepositAccount)
+                                        neblioDepositAddressForShop = k.Address;
 
-                                if (dbackup.Item1 && dpass.Item1)
-                                {
-                                    try
+                                    if (bckp != null)
                                     {
-                                        var bdto = JsonConvert.DeserializeObject<BackupDataDto>(dbackup.Item2);
-                                        if (bdto != null && !string.IsNullOrEmpty(bdto.DogeAddress))
+                                        var dadd = await ECDSAProvider.DecryptMessage(bckp.eadd, account.Secret);
+                                        dbackup = await ECDSAProvider.DecryptMessage(bckp.edata, account.Secret);
+                                        dpass = await ECDSAProvider.DecryptMessage(bckp.epass, account.Secret);
+                                        if (dpass.Item1 && dadd.Item1 && dadd.Item1)
                                         {
-                                            Console.WriteLine($"Backup for main address {k.Address} contains also Dogecoin address {bdto.DogeAddress}. It will be imported.");
-                                            var dogeAccount = new DogeAccount();
-                                            var res = await dogeAccount.LoadAccount(dpass.Item2, bdto.DogeKey, bdto.DogeAddress);
-                                            VEDLDataContext.DogeAccounts.TryAdd(bdto.DogeAddress, dogeAccount);
-                                            Console.WriteLine($"Dogecoin address {bdto.DogeAddress} initialized.");
+                                            Console.WriteLine($"Loading Neblio address {k.Address} from VENFT Backup...");
+                                            if (await account.LoadAccountFromVENFTBackup(dpass.Item2, dbackup.Item2, awaitFirstLoad: true))
+                                                Console.WriteLine($"Neblio address {k.Address} initialized.");
+                                            else
+                                                Console.WriteLine($"Cannot load VENFT backup for address {k.Address}.");
                                         }
                                     }
-                                    catch (Exception ex)
+                                    VEDLDataContext.Accounts.TryAdd(k.Address, account);
+                                    VEDLDataContext.AdminAddresses.Add(k.Address);
+
+                                    if (dbackup.Item1 && dpass.Item1)
                                     {
-                                        Console.WriteLine("Canno init doge account" + ex.Message);
+                                        try
+                                        {
+                                            var bdto = JsonConvert.DeserializeObject<BackupDataDto>(dbackup.Item2);
+                                            if (bdto != null && !string.IsNullOrEmpty(bdto.DogeAddress))
+                                            {
+                                                Console.WriteLine($"Backup for main address {k.Address} contains also Dogecoin address {bdto.DogeAddress}. It will be imported.");
+                                                var dogeAccount = new DogeAccount();
+                                                var res = await dogeAccount.LoadAccount(dpass.Item2, bdto.DogeKey, bdto.DogeAddress);
+                                                VEDLDataContext.DogeAccounts.TryAdd(bdto.DogeAddress, dogeAccount);
+                                                Console.WriteLine($"Dogecoin address {bdto.DogeAddress} initialized.");
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine("Canno init doge account" + ex.Message);
+                                        }
                                     }
                                 }
                             }
@@ -129,8 +150,10 @@ namespace VENFTApp_Server
                                 if(await dogeacc.LoadAccount(k.Password, k.EKey, k.Address))
                                     VEDLDataContext.DogeAccounts.TryAdd(dogeacc.Address, dogeacc);
                                 Console.WriteLine($"Dogecoin address {k.Address} initialized.");
-                                if (k.ConnectToMainShop)
-                                    addressForShop = k.Address;
+                                if (k.ConnectToMainShop && k.IsReceivingAccount)
+                                    dogeAddressForShop = k.Address;
+                                else if (k.ConnectToMainShop && k.IsDepositAccount)
+                                    dogeDepositAddressForShop = k.Address;
                             }
                         }
                     }
@@ -141,7 +164,7 @@ namespace VENFTApp_Server
                 Console.WriteLine("Cannot load the keys." + ex.Message);
             }
 
-            await Task.Delay(2500);
+            await Task.Delay(5000);
 
             Console.WriteLine("------------------------------------");
             Console.WriteLine("Loading NFT Hashes...");
@@ -159,11 +182,11 @@ namespace VENFTApp_Server
                 VEDLDataContext.WooCommerceStoreAPIKey = settings.GetValue<string>("WooCommerceStoreAPIKey");
                 VEDLDataContext.WooCommerceStoreSecret = settings.GetValue<string>("WooCommerceStoreSecret");
                 VEDLDataContext.WooCommerceStoreJWTToken = settings.GetValue<string>("WooCommerceStoreJWT");
+                VEDLDataContext.AllowDispatchNFTOrders = settings.GetValue<bool>("AllowDispatchNFTOrders", false);
 
                 if (!string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreUrl) &&
                     !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreAPIKey) &&
-                    !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreSecret) &&
-                    !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreJWTToken))
+                    !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreSecret))
                 {
                     Console.WriteLine("Initializing WooCommerce Shop...");
                     Console.WriteLine("API Url: " + VEDLDataContext.WooCommerceStoreUrl);
@@ -176,10 +199,33 @@ namespace VENFTApp_Server
                         Console.WriteLine($"- Number of Products: {WooCommerceHelpers.Shop.Products.Count}");
                         Console.WriteLine($"- Number of Orders: {WooCommerceHelpers.Shop.Orders.Count}");
                         Console.WriteLine("------------------------------------");
-                        if (!string.IsNullOrEmpty(addressForShop))
+                        if (!string.IsNullOrEmpty(dogeAddressForShop))
                         {
-                            await WooCommerceHelpers.Shop.ConnectDogeAccount(addressForShop);
-                            Console.WriteLine($"Connecting Dogecoin address {addressForShop} to the WooCommerce Shop.");
+                            await WooCommerceHelpers.Shop.ConnectDogeAccount(dogeAddressForShop);
+                            Console.WriteLine($"Connecting Dogecoin address {dogeAddressForShop} to the WooCommerce Shop main input account.");
+                        }
+                        if (!string.IsNullOrEmpty(dogeDepositAddressForShop) && dogeAddressForShop != dogeDepositAddressForShop)
+                        {
+                            WooCommerceHelpers.Shop.ConnectedDepositDogeAccountAddress = dogeDepositAddressForShop;
+                            Console.WriteLine($"Connecting Dogecoin address {dogeDepositAddressForShop} to the WooCommerce Shop as deposit account.");
+                        }
+                        if (!string.IsNullOrEmpty(dogeDepositAddressForShop) && !string.IsNullOrEmpty(dogeAddressForShop) && dogeAddressForShop == dogeDepositAddressForShop) 
+                            Console.WriteLine($"Input doge address and deposit address cannot be same.");
+
+                        if (string.IsNullOrEmpty(WooCommerceHelpers.Shop.ConnectedDogeAccountAddress))
+                        {
+                            if (!string.IsNullOrEmpty(neblioAddressForShop))
+                            {
+                                await WooCommerceHelpers.Shop.ConnectNeblioAccount(neblioAddressForShop);
+                                Console.WriteLine($"Connecting Neblio address {neblioAddressForShop} to the WooCommerce Shop main input account.");
+                            }
+                            if (!string.IsNullOrEmpty(neblioDepositAddressForShop) && neblioAddressForShop != dogeDepositAddressForShop)
+                            {
+                                await WooCommerceHelpers.Shop.ConnectDepositNeblioAccount(neblioDepositAddressForShop);
+                                Console.WriteLine($"Connecting Neblio address {neblioDepositAddressForShop} to the WooCommerce Shop as deposit account.");
+                            }
+                            if (!string.IsNullOrEmpty(neblioDepositAddressForShop) && !string.IsNullOrEmpty(neblioAddressForShop) && neblioAddressForShop == neblioDepositAddressForShop)
+                                Console.WriteLine($"Input Neblio address and deposit address cannot be same.");
                         }
                     }
                     else

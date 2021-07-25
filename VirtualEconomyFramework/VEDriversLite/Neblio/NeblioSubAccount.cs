@@ -330,6 +330,8 @@ namespace VEDriversLite.Neblio
 
             try
             {
+                AddressInfo = new GetAddressResponse();
+                AddressInfo.Transactions = new List<string>();
                 await ReloadUtxos();
                 await ReLoadNFTs();
                 await ReloadTokenSupply();
@@ -344,19 +346,6 @@ namespace VEDriversLite.Neblio
             {
                 var minorRefresh = 5;
                 var firstLoad = true;
-
-                try
-                {
-                    AddressInfo = new GetAddressResponse();
-                    AddressInfo.Transactions = new List<string>();
-                    await ReloadUtxos();
-                    await ReLoadNFTs();
-                    await ReloadTokenSupply();
-                }
-                catch (Exception ex)
-                {
-                    // todo
-                }
 
                 while (true)
                 {
