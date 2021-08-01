@@ -315,7 +315,7 @@ namespace VEDriversLite
                 if (!WithoutNFTs)
                 {
                     FirsLoadingStatus?.Invoke(this, "Loading NFTs started.");
-                    await ReLoadNFTs(true, true);
+                    await ReLoadNFTs(true);
                     await ReloadCountOfNFTs();
                     Refreshed?.Invoke(this, null);
                     FirsLoadingStatus?.Invoke(this, "Main Account NFTs Loaded.");

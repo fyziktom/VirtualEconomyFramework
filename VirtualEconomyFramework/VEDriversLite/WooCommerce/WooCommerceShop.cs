@@ -54,6 +54,7 @@ namespace VEDriversLite.WooCommerce
 
         public ConcurrentDictionary<string, Order> Orders { get; set; } = new ConcurrentDictionary<string, Order>();
         public ConcurrentDictionary<int, Product> Products { get; set; } = new ConcurrentDictionary<int, Product>();
+        public ConcurrentDictionary<int, Category> Categories { get; set; } = new ConcurrentDictionary<int, Category>();
 
         private ConcurrentQueue<ReceivedPaymentForOrder> ReceivedPaymentsForOrdersToProcess = new ConcurrentQueue<ReceivedPaymentForOrder>();
         private ConcurrentQueue<NFTOrderToDispatch> NFTOrdersToDispatchList = new ConcurrentQueue<NFTOrderToDispatch>();
@@ -93,6 +94,7 @@ namespace VEDriversLite.WooCommerce
             {
                 await ReLoadProducts();
                 await ReLoadOrders();
+                await ReLoadCategories();
                 if (!string.IsNullOrEmpty(ConnectedDogeAccountAddress))
                 {
                     await CheckDogePayments();
@@ -278,6 +280,33 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        public async Task ReLoadCategories()
+        {
+            var categories = await WooCommerceHelpers.GetAllCategoreis(
+                WooCommerceHelpers.GetFullAPIUrl(
+                    "products/categories", WooCommerceStoreUrl, WooCommerceStoreAPIKey, WooCommerceStoreSecret)
+                );
+
+            foreach (var c in categories)
+            {
+                if (Categories.TryGetValue(c.id, out var cat))
+                {
+                    cat.Fill(c);
+                }
+                else
+                {
+                    cat = new Category();
+                    cat.Fill(c);
+                    Categories.TryAdd(cat.id, cat);
+                }
+            }
+            foreach (var o in Categories.Values)
+            {
+                if (categories.FirstOrDefault(r => r.id == o.id) == null)
+                    Categories.TryRemove(o.id, out var rprd);
+            }
+        }
+
         /*
         public async Task<string> StartRefreshingData(int interval = 10000)
         {
@@ -422,19 +451,27 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
-        public async Task<Product> AddProduct(INFT nft, int quantity = 1, Dictionary<string,string> options = null)
+        public async Task<Product> AddProduct(INFT nft, List<Category> categories, int quantity = 1, Dictionary<string,string> options = null)
         {
-            var prod = await WooCommerceHelpers.AddNewProduct(nft, quantity,
-                WooCommerceHelpers.GetFullAPIUrl($"products", 
-                                                 WooCommerceStoreUrl, 
-                                                 WooCommerceStoreAPIKey, 
-                                                 WooCommerceStoreSecret),
-                options);
-            if (Products.TryGetValue(prod.id, out var prd))
-                prd = prod;
-            else
-                Products.TryAdd(prod.id, prod);
-            return prod;
+            try
+            {
+                var prod = await WooCommerceHelpers.AddNewProduct(nft, categories, quantity,
+                    WooCommerceHelpers.GetFullAPIUrl($"products",
+                                                     WooCommerceStoreUrl,
+                                                     WooCommerceStoreAPIKey,
+                                                     WooCommerceStoreSecret),
+                    options);
+
+                if (Products.TryGetValue(prod.id, out var prd))
+                    prd = prod;
+                else
+                    Products.TryAdd(prod.id, prod);
+                return prod;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<Product> GetProduct(int productid)

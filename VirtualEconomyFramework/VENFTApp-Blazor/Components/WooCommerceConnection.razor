@@ -462,7 +462,7 @@
             confirmVisible = false;
             StateHasChanged();
 
-            var prd = await WooCommerceHelpers.AddNewProduct(nft);
+            var prd = await WooCommerceHelpers.AddNewProduct(nft, WooCommerceHelpers.Shop.Categories.Values.ToList());
 
             if (prd == null)
                 await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during try to connect.");

@@ -217,8 +217,7 @@
                     bookmarks = string.Empty;
 
                 if (!string.IsNullOrEmpty(bookmarks))
-                    if (AppData.Account.Bookmarks.Count == 0)
-                        await AppData.Account.LoadBookmarks(bookmarks);
+                     await AppData.Account.LoadBookmarks(bookmarks);
             }
             catch (Exception ex)
             {
@@ -231,8 +230,7 @@
             {
                 var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
                 if (!string.IsNullOrEmpty(subAccounts))
-                    if (AppData.Account.SubAccounts.Count == 0)
-                        await AppData.Account.LoadSubAccounts(subAccounts);
+                    await AppData.Account.LoadSubAccounts(subAccounts);
             }
             catch (Exception ex)
             {

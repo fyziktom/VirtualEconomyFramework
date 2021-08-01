@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite;
+using VEDriversLite.Common;
 using VEDriversLite.Dto;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
@@ -1032,6 +1033,8 @@ namespace TestVEDriversLite
             // sign it with loaded account
             Console.WriteLine("Name: ");
             Console.WriteLine(nft.Name);
+            if(System.Text.RegularExpressions.Regex.Match(nft.Name, RegexMatchPaterns.EmojiPattern).Success)
+                Console.WriteLine("there are emojis in the name");
             Console.WriteLine("Author: ");
             Console.WriteLine(nft.Author);
             Console.WriteLine("Description: ");
@@ -1796,7 +1799,7 @@ namespace TestVEDriversLite
             Console.WriteLine("API Url: " + apiurl);
             Console.WriteLine("-----------------------------------------");
 
-            var res = await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, secret, jwt);
+            var res = await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, secret, jwt, true);
 
             await WoCGetShopStatsAsync(string.Empty);
         }

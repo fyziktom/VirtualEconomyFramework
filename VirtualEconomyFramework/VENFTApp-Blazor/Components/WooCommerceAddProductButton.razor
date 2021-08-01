@@ -126,6 +126,23 @@
             </div>
         }
 
+        @if (WooCommerceHelpers.IsInitialized)
+        {
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <div class="col">
+                    <span>Please select Categories</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                @foreach (var cat in ShopCategories)
+                {
+                <div class="col d-flex justify-content-center align-items-center">
+                    <input type="checkbox" @onchange="eventArgs => { productCategoryChanged(eventArgs.Value,cat.id); }" /><span style="margin-left:10px;">@cat.name</span><br />
+                </div>
+                }
+            </div>
+       }
+
         <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
             <div class="col">
                 <span>Setted price</span>
@@ -227,6 +244,21 @@
     bool error = false;
     bool needNewImage = false;
 
+    public List<Category> newProductCategories = new List<Category>();
+
+    public List<Category> ShopCategories
+    {
+        get
+        {
+            if (WooCommerceHelpers.IsInitialized && WooCommerceHelpers.Shop != null)
+            {
+                if (WooCommerceHelpers.Shop.Categories != null)
+                    return WooCommerceHelpers.Shop.Categories.Values.ToList();
+            }
+            return new List<Category>();
+        }
+    }
+
     INFT loadedNFT = new ImageNFT("");
     [Parameter]
     public INFT NFT
@@ -263,7 +295,12 @@
             if (apisecret == null) apisecret = string.Empty;
             jwt = await localStorage.GetItemAsync<string>("woocom-jwt");
             if (jwt == null) jwt = string.Empty;
-            await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt);
+            if (await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt))
+                await WooCommerceHelpers.Shop.ReLoadCategories();
+        }
+        else
+        {
+            await WooCommerceHelpers.Shop.ReLoadCategories();
         }
         StateHasChanged();
     }
@@ -297,6 +334,23 @@
         needNewImage = (bool)e;
         newImageLink = string.Empty;
         StateHasChanged();
+    }
+
+    private async Task productCategoryChanged(object state, int catid)
+    {
+        if (WooCommerceHelpers.Shop.Categories.TryGetValue(catid, out var cat))
+        {
+            if ((bool)state)
+            {
+                newProductCategories.Add(cat);
+            }
+            else
+            {
+                if (newProductCategories.Contains(cat))
+                    newProductCategories.Remove(cat);
+            }
+            StateHasChanged();
+        }
     }
 
     private void NewImageLinkChanged(string link)
@@ -361,13 +415,13 @@
 
             if (productUploadNFTType == ProductUploadNFTType.Unique)
             {
-                prd = await WooCommerceHelpers.Shop.AddProduct(loadedNFT);
+                prd = await WooCommerceHelpers.Shop.AddProduct(loadedNFT, newProductCategories);
             }
             else
             {
                 var options = new Dictionary<string, string>();
                 options.Add("Category", category);
-                prd = await WooCommerceHelpers.Shop.AddProduct(loadedNFT, maxsupply, options);
+                prd = await WooCommerceHelpers.Shop.AddProduct(loadedNFT, newProductCategories, maxsupply, options);
             }
 
             if (prd == null)
@@ -384,6 +438,7 @@
         }
         catch (Exception ex)
         {
+            await JSRuntime.InvokeVoidAsync("alertMessage", ex.Message);
             error = true;
             errorMeesage = ex.Message;
             Console.WriteLine(ex.Message);

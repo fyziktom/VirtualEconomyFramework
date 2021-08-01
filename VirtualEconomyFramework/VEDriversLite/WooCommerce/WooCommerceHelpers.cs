@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Common;
 using VEDriversLite.NFT;
 using VEDriversLite.WooCommerce.Dto;
 using WordPressPCL;
@@ -197,14 +198,19 @@ namespace VEDriversLite.WooCommerce
                 return VEDLDataContext.WooCommerceStoreUrl + $"{command}?consumer_key={VEDLDataContext.WooCommerceStoreAPIKey}&consumer_secret={VEDLDataContext.WooCommerceStoreSecret}";
         }
 
-        public static async Task<Product> AddNewProduct(INFT nft, int quantity = 1, string apiurl = "", Dictionary<string,string> options = null)
+        public static async Task<Product> AddNewProduct(INFT nft, List<Category> categories, int quantity = 1, string apiurl = "", Dictionary<string,string> options = null)
         {
             if (IsInitialized && string.IsNullOrEmpty(apiurl))
                 apiurl = GetFullAPIUrl("products");
 
             if (wpClient == null) throw new Exception("Please init the connection and obtain JWT Token first.");
             if (string.IsNullOrEmpty(nft.ImageLink)) throw new Exception("Image link cannot be empty.");
-            
+            if (categories == null || categories.Count == 0) throw new Exception("Please provide at least one category.");
+            if(System.Text.RegularExpressions.Regex.Match(nft.Name, RegexMatchPaterns.EmojiPattern).Success) 
+                throw new Exception("You cannot use Emojis in the name if you want to publish it into the shop.");
+            if(System.Text.RegularExpressions.Regex.Match(nft.Description, RegexMatchPaterns.EmojiPattern).Success) 
+                throw new Exception("You cannot use Emojis in the description if you want to publish it into the shop.");
+
             Product p = null;
             var link = nft.ImageLink; 
             var productlink = nft.ImageLink;
@@ -227,7 +233,7 @@ namespace VEDriversLite.WooCommerce
             var resi = await UploadIFPSImageToWP(link, nft.Name.Replace(" ", "_")); // todo add illegal chars check/cleanup
             var imagelink = string.Empty;
             if (resi.Item1) imagelink = resi.Item2;
-            
+
             p = new Product()
             {
                 name = nft.Name,
@@ -235,6 +241,7 @@ namespace VEDriversLite.WooCommerce
                 regular_price = price,
                 images = new List<ImageObject>() { new ImageObject() { src = imagelink } },
                 status = "publish",
+                categories = categories,
                 downloadable = true,
                 stock_quantity = quantity,
                 stock_status_enum = StockStatus.instock,
@@ -242,9 +249,11 @@ namespace VEDriversLite.WooCommerce
                 type = "simple",
                 short_description = desc,
                 meta_data = new List<ProductMetadata>() {
+                        new ProductMetadata() { key = "Author", value =  nft.Author },
                         new ProductMetadata() { key = "Utxo", value =  nft.Utxo },
                         new ProductMetadata() { key = "Utxoindex", value =  nft.UtxoIndex.ToString() },
-                        new ProductMetadata() { key = "ShortHash", value =  nft.ShortHash }
+                        new ProductMetadata() { key = "ShortHash", value =  nft.ShortHash },
+                        new ProductMetadata() { key = "NFTData", value = JsonConvert.SerializeObject(await nft.GetMetadata()) }
                         },
                 downloads = new List<DownloadsObject>() {
                         new DownloadsObject() {
@@ -257,7 +266,7 @@ namespace VEDriversLite.WooCommerce
                         }
                     }
             };
-
+            
             if (options != null)
             {
                 foreach(var o in options)
@@ -375,6 +384,24 @@ namespace VEDriversLite.WooCommerce
             catch (Exception ex) { Console.WriteLine(ex.Message); }
 
             return new List<Order>();
+        }
+
+        public static async Task<List<Category>> GetAllCategoreis(string apiurl = "")
+        {
+            try
+            {
+                if (IsInitialized && string.IsNullOrEmpty(apiurl))
+                    apiurl = GetFullAPIUrl("products/categories");
+                apiurl += "&per_page=100";
+                var res = await httpClient.GetAsync(apiurl);
+                var resmsg = await res.Content.ReadAsStringAsync();
+                //Console.WriteLine(resmsg);
+                var cats = JsonConvert.DeserializeObject<List<Category>>(resmsg);
+                return cats;
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+
+            return new List<Category>();
         }
 
     }

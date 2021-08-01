@@ -260,12 +260,12 @@
 </Modal>
 
 @code {
-    bool sendMessageVisible = false;
-    bool openTabBrowser = false;
-    bool loadingBrowser = false;
-    bool browsePublicAddresses = false;
-    bool copyTextButtonCoppied = false;
-    int holdersPage = 0;
+        bool sendMessageVisible = false;
+        bool openTabBrowser = false;
+        bool loadingBrowser = false;
+        bool browsePublicAddresses = false;
+        bool copyTextButtonCoppied = false;
+        int holdersPage = 0;
 
     private string selectedNewTabFromBookmarkName = "Select From Bookmark";
 
@@ -398,13 +398,15 @@
             await Task.Delay(50);
             try
             {
-                var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
-                if (bookmarks == "{}" || bookmarks == "[]")
-                    bookmarks = string.Empty;
+                if (AppData.Account.Bookmarks.Count == 0)
+                {
+                    var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+                    if (bookmarks == "{}" || bookmarks == "[]")
+                        bookmarks = string.Empty;
 
-                if (!string.IsNullOrEmpty(bookmarks))
-                    if (AppData.Account.Bookmarks.Count == 0)
+                    if (!string.IsNullOrEmpty(bookmarks))
                         await AppData.Account.LoadBookmarks(bookmarks);
+                }
             }
             catch (Exception ex)
             {

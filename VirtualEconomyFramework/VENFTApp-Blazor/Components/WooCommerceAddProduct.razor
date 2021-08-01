@@ -105,6 +105,21 @@
     bool initialized = false;
     bool showNFTDetailsVisible = false;
 
+    public List<Category> newProductCategories = new List<Category>();
+
+    public List<Category> ShopCategories
+    {
+        get
+        {
+            if (WooCommerceHelpers.IsInitialized && WooCommerceHelpers.Shop != null)
+            {
+                if (WooCommerceHelpers.Shop.Categories != null)
+                    return WooCommerceHelpers.Shop.Categories.Values.ToList();
+            }
+            return new List<Category>();
+        }
+    }
+
     INFT loadedNFT = new ImageNFT("");
     [Parameter]
     public INFT NFT
@@ -171,8 +186,8 @@
             processingSending = true;
             confirmVisible = false;
             StateHasChanged();
-
-            var prd = await WooCommerceHelpers.AddNewProduct(nft);
+            newProductCategories = ShopCategories;
+            var prd = await WooCommerceHelpers.AddNewProduct(nft, newProductCategories);
 
             if (prd == null)
                 await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during try to connect.");

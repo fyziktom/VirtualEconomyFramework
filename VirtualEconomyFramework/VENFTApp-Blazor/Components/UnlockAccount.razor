@@ -225,14 +225,33 @@
             address = await localStorage.GetItemAsync<string>("address");
             key = await localStorage.GetItemAsync<string>("key");
 
-            await Task.Delay(100);
+            await Task.Delay(50);
 
             await AppData.Account.LoadAccount(pass, key, address, awaitFirstLoad: true); // put here your password
-            await Task.Delay(100);
+            await Task.Delay(50);
             StateHasChanged();
             var kt = await AppData.Account.AccountKey.GetEncryptedKey();
             if (!string.IsNullOrEmpty(kt))
             {
+                state = "Loading Bookmarks...";
+                StateHasChanged();
+                try
+                {
+                    if (AppData.Account.Bookmarks.Count == 0)
+                    {
+                        var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+                        if (bookmarks == "{}" || bookmarks == "[]")
+                            bookmarks = string.Empty;
+
+                        if (!string.IsNullOrEmpty(bookmarks))
+                            await AppData.Account.LoadBookmarks(bookmarks);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot load bookmarks!" + ex.Message);
+                }
+                await Task.Delay(50);
                 state = "Loading SubAccounts...";
                 StateHasChanged();
                 await LoadSubAccounts();

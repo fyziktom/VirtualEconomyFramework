@@ -56,6 +56,7 @@ namespace VEDriversLite.WooCommerce.Dto
         public List<DownloadsObject> downloads { get; set; } = new List<DownloadsObject>();
         public List<ImageObject> images { get; set; } = new List<ImageObject>();
         public List<ProductMetadata> meta_data { get; set; } = new List<ProductMetadata>();
+        public List<Category> categories { get; set; } = new List<Category>();
         public void Fill(Product product)
         {
             id = product.id;
@@ -77,6 +78,7 @@ namespace VEDriversLite.WooCommerce.Dto
             downloads = product.downloads;
             images = product.images;
             meta_data = product.meta_data;
+            categories = product.categories;
         }
     }
 }
