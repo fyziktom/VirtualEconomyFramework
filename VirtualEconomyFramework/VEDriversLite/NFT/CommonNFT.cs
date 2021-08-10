@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.NFT.Dto;
 
 namespace VEDriversLite.NFT
 {
@@ -30,6 +31,9 @@ namespace VEDriversLite.NFT
         public bool PriceActive { get; set; } = false;
         public double DogePrice { get; set; } = 0.0;
         public bool DogePriceActive { get; set; } = false;
+        public string DogeAddress { get; set; } = string.Empty;
+        public DogeftInfo DogeftInfo { get; set; } = new DogeftInfo();
+        public NFTSoldInfo SoldInfo { get; set; } = new NFTSoldInfo();
         public string ShortHash => $"{NeblioTransactionHelpers.ShortenTxId(Utxo, false, 16)}:{UtxoIndex}";
         public DateTime Time { get; set; } = DateTime.UtcNow;
         [JsonIgnore]
@@ -73,8 +77,21 @@ namespace VEDriversLite.NFT
             Time = nft.Time;
             Tags = nft.Tags;
             Text = nft.Text;
+            DogeAddress = nft.DogeAddress;
+            DogeftInfo = nft.DogeftInfo;
+            SoldInfo = nft.SoldInfo;
         }
-
+        public async Task ClearSoldInfo()
+        {
+            SoldInfo = new NFTSoldInfo();
+        }
+        public async Task ClearPrices()
+        {
+            DogePrice = 0.0;
+            DogePriceActive = false;
+            Price = 0.0;
+            PriceActive = false;
+        }
         private void parseTags()
         {
             var split = Tags.Split(' ');
@@ -109,6 +126,19 @@ namespace VEDriversLite.NFT
             else
                 DogePriceActive = false;
         }
+
+        public void ParseSoldInfo(IDictionary<string, string> meta)
+        {
+            if (meta.TryGetValue("SoldInfo", out var sinf))
+            {
+                try
+                {
+                    SoldInfo = JsonConvert.DeserializeObject<NFTSoldInfo>(sinf);
+                }
+                catch (Exception ex) { Console.WriteLine("Cannot parse sold info in the NFT"); }
+            }
+        }
+
         public void ParseCommon(IDictionary<string,string> meta)
         {
             if (meta.TryGetValue("Name", out var name))
@@ -127,6 +157,16 @@ namespace VEDriversLite.NFT
                 TypeText = type;
             if (meta.TryGetValue("Text", out var text))
                 Text = text;
+            if (meta.TryGetValue("DogeAddress", out var dadd))
+                DogeAddress = dadd;
+            if (meta.TryGetValue("DogeftInfo", out var dfti))
+            {
+                try
+                {
+                    DogeftInfo = JsonConvert.DeserializeObject<DogeftInfo>(dfti);
+                }
+                catch (Exception ex) { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
+            }
             if (meta.TryGetValue("Tags", out var tags))
             {
                 tags = tags.Replace("#", string.Empty);
@@ -137,6 +177,20 @@ namespace VEDriversLite.NFT
             }
             //if (meta.TryGetValue("SourceUtxo", out var su))
                 //NFTOriginTxId = su;
+        }
+
+        public async Task ParseDogeftInfo(IDictionary<string,string> meta)
+        {
+            if (meta.TryGetValue("DogeAddress", out var dadd))
+                DogeAddress = dadd;
+            if (meta.TryGetValue("DogeftInfo", out var dfti))
+            {
+                try
+                {
+                    DogeftInfo = JsonConvert.DeserializeObject<DogeftInfo>(dfti);
+                }
+                catch (Exception ex) { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
+            }
         }
 
         public async Task<IDictionary<string,string>> GetCommonMetadata()
@@ -203,7 +257,12 @@ namespace VEDriversLite.NFT
                 metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
             if (DogePrice > 0)
                 metadata.Add("DogePrice", DogePrice.ToString(CultureInfo.InvariantCulture));
-
+            if (!string.IsNullOrEmpty(DogeAddress))
+                metadata.Add("DogeAddress", DogeAddress);
+            if (!DogeftInfo.IsEmpty)
+                metadata.Add("DogeftInfo", JsonConvert.SerializeObject(DogeftInfo));
+            if (!SoldInfo.IsEmpty)
+                metadata.Add("SoldInfo", JsonConvert.SerializeObject(SoldInfo));
             return metadata;
         }
 

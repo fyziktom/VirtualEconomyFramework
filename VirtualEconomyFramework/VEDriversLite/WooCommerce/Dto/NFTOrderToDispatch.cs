@@ -20,6 +20,7 @@ namespace VEDriversLite.WooCommerce.Dto
         public bool IsCategory { get; set; } = false;
         public string Category { get; set; } = string.Empty;
         public int Quantity { get; set; } = 0;
+        public double TotalPriceForLineItem { get; set; } = 0.0;
         public string OwnerMainAccount { get; set; } = string.Empty;
         public string OwnerSubAccount { get; set; } = string.Empty;
     }

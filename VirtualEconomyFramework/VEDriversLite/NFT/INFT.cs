@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.NFT.Dto;
 
 namespace VEDriversLite.NFT
 {
@@ -45,9 +46,12 @@ namespace VEDriversLite.NFT
         bool PriceActive { get; set; }
         double DogePrice { get; set; }
         bool DogePriceActive { get; set; }
+        string DogeAddress { get; set; }
+        DogeftInfo DogeftInfo { get; set; }
         string NFTOriginTxId { get; set; }
         int UtxoIndex { get; set; }
         string ShortHash { get; }
+        NFTSoldInfo SoldInfo { get; set; }
         DateTime Time { get; set; }
         List<INFT> History { get; set; }
         [JsonIgnore]
@@ -57,7 +61,12 @@ namespace VEDriversLite.NFT
         Task FillCommon(INFT nft);
         Task Fill(INFT NFT);
         Task ParseOriginData(IDictionary<string,string> lastmetadata);
+        void ParseSoldInfo(IDictionary<string, string> meta);
+        void ParsePrice(IDictionary<string, string> meta);
+        Task ParseDogeftInfo(IDictionary<string, string> meta);
+        Task ClearSoldInfo();
         Task LoadHistory();
+        Task ClearPrices();
         Task StopRefreshingData();
         Task StartRefreshingTxData();
         Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");

@@ -166,6 +166,14 @@
             <param name="address"></param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.DogeAccount.LoadAccountWithDummyKey(System.String)">
+            <summary>
+            Load account just for observation
+            You cannot sign tx when you load address this way
+            </summary>
+            <param name="address">Address</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.DogeAccount.StartRefreshingData(System.Int32)">
             <summary>
             This function will load the actual data and then run the task which periodically refresh this data.
@@ -213,6 +221,14 @@
         <member name="M:VEDriversLite.DogeAccount.SendMultipleInputPayment(System.String,System.Double,System.Collections.Generic.List{VEDriversLite.DogeAPI.Utxo},System.String,System.UInt64)">
             <summary>
             Send Doge payment with multiple inputs
+            </summary>
+            <param name="receiver">Receiver Doge Address</param>
+            <param name="amount">Ammount in Doge</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.DogeAccount.SendMultipleOutputPayment(System.Collections.Generic.Dictionary{System.String,System.Double},System.Collections.Generic.List{VEDriversLite.DogeAPI.Utxo},System.String,System.UInt64)">
+            <summary>
+            Send Doge payment with multiple outputs
             </summary>
             <param name="receiver">Receiver Doge Address</param>
             <param name="amount">Ammount in Doge</param>
@@ -618,7 +634,7 @@
             <param name="password"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SignAndBroadcast(NBitcoin.Transaction,NBitcoin.BitcoinSecret,NBitcoin.BitcoinAddress)">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SignAndBroadcast(NBitcoin.Transaction,NBitcoin.BitcoinSecret,NBitcoin.BitcoinAddress,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
             <summary>
             Function will sign transaction with provided key and broadcast with Neblio API
             </summary>
@@ -970,9 +986,10 @@
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadAccountWithDummyKey(System.String,System.String,System.Boolean,System.Boolean)">
             <summary>
-            Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
+            Load account just for observation
+            You cannot sign tx when you load address this way
             </summary>
-            <param name="password">Passwotd to decrypt the loaded private key</param>
+            <param name="address">Address you want to observe</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String,System.String,System.Boolean,System.Boolean)">
@@ -1136,7 +1153,7 @@
             </summary>
             <returns>true and dictionary with addresses and private keys</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.SendNFTFromSubAccount(System.String,System.String,VEDriversLite.NFT.INFT,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.SendNFTFromSubAccount(System.String,System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Boolean,System.Double)">
             <summary>
             Send NFT From SubAccount
             </summary>
@@ -3909,7 +3926,7 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.SendNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double)">
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.SendNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double,System.Boolean,System.Double)">
             <summary>
             Send input NFT to new owner, or use it just for price write and resend it to yourself with new metadata about the price.
             </summary>
@@ -4043,6 +4060,26 @@
             <param name="receiver">Fill when you want to send NFT to another address</param>
             <returns>New Tx Id Hash</returns>
         </member>
+        <member name="P:VEDriversLite.NFT.DogeftInfo.License">
+            <summary>
+            Here can be described license
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.DogeftInfo.Coppies">
+            <summary>
+            If this is 0 (default) it is unique NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.DogeftInfo.AuthorUrl">
+            <summary>
+            If you want to provide some author personal page
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.DogeftInfo.AuthorDogeAddress">
+            <summary>
+            Author Deposit Doge address where Dogeft will send the reward from sale
+            </summary>
+        </member>
         <member name="E:VEDriversLite.NFT.NFTHelpers.ProfileNFTFound">
             <summary>
             This event is called profile nft is found in the list of nfts
@@ -4125,7 +4162,7 @@
             <param name="address"></param>
             <returns>profile NFT and list of all NFTs</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Boolean,System.Int32,System.Boolean)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Boolean,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             This function will find all NFTs and load them to the carriers. 
             If you already have list of utxos and NFTs you can provide it and it will load just the changes.

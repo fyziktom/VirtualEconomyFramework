@@ -418,12 +418,13 @@ namespace VEDriversLite.NFT
         /// <param name="inutxos"></param>
         /// <param name="innfts"></param>
         /// <returns></returns>
-        public static async Task<List<INFT>> LoadAddressNFTs(string address, 
-                                                             ICollection<Utxos> inutxos = null, 
-                                                             ICollection<INFT> innfts = null, 
-                                                             bool fireProfileEvent = false, 
+        public static async Task<List<INFT>> LoadAddressNFTs(string address,
+                                                             ICollection<Utxos> inutxos = null,
+                                                             ICollection<INFT> innfts = null,
+                                                             bool fireProfileEvent = false,
                                                              int maxLoadedItems = 0,
-                                                             bool withoutMessages = false)
+                                                             bool withoutMessages = false,
+                                                             bool justMessages = false)
         {
             var fireProfileEventTmp = fireProfileEvent;
             List<INFT> nfts = new List<INFT>();
@@ -468,9 +469,16 @@ namespace VEDriversLite.NFT
                                 {
                                     INFT nft = null;
                                     if (!withoutMessages)
-                                        nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
+                                    {
+                                        if (!justMessages)
+                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
+                                        else
+                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, loadJustType:true, justType:NFTTypes.Message);
+                                    }
                                     else
-                                        nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, skipTheType:true, skipType:NFTTypes.Message);
+                                    {
+                                        nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, skipTheType: true, skipType: NFTTypes.Message);
+                                    }
                                     if (nft != null)
                                     {
                                         if (fireProfileEventTmp && nft.Type == NFTTypes.Profile)

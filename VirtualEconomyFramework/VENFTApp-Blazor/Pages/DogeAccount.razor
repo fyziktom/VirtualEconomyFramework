@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <input type="number" step="1" min="1" max="@AppData.DogeAccount.TotalBalance" @bind="@AmountToSend" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                                        <input type="number" step="1" min="1" max="@(AppData.DogeAccount.TotalBalance-1)" @bind="@AmountToSend" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top:20px;">
@@ -114,15 +114,23 @@
                                     </tr>
                                 </thead>
                                 <tbody style="width:100%;">
+                                    @if (AppData.DogeAccount.SentTransactions.Count > 0)
+                                    {
+                                        var txc = 0;
                                     @foreach (var tx in AppData.DogeAccount.ReceivedTransactions)
                                     {
+                                        if (txc <= maxLoadedTxs)
+                                        {
                                         <tr>
                                             <td>@TimeHelpers.UnixTimestampToDateTime(tx.Time * 1000).ToString()</td>
                                             <td>@tx.Value</td>
                                             <td>@tx.Confirmations</td>
                                             <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx.TxId)"><i class="oi oi-info"></i></button></td>
                                         </tr>
+                                        txc++;
+                                        }
                                     }
+                                }
                                 </tbody>
                             </table>
                         </div>
@@ -151,14 +159,22 @@
                                     </tr>
                                 </thead>
                                 <tbody style="width:100%;">
-                                    @foreach (var tx in AppData.DogeAccount.SentTransactions)
+                                    @if (AppData.DogeAccount.SentTransactions.Count > 0)
                                     {
-                                        <tr>
-                                            <td>@TimeHelpers.UnixTimestampToDateTime(tx.Time * 1000).ToString()</td>
-                                            <td>@tx.Value</td>
-                                            <td>@tx.Confirmations</td>
-                                            <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx.TxId)"><i class="oi oi-info"></i></button></td>
-                                        </tr>
+                                        var txc = 0;
+                                        @foreach (var tx in AppData.DogeAccount.SentTransactions)
+                                        {
+                                            if (txc <= maxLoadedTxs)
+                                            {
+                                            <tr>
+                                                <td>@TimeHelpers.UnixTimestampToDateTime(tx.Time * 1000).ToString()</td>
+                                                <td>@tx.Value</td>
+                                                <td>@tx.Confirmations</td>
+                                                <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx.TxId)"><i class="oi oi-info"></i></button></td>
+                                            </tr>
+                                            txc++;
+                                            }
+                                        }
                                     }
                                 </tbody>
                             </table>
@@ -225,6 +241,8 @@
 </Modal>
 
 @code {
+
+    int maxLoadedTxs = 25;
 
     string txDetailsTxId = string.Empty;
     bool txDetailsVisible = false;

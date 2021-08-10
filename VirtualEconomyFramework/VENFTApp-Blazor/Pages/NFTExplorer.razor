@@ -34,7 +34,8 @@
                                     <span class="oi oi-home" aria-hidden="true"></span> Main Account NFTs
                                 </HeaderTemplate>
                                 <ChildContent>
-                                    <VENFTApp_Blazor.Components.NFTList MainAccount="true" SubAccount="false" InBrowser="false"
+                                    <VENFTApp_Blazor.Components.NFTList MainAccount="true" SubAccount="false" InBrowser="false" 
+                                                                        ProductsInTheShop="@ProductsInTheShop"
                                                                         Address="@AppData.Account.Address" />
                                 </ChildContent>
                             </Panel>
@@ -60,7 +61,7 @@
                                         </div>
                                         <div class="row" style="min-width:300px; padding:0px;">
                                             <div class="col w-100" style="min-width:300px; padding:0px;">
-                                                <VENFTApp_Blazor.Components.NFTList SubAccount="true" MainAccount="false" InBrowser="false" Address="@mt.Address" />
+                                                <VENFTApp_Blazor.Components.NFTList SubAccount="true" MainAccount="false" ProductsInTheShop="@ProductsInTheShop" InBrowser="false" Address="@mt.Address" />
                                             </div>
                                         </div>
                                     </ChildContent>
@@ -115,6 +116,10 @@
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private Dictionary<string, Product> ProductsInTheShop = new Dictionary<string, Product>();
+    private System.Threading.Timer productInWooReloadTimer;
+
 
     private void ToggleNavMenu()
     {
@@ -176,7 +181,50 @@
             var jwt = await localStorage.GetItemAsync<string>("woocom-jwt");
             if (jwt == null) jwt = string.Empty;
             if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(apisecret))
+            {
                 await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt);
+            }
+        }
+
+        await ReloadProducsts();
+        productInWooReloadTimer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            try
+            {
+                await ReloadProducsts();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot reload woo commerce product list. " + ex.Message);
+            }
+
+        }, new System.Threading.AutoResetEvent(false), 10000, 10000);
+    }
+
+    private async Task ReloadProducsts()
+    {
+        if (WooCommerceHelpers.IsInitialized)
+        {
+            try
+            {
+                await WooCommerceHelpers.Shop.ReLoadProducts();
+                foreach (var p in WooCommerceHelpers.Shop.Products.Values)
+                {
+                    var utxo = string.Empty;
+                    var index = string.Empty;
+                    p.meta_data.ForEach(m =>
+                    {
+                        if (m.key == "Utxo") utxo = m.value;
+                        if (m.key == "Utxoindex") index = m.value;
+                    });
+                    ProductsInTheShop.Add(utxo + ":" + index, p);
+                }
+                StateHasChanged();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot reload the eshop products. " + ex.Message);
+            }
         }
     }
 

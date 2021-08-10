@@ -84,16 +84,18 @@ namespace VEDriversLite
         /// <param name="key">NBitcoin Key - must contain Private Key</param>
         /// <param name="address">NBitcoin address - must match with the provided key</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key, BitcoinAddress address)
+        private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key, BitcoinAddress address, ICollection<Utxo> utxos)
         {
             // add coins
             List<ICoin> coins = new List<ICoin>();
             try
             {
-                var addrutxos = await AddressUtxosAsync(address.ToString());
+                
+                //var addrutxos = await AddressUtxosAsync(address.ToString());
 
                 // add all spendable coins of this address
-                foreach (var inp in addrutxos.Data.Utxos)
+                //foreach (var inp in addrutxos.Data.Utxos)
+                foreach (var inp in utxos)
                 {
                     if (transaction.Inputs.FirstOrDefault(i => (i.PrevOut.Hash == uint256.Parse(inp.TxId)) && i.PrevOut.N == (uint)inp.N) != null)
                     {
@@ -101,6 +103,7 @@ namespace VEDriversLite
                         coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money(val), address.ScriptPubKey));
                     }
                 }
+                
                 // add signature to inputs before signing
                 foreach (var inp in transaction.Inputs)
                     inp.ScriptSig = address.ScriptPubKey;
@@ -230,7 +233,7 @@ namespace VEDriversLite
 
             try
             {
-                return await SignAndBroadcast(transaction, key, addressForTx);
+                return await SignAndBroadcast(transaction, key, addressForTx, utxos);
             }
             catch (Exception ex)
             {
@@ -320,7 +323,105 @@ namespace VEDriversLite
             }
             try
             {
-                return await SignAndBroadcast(transaction, key, addressForTx);
+                return await SignAndBroadcast(transaction, key, addressForTx, utxos);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string,double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000, string password = "", string message = "")
+        {
+            var res = "ERROR";
+
+            if (receiverAmount == null)
+                throw new Exception("Receivers Dictionary cannot be null!");
+
+            if (ekey == null)
+                throw new Exception("Account cannot be null!");
+
+            // create receiver address
+            Dictionary<string,BitcoinAddress> recsaddr = new Dictionary<string, BitcoinAddress>();
+            try
+            {
+                foreach (var r in receiverAmount)
+                {
+                    var rca = BitcoinAddress.Create(r.Key, Network);
+                    recsaddr.Add(r.Key,rca);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot send transaction. cannot create receiver address!");
+            }
+
+            // load key and address
+            BitcoinSecret key = null;
+            BitcoinAddress addressForTx = null;
+            try
+            {
+                var k = await GetAddressAndKey(ekey, password);
+                key = k.Item2;
+                addressForTx = k.Item1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            // create template for new tx from last one
+            var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
+
+            try
+            {
+                // add inputs of tx
+                foreach (var utxo in utxos)
+                {
+                    var txin = new TxIn(new OutPoint(uint256.Parse(utxo.TxId), utxo.N));
+                    txin.ScriptSig = addressForTx.ScriptPubKey;
+                    transaction.Inputs.Add(txin);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during loading inputs. " + ex.Message);
+            }
+
+            try
+            {
+                var allCoins = 0.0;
+                foreach (var u in utxos)
+                    allCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture);
+
+                UInt64 totalamnt = 0;
+                foreach (var r in receiverAmount)
+                {
+                    var amntinSat = Convert.ToUInt64(r.Value) * Convert.ToUInt64(FromSatToMainRatio);
+                    totalamnt += amntinSat;
+                    // create outputs
+                    if (recsaddr.TryGetValue(r.Key, out var badd))
+                        transaction.Outputs.Add(new Money(amntinSat), badd.ScriptPubKey); // send to receiver required amount
+                }
+
+                var bytes = Encoding.UTF8.GetBytes(message);
+                transaction.Outputs.Add(new TxOut()
+                {
+                    Value = 0,
+                    ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
+                });
+
+                var diffinSat = (Convert.ToUInt64(allCoins) * FromSatToMainRatio) - totalamnt - Convert.ToUInt64(fee);
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during creating outputs. " + ex.Message);
+            }
+            try
+            {
+                return await SignAndBroadcast(transaction, key, addressForTx, utxos);
             }
             catch (Exception ex)
             {
@@ -608,6 +709,5 @@ namespace VEDriversLite
             }
             return resp;
         }
-
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -55,9 +55,7 @@ namespace VEDriversLite.WooCommerce
         public ConcurrentDictionary<string, Order> Orders { get; set; } = new ConcurrentDictionary<string, Order>();
         public ConcurrentDictionary<int, Product> Products { get; set; } = new ConcurrentDictionary<int, Product>();
         public ConcurrentDictionary<int, Category> Categories { get; set; } = new ConcurrentDictionary<int, Category>();
-
-        private ConcurrentQueue<ReceivedPaymentForOrder> ReceivedPaymentsForOrdersToProcess = new ConcurrentQueue<ReceivedPaymentForOrder>();
-        private ConcurrentQueue<NFTOrderToDispatch> NFTOrdersToDispatchList = new ConcurrentQueue<NFTOrderToDispatch>();
+        public ConcurrentDictionary<string, NFTOrderToDispatch> NFTOrdersToDispatchDict { get; set; } = new ConcurrentDictionary<string, NFTOrderToDispatch>();
 
         /// <summary>
         /// This event is called whenever info about the shop is reloaded. It is periodic event.
@@ -70,7 +68,7 @@ namespace VEDriversLite.WooCommerce
         {
             await Reload();
             refreshTimer.Interval = interval;
-            refreshTimer.AutoReset = true;
+            refreshTimer.AutoReset = false;
             refreshTimer.Elapsed += RefreshTimer_Elapsed;
             refreshTimer.Enabled = true;
             refreshTimer.Start();
@@ -85,7 +83,11 @@ namespace VEDriversLite.WooCommerce
 
         private void RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Reload();
+            refreshTimer.Stop();
+            refreshTimer.Enabled = false;
+            Reload().Wait();
+            refreshTimer.Enabled = true;
+            refreshTimer.Start();
         }
 
         public async Task Reload()

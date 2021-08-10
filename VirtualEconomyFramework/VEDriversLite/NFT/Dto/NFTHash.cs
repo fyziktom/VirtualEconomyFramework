@@ -12,6 +12,7 @@ namespace VEDriversLite.NFT.Dto
         public int Index { get; set; } = 0;
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string AuthorDogeAddress { get; set; } = string.Empty;
         public string Image { get; set; } = string.Empty;
         public string Link { get; set; } = string.Empty;
         public double Price { get; set; } = 0.0;

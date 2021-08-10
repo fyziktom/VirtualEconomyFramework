@@ -589,6 +589,9 @@
                 newNFT.NFTOriginTxId = sourceNFT.NFTOriginTxId;
             }
 
+            if (!string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                newNFT.DogeAddress = AppData.DogeAccount.Address;
+
             (bool, string) res;
             if (!string.IsNullOrEmpty(newNFT.Utxo))
             {

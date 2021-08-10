@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
@@ -21,6 +21,11 @@ namespace VEDriversLite
         public static string WooCommerceStoreAPIKey { get; set; } = string.Empty;
         public static string WooCommerceStoreSecret { get; set; } = string.Empty;
         public static string WooCommerceStoreJWTToken { get; set; } = string.Empty;
+        public static string WooCommerceStoreDonationDogeAddress { get; set; } = string.Empty;
+        public static double WooCommerceStoreDonationDogePercentage { get; set; } = 20.0;
+        public static bool WooCommerceStoreSendDogeToDonation { get; set; } = false;
+        public static bool WooCommerceStoreSendDogeToAuthor { get; set; } = false;
+        public static double WooCommerceStoreSendDogeToAuthorPercentage { get; set; } = 80.0;
         public static bool AllowDispatchNFTOrders { get; set; } = false;
     }
 }

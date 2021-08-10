@@ -160,6 +160,9 @@
 
             StateHasChanged();
 
+            if (!string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                nft.DogeAddress = AppData.DogeAccount.Address;
+
             var res = await AppData.Account.SendNFT(receiverAddress, nft, withPrice, price, withDogePrice, dogePrice);
 
             if (res.Item1)

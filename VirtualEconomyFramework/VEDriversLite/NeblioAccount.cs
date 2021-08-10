@@ -510,22 +510,24 @@ namespace VEDriversLite
         }
 
         /// <summary>
-        /// Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
+        /// Load account just for observation
+        /// You cannot sign tx when you load address this way
         /// </summary>
-        /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="address">Address you want to observe</param>
         /// <returns></returns>
         public async Task<bool> LoadAccountWithDummyKey(string password, string address, bool withoutNFTs = false, bool awaitFirstLoad = false)
         {
             try
             {
                 Key k = new Key();
+                BitcoinSecret privateKeyFromNetwork = k.GetBitcoinSecret(NeblioTransactionHelpers.Network);
                 if (!string.IsNullOrEmpty(password))
                 {
-                    AccountKey = new EncryptionKey(k.ToString(), fromDb: true);
+                    AccountKey = new EncryptionKey(privateKeyFromNetwork.ToString(), fromDb: true);
                 }
                 else
                 {
-                    AccountKey = new EncryptionKey(k.ToString(), fromDb: false);
+                    AccountKey = new EncryptionKey(privateKeyFromNetwork.ToString(), fromDb: false);
                 }
                 if (!string.IsNullOrEmpty(password))
                 {
@@ -533,7 +535,7 @@ namespace VEDriversLite
                     AccountKey.IsEncrypted = true;
                 }
 
-                Secret = new BitcoinSecret(k.ToString(), NeblioTransactionHelpers.Network);
+                Secret = privateKeyFromNetwork;
                 Address = address;//Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
 
                 SignMessage("init");
@@ -1296,7 +1298,7 @@ namespace VEDriversLite
         /// <param name="NFT">NFT on the SubAccount which should be send</param>
         /// <param name="sendToMainAccount">If this is set, function will rewrite receiver to main Account Address</param>
         /// <returns>true and string with new TxId</returns>
-        public async Task<(bool, string)> SendNFTFromSubAccount(string address, string receiver, INFT NFT, bool sendToMainAccount = false)
+        public async Task<(bool, string)> SendNFTFromSubAccount(string address, string receiver, INFT NFT, bool sendToMainAccount = false, bool withDogePrice = false, double dogeprice = 0.0)
         {
             try
             {
@@ -1304,7 +1306,7 @@ namespace VEDriversLite
                 {
                     if (sendToMainAccount)
                         receiver = Address;
-                    var res = await sacc.SendNFT(receiver, NFT, false, 0.0);
+                    var res = await sacc.SendNFT(receiver, NFT, false, 0.0, withDogePrice, dogeprice);
                     return res;
                 }
                 else

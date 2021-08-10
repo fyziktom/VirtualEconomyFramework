@@ -1,5 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.WooCommerce
+@using VEDriversLite.WooCommerce.Dto
 @inject AppData AppData
 
 <div class="container-fluid overflow-auto">
@@ -67,6 +69,11 @@
                         <div class="card-group">
                             @foreach (var nft in NFTsList)
                             {
+                                var isInWoo = false;
+                                if (ProductsInTheShop.TryGetValue(nft.Utxo + ":" + nft.UtxoIndex.ToString(), out var product))
+                                {
+                                    isInWoo = true;
+                                }
                                 if (displayCoruzant && (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast))
                                 {
                                     <CoruzantNFT Address="@_address"
@@ -93,7 +100,8 @@
                                                  OwnNFT="@OwnNFT"
                                                  SubAccount="@SubAccount"
                                                  DisplayCheckField="@allowNFTCheckField"
-                                                 NFTCheckedChanged="@NFTCheckChangedHandler" />
+                                                 NFTCheckedChanged="@NFTCheckChangedHandler"
+                                                 IsInWooCom="@isInWoo"/>
                                         }
                                     }
                                 }
@@ -136,6 +144,9 @@
     public bool OwnNFT => MainAccount || SubAccount;
 
     bool canLoadMore = false;
+
+    [Parameter]
+    public Dictionary<string, Product> ProductsInTheShop { get; set; } = new Dictionary<string, Product>();
 
     private List<INFT> _NFTsList = new List<INFT>();
 
@@ -288,7 +299,7 @@
         StateHasChanged();
     }
 
-    private async Task NFTCheckChangedHandler((INFT,bool) e)
+    private async Task NFTCheckChangedHandler((INFT, bool) e)
     {
         if (NFTsSelectedForAction.Count > 10 && e.Item2)
             return; // todo alert messagebox

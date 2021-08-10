@@ -33,7 +33,8 @@ namespace VEDriversLite.NFT
                 ParseCommon(nftData.NFTMetadata);
 
                 ParsePrice(lastmetadata);
-
+                await ParseDogeftInfo(lastmetadata);
+                ParseSoldInfo(lastmetadata);
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
 
@@ -64,7 +65,8 @@ namespace VEDriversLite.NFT
             if (metadata != null)
             {
                 ParseCommon(metadata);
-
+                await ParseDogeftInfo(metadata);
+                ParseSoldInfo(metadata);
                 if (metadata.TryGetValue("SourceUtxo", out var su))
                 {
                     SourceTxId = Utxo;

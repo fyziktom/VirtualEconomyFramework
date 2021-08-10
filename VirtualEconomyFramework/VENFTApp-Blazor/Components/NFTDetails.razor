@@ -77,7 +77,7 @@
                 </div>
             }
             @if ((NFT.Type == NFTTypes.Post && !string.IsNullOrEmpty(NFT.Text)) ||
-             (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
+          (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
             {
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
@@ -411,10 +411,26 @@
                 @if (NFT.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
                 {
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="async () => await ShowOwnershipQRCode()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <i class="oi oi-grid-four-up"></i>
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <span style="font-size: 12px;">QR</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
                             @if (NFT.Type == NFTTypes.Post || NFT.Type == NFTTypes.Event || NFT.Type == NFTTypes.Profile)
                             {
-                                <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="width:65px; height:65px; margin-right:20px;">
+                                <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px; margin-left: 20px;">
                                     <div class="row">
                                         <div class="col">
                                             <div class="row d-flex justify-content-center align-items-center">
@@ -431,7 +447,7 @@
                                     </div>
                                 </button>
                             }
-                            <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog()" style="width:65px; height:65px;">
+                            <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog()" style="min-width:65px; max-width:65px; width:65px; height:65px; margin-left: 20px;">
                                 <div class="row">
                                     <div class="col">
                                         <div class="row d-flex justify-content-center align-items-center">
@@ -447,9 +463,46 @@
                                     </div>
                                 </div>
                             </button>
+                            <button class="btn btn-primary" @onclick="async () => ShowMoveNFTDialog()" style="min-width:65px; max-width:65px; width:65px; height:65px; margin-left: 20px;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <i class="oi oi-transfer"></i>
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <span style="font-size: 12px;">Move</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="async () => ShowSendNFTToDogeftDialog()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <!--<i class="oi oi-location"></i>-->
+                                                <img style="width:23px;" src="images/dogeicon-w.png" />
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <span style="font-size: 12px;">Dogeft</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
                             @if (!SubAccount)
                             {
-                                <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()" style="width:65px; height:65px; margin-left:20px;">
+                                <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px; margin-left: 20px;">
                                     <div class="row">
                                         <div class="col">
                                             <div class="row d-flex justify-content-center align-items-center">
@@ -467,25 +520,10 @@
                                 </button>
                             }
                             @if (WooCommerceHelpers.IsInitialized)
-                            { 
+                            {
                                 <WooCommerceAddProductButton NFT="@NFT" />
                             }
-                                <button class="btn btn-primary" @onclick="async () => await ShowOwnershipQRCode()" style="width:65px; height:65px; margin-left:20px;">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="row d-flex justify-content-center align-items-center">
-                                                <div class="col">
-                                                    <i class="oi oi-grid-four-up"></i>
-                                                </div>
-                                            </div>
-                                            <div class="row d-flex justify-content-center align-items-center">
-                                                <div class="col">
-                                                    <span style="font-size: 12px;">QR</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </button>
+
                         </div>
                     </div>
                 }
@@ -500,6 +538,17 @@
              @bind-SendNFTDialogVisible="sendNFTDialogVisible"
              Address="@Address"
              SubAccount="@SubAccount" />
+    <MoveNFTToSubAccount NFT="@NFT"
+             NFTSent="@NFTSentHandler"
+             @bind-SendNFTDialogVisible="moveNFTDialogVisible"
+             Address="@Address"
+             SubAccount="@SubAccount" />
+
+    <SendNFTToDogeft NFT="@NFT"
+                     NFTSent="@NFTSentHandler"
+                     @bind-SendNFTDialogVisible="sendNFTToDogeftDialogVisible"
+                     Address="@Address"
+                     SubAccount="@SubAccount" />
 
     <SetNFTPrice NFT="@NFT"
                  NFTSent="@NFTSentHandler"
@@ -657,6 +706,8 @@
     bool showUseTicket = false;
     bool createNewPostVisible = false;
     bool sendNFTDialogVisible = false;
+    bool moveNFTDialogVisible = false;
+    bool sendNFTToDogeftDialogVisible = false;
     bool showOwnershipDialogVisible = false;
     bool showOwnershipDialogLoading = false;
     bool setPriceNFTDialogVisible = false;
@@ -747,10 +798,19 @@
     {
         StateHasChanged();
     }
-
+    private async Task ShowMoveNFTDialog()
+    {
+        moveNFTDialogVisible = true;
+        StateHasChanged();
+    }
     private async Task ShowSendNFTDialog()
     {
         sendNFTDialogVisible = true;
+        StateHasChanged();
+    }
+    private async Task ShowSendNFTToDogeftDialog()
+    {
+        sendNFTToDogeftDialogVisible = true;
         StateHasChanged();
     }
 
@@ -903,8 +963,10 @@
 
     void NFTSentHandler(string e)
     {
+        moveNFTDialogVisible = false;
         sendNFTDialogVisible = false;
-        sendNFTDialogVisible = false;
+        setPriceNFTDialogVisible = false;
+        sendNFTToDogeftDialogVisible = false;
         NFTSent.InvokeAsync(e);
         StateHasChanged();
     }
@@ -912,7 +974,9 @@
     void NFTMinted(string e)
     {
         createNewPostVisible = false;
+        setPriceNFTDialogVisible = false;
         sendNFTDialogVisible = false;
+        sendNFTToDogeftDialogVisible = false;
         NFTSent.InvokeAsync(e);
         StateHasChanged();
     }

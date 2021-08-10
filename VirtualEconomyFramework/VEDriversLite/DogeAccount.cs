@@ -312,6 +312,32 @@ namespace VEDriversLite
             return false;
         }
 
+        /// <summary>
+        /// Load account just for observation
+        /// You cannot sign tx when you load address this way
+        /// </summary>
+        /// <param name="address">Address</param>
+        /// <returns></returns>
+        public async Task<bool> LoadAccountWithDummyKey(string address)
+        {
+            try
+            {
+                Key k = new Key();
+                BitcoinSecret privateKeyFromNetwork = k.GetBitcoinSecret(DogeTransactionHelpers.Network);
+                AccountKey = new EncryptionKey(privateKeyFromNetwork.ToString(), fromDb: false);
+                Secret = privateKeyFromNetwork;
+                Address = address;//Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+
+                await StartRefreshingData();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address! " + ex.Message);
+            }
+        }
+
 
         /// <summary>
         /// This function will load the actual data and then run the task which periodically refresh this data.
@@ -400,6 +426,7 @@ namespace VEDriversLite
             try
             {
                 var txs = await DogeTransactionHelpers.AddressSpendTxsAsync(Address);
+                txs.Reverse();
                 SentTransactions = txs;
                 return txs;
             }
@@ -420,6 +447,7 @@ namespace VEDriversLite
             try
             {
                 var txs = await DogeTransactionHelpers.AddressReceivedTxsAsync(Address);
+                txs.Reverse();
                 ReceivedTransactions = txs;
                 return txs;
             }
@@ -554,6 +582,55 @@ namespace VEDriversLite
                     rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
                 else
                     rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
+
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
+        /// Send Doge payment with multiple outputs
+        /// </summary>
+        /// <param name="receiver">Receiver Doge Address</param>
+        /// <param name="amount">Ammount in Doge</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "", UInt64 fee = 100000000)
+        {
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var totam = 0.0;
+            foreach(var r in receiverAmounts)
+                totam += r.Value;
+            var res = await CheckSpendableDoge(totam);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                return (false, res.Item1);
+            }
+
+            if (utxos.Count > 0)
+            {
+                res.Item2 = utxos;
+            }
+
+            try
+            {
+                // send tx
+                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, fee, message: message);
 
                 if (rtxid != null)
                 {

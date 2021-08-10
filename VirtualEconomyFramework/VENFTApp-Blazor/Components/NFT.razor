@@ -14,7 +14,7 @@
                 <div class="col d-flex justify-content-center align-items-center" style="padding: 0px;">
                     @if (DisplayCheckField)
                     {
-                        <input type="checkbox" style="position : absolute; right: 220px; top: 20px;" @onchange="eventArgs => { checkNFTChanged(eventArgs.Value); }" />
+                        <input type="checkbox" style="position : absolute; right: 220px; top: 20px; z-index:10;" @onchange="eventArgs => { checkNFTChanged(eventArgs.Value); }" />
                     }
                     @switch (nft.Type)
                     {
@@ -128,105 +128,114 @@
             @if (nft.TokenId == NFTHelpers.TokenId)
             {
                 <span class="badge badge-warning" style="position: absolute;right: 200px;top: 207px;">VENFT</span>
+                @if (IsInWooCom)
+                {
+                    <span class="badge badge-info" style="position: absolute;right: 155px;top: 207px;">Eshop</span>
+                }
             }
             else if (nft.TokenId == CoruzantNFTHelpers.CoruzantTokenId)
             {
                 <span class="badge badge-primary" style="position: absolute;right: 190px;top: 207px;">Coruzant</span>
-            }
-        <div style="position: absolute;right: 7px;top: 207px; padding:0px; margin:0px;">
-            @if (nft.Type == NFTTypes.Ticket)
-            {
-                var tnft = nft as TicketNFT;
-                @switch (tnft.TicketDuration)
+                @if (IsInWooCom)
                 {
-                    case DurationOfNFTTicket.Day:
-                        <span class="badge badge-secondary">1 Day</span>
-                        break;
-                    case DurationOfNFTTicket.TwoDays:
-                        <span class="badge badge-primary">2 Days</span>
-                        break;
-                    case DurationOfNFTTicket.ThreeDays:
-                        <span class="badge badge-success">3 Days</span>
-                        break;
-                    case DurationOfNFTTicket.FourDays:
-                        <span class="badge badge-info">4 Days</span>
-                        break;
-                    case DurationOfNFTTicket.FiveDays:
-                        <span class="badge badge-warning">5 Days</span>
-                        break;
-                }
-                @switch (tnft.TicketClass)
-                {
-                    case ClassOfNFTTicket.Economy:
-                        <span class="badge badge-secondary">Economy</span>
-                        break;
-                    case ClassOfNFTTicket.Standard:
-                        <span class="badge badge-primary">Standard</span>
-                        break;
-                    case ClassOfNFTTicket.VIP:
-                        <span class="badge badge-success">VIP</span>
-                        break;
-                    case ClassOfNFTTicket.VIPPlus:
-                        <span class="badge badge-info">VIP+</span>
-                        break;
-                    case ClassOfNFTTicket.General:
-                        <span class="badge badge-primary">General</span>
-                        break;
-                    case ClassOfNFTTicket.Family:
-                        <span class="badge badge-warning">Family</span>
-                        break;
-                    case ClassOfNFTTicket.Children:
-                        <span class="badge badge-warning">Children</span>
-                        break;
+                    <span class="badge badge-info" style="position: absolute;right: 150px;top: 207px;">Eshop</span>
                 }
             }
-            else if (nft.Type == NFTTypes.Event)
-            {
-                var enft = nft as EventNFT;
-                @switch (enft.EventClass)
+
+            <div style="position: absolute;right: 7px;top: 203px; padding:0px; margin:0px;">
+                @if (nft.Type == NFTTypes.Ticket)
                 {
-                    case ClassOfNFTEvent.PersonalEvent:
-                        <span class="badge badge-secondary">Personal</span>
+                    var tnft = nft as TicketNFT;
+                    @switch (tnft.TicketDuration)
+                    {
+                        case DurationOfNFTTicket.Day:
+                            <span class="badge badge-secondary">1 Day</span>
+                            break;
+                        case DurationOfNFTTicket.TwoDays:
+                            <span class="badge badge-primary">2 Days</span>
+                            break;
+                        case DurationOfNFTTicket.ThreeDays:
+                            <span class="badge badge-success">3 Days</span>
+                            break;
+                        case DurationOfNFTTicket.FourDays:
+                            <span class="badge badge-info">4 Days</span>
+                            break;
+                        case DurationOfNFTTicket.FiveDays:
+                            <span class="badge badge-warning">5 Days</span>
+                            break;
+                    }
+                    @switch (tnft.TicketClass)
+                    {
+                        case ClassOfNFTTicket.Economy:
+                            <span class="badge badge-secondary">Economy</span>
+                            break;
+                        case ClassOfNFTTicket.Standard:
+                            <span class="badge badge-primary">Standard</span>
+                            break;
+                        case ClassOfNFTTicket.VIP:
+                            <span class="badge badge-success">VIP</span>
+                            break;
+                        case ClassOfNFTTicket.VIPPlus:
+                            <span class="badge badge-info">VIP+</span>
+                            break;
+                        case ClassOfNFTTicket.General:
+                            <span class="badge badge-primary">General</span>
+                            break;
+                        case ClassOfNFTTicket.Family:
+                            <span class="badge badge-warning">Family</span>
+                            break;
+                        case ClassOfNFTTicket.Children:
+                            <span class="badge badge-warning">Children</span>
+                            break;
+                    }
+                }
+                else if (nft.Type == NFTTypes.Event)
+                {
+                    var enft = nft as EventNFT;
+                    @switch (enft.EventClass)
+                    {
+                        case ClassOfNFTEvent.PersonalEvent:
+                            <span class="badge badge-secondary">Personal</span>
+                            break;
+                        case ClassOfNFTEvent.Birthday:
+                            <span class="badge badge-primary">Birthday</span>
+                            break;
+                        case ClassOfNFTEvent.Concert:
+                            <span class="badge badge-success">Concert</span>
+                            break;
+                        case ClassOfNFTEvent.Festival:
+                            <span class="badge badge-info">Festival</span>
+                            break;
+                        case ClassOfNFTEvent.PlaneFlight:
+                            <span class="badge badge-warning">Plane Flight</span>
+                            break;
+                        case ClassOfNFTEvent.OnlineMeeting:
+                            <span class="badge badge-light">e-Meeting</span>
+                            break;
+                    }
+                }
+                @switch (nft.Type)
+                {
+                    case NFTTypes.Image:
+                        <span class="badge badge-primary">Image</span>
                         break;
-                    case ClassOfNFTEvent.Birthday:
-                        <span class="badge badge-primary">Birthday</span>
+                    case NFTTypes.Ticket:
+                        <span class="badge badge-secondary">Ticket</span>
                         break;
-                    case ClassOfNFTEvent.Concert:
-                        <span class="badge badge-success">Concert</span>
+                    case NFTTypes.Event:
+                        <span class="badge badge-success">Event</span>
                         break;
-                    case ClassOfNFTEvent.Festival:
-                        <span class="badge badge-info">Festival</span>
+                    case NFTTypes.Post:
+                        <span class="badge badge-info">Post</span>
                         break;
-                    case ClassOfNFTEvent.PlaneFlight:
-                        <span class="badge badge-warning">Plane Flight</span>
+                    case NFTTypes.Profile:
+                        <span class="badge badge-light">Profile</span>
                         break;
-                    case ClassOfNFTEvent.OnlineMeeting:
-                        <span class="badge badge-light">e-Meeting</span>
+                    case NFTTypes.Music:
+                        <span class="badge badge-warning">Music</span>
                         break;
                 }
-            }
-            @switch (nft.Type)
-            {
-                case NFTTypes.Image:
-                    <span class="badge badge-primary">Image</span>
-                    break;
-                case NFTTypes.Ticket:
-                    <span class="badge badge-secondary">Ticket</span>
-                    break;
-                case NFTTypes.Event:
-                    <span class="badge badge-success">Event</span>
-                    break;
-                case NFTTypes.Post:
-                    <span class="badge badge-info">Post</span>
-                    break;
-                case NFTTypes.Profile:
-                    <span class="badge badge-light">Profile</span>
-                    break;
-                case NFTTypes.Music:
-                    <span class="badge badge-warning">Music</span>
-                    break;
-            }
-        </div>
+            </div>
 
             <button class="btn btn-light" @onclick="async () => ShowShareNFT(nft.Utxo)"
                     style="position:absolute; right: 7px;top: 230px; width: 30px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
@@ -282,12 +291,12 @@
                 </div>
             </div>
             <!--
-        <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                <VENFTApp_Blazor.Components.NFTThumbnail Name="nft.Name" Type="nft.Type" Author="nft.Author" Description="nft.Description" />
-            </div>
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <VENFTApp_Blazor.Components.NFTThumbnail Name="nft.Name" Type="nft.Type" Author="nft.Author" Description="nft.Description" />
         </div>
-        -->
+    </div>
+    -->
         </div>
         @if (!HideButtons)
         {
@@ -392,32 +401,35 @@
 }
 @code {
 
-        bool shareNFTVisible = false;
-        string shareNFTUtxo = string.Empty;
+    bool shareNFTVisible = false;
+    string shareNFTUtxo = string.Empty;
 
-        string nftDetailsUtxo = string.Empty;
-        bool nftDetailsVisible = false;
+    string nftDetailsUtxo = string.Empty;
+    bool nftDetailsVisible = false;
 
-        string modalWithImageLink = string.Empty;
-        bool modalWithImageVisible = false;
+    string modalWithImageLink = string.Empty;
+    bool modalWithImageVisible = false;
 
-        [Parameter]
-        public bool HideButtons { get; set; } = false;
+    [Parameter]
+    public bool HideButtons { get; set; } = false;
 
-        [Parameter]
-        public bool SubAccount { get; set; } = false;
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
 
-        [Parameter]
-        public EventCallback<string> NFTSent { get; set; }
+    [Parameter]
+    public bool IsInWooCom { get; set; } = false;
 
-        [Parameter]
-        public bool DisplayCheckField { get; set; } = false;
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
 
-        bool NFTChecked { get; set; } = false;
-        string NFTCheckedBgColor { get; set; } = string.Empty;
+    [Parameter]
+    public bool DisplayCheckField { get; set; } = false;
 
-        [Parameter]
-        public EventCallback<(INFT,bool)> NFTCheckedChanged { get; set; }
+    bool NFTChecked { get; set; } = false;
+    string NFTCheckedBgColor { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<(INFT,bool)> NFTCheckedChanged { get; set; }
 
     private INFT nft = new ImageNFT("");
     [Parameter]

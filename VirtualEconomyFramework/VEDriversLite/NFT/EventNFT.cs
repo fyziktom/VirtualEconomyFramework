@@ -150,7 +150,7 @@ namespace VEDriversLite.NFT
                 ParseCommon(lastmetadata);
 
                 ParsePrice(lastmetadata);
-
+                ParseDogeftInfo(lastmetadata);
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
 

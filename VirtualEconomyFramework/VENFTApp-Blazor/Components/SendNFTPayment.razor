@@ -119,6 +119,8 @@
             StateHasChanged();
 
             var NFT = await NFTFactory.GetNFT("", utxo, UtxoIndex, 0, true);
+            if (!string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                NFT.DogeAddress = AppData.DogeAccount.Address;
             var res = await AppData.Account.SendNFTPayment(receiverAddress, NFT);
             if (res.Item1)
                 status = res.Item2;

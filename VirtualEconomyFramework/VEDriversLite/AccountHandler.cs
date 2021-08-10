@@ -209,7 +209,8 @@ namespace VEDriversLite
                         Image = n.ImageLink,
                         Link = n.Link,
                         Price = n.Price,
-                        DogePrice = n.DogePrice
+                        DogePrice = n.DogePrice,
+                        AuthorDogeAddress = n.DogeAddress
                     })));
 
                 VEDLDataContext.Accounts.Values.ToList()
@@ -227,7 +228,8 @@ namespace VEDriversLite
                         Image = n.ImageLink,
                         Link = n.Link,
                         Price = n.Price,
-                        DogePrice = n.DogePrice
+                        DogePrice = n.DogePrice,
+                        AuthorDogeAddress = n.DogeAddress
                     }))));
 
                 if (nhs != null)

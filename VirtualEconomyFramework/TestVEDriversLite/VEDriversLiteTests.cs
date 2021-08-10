@@ -1266,9 +1266,22 @@ namespace TestVEDriversLite
 
             password = param;
             await dogeAccount.LoadAccount(password);
-            DogeStartRefreshingData(null);
+            //DogeStartRefreshingData(null);
         }
 
+        [TestEntry]
+        public static void DogeLoadAccountForObserve(string param)
+        {
+            DogeLoadAccountForObserveAsync(param);
+        }
+        public static async Task DogeLoadAccountForObserveAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+                throw new Exception("Address cannot be empty.");
+
+            await dogeAccount.LoadAccountWithDummyKey(param);
+            DogeDisplayAccountDetails(null);
+        }
 
         [TestEntry]
         public static void DogeStartRefreshingData(string param)

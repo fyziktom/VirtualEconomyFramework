@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
@@ -78,25 +78,104 @@ namespace VEDriversLite.WooCommerce
                                                 {
                                                     if (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) >= Convert.ToDouble(ord.total, CultureInfo.InvariantCulture))
                                                     {
-                                                        Console.WriteLine($"Order {ord.id}, {ord.order_key} payment has correct amount and it is moved to processing state.");
-                                                        if (AllowDispatchNFTOrders)
+                                                        try
                                                         {
-                                                            var add = await GetNeblioAddressFromOrderMetadata(ord);
-                                                            if (add.Item1)
+                                                            Console.WriteLine($"Order {ord.id}, {ord.order_key} payment has correct amount and it is moved to processing state.");
+                                                            if (AllowDispatchNFTOrders)
                                                             {
-                                                                Console.WriteLine($"Order {ord.id}, {ord.order_key} received Neblio Address in DOGE Payment message matchs with Address in the order.");
+                                                                var add = await GetNeblioAddressFromOrderMetadata(ord);
+                                                                if (add.Item1)
+                                                                {
+                                                                    Console.WriteLine($"Order {ord.id}, {ord.order_key} received Neblio Address in DOGE Payment message matchs with Address in the order.");
+                                                                    ord.statusclass = OrderStatus.processing;
+                                                                    ord.transaction_id = $"{u.TxId}:{u.N}";
+                                                                    ord.date_paid = TimeHelpers.UnixTimestampToDateTime(u.Time * 1000);
+                                                                    var o = await UpdateOrder(ord);
+                                                                }
+                                                            }
+                                                            else
+                                                            {
                                                                 ord.statusclass = OrderStatus.processing;
                                                                 ord.transaction_id = $"{u.TxId}:{u.N}";
                                                                 ord.date_paid = TimeHelpers.UnixTimestampToDateTime(u.Time * 1000);
                                                                 var o = await UpdateOrder(ord);
                                                             }
+                                                            try
+                                                            {
+                                                                (bool, string) dres = (false, string.Empty);
+                                                                if (VEDLDataContext.WooCommerceStoreSendDogeToAuthor)
+                                                                {
+                                                                    Dictionary<string, double> receiversAmounts = new Dictionary<string, double>();
+                                                                    ord.line_items.ForEach(async (item) =>
+                                                                    {
+                                                                        var authoraddress = string.Empty;
+                                                                        var sh = string.Empty;
+                                                                        var adogeaddFromOrder = string.Empty;
+                                                                        if (WooCommerceHelpers.Shop.Products.TryGetValue(item.product_id, out var product))
+                                                                        {
+                                                                            product.meta_data.ForEach(m =>
+                                                                            {
+                                                                                if (m.key == "ShortHash") sh = m.value;
+                                                                                if (m.key == "AuthorDogeAddress") adogeaddFromOrder = m.value;
+                                                                            });
+                                                                            if (!string.IsNullOrEmpty(sh))
+                                                                            {
+                                                                                if (VEDLDataContext.NFTHashs.TryGetValue(sh, out var nfthash))
+                                                                                {
+                                                                                    var amnt = Convert.ToDouble(item.total, CultureInfo.InvariantCulture) * (VEDLDataContext.WooCommerceStoreSendDogeToAuthorPercentage / 100);
+                                                                                    amnt = Math.Round(amnt);
+                                                                                    if (!string.IsNullOrEmpty(adogeaddFromOrder))
+                                                                                        authoraddress = adogeaddFromOrder;
+                                                                                    else
+                                                                                        authoraddress = nfthash.AuthorDogeAddress;
+
+                                                                                    if (receiversAmounts.TryGetValue(authoraddress, out var value))
+                                                                                    {
+                                                                                        receiversAmounts.Remove(authoraddress);
+                                                                                        amnt += value;
+                                                                                    }
+                                                                                    receiversAmounts.Add(authoraddress, amnt);
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    });
+
+                                                                    var rest = 0.0;
+                                                                    var totalToAuthors = 0.0;
+                                                                    foreach (var r in receiversAmounts)
+                                                                        totalToAuthors += r.Value;
+                                                                    rest = Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) - totalToAuthors - 1;
+                                                                    receiversAmounts.Add(ConnectedDepositDogeAccountAddress, rest);
+                                                                    // send the utxo to the deposit account
+                                                                    dres = await doge.SendMultipleOutputPayment(receiversAmounts,
+                                                                                                  message:$"Order {ord.order_key} moved to processing state.", utxos: new List<DogeAPI.Utxo> { u });
+                                                                }
+                                                                else
+                                                                {
+                                                                    // send the utxo to the deposit account
+                                                                    dres = await doge.SendPayment(doge.Address,
+                                                                                                  Convert.ToDouble(u.Value, CultureInfo.InvariantCulture) - 1,
+                                                                                                  $"Order {ord.order_key} moved to processing state.", utxo: u.TxId, N: u.N);
+                                                                }
+                                                                if (dres.Item1)
+                                                                {
+                                                                    ord.meta_data.Add(new ProductMetadata() { key = "Doge deposit and author reward payment txid.", value = dres.Item2 });
+                                                                    var o = await UpdateOrder(ord);
+                                                                    Console.WriteLine($"Doge payment resend to the deposit account. Txid: {dres.Item2}");
+                                                                }
+                                                                else
+                                                                {
+                                                                    Console.WriteLine($"Doge payment cannot be send to the deposit account. Message: {dres.Item2}");
+                                                                }
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                Console.WriteLine("Cannot send the doge payment after setup of the processing the order.");
+                                                            }
                                                         }
-                                                        else
+                                                        catch(Exception ex)
                                                         {
-                                                            ord.statusclass = OrderStatus.processing;
-                                                            ord.transaction_id = $"{u.TxId}:{u.N}";
-                                                            ord.date_paid = TimeHelpers.UnixTimestampToDateTime(u.Time * 1000);
-                                                            var o = await UpdateOrder(ord);
+                                                            Console.WriteLine("Cannot set order to processing state.");
                                                         }
                                                     }
                                                     else
@@ -141,7 +220,8 @@ namespace VEDriversLite.WooCommerce
                                                      completedOrdersUtxos.Count <= 10 &&
                                                      !string.IsNullOrEmpty(ConnectedDepositDogeAccountAddress))
                                             {
-                                                completedOrdersUtxos.Add(u);
+                                                // temporary stop of sending the aggregated deposit
+                                                //completedOrdersUtxos.Add(u);
                                             }
                                         }
                                     }
@@ -153,6 +233,8 @@ namespace VEDriversLite.WooCommerce
                     await Task.Delay(500);//wait at least 500ms before next request to the api. otherwise chain.so api can revoke the request
                 }
 
+                // temporary stop of sending the aggregated deposit
+                /*
                 if (completedOrdersUtxos.Count > 5 && !string.IsNullOrEmpty(ConnectedDepositDogeAccountAddress))
                 {
                     var totalAmount = 0.0;
@@ -191,6 +273,7 @@ namespace VEDriversLite.WooCommerce
                         }
                     }
                 }
+                */
             }
         }
 

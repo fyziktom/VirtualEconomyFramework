@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +23,8 @@ namespace VENFTApp_Server
 {
     public class VEDriversLiteCore : BackgroundService
     {
+        //private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private IConfiguration settings;
         private IHostApplicationLifetime lifetime;
 
@@ -60,6 +62,7 @@ namespace VENFTApp_Server
                 settings.GetSection("keys").Bind(keys);
                 if (keys == null || keys.Count == 0)
                 {
+                    //log.Error("Missing keys in settigns. Cannot continue without at least one root Neblio account.");
                     Console.WriteLine("Missing keys in settigns. Cannot continue without at least one root Neblio account.");
                     return;
                 }
@@ -76,84 +79,93 @@ namespace VENFTApp_Server
                         {
                             if (!k.IsDogeAccount)
                             {
-                                Console.WriteLine("");
-                                Console.WriteLine("=========Neblio Main Account========");
-                                Console.WriteLine($"Loading Neblio address {k.Address}...");
-                                if (string.IsNullOrEmpty(k.Name))
-                                    k.Name = NeblioTransactionHelpers.ShortenAddress(k.Address);
-
-                                var account = new NeblioAccount();
-                                EncryptedBackupDto bckp = null;
-                                if (FileHelpers.IsFileExists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, k.Address + "-backup.json")))
+                                var add = await NeblioTransactionHelpers.ValidateNeblioAddress(k.Address);
+                                if (add.Item1)
                                 {
-                                    var b = FileHelpers.ReadTextFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, k.Address + "-backup.json"));
-                                    if (!string.IsNullOrEmpty(b))
-                                    {
-                                        bckp = JsonConvert.DeserializeObject<EncryptedBackupDto>(b);
-                                        Console.WriteLine($"Backup data found for this account. It will be loaded based on VENFT backup.");
-                                    }
-                                }
+                                    Console.WriteLine("");
+                                    Console.WriteLine("=========Neblio Main Account========");
+                                    Console.WriteLine($"Loading Neblio address {k.Address}...");
+                                    if (string.IsNullOrEmpty(k.Name))
+                                        k.Name = NeblioTransactionHelpers.ShortenAddress(k.Address);
 
-                                (bool, string) dbackup = (false, string.Empty);
-                                (bool, string) dpass = (false, string.Empty);
-                                if (await account.LoadAccount(k.Password, k.EKey, k.Address, awaitFirstLoad: true)) // fill your password
-                                {
-                                    if (k.ConnectToMainShop && k.IsReceivingAccount)
-                                        neblioAddressForShop = k.Address;
-                                    else if (k.ConnectToMainShop && k.IsDepositAccount)
-                                        neblioDepositAddressForShop = k.Address;
-
-                                    if (bckp != null)
+                                    var account = new NeblioAccount();
+                                    EncryptedBackupDto bckp = null;
+                                    if (FileHelpers.IsFileExists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, k.Address + "-backup.json")))
                                     {
-                                        var dadd = await ECDSAProvider.DecryptMessage(bckp.eadd, account.Secret);
-                                        dbackup = await ECDSAProvider.DecryptMessage(bckp.edata, account.Secret);
-                                        dpass = await ECDSAProvider.DecryptMessage(bckp.epass, account.Secret);
-                                        if (dpass.Item1 && dadd.Item1 && dadd.Item1)
+                                        var b = FileHelpers.ReadTextFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, k.Address + "-backup.json"));
+                                        if (!string.IsNullOrEmpty(b))
                                         {
-                                            Console.WriteLine($"Loading Neblio address {k.Address} from VENFT Backup...");
-                                            if (await account.LoadAccountFromVENFTBackup(dpass.Item2, dbackup.Item2, awaitFirstLoad: true))
-                                                Console.WriteLine($"Neblio address {k.Address} initialized.");
-                                            else
-                                                Console.WriteLine($"Cannot load VENFT backup for address {k.Address}.");
+                                            bckp = JsonConvert.DeserializeObject<EncryptedBackupDto>(b);
+                                            Console.WriteLine($"Backup data found for this account. It will be loaded based on VENFT backup.");
                                         }
                                     }
-                                    VEDLDataContext.Accounts.TryAdd(k.Address, account);
-                                    VEDLDataContext.AdminAddresses.Add(k.Address);
 
-                                    if (dbackup.Item1 && dpass.Item1)
+                                    (bool, string) dbackup = (false, string.Empty);
+                                    (bool, string) dpass = (false, string.Empty);
+                                    if (await account.LoadAccount(k.Password, k.EKey, k.Address, awaitFirstLoad: true)) // fill your password
                                     {
-                                        try
+                                        if (k.ConnectToMainShop && k.IsReceivingAccount)
+                                            neblioAddressForShop = k.Address;
+                                        else if (k.ConnectToMainShop && k.IsDepositAccount)
+                                            neblioDepositAddressForShop = k.Address;
+
+                                        if (bckp != null)
                                         {
-                                            var bdto = JsonConvert.DeserializeObject<BackupDataDto>(dbackup.Item2);
-                                            if (bdto != null && !string.IsNullOrEmpty(bdto.DogeAddress))
+                                            var dadd = await ECDSAProvider.DecryptMessage(bckp.eadd, account.Secret);
+                                            dbackup = await ECDSAProvider.DecryptMessage(bckp.edata, account.Secret);
+                                            dpass = await ECDSAProvider.DecryptMessage(bckp.epass, account.Secret);
+                                            if (dpass.Item1 && dadd.Item1 && dadd.Item1)
                                             {
-                                                Console.WriteLine($"Backup for main address {k.Address} contains also Dogecoin address {bdto.DogeAddress}. It will be imported.");
-                                                var dogeAccount = new DogeAccount();
-                                                var res = await dogeAccount.LoadAccount(dpass.Item2, bdto.DogeKey, bdto.DogeAddress);
-                                                VEDLDataContext.DogeAccounts.TryAdd(bdto.DogeAddress, dogeAccount);
-                                                Console.WriteLine($"Dogecoin address {bdto.DogeAddress} initialized.");
+                                                Console.WriteLine($"Loading Neblio address {k.Address} from VENFT Backup...");
+                                                if (await account.LoadAccountFromVENFTBackup(dpass.Item2, dbackup.Item2, awaitFirstLoad: true))
+                                                    Console.WriteLine($"Neblio address {k.Address} initialized.");
+                                                else
+                                                    Console.WriteLine($"Cannot load VENFT backup for address {k.Address}.");
                                             }
                                         }
-                                        catch (Exception ex)
+                                        VEDLDataContext.Accounts.TryAdd(k.Address, account);
+                                        VEDLDataContext.AdminAddresses.Add(k.Address);
+
+                                        if (dbackup.Item1 && dpass.Item1)
                                         {
-                                            Console.WriteLine("Canno init doge account" + ex.Message);
+                                            try
+                                            {
+                                                var bdto = JsonConvert.DeserializeObject<BackupDataDto>(dbackup.Item2);
+                                                if (bdto != null && !string.IsNullOrEmpty(bdto.DogeAddress))
+                                                {
+                                                    Console.WriteLine($"Backup for main address {k.Address} contains also Dogecoin address {bdto.DogeAddress}. It will be imported.");
+                                                    var dogeAccount = new DogeAccount();
+                                                    var res = await dogeAccount.LoadAccount(dpass.Item2, bdto.DogeKey, bdto.DogeAddress);
+                                                    VEDLDataContext.DogeAccounts.TryAdd(bdto.DogeAddress, dogeAccount);
+                                                    Console.WriteLine($"Dogecoin address {bdto.DogeAddress} initialized.");
+                                                }
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                //log.Error("Canno init doge account" + ex.Message);
+                                                Console.WriteLine("Cannot init doge account" + ex.Message);
+                                            }
                                         }
                                     }
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("");
-                                Console.WriteLine("========Dogecoin Main Account=======");
-                                Console.WriteLine($"Loading Dogecoin address {k.Address}...");
-                                var dogeacc = new DogeAccount();
-                                if(await dogeacc.LoadAccount(k.Password, k.EKey, k.Address))
-                                    VEDLDataContext.DogeAccounts.TryAdd(dogeacc.Address, dogeacc);
-                                Console.WriteLine($"Dogecoin address {k.Address} initialized.");
-                                if (k.ConnectToMainShop && k.IsReceivingAccount)
-                                    dogeAddressForShop = k.Address;
-                                else if (k.ConnectToMainShop && k.IsDepositAccount)
-                                    dogeDepositAddressForShop = k.Address;
+                                var dadd = await DogeTransactionHelpers.ValidateDogeAddress(k.Address);
+                                if (dadd.Item1)
+                                {
+                                    Console.WriteLine("");
+                                    Console.WriteLine("========Dogecoin Main Account=======");
+                                    Console.WriteLine($"Loading Dogecoin address {k.Address}...");
+                                    var dogeacc = new DogeAccount();
+                                    if (await dogeacc.LoadAccount(k.Password, k.EKey, k.Address))
+                                        VEDLDataContext.DogeAccounts.TryAdd(dogeacc.Address, dogeacc);
+                                    Console.WriteLine($"Dogecoin address {k.Address} initialized.");
+                                    if (k.ConnectToMainShop && k.IsReceivingAccount)
+                                        dogeAddressForShop = k.Address;
+                                    else if (k.ConnectToMainShop && k.IsDepositAccount)
+                                        dogeDepositAddressForShop = k.Address;
+                                }
                             }
                         }
                     }
@@ -161,7 +173,8 @@ namespace VENFTApp_Server
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Cannot load the keys." + ex.Message);
+                //log.Error("Canno load the keys. " + ex.Message);
+                Console.WriteLine("Cannot load the keys. " + ex.Message);
             }
 
             await Task.Delay(5000);
@@ -182,7 +195,12 @@ namespace VENFTApp_Server
                 VEDLDataContext.WooCommerceStoreAPIKey = settings.GetValue<string>("WooCommerceStoreAPIKey");
                 VEDLDataContext.WooCommerceStoreSecret = settings.GetValue<string>("WooCommerceStoreSecret");
                 VEDLDataContext.WooCommerceStoreJWTToken = settings.GetValue<string>("WooCommerceStoreJWT");
+                VEDLDataContext.WooCommerceStoreDonationDogeAddress = settings.GetValue<string>("WooCommerceStoreDonationDogeAddress");
+                VEDLDataContext.WooCommerceStoreSendDogeToDonation = settings.GetValue<bool>("WooCommerceStoreSendDogeToDonation", false);
+                VEDLDataContext.WooCommerceStoreSendDogeToAuthor = settings.GetValue<bool>("WooCommerceStoreSendDogeToAuthor", false);
                 VEDLDataContext.AllowDispatchNFTOrders = settings.GetValue<bool>("AllowDispatchNFTOrders", false);
+                VEDLDataContext.WooCommerceStoreDonationDogePercentage = settings.GetValue<double>("WooCommerceStoreDonationDogePercentage", 20.0);
+                VEDLDataContext.WooCommerceStoreSendDogeToAuthorPercentage = settings.GetValue<double>("WooCommerceStoreSendDogeToAuthorPercentage", 80.0);
 
                 if (!string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreUrl) &&
                     !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreAPIKey) &&
@@ -209,7 +227,7 @@ namespace VENFTApp_Server
                             WooCommerceHelpers.Shop.ConnectedDepositDogeAccountAddress = dogeDepositAddressForShop;
                             Console.WriteLine($"Connecting Dogecoin address {dogeDepositAddressForShop} to the WooCommerce Shop as deposit account.");
                         }
-                        if (!string.IsNullOrEmpty(dogeDepositAddressForShop) && !string.IsNullOrEmpty(dogeAddressForShop) && dogeAddressForShop == dogeDepositAddressForShop) 
+                        if (!string.IsNullOrEmpty(dogeDepositAddressForShop) && !string.IsNullOrEmpty(dogeAddressForShop) && dogeAddressForShop == dogeDepositAddressForShop)
                             Console.WriteLine($"Input doge address and deposit address cannot be same.");
 
                         if (string.IsNullOrEmpty(WooCommerceHelpers.Shop.ConnectedDogeAccountAddress))
@@ -229,11 +247,15 @@ namespace VENFTApp_Server
                         }
                     }
                     else
+                    {
                         Console.WriteLine("Cannot init the WooCommerce API.");
+                        //log.Warn("Canno init WooCommerce API.");
+                    }
                 }
             }
             catch(Exception ex)
             {
+                //log.Error("Canno init WooCommerce API. " + ex.Message);
                 Console.WriteLine("Cannot init the WooCommerce API." + ex.Message);
             }
 
@@ -244,7 +266,7 @@ namespace VENFTApp_Server
             {
                 var VENFTOwnersRefreshDefault = 3600;
                 var VENFTOwnersRefresh = 100;
-                var NFTHashsRefreshDefault = 15000;
+                var NFTHashsRefreshDefault = 100;
                 var NFTHashsRefresh = 10;
 
                 _ = Task.Run(async () =>
@@ -253,6 +275,7 @@ namespace VENFTApp_Server
                     while (!stopToken.IsCancellationRequested)
                     {
                         await Task.Delay(1000);
+                        /*
                         if (VENFTOwnersRefresh <= 0)
                         {
                             try
@@ -269,22 +292,30 @@ namespace VENFTApp_Server
                             }
                             catch(Exception ex)
                             {
+                                log.Error("Cannot refresh VENFT Owners. " + ex.Message);
                                 Console.WriteLine("Cannot refresh VENFT Owners");
                             }
                         }
                         else
                         {
                             VENFTOwnersRefresh--;
-                        }
+                        }*/
 
-                        if (NFTHashsRefresh <= 0)
+                        try
                         {
-                            if(await AccountHandler.ReloadNFTHashes())
-                                NFTHashsRefresh = NFTHashsRefreshDefault;
+                            if (NFTHashsRefresh <= 0)
+                            {
+                                if (await AccountHandler.ReloadNFTHashes())
+                                    NFTHashsRefresh = NFTHashsRefreshDefault;
+                            }
+                            else
+                            {
+                                NFTHashsRefresh--;
+                            }
                         }
-                        else
+                        catch(Exception ex)
                         {
-                            NFTHashsRefresh--;
+                            //log.Error("Cannot reload the NFT Hashes. " + ex.Message);
                         }
                     }
                 });
@@ -292,6 +323,7 @@ namespace VENFTApp_Server
             }
             catch (Exception ex)
             {
+                //log.Error("Fatal error in main loop. " + ex.Message);
                 lifetime.StopApplication();
             }
 

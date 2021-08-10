@@ -184,7 +184,8 @@ namespace VEDriversLite.NFT
                 ParseCommon(nftData.NFTMetadata);
 
                 ParsePrice(lastmetadata);
-
+                await ParseDogeftInfo(lastmetadata);
+                ParseSoldInfo(lastmetadata);
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
 
@@ -227,7 +228,8 @@ namespace VEDriversLite.NFT
                     SourceTxId = Utxo;
                     NFTOriginTxId = Utxo;
                 }
-
+                await ParseDogeftInfo(metadata);
+                ParseSoldInfo(metadata);
                 ParsePrice(metadata);
                 ParseSpecific(metadata);
             }

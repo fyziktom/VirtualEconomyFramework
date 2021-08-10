@@ -1,4 +1,4 @@
-﻿using Ipfs.Http;
+using Ipfs.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -200,62 +200,73 @@ namespace VEDriversLite.WooCommerce
 
         public static async Task<Product> AddNewProduct(INFT nft, List<Category> categories, int quantity = 1, string apiurl = "", Dictionary<string,string> options = null)
         {
-            if (IsInitialized && string.IsNullOrEmpty(apiurl))
-                apiurl = GetFullAPIUrl("products");
-
-            if (wpClient == null) throw new Exception("Please init the connection and obtain JWT Token first.");
-            if (string.IsNullOrEmpty(nft.ImageLink)) throw new Exception("Image link cannot be empty.");
-            if (categories == null || categories.Count == 0) throw new Exception("Please provide at least one category.");
-            if(System.Text.RegularExpressions.Regex.Match(nft.Name, RegexMatchPaterns.EmojiPattern).Success) 
-                throw new Exception("You cannot use Emojis in the name if you want to publish it into the shop.");
-            if(System.Text.RegularExpressions.Regex.Match(nft.Description, RegexMatchPaterns.EmojiPattern).Success) 
-                throw new Exception("You cannot use Emojis in the description if you want to publish it into the shop.");
-
-            Product p = null;
-            var link = nft.ImageLink; 
-            var productlink = nft.ImageLink;
-            var desc = nft.Description;
-
-            if (nft.Type == NFTTypes.Music || 
-                (nft.Type == NFTTypes.Ticket && (nft as TicketNFT).MusicInLink) || 
-                (nft.Type == NFTTypes.Event && (nft as EventNFT).MusicInLink))
+            try
             {
-                productlink = nft.Link;
-                desc += " - This NFT contains music which is available after your order is finished.";
-            }
+                if (IsInitialized && string.IsNullOrEmpty(apiurl))
+                    apiurl = GetFullAPIUrl("products");
 
-            var price = "0.0";
-            if (nft.DogePriceActive)
-                price = Convert.ToString(nft.DogePrice, CultureInfo.InvariantCulture).Replace(",", ".");
-            else if (nft.PriceActive)
-                price = Convert.ToString(nft.Price, CultureInfo.InvariantCulture).Replace(",", ".");
+                if (wpClient == null) throw new Exception("Please init the connection and obtain JWT Token first.");
+                if (string.IsNullOrEmpty(nft.ImageLink)) throw new Exception("Image link cannot be empty.");
+                if (categories == null || categories.Count == 0) throw new Exception("Please provide at least one category.");
+                if (System.Text.RegularExpressions.Regex.Match(nft.Name, RegexMatchPaterns.EmojiPattern).Success)
+                    throw new Exception("You cannot use Emojis in the name if you want to publish it into the shop.");
+                if (System.Text.RegularExpressions.Regex.Match(nft.Description, RegexMatchPaterns.EmojiPattern).Success)
+                    throw new Exception("You cannot use Emojis in the description if you want to publish it into the shop.");
 
-            var resi = await UploadIFPSImageToWP(link, nft.Name.Replace(" ", "_")); // todo add illegal chars check/cleanup
-            var imagelink = string.Empty;
-            if (resi.Item1) imagelink = resi.Item2;
+                Product p = null;
+                var link = nft.ImageLink;
+                var productlink = nft.ImageLink;
+                var desc = nft.Description;
 
-            p = new Product()
-            {
-                name = nft.Name,
-                description = nft.Text,
-                regular_price = price,
-                images = new List<ImageObject>() { new ImageObject() { src = imagelink } },
-                status = "publish",
-                categories = categories,
-                downloadable = true,
-                stock_quantity = quantity,
-                stock_status_enum = StockStatus.instock,
-                _virtual = true,
-                type = "simple",
-                short_description = desc,
-                meta_data = new List<ProductMetadata>() {
+                if (nft.Type == NFTTypes.Music ||
+                    (nft.Type == NFTTypes.Ticket && (nft as TicketNFT).MusicInLink) ||
+                    (nft.Type == NFTTypes.Event && (nft as EventNFT).MusicInLink))
+                {
+                    productlink = nft.Link;
+                    desc += " - This NFT contains music which is available after your order is finished.";
+                }
+
+                var price = "0.0";
+                if (nft.DogePriceActive)
+                    price = Convert.ToString(nft.DogePrice, CultureInfo.InvariantCulture).Replace(",", ".");
+                else if (nft.PriceActive)
+                    price = Convert.ToString(nft.Price, CultureInfo.InvariantCulture).Replace(",", ".");
+
+                var resi = await UploadIFPSImageToWP(link, nft.Name.Replace(" ", "_")); // todo add illegal chars check/cleanup
+                var imagelink = string.Empty;
+                if (resi.Item1) imagelink = resi.Item2;
+
+                var authorDogeAddress = string.Empty;
+                if (!string.IsNullOrEmpty(nft.DogeftInfo.AuthorDogeAddress))
+                    authorDogeAddress = nft.DogeftInfo.AuthorDogeAddress;
+                var metadata = await nft.GetMetadata();
+                if (metadata.ContainsKey("SoldInfo"))
+                    metadata.Remove("SoldInfo");
+                if (metadata.ContainsKey("DogeftInfo"))
+                    metadata.Remove("DogeftInfo");
+                p = new Product()
+                {
+                    name = nft.Name,
+                    description = nft.Text,
+                    regular_price = price,
+                    images = new List<ImageObject>() { new ImageObject() { src = imagelink } },
+                    status = "publish",
+                    categories = categories,
+                    downloadable = true,
+                    stock_quantity = quantity,
+                    stock_status_enum = StockStatus.instock,
+                    _virtual = true,
+                    type = "simple",
+                    short_description = desc,
+                    meta_data = new List<ProductMetadata>() {
                         new ProductMetadata() { key = "Author", value =  nft.Author },
                         new ProductMetadata() { key = "Utxo", value =  nft.Utxo },
                         new ProductMetadata() { key = "Utxoindex", value =  nft.UtxoIndex.ToString() },
                         new ProductMetadata() { key = "ShortHash", value =  nft.ShortHash },
-                        new ProductMetadata() { key = "NFTData", value = JsonConvert.SerializeObject(await nft.GetMetadata()) }
+                        new ProductMetadata() { key = "AuthorDogeAddress", value = authorDogeAddress },
+                        new ProductMetadata() { key = "NFTData", value = JsonConvert.SerializeObject(metadata) }
                         },
-                downloads = new List<DownloadsObject>() {
+                    downloads = new List<DownloadsObject>() {
                         new DownloadsObject() {
                             name = "NFT on IPFS",
                             file = productlink,
@@ -265,30 +276,40 @@ namespace VEDriversLite.WooCommerce
                             }
                         }
                     }
-            };
-            
-            if (options != null)
-            {
-                foreach(var o in options)
+                };
+
+                if (options != null)
                 {
-                    p.meta_data.Add(new ProductMetadata() { key = o.Key, value = o.Value });
+                    foreach (var o in options)
+                    {
+                        p.meta_data.Add(new ProductMetadata() { key = o.Key, value = o.Value });
+                    }
                 }
-            }
 
-            var pr = JsonConvert.SerializeObject(p);
-            pr = pr.Replace("_virtual", "virtual");
-            var content = new StringContent(pr, Encoding.UTF8, "application/json");
-            try
+                var pr = JsonConvert.SerializeObject(p);
+                pr = pr.Replace("_virtual", "virtual");
+                var content = new StringContent(pr, Encoding.UTF8, "application/json");
+                try
+                {
+                    var res = await httpClient.PostAsync(apiurl, content);
+                    var resmsg = await res.Content.ReadAsStringAsync();
+                    //Console.WriteLine(resmsg);
+                    var prd = JsonConvert.DeserializeObject<Product>(resmsg);
+                    return prd;
+                }
+                catch (Exception ex) 
+                {
+                    ////log.Error("Cannot upload WooCommerce product. " + ex.Message);
+                    Console.WriteLine(ex.Message); 
+                }
+
+                return new Product();
+            }
+            catch(Exception ex)
             {
-                var res = await httpClient.PostAsync(apiurl, content);
-                var resmsg = await res.Content.ReadAsStringAsync();
-                //Console.WriteLine(resmsg);
-                var prd = JsonConvert.DeserializeObject<Product>(resmsg);
-                return prd;
+                ////log.Error("Cannot add new WooCommerce Product. " + ex.Message);
+                return new Product();
             }
-            catch(Exception ex) { Console.WriteLine(ex.Message); }
-
-            return new Product();
         }
 
         public static async Task<Order> UpdateOrder(Order order, string apiurl = "")
@@ -354,14 +375,37 @@ namespace VEDriversLite.WooCommerce
         {
             try
             {
-                if (IsInitialized && string.IsNullOrEmpty(apiurl))
-                    apiurl = GetFullAPIUrl("products");
-                apiurl += "&per_page=100";
-                var res = await httpClient.GetAsync(apiurl);
-                var resmsg = await res.Content.ReadAsStringAsync();
-                //Console.WriteLine(resmsg);
-                var prds = JsonConvert.DeserializeObject<List<Product>>(resmsg);
-                return prds;
+                var prods = new List<Product>();
+                var loaded = false;
+                var page = 1;
+                var attempts = 1000;
+                while (!loaded)
+                {
+                    if (IsInitialized && string.IsNullOrEmpty(apiurl))
+                        apiurl = GetFullAPIUrl("products");
+                    apiurl += "&per_page=20";
+                    apiurl += $"&page={page}";
+                    try
+                    {
+                        var res = await httpClient.GetAsync(apiurl);
+                        var resmsg = await res.Content.ReadAsStringAsync();
+                        //Console.WriteLine(resmsg);
+
+                        var prds = JsonConvert.DeserializeObject<List<Product>>(resmsg);
+                        if (prds != null && prds.Count > 0)
+                            foreach (var p in prds) prods.Add(p);
+                        else
+                            loaded = true;
+                        page++;
+                        attempts--;
+                        if (attempts < 0) loaded = true;
+                    }
+                    catch(Exception ex)
+                    {
+                        loaded = true;
+                    }
+                }
+                return prods;
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
 
@@ -372,14 +416,36 @@ namespace VEDriversLite.WooCommerce
         {
             try
             {
-                if (IsInitialized && string.IsNullOrEmpty(apiurl))
-                    apiurl = GetFullAPIUrl("orders");
-                apiurl += "&per_page=100";
-                var res = await httpClient.GetAsync(apiurl);
-                var resmsg = await res.Content.ReadAsStringAsync();
-                //Console.WriteLine(resmsg);
-                var ords = JsonConvert.DeserializeObject<List<Order>>(resmsg);
-                return ords;
+                var orders = new List<Order>();
+                var loaded = false;
+                var page = 1;
+                var attempts = 1000;
+                while (!loaded)
+                {
+                    try
+                    {
+                        if (IsInitialized && string.IsNullOrEmpty(apiurl))
+                            apiurl = GetFullAPIUrl("orders");
+                        apiurl += "&per_page=20";
+                        apiurl += $"&page={page}";
+                        var res = await httpClient.GetAsync(apiurl);
+                        var resmsg = await res.Content.ReadAsStringAsync();
+                        //Console.WriteLine(resmsg);
+                        var ords = JsonConvert.DeserializeObject<List<Order>>(resmsg);
+                        if (ords != null && ords.Count > 0)
+                            foreach (var o in ords) orders.Add(o);
+                        else
+                            loaded = true;
+                        page++;
+                        attempts--;
+                        if (attempts < 0) loaded = true;
+                    }
+                    catch(Exception ex)
+                    {
+                        loaded = true;
+                    }
+                }
+                return orders;
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
 
@@ -390,14 +456,36 @@ namespace VEDriversLite.WooCommerce
         {
             try
             {
-                if (IsInitialized && string.IsNullOrEmpty(apiurl))
-                    apiurl = GetFullAPIUrl("products/categories");
-                apiurl += "&per_page=100";
-                var res = await httpClient.GetAsync(apiurl);
-                var resmsg = await res.Content.ReadAsStringAsync();
-                //Console.WriteLine(resmsg);
-                var cats = JsonConvert.DeserializeObject<List<Category>>(resmsg);
-                return cats;
+                var categories = new List<Category>();
+                var loaded = false;
+                var page = 1;
+                var attempts = 1000;
+                while (!loaded)
+                {
+                    try
+                    {
+                        if (IsInitialized && string.IsNullOrEmpty(apiurl))
+                            apiurl = GetFullAPIUrl("products/categories");
+                        apiurl += "&per_page=20";
+                        apiurl += $"&page={page}";
+                        var res = await httpClient.GetAsync(apiurl);
+                        var resmsg = await res.Content.ReadAsStringAsync();
+                        //Console.WriteLine(resmsg);
+                        var cats = JsonConvert.DeserializeObject<List<Category>>(resmsg);
+                        if (cats != null && cats.Count > 0)
+                            foreach (var c in cats) categories.Add(c);
+                        else
+                            loaded = true;
+                        page++;
+                        attempts--;
+                        if (attempts < 0) loaded = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        loaded = true;
+                    }
+                }
+                return categories;
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
 

@@ -1045,7 +1045,7 @@ namespace VEDriversLite.Neblio
         /// <param name="priceWrite">Set this if you need to just write the price to the NFT</param>
         /// <param name="price">Price must be bigger than 0.0002 NEBL</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite, double price)
+        public async Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite, double price, bool withDogePrice = false, double dogeprice = 0.0)
         {
             var nft = await NFTFactory.CloneNFT(NFT);
 
@@ -1071,7 +1071,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, nft, priceWrite, res.Item2, price);
+                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, nft, priceWrite, res.Item2, price, withDogePrice:withDogePrice, dogeprice:dogeprice);
 
                 if (rtxid != null)
                 {

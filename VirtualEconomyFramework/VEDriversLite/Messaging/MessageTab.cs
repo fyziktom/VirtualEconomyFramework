@@ -48,7 +48,7 @@ namespace VEDriversLite.Messaging
             if (string.IsNullOrEmpty(Address))
                 return;
 
-            NFTs = await NFTHelpers.LoadAddressNFTs(Address, null, NFTs.ToList());
+            NFTs = await NFTHelpers.LoadAddressNFTs(Address, null, NFTs.ToList(), justMessages:true);
             if (NFTs == null)
                 NFTs = new List<INFT>();
 
