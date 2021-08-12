@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>VEFramework.VEDriversLite</PackageId>
-    <Version>0.1.6</Version>
+    <Version>0.1.8</Version>
     <Authors>fyziktom</Authors>
     <Company>VEFramework</Company>
     <Description>.NET Standard version of VEDrivers. Contains just minimum dependencies and now just support of Neblio and Doge blockchain.</Description>
@@ -13,14 +13,11 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
     <Copyright>fyziktom</Copyright>
-    <PackageReleaseNotes>- Fixed lots of small bugs in transactions and utxos handling / sending
-- Added new functions to SubAccounts
-- Added NFT Events
-- Added basic WooCommerce and WordPress connection
-- Added connection to Unstoppable Domains
-- Added message to classic Neblio Payment
-- Loading Account from VENFT App Backup
-- Refactoring of Active Tabs</PackageReleaseNotes>
+    <PackageReleaseNotes>- Added Doge Address field in NFT Metadata
+- Added Dogeft marketplace integration
+- Refactoring of WooCommerce
+- Added Multiple Inputs and Outputs Doge transactions
+- DepositSchemes for WoC</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

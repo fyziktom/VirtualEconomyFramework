@@ -4075,6 +4075,11 @@
             If you want to provide some author personal page
             </summary>
         </member>
+        <member name="P:VEDriversLite.NFT.DogeftInfo.RewardSchemeName">
+            <summary>
+            Reward scheme for the sale of the NFT. Default is Dogeft standard : 80% to the author, 10% charity, 10% dogeft
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.DogeftInfo.AuthorDogeAddress">
             <summary>
             Author Deposit Doge address where Dogeft will send the reward from sale

@@ -201,6 +201,19 @@ namespace VENFTApp_Server
                 VEDLDataContext.AllowDispatchNFTOrders = settings.GetValue<bool>("AllowDispatchNFTOrders", false);
                 VEDLDataContext.WooCommerceStoreDonationDogePercentage = settings.GetValue<double>("WooCommerceStoreDonationDogePercentage", 20.0);
                 VEDLDataContext.WooCommerceStoreSendDogeToAuthorPercentage = settings.GetValue<double>("WooCommerceStoreSendDogeToAuthorPercentage", 80.0);
+                try
+                {
+                    settings.GetSection("DepositSchemes").Bind(VEDLDataContext.DepositSchemes);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Cannot load the deposit schemes. " + ex.Message);
+                }
+
+                if (VEDLDataContext.DepositSchemes.Count == 0)
+                {
+                    Console.WriteLine("!!!Cannot load the deposit schemes!!!");
+                }
 
                 if (!string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreUrl) &&
                     !string.IsNullOrEmpty(VEDLDataContext.WooCommerceStoreAPIKey) &&

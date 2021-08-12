@@ -27,10 +27,17 @@
                     </div>
                     <div class="row" style="margin-top:5px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <TextArea Placeholder="Type your message" MaxLength="160" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:100px;" />
+                            <TextArea Placeholder="Type your message" MaxLength="600" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:100px;" />
                         </div>
                     </div>
-
+                    @if (!string.IsNullOrEmpty(description))
+                    {
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-info">Remaining @(600-description.Length) from 600 characters.</small>
+                            </div>
+                        </div>
+                    }
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <small>Receiver</small>
@@ -42,17 +49,7 @@
                         </div>
                     </div>
 
-
-                    @if (newNFT.Description.Length >= 500)
-                    {
-                        <div class="row" style="margin-top:2px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Maximum length is 500 characters</small>
-                            </div>
-                        </div>
-                    }
-
-                    else
+                    @if (!string.IsNullOrEmpty(description))
                     {
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">

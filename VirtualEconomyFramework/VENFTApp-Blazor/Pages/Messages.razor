@@ -10,16 +10,10 @@
 @inject IJSRuntime JSRuntime
 @page "/messages"
 
-<div class="container-fluid h-100 w-100" style="padding:5px;">
+<div class="container-fluid h-100 w-100 overflow-auto" style="padding:2px;">
     <Spin Tip="Loading Message Browser..." Spinning="@loadingBrowser">
-        <div class="row h-100 w-100" style="margin-left:0px; padding:0px;">
+        <div class="row h-100 w-100" style="margin-left:0px; padding:5px;">
             <div class="col h-100 w-100" style="margin-left:0px; padding:0px;">
-
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <h3>My Messages</h3>
-                    </div>
-                </div>
 
                 <!--<VENFTApp_Blazor.Components.MessageList Address="AppData.Account.Address"/>-->
                 <div class="row w-100" style="margin-left:0px; padding:0px;">
@@ -56,7 +50,7 @@
                                     </ChildContent>
                                 </Panel>
                             }
-                            <Panel Header="Add New" Key="Add">
+                            <Panel Header="Add New Partner" Key="Add">
                                 <button @onclick="addMessageTab">Add New Partner</button>
                             </Panel>
                         </Collapse>

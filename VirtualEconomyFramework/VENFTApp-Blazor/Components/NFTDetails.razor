@@ -500,25 +500,22 @@
                                     </div>
                                 </div>
                             </button>
-                            @if (!SubAccount)
-                            {
-                                <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px; margin-left: 20px;">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="row d-flex justify-content-center align-items-center">
-                                                <div class="col">
-                                                    <i class="oi oi-dollar"></i>
-                                                </div>
+                            <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px; margin-left: 20px;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <i class="oi oi-dollar"></i>
                                             </div>
-                                            <div class="row d-flex justify-content-center align-items-center">
-                                                <div class="col">
-                                                    <span style="font-size: 12px;">Sell</span>
-                                                </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center align-items-center">
+                                            <div class="col">
+                                                <span style="font-size: 12px;">Sell</span>
                                             </div>
                                         </div>
                                     </div>
-                                </button>
-                            }
+                                </div>
+                            </button>
                             @if (WooCommerceHelpers.IsInitialized)
                             {
                                 <WooCommerceAddProductButton NFT="@NFT" />

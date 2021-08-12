@@ -8,7 +8,7 @@
 @inject IJSRuntime JSRuntime
 @page "/dogeaccount"
 
-<div class="container-fluid">
+<div class="container-fluid overflow-auto">
     <div class="row">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
             <h3>My Doge Account</h3>
@@ -108,29 +108,40 @@
                                 <thead style="width:100%;">
                                     <tr>
                                         <th>Date Time</th>
-                                        <th>Amount</th>
+                                        <th>Total Amount</th>
                                         <th>Confirmations</th>
                                         <th>Details</th>
                                     </tr>
                                 </thead>
                                 <tbody style="width:100%;">
-                                    @if (AppData.DogeAccount.SentTransactions.Count > 0)
+                                    @if (AppData.DogeAccount.ReceivedTransactions.Count > 0)
                                     {
-                                        var txc = 0;
-                                    @foreach (var tx in AppData.DogeAccount.ReceivedTransactions)
-                                    {
-                                        if (txc <= maxLoadedTxs)
+                                        @for (var i = 0; i < AppData.DogeAccount.ReceivedTransactions.Count; i++)
                                         {
-                                        <tr>
-                                            <td>@TimeHelpers.UnixTimestampToDateTime(tx.Time * 1000).ToString()</td>
-                                            <td>@tx.Value</td>
-                                            <td>@tx.Confirmations</td>
-                                            <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx.TxId)"><i class="oi oi-info"></i></button></td>
-                                        </tr>
-                                        txc++;
+                                            @if (i < maxLoadedReceivedTxs && AppData.DogeAccount.ReceivedTransactions.Count > i)
+                                            {
+                                                var tx = AppData.DogeAccount.ReceivedTransactions[i];
+                                                <tr>
+                                                    <td>@TimeHelpers.UnixTimestampToDateTime(tx.Time * 1000).ToString()</td>
+                                                    <td>@tx.Value</td>
+                                                    <td>@tx.Confirmations</td>
+                                                    <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx.TxId)"><i class="oi oi-info"></i></button></td>
+                                                </tr>
+                                            }
                                         }
                                     }
-                                }
+                                    @if (maxLoadedReceivedTxs < AppData.DogeAccount.ReceivedTransactions.Count)
+                                    {
+                                        var diff = AppData.DogeAccount.ReceivedTransactions.Count - maxLoadedSentTxs;
+                                        @if (diff < 10)
+                                        {
+                                            <tr><td colspan="4" class="d-flex justify-content-center"> <button class="btn btn-secondary" @onclick="loadNextReceivedTx">Show Next @diff transactions</button></td></tr>
+                                        }
+                                        else
+                                        {
+                                            <tr><td colspan="4" class="d-flex justify-content-center"> <button class="btn btn-secondary" @onclick="loadNextReceivedTx">Show Next 10 transactions</button></td></tr>
+                                        }
+                                    }
                                 </tbody>
                             </table>
                         </div>
@@ -153,7 +164,7 @@
                                 <thead style="width:100%;">
                                     <tr>
                                         <th>Date Time</th>
-                                        <th>Amount</th>
+                                        <th>Total Amount</th>
                                         <th>Confirmations</th>
                                         <th>Details</th>
                                     </tr>
@@ -161,19 +172,30 @@
                                 <tbody style="width:100%;">
                                     @if (AppData.DogeAccount.SentTransactions.Count > 0)
                                     {
-                                        var txc = 0;
-                                        @foreach (var tx in AppData.DogeAccount.SentTransactions)
+                                        @for (var i = 0; i < AppData.DogeAccount.SentTransactions.Count; i++)
                                         {
-                                            if (txc <= maxLoadedTxs)
+                                            @if (i < maxLoadedSentTxs && AppData.DogeAccount.SentTransactions.Count > i)
                                             {
-                                            <tr>
-                                                <td>@TimeHelpers.UnixTimestampToDateTime(tx.Time * 1000).ToString()</td>
-                                                <td>@tx.Value</td>
-                                                <td>@tx.Confirmations</td>
-                                                <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx.TxId)"><i class="oi oi-info"></i></button></td>
-                                            </tr>
-                                            txc++;
+                                                var tx = AppData.DogeAccount.SentTransactions[i];
+                                                <tr>
+                                                    <td>@TimeHelpers.UnixTimestampToDateTime(tx.Time * 1000).ToString()</td>
+                                                    <td>@tx.Value</td>
+                                                    <td>@tx.Confirmations</td>
+                                                    <td><button class="btn btn-primary" @onclick="async () => ShowTxDetails(tx.TxId)"><i class="oi oi-info"></i></button></td>
+                                                </tr>
                                             }
+                                        }
+                                    }
+                                    @if (maxLoadedSentTxs < AppData.DogeAccount.SentTransactions.Count)
+                                    {
+                                        var diff = AppData.DogeAccount.SentTransactions.Count - maxLoadedSentTxs;
+                                        @if (diff < 10)
+                                        {
+                                            <tr><td class="d-flex justify-content-center" colspan="4"> <button class="btn btn-secondary" @onclick="loadNextSentTx">Show Next @diff transactions</button></td></tr>
+                                        }
+                                        else
+                                        {
+                                            <tr><td class="d-flex justify-content-center" colspan="4"> <button class="btn btn-secondary" @onclick="loadNextSentTx">Show Next 10 transactions</button></td></tr>
                                         }
                                     }
                                 </tbody>
@@ -242,7 +264,8 @@
 
 @code {
 
-    int maxLoadedTxs = 25;
+    int maxLoadedReceivedTxs = 20;
+    int maxLoadedSentTxs = 20;
 
     string txDetailsTxId = string.Empty;
     bool txDetailsVisible = false;
@@ -294,6 +317,17 @@
         unlockAcocuntModalVisible = false;
         StateHasChanged();
         Load();
+    }
+
+    private async Task loadNextSentTx()
+    {
+        maxLoadedSentTxs += 10;
+        StateHasChanged();
+    }
+    private async Task loadNextReceivedTx()
+    {
+        maxLoadedReceivedTxs += 10;
+        StateHasChanged();
     }
 
     private async Task TryLogin()

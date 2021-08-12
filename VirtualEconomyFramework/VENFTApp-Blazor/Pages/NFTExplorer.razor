@@ -11,16 +11,10 @@
 @inject NavigationManager NavManager
 @page "/nftexplorer"
 
-<div class="container-fluid h-100 w-100" style="padding:5px;">
+<div class="container-fluid h-100 w-100 overflow-auto">
     <Spin Tip="Loading NFT Explorer..." Spinning="@loadingBrowser">
-        <div class="row h-100 w-100" style="margin-left:0px; padding:0px;">
-            <div class="col h-100 w-100" style="margin-left:0px; padding:0px;">
-
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <h3>My NFTs</h3>
-                    </div>
-                </div>
+        <div class="row h-100 w-100">
+            <div class="col h-100 w-100">
 
                 <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
 

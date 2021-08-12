@@ -17,6 +17,7 @@ namespace VEDriversLite.NFT.Dto
         public string Link { get; set; } = string.Empty;
         public double Price { get; set; } = 0.0;
         public double DogePrice { get; set; } = 0.0;
+        public DogeftInfo DogeftInfo { get; set; } = new DogeftInfo();
         public NFTTypes Type { get; set; } = NFTTypes.Image;
         public string ShortHash => $"{NeblioTransactionHelpers.ShortenTxId(TxId, false, 16)}:{Index}";
 

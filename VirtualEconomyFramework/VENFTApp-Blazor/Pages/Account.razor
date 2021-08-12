@@ -11,7 +11,7 @@
 
 @if (AppData.Account != null && !string.IsNullOrEmpty(AppData.Account.Address))
 {
-<div class="container-fluid">
+<div class="container-fluid overflow-auto">
     <div class="row">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
             <h3>Main Account</h3>
@@ -94,6 +94,7 @@
         </div>
 
         <div class="col">
+            <!--
             <div class="card" style="margin-top:10px;">
                 <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                     <h5 class="text-center">Received NFT Payments</h5>
@@ -101,7 +102,7 @@
                 <div class="card-body d-flex justify-content-center align-items-center" style="min-height:150px; padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
                     <VENFTApp_Blazor.Components.PaymentsList />
                 </div>
-            </div>
+            </div>-->
             <div class="card" style="margin-top:10px;">
                 <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                     <h5 class="text-center">Transactions List</h5>

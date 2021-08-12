@@ -20,6 +20,10 @@ namespace VEDriversLite.NFT
         /// </summary>
         public string AuthorUrl { get; set; } = string.Empty;
         /// <summary>
+        /// Reward scheme for the sale of the NFT. Default is Dogeft standard : 80% to the author, 10% charity, 10% dogeft
+        /// </summary>
+        public string RewardSchemeName { get; set; } = string.Empty;
+        /// <summary>
         /// Author Deposit Doge address where Dogeft will send the reward from sale
         /// </summary>
         public string AuthorDogeAddress { get; set; } = string.Empty;

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using VEDriversLite.Admin.Dto;
+using VEDriversLite.Dto;
 using VEDriversLite.NFT.Dto;
 
 namespace VEDriversLite
@@ -27,5 +28,6 @@ namespace VEDriversLite
         public static bool WooCommerceStoreSendDogeToAuthor { get; set; } = false;
         public static double WooCommerceStoreSendDogeToAuthorPercentage { get; set; } = 80.0;
         public static bool AllowDispatchNFTOrders { get; set; } = false;
+        public static Dictionary<string, DepositScheme> DepositSchemes { get; set; } = new Dictionary<string, DepositScheme>();
     }
 }
