@@ -24,8 +24,8 @@ namespace VEDriversLite.WooCommerce
                     {
                         prod.meta_data.ForEach(m =>
                         {
-                            if (m.key == "ShortHash") sh = m.value;
-                            if (m.key == "Category") cat = m.value;
+                            if (m.key == "ShortHash") sh = Convert.ToString(m.value);
+                            if (m.key == "Category") cat = Convert.ToString(m.value);
                         });
                         var isSent = false;
                         if (!string.IsNullOrEmpty(cat))
@@ -250,8 +250,8 @@ namespace VEDriversLite.WooCommerce
                                         {
                                             product.meta_data.ForEach(m =>
                                             {
-                                                if (m.key == "ShortHash") sh = m.value;
-                                                if (m.key == "Category") cat = m.value;
+                                                if (m.key == "ShortHash") sh = Convert.ToString(m.value);
+                                                if (m.key == "Category") cat = Convert.ToString(m.value);
                                             });
                                             if (!string.IsNullOrEmpty(cat))
                                             {

@@ -23,7 +23,7 @@ namespace VEDriversLite.WooCommerce.Dto
     public class ProductMetadata
     {
         public string key { get; set; } = string.Empty;
-        public string value { get; set; } = string.Empty;
+        public object value { get; set; }
     }
     public enum StockStatus
     {

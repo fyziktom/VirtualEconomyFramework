@@ -259,8 +259,8 @@ namespace VEDriversLite.WooCommerce
                 {
                     product.meta_data.ForEach(m =>
                     {
-                        if (m.key == "ShortHash") sh = m.value;
-                        if (m.key == "AuthorDogeAddress") adogeaddFromOrder = m.value;
+                        if (m.key == "ShortHash") sh = Convert.ToString(m.value);
+                        if (m.key == "AuthorDogeAddress") adogeaddFromOrder = Convert.ToString(m.value);
                     });
                     if (!string.IsNullOrEmpty(sh))
                     {

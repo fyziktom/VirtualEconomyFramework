@@ -681,6 +681,7 @@ namespace VEDriversLite
             catch (Exception ex)
             {
                 //await InvokeErrorEvent(ex.Message, "Cannot Load Account");
+                Console.WriteLine("Cannot load the account! " + ex.Message);
                 //throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
             }
 

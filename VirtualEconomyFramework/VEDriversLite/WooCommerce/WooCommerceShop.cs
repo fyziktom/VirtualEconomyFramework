@@ -157,7 +157,7 @@ namespace VEDriversLite.WooCommerce
                                     var sh = string.Empty;
                                     item.meta_data.ForEach(m =>
                                     {
-                                        if (m.key == "ShortHash") sh = m.value;
+                                        if (m.key == "ShortHash") sh = Convert.ToString(m.value);
                                     });
                                     if (!string.IsNullOrEmpty(sh))
                                     {
@@ -251,7 +251,7 @@ namespace VEDriversLite.WooCommerce
             o.meta_data.ForEach(async (m) =>
             {
                 if (m.key == "_billing_virtual_economy_wallet_nebl_address")
-                    res = await NeblioTransactionHelpers.ValidateNeblioAddress(m.value);
+                    res = await NeblioTransactionHelpers.ValidateNeblioAddress(Convert.ToString(m.value));
             });
             return res;
         }
