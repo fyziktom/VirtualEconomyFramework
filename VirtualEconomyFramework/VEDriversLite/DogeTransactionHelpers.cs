@@ -20,7 +20,7 @@ namespace VEDriversLite
         private static IClient _client;
         public static double FromSatToMainRatio = 100000000;
         public static Network Network = NBitcoin.Altcoins.Dogecoin.Instance.Mainnet;
-        public static int MinimumConfirmations = 2;
+        public static int MinimumConfirmations = 1;
 
         private static ConcurrentDictionary<string, GetTransactionInfoResponse> transactionDetails = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
 
@@ -692,7 +692,7 @@ namespace VEDriversLite
             var utxos = addinfo.Data.Utxos;
             if (utxos == null)
                 return resp;
-            utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
+            utxos = utxos.OrderBy(u => Convert.ToDouble(u.Value, CultureInfo.InvariantCulture)).Reverse().ToList();
 
             var founded = 0.0;
             foreach (var utx in utxos)

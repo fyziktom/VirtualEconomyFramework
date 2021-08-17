@@ -195,12 +195,9 @@ namespace VENFTApp_Server
                 VEDLDataContext.WooCommerceStoreAPIKey = settings.GetValue<string>("WooCommerceStoreAPIKey");
                 VEDLDataContext.WooCommerceStoreSecret = settings.GetValue<string>("WooCommerceStoreSecret");
                 VEDLDataContext.WooCommerceStoreJWTToken = settings.GetValue<string>("WooCommerceStoreJWT");
-                VEDLDataContext.WooCommerceStoreDonationDogeAddress = settings.GetValue<string>("WooCommerceStoreDonationDogeAddress");
-                VEDLDataContext.WooCommerceStoreSendDogeToDonation = settings.GetValue<bool>("WooCommerceStoreSendDogeToDonation", false);
+                VEDLDataContext.WooCommerceStoreCheckoutFieldCustomerNeblioAddress = settings.GetValue<string>("WooCommerceStoreCheckoutFieldCustomerNeblioAddress");
                 VEDLDataContext.WooCommerceStoreSendDogeToAuthor = settings.GetValue<bool>("WooCommerceStoreSendDogeToAuthor", false);
                 VEDLDataContext.AllowDispatchNFTOrders = settings.GetValue<bool>("AllowDispatchNFTOrders", false);
-                VEDLDataContext.WooCommerceStoreDonationDogePercentage = settings.GetValue<double>("WooCommerceStoreDonationDogePercentage", 20.0);
-                VEDLDataContext.WooCommerceStoreSendDogeToAuthorPercentage = settings.GetValue<double>("WooCommerceStoreSendDogeToAuthorPercentage", 80.0);
                 try
                 {
                     settings.GetSection("DepositSchemes").Bind(VEDLDataContext.DepositSchemes);

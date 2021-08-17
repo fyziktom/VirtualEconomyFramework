@@ -250,7 +250,7 @@ namespace VEDriversLite.WooCommerce
             var res = (false, string.Empty);
             o.meta_data.ForEach(async (m) =>
             {
-                if (m.key == "_billing_virtual_economy_wallet_nebl_address")
+                if (m.key == "_billing_virtual_economy_wallet_nebl_address" || m.key == "_billing_neblio_address" || m.key == VEDLDataContext.WooCommerceStoreCheckoutFieldCustomerNeblioAddress)
                     res = await NeblioTransactionHelpers.ValidateNeblioAddress(Convert.ToString(m.value));
             });
             return res;

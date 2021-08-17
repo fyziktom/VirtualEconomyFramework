@@ -257,7 +257,7 @@
                 product = prd;
                 product.meta_data.ForEach(m =>
                 {
-                    if (m.key == "Utxo") txid = m.value;
+                    if (m.key == "Utxo") txid = Convert.ToString(m.value);
                     else if (m.key == "Utxoindex") index = Convert.ToInt32(m.value);
                 });
 

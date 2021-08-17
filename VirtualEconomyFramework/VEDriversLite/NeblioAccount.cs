@@ -591,14 +591,14 @@ namespace VEDriversLite
                             VEDLDataContext.DogeAccounts.TryAdd(dogeacc.Address, dogeacc);
                     }
 
+                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+
                     if (!string.IsNullOrEmpty(bdto.SubAccounts))
                         await LoadSubAccounts(bdto.SubAccounts);
                     if (!string.IsNullOrEmpty(bdto.Bookmarks))
                         await LoadBookmarks(bdto.Bookmarks);
                     if (!string.IsNullOrEmpty(bdto.BrowserTabs))
                         await LoadTabs(bdto.BrowserTabs);
-
-                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
 
                     WithoutNFTs = withoutNFTs;
 

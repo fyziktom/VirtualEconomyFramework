@@ -467,7 +467,7 @@ namespace VEDriversLite
         {
             try
             {
-                var utxos = await DogeTransactionHelpers.GetAddressSpendableUtxo(Address, 0.0002, amount);
+                var utxos = await DogeTransactionHelpers.GetAddressSpendableUtxo(Address, 0.0002, amount + 2);
                 if (utxos == null || utxos.Count == 0)
                     return ($"You dont have Doge on the address. Probably waiting for more than {DogeTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
@@ -515,6 +515,9 @@ namespace VEDriversLite
                 ReceiverAddress = receiver,
                 CustomMessage = message
             };
+
+            if (res.Item2.Count >= 5 && fee == 100000000)
+                fee = 200000000;
 
             try
             {
@@ -565,6 +568,10 @@ namespace VEDriversLite
             {
                 res.Item2 = utxos;
             }
+
+            if (res.Item2.Count >= 5 && fee == 100000000)
+                fee = 200000000;
+
             // fill input data for sending tx
             var dto = new SendTxData() // please check SendTxData for another properties such as specify source UTXOs
             {
@@ -626,6 +633,9 @@ namespace VEDriversLite
             {
                 res.Item2 = utxos;
             }
+
+            if (res.Item2.Count >= 5 && fee == 100000000)
+                fee = 200000000;
 
             try
             {

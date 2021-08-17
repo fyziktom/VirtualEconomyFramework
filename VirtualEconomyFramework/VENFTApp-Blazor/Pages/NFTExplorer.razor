@@ -208,8 +208,8 @@
                     var index = string.Empty;
                     p.meta_data.ForEach(m =>
                     {
-                        if (m.key == "Utxo") utxo = m.value;
-                        if (m.key == "Utxoindex") index = m.value;
+                        if (m.key == "Utxo") utxo = Convert.ToString(m.value);
+                        if (m.key == "Utxoindex") index = Convert.ToString(m.value);
                     });
                     ProductsInTheShop.Add(utxo + ":" + index, p);
                 }
