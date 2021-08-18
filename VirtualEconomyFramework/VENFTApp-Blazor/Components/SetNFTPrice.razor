@@ -141,10 +141,10 @@
 
             sendingTransaction = true;
 
-            if (withPrice || withDogePrice)
+            if ((withPrice || withDogePrice))
             {
                 confirmSetPriceVisible = false;
-                receiverAddress = AppData.Account.Address;
+                //receiverAddress = AppData.Account.Address;
             }
 
             if (withPrice && price > 0)
@@ -163,7 +163,11 @@
             if (!string.IsNullOrEmpty(AppData.DogeAccount.Address))
                 nft.DogeAddress = AppData.DogeAccount.Address;
 
-            var res = await AppData.Account.SendNFT(receiverAddress, nft, withPrice, price, withDogePrice, dogePrice);
+            (bool, string) res = (false, string.Empty);
+            if (!SubAccount)
+                res = await AppData.Account.SendNFT(receiverAddress, nft, withPrice, price, withDogePrice, dogePrice);
+            else
+                res = await AppData.Account.SendNFTFromSubAccount(Address, receiverAddress, nft, false, withPrice, price, withDogePrice, dogePrice);
 
             if (res.Item1)
             {

@@ -1068,6 +1068,8 @@ namespace VEDriversLite.Neblio
 
             if (string.IsNullOrEmpty(receiver) || priceWrite)
                 receiver = Address;
+            if(string.IsNullOrEmpty(receiver))
+                receiver = Address;
 
             try
             {

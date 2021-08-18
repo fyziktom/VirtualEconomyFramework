@@ -28,14 +28,14 @@ namespace VEDriversLite.WooCommerce
                             if (m.key == "Category") cat = Convert.ToString(m.value);
                         });
                         var isSent = false;
-                        if (!string.IsNullOrEmpty(cat))
+                        if (!string.IsNullOrEmpty(cat))// && prod.stock_quantity > 1)
                         {
                             order.meta_data.ForEach(m =>
                             {
                                 if (m.key.Contains(cat)) isSent = true;
                             });
                         }
-                        else if (string.IsNullOrEmpty(cat) && !string.IsNullOrEmpty(sh))
+                        else if (string.IsNullOrEmpty(cat) && !string.IsNullOrEmpty(sh))// && prod.stock_quantity == 1)
                         {
                             order.meta_data.ForEach(m =>
                             {
@@ -45,7 +45,7 @@ namespace VEDriversLite.WooCommerce
                         if (!isSent)
                         {
                             if (VEDLDataContext.NFTHashs.TryGetValue(sh, out var nfth))
-                            {
+                            { 
                                 var validateNeblioAddress = await GetNeblioAddressFromOrderMetadata(order);
                                 if (validateNeblioAddress.Item1)
                                 {
@@ -99,6 +99,10 @@ namespace VEDriversLite.WooCommerce
                                         }
                                     }
                                 }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Cannot find NFT Hash {sh}. Please check if the subaccount is loaded on the server.");
                             }
                         }
                     }

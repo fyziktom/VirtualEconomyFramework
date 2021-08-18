@@ -134,12 +134,16 @@
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
-                @foreach (var cat in ShopCategories)
-                {
-                <div class="col d-flex justify-content-center align-items-center">
-                    <input type="checkbox" @onchange="eventArgs => { productCategoryChanged(eventArgs.Value,cat.id); }" /><span style="margin-left:10px;">@cat.name</span><br />
+                <div class="col">
+                    @foreach (var cat in ShopCategories)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="checkbox" @onchange="eventArgs => { productCategoryChanged(eventArgs.Value,cat.id); }" /><span style="margin-left:10px;">@cat.name</span><br />
+                            </div>
+                        </div>
+                    }
                 </div>
-                }
             </div>
        }
 
@@ -253,7 +257,7 @@
             if (WooCommerceHelpers.IsInitialized && WooCommerceHelpers.Shop != null)
             {
                 if (WooCommerceHelpers.Shop.Categories != null)
-                    return WooCommerceHelpers.Shop.Categories.Values.ToList();
+                    return WooCommerceHelpers.Shop.Categories.Values.ToList().OrderBy(c => c.name).ToList();
             }
             return new List<Category>();
         }

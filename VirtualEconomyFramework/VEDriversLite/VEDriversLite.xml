@@ -1153,7 +1153,7 @@
             </summary>
             <returns>true and dictionary with addresses and private keys</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.SendNFTFromSubAccount(System.String,System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Boolean,System.Double)">
+        <member name="M:VEDriversLite.NeblioAccount.SendNFTFromSubAccount(System.String,System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Boolean,System.Double,System.Boolean,System.Double)">
             <summary>
             Send NFT From SubAccount
             </summary>

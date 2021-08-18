@@ -1299,7 +1299,7 @@ namespace VEDriversLite
         /// <param name="NFT">NFT on the SubAccount which should be send</param>
         /// <param name="sendToMainAccount">If this is set, function will rewrite receiver to main Account Address</param>
         /// <returns>true and string with new TxId</returns>
-        public async Task<(bool, string)> SendNFTFromSubAccount(string address, string receiver, INFT NFT, bool sendToMainAccount = false, bool withDogePrice = false, double dogeprice = 0.0)
+        public async Task<(bool, string)> SendNFTFromSubAccount(string address, string receiver, INFT NFT, bool sendToMainAccount = false, bool withPrice = false, double price = 0.0, bool withDogePrice = false, double dogeprice = 0.0)
         {
             try
             {
@@ -1307,7 +1307,7 @@ namespace VEDriversLite
                 {
                     if (sendToMainAccount)
                         receiver = Address;
-                    var res = await sacc.SendNFT(receiver, NFT, false, 0.0, withDogePrice, dogeprice);
+                    var res = await sacc.SendNFT(receiver, NFT, withPrice, price, withDogePrice, dogeprice);
                     return res;
                 }
                 else

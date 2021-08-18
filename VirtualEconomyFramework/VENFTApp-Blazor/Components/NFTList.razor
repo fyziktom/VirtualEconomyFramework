@@ -57,6 +57,11 @@
                     </div>
                 </div>
             </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <Input Placeholder="Search NFTs by Name or Author" autocomplete="random" OnkeyUp="@searchNFTsEnter" MaxLength="100" @bind-Value=@_searchNFTsString @onfocusout="@searchNFTsChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
+               </div>
+            </div>
 
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -69,13 +74,15 @@
                         <div class="card-group">
                             @foreach (var nft in NFTsList)
                             {
-                                var isInWoo = false;
-                                if (ProductsInTheShop.TryGetValue(nft.Utxo + ":" + nft.UtxoIndex.ToString(), out var product))
+                                if (nft.Author.ToLower().Contains(searchNFTsString) || nft.Name.ToLower().Contains(searchNFTsString))
                                 {
-                                    isInWoo = true;
-                                }
-                                if (displayCoruzant && (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast))
-                                {
+                                    var isInWoo = false;
+                                    if (ProductsInTheShop.TryGetValue(nft.Utxo + ":" + nft.UtxoIndex.ToString(), out var product))
+                                    {
+                                        isInWoo = true;
+                                    }
+                                    if (displayCoruzant && (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast))
+                                    {
                                     <CoruzantNFT Address="@_address"
                                                  InputNFT="@nft"
                                                  NFTSent="@NFTSentHandler"
@@ -83,25 +90,26 @@
                                                  SubAccount="@SubAccount"
                                                  DisplayCheckField="@allowNFTCheckField"
                                                  NFTCheckedChanged="@NFTCheckChangedHandler" />
-                                }
-                                else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
-                                {
-                                    if ((displayImages && nft.Type == NFTTypes.Image) ||
-                                        (displayPosts && nft.Type == NFTTypes.Post) ||
-                                        (displayMusic && nft.Type == NFTTypes.Music) ||
-                                        (displayEvents && nft.Type == NFTTypes.Event) ||
-                                        (displayTickets && nft.Type == NFTTypes.Ticket))
+                                    }
+                                    else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
                                     {
-                                        if ((displayVENFT && nft.TokenId == NFTHelpers.TokenId) ||
-                                            (!displayVENFT && nft.TokenId != NFTHelpers.TokenId))
+                                        if ((displayImages && nft.Type == NFTTypes.Image) ||
+                                            (displayPosts && nft.Type == NFTTypes.Post) ||
+                                            (displayMusic && nft.Type == NFTTypes.Music) ||
+                                            (displayEvents && nft.Type == NFTTypes.Event) ||
+                                            (displayTickets && nft.Type == NFTTypes.Ticket))
                                         {
+                                            if ((displayVENFT && nft.TokenId == NFTHelpers.TokenId) ||
+                                                (!displayVENFT && nft.TokenId != NFTHelpers.TokenId))
+                                            {
                                             <NFT Address="@_address" InputNFT="@nft"
                                                  NFTSent="@NFTSentHandler"
                                                  OwnNFT="@OwnNFT"
                                                  SubAccount="@SubAccount"
                                                  DisplayCheckField="@allowNFTCheckField"
                                                  NFTCheckedChanged="@NFTCheckChangedHandler"
-                                                 IsInWooCom="@isInWoo"/>
+                                                 IsInWooCom="@isInWoo" />
+                                            }
                                         }
                                     }
                                 }
@@ -112,14 +120,14 @@
             </div>
 
             <!--
-            if (InBrowser && canLoadMore && NFTsList.Count > 0)
-            {
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <button class="btn btn-primary" onclick="LoadMoreNFTs" style="width:120px;">Load more NFTs</button>
-                    </div>
-                </div>
-            }-->
+    if (InBrowser && canLoadMore && NFTsList.Count > 0)
+    {
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <button class="btn btn-primary" onclick="LoadMoreNFTs" style="width:120px;">Load more NFTs</button>
+            </div>
+        </div>
+    }-->
         </div>
     </div>
 </div>
@@ -154,6 +162,14 @@
     {
         get
         {
+            if (string.IsNullOrEmpty(searchNFTsString))
+            {
+                searchNFTsString = string.Empty;
+            }
+            else
+            {
+                searchNFTsString = searchNFTsString.ToLower();
+            }
             if (MainAccount)
             {
                 return AppData.Account.NFTs;
@@ -161,7 +177,9 @@
             else if (SubAccount)
             {
                 if (AppData.Account.SubAccounts.TryGetValue(Address, out var sacc))
+                {
                     return sacc.NFTs;
+                }
             }
             else if (InBrowser)
             {
@@ -249,6 +267,9 @@
 
     string lastAddress = string.Empty;
 
+    string searchNFTsString = string.Empty;
+    string _searchNFTsString = string.Empty;
+
     int refresh = 5;
 
     private List<INFT> NFTsSelectedForAction = new List<INFT>();
@@ -297,6 +318,26 @@
         allowNFTCheckField = !allowNFTCheckField;
         NFTsSelectedForAction.Clear();
         StateHasChanged();
+    }
+
+    private async Task searchNFTsChanged(EventArgs e)
+    {
+        if (!string.IsNullOrEmpty(_searchNFTsString))
+            searchNFTsString = _searchNFTsString;
+        else
+        {
+            searchNFTsString = string.Empty;
+            _searchNFTsString = string.Empty;
+        }
+        StateHasChanged();
+    }
+
+    public void searchNFTsEnter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            searchNFTsChanged(null);
+        }
     }
 
     private async Task NFTCheckChangedHandler((INFT, bool) e)

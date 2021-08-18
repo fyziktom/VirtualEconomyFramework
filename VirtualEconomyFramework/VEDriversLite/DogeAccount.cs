@@ -467,7 +467,7 @@ namespace VEDriversLite
         {
             try
             {
-                var utxos = await DogeTransactionHelpers.GetAddressSpendableUtxo(Address, 0.0002, amount + 2);
+                var utxos = await DogeTransactionHelpers.GetAddressSpendableUtxo(Address, 0.0002, amount);
                 if (utxos == null || utxos.Count == 0)
                     return ($"You dont have Doge on the address. Probably waiting for more than {DogeTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
@@ -492,7 +492,8 @@ namespace VEDriversLite
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableDoge(amount);
+
+            var res = await CheckSpendableDoge(amount + 5);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
@@ -516,8 +517,12 @@ namespace VEDriversLite
                 CustomMessage = message
             };
 
-            if (res.Item2.Count >= 5 && fee == 100000000)
+            if (res.Item2.Count >= 5 && res.Item2.Count < 10 && fee == 100000000)
                 fee = 200000000;
+            else if (res.Item2.Count >= 10 && res.Item2.Count < 18)
+                fee = 300000000;
+            else if (res.Item2.Count >= 18)
+                fee = 400000000;
 
             try
             {
@@ -557,7 +562,7 @@ namespace VEDriversLite
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableDoge(amount);
+            var res = await CheckSpendableDoge(amount + 3);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
@@ -569,8 +574,12 @@ namespace VEDriversLite
                 res.Item2 = utxos;
             }
 
-            if (res.Item2.Count >= 5 && fee == 100000000)
+            if (res.Item2.Count >= 5 && res.Item2.Count < 10 && fee == 100000000)
                 fee = 200000000;
+            else if (res.Item2.Count >= 10 && res.Item2.Count < 18)
+                fee = 300000000;
+            else if (res.Item2.Count >= 18)
+                fee = 400000000;
 
             // fill input data for sending tx
             var dto = new SendTxData() // please check SendTxData for another properties such as specify source UTXOs
@@ -622,7 +631,7 @@ namespace VEDriversLite
             var totam = 0.0;
             foreach(var r in receiverAmounts)
                 totam += r.Value;
-            var res = await CheckSpendableDoge(totam);
+            var res = await CheckSpendableDoge(totam + 3);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
@@ -634,8 +643,12 @@ namespace VEDriversLite
                 res.Item2 = utxos;
             }
 
-            if (res.Item2.Count >= 5 && fee == 100000000)
+            if (res.Item2.Count >= 5 && res.Item2.Count < 10 && fee == 100000000)
                 fee = 200000000;
+            else if (res.Item2.Count >= 10 && res.Item2.Count < 18)
+                fee = 300000000;
+            else if (res.Item2.Count >= 18)
+                fee = 400000000;
 
             try
             {
