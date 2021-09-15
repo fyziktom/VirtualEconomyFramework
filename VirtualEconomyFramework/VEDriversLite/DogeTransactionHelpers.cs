@@ -135,6 +135,7 @@ namespace VEDriversLite
             {
                 var txhex = transaction.ToHex();
                 var res = await BroadcastTxAsync(new BroadcastTxRequest() { data = txhex });
+                //var res = await ChainSoBroadcastTxAsync(new ChainSoBroadcastTxRequest() { tx_hex = txhex });
                 return res;
             }
             catch (Exception ex)
@@ -331,7 +332,7 @@ namespace VEDriversLite
             }
         }
 
-        public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string,double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000, string password = "", string message = "")
+        public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string,double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 200000000, string password = "", string message = "")
         {
             var res = "ERROR";
 
@@ -582,6 +583,17 @@ namespace VEDriversLite
         }
 
         /// <summary>
+        /// Broadcast of signed transaction. with chain.so
+        /// </summary>
+        /// <param name="data">tx hex</param>
+        /// <returns></returns>
+        public static async Task<string> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest data)
+        {
+            var info = await GetClient().ChainSoBroadcastTxAsync(data);
+            return info.TxId;
+        }
+
+        /// <summary>
         /// Return address balance.
         /// </summary>
         /// <param name="addr"></param>
@@ -707,7 +719,7 @@ namespace VEDriversLite
                             return resp;
                     }
             }
-            return resp;
+            return new List<Utxo>();
         }
     }
 }

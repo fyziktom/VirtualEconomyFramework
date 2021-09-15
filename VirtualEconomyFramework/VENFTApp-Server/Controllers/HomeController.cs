@@ -17,6 +17,8 @@ using VEDriversLite.NFT;
 using VEDriversLite.Admin.Dto;
 using VEDriversLite.Admin;
 using VEDriversLite.NFT.Dto;
+using System.IO;
+using Ipfs;
 
 namespace VENFTApp_Server.Controllers
 {
@@ -49,6 +51,10 @@ namespace VENFTApp_Server.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
+
+        public static string InfuraKey = "";
+        public static string InfuraSecret = "";
+
         [HttpPost]
         [AllowCrossSiteJsonAttribute]
         [Route("upload")]
@@ -71,6 +77,87 @@ namespace VENFTApp_Server.Controllers
             return string.Empty;
         }
 
+        [HttpPost]
+        [AllowCrossSiteJsonAttribute]
+        [Route("uploadinfura")]
+        public async Task<string> UploadInfura(IFormFile file)
+        {
+            if (file == null)
+                return "Error. Provided null file.";
+
+            using var stream = file.OpenReadStream();
+            
+            try
+            {
+                if (stream.Length <= 0)
+                    return string.Empty;
+
+                var link = string.Empty;
+                var ipfsClient = NFTHelpers.CreateIpfsClient("https://ipfs.infura.io:5001", InfuraKey, InfuraSecret);
+                ipfsClient.UserAgent = "VEFramework";
+                IFileSystemNode reslink = null;
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    reslink = await ipfsClient.FileSystem.AddAsync(ms, file.FileName);
+                }
+
+                if (reslink != null)
+                {
+                    var hash = reslink.ToLink().Id.ToString();
+                    link = "https://gateway.ipfs.io/ipfs/" + hash;
+
+                    var loaded = false;
+                    var attempts = 50;
+                    while (attempts > 0 && !loaded)
+                    {
+                        try
+                        {
+                            //var resp = await ipfsClient.FileSystem.GetAsync(hash);
+                            //var respb = await IPFSDownloadFromPublicAsync(hash);
+                            var respb = await IPFSDownloadFromInfuraAsync(hash);
+                            if (respb != null)
+                            {
+                                var resp = new MemoryStream(respb);
+                                if (resp != null && resp.Length >= (stream.Length * 0.8))
+                                    loaded = true;
+                                else
+                                    await Task.Delay(1000);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            await Task.Delay(1000);
+                        }
+                        attempts--;
+                    }
+                }
+                return link;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+            }
+            return string.Empty;
+        }
+
+        public static async Task<byte[]> IPFSDownloadFromInfuraAsync(string hash)
+        {
+            var ipfsClient = NFTHelpers.CreateIpfsClient("https://ipfs.infura.io:5001", InfuraKey, InfuraSecret);
+            ipfsClient.UserAgent = "VEFramework";
+
+            using (var stream = await ipfsClient.FileSystem.ReadFileAsync(hash))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+            return null;
+        }
+
+        /*
         [HttpPost]
         [AllowCrossSiteJsonAttribute]
         [Route("uploadinfura")]
@@ -122,7 +209,7 @@ namespace VENFTApp_Server.Controllers
             }
             return string.Empty;
         }
-
+        */
         [AllowCrossSiteJsonAttribute]
         [HttpGet("GetAccountBalance/{address}")]
         public string GetAccountBalance(string address)

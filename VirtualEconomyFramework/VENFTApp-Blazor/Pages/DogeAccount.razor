@@ -393,14 +393,21 @@
 
     private void receiverAddressChangedHandler(string address)
     {
-        if (address.Length < 8)
+        if (!string.IsNullOrEmpty(address))
         {
-            Receiver = string.Empty;
-            return;
+            if (address.Length < 8)
+            {
+                Receiver = string.Empty;
+                return;
+            }
+            if (receiver != address)
+                receiver = address;
+            StateHasChanged();
         }
-        if (receiver != address)
-            receiver = address;
-        StateHasChanged();
+        else
+        {
+            receiver = string.Empty;
+        }
     }
 
     private async Task SendTx()

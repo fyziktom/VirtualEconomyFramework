@@ -45,12 +45,19 @@
 
     private void receiverAddressChangedHandler(EventArgs e)
     {
-        if (receiver.Length < 8)
-            return;
+        if (!string.IsNullOrEmpty(receiver))
+        {
+            if (receiver.Length < 8)
+                return;
 
-        var rec = receiver;
-        checkAddress(rec);
-        StateHasChanged();
+            var rec = receiver;
+            checkAddress(rec);
+            StateHasChanged();
+        }
+        else
+        {
+            receiver = string.Empty;
+        }
     }
     private async Task checkAddress(string address)
     {

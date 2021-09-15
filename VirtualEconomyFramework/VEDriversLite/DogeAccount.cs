@@ -469,7 +469,7 @@ namespace VEDriversLite
             {
                 var utxos = await DogeTransactionHelpers.GetAddressSpendableUtxo(Address, 0.0002, amount);
                 if (utxos == null || utxos.Count == 0)
-                    return ($"You dont have Doge on the address. Probably waiting for more than {DogeTransactionHelpers.MinimumConfirmations} confirmations.", null);
+                    return ($"You dont have enough Doge on the address. You need 5 Doge more than you want to send (for max fee). Probably waiting for more than {DogeTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
                     return ("OK", utxos);
             }
@@ -496,7 +496,7 @@ namespace VEDriversLite
             var res = await CheckSpendableDoge(amount + 5);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Doge");
                 return (false, res.Item1);
             }
 
@@ -555,7 +555,7 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendMultipleInputPayment(string receiver, double amount, List<Utxo> utxos, string message = "", UInt64 fee = 200000000)
+        public async Task<(bool, string)> SendMultipleInputPayment(string receiver, double amount, List<Utxo> utxos, string message = "", UInt64 fee = 100000000)
         {
             if (IsLocked())
             {

@@ -62,7 +62,7 @@
                                 </Panel>
                             }
                             <Panel Header="Add New" Key="Add">
-                                <button @onclick="addMessageTab">Add New Sub Account</button>
+                                <button @onclick="addNewSubAccountTab">Add New Sub Account</button>
                             </Panel>
                         </Collapse>
                     </div>
@@ -277,7 +277,7 @@
         StateHasChanged();
     }
 
-    private async Task addMessageTab(MouseEventArgs e)
+    private async Task addNewSubAccountTab(MouseEventArgs e)
     {
         addSubAccountVisible = true;
         StateHasChanged();

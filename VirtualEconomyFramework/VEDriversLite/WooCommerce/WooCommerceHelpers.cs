@@ -218,12 +218,13 @@ namespace VEDriversLite.WooCommerce
                 var productlink = nft.ImageLink;
                 var desc = nft.Description;
 
+                
                 if (nft.Type == NFTTypes.Music ||
                     (nft.Type == NFTTypes.Ticket && (nft as TicketNFT).MusicInLink) ||
                     (nft.Type == NFTTypes.Event && (nft as EventNFT).MusicInLink))
                 {
                     productlink = nft.Link;
-                    desc += " - This NFT contains music which is available after your order is finished.";
+                    //desc += " - This NFT contains music which is available after your order is finished.";
                 }
 
                 var price = "0.0";

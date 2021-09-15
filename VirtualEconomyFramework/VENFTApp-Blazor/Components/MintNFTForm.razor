@@ -66,6 +66,8 @@
                     }
                     @if (nftType != NFTTypes.Profile)
                     {
+                        @if (nftType != NFTTypes.Music)
+                        {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
                                 <small>Webpage</small>
@@ -83,6 +85,7 @@
                                     <a href="@link" target="_blank" class="text-info">Test the link</a>
                                 </div>
                             </div>
+                        }
                         }
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">

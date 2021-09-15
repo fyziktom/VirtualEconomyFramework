@@ -1598,6 +1598,36 @@ namespace TestVEDriversLite
 
         #region Tools
 
+        [TestEntry]
+        public static void IPFSFileUpload(string param)
+        {
+            IPFSFileUploadAsync(param);
+        }
+        public static async Task IPFSFileUploadAsync(string param)
+        {
+            //var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            //if (split.Length < 3)
+            //    throw new Exception("Please input filename");
+            //var fileName = split[0];
+            var filebytes = File.ReadAllBytes(param);
+            var link = string.Empty;
+            try
+            {
+                using (Stream stream = new MemoryStream(filebytes))
+                {
+                    var imageLink = await NFTHelpers.UploadInfura(stream, param);
+                    Console.WriteLine("Image Link: " + imageLink);
+                    //var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileName);
+                    //link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+            }
+
+        }
+
         public class IPFSLinksNFTsDto
         {
             public string Address { get; set; } = string.Empty;
@@ -1620,7 +1650,7 @@ namespace TestVEDriversLite
             var owners = await NeblioTransactionHelpers.GetTokenOwners(NFTHelpers.TokenId);
 
             var ipfsLinkNFTs = new Dictionary<string, IPFSLinksNFTsDto>();
-
+            var ipfsCIDs = new List<string>();
             Console.WriteLine("Starting searching the owners:");
             Console.WriteLine("--------------------------------");
             foreach (var own in owners)
@@ -1678,6 +1708,33 @@ namespace TestVEDriversLite
                 Console.WriteLine($"-------Processing of address {own.Address} done---------");
             }
 
+            var filename = $"{TimeHelpers.DateTimeToUnixTimestamp(DateTime.UtcNow)}-ipfsLinkNFTs.txt";
+            Console.WriteLine($"Completed search. Saving file. {filename}");
+
+            foreach (var link in ipfsLinkNFTs)
+            {
+                
+                if (link.Value.ImageLink.Contains("https://gateway.ipfs.io/ipfs/"))
+                {
+                    var a = link.Value.ImageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty);
+                    if (!ipfsCIDs.Contains(a))
+                    //{
+                        //ipfsCIDs.Add(a);
+                        FileHelpers.AppendLineToTextFile(a, filename);
+                    //}
+                }
+                if (link.Value.Link.Contains("https://gateway.ipfs.io/ipfs/"))
+                {
+                    var a = link.Value.Link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty);
+                    //if (!ipfsCIDs.Contains(a))
+                    //{
+                        //ipfsCIDs.Add(a);
+                        FileHelpers.AppendLineToTextFile(a, filename);
+                    //}
+                }
+                
+            }
+            /*
             var ipfs = new Ipfs.Http.IpfsClient("http://127.0.0.1:5001");
             foreach (var nft in ipfsLinkNFTs)
             {
@@ -1722,11 +1779,12 @@ namespace TestVEDriversLite
                     Console.WriteLine("Cannot pin " + nft.Value.PodcastLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
                 }
             }
+            */
 
-            var filename = $"{TimeHelpers.DateTimeToUnixTimestamp(DateTime.UtcNow)}-ipfsLinkNFTs.json";
-            Console.WriteLine($"Completed search. Saving file. {filename}");
-            var output = JsonConvert.SerializeObject(ipfsLinkNFTs, Formatting.Indented);
-            FileHelpers.WriteTextToFile(filename, output);
+            //var filename = $"{TimeHelpers.DateTimeToUnixTimestamp(DateTime.UtcNow)}-ipfsLinkNFTs.json";
+            //Console.WriteLine($"Completed search. Saving file. {filename}");
+            //var output = JsonConvert.SerializeObject(ipfsCIDs, Formatting.Indented);
+            //FileHelpers.WriteTextToFile(filename, output);
         }
 
         [TestEntry]
@@ -1814,7 +1872,7 @@ namespace TestVEDriversLite
 
             var res = await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, secret, jwt, true);
 
-            await WoCGetShopStatsAsync(string.Empty);
+            //await WoCGetShopStatsAsync(string.Empty);
         }
 
         [TestEntry]

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
@@ -48,6 +49,8 @@ namespace VEDriversLite.NFT
                 "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
                 Coruzant.CoruzantNFTHelpers.CoruzantTokenId };
 
+        public static string InfuraKey = "";
+        public static string InfuraSecret = "";
         public static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         private static string TokenSymbol = "VENFT";
         public static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
@@ -116,11 +119,22 @@ namespace VEDriversLite.NFT
                     {
                         try
                         {
+                            var respb = await IPFSDownloadFromInfuraAsync(link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                            if (respb != null)
+                            {
+                                var resp = new MemoryStream(respb);
+                                if (resp != null && resp.Length >= (stream.Length * 0.8))
+                                    loaded = true;
+                                else
+                                    await Task.Delay(1000);
+                            }
+                            /*
                             var resp = await ipfs.FileSystem.GetAsync(link.Replace("https://gateway.ipfs.io/ipfs/",string.Empty));
                             if (resp != null && resp.Length >= (stream.Length*0.8))
                                 loaded = true;
                             else
                                 await Task.Delay(1000);
+                            */
                         }
                         catch (Exception ex)
                         {
@@ -138,6 +152,26 @@ namespace VEDriversLite.NFT
             return link;
         }
 
+        public static IpfsClient CreateIpfsClient(string IpfsHostUrl, string IpfsHostUserName, string IpfsHostPassword)
+        {
+            var c = new IpfsClient(IpfsHostUrl);
+
+            var httpClientInfo = typeof(IpfsClient).GetField("api", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var apiObj = httpClientInfo.GetValue(null);
+            if (apiObj == null)
+            {
+
+                MethodInfo createMethod = typeof(IpfsClient).GetMethod("Api", BindingFlags.NonPublic | BindingFlags.Instance);
+                var o = createMethod.Invoke(c, new Object[0]);
+                var httpClient = o as HttpClient;
+
+                var byteArray = Encoding.ASCII.GetBytes(IpfsHostUserName + ":" + IpfsHostPassword);
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+            }
+
+            return c;
+        }
+
         public static async Task<string> UploadInfura(Stream stream, string fileName, string fileContentType = "multipart/form-data")
         {
             if (stream == null)
@@ -147,7 +181,9 @@ namespace VEDriversLite.NFT
                 if (stream.Length <= 0)
                     return string.Empty;
                 var link = string.Empty;
-
+                var ipfsClient = CreateIpfsClient("https://ipfs.infura.io:5001", InfuraKey, InfuraSecret);
+                ipfsClient.UserAgent = "VEFramework";
+                //var reslink = await ipfsClient.FileSystem.AddAsync(stream, fileName);
                 var reslink = await ipfs.FileSystem.AddAsync(stream, fileName);
 
                 if (reslink != null)
@@ -161,11 +197,17 @@ namespace VEDriversLite.NFT
                     {
                         try
                         {
-                            var resp = await ipfs.FileSystem.GetAsync(hash);
-                            if (resp != null && resp.Length >= (stream.Length * 0.8))
-                                loaded = true;
-                            else
-                                await Task.Delay(1000);
+                            //var resp = await ipfsClient.FileSystem.GetAsync(hash);
+                            //var respb = await IPFSDownloadFromPublicAsync(hash);
+                            var respb = await IPFSDownloadFromInfuraAsync(hash);
+                            if (respb != null)
+                            {
+                                var resp = new MemoryStream(respb);
+                                if (resp != null && resp.Length >= (stream.Length * 0.8))
+                                    loaded = true;
+                                else
+                                    await Task.Delay(1000);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -183,6 +225,36 @@ namespace VEDriversLite.NFT
             return string.Empty;
         }
 
+        public static async Task<byte[]> IPFSDownloadFromInfuraAsync(string hash)
+        {
+            var ipfsClient = CreateIpfsClient("https://ipfs.infura.io:5001", InfuraKey, InfuraSecret);
+            ipfsClient.UserAgent = "VEFramework";
+
+            using (var stream = await ipfsClient.FileSystem.ReadFileAsync(hash))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+            return null;
+        }
+
+        public static async Task<byte[]> IPFSDownloadFromPublicAsync(string hash)
+        {
+            ipfs.UserAgent = "VEFramework";
+
+            using (var stream = await ipfs.FileSystem.ReadFileAsync(hash))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+            return null;
+        }
 
         public static async Task InitNFTHelpers()
         {

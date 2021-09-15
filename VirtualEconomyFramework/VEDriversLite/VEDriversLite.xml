@@ -334,6 +334,17 @@
             <returns>An object containing the TXID if the broadcast was successful</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="M:VEDriversLite.DogeAPI.Client.ChainSoBroadcastTxAsync(VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest)">
+            <summary>Broadcasts a signed raw transaction to the network</summary>
+            <returns>An object containing the TXID if the broadcast was successful</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
+        <member name="M:VEDriversLite.DogeAPI.Client.ChainSoBroadcastTxAsync(VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest,System.Threading.CancellationToken)">
+            <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+            <summary>Broadcasts a signed raw transaction to the network</summary>
+            <returns>An object containing the TXID if the broadcast was successful</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
         <member name="M:VEDriversLite.DogeAPI.IJsonClient.RpcAsync(VEDriversLite.DogeAPI.RpcRequest)">
             <summary>Send a JSON-RPC call to a localhost neblio-Qt or nebliod node</summary>
             <returns>Object containing the JSON response from the Neblio node.</returns>
@@ -485,7 +496,16 @@
         <member name="P:VEDriversLite.DogeAPI.BroadcastTxRequest.data">
             <summary>Signed raw tx hex to broadcast</summary>
         </member>
+        <member name="P:VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest.tx_hex">
+            <summary>Signed raw tx hex to broadcast</summary>
+        </member>
         <member name="P:VEDriversLite.DogeAPI.BroadcastTxResponse.Data">
+            <summary>Txid of successfully broadcasted transaction</summary>
+        </member>
+        <member name="P:VEDriversLite.DogeAPI.ChainSoBroadcastTxResponse.Network">
+            <summary>Txid of successfully broadcasted transaction</summary>
+        </member>
+        <member name="P:VEDriversLite.DogeAPI.ChainSoBroadcastTxResponse.TxId">
             <summary>Txid of successfully broadcasted transaction</summary>
         </member>
         <member name="P:VEDriversLite.DogeAPI.BTData.TxId">
@@ -601,6 +621,11 @@
             <returns>An object containing the TXID if the broadcast was successful</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.ChainSoBroadcastTxAsync(VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest)">
+            <summary>Broadcasts a signed raw transaction to the network</summary>
+            <returns>An object containing the TXID if the broadcast was successful</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
         <member name="M:VEDriversLite.DogeAPI.IClient.GetTransactionInfoAsync(System.String)">
             <summary>Information On an Doge Transaction</summary>
             <param name="txid">Doge txid to get information on.</param>
@@ -664,6 +689,13 @@
             Broadcast of signed transaction.
             </summary>
             <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.ChainSoBroadcastTxAsync(VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest)">
+            <summary>
+            Broadcast of signed transaction. with chain.so
+            </summary>
+            <param name="data">tx hex</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.AddressBalanceAsync(System.String)">

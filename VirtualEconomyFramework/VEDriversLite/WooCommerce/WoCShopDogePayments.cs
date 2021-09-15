@@ -284,7 +284,7 @@ namespace VEDriversLite.WooCommerce
                                             if (!string.IsNullOrEmpty(adogeaddFromOrder))
                                                 authoraddress = adogeaddFromOrder;
                                             else
-                                                authoraddress = nfthash.AuthorDogeAddress;
+                                                authoraddress = nfthash.DogeftInfo.AuthorDogeAddress;
 
                                             if (receiversAmounts.TryGetValue(authoraddress, out var value))
                                             {
