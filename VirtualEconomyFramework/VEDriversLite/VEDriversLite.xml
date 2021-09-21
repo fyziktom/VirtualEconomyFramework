@@ -1503,6 +1503,14 @@
             <param name="NFT">NFT what you want to buy</param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.ReturnNFTPayment(System.String,VEDriversLite.NFT.PaymentNFT)">
+            <summary>
+            This function will return the NFT Payment to the original sender.
+            The receiver is taken from the Minting transaction of the PaymentNFT
+            </summary>
+            <param name="NFT">NFT Payment to return</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.SendAirdrop(System.String,System.String,System.Double,System.Double)">
             <summary>
             This function will send airdrop.
@@ -3728,6 +3736,11 @@
             List of actual address NFTs. Based on Utxos list
             </summary>
         </member>
+        <member name="F:VEDriversLite.Neblio.NeblioSubAccount.ReceivedPayments">
+            <summary>
+            Received payments (means Payment NFT) of this address.
+            </summary>
+        </member>
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.CoruzantNFTs">
             <summary>
             List of actual address Coruzant NFTs. Based on Utxos list
@@ -3864,6 +3877,20 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.RefreshAddressReceivedPayments">
+            <summary>
+            This function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. 
+            This list is cleared at the start of this function
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.CheckPayments">
+            <summary>
+            This function will check payments and try to find them complementary NFT which was sold. 
+            If there is price mathc and enough of confirmations it will try to send NFT to new owner.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.Neblio.NeblioSubAccount.ReloadTokenSupply">
             <summary>
             Reload actual token supplies based on already loaded list of address utxos
@@ -3983,6 +4010,14 @@
             Write Used flag into NFT Ticket
             </summary>
             <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.ReturnNFTPayment(System.String,VEDriversLite.NFT.PaymentNFT)">
+            <summary>
+            This function will return the NFT Payment to the original sender.
+            The receiver is taken from the Minting transaction of the PaymentNFT
+            </summary>
+            <param name="NFT">NFT Payment to return</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioSubAccount.GetNFTVerifyCode(System.String)">
@@ -4199,7 +4234,7 @@
             <param name="address"></param>
             <returns>profile NFT and list of all NFTs</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Boolean,System.Int32,System.Boolean,System.Boolean)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Boolean,System.Int32,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             This function will find all NFTs and load them to the carriers. 
             If you already have list of utxos and NFTs you can provide it and it will load just the changes.
@@ -4312,6 +4347,17 @@
             <param name="address">sender address</param>
             <param name="ekey">Encryption Key object of the address</param>
             <param name="nft">Input NFT object with data to save to metadata. It is NFT what you are buying.</param>
+            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+            <returns>New Tx Id Hash</returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.ReturnNFTPayment(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+            <summary>
+            This function will return payment to the original sender.
+            </summary>
+            <param name="address">sender address</param>
+            <param name="ekey">Encryption Key object of the address</param>
+            <param name="nft">Input PaymentNFT.</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
         </member>

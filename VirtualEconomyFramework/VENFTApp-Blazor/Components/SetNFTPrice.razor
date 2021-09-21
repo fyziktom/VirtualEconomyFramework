@@ -11,12 +11,14 @@
         <div class="col">
             <Spin Tip="Sending..." Spinning="@sendingTransaction">
                 <div class="row" style="margin-top:20px;">
+                    
                     <div class="col d-flex justify-content-center align-items-center">
-                        <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
+                        <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Neblio Price</span><br />
                     </div>
+                    <!--
                     <div class="col d-flex justify-content-center align-items-center">
-                        <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
-                    </div>
+                        <input type="checkbox" onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
+                    </div>-->
                 </div>
                 @if (withPrice)
                 {
@@ -31,7 +33,8 @@
                     </div>
                 </div>
                 }
-                @if (withDogePrice)
+                <!--
+                if (withDogePrice)
                 {
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
@@ -40,10 +43,10 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <input type="number" step="1" min="2" max="10000000000" @bind="@dogePrice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                        <input type="number" step="1" min="2" max="10000000000" bind="dogePrice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
                     </div>
                 </div>
-                }
+                }-->
             </Spin>
         </div>
     </div>
@@ -92,7 +95,7 @@
     }
 
     double dogePrice = 0.0;
-    double price = 0.0;
+    double price = 1.0;
     bool withDogePrice = false;
     bool withPrice = false;
 

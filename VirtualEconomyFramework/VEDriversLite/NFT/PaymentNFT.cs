@@ -18,7 +18,9 @@ namespace VEDriversLite.NFT
         public string NFTUtxoTxId { get; set; } = string.Empty;
         public int NFTUtxoIndex { get; set; } = 0;
         public string Sender { get; set; } = string.Empty;
+        public string OriginalPaymentTxId { get; set; } = string.Empty;
         public bool Matched { get; set; } = false;
+        public bool AlreadySoldItem { get; set; } = false;
 
         public override async Task Fill(INFT NFT)
         {
@@ -41,6 +43,7 @@ namespace VEDriversLite.NFT
             NFTUtxoTxId = pnft.NFTUtxoTxId;
             NFTUtxoIndex = pnft.NFTUtxoIndex;
             Sender = pnft.Sender;
+            AlreadySoldItem = pnft.AlreadySoldItem;
         }
 
         public async Task LoadLastData(Dictionary<string, string> metadata)
@@ -55,7 +58,7 @@ namespace VEDriversLite.NFT
                     NFTOriginTxId = nfttxid;
                 }
                 if (metadata.TryGetValue("Sender", out var sender))
-                    Sender = sender;
+                    Sender = sender;                
                 if (metadata.TryGetValue("Image", out var imagelink))
                     ImageLink = imagelink;
                 if (metadata.TryGetValue("Type", out var type))
@@ -80,6 +83,26 @@ namespace VEDriversLite.NFT
                 {
                     PriceActive = false;
                 }
+                if (metadata.TryGetValue("AlreadySold", out var aldsold))
+                {
+                    if (!string.IsNullOrEmpty(aldsold))
+                    {
+                        if (aldsold == "true")
+                            AlreadySoldItem = true;
+                        else
+                            AlreadySoldItem = false;
+                    }
+                    else
+                    {
+                        AlreadySoldItem = false;
+                    }
+                }
+                else
+                {
+                    AlreadySoldItem = false;
+                }
+                if (metadata.TryGetValue("OriginalPaymentTxId", out var optxid))
+                    OriginalPaymentTxId = optxid;
             }
         }
 
@@ -95,6 +118,10 @@ namespace VEDriversLite.NFT
             metadata.Add("Sender", Sender);
             metadata.Add("NFTUtxoTxId", NFTUtxoTxId);
             metadata.Add("NFTUtxoIndex", NFTUtxoIndex.ToString());
+            if (AlreadySoldItem)
+                metadata.Add("AlreadySold", "true");
+            if (!string.IsNullOrEmpty(OriginalPaymentTxId))
+                metadata.Add("OriginalPaymentTxId", OriginalPaymentTxId);
             return metadata;
         }
     }

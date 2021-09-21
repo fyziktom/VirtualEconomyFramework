@@ -12,11 +12,13 @@ using VEDriversLite.Events;
 using NBitcoin;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.Dto;
+using System.Collections.Concurrent;
 
 namespace VEDriversLite.Neblio
 {
     public class NeblioSubAccount
     {
+        private static object _lock { get; set; } = new object();
         /// <summary>
         /// Neblio Address hash
         /// </summary>
@@ -34,6 +36,12 @@ namespace VEDriversLite.Neblio
         /// </summary>
         [JsonIgnore]
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+
+        /// <summary>
+        /// Received payments (means Payment NFT) of this address.
+        /// </summary>
+        [JsonIgnore]
+        public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         /// <summary>
         /// List of actual address Coruzant NFTs. Based on Utxos list
         /// </summary>
@@ -340,6 +348,8 @@ namespace VEDriversLite.Neblio
                 AddressInfo.Transactions = new List<string>();
                 await ReloadUtxos();
                 await ReLoadNFTs();
+                await RefreshAddressReceivedPayments();
+                await CheckPayments();
                 await ReloadTokenSupply();
             }
             catch(Exception ex)
@@ -362,6 +372,8 @@ namespace VEDriversLite.Neblio
                             await ReloadUtxos();
                             await ReLoadNFTs();
                             await ReloadTokenSupply();
+                            await RefreshAddressReceivedPayments();
+                            await CheckPayments();
                         }
                         if (firstLoad)
                             firstLoad = false;
@@ -453,6 +465,127 @@ namespace VEDriversLite.Neblio
             finally
             {
                 NFTHelpers.NFTLoadingStateChanged -= NFTHelpers_LoadingStateChangedHandler;
+            }
+        }
+
+        /// <summary>
+        /// This function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. 
+        /// This list is cleared at the start of this function
+        /// </summary>
+        /// <returns></returns>
+        public async Task RefreshAddressReceivedPayments()
+        {
+            try
+            {
+                ReceivedPayments.Clear();
+                var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+                foreach (var p in pnfts)
+                    ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot refresh address received payments. " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// This function will check payments and try to find them complementary NFT which was sold. 
+        /// If there is price mathc and enough of confirmations it will try to send NFT to new owner.
+        /// </summary>
+        /// <returns></returns>
+        public async Task CheckPayments()
+        {
+            try
+            {
+                List<INFT> pnfts = null;
+                lock (_lock)
+                {
+                    pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+                }
+                if (pnfts != null && pnfts.Count > 0)
+                {
+                    foreach (var p in pnfts)
+                    {
+                        if (!((PaymentNFT)p).AlreadySoldItem)
+                        {
+                            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(p.Utxo);
+                            if (txinfo != null && txinfo.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
+                            {
+                                INFT pn = null;
+                                lock (_lock)
+                                {
+                                    pn = NFTs.FirstOrDefault(n => (n.Utxo == ((PaymentNFT)p).NFTUtxoTxId && n.UtxoIndex == ((PaymentNFT)p).UtxoIndex));
+                                }
+
+                                if (pn != null)
+                                {
+                                    Console.WriteLine($"Payment for NFT {pn.Name} received and it will be processed.");
+                                    Console.WriteLine($"Received amount {p.Price} NEBL.");
+                                    Console.WriteLine($"Requested amount {pn.Price} NEBL.");
+
+                                    if (pn != null && pn.Price > 0 && p.Price >= pn.Price)
+                                    {
+                                        try
+                                        {
+                                            var res = await CheckSpendableNeblio(0.001);
+                                            if (res.Item2 != null)
+                                            {
+                                                var rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
+                                                Console.WriteLine($"NFT sent to the buyer {((PaymentNFT)p).Sender} with txid: {rtxid}");
+                                                //await Task.Delay(500);
+                                                //await ReLoadNFTs();
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("You do not have spendable utxo for the fee.");
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            //await InvokeErrorDuringSendEvent($"Cannot send ordered NFT. Payment TxId: {p.Utxo}, NFT TxId: {pn.Utxo}, error message: {ex.Message}", "Cannot send ordered NFT");
+                                            Console.WriteLine("Cannot send ordered NFT, payment txid: " + p.Utxo + " - " + ex.Message);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Price in the NFT Payment {p.NFTOriginTxId} does not match with the found NFT {pn.Utxo}.");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Cannot find the NFT for the received Payment. Marking the NFT Payment as already sold item.");
+                                    try
+                                    {
+                                        PaymentNFT pn2send = p as PaymentNFT;
+                                        pn2send.AlreadySoldItem = true;
+                                        pn2send.OriginalPaymentTxId = p.Utxo;
+                                        var res = await SendNFT(Address, pn2send, priceWrite: true, price: p.Price);
+                                        if (res.Item1)
+                                        {
+                                            Console.WriteLine($" NFT Payment {p.Name} was marked as already sold. Please inform sender about it and return payment.");
+                                            Console.WriteLine($" NFT Payment processed in txid: {res.Item2}");
+                                            Console.WriteLine(res);
+                                            await ReLoadNFTs();
+                                            await RefreshAddressReceivedPayments();
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine($"Cannot mark the NFT Payment {p.Name} with txid: {p.Utxo} with index: {p.UtxoIndex} as already sold.");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Cannot process the NFT Payment {p.Name} with txid: {p.Utxo} with index: {p.UtxoIndex}. Waiting for enough confirmations.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot Check the payments. " + ex.Message);
             }
         }
 
@@ -1185,6 +1318,49 @@ namespace VEDriversLite.Neblio
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "NFT Ticket used.");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
+        /// This function will return the NFT Payment to the original sender.
+        /// The receiver is taken from the Minting transaction of the PaymentNFT
+        /// </summary>
+        /// <param name="NFT">NFT Payment to return</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> ReturnNFTPayment(string receiver, PaymentNFT NFT)
+        {
+            //var nft = await NFTFactory.CloneNFT(NFT);
+
+            if (!AccountKey.IsLoaded)
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "SubAccount is not loaded.");
+            }
+
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                return (false, res.Item1);
+            }
+
+            try
+            {
+                var rtxid = await NFTHelpers.ReturnNFTPayment(Address, AccountKey, NFT, res.Item2);
+
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "Payment returned to the original sender");
                     return (true, rtxid);
                 }
             }

@@ -6,10 +6,10 @@
 
 <Spin Tip="Sending..." Spinning="@sendingTransaction">
     <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="width: 40px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
-        <i class="oi oi-dollar" style="font-size:12px;"></i>
+        <i class="oi oi-location" style="font-size:12px;"></i>
     </button>
 </Spin>
-<Modal Title="Buy this NFT"
+<Modal Title="Return NFT Payment"
        Visible="@sendNFTDialogVisible"
        OnOk="@sendNFTDialogOK"
        OnCancel="@sendNFTDialogCancel">
@@ -18,17 +18,17 @@
             <Spin Tip="Sending..." Spinning="@sendingTransaction">
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        This dialog will process the order and payment of this NFT
+                        Returning payment was send from @receiverAddress
                     </div>
                 </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        Receiver Address: @receiverAddress
+                        <small>The payment was probably send right after the first buyer who already received this NFT. You must return the payment to the sender.</small>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        Price @Price NEBL <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
+                        Amount to return: @Price NEBL <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
                     </div>
                 </div>
             </Spin>
@@ -70,17 +70,21 @@
         }
     }
 
-    private INFT sourceNFT = new ImageNFT("");
+    private string paymentSender = string.Empty;
+
+    private PaymentNFT sourceNFT = new PaymentNFT("");
     [Parameter]
     public INFT NFT
     {
         get => sourceNFT;
         set
         {
-            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != sourceNFT.Utxo)
+            if (value != null && value.Type == NFTTypes.Payment && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != sourceNFT.Utxo)
             {
-                sourceNFT = value;
-                StateHasChanged();
+                sourceNFT = value as PaymentNFT;
+                receiverAddress = sourceNFT.Sender;
+                Price = sourceNFT.Price;
+                //LoadSender();
             }
         }
     }
@@ -89,7 +93,7 @@
     public EventCallback<string> NFTSent { get; set; }
 
     bool sendingTransaction = false;
-    string sendingTransactionState = "Sending Order and Payment...";
+    string sendingTransactionState = "Sending Payment Back...";
     bool sendNFTDialogVisible = false;
 
     bool confirmVisible = false;
@@ -97,6 +101,13 @@
     string confirmContent = "Do you realy want to buy this NFT?";
 
     string status = string.Empty;
+
+    private async Task LoadSender()
+    {
+        paymentSender = await NeblioTransactionHelpers.GetTransactionSender(sourceNFT.Utxo, sourceNFT.TxDetails);
+        receiverAddress = paymentSender;
+        StateHasChanged();
+    }
 
     private async Task HandleOk(MouseEventArgs e)
     {
@@ -134,10 +145,10 @@
             StateHasChanged();
 
             //var NFT = await NFTFactory.GetNFT("", utxo, UtxoIndex, 0, true);
-            
+
             if (!string.IsNullOrEmpty(AppData.DogeAccount.Address))
                 sourceNFT.DogeAddress = AppData.DogeAccount.Address;
-            var res = await AppData.Account.SendNFTPayment(receiverAddress, sourceNFT);
+            var res = await AppData.Account.ReturnNFTPayment(receiverAddress, sourceNFT);
             if (res.Item1)
                 status = res.Item2;
             else

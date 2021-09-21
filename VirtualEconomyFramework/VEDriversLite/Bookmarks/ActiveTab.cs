@@ -107,7 +107,8 @@ namespace VEDriversLite.Bookmarks
                 if (_NFTs.Count > 0)
                     Profile = await NFTHelpers.FindProfileNFT(_NFTs);
 
-                //await RefreshAddressReceivedPayments();
+                await RefreshAddressReceivedPayments();
+
                 NFTsChanged?.Invoke(this, Address);
                 refreshTimer?.Start();
             }

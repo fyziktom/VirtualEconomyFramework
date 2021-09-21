@@ -1,4 +1,4 @@
-﻿using Ipfs.Http;
+using Ipfs.Http;
 using NBitcoin;
 using Newtonsoft.Json;
 using System;
@@ -496,7 +496,8 @@ namespace VEDriversLite.NFT
                                                              bool fireProfileEvent = false,
                                                              int maxLoadedItems = 0,
                                                              bool withoutMessages = false,
-                                                             bool justMessages = false)
+                                                             bool justMessages = false, 
+                                                             bool justPayments = false)
         {
             var fireProfileEventTmp = fireProfileEvent;
             List<INFT> nfts = new List<INFT>();
@@ -542,10 +543,12 @@ namespace VEDriversLite.NFT
                                     INFT nft = null;
                                     if (!withoutMessages)
                                     {
-                                        if (!justMessages)
+                                        if (!justMessages && !justPayments)
                                             nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
-                                        else
+                                        else if (justMessages && !justPayments)
                                             nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, loadJustType:true, justType:NFTTypes.Message);
+                                        else if (!justMessages && justPayments)
+                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, loadJustType:true, justType:NFTTypes.Payment);
                                     }
                                     else
                                     {
@@ -1056,6 +1059,7 @@ namespace VEDriversLite.NFT
         /// <param name="ekey">Encryption Key object of the address</param>
         /// <param name="nft">Input NFT object with data to save to metadata. It is NFT what you are buying.</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> SendNFTPayment(string address, EncryptionKey ekey, string receiver, INFT nft, ICollection<Utxos> nutxos)
         {
@@ -1083,6 +1087,47 @@ namespace VEDriversLite.NFT
                 sendUtxo = new List<string>() { nft.Utxo },
                 SenderAddress = address,
                 ReceiverAddress = receiver
+            };
+            var fee = CalculateFee(metadata);
+            try
+            {
+                // send tx
+                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, ekey, nft.Price, nutxos, fee);
+                if (rtxid != null)
+                    return rtxid;
+                else
+                    return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// This function will return payment to the original sender.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="nft">Input PaymentNFT.</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
+        public static async Task<string> ReturnNFTPayment(string address, EncryptionKey ekey, PaymentNFT nft, ICollection<Utxos> nutxos)
+        {
+            if (string.IsNullOrEmpty(nft.Utxo))
+                throw new Exception("Wrong token txid input.");
+
+            nft.Description = "The ordered NFT was sold just right before the receiving your payment. The full amount is send back in this transaction.";
+            var metadata = await nft.GetMetadata();
+            // fill input data for sending tx
+            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+            {
+                Id = TokenId, // id of token
+                Metadata = metadata,
+                Amount = 1,
+                sendUtxo = new List<string>() { nft.Utxo },
+                SenderAddress = address,
+                ReceiverAddress = nft.Sender
             };
             var fee = CalculateFee(metadata);
             try

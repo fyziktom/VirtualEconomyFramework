@@ -2623,7 +2623,7 @@ namespace VEDriversLite
             var utxos = addinfo.Utxos;
             if (utxos == null)
                 return null;
-
+            
             var founded = 0.0;
             utxos = utxos.OrderBy(u => u.Value).ToList();
             foreach (var utx in utxos)
