@@ -218,6 +218,7 @@
         try
         {
             creatingAddressSpinner = true;
+            await Task.Delay(50);
             StateHasChanged();
             await Task.Delay(50);
 
@@ -230,8 +231,9 @@
                 accountImportError = false;
                 importAccountVisible = false;
                 creatingAddressSpinner = true;
-
+                await Task.Delay(50);
                 StateHasChanged();
+                await Task.Delay(50);
                 await AccountImported.InvokeAsync("OK");
             }
             else
@@ -382,6 +384,7 @@
     private async Task importAccountCancel(MouseEventArgs e)
     {
         importAccountVisible = false;
+        await AccountImported.InvokeAsync("");
     }
 
     public async Task ReadFile()

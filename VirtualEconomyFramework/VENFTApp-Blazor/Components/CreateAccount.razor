@@ -32,19 +32,9 @@
                         <span>Your private key will be stored just in your local browser encrypted with your password.</span>
                     </div>
                 </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>If you have Neblio address and private key you can import it</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <button class="btn btn-secondary" @onclick="showImportAccount">Import address</button>
-                    </div>
-                </div>
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>or you can create new address</span>
+                        <span>Create new address with type your new password (8 chars minimum)</span>
                     </div>
                 </div>
 
@@ -71,6 +61,17 @@
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                         <span>Please Fill Password longer than 8 characters</span>
+                    </div>
+                </div>
+                <hr />
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>If you have Neblio address and private key you can import it</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <button class="btn btn-secondary" @onclick="showImportAccount">Import address</button>
                     </div>
                 </div>
 
@@ -207,7 +208,9 @@
             {
                 creatingAddressSpinner = true;
                 mustCreateAddressMessage = false;
+                await Task.Delay(50);
                 StateHasChanged();
+                await Task.Delay(50);
 
                 await AppData.Account.CreateNewAccount(password, false);
                 await AppData.DogeAccount.CreateNewAccount(password, false);
@@ -228,7 +231,7 @@
                 mustCreateAddressMessage = false;
                 createNewAddressModalVisible = false;
                 await AccountCreated.InvokeAsync("Created");
-                
+
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -247,6 +250,8 @@
 
     private void AccountImported(string msg)
     {
-        AccountCreated.InvokeAsync(msg);
+        importAccountVisible = false;
+        if (!string.IsNullOrEmpty(msg))
+            AccountCreated.InvokeAsync(msg);
     }
 }

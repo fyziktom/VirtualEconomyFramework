@@ -3033,6 +3033,8 @@ namespace VEDriversLite
 
                 if (rtxid != null)
                 {
+                    await ReLoadNFTs();
+                    await RefreshAddressReceivedPayments();
                     await InvokeSendPaymentSuccessEvent(rtxid, "Payment returned to the original sender");
                     return (true, rtxid);
                 }

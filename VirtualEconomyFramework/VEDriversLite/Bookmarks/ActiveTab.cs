@@ -13,6 +13,7 @@ namespace VEDriversLite.Bookmarks
     public class ActiveTab
     {
         private static object _lock = new object();
+        public ActiveTab() { }
         public ActiveTab(string address)
         {
             Address = address;
@@ -45,20 +46,26 @@ namespace VEDriversLite.Bookmarks
         /// This event is called whenever profile nft is updated or found
         /// </summary>
         public event EventHandler<INFT> ProfileUpdated;
+        /// <summary>
+        /// This event is called during first loading of the account to keep updated the user
+        /// </summary>
+        public event EventHandler<string> FirsLoadingStatus;
+
 
         private System.Timers.Timer refreshTimer = new System.Timers.Timer();
-        private int MaxLoadedNFTItems = 40;
+        public int MaxLoadedNFTItems { get; set; } = 40;
 
         public async Task StartRefreshing(double interval = 5000)
         {
             Selected = true;
+            FirsLoadingStatus?.Invoke(this, "Start Loading the data.");
+            await Reload();
             refreshTimer.Interval = interval;
             refreshTimer.AutoReset = true;
             refreshTimer.Elapsed -= RefreshTimer_Elapsed;
             refreshTimer.Elapsed += RefreshTimer_Elapsed;
             refreshTimer.Enabled = true;
             IsRefreshingRunning = true;
-            await Reload();
         }
 
         public async Task StopRefreshing()
@@ -86,7 +93,12 @@ namespace VEDriversLite.Bookmarks
                 {
                     ns = NFTs.ToList();
                 }
+                NFTHelpers.ProfileNFTFound += NFTHelpers_ProfileNFTFound;
+                NFTHelpers.NFTLoadingStateChanged += NFTHelpers_LoadingStateChangedHandler;
                 var _NFTs = await NFTHelpers.LoadAddressNFTs(Address, UtxosList, ns, false, MaxLoadedNFTItems, true);
+                NFTHelpers.NFTLoadingStateChanged -= NFTHelpers_LoadingStateChangedHandler;
+                NFTHelpers.ProfileNFTFound -= NFTHelpers_ProfileNFTFound;
+                FirsLoadingStatus?.Invoke(this, "NFTs Loaded.");
                 if (_NFTs != null)
                 {
                     /*
@@ -104,12 +116,15 @@ namespace VEDriversLite.Bookmarks
                         NFTs = new List<INFT>(_NFTs);
                     }
                 }
+
                 if (_NFTs.Count > 0)
                     Profile = await NFTHelpers.FindProfileNFT(_NFTs);
 
+                FirsLoadingStatus?.Invoke(this, "Searching for NFT Payments.");
                 await RefreshAddressReceivedPayments();
 
                 NFTsChanged?.Invoke(this, Address);
+                FirsLoadingStatus?.Invoke(this, "Loading finished.");
                 refreshTimer?.Start();
             }
             catch (Exception ex)
@@ -117,6 +132,26 @@ namespace VEDriversLite.Bookmarks
                 Console.WriteLine("Cannot reload the tab content. " + ex.Message);
             }
         }
+
+        private void NFTHelpers_ProfileNFTFound(object sender, INFT e)
+        {
+            var add = sender as string;
+            if (!string.IsNullOrEmpty(add) && add == Address)
+            {
+                Profile = e as ProfileNFT;
+                ProfileUpdated?.Invoke(this, e);
+            }
+        }
+
+        private void NFTHelpers_LoadingStateChangedHandler(object sender, string e)
+        {
+            var add = sender as string;
+            if (!string.IsNullOrEmpty(add) && add == Address)
+            {
+                FirsLoadingStatus?.Invoke(this, e);
+            }
+        }
+
         public async Task RefreshAddressReceivedPayments()
         {
             ReceivedPayments.Clear();

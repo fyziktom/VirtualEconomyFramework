@@ -1,0 +1,277 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.Bookmarks
+@using Microsoft.AspNetCore.WebUtilities
+@page "/address"
+@inject NavigationManager NavManager
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <h3>Neblio NFTs on Address</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <h5>@address</h5>
+                </div>
+            </div>
+            @if (tab != null)
+            {
+                @if (tab.Profile != null)
+                {
+                    <div class="row bg-light" style="margin-top:5px;">
+                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="row">
+                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                    <img src="@tab.Profile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
+                                </div>
+                            </div>
+                            <div class="row" style="margin-left:20px;">
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                            <span>Name: @tab.Profile.Name @tab.Profile.Surname</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                            Nick: @tab.Profile.Nickname
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                            Bio: @tab.Profile.Description
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(tab.Profile.Link))
+                                    {
+                                        <div class="row">
+                                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                <a href="@tab.Profile.Link" target="_blank">Webpage</a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            <div class="row" style="margin-top:30px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayVENFTChanged(eventArgs.Value); }" /><span style="margin-left:10px;">VENFT</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayCoruzantChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Coruzant</span><br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayImagesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Images</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayPostsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Posts</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayMusicChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Music</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayTicketsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Tickets</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayEventsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Events</span><br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <Input Placeholder="Search NFTs by Name or Author" autocomplete="random" OnkeyUp="@searchNFTsEnter" MaxLength="100" @bind-Value=@_searchNFTsString @onfocusout="@searchNFTsChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    @if (tab.NFTs.Count == 0)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col">
+                                <p>No NFTs loaded.</p>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col">
+                                <h5>@loadingStatus</h5>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card-group">
+                            @foreach (var nft in tab.NFTs)
+                            {
+                                if (nft.Author.ToLower().Contains(searchNFTsString) || nft.Name.ToLower().Contains(searchNFTsString))
+                                {
+                                    if (displayCoruzant && (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast))
+                                    {
+                                        <VENFTApp_Banner.Components.CoruzantNFT InputNFT="@nft" />
+                                    }
+                                    else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
+                                    {
+                                        if ((displayImages && nft.Type == NFTTypes.Image) ||
+                                            (displayPosts && nft.Type == NFTTypes.Post) ||
+                                            (displayMusic && nft.Type == NFTTypes.Music) ||
+                                            (displayEvents && nft.Type == NFTTypes.Event) ||
+                                            (displayTickets && nft.Type == NFTTypes.Ticket))
+                                        {
+                                            if ((displayVENFT && nft.TokenId == NFTHelpers.TokenId) ||
+                                                (!displayVENFT && nft.TokenId != NFTHelpers.TokenId))
+                                            {
+                                                <VENFTApp_Banner.Components.NFT InputNFT="@nft" />
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row" style="margin-top:50px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small class="text-center"><a href="https://about.ve-nft.com/" target="_blank">VENFT App 2021</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ActiveTab tab = new ActiveTab();
+    private string address = "Address Was Not Provided In URL";
+
+    bool displayImages = true;
+    bool displayPosts = true;
+    bool displayMusic = true;
+    bool displayTickets = true;
+    bool displayEvents = true;
+    bool displayVENFT = true;
+    bool displayCoruzant = true;
+    bool displayYouTube = false;
+    bool displaySpotify = false;
+    bool allowNFTCheckField = false;
+    bool destroyNFTsVisible = false;
+    bool destroyingNFTs = false;
+
+    string searchNFTsString = string.Empty;
+    string _searchNFTsString = string.Empty;
+
+    string loadingStatus = string.Empty;
+
+    protected override Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("add", out var add))
+        {
+            address = add;
+        }
+
+        if (!string.IsNullOrEmpty(address))
+        {
+            tab = new ActiveTab(address);
+            Load();
+        }
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Load()
+    {
+        StateHasChanged();
+        tab.NFTsChanged -= RefreshedNFTsHandler;
+        tab.NFTsChanged += RefreshedNFTsHandler;
+        tab.ProfileUpdated -= RefreshedProfileHandler;
+        tab.ProfileUpdated += RefreshedProfileHandler;
+        tab.FirsLoadingStatus -= FirstLoadHandler;
+        tab.FirsLoadingStatus += FirstLoadHandler;
+
+        await tab.StartRefreshing();
+    }
+
+    void RefreshedProfileHandler(object sender, INFT e)
+    {
+        StateHasChanged();
+    }
+    void RefreshedNFTsHandler(object sender, string e)
+    {
+        StateHasChanged();
+    }
+    void FirstLoadHandler(object sender, string e)
+    {
+        if (!string.IsNullOrEmpty(e))
+            loadingStatus = e;
+        StateHasChanged();
+    }
+
+    private async Task searchNFTsChanged(EventArgs e)
+    {
+        if (!string.IsNullOrEmpty(_searchNFTsString))
+            searchNFTsString = _searchNFTsString;
+        else
+        {
+            searchNFTsString = string.Empty;
+            _searchNFTsString = string.Empty;
+        }
+        StateHasChanged();
+    }
+
+    public void searchNFTsEnter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            searchNFTsChanged(null);
+        }
+    }
+
+    private async Task displayImagesChanged(object e)
+    {
+        displayImages = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayMusicChanged(object e)
+    {
+        displayMusic = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayPostsChanged(object e)
+    {
+        displayPosts = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayTicketsChanged(object e)
+    {
+        displayTickets = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayEventsChanged(object e)
+    {
+        displayEvents = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayVENFTChanged(object e)
+    {
+        displayVENFT = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayCoruzantChanged(object e)
+    {
+        displayCoruzant = (bool)e;
+        StateHasChanged();
+    }
+}

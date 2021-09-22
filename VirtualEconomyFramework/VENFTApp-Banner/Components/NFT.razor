@@ -242,6 +242,7 @@
                             <small>@nft.Description</small>
                         }
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -255,6 +256,14 @@
                         <i class="oi oi-info" style="font-size:12px;"></i>
                     </button>
                 </div>
+                @if (nft.Price > 0)
+                {
+                    <div class="col d-flex w-auto" style="margin-left:15px;">
+                        <a class="btn btn-primary" href="@shareBuyNFTUtxo" target="_blank" style="width: 40px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+                            <i class="oi oi-dollar" style="font-size:12px;"></i>
+                        </a>
+                    </div>
+                }
             </div>
         </small>
     </div>
@@ -285,6 +294,7 @@
     bool nftDetailsVisible = false;
 
     string modalWithImageLink = string.Empty;
+    string shareBuyNFTUtxo = string.Empty;
     bool modalWithImageVisible = false;
 
     [Parameter]
@@ -303,6 +313,7 @@
             if (value != null && value.Utxo != nft.Utxo)
             {
                 nft = value;
+                shareBuyNFTUtxo = "https://ve-nft.com/buynft?utxo=" + nft.Utxo + "&index=" + nft.UtxoIndex;
                 StateHasChanged();
             }
         }

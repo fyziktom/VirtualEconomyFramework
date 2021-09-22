@@ -1,0 +1,639 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Bookmarks
+@using VEDriversLite.NFT
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Globalization
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject HttpClient _client
+@inject AppData AppData
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+@page "/buynft"
+
+<div class="container-fluid overflow-auto">
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <h3>Buy NFT</h3>
+        </div>
+    </div>
+
+    @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+    {
+        <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" HideNFTs="true" />
+    }
+    else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+    {
+        <VENFTApp_Blazor.Components.DogeAccountBalance />
+    }
+
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex justify-content-center align-items-center">
+            <hr />
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom:20px;">
+        <div class="col">
+            <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
+                <div class="card" style="margin-top:10px;">
+                    <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                        @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                        {
+                            <h5 class="text-center">Buy NFT with Neblio Payment</h5>
+                        }
+                        else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                        {
+                            <h5 class="text-center">Buy NFT with Doge Payment</h5>
+                        }
+                    </div>
+                    <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <h5>NFT</h5>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <VENFTApp_Blazor.Components.NFT InputNFT="@NFT" OwnNFT="false" AllowBuy="false" />
+                                    </div>
+                                </div>
+                                @if (isPossibleToBuy && !IsInThePayments())
+                                {
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>Receiver Address:</span>
+                                            <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@receiver" MarginLeft="10" />
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                                            {
+                                                <a href="https://explorer.nebl.io/address/@receiver" target="_blank">@receiver</a>
+                                            }
+                                            else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                                            {
+                                                <a href="https://dogechain.info/address/@receiver" target="_blank">@receiver</a>
+                                            }
+                                        </div>
+                                    </div>
+                                    @if (AmountToSend > 0)
+                                    {
+                                        @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                                        {
+                                            <div class="row" style="margin-top:30px;">
+                                                <div class="col d-flex justify-content-center align-items-center">
+                                                    <span>Amount of Neblio:</span>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top:10px;">
+                                                <div class="col d-flex justify-content-center align-items-center">
+                                                    <span>@AmountToSend NEBL <img style="width: 20px;margin-left: 10px;" src="images/neblio-icon.png" /></span>
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                                        {
+                                            <div class="row" style="margin-top:30px;">
+                                                <div class="col d-flex justify-content-center align-items-center">
+                                                    <span>Amount of Dogecoin:</span>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top:10px;">
+                                                <div class="col d-flex justify-content-center align-items-center">
+                                                    <span>@AmountToSend DOGE <img style="width: 20px;margin-left: 10px;" src="images/doge.jpg" /></span>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (currecncy == Currecncy.DGC && AmountToSend >= AppData.DogeAccount.TotalSpendableBalance)
+                                        {
+                                            <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                                <div class="col d-flex justify-content-center align-items-center">
+                                                    <button class="btn btn-secondary" disabled>Not enought Doge or VENFT Tokens</button>
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (currecncy == Currecncy.NBL && AmountToSend >= AppData.Account.TotalSpendableBalance)
+                                        {
+                                            <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                                <div class="col d-flex justify-content-center align-items-center">
+                                                    <button class="btn btn-secondary" disabled >Not enought Neblio</button>
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (AppData.Account.SourceTokensBalance <= 5)
+                                        {
+                                            <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                                <div class="col d-flex justify-content-center align-items-center">
+                                                    <button class="btn btn-secondary" disabled >Not enought VENFT Tokens</button>
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (currecncy == Currecncy.NBL && AmountToSend < AppData.Account.TotalSpendableBalance && AppData.Account.SourceTokensBalance >= 5)
+                                        {
+                                            <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                                <div class="col d-flex justify-content-center align-items-center">
+                                                    <button class="btn btn-primary" @onclick="ShowSendConfirm">Buy NFT</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <h5>This NFT is not for sale</h5>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (sucessfullSend)
+                                {
+                                    <hr />
+                                    <Alert Type="@AlertType.Success"
+                                           Message="Payment Sent."
+                                           Description="Your payment has been sent :)"
+                                           ShowIcon="true" />
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>Transaction Id</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:5px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                                            {
+                                                <a href="https://explorer.nebl.io/tx/@txid" target="_blank">@txid</a>
+                                            }
+                                            else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                                            {
+                                                <a href="https://dogechain.info/tx/@txid" target="_blank">@txid</a>
+                                            }
+                                            <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@txid" MarginLeft="10" />
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    @if (!string.IsNullOrEmpty(redirect))
+                                    {
+                                        <div class="row" style="margin-top:10px; margin-bottom:20px;">
+                                            <div class="col d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-primary" @onclick="GoBackToShop">Go Back to the Shop</button>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Spin>
+        </div>
+    </div>
+
+    <VENFTApp_Blazor.Components.InfoEventModal />
+</div>
+
+<Modal Title="Unlock Account"
+       Visible="@unlockAcocuntModalVisible"
+       OnOk="@UnlockAccountConfirm"
+       OnCancel="@UnclockAccountCancel">
+    <div class="row">
+        <div class="col">
+            <Spin Tip="Unlocking..." Spinning="@unlockingAccount">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Please Input password</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@unlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    </div>
+                </div>
+
+                @if (unlockOrClearCashMessage)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Unlock account."
+                           ShowIcon="true" />
+                }
+                @if (accountUnlockingError)
+                {
+                    <Alert Type="@AlertType.Error"
+                           Message="Error"
+                           Description="Wrong Password."
+                           ShowIcon="true" />
+                }
+            </Spin>
+        </div>
+    </div>
+</Modal>
+
+<Modal Title="Redirecting back to the shop"
+       Visible="@redirectingBackToShopVisible"
+       Footer="null">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>You will be redirected back to the Shop in </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <h6>@redirectingBackToShopCountDown @((redirectingBackToShopCountDown > 1)? "seconds" : "second")</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Redirect address:</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>@redirect</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+<Modal Title="Buy NFT"
+       Visible="@confirmVisible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+    <p>Do You really want to buy this NFT?</p>
+</Modal>
+
+@code {
+
+    private enum Currecncy
+    {
+        NBL,
+        DGC,
+        BTC
+    }
+
+    Currecncy currecncy = Currecncy.NBL;
+
+    bool confirmVisible = false;
+
+    bool accountUnlocked = true;
+    bool unlockAcocuntModalVisible = false;
+    string unlockPassword = string.Empty;
+    bool unlockOrClearCashMessage = false;
+    bool unlockingAccount = false;
+    bool accountUnlockingError = false;
+    bool redirectingBackToShopVisible = false;
+    int redirectingBackToShopCountDown = 5;
+
+    private bool sendingTransaction = false;
+    private bool sucessfullSend = false;
+    private double AmountToSend = 1;
+
+    private string nftUtxo = string.Empty;
+    private int nftUtxoIndex = 0;
+    private string receiver = string.Empty;
+    private string currency = string.Empty;
+    private string redirect = string.Empty;
+    private string txid = string.Empty;
+    private bool isPossibleToBuy = false;
+
+    INFT NFT = new ImageNFT("");
+    ActiveTab tab = new ActiveTab();
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("utxo", out var nu))
+                {
+                    nftUtxo = nu;
+                }
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("index", out var ni))
+                {
+                    nftUtxoIndex = Convert.ToInt32(ni);
+                }
+                else
+                {
+                    nftUtxoIndex = 0;
+                }
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("rdc", out var rdc))
+                {
+                    redirect = rdc;
+                }
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("curr", out var curr))
+                {
+                    if (curr == "DGC") currecncy = Currecncy.DGC;
+                    if (curr == "DOGE") currecncy = Currecncy.DGC;
+                    if (curr == "NEBL") currecncy = Currecncy.NBL;
+                    if (curr == "NBL") currecncy = Currecncy.NBL;
+                }
+                else
+                {
+                    currecncy = Currecncy.NBL;
+                }
+
+                if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                    TryLogin();
+
+                LoadNFT();
+            }
+            catch (Exception ex)
+            {
+                Redirect();
+            }
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.DogeAccount = new VEDriversLite.DogeAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
+
+    private async Task LoadNFT()
+    {
+        if (!string.IsNullOrEmpty(nftUtxo))
+        {
+            NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftUtxo, nftUtxoIndex, 0, true);
+            AmountToSend = NFT.Price;
+
+            receiver = await NeblioTransactionHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
+
+            var r = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
+            if (!r.Item1)
+            {
+                //await JSRuntime.InvokeVoidAsync("alertMessage", "This is NFT is not spendable tx on the address of receiver of it. Probably it was already spended.");
+                isPossibleToBuy = false;
+            }
+            else
+            {
+                isPossibleToBuy = true;
+            }
+
+            tab = new ActiveTab(receiver);
+            tab.MaxLoadedNFTItems = 10;
+
+            tab.NFTsChanged -= NFTRefreshedHandler;
+            tab.NFTsChanged += NFTRefreshedHandler;
+            await tab.StartRefreshing();
+
+            StateHasChanged();
+        }
+    }
+
+    void NFTRefreshedHandler(object sender, string e)
+    {
+        StateHasChanged();
+    }
+
+    private bool IsInThePayments()
+    {
+        if (tab != null && tab.ReceivedPayments.TryGetValue(nftUtxo, out var nnft))
+            if ((nnft as PaymentNFT).NFTUtxoIndex == NFT.UtxoIndex)
+                return true;
+
+        return false;
+    }
+
+    private async Task TryLogin()
+    {
+        try
+        {
+            var key = await localStorage.GetItemAsync<string>("key");
+            if (!string.IsNullOrEmpty(key))
+            {
+                unlockAcocuntModalVisible = true;
+                await Task.Delay(50);
+                StateHasChanged();
+            }
+            else
+            {
+                await Redirect();
+            }
+        }
+        catch (Exception ex)
+        {
+            await Redirect();
+        }
+    }
+
+    private async Task ShowSendConfirm(MouseEventArgs e)
+    {
+        confirmVisible = true;
+    }
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(NFT.Utxo))
+            await BuyNFTFromOwner();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    private async Task BuyNFTFromOwner()
+    {
+        confirmVisible = false;
+        if (string.IsNullOrEmpty(NFT.Utxo))
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "This is not correct NFT.");
+            return;
+        }
+
+        try
+        {
+
+            sendingTransaction = true;
+            StateHasChanged();
+            (bool, string) res = (false, string.Empty);
+            switch (currecncy)
+            {
+                case Currecncy.NBL:
+                    res = await AppData.Account.SendNFTPayment(receiver, NFT);
+                    break;
+            }
+
+            Console.WriteLine("Tx send result: " + res.Item2);
+            if (!res.Item1)
+            {
+                txid = string.Empty;
+                sucessfullSend = false;
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
+            }
+            else
+            {
+                txid = res.Item2;
+                sucessfullSend = true;
+                isPossibleToBuy = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+
+    public async Task GoBackToShop(MouseEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(redirect))
+        {
+            redirectingBackToShopVisible = true;
+            StateHasChanged();
+            while (redirectingBackToShopCountDown > 0)
+            {
+                await Task.Delay(1000);
+                redirectingBackToShopCountDown--;
+                StateHasChanged();
+            }
+            NavManager.NavigateTo(redirect);
+        }
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task UnlockAccountConfirm(MouseEventArgs e)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(unlockPassword))
+                return;
+            if (unlockPassword.Length < 5)
+                return;
+
+            unlockingAccount = true;
+            StateHasChanged();
+
+            var pass = unlockPassword;
+
+            var load = false;
+            switch (currecncy)
+            {
+                case Currecncy.NBL:
+                    load = await LoadNeblioAccount();
+                    break;
+                case Currecncy.DGC:
+                    load = await LoadDogeAccount();
+                    break;
+            }
+            if (!load)
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot load the account.");
+                unlockAcocuntModalVisible = false;
+                unlockingAccount = false;
+                accountUnlockingError = false;
+                StateHasChanged();
+                await Task.Delay(50);
+                await Redirect();
+            }
+            else
+            {
+                unlockAcocuntModalVisible = false;
+                unlockingAccount = false;
+                accountUnlockingError = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            accountUnlockingError = true;
+        }
+        finally
+        {
+            unlockingAccount = false;
+            unlockOrClearCashMessage = false;
+            StateHasChanged();
+        }
+    }
+
+    public void UnlockAccountEnter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            StateHasChanged();
+            UnlockAccountConfirm(null);
+        }
+    }
+
+    private void UnclockAccountCancel(MouseEventArgs e)
+    {
+        accountUnlockingError = false;
+        unlockOrClearCashMessage = false;
+        unlockAcocuntModalVisible = true;
+        unlockOrClearCashMessage = true;
+    }
+
+    public async Task<bool> LoadDogeAccount()
+    {
+        if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
+        {
+            var key = await localStorage.GetItemAsync<string>("dogekey");
+            if (!string.IsNullOrEmpty(key))
+            {
+                await Task.Delay(100);
+                if (!await AppData.DogeAccount.LoadAccount(unlockPassword, key))
+                {
+                    await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot unlock the doge account.");
+                }
+                else
+                {
+                    if (AppData.DogeAccount != null)
+                        AppData.DogeAccount.Refreshed += RefreshedHandler;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public async Task<bool> LoadNeblioAccount()
+    {
+        if (string.IsNullOrEmpty(AppData.Account.Address))
+        {
+            var key = await localStorage.GetItemAsync<string>("key");
+            if (!string.IsNullOrEmpty(key))
+            {
+                await Task.Delay(100);
+                if (!await AppData.Account.LoadAccount(unlockPassword, key, "", withoutNFTs: true))
+                {
+                    await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot unlock the doge account.");
+                }
+                else
+                {
+                    if (AppData.Account != null)
+                        AppData.Account.Refreshed += RefreshedHandler;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}

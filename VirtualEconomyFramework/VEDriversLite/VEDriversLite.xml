@@ -43,6 +43,11 @@
             This event is called whenever profile nft is updated or found
             </summary>
         </member>
+        <member name="E:VEDriversLite.Bookmarks.ActiveTab.FirsLoadingStatus">
+            <summary>
+            This event is called during first loading of the account to keep updated the user
+            </summary>
+        </member>
         <member name="P:VEDriversLite.DogeAccount.Address">
             <summary>
             Doge Address hash

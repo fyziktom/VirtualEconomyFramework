@@ -309,14 +309,17 @@
                             </button>
                         </div>
 
+                        @if (AllowBuy)
+                        {
                         @if (!IsInThePayments(nft.Utxo) && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
                         {
                             <div class="col d-flex w-auto" style="margin-left:15px;">
                                 <SendNFTPayment NFT="@nft" Utxo="@nft.Utxo" UtxoIndex="@nft.UtxoIndex" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
                             </div>
                         }
+                        }
                     </div>
-                    
+
                     <div class="row d-flex justify-content-center align-items-center">
                         @if (!IsInThePayments(nft.Utxo))
                         {
@@ -370,7 +373,7 @@
            OnCancel="@CloseShareNFT">
         <div class="row">
             <div class="col">
-                <a href="@shareNFTUtxo" target="_blank">@shareNFTUtxo</a>
+                <a href="@shareNFTUtxo" target="_blank">Share NFT Link</a>
             </div>
         </div>
         <div class="row">
@@ -378,20 +381,41 @@
                 <CopyButton TextToCopy="@shareNFTUtxo" />
             </div>
         </div>
+        <div class="row">
+            <div class="col">
+                <QRIcon TextToCopy="@shareNFTUtxo" FontSize="25" />
+            </div>
+        </div>
         <hr />
         <div class="row">
             <div class="col">
-                <span>Transaction Id</span>
+                <a href="@shareBuyNFTUtxo" target="_blank">Buy NFT Link</a>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <a href="https://explorer.nebl.io/tx/@nft.Utxo" target="_blank">@nft.Utxo</a>
+                <CopyButton TextToCopy="@shareBuyNFTUtxo" />
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <CopyButton TextToCopy="@nft.Utxo" />
+                <QRIcon TextToCopy="@shareBuyNFTUtxo" FontSize="25" />
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col">
+                <span>Transaction Id and index</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <a href="https://explorer.nebl.io/tx/@nft.Utxo" target="_blank">@shareNFTUtxoAndIndex</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <CopyButton TextToCopy="@shareNFTUtxoAndIndex" />
             </div>
         </div>
     </Modal>
@@ -401,6 +425,8 @@
 
     bool shareNFTVisible = false;
     string shareNFTUtxo = string.Empty;
+    string shareBuyNFTUtxo = string.Empty;
+    string shareNFTUtxoAndIndex = string.Empty;
 
     string nftDetailsUtxo = string.Empty;
     bool nftDetailsVisible = false;
@@ -416,6 +442,9 @@
 
     [Parameter]
     public bool IsInWooCom { get; set; } = false;
+
+    [Parameter]
+    public bool AllowBuy { get; set; } = true;
 
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
@@ -521,6 +550,8 @@
     private async Task ShowShareNFT(string utxo)
     {
         shareNFTUtxo = "https://nft.ve-nft.com/?txid=" + utxo;
+        shareBuyNFTUtxo = "https://ve-nft.com/buynft?utxo=" + utxo + "&index=" + nft.UtxoIndex;
+        shareNFTUtxoAndIndex = nft.Utxo + ":" + nft.UtxoIndex.ToString();
         shareNFTVisible = true;
     }
 

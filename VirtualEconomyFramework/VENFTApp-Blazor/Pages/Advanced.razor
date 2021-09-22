@@ -195,6 +195,34 @@
                                 </div>
                             </div>
 
+                            <div class="card" style="margin-top:10px; min-width:200px; max-width:350px; margin-left:20px;">
+                                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                                    <h5 class="text-center">VENFT Airdrop</h5>
+                                </div>
+                                <div class="card-body w-100">
+                                    <Spin Tip="Sending..." Spinning="@sendingTransaction">
+                                        <div class="row" style="margin-top:30px; min-width:250px;">
+                                            <div class="col w-100">
+                                                <div class="row" style="margin-top:10px;">
+                                                    <div class="col d-flex justify-content-center align-items-center">
+                                                        <p>To Address:</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:10px;">
+                                                    <div class="col d-flex justify-content-center align-items-center">
+                                                        <VENFTApp_Blazor.Components.NeblioAddressInput AddressCheckedInputed="@receiverAddressChangedHandler" />
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:10px;">
+                                                    <div class="col d-flex justify-content-center align-items-center">
+                                                        <button class="btn btn-primary" @onclick="SendVENFTAirdrop">Send VENFT Airdrop</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Spin>
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -213,7 +241,9 @@
     private string addressForBackupUpload = string.Empty;
     private string backupData = string.Empty;
     private string serverResponse = string.Empty;
+    private string Receiver = string.Empty;
     private bool sending = false;
+    private bool sendingTransaction = false;
 
     private ElementReference inputTypeFileElement;
 
@@ -237,6 +267,43 @@
         AppData.Account = new NeblioAccount();
         await Task.Delay(500);
         NavManager.NavigateTo("/");
+    }
+
+    private void receiverAddressChangedHandler(string address)
+    {
+        if (string.IsNullOrEmpty(address))
+            return;
+        if (address.Length < 8)
+        {
+            Receiver = string.Empty;
+            return;
+        }
+        Receiver = address;
+        StateHasChanged();
+    }
+
+    private async Task SendVENFTAirdrop(MouseEventArgs e)
+    {
+        try
+        {
+            sendingTransaction = true;
+            StateHasChanged();
+
+            var res = await AppData.Account.SendAirdrop(Receiver, NFTHelpers.TokenId, 100, 0.05);
+            if (res.Item1)
+                Console.WriteLine("Tx send result: " + res.Item2);
+            else
+                Console.WriteLine("Cannot send Airdrop: " + res.Item2);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot send the airdrop: " + ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            StateHasChanged();
+        }
     }
 
     private async Task getAdminActionTokenServer(MouseEventArgs e)

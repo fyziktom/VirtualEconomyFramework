@@ -1069,6 +1069,9 @@ namespace VEDriversLite.NFT
             if (!nft.PriceActive)
                 throw new Exception("NFT is not for sale.");
 
+            if (nutxos.Count > 10)
+                throw new Exception("The Utxos for the Neblio are too many for one transaction. Please load some bigger Utxo for the big payment like this.");
+
             var paymentnft = new PaymentNFT("");
             paymentnft.Sender = address;
             paymentnft.NFTUtxoTxId = nft.Utxo;
