@@ -879,6 +879,11 @@
             Received payments (means Payment NFT) of this address.
             </summary>
         </member>
+        <member name="F:VEDriversLite.NeblioAccount.ReceivedReceipts">
+            <summary>
+            Received receipts (means Receipt NFT) of this address.
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NeblioAccount.Profile">
             <summary>
             If address has some profile NFT, it is founded in Utxo list and in this object.
@@ -1325,6 +1330,13 @@
         <member name="M:VEDriversLite.NeblioAccount.RefreshAddressReceivedPayments">
             <summary>
             This function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. 
+            This list is cleared at the start of this function
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.RefreshAddressReceivedReceipts">
+            <summary>
+            This function will search NFT Receipts in the NFTs list and load them into ReceivedReceipts list. 
             This list is cleared at the start of this function
             </summary>
             <returns></returns>
@@ -3755,6 +3767,11 @@
             Received payments (means Payment NFT) of this address.
             </summary>
         </member>
+        <member name="F:VEDriversLite.Neblio.NeblioSubAccount.ReceivedReceipts">
+            <summary>
+            Received receipts (means Receipt NFT) of this address.
+            </summary>
+        </member>
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.CoruzantNFTs">
             <summary>
             List of actual address Coruzant NFTs. Based on Utxos list
@@ -3894,6 +3911,13 @@
         <member name="M:VEDriversLite.Neblio.NeblioSubAccount.RefreshAddressReceivedPayments">
             <summary>
             This function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. 
+            This list is cleared at the start of this function
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.RefreshAddressReceivedReceipts">
+            <summary>
+            This function will search NFT Receipts in the NFTs list and load them into ReceivedReceipts list. 
             This list is cleared at the start of this function
             </summary>
             <returns></returns>

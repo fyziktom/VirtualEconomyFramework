@@ -43,6 +43,10 @@ namespace VEDriversLite.Neblio
         [JsonIgnore]
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         /// <summary>
+        /// Received receipts (means Receipt NFT) of this address.
+        /// </summary>
+        public ConcurrentDictionary<string, INFT> ReceivedReceipts = new ConcurrentDictionary<string, INFT>();
+        /// <summary>
         /// List of actual address Coruzant NFTs. Based on Utxos list
         /// </summary>
         [JsonIgnore]
@@ -349,6 +353,7 @@ namespace VEDriversLite.Neblio
                 await ReloadUtxos();
                 await ReLoadNFTs();
                 await RefreshAddressReceivedPayments();
+                await RefreshAddressReceivedReceipts();
                 await CheckPayments();
                 await ReloadTokenSupply();
             }
@@ -373,6 +378,7 @@ namespace VEDriversLite.Neblio
                             await ReLoadNFTs();
                             await ReloadTokenSupply();
                             await RefreshAddressReceivedPayments();
+                            await RefreshAddressReceivedReceipts();
                             await CheckPayments();
                         }
                         if (firstLoad)
@@ -485,6 +491,30 @@ namespace VEDriversLite.Neblio
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot refresh address received payments. " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// This function will search NFT Receipts in the NFTs list and load them into ReceivedReceipts list. 
+        /// This list is cleared at the start of this function
+        /// </summary>
+        /// <returns></returns>
+        public async Task RefreshAddressReceivedReceipts()
+        {
+            try
+            {
+                lock (_lock)
+                {
+                    ReceivedReceipts.Clear();
+                    var pnfts = NFTs.Where(n => n.Type == NFTTypes.Receipt).ToList();
+
+                    foreach (var p in pnfts)
+                        ReceivedReceipts.TryAdd(p.NFTOriginTxId, p);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot refresh address received receipts. " + ex.Message);
             }
         }
 

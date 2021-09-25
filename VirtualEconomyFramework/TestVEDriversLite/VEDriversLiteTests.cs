@@ -64,7 +64,7 @@ namespace TestVEDriversLite
                 throw new Exception("Password cannot be empty.");
 
             password = param;
-            await account.LoadAccount(password);
+            await account.LoadAccount(password, awaitFirstLoad:true);
         }
 
         [TestEntry]
@@ -79,7 +79,7 @@ namespace TestVEDriversLite
                 throw new Exception("Please input pass,filename");
             var pass = split[0];
             var file = split[1];
-            await account.LoadAccount(pass, file, false);
+            await account.LoadAccount(pass, file, false, awaitFirstLoad: true);
         }
 
         [TestEntry]
@@ -107,7 +107,7 @@ namespace TestVEDriversLite
                 Console.WriteLine("wrong input.");
                 return;
             }
-            await account.LoadAccount(pass, file, false);
+            await account.LoadAccount(pass, file, false, awaitFirstLoad: true);
 
             Console.WriteLine("Loading account NFTs...");
             var attempts = 100;

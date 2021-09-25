@@ -80,6 +80,7 @@ namespace VEDriversLite.NFT
             DogeAddress = nft.DogeAddress;
             DogeftInfo = nft.DogeftInfo;
             SoldInfo = nft.SoldInfo;
+            TxDetails = nft.TxDetails;
         }
         public async Task ClearSoldInfo()
         {
@@ -175,8 +176,9 @@ namespace VEDriversLite.NFT
                 Tags = tags;
                 parseTags();
             }
+
             //if (meta.TryGetValue("SourceUtxo", out var su))
-                //NFTOriginTxId = su;
+            //NFTOriginTxId = su;
         }
 
         public async Task ParseDogeftInfo(IDictionary<string,string> meta)

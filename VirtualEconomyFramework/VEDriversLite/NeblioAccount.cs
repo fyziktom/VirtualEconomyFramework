@@ -115,6 +115,10 @@ namespace VEDriversLite
         /// </summary>
         public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
         /// <summary>
+        /// Received receipts (means Receipt NFT) of this address.
+        /// </summary>
+        public ConcurrentDictionary<string, INFT> ReceivedReceipts = new ConcurrentDictionary<string, INFT>();
+        /// <summary>
         /// If address has some profile NFT, it is founded in Utxo list and in this object.
         /// </summary>
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
@@ -318,6 +322,7 @@ namespace VEDriversLite
                     await ReLoadNFTs(true);
                     await ReloadCountOfNFTs();
                     await RefreshAddressReceivedPayments();
+                    await RefreshAddressReceivedReceipts();
                     Refreshed?.Invoke(this, null);
                     FirsLoadingStatus?.Invoke(this, "Main Account NFTs Loaded.");
                 }
@@ -352,6 +357,7 @@ namespace VEDriversLite
                                 await ReLoadNFTs();
                                 await ReloadCountOfNFTs();
                                 await RefreshAddressReceivedPayments();
+                                await RefreshAddressReceivedReceipts();
                             }
                             
                             try
@@ -377,6 +383,7 @@ namespace VEDriversLite
                                     //if (!string.IsNullOrEmpty(ConnectedDogeAccountAddress))
                                     //  await CheckDogePayments();
                                     await RefreshAddressReceivedPayments();
+                                    await RefreshAddressReceivedReceipts();
                                 }
                                 catch(Exception ex)
                                 {
@@ -886,6 +893,7 @@ namespace VEDriversLite
             var tab = Tabs.Find(t => t.Address == address);
             if (tab != null)
             {
+                await tab.StopRefreshing();
                 tab.NFTsChanged -= T_NFTsChanged;
                 Tabs.Remove(tab);
             }
@@ -895,19 +903,27 @@ namespace VEDriversLite
                 return (false, string.Empty);
             }
 
-            foreach (var t in Tabs)
-                await t.StopRefreshing();
-            await Tabs.FirstOrDefault().StartRefreshing();
-
+            if (Tabs.Count > 0)
+            {
+                foreach (var t in Tabs)
+                    await t.StopRefreshing();
+                await Tabs.FirstOrDefault().StartRefreshing();
+            }
             return (true, JsonConvert.SerializeObject(Tabs));
         }
         public async Task SelectTab(string address)
         {
             Tabs.ForEach(async (t) => {
                 if (t.Address == address)
+                {
+                    t.Selected = true;
                     if (!t.IsRefreshingRunning) await t.StartRefreshing();
+                }
                 else
+                {
+                    t.Selected = false;
                     await t.StopRefreshing();
+                }
             });
         }
 
@@ -1906,6 +1922,30 @@ namespace VEDriversLite
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot refresh address received payments. " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// This function will search NFT Receipts in the NFTs list and load them into ReceivedReceipts list. 
+        /// This list is cleared at the start of this function
+        /// </summary>
+        /// <returns></returns>
+        public async Task RefreshAddressReceivedReceipts()
+        {
+            try
+            {
+                lock (_lock)
+                {
+                    ReceivedReceipts.Clear();
+                    var pnfts = NFTs.Where(n => n.Type == NFTTypes.Receipt).ToList();
+
+                    foreach (var p in pnfts)
+                        ReceivedReceipts.TryAdd(p.NFTOriginTxId, p);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot refresh address received receipts. " + ex.Message);
             }
         }
 

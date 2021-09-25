@@ -32,18 +32,29 @@
                                     <span class="oi oi-home" aria-hidden="true"></span> Main Account NFTs
                                 </HeaderTemplate>
                                 <ChildContent>
-                                    <div class="row" style="min-width:300px; padding:0px;">
-                                        <div class="col w-100" style="min-width:300px; padding:0px;">
-                                            <div class="card" style="margin-top:10px;">
-                                                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
-                                                    <h5 class="text-center">Received NFT Payments</h5>
-                                                </div>
-                                                <div class="card-body d-flex justify-content-center align-items-center" style="min-height:150px; padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
-                                                    <VENFTApp_Blazor.Components.PaymentsList Address="@AppData.Account.Address" MainAccount="true" SubAccount="false" />
-                                                </div>
-                                            </div>
+                                    <div class="row" style="min-width:200px; width:100%; padding:0px;">
+                                        <div class="col d-flex justify-content-center align-items-center" style="min-width:200px; width:100%; padding:0px;">
+                                            <Collapse DefaultActiveKey="@(new[]{"ReceivedNFTPayments"})" Accordion Style="width:95%;">
+                                                <Panel Header="Received NFT Payments" Key="ReceivedNFTPayments">
+                                                    <HeaderTemplate>
+                                                        <span class="oi oi-dollar" aria-hidden="true"></span> Received NFT Payments
+                                                    </HeaderTemplate>
+                                                    <ChildContent>
+                                                        <VENFTApp_Blazor.Components.PaymentsList Address="@AppData.Account.Address" MainAccount="true" SubAccount="false" />
+                                                    </ChildContent>
+                                                </Panel>
+                                                <Panel Header="Received NFT Receipts" Key="ReceivedNFTReceipts">
+                                                    <HeaderTemplate>
+                                                        <span class="oi oi-paperclip" aria-hidden="true"></span> Received NFT Receipts
+                                                    </HeaderTemplate>
+                                                    <ChildContent>
+                                                        <VENFTApp_Blazor.Components.ReceiptsList Address="@AppData.Account.Address" MainAccount="true" SubAccount="false" />
+                                                    </ChildContent>
+                                                </Panel>
+                                            </Collapse>
                                         </div>
                                     </div>
+
                                     <VENFTApp_Blazor.Components.NFTList MainAccount="true" SubAccount="false" InBrowser="false"
                                                                         ProductsInTheShop="@ProductsInTheShop"
                                                                         Address="@AppData.Account.Address" />
@@ -69,16 +80,26 @@
                                                 <VENFTApp_Blazor.Components.AccountBalances Address="@mt.Address" SubAccount="true" />
                                             </div>
                                         </div>
-                                        <div class="row" style="min-width:300px; padding:0px;">
-                                            <div class="col w-100" style="min-width:300px; padding:0px;">
-                                                <div class="card" style="margin-top:10px;">
-                                                    <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
-                                                        <h5 class="text-center">Received NFT Payments</h5>
-                                                    </div>
-                                                    <div class="card-body d-flex justify-content-center align-items-center" style="min-height:150px; padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
-                                                        <VENFTApp_Blazor.Components.PaymentsList Address="@mt.Address" MainAccount="false" SubAccount="true" />
-                                                    </div>
-                                                </div>
+                                        <div class="row w-100" style="min-width:200px; padding:0px;">
+                                            <div class="col w-100 d-flex justify-content-center align-items-center" style="min-width:200px; padding:0px;">
+                                                <Collapse DefaultActiveKey="@(new[]{"ReceivedNFTPayments"})" Accordion Style="width:95%;">
+                                                    <Panel Header="Received NFT Payments" Key="ReceivedNFTPayments">
+                                                        <HeaderTemplate>
+                                                            <span class="oi oi-dollar" aria-hidden="true"></span> Received NFT Payments
+                                                        </HeaderTemplate>
+                                                        <ChildContent>
+                                                            <VENFTApp_Blazor.Components.PaymentsList Address="@mt.Address" MainAccount="false" SubAccount="true" />
+                                                        </ChildContent>
+                                                    </Panel>
+                                                    <Panel Header="Received NFT Receipts" Key="ReceivedNFTReceipts">
+                                                        <HeaderTemplate>
+                                                            <span class="oi oi-paperclip" aria-hidden="true"></span> Received NFT Receipts
+                                                        </HeaderTemplate>
+                                                        <ChildContent>
+                                                            <VENFTApp_Blazor.Components.ReceiptsList Address="@mt.Address" MainAccount="false" SubAccount="true" />
+                                                        </ChildContent>
+                                                    </Panel>
+                                                </Collapse>
                                             </div>
                                         </div>
                                         <div class="row" style="min-width:300px; padding:0px;">

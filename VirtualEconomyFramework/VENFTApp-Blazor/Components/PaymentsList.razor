@@ -22,8 +22,8 @@
                     {
                         @foreach (var p in AppData.Account.ReceivedPayments.Values)
                         {
-                            var pnft = new PaymentNFT(p.Utxo);
-                            pnft.Fill(p).Wait();
+                            var pnft = p as PaymentNFT;// new PaymentNFT(p.Utxo);
+                            //pnft.Fill(p).Wait();
                             <tr style="margin-top:10px;">
                                 <td style="min-width:60px;">
                                     <div class="row" style="margin-top:5px;">
@@ -63,7 +63,7 @@
                                 @if (!string.IsNullOrEmpty(pnft.ImageLink))
                                 {
                                     <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">
-                                        <img class="img-thumbnail" style="max-height:80px; max-width:80px;" src="@pnft.ImageLink" />
+                                        <img class="img-thumbnail" style="max-height:50px; max-width:50px;" src="@pnft.ImageLink" />
                                     </td>
                                 }
                                 else
@@ -112,19 +112,19 @@
                 {
                     if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
                     {
-                        @if (AppData.Account.ReceivedPayments.Count > 0)
+                        @if (sa.ReceivedPayments.Count > 0)
                         {
                             @foreach (var p in sa.ReceivedPayments.Values)
                             {
-                                var pnft = new PaymentNFT(p.Utxo);
-                                pnft.Fill(p).Wait();
+                                var pnft = p as PaymentNFT;// new PaymentNFT(p.Utxo);
+                                //pnft.Fill(p).Wait();
                                 <tr style="margin-top:10px;">
                                     <td style="min-width:60px;">
                                         <div class="row" style="margin-top:5px;">
                                             <div class="col">
                                                 <div class="row" style="margin-top:5px;">
                                                     <div class="col">
-                                                        @if (pnft.Sender != AppData.Account.Address)
+                                                        @if (pnft.Sender != sa.Address)
                                                         {
                                                             <span class="badge badge-success">Received</span>
                                                         }
@@ -136,7 +136,7 @@
                                                 </div>
                                                 <div class="row" style="margin-top:5px;">
                                                     <div class="col">
-                                                        @if (pnft.Sender != AppData.Account.Address && pnft.AlreadySoldItem)
+                                                        @if (pnft.Sender != sa.Address && pnft.AlreadySoldItem)
                                                         {
                                                             <span class="badge badge-warning">Already Sold</span>
                                                         }
@@ -153,7 +153,7 @@
                                     @if (!string.IsNullOrEmpty(pnft.ImageLink))
                                     {
                                         <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">
-                                            <img class="img-thumbnail" style="max-height:80px; max-width:80px;" src="@pnft.ImageLink" />
+                                            <img class="img-thumbnail" style="max-height:50px; max-width:50px;" src="@pnft.ImageLink" />
                                         </td>
                                     }
                                     else

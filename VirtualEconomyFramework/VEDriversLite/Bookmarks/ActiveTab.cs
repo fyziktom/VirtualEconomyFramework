@@ -31,6 +31,7 @@ namespace VEDriversLite.Bookmarks
         public bool IsRefreshingRunning { get; set; } = false;
         [JsonIgnore]
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        [JsonIgnore]
         public ICollection<Utxos> UtxosList { get; set; } = new List<Utxos>();
         [JsonIgnore]
         public Bookmark BookmarkFromAccount { get; set; } = new Bookmark();

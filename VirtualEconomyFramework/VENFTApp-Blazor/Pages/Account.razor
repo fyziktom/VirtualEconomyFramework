@@ -38,7 +38,18 @@
                     <h5 class="text-center">Profile</h5>
                 </div>
                 <div class="card-body d-flex justify-content-center w-100">
+                    @if (AppData.Account.SourceTokensBalance == 0 && AppData.Account.TotalSpendableBalance == 0)
+                    {
+                        <div>
+                            <div class="col">
+                                <span class="text-danger text-center">Please load Neblio and VENFT to allow create profile.</span>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
                     <VENFTApp_Blazor.Components.Profile ReadOnlyProfile="@false" NFT="@AppData.Account.Profile" />
+                    }
                 </div>
             </div>
 
@@ -106,6 +117,14 @@
                 </div>
                 <div class="card-body d-flex justify-content-center align-items-center" style="min-height:150px; padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
                     <VENFTApp_Blazor.Components.PaymentsList Address="@AppData.Account.Address" MainAccount="true" />
+                </div>
+            </div>
+            <div class="card" style="margin-top:10px;">
+                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                    <h5 class="text-center">Received NFT Receipts</h5>
+                </div>
+                <div class="card-body d-flex justify-content-center align-items-center" style="min-height:150px; padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                    <VENFTApp_Blazor.Components.ReceiptsList Address="@AppData.Account.Address" MainAccount="true" />
                 </div>
             </div>
             <div class="card" style="margin-top:10px;">

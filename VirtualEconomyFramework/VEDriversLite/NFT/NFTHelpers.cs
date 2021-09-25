@@ -966,6 +966,7 @@ namespace VEDriversLite.NFT
             NFT.PriceActive = false;
             var metadata = await NFT.GetMetadata();
             metadata.Add("SoldPrice", payment.Price.ToString(CultureInfo.InvariantCulture));
+            metadata.Add("ReceiptFromPaymentUtxo", payment.Utxo);
             metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
 
             // fill input data for sending tx

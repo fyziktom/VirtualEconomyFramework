@@ -113,6 +113,14 @@ namespace VEDriversLite.NFT
                 }
             }
 
+            if (utxoindex == 1 && meta.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
+            {
+                if (!string.IsNullOrEmpty(rfp))
+                {
+                    type = NFTTypes.Receipt;
+                }
+            }
+
             if (loadJustType)
                 if (justType != type)
                     return null;
@@ -142,6 +150,7 @@ namespace VEDriversLite.NFT
             {
                 case NFTTypes.Image:
                     nft = new ImageNFT(utxo);
+                    nft.TxDetails = txinfo;
                     if (wait)
                         await nft.ParseOriginData(meta);
                     else
@@ -151,6 +160,7 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Profile:
                     nft = new ProfileNFT(utxo);
+                    nft.TxDetails = txinfo;
                     //await pnft.ParseOriginData();
                     if (wait)
                         await (nft as ProfileNFT).LoadLastData(meta);
@@ -160,6 +170,7 @@ namespace VEDriversLite.NFT
                     return nft;
                 case NFTTypes.Post:
                     nft = new PostNFT(utxo);
+                    nft.TxDetails = txinfo;
                     //await ponft.ParseOriginData();
                     if (wait)
                         await (nft as PostNFT).LoadLastData(meta);
@@ -168,6 +179,7 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Music:
                     nft = new MusicNFT(utxo);
+                    nft.TxDetails = txinfo;
                     //await ponft.ParseOriginData();
                     if (wait)
                         await nft.ParseOriginData(meta);
@@ -178,13 +190,23 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Payment:
                     nft = new PaymentNFT(utxo);
+                    nft.TxDetails = txinfo;
                     if (wait)
                         await (nft as PaymentNFT).LoadLastData(meta);
                     else
                         (nft as PaymentNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.Receipt:
+                    nft = new ReceiptNFT(utxo);
+                    nft.TxDetails = txinfo;
+                    if (wait)
+                        await (nft as ReceiptNFT).LoadLastData(meta);
+                    else
+                        (nft as ReceiptNFT).LoadLastData(meta);
+                    break;
                 case NFTTypes.Message:
                     nft = new MessageNFT(utxo);
+                    nft.TxDetails = txinfo;
                     if (wait)
                         await (nft as MessageNFT).LoadLastData(meta);
                     else
@@ -192,6 +214,7 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Ticket:
                     nft = new TicketNFT(utxo);
+                    nft.TxDetails = txinfo;
                     if (wait)
                         await nft.ParseOriginData(meta);
                     else
@@ -201,6 +224,7 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Event:
                     nft = new EventNFT(utxo);
+                    nft.TxDetails = txinfo;
                     if (wait)
                         await nft.ParseOriginData(meta);
                     else
@@ -211,6 +235,7 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.CoruzantArticle:
                     nft = new CoruzantArticleNFT(utxo);
+                    nft.TxDetails = txinfo;
                     if (wait)
                         await (nft as CoruzantArticleNFT).LoadLastData(meta);
                     else
@@ -218,6 +243,7 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.CoruzantProfile:
                     nft = new CoruzantProfileNFT(utxo);
+                    nft.TxDetails = txinfo;
                     if (wait)
                         await (nft as CoruzantProfileNFT).LoadLastData(meta);
                     else
@@ -259,6 +285,10 @@ namespace VEDriversLite.NFT
                     return nft;
                 case NFTTypes.Payment:
                     nft = new PaymentNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Receipt:
+                    nft = new ReceiptNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
                 case NFTTypes.Message:
