@@ -94,7 +94,20 @@
     <VENFTApp_Blazor.Components.DisplayAccountKey />
 </Modal>
 
+<Modal Title="VENFT Hep"
+       Visible="@helpModalVisible"
+       OnOk="@CloseHelpModal"
+       OnCancel="@CloseHelpModal" ZIndex="10" Style="width:90%; height: max-content;">
+    <iframe src=@infopageLink style="width: 100%; height: max-content; min-height:600px; min-width: 300px;" frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>
+</Modal>
+
 @code {
+
+    bool helpModalVisible = false;
+    string defaultInfopageLink = "https://about.ve-nft.com/gettingstarted.html";
+    string infopageLink = "https://about.ve-nft.com/gettingstarted.html";
+    string pageSection = string.Empty;
+
     bool savePrivateKeyVisible = false;
 
     bool accountCreated = false;
@@ -155,6 +168,23 @@
         }
     }
 
+    public async Task OpenHelp(string _pageSection)
+    {
+        if (string.IsNullOrEmpty(_pageSection))
+            _pageSection = string.Empty;
+        infopageLink = defaultInfopageLink + "#" + _pageSection;
+        helpModalVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task CloseHelpModal(MouseEventArgs e)
+    {
+        helpModalVisible = false;
+        if(accountCreated)
+            savePrivateKeyVisible = true;
+        StateHasChanged();
+    }
+
     private async Task savePrivateKeyCancel(MouseEventArgs e)
     {
         savePrivateKeyVisible = false;
@@ -174,8 +204,8 @@
         accountCreated = true;
         createNewAddressModalVisible = false;
 
-        savePrivateKeyVisible = true;
         StateHasChanged();
+        OpenHelp("account");
     }
 
     private void AccountUnlocked(string msg)

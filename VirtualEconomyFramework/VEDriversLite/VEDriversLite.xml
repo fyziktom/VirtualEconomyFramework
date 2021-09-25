@@ -3472,7 +3472,7 @@
             <param name="fee">Fee - 10000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Double,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Double,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String,System.Int32,System.Double)">
             <summary>
             This function will send Neblio payment together with the token whichc carry some metadata
             </summary>
@@ -3610,6 +3610,15 @@
             <returns>true and index of utxo</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Check if the NFT token is spendable. Means utxos with token amount = 1
+            </summary>
+            <param name="address">address which should have this utxo</param>
+            <param name="tokenId">input token id hash</param>
+            <param name="txid">input txid hash</param>
+            <returns>true and index of utxo</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateOneTokenNFTUtxoReturnUtxo(System.String,System.String,System.String,System.Int32)">
             <summary>
             Check if the NFT token is spendable. Means utxos with token amount = 1
             </summary>

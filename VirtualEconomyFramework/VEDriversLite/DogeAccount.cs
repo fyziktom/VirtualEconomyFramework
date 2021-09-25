@@ -496,7 +496,7 @@ namespace VEDriversLite
             var res = await CheckSpendableDoge(amount + 5);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Doge");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Doge");
                 return (false, res.Item1);
             }
 
@@ -565,7 +565,7 @@ namespace VEDriversLite
             var res = await CheckSpendableDoge(amount + 3);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
                 return (false, res.Item1);
             }
 
@@ -634,7 +634,7 @@ namespace VEDriversLite
             var res = await CheckSpendableDoge(totam + 3);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
                 return (false, res.Item1);
             }
 
@@ -692,7 +692,7 @@ namespace VEDriversLite
             var res = await CheckSpendableDoge(nft.Price);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
                 return (false, res.Item1);
             }
 

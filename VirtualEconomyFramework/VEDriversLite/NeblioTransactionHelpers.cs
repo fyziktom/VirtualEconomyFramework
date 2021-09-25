@@ -1423,7 +1423,13 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, double fee = 20000)
+        public static async Task<string> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, 
+                                                                          EncryptionKey ekey, 
+                                                                          double neblAmount, 
+                                                                          ICollection<Utxos> nutxos, 
+                                                                          string paymentUtxoToReturn = null, 
+                                                                          int paymentUtxoIndexToReturn = 0, 
+                                                                          double fee = 20000)
         {
             var res = "ERROR";
 
@@ -1458,14 +1464,32 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
             }
 
-            var tutxos = await FindUtxoForMintNFT(data.SenderAddress, "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", 5);
-            if (tutxos == null || tutxos.Count == 0)
-                throw new Exception("Cannot send transaction, cannot load sender token utxos, for buying you need at least 5 VENFT lot!");
+            Utxos tutxo = null;
+            if (paymentUtxoToReturn == null)
+            {
+                var tutxos = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
+                if (tutxos == null || tutxos.Count == 0)
+                    throw new Exception("Cannot send transaction, cannot load sender token utxos, for buying you need at least 5 VENFT lot!");
 
-            var tutxo = tutxos.FirstOrDefault();
-            if (tutxo == null)
-                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
-
+                tutxo = tutxos.FirstOrDefault();
+                if (tutxo == null)
+                    throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+            }
+            else
+            {
+                tutxo = new Utxos()
+                {
+                    Txid = paymentUtxoToReturn,
+                    Index = paymentUtxoIndexToReturn
+                };
+                /*
+                var pr = await ValidateOneTokenNFTUtxoReturnUtxo(data.SenderAddress, data.Id, paymentUtxoToReturn, paymentUtxoIndexToReturn);
+                if (pr.Item1)
+                    tutxo = pr.Item2;
+                else
+                    throw new Exception("Payment NFT Utxo is not spendable.");
+                */
+            }
             if (nutxos == null || nutxos.Count == 0)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
 
@@ -1545,8 +1569,9 @@ namespace VEDriversLite
                     }
                 }
 
-                // remove token carrier, will be added later
-                transaction.Outputs.RemoveAt(3);
+                // remove token carrier, will be added later - just for minting new nft
+                if (string.IsNullOrEmpty(paymentUtxoToReturn))
+                    transaction.Outputs.RemoveAt(3);
 
                 // add inputs of neblio utxo for payment part
                 foreach (var u in neblutxos)
@@ -1588,7 +1613,8 @@ namespace VEDriversLite
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
                 transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
-                transaction.Outputs.Add(new Money(10000), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
+                if (string.IsNullOrEmpty(paymentUtxoToReturn)) // just for minting new payment nft
+                    transaction.Outputs.Add(new Money(10000), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
             }
             catch(Exception ex)
             {
@@ -2556,6 +2582,39 @@ namespace VEDriversLite
         }
 
         /// <summary>
+        /// Check if the NFT token is spendable. Means utxos with token amount = 1
+        /// </summary>
+        /// <param name="address">address which should have this utxo</param>
+        /// <param name="tokenId">input token id hash</param>
+        /// <param name="txid">input txid hash</param>
+        /// <returns>true and index of utxo</returns>
+        public static async Task<(bool, Utxos)> ValidateOneTokenNFTUtxoReturnUtxo(string address, string tokenId, string txid, int indx)
+        {
+            var addinfo = await GetClient().GetAddressInfoAsync(address);
+            var utxos = addinfo.Utxos;
+            if (utxos == null)
+                return (false, null);
+
+            var uts = utxos.Where(u => (u.Txid == txid && u.Index == indx)); // you can have multiple utxos with same txid but different amount of tokens
+            if (uts == null)
+                return (false, null);
+
+            foreach (var ut in uts)
+                if (ut.Blockheight > 0 && ut.Tokens != null && ut.Tokens.Count > 0)
+                {
+                    var toks = ut.Tokens.ToArray();
+                    if (toks[0].TokenId == tokenId && toks[0].Amount == 1)
+                    {
+                        var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                        if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
+                            return (true, ut);
+                    }
+                }
+
+            return (false, null);
+        }
+
+        /// <summary>
         /// Find utxo which can be used for minting. It means it has token amount > 1
         /// </summary>
         /// <param name="addr">address which has utxos</param>
@@ -3060,13 +3119,13 @@ namespace VEDriversLite
             {
                 try
                 {
-                    if (//h.Address != "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA" &&
-                        //h.Address != "NeNE6a2YQCq4yBLoVbVpcCzx44jVEBLaUE" &&
-                        //h.Address != "NikErRpjtRXpryFRc3RkP5nxRzm1ApxFH8" &&
-                        //h.Address != "NWHozNL3B85PcTXhipmFoBMbfonyrS9WiR" &&
-                        //h.Address != "NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7" &&
-                        //h.Address != "NST3h9Z2CMuHHgea5ewy1berTNMhUdXJya" &&
-                        //h.Address != "NidaStEf81XCmWKuJ6G6fvsFSpvh3TgceD" &&
+                    if (h.Address != "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA" &&
+                        h.Address != "NeNE6a2YQCq4yBLoVbVpcCzx44jVEBLaUE" &&
+                        h.Address != "NikErRpjtRXpryFRc3RkP5nxRzm1ApxFH8" &&
+                        h.Address != "NWHozNL3B85PcTXhipmFoBMbfonyrS9WiR" &&
+                        h.Address != "NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7" &&
+                        h.Address != "NST3h9Z2CMuHHgea5ewy1berTNMhUdXJya" &&
+                        h.Address != "NidaStEf81XCmWKuJ6G6fvsFSpvh3TgceD" &&
                         h.Address != "NZREfode8XxDHndeoLGEeQKhsfvjWfHXUU")
                     {
                         var shadd = h.Address.Substring(0, 3) + "..." + h.Address.Substring(h.Address.Length - 3);

@@ -33,6 +33,11 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <VENFTApp_Blazor.Components.HelpButton PageSection="mint" />
+                </div>
+            </div>
+            <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     <p>With Address:</p>
                 </div>
@@ -105,12 +110,12 @@
                             {
                                 <RadioGroup @bind-Value="@tokenId" OnChange="nftSourceTokensChangedHandler" TValue="string">
                                     @foreach (var t in SelectedAccountTokenSupply)
+                                    {
+                                        if (t.Value.Amount > 1 && NFTHelpers.AllowedTokens.Contains(t.Value.TokenId))
                                         {
-                                            if (t.Value.Amount > 1 && NFTHelpers.AllowedTokens.Contains(t.Value.TokenId))
-                                            {
                                             <Radio Value="t.Value.TokenId"><img style="width: 25px;margin-right: 10px;" src="@t.Value.ImageUrl" /> @t.Value.TokenSymbol - @t.Value.Amount</Radio>
-                                            }
                                         }
+                                    }
                                 </RadioGroup>
                             }
                             else if (SelectedAccountTotalSourceVENFT <= 1 || SelectedAccountTotalSourceCORZT <= 1)

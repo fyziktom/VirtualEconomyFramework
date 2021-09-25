@@ -15,7 +15,12 @@
             <Spin Tip="@state" Spinning="@unlockingAccount">
                 <div class="row">
                     <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Please Input password</span>
+                        <span>Please Input password to unlock existing account</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <span>Shorten Address of the Account is: @NeblioTransactionHelpers.ShortenAddress(address)</span>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
@@ -36,7 +41,7 @@
                             <small>Click @(100-removeAccountCounter) more and you can delete existing account!</small>
                         </div>
                     </div>
-               }
+                }
 
                 @if (unlockOrClearCashMessage)
                 {
@@ -121,6 +126,25 @@
     private System.Threading.Timer txDeleteAccount;
     string state = "Unlocking Account...";
     int removeAccountCounter = 0;
+
+    protected override Task OnInitializedAsync()
+    {
+        LoadAddress();
+        return base.OnInitializedAsync();
+    }
+
+    private async Task LoadAddress()
+    {
+        try
+        {
+            address = await localStorage.GetItemAsync<string>("address");
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Cannot load the address!" + e.Message);
+        }
+    }
 
     private void RemoveExistingAccountOk(MouseEventArgs e)
     {
@@ -222,7 +246,9 @@
 
             var pass = unlockPassword;
 
-            address = await localStorage.GetItemAsync<string>("address");
+            if (string.IsNullOrEmpty(address))
+                address = await localStorage.GetItemAsync<string>("address");
+
             key = await localStorage.GetItemAsync<string>("key");
 
             await Task.Delay(50);

@@ -167,6 +167,7 @@ namespace VEDriversLite.NFT
 
                 var byteArray = Encoding.ASCII.GetBytes(IpfsHostUserName + ":" + IpfsHostPassword);
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                httpClient.DefaultRequestHeaders.Add("mode", "no-cors");
             }
 
             return c;
@@ -183,8 +184,8 @@ namespace VEDriversLite.NFT
                 var link = string.Empty;
                 var ipfsClient = CreateIpfsClient("https://ipfs.infura.io:5001", InfuraKey, InfuraSecret);
                 ipfsClient.UserAgent = "VEFramework";
-                //var reslink = await ipfsClient.FileSystem.AddAsync(stream, fileName);
-                var reslink = await ipfs.FileSystem.AddAsync(stream, fileName);
+                var reslink = await ipfsClient.FileSystem.AddAsync(stream, fileName);
+                //var reslink = await ipfs.FileSystem.AddAsync(stream, fileName);
 
                 if (reslink != null)
                 {
@@ -1095,7 +1096,7 @@ namespace VEDriversLite.NFT
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, ekey, nft.Price, nutxos, fee);
+                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, ekey, nft.Price, nutxos, null, 0, fee);
                 if (rtxid != null)
                     return rtxid;
                 else
@@ -1133,10 +1134,11 @@ namespace VEDriversLite.NFT
                 ReceiverAddress = nft.Sender
             };
             var fee = CalculateFee(metadata);
+            
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, ekey, nft.Price, nutxos, fee);
+                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(dto, ekey, nft.Price, nutxos, nft.Utxo, (int)nft.UtxoIndex, fee);
                 if (rtxid != null)
                     return rtxid;
                 else

@@ -239,7 +239,7 @@ namespace VEDriversLite
             NewEventInfo?.Invoke(this,
                         await EventFactory.GetEvent(EventType.Info,
                                                     title,
-                                                    $"Successfull send. Please wait a while for enough confirmations.",
+                                                    $"Successful send. Please wait a while for enough confirmations.",
                                                     Address,
                                                     txid,
                                                     100));
@@ -1894,10 +1894,14 @@ namespace VEDriversLite
         {
             try
             {
-                ReceivedPayments.Clear();
-                var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
-                foreach (var p in pnfts)
-                    ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+                lock (_lock)
+                {
+                    ReceivedPayments.Clear();
+                    var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+
+                    foreach (var p in pnfts)
+                        ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+                }
             }
             catch (Exception ex)
             {
@@ -1923,7 +1927,7 @@ namespace VEDriversLite
                 {
                     foreach (var p in pnfts)
                     {
-                        if (!((PaymentNFT)p).AlreadySoldItem)
+                        if (!((PaymentNFT)p).AlreadySoldItem && !((PaymentNFT)p).Returned)
                         {
                             var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(p.Utxo);
                             if (txinfo != null && txinfo.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
@@ -1949,12 +1953,13 @@ namespace VEDriversLite
                                             {
                                                 var rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
                                                 Console.WriteLine($"NFT sent to the buyer {((PaymentNFT)p).Sender} with txid: {rtxid}");
-                                                //await Task.Delay(500);
-                                                //await ReLoadNFTs();
+                                                await Task.Delay(1000);
+                                                await ReLoadNFTs();
+                                                await RefreshAddressReceivedPayments();
                                             }
                                             else
                                             {
-                                                Console.WriteLine("You do not have spendable utxo for the fee.");
+                                                Console.WriteLine("You do not have spendable utxo for the fee or NFT is not spendable yet.");
                                             }
                                         }
                                         catch (Exception ex)
@@ -1982,6 +1987,7 @@ namespace VEDriversLite
                                             Console.WriteLine($" NFT Payment {p.Name} was marked as already sold. Please inform sender about it and return payment.");
                                             Console.WriteLine($" NFT Payment processed in txid: {res.Item2}");
                                             Console.WriteLine(res);
+                                            await Task.Delay(1000);
                                             await ReLoadNFTs();
                                             await RefreshAddressReceivedPayments();
                                         }
@@ -2139,7 +2145,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(amount);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
                 return (false, res.Item1);
             }
 
@@ -2189,7 +2195,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(amount);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
                 return (false, res.Item1);
             }
 
@@ -2253,7 +2259,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(totalAmount + 0.0002);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
                 return (false, res.Item1);
             }
 
@@ -2295,13 +2301,13 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
             var tres = await CheckSpendableNeblioTokens(tokenId, amount);
             if (tres.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable token inputs");
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable token inputs");
                 return (false, tres.Item1);
             }
 
@@ -2368,13 +2374,13 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
             var tres = await CheckSpendableNeblioTokens(tokenId, totalAmount);
             if (tres.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable token inputs");
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable token inputs");
                 return (false, tres.Item1);
             }
 
@@ -2417,13 +2423,13 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
             var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 3);
             if (tres.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs. You need 3 tokens as minimum input.");
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs. You need 3 tokens as minimum input.");
                 return (false, tres.Item1);
             }
 
@@ -2469,13 +2475,13 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
             var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 2 + coppies);
             if (tres.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs");
                 return (false, tres.Item1);
             }
 
@@ -2508,13 +2514,13 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null || res.Item2.Count == 0)
             {
-                //await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                //await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, (null, null));
             }
             var tres = await CheckSpendableNeblioTokens(tokenId, 3 + coppies);
             if (tres.Item2 == null || tres.Item2.Count == 0)
             {
-                //await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs. You need 3 tokens as minimum input.");
+                //await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs. You need 3 tokens as minimum input.");
                 return (false, (null, null));
             }
             return (true, (res.Item2, tres.Item2));
@@ -2681,7 +2687,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -2727,7 +2733,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -2775,7 +2781,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -2822,14 +2828,14 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
             var tres = await CheckSpendableNeblioTokens(MessagingTokensId, 3);
             if (tres.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable Token inputs");
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs");
                 return (false, tres.Item1);
             }
 
@@ -2878,7 +2884,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -2933,7 +2939,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -2980,7 +2986,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
@@ -3023,12 +3029,13 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
             try
             {
+                NFT.Returned = true;
                 var rtxid = await NFTHelpers.ReturnNFTPayment(Address, AccountKey, NFT, res.Item2);
 
                 if (rtxid != null)
@@ -3066,13 +3073,13 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(neblioAmount);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
             var tres = await CheckSpendableNeblioTokens(tokenId, (int)tokenAmount);
             if (tres.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(tres.Item1, "Not enought spendable token inputs");
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable token inputs");
                 return (false, tres.Item1);
             }
 
@@ -3134,7 +3141,7 @@ namespace VEDriversLite
             var res = await CheckSpendableNeblio(0.001);
             if (res.Item2 == null)
             {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enought spendable Neblio inputs");
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 

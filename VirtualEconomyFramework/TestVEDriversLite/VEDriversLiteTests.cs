@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -185,8 +185,9 @@ namespace TestVEDriversLite
                 throw new Exception("Please input pass,filename");
             var pass = split[0];
             var file = split[1];
-            await account.LoadAccountFromVENFTBackup(pass, file);
-            StartRefreshingData(null);
+            await account.LoadAccountFromVENFTBackup(pass,filename: file, awaitFirstLoad:true);
+
+            //StartRefreshingData(null);
         }
 
         [TestEntry]
@@ -904,6 +905,32 @@ namespace TestVEDriversLite
             Console.WriteLine("Receiver");
             var receiver = split[2];
             var res = await account.SendNFTPayment(receiver, nft);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void ReturnNFTPayment(string param)
+        {
+            ReturnNFTPaymentAsync(param);
+        }
+        public static async Task ReturnNFTPaymentAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input utxo, utxoindex");
+
+            Console.WriteLine("Input NFT Utxo: ");
+            var nftutxo = split[0];
+            Console.WriteLine("Input NFT Utxo Index: ");
+            var nftutxoindex = Convert.ToInt32(split[1]);
+            // load existing NFT object and wait for whole data synchronisation. NFT must have written price!
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, nftutxoindex, 0, true);
+            if (nft == null)
+                throw new Exception("NFT does not exists!");
+            // send NFT to receiver
+            Console.WriteLine("Receiver: " + (nft as PaymentNFT).Sender);
+            var res = await account.ReturnNFTPayment((nft as PaymentNFT).Sender, nft as PaymentNFT);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }

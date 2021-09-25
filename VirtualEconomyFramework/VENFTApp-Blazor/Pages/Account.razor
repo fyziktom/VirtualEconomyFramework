@@ -18,6 +18,12 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <VENFTApp_Blazor.Components.HelpButton PageSection="account" />
+        </div>
+    </div>
+
     <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
 
     <div class="row" style="margin-top:10px;">
@@ -154,7 +160,7 @@
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@backupData" />
-                        
+
                         <VENFTApp_Blazor.Components.SaveTextAsFile MarginLeft="10" TextToSave="@backupData" FileName="@filename" />
                     </div>
                 </div>

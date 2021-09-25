@@ -13,12 +13,18 @@
 <Spin Tip="Loading Browser..." Spinning="@loadingBrowser">
     <div class="container-fluid overflow-auto">
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <h3>NFT Browser</h3>
             </div>
         </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <VENFTApp_Blazor.Components.HelpButton PageSection="peoplenfts" />
+            </div>
+        </div>
+        
         <div class="row" style="margin-top:10px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
             </div>
         </div>

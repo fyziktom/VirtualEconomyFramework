@@ -7,12 +7,12 @@
         <table style="min-width:250px;">
             <thead>
                 <tr>
+                    <th style="min-width:60px;">Status</th>
                     <th style="min-width:60px;">Sender</th>
                     <th style="min-width:60px;">NFT</th>
                     <th style="min-width:60px;">Price</th>
-                    <th style="min-width:60px;">Status</th>
                     <th style="min-width:60px;">Details</th>
-                    <th style="min-width:60px;">Delete</th>
+                    <th style="min-width:60px;">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -25,6 +25,40 @@
                             var pnft = new PaymentNFT(p.Utxo);
                             pnft.Fill(p).Wait();
                             <tr style="margin-top:10px;">
+                                <td style="min-width:60px;">
+                                    <div class="row" style="margin-top:5px;">
+                                        <div class="col">
+                                            <div class="row" style="margin-top:5px;">
+                                                <div class="col">
+                                                    @if (pnft.Sender != AppData.Account.Address)
+                                                    {
+                                                        <span class="badge badge-success">Received</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-danger">Returned</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top:5px;">
+                                                <div class="col">
+                                                    @if (pnft.Sender != AppData.Account.Address && pnft.AlreadySoldItem)
+                                                    {
+                                                        <span class="badge badge-warning">Already Sold</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        @if (!pnft.Returned)
+                                                        {
+                                                        <span class="badge badge-primary">Processing</span>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
                                 <td style="min-width:60px;"><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioTransactionHelpers.ShortenAddress(pnft.Sender)</a></td>
                                 @if (!string.IsNullOrEmpty(pnft.ImageLink))
                                 {
@@ -35,24 +69,28 @@
                                 else
                                 {
                                     <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">
-                                            <i class="oi oi-musical-note"></i>
+                                        <i class="oi oi-musical-note"></i>
                                     </td>
                                 }
                                 <td style="min-width:60px;">@pnft.Price NEBL</td>
-                                @if (pnft.AlreadySoldItem)
-                                {
-                                    <td style="min-width:60px;">Already Sold Item <ReturnNFTPayment NFT="@pnft" OwnNFT="true" Price="@pnft.Price" Utxo="@pnft.Utxo" UtxoIndex="@pnft.UtxoIndex" /></td>
-                                }
-                                else
-                                {
-                                    <td style="min-width:60px;">Can Process</td>
-                                }
+
                                 <td class="text-center" style="min-width: 60px; margin-left: 5px;"><a href="https://explorer.nebl.io/tx/@pnft.Utxo" target="_blank"><i class="oi oi-info"></i></a></td>
                                 @if (pnft.AlreadySoldItem)
                                 {
-                                <td @onclick="() => deletePaymentNFT(pnft)" style="margin-left:10px;min-width:60px;">
-                                    <i class="oi oi-trash"></i>
-                                </td>
+
+                                    <td style="margin-left:10px;min-width:60px;">
+                                        <div class="row">
+                                            @if (!pnft.Returned)
+                                            {
+                                            <div class="col">
+                                                <ReturnNFTPayment NFT="@pnft" OwnNFT="true" Price="@pnft.Price" Utxo="@pnft.Utxo" UtxoIndex="@pnft.UtxoIndex" />
+                                            </div>
+                                            }
+                                            <div class="col">
+                                                <i class="oi oi-trash" @onclick="() => deletePaymentNFT(pnft)"></i>
+                                            </div>
+                                        </div>
+                                    </td>
                                 }
                             </tr>
                         }
@@ -81,6 +119,36 @@
                                 var pnft = new PaymentNFT(p.Utxo);
                                 pnft.Fill(p).Wait();
                                 <tr style="margin-top:10px;">
+                                    <td style="min-width:60px;">
+                                        <div class="row" style="margin-top:5px;">
+                                            <div class="col">
+                                                <div class="row" style="margin-top:5px;">
+                                                    <div class="col">
+                                                        @if (pnft.Sender != AppData.Account.Address)
+                                                        {
+                                                            <span class="badge badge-success">Received</span>
+                                                        }
+                                                        @if (pnft.Returned) 
+                                                        {
+                                                            <span class="badge badge-danger">Returned</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:5px;">
+                                                    <div class="col">
+                                                        @if (pnft.Sender != AppData.Account.Address && pnft.AlreadySoldItem)
+                                                        {
+                                                            <span class="badge badge-warning">Already Sold</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge badge-primary">Processing</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioTransactionHelpers.ShortenAddress(pnft.Sender)</a></td>
                                     @if (!string.IsNullOrEmpty(pnft.ImageLink))
                                     {
@@ -91,24 +159,24 @@
                                     else
                                     {
                                         <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">
-                                                <i class="oi oi-musical-note"></i>
+                                            <i class="oi oi-musical-note"></i>
                                         </td>
                                     }
                                     <td>@pnft.Price NEBL</td>
-                                    @if (pnft.AlreadySoldItem)
-                                    {
-                                        <td>Already Sold Item <ReturnNFTPayment NFT="@pnft" OwnNFT="true" Price="@pnft.Price" Utxo="@pnft.Utxo" UtxoIndex="@pnft.UtxoIndex" /></td>
-                                    }
-                                    else
-                                    {
-                                        <td>Will Process</td>
-                                    }
+                                    
                                     <td class="text-center" style="margin-left:5px;"><a href="https://explorer.nebl.io/tx/@pnft.Utxo" target="_blank"><i class="oi oi-info"></i></a></td>
                                     @if (pnft.AlreadySoldItem)
                                     {
-                                    <td @onclick="() => deletePaymentNFT(pnft)" style="margin-left:10px;min-width:60px;">
-                                        <i class="oi oi-trash"></i>
-                                    </td>
+                                        <td style="margin-left:10px;min-width:60px;">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <ReturnNFTPayment NFT="@pnft" OwnNFT="true" Price="@pnft.Price" Utxo="@pnft.Utxo" UtxoIndex="@pnft.UtxoIndex" />
+                                                </div>
+                                                <div class="col">
+                                                    <i class="oi oi-trash" @onclick="() => deletePaymentNFT(pnft)"></i>
+                                                </div>
+                                            </div>
+                                        </td>
                                     }
                                 </tr>
                             }

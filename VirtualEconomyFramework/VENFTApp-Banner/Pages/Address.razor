@@ -14,7 +14,7 @@
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <h5>@address</h5>
+                    <h6>@address</h6>
                 </div>
             </div>
             @if (tab != null)
@@ -101,11 +101,6 @@
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
                     @if (tab.NFTs.Count == 0)
                     {
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col">
-                                <p>No NFTs loaded.</p>
-                            </div>
-                        </div>
                         <div class="row" style="margin-top:10px;">
                             <div class="col">
                                 <h5>@loadingStatus</h5>

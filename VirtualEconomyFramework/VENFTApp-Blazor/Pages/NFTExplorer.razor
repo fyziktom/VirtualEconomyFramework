@@ -15,7 +15,11 @@
     <Spin Tip="Loading NFT Explorer..." Spinning="@loadingBrowser">
         <div class="row h-100 w-100">
             <div class="col h-100 w-100">
-
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.HelpButton PageSection="yournfts" />
+                    </div>
+                </div>
                 <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
 
                 <!--<VENFTApp_Blazor.Components.MessageList Address="AppData.Account.Address"/>-->
@@ -72,7 +76,7 @@
                                                         <h5 class="text-center">Received NFT Payments</h5>
                                                     </div>
                                                     <div class="card-body d-flex justify-content-center align-items-center" style="min-height:150px; padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
-                                                        <VENFTApp_Blazor.Components.PaymentsList Address="@mt.Address" MainAccount="false" SubAccount="true"/>
+                                                        <VENFTApp_Blazor.Components.PaymentsList Address="@mt.Address" MainAccount="false" SubAccount="true" />
                                                     </div>
                                                 </div>
                                             </div>
