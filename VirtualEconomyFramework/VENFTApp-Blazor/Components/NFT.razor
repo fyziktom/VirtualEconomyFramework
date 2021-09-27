@@ -522,10 +522,19 @@
         {
             if (OwnNFT)
             {
-                if (AppData.Account.ReceivedPayments.TryGetValue(utxo, out var mnft))
-                    if ((mnft as PaymentNFT).NFTUtxoIndex == nft.UtxoIndex)
-                        return true;
-
+                if (!SubAccount)
+                {
+                    if (AppData.Account.ReceivedPayments.TryGetValue(utxo, out var mnft))
+                        if ((mnft as PaymentNFT).NFTUtxoIndex == nft.UtxoIndex)
+                            return true;
+                }
+                else
+                {
+                    if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                        if (sa.ReceivedPayments.TryGetValue(utxo, out var mnft))
+                            if ((mnft as PaymentNFT).NFTUtxoIndex == nft.UtxoIndex)
+                                return true;
+                }
             }
             else
             {

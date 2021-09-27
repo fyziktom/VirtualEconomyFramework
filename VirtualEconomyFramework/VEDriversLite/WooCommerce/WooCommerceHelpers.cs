@@ -143,7 +143,7 @@ namespace VEDriversLite.WooCommerce
             try
             {
                 //if (string.IsNullOrEmpty(jwt)) return false;
-                    //throw new Exception("Please obtain JWT token first. It is important for upload of images to the eshop. ");
+                //throw new Exception("Please obtain JWT token first. It is important for upload of images to the eshop. ");
                 if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(secret))
                 {
                     VEDLDataContext.WooCommerceStoreUrl = apiurl;
@@ -151,39 +151,39 @@ namespace VEDriversLite.WooCommerce
                     VEDLDataContext.WooCommerceStoreSecret = secret;
                     VEDLDataContext.WooCommerceStoreJWTToken = jwt;
 
+                    httpClient.Timeout = new TimeSpan(0, 0, 0, 0, 500);
                     var res = await httpClient.GetAsync(GetFullAPIUrl(""));
-                    var resmsg = await res.Content.ReadAsStringAsync();
-                    if (res.StatusCode == HttpStatusCode.OK)
+                    if (res != null)
                     {
-                        if (!string.IsNullOrEmpty(jwt))
+                        var resmsg = await res.Content.ReadAsStringAsync();
+                        if (res.StatusCode == HttpStatusCode.OK)
                         {
-                            var apir = await InitWPAPI(apiurl, jwt);
-                            if (!apir.Item1)
+                            if (!string.IsNullOrEmpty(jwt))
                             {
-                                Console.WriteLine("Saved JWT Token is not correct.");
-                                return false;
+                                var apir = await InitWPAPI(apiurl, jwt);
+                                if (!apir.Item1)
+                                {
+                                    Console.WriteLine("Saved JWT Token is not correct.");
+                                    return false;
+                                }
                             }
-                        }
-                        //Console.WriteLine(resmsg);
-                        IsInitialized = true;
+                            //Console.WriteLine(resmsg);
+                            IsInitialized = true;
 
-                        Shop = new WooCommerceShop(apiurl, apikey, secret, VEDLDataContext.WooCommerceStoreJWTToken, VEDLDataContext.AllowDispatchNFTOrders);
-                        if (withRefreshing) await Shop.StartRefreshingData();
-                        return true;
-                    }
-                    else
-                    {
-                        Console.WriteLine(resmsg);
-                        IsInitialized = false;
-                        return false;
+                            Shop = new WooCommerceShop(apiurl, apikey, secret, VEDLDataContext.WooCommerceStoreJWTToken, VEDLDataContext.AllowDispatchNFTOrders);
+                            if (withRefreshing) await Shop.StartRefreshingData();
+                            return true;
+                        }
+                        else
+                        {
+                            Console.WriteLine(resmsg);
+                        }
                     }
                 }
-                else
-                {
-                    return false;
-                }
+                IsInitialized = false;
+                return false;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Cannot init WooCommerce store API connection. " + ex.Message);
                 return false;

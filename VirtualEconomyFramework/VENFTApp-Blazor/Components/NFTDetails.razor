@@ -756,12 +756,11 @@
         if (NFT == null)
             return;
 
-        await NFT.StartRefreshingTxData();
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
+        await NFT.StartRefreshingTxData();
         loading = false;
         StateHasChanged();
     }
-
 
     private async Task ShowEvent(MouseEventArgs e)
     {

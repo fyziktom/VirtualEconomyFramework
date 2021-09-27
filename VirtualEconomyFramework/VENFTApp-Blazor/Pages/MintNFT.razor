@@ -177,7 +177,7 @@
                                         {
                                             <VENFTApp_Blazor.Components.CoruzantNFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
                                         }
-                                        else if (nft.Type != NFTTypes.Message && nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings")
+                                        else if (nft.Type != NFTTypes.Message && nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Receipt)
                                         {
                                             <VENFTApp_Blazor.Components.NFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
                                         }
@@ -319,7 +319,6 @@
             }
             else
             {
-                InitWooCom();
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
                 selectedAccountAddress = AppData.Account.Address;
@@ -334,22 +333,6 @@
         return base.OnInitializedAsync();
     }
 
-    private async Task InitWooCom()
-    {
-        if (!WooCommerceHelpers.IsInitialized)
-        {
-            var apiurl = await localStorage.GetItemAsync<string>("woocom-apiurl");
-            if (apiurl == null) apiurl = string.Empty;
-            var apikey = await localStorage.GetItemAsync<string>("woocom-apikey");
-            if (apikey == null) apikey = string.Empty;
-            var apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
-            if (apisecret == null) apisecret = string.Empty;
-            var jwt = await localStorage.GetItemAsync<string>("woocom-apisecret");
-            if (jwt == null) jwt = string.Empty;
-            await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt);
-        }
-    }
-
     private async Task Redirect()
     {
         AppData.Account = new NeblioAccount();
@@ -359,7 +342,9 @@
 
     private async Task selectSubAddress(string address)
     {
+        //await AppData.Account.StopSubAccountAutorefreshing(selectedAccountAddress);
         selectedAccountAddress = address;
+        //await AppData.Account.AllowSubAccountAutorefreshing(address);
         selectedToken = new TokenSupplyDto();
         tokenId = NFTHelpers.TokenId;
         mainAccountSelected = false;
@@ -368,11 +353,12 @@
     }
     private async Task selectMainAccount(MouseEventArgs e)
     {
+        //await AppData.Account.StopSubAccountAutorefreshing(selectedAccountAddress);
         selectedAccountAddress = AppData.Account.Address;
         selectedToken = new TokenSupplyDto();
         tokenId = NFTHelpers.TokenId;
         mainAccountSelected = true;
-        subAccount = true;
+        subAccount = false;
         StateHasChanged();
     }
 

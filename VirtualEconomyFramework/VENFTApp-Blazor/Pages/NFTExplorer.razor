@@ -229,19 +229,22 @@
             }
         }
 
-        await ReloadProducsts();
-        productInWooReloadTimer = new System.Threading.Timer(async (object stateInfo) =>
+        if (WooCommerceHelpers.IsInitialized)
         {
-            try
+            await ReloadProducsts();
+            productInWooReloadTimer = new System.Threading.Timer(async (object stateInfo) =>
             {
-                await ReloadProducsts();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot reload woo commerce product list. " + ex.Message);
-            }
+                try
+                {
+                    await ReloadProducsts();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot reload woo commerce product list. " + ex.Message);
+                }
 
-        }, new System.Threading.AutoResetEvent(false), 10000, 10000);
+            }, new System.Threading.AutoResetEvent(false), 10000, 10000);
+        }
     }
 
     private async Task ReloadProducsts()
@@ -301,8 +304,7 @@
                 {
                     var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
                     if (!string.IsNullOrEmpty(subAccounts))
-                        if (AppData.Account.SubAccounts.Count == 0)
-                            await AppData.Account.LoadSubAccounts(subAccounts);
+                        await AppData.Account.LoadSubAccounts(subAccounts);
                 }
                 catch (Exception ex)
                 {

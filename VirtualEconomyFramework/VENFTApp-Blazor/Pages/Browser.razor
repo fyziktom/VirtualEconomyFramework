@@ -281,13 +281,13 @@
 </Modal>
 
 @code {
-    bool sendMessageVisible = false;
-    bool openTabBrowser = false;
-    bool loadingBrowser = false;
-    bool browsePublicAddresses = false;
-    bool copyTextButtonCoppied = false;
-    int holdersPage = 0;
-    bool tabIsLoading = false;
+        bool sendMessageVisible = false;
+        bool openTabBrowser = false;
+        bool loadingBrowser = false;
+        bool browsePublicAddresses = false;
+        bool copyTextButtonCoppied = false;
+        int holdersPage = 0;
+        bool tabIsLoading = false;
 
     private string selectedNewTabFromBookmarkName = "Select From Bookmark";
 
@@ -325,8 +325,14 @@
                 LoadBookmarksAndState();
                 if (AppData.Account != null)
                 {
+                    AppData.Account.Refreshed -= RefreshedHandler;
                     AppData.Account.Refreshed += RefreshedHandler;
+                    AppData.Account.NFTsChanged -= NFTsRefreshedHandler;
                     AppData.Account.NFTsChanged += NFTsRefreshedHandler;
+                    AppData.Account.SubAccountNFTsChanged -= NFTsRefreshedHandler;
+                    AppData.Account.SubAccountNFTsChanged += NFTsRefreshedHandler;
+                    AppData.Account.TabNFTsChanged -= NFTsRefreshedHandler;
+                    AppData.Account.TabNFTsChanged += NFTsRefreshedHandler;
                 }
             }
         }
@@ -344,13 +350,17 @@
     }
     void NFTsRefreshedHandler(object sender, string e)
     {
-        var tab = AppData.Account.Tabs.Find(t => t.Address == addressInOpenTab);
-        if (tab != null)
+        if (addressInOpenTab != e)
         {
-            tabBookmark = tab.BookmarkFromAccount;
-            tabProfile = tab.Profile;
+            var tab = AppData.Account.Tabs.Find(t => t.Address == addressInOpenTab);
+            if (tab != null)
+            {
+                tabBookmark = tab.BookmarkFromAccount;
+                tabProfile = tab.Profile;
+            }
+
+            StateHasChanged();
         }
-        StateHasChanged();
     }
 
     private async Task browseTabs(MouseEventArgs e)
@@ -450,7 +460,8 @@
                     if (AppData.Account.Tabs.Count == 0)
                     {
                         var tb = await AppData.Account.LoadTabs(browserTabs);
-                        await selectTab(tb);
+                        if (!string.IsNullOrEmpty(tb))
+                            await selectTab(tb);
                     }
                     else
                     {

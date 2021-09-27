@@ -169,7 +169,12 @@
     protected override async Task OnInitializedAsync()
     {
         if (AppData.Account != null)
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
             AppData.Account.Refreshed += RefreshedHandler;
+            AppData.Account.SubAccountNFTsChanged -= RefreshedNFTsHandler;
+            AppData.Account.SubAccountNFTsChanged += RefreshedNFTsHandler;
+        }
     }
 
     private bool confirmDestroyVisible = false;
@@ -201,6 +206,11 @@
     bool showNFTDetailsVisible = false;
 
     void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    void RefreshedNFTsHandler(object sender, string e)
     {
         StateHasChanged();
     }

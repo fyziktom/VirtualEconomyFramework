@@ -196,6 +196,7 @@
 
     private async Task refreshNFTs()
     {
+        /*
         if (Clear)
         {
             Clear = false;
@@ -222,6 +223,7 @@
             }
         }
         StateHasChanged();
+        */
     }
 
     [Parameter]
@@ -282,6 +284,11 @@
             AppData.Account.Refreshed += RefreshedHandler;
             AppData.Account.NFTsChanged -= RefreshedNFTsHandler;
             AppData.Account.NFTsChanged += RefreshedNFTsHandler;
+            AppData.Account.SubAccountNFTsChanged -= RefreshedNFTsHandler;
+            AppData.Account.SubAccountNFTsChanged += RefreshedNFTsHandler;
+            AppData.Account.TabNFTsChanged -= RefreshedNFTsHandler;
+            AppData.Account.TabNFTsChanged += RefreshedNFTsHandler;
+
             if (string.IsNullOrEmpty(_address))
             {
                 Address = AppData.Account.Address;
@@ -408,6 +415,8 @@
         {
             await AppData.Account.ReloadUtxos();
             await AppData.Account.ReLoadNFTs();
+            await AppData.Account.RefreshAddressReceivedPayments();
+            await AppData.Account.RefreshAddressReceivedReceipts();
         }
         else if (SubAccount)
         {
@@ -415,6 +424,8 @@
             {
                 await sacc.ReloadUtxos();
                 await sacc.ReLoadNFTs();
+                await sacc.RefreshAddressReceivedPayments();
+                await sacc.RefreshAddressReceivedReceipts();
             }
         }
         _NFTsList.Clear();

@@ -23,12 +23,12 @@
                                 <Menu>
                                     @foreach (var sa in AppData.Account.SubAccounts.Values)
                                     {
-                                        <MenuItem>
-                                            <span @onclick="() => selectNewTabAddressFromBookmark(sa.Address, sa.Name)">@sa.Name</span>
+                                        <MenuItem @onclick="() => selectNewTabAddressFromBookmark(sa.Address, sa.Name)">
+                                            <span>@sa.Name</span>
                                         </MenuItem>
                                     }
-                                    <MenuItem>
-                                        <span @onclick="() => selectNewTabAddressFromBookmark(AppData.Account.Address, null)">Main Account</span>
+                                    <MenuItem @onclick="() => selectNewTabAddressFromBookmark(AppData.Account.Address, null)">
+                                        <span>Main Account</span>
                                     </MenuItem>
                                 </Menu>
                             </Overlay>
@@ -93,16 +93,23 @@
     private async Task HandleOk(MouseEventArgs e)
     {
         confirmVisible = false;
-        await sendNFT(await NFTFactory.CloneNFT(NFT), false, 0.0002);
+        await sendNFT(NFT);
     }
 
     private async Task selectNewTabAddressFromBookmark(string address, string name)
     {
         receiverAddress = address;
+
         if (string.IsNullOrEmpty(name) && address == AppData.Account.Address)
             selectedSubAccountName = "Main Account";
         else if (!string.IsNullOrEmpty(name) && address != AppData.Account.Address)
             selectedSubAccountName = name;
+
+        var add = await AppData.Account.GetSubAccountAddressByName(name);
+        if (add.Item1)
+            receiverAddress = add.Item2;
+        Console.WriteLine("Selected account to move on the NFT: " + receiverAddress);
+        await Task.Delay(50);
         StateHasChanged();
     }
 
@@ -128,7 +135,7 @@
         SendNFTDialogVisibleChanged.InvokeAsync(SendNFTDialogVisible);
     }
 
-    private async Task sendNFT(INFT nft, bool priceWrite, double price)
+    private async Task sendNFT(INFT nft)
     {
         try
         {

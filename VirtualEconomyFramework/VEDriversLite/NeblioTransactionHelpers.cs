@@ -3104,15 +3104,27 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="tokenId">Token Id hash</param>
         /// <returns></returns>
-        public static async Task<List<TokenOwnerDto>> GetTokenOwners(string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
+        public static async Task<List<Holders>> GetTokenOwnersList(string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
         {
             var tokenholders = await GetClient().GetTokenHoldersAsync(tokenId);
 
-            var resp = new List<TokenOwnerDto>();
             var hd = tokenholders.Holders.ToList().OrderBy(h => (double)h.Amount).Reverse().ToList();
             hd.RemoveAt(0);
             hd.RemoveAt(0);
             hd.RemoveAt(0);
+
+            return hd;
+        }
+
+        /// <summary>
+        /// Return VENFT top owners. It eliminate some testing addresses.
+        /// </summary>
+        /// <param name="tokenId">Token Id hash</param>
+        /// <returns></returns>
+        public static async Task<List<TokenOwnerDto>> GetTokenOwners(string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
+        {
+            var resp = new List<TokenOwnerDto>();
+            var hd = await GetTokenOwnersList(tokenId);
 
             var i = 0;
             foreach (var h in hd)

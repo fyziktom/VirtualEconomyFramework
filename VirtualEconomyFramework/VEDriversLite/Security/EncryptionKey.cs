@@ -11,8 +11,8 @@ namespace VEDriversLite.Security
         public EncryptionKey(string key, string password = "", bool fromDb = false)
         {
             LoadNewKey(key, password, fromDb);
-            if (!string.IsNullOrEmpty(password))
-                LoadPassword(password);
+            //if (!string.IsNullOrEmpty(password))
+            //    LoadPassword(password);
 
             if (Id == Guid.Empty)
                 Id = Guid.NewGuid();
@@ -95,6 +95,10 @@ namespace VEDriversLite.Security
             {
                 _key = key;
                 IsEncrypted = false;
+                if (!string.IsNullOrEmpty(password))
+                    loadedPassword = string.Empty;
+                else
+                    loadedPassword = password;
                 passwordLoaded = true;
                 return true;
             }
@@ -110,6 +114,8 @@ namespace VEDriversLite.Security
         {
             loadedPassword = password;
             passwordLoaded = true;
+            if (!string.IsNullOrEmpty(password))
+                IsEncrypted = true;
             return true;
         }
     }
