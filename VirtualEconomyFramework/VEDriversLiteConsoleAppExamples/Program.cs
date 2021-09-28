@@ -138,17 +138,18 @@ namespace VEDriversLiteConsoleAppExamples
         }
         private static async Task<bool> InitAccount(string password, string ekey, string addr)
         {
-            return await account.LoadAccount(password, ekey, addr); // put here your password, encrypted key and address
+            return await account.LoadAccount(password, ekey, addr, awaitFirstLoad:true); // put here your password, encrypted key and address
         }
 
         private static async Task<bool> InitAccount(string password)
         {
-            return await account.LoadAccount(password); // put here your password
+            return await account.LoadAccount(password, awaitFirstLoad:true); // put here your password
         }
 
         private static async Task LoadAccountDetails()
         {
             Console.WriteLine("Account Details");
+            Console.WriteLine($"Account Address: {account.Address}");
             Console.WriteLine($"Account Total Balance: {account.TotalBalance} NEBL");
             Console.WriteLine($"Account Total Spendable Balance: {account.TotalSpendableBalance} NEBL");
             Console.WriteLine($"Account Total Unconfirmed Balance: {account.TotalUnconfirmedBalance} NEBL");
@@ -238,7 +239,7 @@ namespace VEDriversLiteConsoleAppExamples
                 nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmWTkVqaWn1ABZ1UMKL91pxxspzXW6yodJ9bjUn6nPLeHX";
 
             // send 10 VENFT to receiver with connected metadata
-            var res = await account.MintNFT(NFTHelpers.TokenId, nft);
+            var res = await account.MintNFT(nft);
 
             // or multimint with 5 coppies (mint 1 + 5);
             // var res = await account.MintMultiNFT(NFTHelpers.TokenId, nft, 5); 
@@ -251,7 +252,7 @@ namespace VEDriversLiteConsoleAppExamples
             Console.WriteLine("Fill input NFT Utxo: ");
             var nftutxo = Console.ReadLine();
             // load existing NFT object and wait for whole data synchronisation
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, true);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, 0, true);
             // send NFT to receiver
             if (nft == null)
                 throw new Exception("NFT does not exists!");
@@ -267,7 +268,7 @@ namespace VEDriversLiteConsoleAppExamples
             Console.WriteLine("Fill input NFT Utxo: ");
             var nftutxo = Console.ReadLine();
             // load existing NFT object and wait for whole data synchronisation
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, true);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, 0, true);
             if (nft == null)
                 throw new Exception("NFT does not exists!");
             // send NFT to receiver
@@ -281,7 +282,7 @@ namespace VEDriversLiteConsoleAppExamples
             Console.WriteLine("Fill input NFT Utxo: ");
             var nftutxo = Console.ReadLine();
             // load existing NFT object and wait for whole data synchronisation. NFT must have written price!
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, true);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, 0, true);
             if (nft == null)
                 throw new Exception("NFT does not exists!");
             // send NFT to receiver
@@ -355,7 +356,7 @@ namespace VEDriversLiteConsoleAppExamples
         {
             Console.WriteLine("Input NFT Tx Id Hash");
             var txid = Console.ReadLine();
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, txid, 0, true);
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, txid, 0, 0, true);
             // sign it with loaded account
             Console.WriteLine("Timestamp");
             Console.WriteLine(nft.Time);
