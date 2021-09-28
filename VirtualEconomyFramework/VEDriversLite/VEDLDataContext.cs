@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using VEDriversLite.Admin.Dto;
 using VEDriversLite.Dto;
+using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
 
 namespace VEDriversLite
@@ -16,7 +17,8 @@ namespace VEDriversLite
         public static List<string> PublicAddresses = new List<string>();
         public static ConcurrentDictionary<string, IAdminAction> AdminActionsRequests = new ConcurrentDictionary<string, IAdminAction>();
         public static ConcurrentDictionary<string, NFTHash> NFTHashs = new ConcurrentDictionary<string, NFTHash>();
-
+        public static ConcurrentDictionary<string, IDictionary<string,string>> NFTCache = new ConcurrentDictionary<string, IDictionary<string, string>>();
+        public static bool AllowCache { get; set; } = false;
         public static string WooCommerceStoreUrl { get; set; } = string.Empty;
         public static string WooCommerceStoreUrlWithCred => WooCommerceStoreUrl.Replace("https://", $"https://{WooCommerceStoreAPIKey}:{WooCommerceStoreSecret}@");
         public static string WooCommerceStoreAPIKey { get; set; } = string.Empty;

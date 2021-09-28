@@ -1,6 +1,9 @@
 ﻿@using VEDriversLite
+@using VEDriversLite.NFT
 @using VEDriversLite.NeblioAPI
 @using VEDriversLite.Security
+@using Newtonsoft.Json 
+@using Newtonsoft.Json.Linq
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 @inject NavigationManager NavManager
@@ -253,13 +256,28 @@
 
             await Task.Delay(50);
 
+            if (VEDLDataContext.AllowCache)
+            {
+                try
+                {
+                    var cch = await localStorage.GetItemAsync<IDictionary<string, IDictionary<string, string>>>("nftcache");
+                    var resload = await AppData.Account.LoadCacheNFTsFromString(cch);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot load data from cache." + ex.Message);
+                }
+            }
+
             await AppData.Account.LoadAccount(pass, key, address, awaitFirstLoad: true); // put here your password
+
             await Task.Delay(50);
             StateHasChanged();
             var kt = await AppData.Account.AccountKey.GetEncryptedKey();
             if (!string.IsNullOrEmpty(kt))
             {
                 state = "Loading Bookmarks...";
+                await Task.Delay(50);
                 StateHasChanged();
                 try
                 {
@@ -277,12 +295,31 @@
                 {
                     Console.WriteLine("Cannot load bookmarks!" + ex.Message);
                 }
-                await Task.Delay(50);
+
                 state = "Loading SubAccounts...";
+                await Task.Delay(50);
                 StateHasChanged();
+
                 await LoadSubAccounts();
-                await Task.Delay(100);
+                await Task.Delay(50);
+
+                if (VEDLDataContext.AllowCache)
+                {
+                    // save cached NFTs
+                    try
+                    {
+                        var nftcache = await AppData.Account.CacheNFTs();
+                        if (!string.IsNullOrEmpty(nftcache))
+                            await localStorage.SetItemAsync("nftcache", nftcache);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Cannot save data to cache." + ex.Message);
+                    }
+                }
+
                 state = "Unlocking Doge Account...";
+                await Task.Delay(50);
                 StateHasChanged();
                 await LoadDogeAccount();
 

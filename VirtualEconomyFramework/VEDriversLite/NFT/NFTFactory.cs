@@ -10,46 +10,11 @@ namespace VEDriversLite.NFT
 {
     public static class NFTFactory
     {
-        public static async Task<INFT> GetNFT(string tokenId, 
-                                              string utxo, 
-                                              int utxoindex = 0, 
-                                              double time = 0, 
-                                              bool wait = false, 
-                                              bool loadJustType = false, 
-                                              NFTTypes justType = NFTTypes.Image,
-                                              bool skipTheType = false,
-                                              NFTTypes skipType = NFTTypes.Image)
+        public static NFTTypes ParseNFTType(IDictionary<string,string> metadata)
         {
             NFTTypes type = NFTTypes.Image;
 
-            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
-            if (txinfo == null)
-                return null;
-            if (txinfo.Vout == null)
-                return null;
-            var tokid = tokenId;
-            try
-            {
-                var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0]?.TokenId;
-                tokid = tid;
-                if (string.IsNullOrEmpty(tokid))
-                {
-                    tokid = NFTHelpers.TokenId;
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-
-            var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokid, utxo);
-            
-            if (meta == null)
-                return null;
-            else if (meta.Count == 0 || meta.Count == 1)
-                return null;
-
-            if (meta.TryGetValue("Type", out var t))
+            if (metadata.TryGetValue("Type", out var t))
             {
                 if (!string.IsNullOrEmpty(t))
                 {
@@ -95,14 +60,86 @@ namespace VEDriversLite.NFT
                             type = NFTTypes.CoruzantProfile;
                             break;
                     }
+                    return type;
                 }
-                else
+            }
+
+            throw new Exception("Metadata does not contain NFT Type.");
+        }
+        public static async Task<INFT> GetNFT(string tokenId,
+                                              string utxo,
+                                              int utxoindex = 0,
+                                              double time = 0,
+                                              bool wait = false,
+                                              bool loadJustType = false,
+                                              NFTTypes justType = NFTTypes.Image,
+                                              bool skipTheType = false,
+                                              NFTTypes skipType = NFTTypes.Image,
+                                              string address = "")
+        {
+            NFTTypes type = NFTTypes.Image;
+            INFT nft = null;
+
+            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
+            if (txinfo == null)
+                return null;
+            if (txinfo.Vout == null)
+                return null;
+            var tokid = tokenId;
+            try
+            {
+                var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0]?.TokenId;
+                tokid = tid;
+                if (string.IsNullOrEmpty(tokid))
                 {
+                    tokid = NFTHelpers.TokenId;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+            if (VEDLDataContext.AllowCache)
+            {
+                // try to load it from cache
+                try
+                {
+                    if (VEDLDataContext.NFTCache.TryGetValue($"{utxo}:{utxoindex}", out var cachedMetadata))
+                    {
+                        nft = await GetNFTFromCacheMetadata(cachedMetadata, utxo, utxoindex, txinfo);
+                        if (nft != null)
+                            return nft;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot load NFT from cache. " + ex.Message);
                     return null;
                 }
             }
-            else
+
+            var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokid, utxo);
+
+            if (meta == null)
+                return null;
+            else if (meta.Count == 0 || meta.Count == 1)
+                return null;
+
+
+            try
             {
+                if (!meta.TryGetValue("NFT", out var nftt))
+                    return null;
+                else
+                    if (nftt != "true") return null;
+
+                type = ParseNFTType(meta);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Cannot load Type of NFT {utxo}. " + ex.Message);
+
                 if (meta.TryGetValue("SourceUtxo", out var sourceutxo))
                 {
                     type = NFTTypes.Image;
@@ -145,7 +182,6 @@ namespace VEDriversLite.NFT
             else
                 PriceActive = false;
 
-            INFT nft = null;
             switch (type)
             {
                 case NFTTypes.Image:
@@ -207,10 +243,10 @@ namespace VEDriversLite.NFT
                 case NFTTypes.Message:
                     nft = new MessageNFT(utxo);
                     nft.TxDetails = txinfo;
-                    if (wait)
-                        await (nft as MessageNFT).LoadLastData(meta);
-                    else
-                        (nft as MessageNFT).LoadLastData(meta);
+                    //if (wait)
+                    //    await (nft as MessageNFT).LoadLastData(meta);
+                    //else
+                    (nft as MessageNFT).LoadLastData(meta);
                     break;
                 case NFTTypes.Ticket:
                     nft = new TicketNFT(utxo);
@@ -255,6 +291,23 @@ namespace VEDriversLite.NFT
             nft.Time = Time;
             nft.TxDetails = txinfo;
             nft.UtxoIndex = utxoindex;
+
+            if (VEDLDataContext.AllowCache)
+            {
+                //if (nft.Type != NFTTypes.Message)
+                {
+                    try
+                    {
+                        var mtd = await nft.GetMetadata();
+                        if (!VEDLDataContext.NFTCache.TryGetValue($"{nft.Utxo}:{nft.UtxoIndex}", out var m))
+                            VEDLDataContext.NFTCache.TryAdd($"{nft.Utxo}:{nft.UtxoIndex}", mtd);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Cannot load NFT {utxo} of type {nft.TypeText} to NFTCache dictionary. " + ex.Message);
+                    }
+                }
+            }
 
             return nft;
         }
@@ -314,6 +367,108 @@ namespace VEDriversLite.NFT
             }
 
             return null;
+        }
+
+        public static async Task<INFT> GetNFTFromCacheMetadata(IDictionary<string,string> metadata, string utxo, int utxoindex, NeblioAPI.GetTransactionInfoResponse txinfo = null, bool asType = false, NFTTypes type = NFTTypes.Image)
+        {
+            if (!asType)
+            {
+                try
+                {
+                    type = ParseNFTType(metadata);
+                    //if (type == NFTTypes.Message)
+                        //return null;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Cannot load Type of NFT from cache. " + ex.Message);    
+                    return null;
+                }
+            }
+
+            if (utxoindex == 1 && metadata.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
+            {
+                if (!string.IsNullOrEmpty(rfp))
+                {
+                    type = NFTTypes.Receipt;
+                }
+            }
+
+            if (txinfo == null)
+            {
+                txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
+                if (txinfo == null)
+                    return null;
+                if (txinfo.Vout == null)
+                    return null;
+            }
+            var tokid = string.Empty;
+            try
+            {
+                var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0]?.TokenId;
+                tokid = tid;
+                if (string.IsNullOrEmpty(tokid))
+                {
+                    tokid = NFTHelpers.TokenId;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot parse token Id from NFT. " + ex.Message);
+                return null;
+            }
+
+            INFT nft = null;
+            switch (type)
+            {
+                case NFTTypes.Image:
+                    nft = new ImageNFT(utxo);
+                    break;
+                case NFTTypes.Profile:
+                    nft = new ProfileNFT(utxo);
+                    break;
+                case NFTTypes.Post:
+                    nft = new PostNFT(utxo);
+                    break;
+                case NFTTypes.Music:
+                    nft = new MusicNFT(utxo);
+                    break;
+                case NFTTypes.Payment:
+                    nft = new PaymentNFT(utxo);
+                    break;
+                case NFTTypes.Receipt:
+                    nft = new ReceiptNFT(utxo);
+                    break;
+                case NFTTypes.Message:
+                    nft = new MessageNFT(utxo);
+                    break;
+                case NFTTypes.Ticket:
+                    nft = new TicketNFT(utxo);
+                    break;
+                case NFTTypes.Event:
+                    nft = new EventNFT(utxo);
+                    break;
+                case NFTTypes.CoruzantArticle:
+                    nft = new CoruzantArticleNFT(utxo);
+                    break;
+                case NFTTypes.CoruzantProfile:
+                    nft = new CoruzantProfileNFT(utxo);
+                    break;
+            }
+
+            if (nft != null)
+            {
+                await nft.LoadLastData(metadata);
+                nft.Time = TimeHelpers.UnixTimestampToDateTime((double)txinfo.Blocktime);
+                nft.UtxoIndex = utxoindex;
+                nft.TxDetails = txinfo;
+                nft.TokenId = tokid;
+                return nft;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

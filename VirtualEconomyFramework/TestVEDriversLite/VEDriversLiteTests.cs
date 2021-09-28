@@ -1057,6 +1057,10 @@ namespace TestVEDriversLite
             Console.WriteLine("Input NFT Utxo Index: ");
             var nftutxoindex = Convert.ToInt32(split[1]);
             var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, txid, nftutxoindex, 0, true);
+            if (nft.Type == NFTTypes.Message && !account.IsLocked())
+            {
+                await (nft as MessageNFT).Decrypt(account.Secret);
+            }
             // sign it with loaded account
             Console.WriteLine("Name: ");
             Console.WriteLine(nft.Name);

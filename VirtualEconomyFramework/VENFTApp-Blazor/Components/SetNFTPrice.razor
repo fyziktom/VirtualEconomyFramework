@@ -11,7 +11,7 @@
         <div class="col">
             <Spin Tip="Sending..." Spinning="@sendingTransaction">
                 <div class="row" style="margin-top:20px;">
-                    
+
                     <div class="col d-flex justify-content-center align-items-center">
                         <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Neblio Price</span><br />
                     </div>
@@ -20,6 +20,12 @@
                         <input type="checkbox" onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
                     </div>-->
                 </div>
+                <div class="row" style="margin-top:5px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>Here you can setup the price. If you will leave it unchecked it will remove the Price from NFT.</small>
+                    </div>
+                </div>
+
                 @if (withPrice)
                 {
                 <div class="row">

@@ -32,15 +32,15 @@ namespace VEDriversLite.NFT
         }
 
 
-        private void ParseSpecific(IDictionary<string, string> meta)
+        public override void ParseSpecific(IDictionary<string, string> metadata)
         {
-            if (meta.TryGetValue("Surname", out var surname))
+            if (metadata.TryGetValue("Surname", out var surname))
                 Surname = surname;
-            if (meta.TryGetValue("Nickname", out var nickname))
+            if (metadata.TryGetValue("Nickname", out var nickname))
                 Nickname = nickname;
-            if (meta.TryGetValue("RelationshipStatus", out var relationshipStatus))
+            if (metadata.TryGetValue("RelationshipStatus", out var relationshipStatus))
                 RelationshipStatus = relationshipStatus;
-            if (meta.TryGetValue("Age", out var age))
+            if (metadata.TryGetValue("Age", out var age))
                 Age = Convert.ToInt32(age);
         }
 
@@ -74,19 +74,6 @@ namespace VEDriversLite.NFT
                 ParseSpecific(nftData.NFTMetadata);
             }
         }
-
-        public async Task LoadLastData(Dictionary<string,string> metadata)
-        {
-            if (metadata != null)
-            {
-                ParseCommon(metadata);
-
-                ParsePrice(metadata);
-
-                ParseSpecific(metadata);
-            }
-        }
-
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             var metadata = await GetCommonMetadata();

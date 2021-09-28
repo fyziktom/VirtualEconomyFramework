@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
 @using VEDriversLite.WooCommerce
 @using VEDriversLite.WooCommerce.Dto
 @inject AppData AppData
@@ -59,7 +60,7 @@
             </div>
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <Input Placeholder="Search NFTs by Name or Author" autocomplete="random" OnkeyUp="@searchNFTsEnter" MaxLength="100" @bind-Value=@_searchNFTsString @onfocusout="@searchNFTsChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    <Input Placeholder="Search NFTs by Name, Author or tags" autocomplete="random" OnkeyUp="@searchNFTsEnter" MaxLength="100" @bind-Value=@_searchNFTsString @onfocusout="@searchNFTsChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
                </div>
             </div>
 
@@ -74,7 +75,7 @@
                         <div class="card-group">
                             @foreach (var nft in NFTsList)
                             {
-                                if (nft.Author.ToLower().Contains(searchNFTsString) || nft.Name.ToLower().Contains(searchNFTsString))
+                                if (IsInFilter(nft))
                                 {
                                     var isInWoo = false;
                                     if (ProductsInTheShop.TryGetValue(nft.Utxo + ":" + nft.UtxoIndex.ToString(), out var product))
@@ -191,6 +192,54 @@
                 }
             }
             return new List<INFT>();
+        }
+    }
+
+    public bool IsInFilter(INFT nft)
+    {
+        if (!string.IsNullOrEmpty(searchNFTsString))
+        {
+            if (nft.Author.ToLower().Contains(searchNFTsString) || nft.Name.ToLower().Contains(searchNFTsString))
+            {
+                return true;
+            }
+            if (nft.Type == NFTTypes.CoruzantProfile)
+            {
+                if (((nft as CoruzantProfileNFT).Name.ToLower() + (nft as CoruzantProfileNFT).Surname.ToLower()).Contains(searchNFTsString))
+                {
+                    return true;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(nft.Tags))
+            {
+                if (nft.Tags.ToLower().Contains(searchNFTsString))
+                    return true;
+
+                var split = searchNFTsString.Split(' ');
+                if (split.Length > 1)
+                {
+                    var score = 0;
+                    nft.TagsList.ForEach(t =>
+                    {
+                        split.ForEach(s =>
+                        {
+                            if (t.ToLower().Contains(s.ToLower()))
+                                score++;
+                            else if (s.ToLower().Contains(t.ToLower()))
+                                score++;
+                        });
+                    });
+                    if (score > 0)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
@@ -329,14 +378,17 @@
 
     private async Task searchNFTsChanged(EventArgs e)
     {
-        if (!string.IsNullOrEmpty(_searchNFTsString))
-            searchNFTsString = _searchNFTsString;
-        else
+        if (searchNFTsString != _searchNFTsString)
         {
-            searchNFTsString = string.Empty;
-            _searchNFTsString = string.Empty;
+            if (!string.IsNullOrEmpty(_searchNFTsString))
+                searchNFTsString = _searchNFTsString;
+            else
+            {
+                searchNFTsString = string.Empty;
+                _searchNFTsString = string.Empty;
+            }
+            StateHasChanged();
         }
-        StateHasChanged();
     }
 
     public void searchNFTsEnter(KeyboardEventArgs e)

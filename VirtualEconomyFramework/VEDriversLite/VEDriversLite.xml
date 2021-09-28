@@ -3743,7 +3743,7 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendMessageNFT(System.String,System.String,System.String,System.String,System.Boolean)">
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendMessageNFT(System.String,System.String,System.String,System.String,System.Boolean,System.String,System.String,System.String)">
             <summary>
             Send NFT.
             </summary>

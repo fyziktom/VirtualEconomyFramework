@@ -59,13 +59,13 @@
 
     private async Task Load()
     {
-        StateHasChanged();
         NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, true);
-        var sender = await VEDriversLite.NeblioTransactionHelpers.GetTransactionSender(NFT.SourceTxId);
+        /*
+        var sender = await VEDriversLite.NeblioTransactionHelpers.GetTransactionSender(NFT.SourceTxId, NFT.TxDetails);
         if (sender == "NXSy3AoBkV39rBFmV15GUwFruQSMM4gPs6")
             isDogeft = true;
         else
-            isDogeft = false;
+            isDogeft = false;*/
         StateHasChanged();
     }
 }

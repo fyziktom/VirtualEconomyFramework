@@ -311,7 +311,7 @@
 
                         @if (AllowBuy)
                         {
-                        @if (!IsInThePayments(nft.Utxo) && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
+                        @if (!_isInThePayments && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
                         {
                             <div class="col d-flex w-auto" style="margin-left:15px;">
                                 <SendNFTPayment NFT="@nft" Utxo="@nft.Utxo" UtxoIndex="@nft.UtxoIndex" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
@@ -321,7 +321,7 @@
                     </div>
 
                     <div class="row d-flex justify-content-center align-items-center">
-                        @if (!IsInThePayments(nft.Utxo))
+                        @if (!_isInThePayments)
                         {
                             if (OwnNFT && nft.PriceActive)
                             {
@@ -349,6 +349,7 @@
            OnCancel="@CloseNFTDetails">
         <VENFTApp_Blazor.Components.NFTDetails UtxoIndex="@nft.UtxoIndex" 
                                                Utxo="@nftDetailsUtxo"
+                                               InputNFT="@nft"
                                                NFTSent="@NFTSentHandler" 
                                                OwnNFT="@OwnNFT"
                                                Address="@_address"
@@ -423,6 +424,7 @@
 }
 @code {
 
+    bool _isInThePayments = false;
     bool shareNFTVisible = false;
     string shareNFTUtxo = string.Empty;
     string shareBuyNFTUtxo = string.Empty;
@@ -458,6 +460,8 @@
     [Parameter]
     public EventCallback<(INFT,bool)> NFTCheckedChanged { get; set; }
 
+    private System.Threading.Timer isInPaymentsTimer;
+
     private INFT nft = new ImageNFT("");
     [Parameter]
     public INFT InputNFT
@@ -468,6 +472,7 @@
             if (value != null && value.Utxo != nft.Utxo)
             {
                 nft = value;
+                setTimer();
                 setBgColor();
                 StateHasChanged();
             }
@@ -484,7 +489,6 @@
             if (!string.IsNullOrEmpty(value))
             {
                 _address = value;
-                StateHasChanged();
             }
         }
     }
@@ -504,7 +508,6 @@
         NFTChecked = (bool)e;
         await setBgColor();
         await NFTCheckedChanged.InvokeAsync((nft, NFTChecked));
-        StateHasChanged();
     }
 
     private async Task setBgColor()
@@ -514,6 +517,34 @@
         else
             NFTCheckedBgColor = string.Empty;
         StateHasChanged();
+    }
+
+    private async Task setTimer()
+    {
+        if (isInPaymentsTimer != null)
+        {
+            isInPaymentsTimer.Dispose();
+            isInPaymentsTimer = null;
+        }
+        isInPaymentsTimer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(nft.Utxo))
+                {
+                    _isInThePayments = IsInThePayments(nft.Utxo);
+                }
+                else
+                {
+                    _isInThePayments = false;
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot read tx details. " + ex.Message);
+            }
+        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
     }
 
     private bool IsInThePayments(string utxo)
@@ -572,21 +603,17 @@
     private async Task ShowNFTDetails(string utxo)
     {
         nftDetailsUtxo = utxo;
-        StateHasChanged();
         nftDetailsVisible = true;
-        StateHasChanged();
     }
 
     public async Task OpenModalWithImage(string url)
     {
         modalWithImageVisible = true;
         modalWithImageLink = url;
-        StateHasChanged();
     }
 
     public async Task modalWithImageClose(MouseEventArgs e)
     {
         modalWithImageVisible = false;
-        StateHasChanged();
     }
 }

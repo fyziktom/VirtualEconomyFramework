@@ -59,27 +59,27 @@ namespace VEDriversLite.NFT
         public DateTime EventDate { get; set; } = DateTime.UtcNow;
         public ClassOfNFTEvent EventClass { get; set; } = ClassOfNFTEvent.PersonalEvent;
 
-        private void ParseSpecific(IDictionary<string,string> meta)
+        public override void ParseSpecific(IDictionary<string,string> metadata)
         {
-            if (meta.TryGetValue("EventId", out var ei))
+            if (metadata.TryGetValue("EventId", out var ei))
                 EventId = ei;
-            if (meta.TryGetValue("Used", out var used))
+            if (metadata.TryGetValue("Used", out var used))
             {
                 if (used == "true")
                     Used = true;
                 else
                     Used = false;
             }
-            if (meta.TryGetValue("MusicInLink", out var mil))
+            if (metadata.TryGetValue("MusicInLink", out var mil))
             {
                 if (mil == "true")
                     MusicInLink = true;
                 else
                     MusicInLink = false;
             }
-            if (meta.TryGetValue("Location", out var location))
+            if (metadata.TryGetValue("Location", out var location))
                 Location = location;
-            if (meta.TryGetValue("LocationC", out var loc))
+            if (metadata.TryGetValue("LocationC", out var loc))
             {
                 LocationCoordinates = loc;
                 var split = loc.Split(',');
@@ -96,11 +96,11 @@ namespace VEDriversLite.NFT
                     }
                 }
             }
-            if (meta.TryGetValue("VideoLink", out var video))
+            if (metadata.TryGetValue("VideoLink", out var video))
                 VideoLink = video;
-            if (meta.TryGetValue("AuthorLink", out var alink))
+            if (metadata.TryGetValue("AuthorLink", out var alink))
                 AuthorLink = alink;
-            if (meta.TryGetValue("EventDate", out var date))
+            if (metadata.TryGetValue("EventDate", out var date))
             {
                 try
                 {
@@ -111,7 +111,7 @@ namespace VEDriversLite.NFT
                     Console.WriteLine("Cannot parse NFT Ticket Event Date");
                 }
             }
-            if (meta.TryGetValue("EventClass", out var tc))
+            if (metadata.TryGetValue("EventClass", out var tc))
             {
                 try
                 {
@@ -122,7 +122,7 @@ namespace VEDriversLite.NFT
                     EventClass = ClassOfNFTEvent.PersonalEvent;
                 }
             }
-            if (meta.TryGetValue("PriceInDoge", out var priced))
+            if (metadata.TryGetValue("PriceInDoge", out var priced))
             {
                 if (!string.IsNullOrEmpty(priced))
                 {
@@ -159,6 +159,7 @@ namespace VEDriversLite.NFT
 
                 Used = nftData.Used;
                 MintAuthorAddress = await NeblioTransactionHelpers.GetTransactionSender(NFTOriginTxId);
+                IsLoaded = true;
             }
         }
 
@@ -175,30 +176,7 @@ namespace VEDriversLite.NFT
                 NFTOriginTxId = nftData.NFTOriginTxId;
 
                 ParseSpecific(nftData.NFTMetadata);
-            }
-        }
-
-        public async Task LoadLastData(Dictionary<string,string> metadata)
-        {
-            if (metadata != null)
-            {
-                ParseCommon(metadata);
-
-                if (metadata.TryGetValue("SourceUtxo", out var su))
-                {
-                    SourceTxId = Utxo;
-                    //if (string.IsNullOrEmpty(NFTOriginTxId))
-                        //NFTOriginTxId = su;
-                }
-                else
-                {
-                    SourceTxId = Utxo;
-                    //if (string.IsNullOrEmpty(NFTOriginTxId))
-                        //NFTOriginTxId = Utxo;
-                }
-
-                ParsePrice(metadata);
-                ParseSpecific(metadata);
+                IsLoaded = true;
             }
         }
 

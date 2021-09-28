@@ -37,17 +37,17 @@ namespace VEDriversLite.NFT.Coruzant
         public string LastCommentBy { get; set; } = string.Empty;
 
 
-        private void ParseSpecific(IDictionary<string, string> meta)
+        public override void ParseSpecific(IDictionary<string, string> metadata)
         {
-            if (meta.TryGetValue("AuthorProfileUtxo", out var pu))
+            if (metadata.TryGetValue("AuthorProfileUtxo", out var pu))
                 AuthorProfileUtxo = pu;
-            if (meta.TryGetValue("LastComment", out var lc))
+            if (metadata.TryGetValue("LastComment", out var lc))
                 LastComment = lc;
-            if (meta.TryGetValue("LastCommentBy", out var lcb))
+            if (metadata.TryGetValue("LastCommentBy", out var lcb))
                 LastCommentBy = lcb;
-            if (meta.TryGetValue("FullPostLink", out var fpl))
+            if (metadata.TryGetValue("FullPostLink", out var fpl))
                 FullPostLink = fpl;
-            if (meta.TryGetValue("PodcastLink", out var pdl))
+            if (metadata.TryGetValue("PodcastLink", out var pdl))
                 PodcastLink = pdl;
         }
 
@@ -58,23 +58,7 @@ namespace VEDriversLite.NFT.Coruzant
             {
                 ParseCommon(lastmetadata);
 
-                if (lastmetadata.TryGetValue("Price", out var price))
-                {
-                    if (!string.IsNullOrEmpty(price))
-                    {
-                        price = price.Replace(',', '.');
-                        Price = double.Parse(price, CultureInfo.InvariantCulture);
-                        PriceActive = true;
-                    }
-                    else
-                    {
-                        PriceActive = false;
-                    }
-                }
-                else
-                {
-                    PriceActive = false;
-                }
+                ParsePrice(nftData.NFTMetadata);
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
@@ -89,56 +73,12 @@ namespace VEDriversLite.NFT.Coruzant
             {
                 ParseCommon(nftData.NFTMetadata);
 
-                if (nftData.NFTMetadata.TryGetValue("Price", out var price))
-                {
-                    if (!string.IsNullOrEmpty(price))
-                    {
-                        price = price.Replace(',', '.');
-                        Price = double.Parse(price, CultureInfo.InvariantCulture);
-                        PriceActive = true;
-                    }
-                    else
-                    {
-                        PriceActive = false;
-                    }
-                }
-                else
-                {
-                    PriceActive = false;
-                }
+                ParsePrice(nftData.NFTMetadata);
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }
             ParseSpecific(nftData.NFTMetadata);
-        }
-
-        public async Task LoadLastData(Dictionary<string, string> metadata)
-        {
-            if (metadata != null)
-            {
-                ParseCommon(metadata);
-                ParseSpecific(metadata);
-                ParseOriginData(metadata);
-
-                if (metadata.TryGetValue("Price", out var price))
-                {
-                    if (!string.IsNullOrEmpty(price))
-                    {
-                        price = price.Replace(',', '.');
-                        Price = double.Parse(price, CultureInfo.InvariantCulture);
-                        PriceActive = true;
-                    }
-                    else
-                    {
-                        PriceActive = false;
-                    }
-                }
-                else
-                {
-                    PriceActive = false;
-                }
-            }
         }
 
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")

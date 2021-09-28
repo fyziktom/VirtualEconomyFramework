@@ -2241,6 +2241,19 @@ namespace VEDriversLite
             return (false, string.Empty);
         }
 
+        public static (bool, string) IsEnoughConfirmationsForSend(int confirmations)
+        {
+            try
+            {
+                if (confirmations > MinimumConfirmations)
+                    return (true, ">" + MinimumConfirmations.ToString());
+            }
+            catch (Exception ex)
+            {
+                return (false, confirmations.ToString());
+            }
+            return (false, confirmations.ToString());
+        }
 
         ///////////////////////////////////////////
         // calls of Neblio API and helpers

@@ -49,63 +49,57 @@ namespace VEDriversLite.NFT
             OriginalPaymentTxId = pnft.OriginalPaymentTxId;
         }
 
-        public async Task LoadLastData(Dictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, string> metadata)
         {
-            if (metadata != null)
+            if (metadata.TryGetValue("NFTUtxoTxId", out var nfttxid))
             {
-                ParseCommon(metadata);
-                ParsePrice(metadata);
-
-                if (metadata.TryGetValue("NFTUtxoTxId", out var nfttxid))
+                NFTUtxoTxId = nfttxid;
+                NFTOriginTxId = nfttxid;
+            }
+            if (metadata.TryGetValue("Sender", out var sender))
+                Sender = sender;
+            if (metadata.TryGetValue("NFTUtxoIndex", out var index))
+                if (!string.IsNullOrEmpty(index))
+                    NFTUtxoIndex = Convert.ToInt32(index);
+            if (metadata.TryGetValue("AlreadySold", out var aldsold))
+            {
+                if (!string.IsNullOrEmpty(aldsold))
                 {
-                    NFTUtxoTxId = nfttxid;
-                    NFTOriginTxId = nfttxid;
-                }
-                if (metadata.TryGetValue("Sender", out var sender))
-                    Sender = sender;                
-                if (metadata.TryGetValue("NFTUtxoIndex", out var index))
-                    if (!string.IsNullOrEmpty(index))
-                        NFTUtxoIndex = Convert.ToInt32(index);
-                if (metadata.TryGetValue("AlreadySold", out var aldsold))
-                {
-                    if (!string.IsNullOrEmpty(aldsold))
-                    {
-                        if (aldsold == "true")
-                            AlreadySoldItem = true;
-                        else
-                            AlreadySoldItem = false;
-                    }
+                    if (aldsold == "true")
+                        AlreadySoldItem = true;
                     else
-                    {
                         AlreadySoldItem = false;
-                    }
                 }
                 else
                 {
                     AlreadySoldItem = false;
                 }
-                if (metadata.TryGetValue("Returned", out var rtn))
+            }
+            else
+            {
+                AlreadySoldItem = false;
+            }
+            if (metadata.TryGetValue("Returned", out var rtn))
+            {
+                if (!string.IsNullOrEmpty(rtn))
                 {
-                    if (!string.IsNullOrEmpty(rtn))
-                    {
-                        if (rtn == "true")
-                            Returned = true;
-                        else
-                            Returned = false;
-                    }
+                    if (rtn == "true")
+                        Returned = true;
                     else
-                    {
                         Returned = false;
-                    }
                 }
                 else
                 {
                     Returned = false;
                 }
-
-                if (metadata.TryGetValue("OriginalPaymentTxId", out var optxid))
-                    OriginalPaymentTxId = optxid;
             }
+            else
+            {
+                Returned = false;
+            }
+
+            if (metadata.TryGetValue("OriginalPaymentTxId", out var optxid))
+                OriginalPaymentTxId = optxid;
         }
 
         public override Task ParseOriginData(IDictionary<string, string> lastmetadata)

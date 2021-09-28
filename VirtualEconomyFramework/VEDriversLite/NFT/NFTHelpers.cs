@@ -168,6 +168,7 @@ namespace VEDriversLite.NFT
                 var byteArray = Encoding.ASCII.GetBytes(IpfsHostUserName + ":" + IpfsHostPassword);
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                 httpClient.DefaultRequestHeaders.Add("mode", "no-cors");
+                httpClient.DefaultRequestHeaders.Add("Origin", "https://ve-nft.com");
             }
 
             return c;

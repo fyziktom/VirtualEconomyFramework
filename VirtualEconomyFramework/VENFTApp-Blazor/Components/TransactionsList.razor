@@ -51,7 +51,7 @@
                                         }
                                         <td class="text-wrap" style="max-width:80px;">@txd.Receiver</td>
                                         <td class="text-wrap" style="max-width:60px;">@txd.Time</td>
-                                        <td class="text-center"><i class="oi oi-info" @onclick="async () => ShowTxDetails(txd.Info.Txid)" style="font-size:18px;"></i></td>
+                                        <td class="text-center" @onclick="async () => ShowTxDetails(txd.Info.Txid)"><i class="oi oi-info" style="font-size:18px;"></i></td>
                                     </tr>
                                 }
                             }

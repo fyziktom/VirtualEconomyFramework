@@ -390,6 +390,21 @@
     public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
 
     private INFT NFT { get; set; } = new ImageNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo && value.IsLoaded)
+            {
+                if (value.IsLoaded)
+                {
+                    LoadNFT(value);
+                }
+            }
+        }
+    }
 
     private string _utxo = string.Empty;
     [Parameter]
@@ -401,7 +416,7 @@
             if (!string.IsNullOrEmpty(value) && _utxo != value)
             {
                 _utxo = value;
-                Load();
+                //Load();
             }
         }
     }
@@ -423,8 +438,8 @@
 
     protected override Task OnInitializedAsync()
     {
-        if (!string.IsNullOrEmpty(_utxo))
-            Load();
+        //if (!string.IsNullOrEmpty(_utxo))
+            //Load();
         return base.OnInitializedAsync();
     }
 
@@ -453,6 +468,26 @@
 
         await NFT.StartRefreshingTxData();
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
+        loading = false;
+        StateHasChanged();
+    }
+
+    private async Task LoadNFT(INFT nft)
+    {
+        loading = true;
+        StateHasChanged();
+        if (!string.IsNullOrEmpty(NFT.Utxo))
+        {
+            NFT.TxDataRefreshed -= TxDataRefreshedHandler;
+            await NFT.StopRefreshingData();
+        }
+
+        NFT = await NFTFactory.CloneNFT(nft);
+        if (NFT == null)
+            return;
+
+        NFT.TxDataRefreshed += TxDataRefreshedHandler;
+        await NFT.StartRefreshingTxData();
         loading = false;
         StateHasChanged();
     }

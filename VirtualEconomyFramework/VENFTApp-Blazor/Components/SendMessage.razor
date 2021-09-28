@@ -38,6 +38,12 @@
                             </div>
                         </div>
                     }
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <UploadImage ImageLink="@imagelink" EncryptedContent="@encrypt" Partner="@receiver" ImageLinkChanged="@ImageLinkChanged" NFTType="@NFTTypes.Image" />
+                        </div>
+                    </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <small>Receiver</small>
@@ -67,7 +73,15 @@
                     {
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <button class="btn btn-primary disabled" @onclick="ShowMintConfirm">Wrong Receiver</button>
+                                <button class="btn btn-primary disabled">Wrong Receiver</button>
+                            </div>
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(newNFT.Utxo) && newNFT.TxDetails.Confirmations < NeblioTransactionHelpers.MinimumConfirmations)
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary disabled">Not enough confirmations</button>
                             </div>
                         </div>
                     }
@@ -101,8 +115,8 @@
 
 @code {
 
-    [Parameter]
-    public EventCallback<string> MessageSent { get; set; }
+        [Parameter]
+        public EventCallback<string> MessageSent { get; set; }
 
     private string receiver = string.Empty;
     private string name = string.Empty;
@@ -128,10 +142,25 @@
         {
             if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != newNFT.Utxo)
             {
+                if (!string.IsNullOrEmpty(newNFT.Utxo))
+                {
+                    newNFT.TxDataRefreshed -= TxDataRefreshedHandler;
+                    newNFT.StopRefreshingData();
+                }
                 newNFT.Fill(value);
                 newNFT.Description = string.Empty;
                 description = string.Empty;
                 newNFT.Name = value.Name;
+                if (!string.IsNullOrEmpty(value.ImageLink))
+                {
+                    imagelink = value.ImageLink;
+                    newNFT.ImageLink = imagelink;
+                }
+                if (!string.IsNullOrEmpty(newNFT.Utxo))
+                {
+                    newNFT.TxDataRefreshed += TxDataRefreshedHandler;
+                    newNFT.StartRefreshingTxData();
+                }
                 name = value.Name;
 
                 StateHasChanged();
@@ -144,6 +173,19 @@
     bool uploadingImage = false;
     bool confirmVisible = false;
     bool processingSending = false;
+    string imagelink = string.Empty;
+
+    void ImageLinkChanged(string newLink)
+    {
+        if (!string.IsNullOrEmpty(newLink))
+            imagelink = newLink;
+        StateHasChanged();
+    }
+
+    private void TxDataRefreshedHandler(object sender, VEDriversLite.NeblioAPI.GetTransactionInfoResponse e)
+    {
+        StateHasChanged();
+    }
 
     private void receiverAddressChangedHandler(string address)
     {
@@ -154,11 +196,6 @@
         }
         Receiver = address;
         StateHasChanged();
-    }
-
-    void ImageLinkChanged(string newLink)
-    {
-        newNFT.ImageLink = newLink;
     }
 
     private async Task encryptChanged(object e)
@@ -193,6 +230,7 @@
         {
             newNFT.Name = name;
             newNFT.Description = description;
+            newNFT.ImageLink = imagelink;
 
             if (string.IsNullOrEmpty(newNFT.Name) || string.IsNullOrEmpty(newNFT.Description) || string.IsNullOrEmpty(receiver))
             {
@@ -204,7 +242,7 @@
             confirmVisible = false;
             StateHasChanged();
 
-            var res = await AppData.Account.SendMessageNFT(newNFT.Name, newNFT.Description, receiver, newNFT.Utxo, encrypt);
+            var res = await AppData.Account.SendMessageNFT(newNFT.Name, newNFT.Description, receiver, newNFT.Utxo, encrypt, imagelink);
 
             if (res.Item1)
             {

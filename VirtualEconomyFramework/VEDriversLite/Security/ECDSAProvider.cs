@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
@@ -195,6 +196,7 @@ namespace VEDriversLite.Security
             }
             return (false, "Wrong input Key.");
         }
+
         public static async Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, BitcoinSecret secret)
         {
             if (string.IsNullOrEmpty(message))
@@ -219,6 +221,32 @@ namespace VEDriversLite.Security
                 return (false, "Cannot encrypt message. " + ex.Message);
             }
         }
+
+        public static async Task<(bool, byte[])> EncryptBytesWithSharedSecret(byte[] inputBytes, string bobAddress, BitcoinSecret secret)
+        {
+            if (inputBytes == null || inputBytes.Length == 0)
+                throw new Exception("Input cannot be empty or null.");
+            if (string.IsNullOrEmpty(bobAddress))
+                throw new Exception("Partner Address cannot be empty or null.");
+            if (secret == null)
+                throw new Exception("Input secret cannot null.");
+
+            var key = await GetSharedSecret(bobAddress, secret);
+            if (!key.Item1)
+                return (false,null);
+
+            try
+            {
+                var ebytes = await SymetricProvider.EncryptBytes(key.Item2, inputBytes);
+                return (true, ebytes);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot encrypt bytes. " + ex.Message);
+                throw new Exception("Cannot encrypt bytes. " + ex.Message);
+            }
+        }
+
         public static async Task<(bool, string)> EncryptStringWithSharedSecretWithKey(string message, string bobAddress, string key)
         {
             if (string.IsNullOrEmpty(message))
@@ -277,6 +305,32 @@ namespace VEDriversLite.Security
                 return (false, "Cannot decrypt message. " + ex.Message);
             }
         }
+
+        public static async Task<(bool, byte[])> DecryptBytesWithSharedSecret(byte[] ebytes, string bobAddress, BitcoinSecret secret)
+        {
+            if (ebytes == null || ebytes.Length == 0)
+                throw new Exception("Message cannot be empty or null.");
+            if (string.IsNullOrEmpty(bobAddress))
+                throw new Exception("Partner Address cannot be empty or null.");
+            if (secret == null)
+                throw new Exception("Input secret cannot null.");
+
+            var key = await GetSharedSecret(bobAddress, secret);
+            if (!key.Item1)
+                return (false, null);
+
+            try
+            {
+                var bytes = await SymetricProvider.DecryptBytes(key.Item2, ebytes);
+                return (true, bytes);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot decrypt message. " + ex.Message);
+                throw new Exception("Cannot decrypt message. " + ex.Message);
+            }
+        }
+
         public static async Task<(bool, string)> DecryptStringWithSharedSecretWithKey(string emessage, string bobAddress, string key)
         {
             if (string.IsNullOrEmpty(emessage))

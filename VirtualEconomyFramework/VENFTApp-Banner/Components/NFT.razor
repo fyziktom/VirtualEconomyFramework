@@ -273,7 +273,7 @@
        Visible="@nftDetailsVisible"
        OnOk="@CloseNFTDetails"
        OnCancel="@CloseNFTDetails">
-    <NFTDetails Utxo="@nftDetailsUtxo" OwnNFT="@OwnNFT" />
+    <NFTDetails Utxo="@nftDetailsUtxo" OwnNFT="@OwnNFT" InputNFT="@nft" />
 </Modal>
 
 <Modal Title="NFT Image"
@@ -329,7 +329,6 @@
             if (!string.IsNullOrEmpty(value))
             {
                 _address = value;
-                StateHasChanged();
             }
         }
     }
@@ -343,6 +342,7 @@
         NFTSent.InvokeAsync(nfttx);
     }
 
+
     private async Task CloseNFTDetails(MouseEventArgs e)
     {
         await nft.StopRefreshingData();
@@ -352,21 +352,17 @@
     private async Task ShowNFTDetails(string utxo)
     {
         nftDetailsUtxo = utxo;
-        StateHasChanged();
         nftDetailsVisible = true;
-        StateHasChanged();
     }
 
     public async Task OpenModalWithImage(string url)
     {
         modalWithImageVisible = true;
         modalWithImageLink = url;
-        StateHasChanged();
     }
 
     public async Task modalWithImageClose(MouseEventArgs e)
     {
         modalWithImageVisible = false;
-        StateHasChanged();
     }
 }

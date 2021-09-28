@@ -32,6 +32,7 @@ namespace VEDriversLite.NFT
         public double DogePrice { get; set; } = 0.0;
         public bool DogePriceActive { get; set; } = false;
         public string DogeAddress { get; set; } = string.Empty;
+        public bool IsLoaded { get; set; } = false;
         public DogeftInfo DogeftInfo { get; set; } = new DogeftInfo();
         public NFTSoldInfo SoldInfo { get; set; } = new NFTSoldInfo();
         public string ShortHash => $"{NeblioTransactionHelpers.ShortenTxId(Utxo, false, 16)}:{UtxoIndex}";
@@ -101,6 +102,27 @@ namespace VEDriversLite.NFT
                 foreach (var s in split)
                     if (!string.IsNullOrEmpty(s))
                         TagsList.Add(s);
+        }
+
+        public abstract void ParseSpecific(IDictionary<string, string> meta);
+
+        public async Task LoadLastData(IDictionary<string, string> metadata)
+        {
+            if (metadata != null)
+            {
+                ParseCommon(metadata);
+                await ParseDogeftInfo(metadata);
+                ParseSoldInfo(metadata);
+                ParseSpecific(metadata);
+                ParsePrice(metadata);
+
+                if (Type == NFTTypes.Music)
+                {
+                    if (string.IsNullOrEmpty(Link) && !string.IsNullOrEmpty(ImageLink))
+                        Link = ImageLink;
+                }
+                IsLoaded = true;
+            }
         }
 
         public void ParsePrice(IDictionary<string, string> meta)
@@ -177,8 +199,10 @@ namespace VEDriversLite.NFT
                 parseTags();
             }
 
-            //if (meta.TryGetValue("SourceUtxo", out var su))
-            //NFTOriginTxId = su;
+            if (meta.TryGetValue("SourceUtxo", out var su))
+                SourceTxId = su;
+            if (meta.TryGetValue("NFTOriginTxId", out var nfttxid))
+                NFTOriginTxId = nfttxid;
         }
 
         public async Task ParseDogeftInfo(IDictionary<string,string> meta)
@@ -265,6 +289,10 @@ namespace VEDriversLite.NFT
                 metadata.Add("DogeftInfo", JsonConvert.SerializeObject(DogeftInfo));
             if (!SoldInfo.IsEmpty)
                 metadata.Add("SoldInfo", JsonConvert.SerializeObject(SoldInfo));
+            if (!string.IsNullOrEmpty(SourceTxId))
+                metadata.Add("SourceTxId", SourceTxId);
+            if (!string.IsNullOrEmpty(NFTOriginTxId))
+                metadata.Add("NFTOriginTxId", NFTOriginTxId);
             return metadata;
         }
 

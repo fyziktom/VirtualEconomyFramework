@@ -1506,13 +1506,16 @@ namespace VEDriversLite.Neblio
         /// </summary>
         /// <param name="NFT"></param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendMessageNFT(string name, string message, string receiver, string utxo = "", bool encrypt = true)
+        public async Task<(bool, string)> SendMessageNFT(string name, string message, string receiver, string utxo = "", bool encrypt = true, string imagelink = "", string link = "", string text = "")
         {
             MessageNFT nft = new MessageNFT("");
 
             nft.Utxo = utxo;
             nft.Description = message;
             nft.Name = name;
+            nft.Text = text;
+            nft.Link = link;
+            nft.ImageLink = imagelink;
             nft.Encrypt = encrypt;
             nft.TokenId = NFTHelpers.TokenId;
 

@@ -44,6 +44,32 @@ namespace VEDriversLite.Security
             return Convert.ToBase64String(array);
         }
 
+        public static async Task<byte[]> EncryptBytes(string key, byte[] bytes)
+        {
+            byte[] iv = new byte[16];
+            byte[] array;
+
+            using (Aes aes = Aes.Create())
+            {
+                var keySize = 256 / 8;
+
+                var k = Encoding.UTF8.GetBytes(key);
+                Array.Resize(ref k, keySize);
+                aes.Key = k; // todo wrong lenght!!
+                aes.IV = iv;
+
+
+                using (MemoryStream stream = new MemoryStream())
+                using (ICryptoTransform encryptor = aes.CreateEncryptor())
+                using (CryptoStream encrypt = new CryptoStream(stream, encryptor, CryptoStreamMode.Write))
+                {
+                    encrypt.Write(bytes, 0, bytes.Length);
+                    encrypt.FlushFinalBlock();
+                    return stream.ToArray();
+                }
+            }
+        }
+
         public static async Task<string> DecryptString(string key, string cipherText)
         {
             byte[] iv = new byte[16];
@@ -70,6 +96,33 @@ namespace VEDriversLite.Security
                             return streamReader.ReadToEnd();
                         }
                     }
+                }
+            }
+        }
+
+        public static async Task<byte[]> DecryptBytes(string key, byte[] cipherBytes)
+        {
+            byte[] iv = new byte[16];
+            byte[] buffer = cipherBytes;//Convert.FromBase64String(cipherBytes);
+
+            using (Aes aes = Aes.Create())
+            {
+                var keySize = 256 / 8;
+
+                var k = Encoding.UTF8.GetBytes(key);
+                Array.Resize(ref k, keySize);
+                aes.Key = k; // todo wrong lenght!!
+
+                //aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+
+                using (MemoryStream stream = new MemoryStream())
+                using (ICryptoTransform decryptor = aes.CreateDecryptor())
+                using (CryptoStream encrypt = new CryptoStream(stream, decryptor, CryptoStreamMode.Write))
+                {
+                    encrypt.Write(cipherBytes, 0, cipherBytes.Length);
+                    encrypt.FlushFinalBlock();
+                    return stream.ToArray();
                 }
             }
         }

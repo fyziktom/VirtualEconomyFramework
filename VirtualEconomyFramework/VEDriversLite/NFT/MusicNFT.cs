@@ -20,7 +20,7 @@ namespace VEDriversLite.NFT
             await FillCommon(NFT);
         }
 
-        private void ParseSpecific(IDictionary<string, string> meta)
+        public override void ParseSpecific(IDictionary<string, string> metadata)
         {
 
         }
@@ -40,6 +40,7 @@ namespace VEDriversLite.NFT
 
                 if (string.IsNullOrEmpty(Link) && !string.IsNullOrEmpty(ImageLink))
                     Link = ImageLink;
+                IsLoaded = true;
             }
         }
 
@@ -57,32 +58,7 @@ namespace VEDriversLite.NFT
 
                 if (string.IsNullOrEmpty(Link) && !string.IsNullOrEmpty(ImageLink))
                     Link = ImageLink;
-            }
-        }
-
-        public async Task LoadLastData(Dictionary<string,string> metadata)
-        {
-            if (metadata != null)
-            {
-                ParseCommon(metadata);
-                await ParseDogeftInfo(metadata);
-                ParseSoldInfo(metadata);
-                if (metadata.TryGetValue("SourceUtxo", out var su))
-                {
-                    SourceTxId = Utxo;
-                    NFTOriginTxId = su;
-                }
-                else
-                {
-                    SourceTxId = Utxo;
-                    NFTOriginTxId = Utxo;
-                }
-
-                ParsePrice(metadata);
-
-                if (string.IsNullOrEmpty(Link) && !string.IsNullOrEmpty(ImageLink))
-                    Link = ImageLink;
-
+                IsLoaded = true;
             }
         }
 

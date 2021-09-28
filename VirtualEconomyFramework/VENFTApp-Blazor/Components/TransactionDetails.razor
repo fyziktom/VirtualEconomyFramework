@@ -165,6 +165,18 @@
                              Address="@Address"
                              SubAccount="@SubAccount" />
             }
+            else if (nftType == NFTTypes.Message)
+            {
+                <NFTMessage Utxo="@loadedNFT.Utxo" />
+            }
+            else if (nftType == NFTTypes.Payment || nftType == NFTTypes.Receipt)
+            {
+                <div class="row">
+                    <div class="col">
+                        <span>NFT Receipt or Payment</span>
+                    </div>
+                </div>
+            }
             else
             {
                 <NFT InputNFT="@loadedNFT"
@@ -373,6 +385,7 @@
                             loadedNFT = await NFTFactory.GetNFT(tokid, txId, 0, 0, false);
                         else
                             loadedNFT = new ImageNFT("");
+                        nftType = loadedNFT.Type;
                     }
                 }
                 catch (Exception ex)

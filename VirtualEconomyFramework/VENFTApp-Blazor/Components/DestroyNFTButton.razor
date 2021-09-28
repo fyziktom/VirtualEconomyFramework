@@ -1,0 +1,192 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+@if (!isIcon)
+{
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <button class="btn btn-secondary" @onclick="deleteNFT">Delete <i class="oi oi-trash" style="width:50px; font-size:@fontsize;"></i></button>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center" style="min-width:30px; min-height:20px;">
+            <i class="oi oi-trash" @onclick="deleteNFT" style="margin-left:@marginleft; margin-top:@margintop; font-size:@fontsize;"></i>
+        </div>
+    </div>
+}
+
+<Modal Title="Destroy NFT"
+       Visible="@confirmDestroyVisible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+    <Spin Tip="Removing the NFT... " Spinning="@removingNFT">
+    <p class="text-center">Do you really want to destroy this NFT?</p>
+    <small class="text-center">When you destroy NFT the token will be connected to source tokens and it can be used for minting again.</small>
+    @if (!string.IsNullOrEmpty(customMessage))
+    {
+        <p class="text-center">@customMessage</p>
+    }
+    </Spin>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> NFTDestroyed { get; set; }
+
+    private bool confirmDestroyVisible = false;
+    private bool removingNFT = false;
+
+    private bool isIcon { get; set; } = false;
+    [Parameter]
+    public bool IsIcon
+    {
+        get => isIcon;
+        set => isIcon = value;
+    }
+
+    private string customMessage = string.Empty;
+    [Parameter]
+    public string CustomMessage
+    {
+        get => customMessage;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+                customMessage = value;
+        }
+    }
+
+    private string margintop = "0px";
+    [Parameter]
+    public int MarginTop
+    {
+        get => Convert.ToInt32(margintop);
+        set => margintop = value.ToString() + "px";
+    }
+
+    private string marginleft = "0px";
+    [Parameter]
+    public int MarginLeft
+    {
+        get => Convert.ToInt32(marginleft);
+        set => marginleft = value.ToString() + "px";
+    }
+    private string fontsize = "14px";
+    [Parameter]
+    public int FontSize
+    {
+        get => Convert.ToInt32(FontSize);
+        set => fontsize = value.ToString() + "px";
+    }
+
+    private string _address = string.Empty;
+    [Parameter]
+    public string Address
+    {
+        get => _address;
+        set
+        {
+            if (!string.IsNullOrEmpty(value) && _address != value)
+            {
+                _address = value;
+            }
+        }
+    }
+
+    private INFT NFT { get; set; } = new ImageNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo)
+            {
+                LoadNFT(value);
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool MainAccount { get; set; } = true;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    private async Task LoadNFT(INFT nft)
+    {
+        NFT = await NFTFactory.CloneNFT(nft);
+        if (NFT == null)
+            return;
+        StateHasChanged();
+    }
+
+    private async Task deleteNFT()
+    {
+        if (NFT == null)
+            return;
+
+        confirmDestroyVisible = true;
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        await deletePaymentNFTAction(NFT);
+    }
+    private async Task HandleCancel(MouseEventArgs e)
+    {
+        confirmDestroyVisible = false;
+    }
+
+    private async Task deletePaymentNFTAction(INFT loadedNFT)
+    {
+        if (loadedNFT != null)
+        {
+            try
+            {
+                removingNFT = true;
+                StateHasChanged();
+                (bool, string) res = (false, string.Empty);
+                if (!SubAccount)
+                    res = await AppData.Account.DestroyNFTs(new List<INFT>() { loadedNFT });
+                else
+                    res = await AppData.Account.DestroyNFTOnSubAccount(Address, new List<INFT>() { loadedNFT });
+                if (res.Item1)
+                {
+                    //await AppData.Account.ReloadUtxos();
+                    //await AppData.Account.ReLoadNFTs();
+                    //await AppData.Account.RefreshAddressReceivedPayments();
+
+                    Console.WriteLine("NFT Payment destroyed. TxId: " + res.Item2);
+                    removingNFT = false;
+                    confirmDestroyVisible = false;
+                    StateHasChanged();
+                    await NFTDestroyed.InvokeAsync(res.Item2);
+                }
+                else
+                {
+                    Console.WriteLine("Cannot destroy the NFT Payment. " + res.Item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot delete NFT Payment. " + ex.Message);
+            }
+            finally
+            {
+                removingNFT = false;
+                confirmDestroyVisible = false;
+            }
+        }
+        await Task.Delay(100);
+        StateHasChanged();
+    }
+
+}

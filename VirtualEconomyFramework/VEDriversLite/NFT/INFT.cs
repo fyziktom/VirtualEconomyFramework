@@ -52,6 +52,7 @@ namespace VEDriversLite.NFT
         string NFTOriginTxId { get; set; }
         int UtxoIndex { get; set; }
         string ShortHash { get; }
+        bool IsLoaded { get; set; }
         NFTSoldInfo SoldInfo { get; set; }
         DateTime Time { get; set; }
         List<INFT> History { get; set; }
@@ -61,9 +62,11 @@ namespace VEDriversLite.NFT
 
         Task FillCommon(INFT nft);
         Task Fill(INFT NFT);
+        Task LoadLastData(IDictionary<string, string> metadata);
         Task ParseOriginData(IDictionary<string,string> lastmetadata);
         void ParseSoldInfo(IDictionary<string, string> meta);
         void ParsePrice(IDictionary<string, string> meta);
+        void ParseSpecific(IDictionary<string, string> meta);
         Task ParseDogeftInfo(IDictionary<string, string> meta);
         Task ClearSoldInfo();
         Task LoadHistory();

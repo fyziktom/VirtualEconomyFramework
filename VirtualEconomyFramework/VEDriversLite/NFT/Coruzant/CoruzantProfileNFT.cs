@@ -61,29 +61,29 @@ namespace VEDriversLite.NFT.Coruzant
             }
         }
 
-        private void ParseSpecific(IDictionary<string, string> meta)
+        public override void ParseSpecific(IDictionary<string, string> metadata)
         {
-            if (meta.TryGetValue("Surname", out var surname))
+            if (metadata.TryGetValue("Surname", out var surname))
                 Surname = surname;
-            if (meta.TryGetValue("Nickname", out var nickname))
+            if (metadata.TryGetValue("Nickname", out var nickname))
                 Nickname = nickname;
-            if (meta.TryGetValue("WorkingPosition", out var workpos))
+            if (metadata.TryGetValue("WorkingPosition", out var workpos))
                 WorkingPosition = workpos;
-            if (meta.TryGetValue("PodcastLink", out var pdl))
+            if (metadata.TryGetValue("PodcastLink", out var pdl))
                 PodcastLink = pdl;
-            if (meta.TryGetValue("PersonalPageLink", out var ppl))
+            if (metadata.TryGetValue("PersonalPageLink", out var ppl))
                 PersonalPageLink = ppl;
-            if (meta.TryGetValue("CompanyName", out var comn))
+            if (metadata.TryGetValue("CompanyName", out var comn))
                 CompanyName = comn;
-            if (meta.TryGetValue("CompanyLink", out var coml))
+            if (metadata.TryGetValue("CompanyLink", out var coml))
                 CompanyLink = coml;
-            if (meta.TryGetValue("Age", out var age))
+            if (metadata.TryGetValue("Age", out var age))
                 Age = Convert.ToInt32(age);
-            if (meta.TryGetValue("Linkedin", out var lkd))
+            if (metadata.TryGetValue("Linkedin", out var lkd))
                 Linkedin = lkd;
-            if (meta.TryGetValue("PodcastId", out var pdb))
+            if (metadata.TryGetValue("PodcastId", out var pdb))
                 PodcastId = pdb;
-            if (meta.TryGetValue("Twitter", out var twit))
+            if (metadata.TryGetValue("Twitter", out var twit))
                 Twitter = twit;
         }
 
@@ -113,16 +113,6 @@ namespace VEDriversLite.NFT.Coruzant
                 NFTOriginTxId = nftData.NFTOriginTxId;
 
                 ParseSpecific(nftData.NFTMetadata);
-            }
-        }
-
-        public async Task LoadLastData(Dictionary<string,string> metadata)
-        {
-            if (metadata != null)
-            {
-                ParseCommon(metadata);
-                ParseSpecific(metadata);
-                ParseOriginData(metadata);
             }
         }
 

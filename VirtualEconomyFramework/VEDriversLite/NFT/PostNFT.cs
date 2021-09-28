@@ -22,7 +22,7 @@ namespace VEDriversLite.NFT
 
         public string Surname { get; set; } = string.Empty;
 
-        private void ParseSpecific(IDictionary<string, string> meta)
+        public override void ParseSpecific(IDictionary<string, string> metadata)
         {
 
         }
@@ -55,28 +55,6 @@ namespace VEDriversLite.NFT
             }
         }
 
-        public async Task LoadLastData(Dictionary<string,string> metadata)
-        {
-            if (metadata != null)
-            {
-                ParseCommon(metadata);
-                await ParseDogeftInfo(metadata);
-                ParseSoldInfo(metadata);
-                if (metadata.TryGetValue("SourceUtxo", out var su))
-                {
-                    SourceTxId = Utxo;
-                    NFTOriginTxId = su;
-                }
-                else
-                {
-                    SourceTxId = Utxo;
-                    NFTOriginTxId = Utxo;
-                }
-
-                ParsePrice(metadata);
-
-            }
-        }
 
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {

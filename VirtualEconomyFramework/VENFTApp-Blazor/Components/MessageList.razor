@@ -105,7 +105,7 @@
                                             </div>
                                             <div class="row" style="margin-top:20px;">
                                                 <div class="col d-flex justify-content-end align-items-end">
-                                                    <button class="btn btn-light" @onclick="() => showMessageDetails(nft.Utxo)"><i class="oi oi-envelope-open"></i></button>
+                                                    <button class="btn btn-light" @onclick="() => showMessageDetails(nft)"><i class="oi oi-envelope-open"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -124,7 +124,7 @@
        Visible="@messageDetailsVisible"
        OnOk="@messageDetailsVisibleCancel"
        OnCancel="@messageDetailsVisibleCancel">
-    <NFTMessage Utxo="@selectedNFTUtxo" />
+    <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" Address="@_address" />
 </Modal>
 
 
@@ -137,6 +137,7 @@
 
 @code {
 
+    private INFT nftToShow = new MessageNFT("");
     private List<INFT> _nfts = new List<INFT>();
     [Parameter]
     public List<INFT> NFTs
@@ -182,7 +183,10 @@
     protected override async Task OnInitializedAsync()
     {
         if (AppData.Account != null)
+        {
             AppData.Account.Refreshed += RefreshedHandler;
+            AppData.Account.NFTsChanged += NFTsChangedHandler;
+        }
         DecryptMessages();
     }
 
@@ -208,6 +212,7 @@
 
     void RefreshedHandler(object sender, EventArgs e)
     {
+        /*
         if (_nfts.Count != AppData.Account.NFTs.Count || refresh < 0)
         {
             _nfts = AppData.Account.NFTs;
@@ -218,14 +223,20 @@
         {
             refresh--;
         }
-
+        */
         StateHasChanged();
+    }
+    void NFTsChangedHandler(object sender, string e)
+    {
+        _nfts = AppData.Account.NFTs;
+        DecryptMessages();
     }
 
     private async Task ReloadNFTs()
     {
         if (!string.IsNullOrEmpty(_address))
         {
+            await AppData.Account.ReloadUtxos();
             await AppData.Account.ReLoadNFTs();
             _nfts = AppData.Account.NFTs;
 
@@ -240,25 +251,22 @@
         messageDetailsVisible = false;
     }
 
-    private async Task showMessageDetails(string utxo)
+    private async Task showMessageDetails(INFT nft)
     {
-        selectedNFTUtxo = utxo;
-        StateHasChanged();
-        await Task.Delay(50);
-        Console.WriteLine(utxo);
+        nftToShow = await NFTFactory.CloneNFT(nft);
+        selectedNFTUtxo = nft.Utxo;
+        Console.WriteLine(nft.Utxo);
         messageDetailsVisible = true;
     }
 
     private async Task showSendMessage()
     {
         sendMessageVisible = true;
-        StateHasChanged();
     }
 
     private async Task sendMessageConfirm(MouseEventArgs e)
     {
         sendMessageVisible = false;
-        StateHasChanged();
     }
 
     private async Task sendMessageCancel(MouseEventArgs e)

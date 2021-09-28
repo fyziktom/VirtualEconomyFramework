@@ -100,7 +100,17 @@
                     case LoadingImageStages.Loaded:
                         @if (NFTType == NFTTypes.Image || NFTType == NFTTypes.Post || NFTType == NFTTypes.Profile || NFTType == NFTTypes.CoruzantArticle || NFTType == NFTTypes.CoruzantProfile || NFTType == NFTTypes.CoruzantPodcast)
                         {
-                        <a href="@_imageLink" target="_blank"><img src="@_imageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
+                            @if (!EncryptedContent)
+                            {
+                                <a href="@_imageLink" target="_blank"><img src="@_imageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
+                            }
+                            else
+                            {
+                                @if (decryptedFile != null)
+                                {
+                                    <a href="_imageLink" target="_blank"><img src="data:image;base64,@System.Convert.ToBase64String(decryptedFile)" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
+                                }
+                            }
                         }
                         else if (NFTType == NFTTypes.Music)
                         {
@@ -117,8 +127,8 @@
 </div>
 
 @code {
-    bool uploadingImage = false;
-    bool errorUpload = false;
+        bool uploadingImage = false;
+        bool errorUpload = false;
     private static int attemptsToDisplay = 10;
     LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
     private System.Threading.Timer timer;
@@ -145,6 +155,17 @@
     }
     [Parameter]
     public EventCallback<string> ImageLinkChanged { get; set; }
+
+    [Parameter]
+    public bool EncryptedContent { get; set; } = false;
+
+    [Parameter]
+    public string Partner { get; set; } = string.Empty;
+
+
+    long uploadedFileLength = 0;
+    byte[] decryptedFile = null;
+
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -191,8 +212,31 @@
         {
             try
             {
-                if (!string.IsNullOrEmpty(imageLink))
+                if (!string.IsNullOrEmpty(imageLink) && imageLink.Contains("https://gateway.ipfs.io/ipfs/"))
                 {
+                    var res = await NFTHelpers.IPFSDownloadFromInfuraAsync(imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                    if (res != null && res.Length > 0.5*uploadedFileLength)
+                    {
+                        ImageLink = imageLink;
+                        if (EncryptedContent)
+                        {
+                            var dbytes = await VEDriversLite.Security.ECDSAProvider.DecryptBytesWithSharedSecret(res, Partner, AppData.Account.Secret);
+                            if (dbytes.Item1)
+                            {
+                                decryptedFile = dbytes.Item2;
+                                loadingImageStage = LoadingImageStages.Loaded;
+                                await ImageLinkChanged.InvokeAsync(imageLink);
+                                finished = true;
+                            }
+                        }
+                        else
+                        {
+                            await ImageLinkChanged.InvokeAsync(imageLink);
+                            finished = true;
+                        }
+                    }
+
+                    /*
                     using var httpResponse = await _client.GetAsync(imageLink);
 
                     if (httpResponse.IsSuccessStatusCode)
@@ -201,7 +245,7 @@
                         await ImageLinkChanged.InvokeAsync(imageLink);
                         finished = true;
                     }
-
+                    */
                     attemptsToDisplay--;
                     if (attemptsToDisplay < 0)
                     {
@@ -209,6 +253,7 @@
                         await ImageLinkChanged.InvokeAsync(imageLink);
                         finished = true;
                     }
+
                 }
                 else
                 {
@@ -268,8 +313,36 @@
                     }
                     try
                     {
-                        //var link = await NFTHelpers.UploadImage(stream, fileinfo.Name);
-                        var link = await NFTHelpers.UploadInfura(stream, fileinfo.Name);
+                        var link = string.Empty;
+                        if (!EncryptedContent)
+                        {
+                            link = await NFTHelpers.UploadInfura(stream, fileinfo.Name);
+                        }
+                        else
+                        {
+                            var bytes = new byte[stream.Length];
+                            
+                            //var res = await stream.ReadAsync(bytes, 0, (int)stream.Length);
+                            using (MemoryStream mss = new MemoryStream())
+                            {
+                                await stream.CopyToAsync(mss);
+                                Console.WriteLine($"MS length before encryption: {mss.Length}");
+                                Console.WriteLine($"Partner is: {Partner}");
+                                                                
+                                bytes = mss.ToArray();
+                                var rbytes = await VEDriversLite.Security.ECDSAProvider.EncryptBytesWithSharedSecret(bytes, Partner, AppData.Account.Secret);
+                                if (rbytes.Item1)
+                                {
+                                    var rbl = rbytes.Item2.Length;
+                                    Console.WriteLine($"Bytes length after encryption: {rbl}");
+                                    using (MemoryStream ms = new MemoryStream(rbytes.Item2))
+                                    {
+                                        link = await NFTHelpers.UploadInfura(ms, fileinfo.Name);
+                                    }
+                                }
+                            }
+                        }
+                        uploadedFileLength = stream.Length;
                         //var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileinfo.Name);
                         //var link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
                         await CheckFile(link);
@@ -289,6 +362,7 @@
         catch (Exception ex)
         {
             loadingImageStage = LoadingImageStages.NotStarted;
+            Console.WriteLine("Cannot upload the image. " + ex.Message);
             uploadingImage = false;
             errorUpload = true;
         }

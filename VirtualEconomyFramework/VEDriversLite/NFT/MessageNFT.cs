@@ -19,17 +19,28 @@ namespace VEDriversLite.NFT
         public override async Task Fill(INFT NFT) 
         {
             await FillCommon(NFT);
+            IsReceivedMessage = (NFT as MessageNFT).IsReceivedMessage;
+            Partner = (NFT as MessageNFT).Partner;
+            Encrypt = (NFT as MessageNFT).Encrypt;
+            Decrypted = (NFT as MessageNFT).Decrypted;
+            ImageData = (NFT as MessageNFT).ImageData;
         }
 
         public bool Encrypt { get; set; } = true;
         public bool Decrypted { get; set; } = false;
         public string Partner { get; set; } = string.Empty;
+        public byte[] ImageData { get; set; }
 
         public bool IsReceivedMessage { get; set; } = false;
 
-        private void ParseSpecific(IDictionary<string, string> meta)
+        public override void ParseSpecific(IDictionary<string, string> metadata)
         {
+            GetPartnerAsync();
+        }
 
+        private async Task GetPartnerAsync()
+        {
+            await GetPartner();
         }
 
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
@@ -42,6 +53,7 @@ namespace VEDriversLite.NFT
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
+                IsLoaded = true;
             }
         }
 
@@ -55,46 +67,26 @@ namespace VEDriversLite.NFT
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
-            }
-        }
-
-        public async Task LoadLastData(Dictionary<string,string> metadata)
-        {
-            await GetPartner();
-            if (metadata != null)
-            {
-                ParseCommon(metadata);
-
-                if (metadata.TryGetValue("SourceUtxo", out var su))
-                {
-                    SourceTxId = Utxo;
-                    NFTOriginTxId = su;
-                }
-                else
-                {
-                    SourceTxId = Utxo;
-                    NFTOriginTxId = Utxo;
-                }
+                IsLoaded = true;
             }
         }
 
         public async Task GetPartner()
         {
-            var rec = await NeblioTransactionHelpers.GetTransactionSender(Utxo);
+            var rec = await NeblioTransactionHelpers.GetTransactionSender(Utxo, TxDetails);
             if (!string.IsNullOrEmpty(rec))
                 Partner = rec;
         }
 
         public async Task GetReceiver()
         {
-            var rec = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo);
+            var rec = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo, TxDetails);
             if (!string.IsNullOrEmpty(rec))
                 Partner = rec;
         }
 
         public async Task<bool> Decrypt(NBitcoin.BitcoinSecret secret)
         {
-            
             if (Decrypted)
                 return false;
 
@@ -114,62 +106,118 @@ namespace VEDriversLite.NFT
             {
                 IsReceivedMessage = true;
             }
-            
-            var dmsg = await Security.ECDSAProvider.DecryptStringWithSharedSecret(Description, Partner, secret);
-            var dname = await Security.ECDSAProvider.DecryptStringWithSharedSecret(Name, Partner, secret);
 
-            if (dmsg.Item1)
-                Description = dmsg.Item2;
-            if (dname.Item1)
-                Name = dname.Item2;
+            Description = await DecryptProperty(Description, secret);
+            Name = await DecryptProperty(Name, secret);
+            Text = await DecryptProperty(Text, secret);
+            ImageLink = await DecryptProperty(ImageLink, secret);
+            Link = await DecryptProperty(Link, secret);
 
             Decrypted = true;
 
             return true;
         }
 
+        public async Task<bool> DecryptImageData(NBitcoin.BitcoinSecret secret)
+        {
+            if (!string.IsNullOrEmpty(ImageLink) && ImageLink.Contains("https://gateway.ipfs.io/ipfs/"))
+            {
+                var hash = ImageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty);
+                try
+                {
+                    var bytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
+                    var dbytesres = await ECDSAProvider.DecryptBytesWithSharedSecret(bytes, Partner, secret);
+                    if (dbytesres.Item1)
+                    {
+                        ImageData = dbytesres.Item2;
+                        var bl = ImageData.Length;
+                        return true;
+                    }
+                    else
+                        ImageData = null;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot download the file from ipfs or decrypt it. " + ex.Message);
+                }
+            }
+            return false;
+        }
+
+        private async Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret)
+        {
+            if (!string.IsNullOrEmpty(prop))
+            {
+                try
+                {
+                    var d = await ECDSAProvider.DecryptStringWithSharedSecret(prop, Partner, secret);
+                    if (d.Item1)
+                        return d.Item2;
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Cannot decrypt property in NFT Message. " + ex.Message);
+                    return prop;
+                }
+            }
+            return string.Empty;
+        }
+
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
-            if (string.IsNullOrEmpty(address) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(receiver))
-                throw new Exception("Wrong input. Must fill all parameters if you want to use metadata encryption.");
-
             var metadata = await GetCommonMetadata();
-            var edescription = string.Empty;
-            var ename = string.Empty;
-            var etext = string.Empty;
-            var eimagelink = string.Empty;
-            if (Encrypt)
+            if (string.IsNullOrEmpty(address) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(receiver))
             {
-                var res = await ECDSAProvider.EncryptStringWithSharedSecret(Description, receiver, key);
-                if (res.Item1)
-                    edescription = res.Item2;
-
-                res = await ECDSAProvider.EncryptStringWithSharedSecret(Name, receiver, key);
-                if (res.Item1)
-                    ename = res.Item2;
-
-                res = await ECDSAProvider.EncryptStringWithSharedSecret(Text, receiver, key);
-                if (res.Item1)
-                    etext = res.Item2;
-
-                res = await ECDSAProvider.EncryptStringWithSharedSecret(ImageLink, receiver, key);
-                if (res.Item1)
-                    eimagelink = res.Item2;
+                //throw new Exception("Wrong input. Must fill all parameters if you want to use metadata encryption.");
             }
             else
             {
-                edescription = Description;
-                ename = Name;
-                etext = Text;
-            }
+                var edescription = string.Empty;
+                var ename = string.Empty;
+                var etext = string.Empty;
+                var eimagelink = string.Empty;
+                var elink = string.Empty;
+                if (Encrypt)
+                {
+                    var res = await ECDSAProvider.EncryptStringWithSharedSecret(Description, receiver, key);
+                    if (res.Item1)
+                        edescription = res.Item2;
 
-            metadata["Name"] = ename;
-            metadata["Author"] = address;
-            metadata["Description"] = edescription;
-            if (!string.IsNullOrEmpty(etext))
-                metadata["Text"] = etext;
-            if (!string.IsNullOrEmpty(eimagelink))
-                metadata["Image"] = eimagelink;
+                    res = await ECDSAProvider.EncryptStringWithSharedSecret(Name, receiver, key);
+                    if (res.Item1)
+                        ename = res.Item2;
+
+                    res = await ECDSAProvider.EncryptStringWithSharedSecret(Text, receiver, key);
+                    if (res.Item1)
+                        etext = res.Item2;
+
+                    res = await ECDSAProvider.EncryptStringWithSharedSecret(ImageLink, receiver, key);
+                    if (res.Item1)
+                        eimagelink = res.Item2;
+
+                    res = await ECDSAProvider.EncryptStringWithSharedSecret(Link, receiver, key);
+                    if (res.Item1)
+                        elink = res.Item2;
+                }
+                else
+                {
+                    edescription = Description;
+                    ename = Name;
+                    etext = Text;
+                    eimagelink = ImageLink;
+                    elink = Link;
+                }
+
+                metadata["Name"] = ename;
+                metadata["Author"] = address;
+                metadata["Description"] = edescription;
+                if (!string.IsNullOrEmpty(etext))
+                    metadata["Text"] = etext;
+                if (!string.IsNullOrEmpty(eimagelink))
+                    metadata["Image"] = eimagelink;
+                if (!string.IsNullOrEmpty(elink))
+                    metadata["Link"] = elink;
+            }
 
             return metadata;
         }

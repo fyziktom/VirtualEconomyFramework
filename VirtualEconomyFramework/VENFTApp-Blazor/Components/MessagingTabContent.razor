@@ -128,7 +128,7 @@
                                             </div>
                                             <div class="row" style="margin-top:20px;">
                                                 <div class="col d-flex justify-content-end align-items-end">
-                                                    <button class="btn btn-light" @onclick="() => showMessageDetails(nft.Utxo)"><i class="oi oi-envelope-open"></i></button>
+                                                    <button class="btn btn-light" @onclick="() => showMessageDetails(nft)"><i class="oi oi-envelope-open"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -148,7 +148,7 @@
        Visible="@messageDetailsVisible"
        OnOk="@messageDetailsVisibleCancel"
        OnCancel="@messageDetailsVisibleCancel">
-    <NFTMessage Utxo="@selectedNFTUtxo" />
+    <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" />
 </Modal>
 
 
@@ -167,6 +167,8 @@
 
     [Parameter]
     public EventCallback<string> ReloadRequest { get; set; }
+
+    private INFT nftToShow = new MessageNFT("");
 
     private MessageTab messageTab = new MessageTab("");
     [Parameter]
@@ -217,12 +219,11 @@
         messageDetailsVisible = false;
     }
 
-    private async Task showMessageDetails(string utxo)
+    private async Task showMessageDetails(INFT nft)
     {
-        selectedNFTUtxo = utxo;
-        StateHasChanged();
-        await Task.Delay(50);
-        Console.WriteLine(utxo);
+        nftToShow = await NFTFactory.CloneNFT(nft);
+        selectedNFTUtxo = nft.Utxo;
+        Console.WriteLine(nft.Utxo);
         messageDetailsVisible = true;
     }
 

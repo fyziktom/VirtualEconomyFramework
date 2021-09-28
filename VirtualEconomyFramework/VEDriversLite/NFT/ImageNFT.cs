@@ -18,7 +18,7 @@ namespace VEDriversLite.NFT
         {
             await FillCommon(NFT);
         }
-        private void ParseSpecific(IDictionary<string, string> meta)
+        public override void ParseSpecific(IDictionary<string, string> metadata)
         {
 
         }
@@ -35,6 +35,7 @@ namespace VEDriversLite.NFT
 
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
+                IsLoaded = true;
             }
         }
 
