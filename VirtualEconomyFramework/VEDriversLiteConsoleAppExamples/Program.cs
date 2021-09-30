@@ -43,9 +43,6 @@ namespace VEDriversLiteConsoleAppExamples
             // or init account with pass, key and address
             //await InitAccount(pass, key, address);
 
-            // start autorefresh of data
-            await account.StartRefreshingData();
-
             while (true)
             {
                 Console.WriteLine("1 - GenerateNewAccount");

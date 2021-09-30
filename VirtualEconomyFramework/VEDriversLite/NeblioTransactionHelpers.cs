@@ -2116,8 +2116,16 @@ namespace VEDriversLite
                 throw new Exception("This kind of transaction requires Token input utxo list.");
             }
 
-            if (dto.Sendutxo.Count < 1)
-                throw new Exception("This kind of transaction requires Token input utxo list with at least 1 one token utox");
+            // if not utxo provided, check the un NFT tokens sources. These with more than 1 token
+            var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
+            var ut = utxs?.FirstOrDefault();
+            if (ut != null)
+                dto.Sendutxo.Add(ut.Txid + ":" + ((int)ut.Index).ToString());
+
+            dto.To.FirstOrDefault().Amount += (double)ut.Tokens?.ToList().FirstOrDefault()?.Amount;
+
+            if (dto.Sendutxo.Count < 2)
+                throw new Exception("This kind of transaction requires Token input utxo list with at least 2 token utox (NFT + Minting).");
 
             // neblio utxo
             if (nutxos == null || nutxos.Count == 0)

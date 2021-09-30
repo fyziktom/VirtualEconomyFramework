@@ -127,9 +127,11 @@
 </div>
 
 @code {
-        bool uploadingImage = false;
-        bool errorUpload = false;
-    private static int attemptsToDisplay = 10;
+    bool uploadingImage = false;
+    bool errorUpload = false;
+    private static int attemptsToDisplay = 30;
+    private static int attemptsToDisplayDefault = 30;
+    private static int limitSizeInMB = 10;
     LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
     private System.Threading.Timer timer;
     private ElementReference inputTypeFileElement;
@@ -214,12 +216,13 @@
             {
                 if (!string.IsNullOrEmpty(imageLink) && imageLink.Contains("https://gateway.ipfs.io/ipfs/"))
                 {
-                    var res = await NFTHelpers.IPFSDownloadFromInfuraAsync(imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
-                    if (res != null && res.Length > 0.5*uploadedFileLength)
+                    if (EncryptedContent)
                     {
-                        ImageLink = imageLink;
-                        if (EncryptedContent)
+                        var res = await NFTHelpers.IPFSDownloadFromInfuraAsync(imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                        if (res != null && res.Length > 0.5 * uploadedFileLength)
                         {
+                            ImageLink = imageLink;
+
                             var dbytes = await VEDriversLite.Security.ECDSAProvider.DecryptBytesWithSharedSecret(res, Partner, AppData.Account.Secret);
                             if (dbytes.Item1)
                             {
@@ -229,23 +232,18 @@
                                 finished = true;
                             }
                         }
-                        else
+                    }
+                    else
+                    {
+                        using var httpResponse = await _client.GetAsync(imageLink);
+
+                        if (httpResponse.IsSuccessStatusCode)
                         {
+                            ImageLink = imageLink;
                             await ImageLinkChanged.InvokeAsync(imageLink);
                             finished = true;
                         }
                     }
-
-                    /*
-                    using var httpResponse = await _client.GetAsync(imageLink);
-
-                    if (httpResponse.IsSuccessStatusCode)
-                    {
-                        ImageLink = imageLink;
-                        await ImageLinkChanged.InvokeAsync(imageLink);
-                        finished = true;
-                    }
-                    */
                     attemptsToDisplay--;
                     if (attemptsToDisplay < 0)
                     {
@@ -253,7 +251,6 @@
                         await ImageLinkChanged.InvokeAsync(imageLink);
                         finished = true;
                     }
-
                 }
                 else
                 {
@@ -290,7 +287,7 @@
         {
             errorUpload = false;
             uploadingImage = true;
-            attemptsToDisplay = 10;
+            attemptsToDisplay = attemptsToDisplayDefault;
             var i = 0;
             //StateHasChanged();
             foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
@@ -302,9 +299,9 @@
                 {
                     var fileinfo = await file.ReadFileInfoAsync();
                     var sizeInMB = fileinfo.Size / (1024 * 1024);
-                    if (sizeInMB > 10)
+                    if (sizeInMB > limitSizeInMB)
                     {
-                        await JSRuntime.InvokeVoidAsync("alertMessage", "Upload limit size is 10 MB.");
+                        await JSRuntime.InvokeVoidAsync("alertMessage", $"Upload limit size is {limitSizeInMB} MB.");
                         uploadingImage = false;
                         loadingImageStage = LoadingImageStages.NotStarted;
                         fileReaderService.CreateReference(inputTypeFileElement).ClearValue();
@@ -321,14 +318,13 @@
                         else
                         {
                             var bytes = new byte[stream.Length];
-                            
-                            //var res = await stream.ReadAsync(bytes, 0, (int)stream.Length);
+
                             using (MemoryStream mss = new MemoryStream())
                             {
                                 await stream.CopyToAsync(mss);
                                 Console.WriteLine($"MS length before encryption: {mss.Length}");
                                 Console.WriteLine($"Partner is: {Partner}");
-                                                                
+
                                 bytes = mss.ToArray();
                                 var rbytes = await VEDriversLite.Security.ECDSAProvider.EncryptBytesWithSharedSecret(bytes, Partner, AppData.Account.Secret);
                                 if (rbytes.Item1)

@@ -7,15 +7,15 @@
 {
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center">
-            <button class="btn btn-secondary" @onclick="deleteNFT">Delete <i class="oi oi-trash" style="width:50px; font-size:@fontsize;"></i></button>
+            <button class="btn btn-secondary" @onclick="deleteNFT">Delete <i class="oi oi-trash" style="pointer-events: none; width: 50px; font-size: @fontsize;"></i></button>
         </div>
     </div>
 }
 else
 {
     <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="min-width:30px; min-height:20px;">
-            <i class="oi oi-trash" @onclick="deleteNFT" style="margin-left:@marginleft; margin-top:@margintop; font-size:@fontsize;"></i>
+        <div class="col d-flex justify-content-center align-items-center">
+            <button class="btn btn-light" @onclick="deleteNFT"><i class="oi oi-trash" style="pointer-events: none; font-size: @fontsize;"></i></button>
         </div>
     </div>
 }
@@ -25,12 +25,12 @@ else
        OnOk="@HandleOk"
        OnCancel="@HandleCancel">
     <Spin Tip="Removing the NFT... " Spinning="@removingNFT">
-    <p class="text-center">Do you really want to destroy this NFT?</p>
-    <small class="text-center">When you destroy NFT the token will be connected to source tokens and it can be used for minting again.</small>
-    @if (!string.IsNullOrEmpty(customMessage))
-    {
-        <p class="text-center">@customMessage</p>
-    }
+        <p class="text-center">Do you really want to destroy this NFT?</p>
+        <small class="text-center">When you destroy NFT the token will be connected to source tokens and it can be used for minting again.</small>
+        @if (!string.IsNullOrEmpty(customMessage))
+        {
+            <p class="text-center">@customMessage</p>
+        }
     </Spin>
 </Modal>
 

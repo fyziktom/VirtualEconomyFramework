@@ -11,7 +11,7 @@
         <Spin Tip="Loading..." Spinning="@loading">
             <span class="badge badge-primary" style="position: absolute;right: 7px;top: 2px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
 
-            @if ((NFT as VEDriversLite.NFT.MessageNFT).IsReceivedMessage)
+            @if ((NFT as VEDriversLite.NFT.MessageNFT).IsReceivedMessage && !IsHistory)
             {
                 <div class="row" style="position: absolute;right: 7px;top: 40px;">
                     <div class="col d-flex justify-content-center align-items-center">
@@ -108,7 +108,7 @@
             }
             <hr />
 
-            @if ((NFT as MessageNFT).IsReceivedMessage)
+            @if ((NFT as MessageNFT).IsReceivedMessage && !IsHistory)
             {
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex justify-content-center align-items-center">
@@ -116,11 +116,6 @@
                     </div>
                 </div>
 
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.DestroyNFTButton IsIcon="true" FontSize="20" InputNFT="@NFT" Address="@_address" MainAccount="true" SubAccount="false" />
-                    </div>
-                </div>
             }
             <VENFTApp_Blazor.Components.NFTHistory Utxo="@NFT.Utxo" NftType="NFTTypes.Message" IsMessageHistory="true" />
 
@@ -193,6 +188,10 @@
 
     [Parameter]
     public bool OwnNFT { get; set; } = false;
+
+
+    [Parameter]
+    public bool IsHistory { get; set; } = false;
 
     [Parameter]
     public INFT InputNFT
