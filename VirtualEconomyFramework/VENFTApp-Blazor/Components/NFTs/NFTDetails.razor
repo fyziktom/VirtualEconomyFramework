@@ -108,7 +108,11 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <button class="btn btn-primary" @onclick="ShowEvent">Check Event NFT</button>
+                        <VENFTApp_Blazor.Components.NFTs.Tickets.ShowNFTEvent Address="@Address"
+                                                                              SubAccount="@SubAccount"
+                                                                              OwnNFT="@OwnNFT"
+                                                                              InputNFT="@NFT"
+                                                                              DisplayButton="true"/>
                     </div>
                 </div>
                 <div class="row">
@@ -144,48 +148,8 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        @switch (nft.TicketDuration)
-                        {
-                            case DurationOfNFTTicket.Day:
-                                <span class="badge badge-secondary">1 Day</span>
-                                break;
-                            case DurationOfNFTTicket.TwoDays:
-                                <span class="badge badge-primary">2 Days</span>
-                                break;
-                            case DurationOfNFTTicket.ThreeDays:
-                                <span class="badge badge-success">3 Days</span>
-                                break;
-                            case DurationOfNFTTicket.FourDays:
-                                <span class="badge badge-info">4 Days</span>
-                                break;
-                            case DurationOfNFTTicket.FiveDays:
-                                <span class="badge badge-warning">5 Days</span>
-                                break;
-                        }
-                        @switch (nft.TicketClass)
-                        {
-                            case ClassOfNFTTicket.Economy:
-                                <span class="badge badge-secondary">Economy</span>
-                                break;
-                            case ClassOfNFTTicket.Standard:
-                                <span class="badge badge-primary">Standard</span>
-                                break;
-                            case ClassOfNFTTicket.VIP:
-                                <span class="badge badge-success">VIP</span>
-                                break;
-                            case ClassOfNFTTicket.VIPPlus:
-                                <span class="badge badge-info">VIP+</span>
-                                break;
-                            case ClassOfNFTTicket.General:
-                                <span class="badge badge-primary">General</span>
-                                break;
-                            case ClassOfNFTTicket.Family:
-                                <span class="badge badge-warning">Family</span>
-                                break;
-                            case ClassOfNFTTicket.Children:
-                                <span class="badge badge-warning">Children</span>
-                                break;
-                        }
+                        <VENFTApp_Blazor.Components.NFTs.Tickets.TicketDurationBadge TicketDuration="@nft.TicketDuration"/>
+                        <VENFTApp_Blazor.Components.NFTs.Tickets.TicketClassBadge TicketClass="@nft.TicketClass" />
                     </div>
                 </div>
                 <div class="row">
@@ -206,25 +170,13 @@
                         </div>
                     </div>
                 }
-                @if (nft.Used)
-                {
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <span><b>This ticket is Used!</b></span>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    if (OwnNFT && nft.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
-                    {
-                        <div class="row">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                <button class="btn btn-primary" @onclick="showUseTicketDialog">Use Ticket</button>
-                            </div>
-                        </div>
-                    }
-                }
+                
+                <VENFTApp_Blazor.Components.NFTs.Tickets.UseTicket InputNFT="@NFT" 
+                                                                   Address="@Address" 
+                                                                   OwnNFT="@OwnNFT" 
+                                                                   SubAccount="@SubAccount" 
+                                                                   DisplayButton="true"
+                                                                   NFTSent="@NFTSentHandler"/>
             }
             @if (NFT.Type == NFTTypes.Event)
             {
@@ -266,27 +218,7 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        @switch (nft.EventClass)
-                        {
-                            case ClassOfNFTEvent.PersonalEvent:
-                                <span class="badge badge-secondary">Personal</span>
-                                break;
-                            case ClassOfNFTEvent.Birthday:
-                                <span class="badge badge-primary">Birthday</span>
-                                break;
-                            case ClassOfNFTEvent.Concert:
-                                <span class="badge badge-success">Concert</span>
-                                break;
-                            case ClassOfNFTEvent.Festival:
-                                <span class="badge badge-info">Festival</span>
-                                break;
-                            case ClassOfNFTEvent.PlaneFlight:
-                                <span class="badge badge-warning">Plane Flight</span>
-                                break;
-                            case ClassOfNFTEvent.OnlineMeeting:
-                                <span class="badge badge-light">e-Meeting</span>
-                                break;
-                        }
+                        <VENFTApp_Blazor.Components.NFTs.Tickets.NFTEventClass EventClass="@nft.EventClass" />
                     </div>
                 </div>
 
@@ -420,7 +352,7 @@
                 {
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <button class="btn btn-primary" @onclick="async () => await ShowOwnershipQRCode()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
+                            <button class="btn btn-primary" @onclick="ShowOwnershipQRCode" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
                                 <div class="row">
                                     <div class="col">
                                         <div class="row d-flex justify-content-center align-items-center">
@@ -588,75 +520,14 @@
         }
     </Modal>
 
-    <Modal Title="Event Details"
-           Visible="@eventNFTDetailsVisible"
-           OnOk="@eventNFTDetailsClose"
-           OnCancel="@eventNFTDetailsClose">
-        <Spin Tip="Loading Event Data..." Spinning="@loadingEventData">
-            @if (!string.IsNullOrEmpty(loadedEventNFT.Utxo))
-            {
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <NFT InputNFT="@loadedEventNFT" OwnNFT="false" Address="@Address" />
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div style="min-width:100px; min-height:50px;"></div>
-            }
-        </Spin>
-    </Modal>
+    <VENFTApp_Blazor.Components.NFTs.OwnershipQRCode Address="@Address" 
+                                                     OwnNFT="@OwnNFT" 
+                                                     SubAccount="@SubAccount" 
+                                                     InputNFT="@NFT"
+                                                     DisplayButton="false" 
+                                                     ShowOwnershipCodeDialog="@ownershipQRCodeVisible"
+                                                     DialogClosed="@ShowOwnerShipQRCodeClosedHandler"/>
 
-    <Modal Title="Use NFT Ticket"
-           Visible="@showUseTicket"
-           OnOk="@UseTicketConfirm"
-           OnCancel="@UseTicketCancel">
-        <span class="text-center">Do you really want to use this ticket?</span>
-    </Modal>
-
-    <Modal Title="Ownership QR Code"
-           Visible="@showOwnershipDialogVisible"
-           OnOk="@showOwnershipDialogCancel"
-           Style="width:auto; max-width:300px;"
-           OnCancel="@showOwnershipDialogCancel">
-        <Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span class="text-center">Code is valid for: @qrCodeRefreshCounter s</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <small>Signature</small>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <h6 class="text-center">@ownershipDialogCode</h6>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <!--<img src="@ownershipDialogQRCodeImage" style="max-width:250px;" />-->
-                    <!--<div id="qrCodeRef"></div>-->
-                    <div @ref=qrCodeRef></div>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    @if (!copyTextButtonCoppied)
-                    {
-                        <button class="btn btn-light" @onclick="copyCodeToClipboard">Copy <i class="oi oi-share"></i></button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-light" @onclick="copyCodeToClipboard">Copied <i class="oi oi-check"></i></button>
-                    }
-                </div>
-            </div>
-        </Spin>
-    </Modal>
 </div>
 
 @code {
@@ -720,31 +591,17 @@
     public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
     public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
 
-    private bool eventNFTDetailsVisible = false;
+    private bool loading = false;
     private bool loadingEventData = false;
-    private bool showUseTicket = false;
     private bool createNewPostVisible = false;
     private bool sendNFTDialogVisible = false;
     private bool moveNFTDialogVisible = false;
+    private bool ownershipQRCodeVisible = false;
     private bool sendNFTToDogeftDialogVisible = false;
-    private bool showOwnershipDialogVisible = false;
-    private bool showOwnershipDialogLoading = false;
     private bool setPriceNFTDialogVisible = false;
-    private bool loading = false;
-    private bool copyTextButtonCoppied = false;
-    private bool qrrefreshed = false;
 
-    private int qrCodeRefreshCounter = 30;
-
-    private string creatingOwnerQRCodeState = string.Empty;
-    private string ownershipDialogQRCodeImage = string.Empty;
-    private string ownershipDialogCode = string.Empty;
     private string status = string.Empty;
     private string songName = string.Empty;
-
-    private System.Threading.Timer qrCodeRefreshTimer;
-    private ElementReference qrCodeRef;
-    INFT loadedEventNFT = new EventNFT("");
 
     protected override Task OnInitializedAsync()
     {
@@ -763,6 +620,16 @@
 
     private void TxDataRefreshedHandler(object sender, GetTransactionInfoResponse info)
     {
+        StateHasChanged();
+    }
+
+    private void ShowOwnershipQRCode(MouseEventArgs e)
+    {
+        ownershipQRCodeVisible = true;
+    }
+    private async Task ShowOwnerShipQRCodeClosedHandler(bool e)
+    {
+        ownershipQRCodeVisible = e;
         StateHasChanged();
     }
 
@@ -786,30 +653,6 @@
         StateHasChanged();
     }
 
-    private async Task ShowEvent(MouseEventArgs e)
-    {
-        if (NFT.Type != NFTTypes.Ticket)
-            return;
-        var nft = NFT as TicketNFT;
-        eventNFTDetailsVisible = true;
-        loadingEventData = true;
-        StateHasChanged();
-
-        loadedEventNFT = await NFTHelpers.FindEventOnTheAddress(nft.EventAddress, nft.EventId);
-        loadingEventData = false;
-        if (loadedEventNFT == null)
-        {
-            loadedEventNFT = new EventNFT("");
-            eventNFTDetailsVisible = false;
-        }
-        StateHasChanged();
-    }
-
-    private async Task eventNFTDetailsClose(MouseEventArgs e)
-    {
-        eventNFTDetailsVisible = false;
-    }
-
     private async Task VideoStartedPlay()
     {
         await JSRuntime.InvokeVoidAsync("setMusicInfo", NFT.Name, NFT.Author, NFT.Description);
@@ -817,162 +660,32 @@
         // not work - handler is not called, I had to add little hack in onafterrender
     }
 
-    private async Task copyCodeToClipboard(MouseEventArgs e)
-    {
-        var dto = new OwnershipVerificationCodeDto()
-        {
-            TxId = NFT.Utxo,
-            Signature = ownershipDialogCode
-        };
-        await JSRuntime.InvokeVoidAsync("jsFunctions.copyToClipboard", JsonConvert.SerializeObject(dto));
-        await copyCodeToClipboardButtonTextEfect();
-    }
-
-    private async Task copyCodeToClipboardButtonTextEfect()
-    {
-        copyTextButtonCoppied = true;
-        StateHasChanged();
-        await Task.Delay(1000);
-        copyTextButtonCoppied = false;
-        StateHasChanged();
-    }
-
-    private async Task RefreshQRCode()
-    {
-        showOwnershipDialogLoading = true;
-        StateHasChanged();
-        await Task.Delay(100);
-
-        (OwnershipVerificationCodeDto, byte[]) res;
-        if (!SubAccount)
-            res = await AppData.Account.GetNFTVerifyQRCode(_utxo);
-        else
-            res = await AppData.Account.GetNFTVerifyQRCodeFromSubAccount(Address, _utxo);
-        ownershipDialogCode = res.Item1.Signature;
-
-        var sdto = JsonConvert.SerializeObject(res.Item1);
-        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { sdto, qrCodeRef });
-        creatingOwnerQRCodeState = "Refreshing Key...";
-        showOwnershipDialogLoading = false;
-        StateHasChanged();
-    }
-    private async Task ShowOwnershipQRCode()
-    {
-        creatingOwnerQRCodeState = "Initializing Verification Module...";
-        showOwnershipDialogVisible = true;
-        StateHasChanged();
-        await Task.Delay(50);
-        await RefreshQRCode();
-
-        if (qrCodeRefreshTimer != null)
-        {
-            qrCodeRefreshTimer.Dispose();
-        }
-
-        qrCodeRefreshTimer = new System.Threading.Timer(async (object stateInfo) =>
-        {
-            try
-            {
-                var utc = DateTime.UtcNow;
-                if ((utc.Second >= 0 && utc.Second < 50) && !qrrefreshed)
-                {
-                    await RefreshQRCode();
-                    qrCodeRefreshCounter = 60 - utc.Second;
-                    qrrefreshed = true;
-                }
-                else if (utc.Second > 50 && utc.Second < 55)
-                {
-                    qrrefreshed = false;
-                    qrCodeRefreshCounter--;
-                }
-                else
-                {
-                    qrCodeRefreshCounter--;
-                }
-
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot read tx details. " + ex.Message);
-            }
-        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
-    }
-
-    private async Task showUseTicketDialog(MouseEventArgs e)
-    {
-        showUseTicket = true;
-    }
-
-    private async Task UseTicketCancel(MouseEventArgs e)
-    {
-        showUseTicket = false;
-    }
-
-    private async Task UseTicketConfirm(MouseEventArgs e)
-    {
-        try
-        {
-            loading = true;
-            showUseTicket = false;
-            StateHasChanged();
-            (bool, string) res;
-            if (!SubAccount)
-                res = await AppData.Account.UseNFTTicket(NFT);
-            else
-                res = await AppData.Account.UseTicketNFTOnSubAccount(Address, NFT);
-            if (res.Item1)
-                await NFTSent.InvokeAsync(res.Item2);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-        finally
-        {
-            loading = false;
-            StateHasChanged();
-        }
-    }
-
     private async Task ShowMoveNFTDialog()
     {
         moveNFTDialogVisible = true;
-        StateHasChanged();
     }
     private async Task ShowSendNFTDialog()
     {
         sendNFTDialogVisible = true;
-        StateHasChanged();
     }
     private async Task ShowSendNFTToDogeftDialog()
     {
         sendNFTToDogeftDialogVisible = true;
-        StateHasChanged();
-    }
-
-    private async Task showOwnershipDialogCancel(MouseEventArgs e)
-    {
-        showOwnershipDialogVisible = false;
-        StateHasChanged();
     }
 
     private async Task ShowSetPriceNFTDialog()
     {
         setPriceNFTDialogVisible = true;
-        StateHasChanged();
     }
 
     private async Task ShowUpdatePostNFTDialog()
     {
         createNewPostVisible = true;
-        StateHasChanged();
     }
 
     private async Task createNewPostConfirm(MouseEventArgs e)
     {
         createNewPostVisible = false;
-        StateHasChanged();
     }
 
     private async Task createNewPostCancel(MouseEventArgs e)

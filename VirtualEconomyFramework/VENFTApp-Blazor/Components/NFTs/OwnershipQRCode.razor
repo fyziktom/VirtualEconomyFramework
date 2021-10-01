@@ -1,0 +1,194 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+@if (DisplayButton)
+{
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <button class="btn btn-primary" @onclick="ShowOwnershipQRCode">Show QR Code</button>
+        </div>
+    </div>
+}
+
+<Modal Title="Ownership QR Code"
+       Visible="@showOwnershipDialogVisible"
+       OnOk="@showOwnershipDialogCancel"
+       Style="width:auto; max-width:300px;"
+       OnCancel="@showOwnershipDialogCancel">
+    <Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span class="text-center">Code is valid for: @qrCodeRefreshCounter s</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <small>Signature</small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h6 class="text-center">@ownershipDialogCode</h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <!--<img src="@ownershipDialogQRCodeImage" style="max-width:250px;" />-->
+                <!--<div id="qrCodeRef"></div>-->
+                <div @ref=qrCodeRef></div>
+            </div>
+        </div>
+        <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@ownershipCodeSerialized" />
+    </Spin>
+</Modal>
+
+@code {
+
+    private bool showOwnershipCode = false;
+    [Parameter]
+    public bool ShowOwnershipCodeDialog
+    {
+        get => showOwnershipCode;
+        set
+        {
+            if (!showOwnershipCode && value)
+            {
+                showOwnershipCode = true;
+                ShowOwnershipQRCode();
+            }
+            else if (!value)
+            {
+                showOwnershipCode = false;
+                showOwnershipDialogVisible = false;
+            }
+        }
+    }
+
+    [Parameter]
+    public bool DisplayButton { get; set; } = false;
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    private INFT NFT { get; set; } = new ImageNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo)
+            {
+                NFT = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> DialogClosed { get; set; }
+
+
+    private bool showOwnershipDialogVisible = false;
+    private bool showOwnershipDialogLoading = false;
+    private bool copyTextButtonCoppied = false;
+    private bool qrrefreshed = false;
+
+    private int qrCodeRefreshCounter = 30;
+
+    private string creatingOwnerQRCodeState = string.Empty;
+    private string ownershipDialogQRCodeImage = string.Empty;
+    private string ownershipDialogCode = string.Empty;
+    private string ownershipCodeSerialized = string.Empty;
+
+    private System.Threading.Timer qrCodeRefreshTimer;
+    private ElementReference qrCodeRef;
+
+    private async Task RefreshQRCode()
+    {
+        showOwnershipDialogLoading = true;
+        StateHasChanged();
+        await Task.Delay(100);
+
+        (OwnershipVerificationCodeDto, byte[]) res;
+        if (!SubAccount)
+            res = await AppData.Account.GetNFTVerifyQRCode(NFT.Utxo);
+        else
+            res = await AppData.Account.GetNFTVerifyQRCodeFromSubAccount(Address, NFT.Utxo);
+        ownershipDialogCode = res.Item1.Signature;
+
+        var dto = new OwnershipVerificationCodeDto()
+        {
+            TxId = NFT.Utxo,
+            Signature = ownershipDialogCode
+        };
+        ownershipCodeSerialized = JsonConvert.SerializeObject(dto);
+
+        var sdto = JsonConvert.SerializeObject(res.Item1);
+        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { sdto, qrCodeRef });
+        creatingOwnerQRCodeState = "Refreshing Key...";
+        showOwnershipDialogLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task ShowOwnershipQRCode()
+    {
+        creatingOwnerQRCodeState = "Initializing Verification Module...";
+        showOwnershipDialogVisible = true;
+        StateHasChanged();
+        await Task.Delay(50);
+        await RefreshQRCode();
+
+        if (qrCodeRefreshTimer != null)
+        {
+            qrCodeRefreshTimer.Dispose();
+        }
+
+        qrCodeRefreshTimer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            try
+            {
+                var utc = DateTime.UtcNow;
+                if ((utc.Second >= 0 && utc.Second < 50) && !qrrefreshed)
+                {
+                    await RefreshQRCode();
+                    qrCodeRefreshCounter = 60 - utc.Second;
+                    qrrefreshed = true;
+                }
+                else if (utc.Second > 50 && utc.Second < 55)
+                {
+                    qrrefreshed = false;
+                    qrCodeRefreshCounter--;
+                }
+                else
+                {
+                    qrCodeRefreshCounter--;
+                }
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot read tx details. " + ex.Message);
+            }
+        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
+    }
+
+    private async Task showOwnershipDialogCancel(MouseEventArgs e)
+    {
+        if (qrCodeRefreshTimer != null)
+        {
+            qrCodeRefreshTimer.Dispose();
+        }
+        await DialogClosed.InvokeAsync(false);
+        showOwnershipDialogVisible = false;
+    }
+}

@@ -1,0 +1,27 @@
+﻿@using VEDriversLite.NFT
+@switch (EventClass)
+{
+    case ClassOfNFTEvent.PersonalEvent:
+        <span class="badge badge-secondary">Personal</span>
+        break;
+    case ClassOfNFTEvent.Birthday:
+        <span class="badge badge-primary">Birthday</span>
+        break;
+    case ClassOfNFTEvent.Concert:
+        <span class="badge badge-success">Concert</span>
+        break;
+    case ClassOfNFTEvent.Festival:
+        <span class="badge badge-info">Festival</span>
+        break;
+    case ClassOfNFTEvent.PlaneFlight:
+        <span class="badge badge-warning">Plane Flight</span>
+        break;
+    case ClassOfNFTEvent.OnlineMeeting:
+        <span class="badge badge-light">e-Meeting</span>
+        break;
+}
+
+@code {
+    [Parameter]
+    public ClassOfNFTEvent EventClass { get; set; } = ClassOfNFTEvent.PersonalEvent;
+}

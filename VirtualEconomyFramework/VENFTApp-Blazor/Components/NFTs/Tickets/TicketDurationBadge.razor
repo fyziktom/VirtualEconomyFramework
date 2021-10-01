@@ -1,0 +1,24 @@
+﻿@using VEDriversLite.NFT 
+@switch (TicketDuration)
+{
+    case DurationOfNFTTicket.Day:
+        <span class="badge badge-secondary">1 Day</span>
+        break;
+    case DurationOfNFTTicket.TwoDays:
+        <span class="badge badge-primary">2 Days</span>
+        break;
+    case DurationOfNFTTicket.ThreeDays:
+        <span class="badge badge-success">3 Days</span>
+        break;
+    case DurationOfNFTTicket.FourDays:
+        <span class="badge badge-info">4 Days</span>
+        break;
+    case DurationOfNFTTicket.FiveDays:
+        <span class="badge badge-warning">5 Days</span>
+        break;
+}
+
+@code {
+    [Parameter]
+    public DurationOfNFTTicket TicketDuration { get; set; } = VEDriversLite.NFT.DurationOfNFTTicket.Day;
+}

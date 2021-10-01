@@ -1,0 +1,30 @@
+﻿@using VEDriversLite.NFT
+@switch (TicketClass)
+{
+    case ClassOfNFTTicket.Economy:
+        <span class="badge badge-secondary">Economy</span>
+        break;
+    case ClassOfNFTTicket.Standard:
+        <span class="badge badge-primary">Standard</span>
+        break;
+    case ClassOfNFTTicket.VIP:
+        <span class="badge badge-success">VIP</span>
+        break;
+    case ClassOfNFTTicket.VIPPlus:
+        <span class="badge badge-info">VIP+</span>
+        break;
+    case ClassOfNFTTicket.General:
+        <span class="badge badge-primary">General</span>
+        break;
+    case ClassOfNFTTicket.Family:
+        <span class="badge badge-warning">Family</span>
+        break;
+    case ClassOfNFTTicket.Children:
+        <span class="badge badge-warning">Children</span>
+        break;
+}
+
+@code {
+    [Parameter]
+    public ClassOfNFTTicket TicketClass { get; set; } = ClassOfNFTTicket.Standard;
+}

@@ -146,7 +146,7 @@
            Visible="@sendMessageVisible"
            OnOk="@sendMessageConfirm"
            OnCancel="@sendMessageCancel">
-        <SendMessage NFT="@NFT" Receiver="@NFT.Author" />
+        <SendMessage NFT="@NFT" Receiver="@NFT.Author" MessageSent="@NFTSentHandler" />
     </Modal>
 </div>
 
@@ -203,6 +203,9 @@
             }
         }
     }
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
 
     private bool modalWithImageVisible = false;
     private bool downloadingImage = false;
@@ -293,6 +296,14 @@
     public async Task modalWithImageClose(MouseEventArgs e)
     {
         modalWithImageVisible = false;
+    }
+
+    void NFTSentHandler(string e)
+    {
+        modalWithImageVisible = false;
+        sendMessageVisible = false;
+        NFTSent.InvokeAsync(e);
+        StateHasChanged();
     }
 
 }

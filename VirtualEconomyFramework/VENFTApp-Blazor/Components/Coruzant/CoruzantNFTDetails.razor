@@ -268,7 +268,7 @@
                                     </div>
                                 </div>
                             </button>
-                            <button class="btn btn-primary" @onclick="async () => await ShowOwnershipQRCode()" style="width:65px; height:65px; margin-left:20px;">
+                            <button class="btn btn-primary" @onclick="ShowOwnershipQRCode" style="width:65px; height:65px; margin-left:20px;">
                                 <div class="row">
                                     <div class="col">
                                         <div class="row d-flex justify-content-center align-items-center">
@@ -297,22 +297,22 @@
     </div>
 
     <VENFTApp_Blazor.Components.NFTs.SendNFT NFT="@NFT"
-             NFTSent="@NFTSentHandler"
-             @bind-SendNFTDialogVisible="sendNFTDialogVisible"
-             Address="@Address"
-             SubAccount="@SubAccount" />
+                                             NFTSent="@NFTSentHandler"
+                                             @bind-SendNFTDialogVisible="sendNFTDialogVisible"
+                                             Address="@Address"
+                                             SubAccount="@SubAccount" />
 
     <Modal Title="Create or edit post NFT"
            Visible="@createNewPostVisible"
            OnOk="@createNewPostConfirm"
            OnCancel="@createNewPostCancel">
         <VENFTApp_Blazor.Components.NFTs.MintNFTForm NFTType="NFTTypes.CoruzantArticle"
-                     NFT="@NFT"
-                     TokenId="@CoruzantNFTHelpers.CoruzantTokenId"
-                     RedirectToNFTsAfterMint="false"
-                     NFTMinted="@NFTMinted"
-                     Address="@Address"
-                     SubAccount="@SubAccount" />
+                                                     NFT="@NFT"
+                                                     TokenId="@CoruzantNFTHelpers.CoruzantTokenId"
+                                                     RedirectToNFTsAfterMint="false"
+                                                     NFTMinted="@NFTMinted"
+                                                     Address="@Address"
+                                                     SubAccount="@SubAccount" />
     </Modal>
 
     <Modal Title="Author Profile NFT"
@@ -326,48 +326,13 @@
         </div>
     </Modal>
 
-    <Modal Title="Ownership QR Code"
-           Visible="@showOwnershipDialogVisible"
-           OnOk="@showOwnershipDialogCancel"
-           Style="width:auto; max-width:300px;"
-           OnCancel="@showOwnershipDialogCancel">
-        <Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span class="text-center">Code is valid for: @qrCodeRefreshCounter s</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <small>Signature</small>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <h6 class="text-center">@ownershipDialogCode</h6>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <!--<img src="@ownershipDialogQRCodeImage" style="max-width:250px;" />-->
-                    <!--<div id="qrCodeRef"></div>-->
-                    <div @ref=qrCodeRef></div>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    @if (!copyTextButtonCoppied)
-                    {
-                        <button class="btn btn-light" @onclick="copyCodeToClipboard">Copy <i class="oi oi-share"></i></button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-light" @onclick="copyCodeToClipboard">Copied <i class="oi oi-check"></i></button>
-                    }
-                </div>
-            </div>
-        </Spin>
-    </Modal>
+    <VENFTApp_Blazor.Components.NFTs.OwnershipQRCode Address="@Address"
+                                                     OwnNFT="@OwnNFT"
+                                                     SubAccount="@SubAccount"
+                                                     InputNFT="@NFT"
+                                                     DisplayButton="false"
+                                                     ShowOwnershipCodeDialog="@ownershipQRCodeVisible"
+                                                     DialogClosed="@ShowOwnerShipQRCodeClosedHandler" />
 </div>
 
 
@@ -418,31 +383,20 @@
     public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
 
     private bool coruzantEditAllowed = false;
+    private bool createNewPostVisible = false;
+    private bool sendNFTDialogVisible = false;
+    private bool ownershipQRCodeVisible = false;
+    private bool setPriceNFTDialogVisible = false;
+    private bool loading = false;
+    private bool authorProfileNFTVisible = false;
+
+    private string buzzsproudLink = string.Empty;
+    private string status = string.Empty;
+    private string songName = string.Empty;
 
     private INFT NFT { get; set; } = new CoruzantProfileNFT("");
     private INFT AuthorProfileNFT { get; set; } = new CoruzantProfileNFT("");
 
-    private bool createNewPostVisible = false;
-    private bool sendNFTDialogVisible = false;
-    private bool showOwnershipDialogVisible = false;
-    private bool showOwnershipDialogLoading = false;
-    private bool setPriceNFTDialogVisible = false;
-    private bool loading = false;
-    private bool copyTextButtonCoppied = false;
-    private bool authorProfileNFTVisible = false;
-
-    private string buzzsproudLink = string.Empty;
-
-    private System.Threading.Timer qrCodeRefreshTimer;
-    private int qrCodeRefreshCounter = 30;
-
-    private string creatingOwnerQRCodeState = string.Empty;
-    private string ownershipDialogQRCodeImage = string.Empty;
-    private string ownershipDialogCode = string.Empty;
-    private string status = string.Empty;
-    private bool qrrefreshed = false;
-    private ElementReference qrCodeRef;
-    private string songName = string.Empty;
 
     protected override Task OnInitializedAsync()
     {
@@ -567,91 +521,13 @@
         }
     }
 
-    private async Task copyCodeToClipboard(MouseEventArgs e)
+    private void ShowOwnershipQRCode(MouseEventArgs e)
     {
-        var dto = new OwnershipVerificationCodeDto()
-        {
-            TxId = NFT.Utxo,
-            Signature = ownershipDialogCode
-        };
-        await JSRuntime.InvokeVoidAsync("jsFunctions.copyToClipboard", JsonConvert.SerializeObject(dto));
-        await copyCodeToClipboardButtonTextEfect();
+        ownershipQRCodeVisible = true;
     }
-
-    private async Task copyCodeToClipboardButtonTextEfect()
+    private async Task ShowOwnerShipQRCodeClosedHandler(bool e)
     {
-        copyTextButtonCoppied = true;
-        StateHasChanged();
-        await Task.Delay(1000);
-        copyTextButtonCoppied = false;
-        StateHasChanged();
-    }
-
-    private async Task RefreshQRCode()
-    {
-        showOwnershipDialogLoading = true;
-        StateHasChanged();
-        await Task.Delay(100);
-
-        (OwnershipVerificationCodeDto, byte[]) res;
-        if (!SubAccount)
-            res = await AppData.Account.GetNFTVerifyQRCode(_utxo);
-        else
-            res = await AppData.Account.GetNFTVerifyQRCodeFromSubAccount(Address, _utxo);
-        ownershipDialogCode = res.Item1.Signature;
-
-        var sdto = JsonConvert.SerializeObject(res.Item1);
-        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { sdto, qrCodeRef });
-        creatingOwnerQRCodeState = "Refreshing Key...";
-        showOwnershipDialogLoading = false;
-        StateHasChanged();
-    }
-    private async Task ShowOwnershipQRCode()
-    {
-        creatingOwnerQRCodeState = "Initializing Verification Module...";
-        showOwnershipDialogVisible = true;
-        StateHasChanged();
-        await Task.Delay(50);
-        await RefreshQRCode();
-
-        if (qrCodeRefreshTimer != null)
-        {
-            qrCodeRefreshTimer.Dispose();
-        }
-
-        qrCodeRefreshTimer = new System.Threading.Timer(async (object stateInfo) =>
-        {
-            try
-            {
-                var utc = DateTime.UtcNow;
-                if ((utc.Second >= 0 && utc.Second < 50) && !qrrefreshed)
-                {
-                    await RefreshQRCode();
-                    qrCodeRefreshCounter = 60 - utc.Second;
-                    qrrefreshed = true;
-                }
-                else if (utc.Second > 50 && utc.Second < 55)
-                {
-                    qrrefreshed = false;
-                    qrCodeRefreshCounter--;
-                }
-                else
-                {
-                    qrCodeRefreshCounter--;
-                }
-
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot read tx details. " + ex.Message);
-            }
-        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
-    }
-
-    private async Task showOwnershipDialogCancel(MouseEventArgs e)
-    {
-        showOwnershipDialogVisible = false;
+        ownershipQRCodeVisible = e;
         StateHasChanged();
     }
 

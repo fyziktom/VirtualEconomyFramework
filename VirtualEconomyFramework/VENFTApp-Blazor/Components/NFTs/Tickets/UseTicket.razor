@@ -1,0 +1,131 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+
+@if (DisplayButton)
+{
+    @if (NFT.Used)
+    {
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span><b>This ticket is Used!</b></span>
+            </div>
+        </div>
+    }
+    else
+    {
+        if (OwnNFT && NFT.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
+        {
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <button class="btn btn-primary" @onclick="showUseTicketDialog">Use Ticket</button>
+                </div>
+            </div>
+        }
+    }
+}
+
+<Modal Title="Use NFT Ticket"
+       Visible="@showUseTicketVisible"
+       OnOk="@UseTicketConfirm"
+       OnCancel="@UseTicketCancel">
+    <Spin Tip="Writing Use state..." Spinning="@loading">
+        <span class="text-center">Do you really want to use this ticket?</span>
+    </Spin>
+</Modal>
+
+@code {
+    private TicketNFT NFT { get; set; } = new TicketNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo && NFT.Type == NFTTypes.Ticket)
+            {
+                NFT = value as TicketNFT;
+            }
+        }
+    }
+
+    private bool showUseTicket = false;
+    [Parameter]
+    public bool ShowUseTicketDialog
+    {
+        get => showUseTicket;
+        set
+        {
+            if (!showUseTicket && value)
+            {
+                showUseTicket = true;
+                showUseTicketVisible = true;
+            }
+            else if (!value)
+            {
+                showUseTicket = false;
+                showUseTicketVisible = false;
+            }
+        }
+    }
+
+    [Parameter]
+    public bool DisplayButton { get; set; } = false;
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> DialogClosed { get; set; }
+
+    private bool loading = false;
+    private bool showUseTicketVisible = false;
+
+    private async Task showUseTicketDialog(MouseEventArgs e)
+    {
+        showUseTicketVisible = true;
+    }
+
+    private async Task UseTicketCancel(MouseEventArgs e)
+    {
+        showUseTicketVisible = false;
+    }
+
+    private async Task UseTicketConfirm(MouseEventArgs e)
+    {
+        try
+        {
+            loading = true;
+            showUseTicket = false;
+            StateHasChanged();
+            (bool, string) res;
+            if (!SubAccount)
+                res = await AppData.Account.UseNFTTicket(NFT);
+            else
+                res = await AppData.Account.UseTicketNFTOnSubAccount(Address, NFT);
+            if (res.Item1)
+            {
+                await DialogClosed.InvokeAsync(false);
+                await NFTSent.InvokeAsync(res.Item2);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

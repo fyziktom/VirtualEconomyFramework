@@ -175,6 +175,7 @@
     private bool messageDetailsVisible = false;
 
     private int refresh = 5;
+    private int lastCount = 0;
 
     private string selectedNFTUtxo = string.Empty;
     private string lastAddress = string.Empty;
@@ -191,12 +192,10 @@
         DecryptMessages();
     }
 
-    void RefreshedHandler(object sender, EventArgs e)
+    private void RefreshedHandler(object sender, EventArgs e)
     {
-        /*
-        if (_nfts.Count != AppData.Account.NFTs.Count || refresh < 0)
+        if (lastCount != AppData.Account.NFTs.Count || refresh < 0)
         {
-            _nfts = AppData.Account.NFTs;
             DecryptMessages();
             refresh = 10;
         }
@@ -204,7 +203,7 @@
         {
             refresh--;
         }
-        */
+        
         StateHasChanged();
     }
     void NFTsChangedHandler(object sender, string e)
@@ -216,7 +215,7 @@
     private async Task DecryptMessages()
     {
         foreach (var m in _nfts)
-            if (m.Type == NFTTypes.Message)
+            if (m.Type == NFTTypes.Message && !(m as MessageNFT).Decrypted)
                 await (m as MessageNFT).Decrypt(AppData.Account.Secret);
         StateHasChanged();
     }
@@ -240,7 +239,7 @@
             await AppData.Account.ReloadUtxos();
             await AppData.Account.ReLoadNFTs();
             _nfts = AppData.Account.NFTs;
-
+            lastCount = _nfts.Count;
             lastAddress = _address;
             await Task.Delay(50);
             StateHasChanged();

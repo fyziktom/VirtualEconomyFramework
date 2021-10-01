@@ -56,8 +56,11 @@ namespace VEDriversLite.NFT
             TicketDuration = nft.TicketDuration;
             EventId = nft.EventId;
             EventAddress = nft.EventAddress;
+            if (!string.IsNullOrEmpty(nft.EventNFTForTheTicket.Utxo))
+                EventNFTForTheTicket = nft.EventNFTForTheTicket;
             Seat = nft.Seat;
             MusicInLink = nft.MusicInLink;
+            Used = nft.Used;
         }
 
         public double PriceInDoge { get; set; } = 0;

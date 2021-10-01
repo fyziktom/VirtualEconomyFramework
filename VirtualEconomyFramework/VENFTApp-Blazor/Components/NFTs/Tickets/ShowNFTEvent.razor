@@ -1,0 +1,115 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+@if (DisplayButton)
+{
+    <div class="row">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <button class="btn btn-primary" @onclick="ShowEvent">Show NFT Event</button>
+        </div>
+    </div>
+}
+
+<Modal Title="Event Details"
+       Visible="@showEventNFTDialogVisible"
+       OnOk="@eventNFTDetailsClose"
+       OnCancel="@eventNFTDetailsClose">
+    <Spin Tip="Loading Event Data..." Spinning="@showEventNFTDialogLoading">
+        @if (!string.IsNullOrEmpty(NFT.Utxo))
+        {
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <NFT InputNFT="@loadedNFTEvent" OwnNFT="false" Address="@Address" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div style="min-width:100px; min-height:50px;"></div>
+        }
+    </Spin>
+</Modal>
+
+@code {
+
+    private bool showEventNFTDialog = false;
+    [Parameter]
+    public bool ShowEventNFTDialog
+    {
+        get => showEventNFTDialog;
+        set
+        {
+            if (!showEventNFTDialog && value)
+            {
+                showEventNFTDialog = true;
+                ShowEvent(null);
+            }
+            else if (!value)
+            {
+                showEventNFTDialog = false;
+                showEventNFTDialogVisible = false;
+            }
+        }
+    }
+
+    [Parameter]
+    public bool DisplayButton { get; set; } = false;
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    private INFT NFT { get; set; } = new ImageNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo)
+            {
+                NFT = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> DialogClosed { get; set; }
+
+    private bool showEventNFTDialogVisible = false;
+    private bool showEventNFTDialogLoading = false;
+
+    private INFT loadedNFTEvent = new EventNFT("");
+
+    private async Task ShowEvent(MouseEventArgs e)
+    {
+        if (NFT.Type != NFTTypes.Ticket)
+            return;
+        var nft = NFT as TicketNFT;
+        showEventNFTDialogVisible = true;
+        showEventNFTDialogLoading = true;
+        StateHasChanged();
+
+        loadedNFTEvent = await NFTHelpers.FindEventOnTheAddress(nft.EventAddress, nft.EventId);
+        showEventNFTDialogLoading = false;
+        if (NFT == null)
+        {
+            NFT = new EventNFT("");
+            showEventNFTDialogVisible = false;
+        }
+        StateHasChanged();
+    }
+    private async Task eventNFTDetailsClose(MouseEventArgs e)
+    {
+        await DialogClosed.InvokeAsync(false);
+        showEventNFTDialogVisible = false;
+    }
+}
