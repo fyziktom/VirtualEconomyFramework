@@ -16,7 +16,7 @@
             <div class="col h-100 w-100" style="margin-left:0px; padding:0px;">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.HelpButton PageSection="messaging" />
+                        <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="messaging" />
                     </div>
                 </div>
 
@@ -30,7 +30,7 @@
                                     <span class="oi oi-home" aria-hidden="true"></span> All My Received
                                 </HeaderTemplate>
                                 <ChildContent>
-                                    <VENFTApp_Blazor.Components.MessageList NFTs="@AppData.Account.NFTs" Address="@AppData.Account.Address" />
+                                    <VENFTApp_Blazor.Components.NFTs.Messages.MessageList NFTs="@AppData.Account.NFTs" Address="@AppData.Account.Address" />
                                 </ChildContent>
                             </Panel>
                             @foreach (var mt in AppData.Account.MessageTabs)
@@ -49,7 +49,7 @@
                                     <ChildContent>
                                         <div class="row" style="min-width:300px; padding:0px;">
                                             <div class="col w-100" style="min-width:300px; padding:0px;">
-                                                <VENFTApp_Blazor.Components.MessagingTabContent InMessageTab="@selectedMessageTab" ReloadRequest="ReloadMessages" />
+                                                <VENFTApp_Blazor.Components.NFTs.Messages.MessagingTabContent InMessageTab="@selectedMessageTab" ReloadRequest="ReloadMessages" />
                                             </div>
                                         </div>
                                     </ChildContent>
@@ -109,7 +109,7 @@
             </div>
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Blazor.Components.NeblioAddressInput AddressCheckedInputed="newTabAddressChangedHandler" />
+                    <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="newTabAddressChangedHandler" />
                     <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
                 </div>
             </div>
@@ -120,41 +120,18 @@
 @code {
 
     private bool allMyVisible = false;
+    private bool loadingBrowser = false;
+    private bool addMessageTabVisible = false;
+    private bool collapseNavMenu = true;
+
+    private int refresh = 10;
+
     private string newTabAddress = string.Empty;
     private string selectedNewTabFromBookmarkName = "Select From Bookmark";
-    bool loadingBrowser = false;
+    private string addressInOpenTab = string.Empty;
 
-    bool addMessageTabVisible = false;
-    string addressInOpenTab = string.Empty;
-    private bool collapseNavMenu = true;
     private MessageTab selectedMessageTab = new MessageTab("");
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-
-    void Callback(string[] keys)
-    {
-        var key = keys.Last();
-        if (string.IsNullOrEmpty(key))
-            return;
-        if (key == "Add")
-        {
-            addMessageTabVisible = true;
-            return;
-        }
-        else if (key == "AllMyReceived")
-        {
-            showAllMyMessageTab(null);
-            return;
-        }
-        addressInOpenTab = keys.Last();
-        selectTab(keys.Last());
-        Console.WriteLine(string.Join(',', keys));
-    }
 
     protected override Task OnInitializedAsync()
     {
@@ -179,25 +156,7 @@
         return base.OnInitializedAsync();
     }
 
-    private void newTabAddressChangedHandler(string address)
-    {
-        if (address.Length < 8)
-        {
-            newTabAddress = string.Empty;
-            return;
-        }
-        newTabAddress = address;
-        StateHasChanged();
-    }
 
-    private async Task Redirect()
-    {
-        AppData.Account = new NeblioAccount();
-        await Task.Delay(500);
-        NavManager.NavigateTo("/");
-    }
-
-    private int refresh = 10;
     void RefreshedHandler(object sender, EventArgs e)
     {
         if (refresh < 0)
@@ -210,6 +169,44 @@
             refresh--;
         }
         StateHasChanged();
+    }
+
+    private void newTabAddressChangedHandler(string address)
+    {
+        if (address.Length < 8)
+        {
+            newTabAddress = string.Empty;
+            return;
+        }
+        newTabAddress = address;
+        StateHasChanged();
+    }
+
+    private void Callback(string[] keys)
+    {
+        var key = keys.Last();
+        if (string.IsNullOrEmpty(key))
+            return;
+        if (key == "Add")
+        {
+            addMessageTabVisible = true;
+            return;
+        }
+        else if (key == "AllMyReceived")
+        {
+            showAllMyMessageTab(null);
+            return;
+        }
+        addressInOpenTab = keys.Last();
+        selectTab(keys.Last());
+        Console.WriteLine(string.Join(',', keys));
+    }
+
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
     }
 
     private async Task ReloadMessages(string tabaddress)

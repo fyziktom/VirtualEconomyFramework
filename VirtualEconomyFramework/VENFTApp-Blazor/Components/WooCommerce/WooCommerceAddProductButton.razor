@@ -1,0 +1,465 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.WooCommerce
+@using VEDriversLite.WooCommerce.Dto
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject NavigationManager NavManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IJSRuntime JSRuntime
+
+@if (WooCommerceHelpers.IsInitialized && loadedNFT != null && !string.IsNullOrEmpty(loadedNFT.Utxo))
+{
+    <button class="btn btn-primary" @onclick="async () => ShowConfirm()" style="width:65px; height:65px; margin-left:20px;">
+        <div class="row">
+            <div class="col">
+                <div class="row d-flex justify-content-center align-items-center">
+                    <div class="col">
+                        <i class="oi oi-cloud-upload"></i>
+                    </div>
+                </div>
+                <div class="row d-flex justify-content-center align-items-center">
+                    <div class="col">
+                        <span style="font-size: 12px;">WooCom</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </button>
+}
+
+<Modal Title="Woo Commerce Product"
+        Visible="@showWooComProductVisible"
+        OnOk="@showWooComProductCancel"
+        OnCancel="@showWooComProductCancel">
+    @if (!error)
+    {
+    <WooCommerceProduct NFT="@loadedNFT" InputProduct="@product" />
+    }
+    else 
+    { 
+        @errorMeesage
+    }
+</Modal>
+
+<Modal Title="Product Without price"
+       Visible="@withoutPriceVisible"
+       OnOk="@withoutPriceConfirm"
+       OnCancel="@withoutPriceCancel">
+    <Spin spinning="@processingSending" tip="Sending...">
+        <p>This product does not have setted the price. Do you want to continue?</p>
+    </Spin>
+</Modal>
+
+<Modal Title="Add product to WooCommerce Shop"
+       Visible="@confirmVisible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+    <Spin spinning="@processingSending" tip="Sending...">
+        <div class="row d-flex justify-content-center align-items-center">
+            <div class="col">
+                <span style="font-size: 12px;">Do you really want to upload this product to your store?</span>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+            <div class="col">
+                <span>Selected Store API</span>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:5px;">
+            <div class="col">
+                <small>@VEDLDataContext.WooCommerceStoreUrl</small>
+            </div>
+        </div>
+
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+            <div class="col">
+                <span>Do you want to put it to store as original on with multiple supply?</span>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+            <div class="col">
+                <RadioGroup @bind-Value="@productUploadNFTType">
+                    <Radio Value="ProductUploadNFTType.Unique">Unique</Radio>
+                    <Radio Value="ProductUploadNFTType.Multiple">Multiple Supply </Radio>
+                </RadioGroup>
+            </div>
+        </div>
+        @if (productUploadNFTType == ProductUploadNFTType.Multiple)
+        {
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <div class="col">
+                    <span>Please specify name of the group product name.</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:5px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <Input MaxLength="50" Placeholder="Type name of the category" @bind-Value=@category @onfocusout="categoryChanged" Style="font-size:12px; min-width:250px; max-width:300px;" />
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(category) && validCategoryName)
+            {
+                <div class="row d-flex justify-content-center align-items-center" style="margin-top:3px;">
+                    <div class="col">
+                        <small class="text-success">This is valid name.</small>
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(category) && !validCategoryName)
+            {
+                <div class="row d-flex justify-content-center align-items-center" style="margin-top:3px;">
+                    <div class="col">
+                        <small class="text-danger">This name is already exists.</small>
+                    </div>
+                </div>
+            }
+
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <div class="col">
+                    <span>Please specify quantity (max 100).</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <input type="number" step="1" min="1" max="100" @bind="@maxsupply" />
+                </div>
+            </div>
+        }
+
+        @if (WooCommerceHelpers.IsInitialized)
+        {
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <div class="col">
+                    <span>Please select Categories</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col">
+                    @foreach (var cat in ShopCategories)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="checkbox" @onchange="eventArgs => { productCategoryChanged(eventArgs.Value,cat.id); }" /><span style="margin-left:10px;">@cat.name</span><br />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+       }
+
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+            <div class="col">
+                <span>Setted price</span>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+            @if (loadedNFT.PriceActive)
+            {
+                <div class="col w-100 d-flex justify-content-center align-items-center">
+                    <small class="text-muted">Setted Price: @loadedNFT.Price NEBL</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
+                </div>
+            }
+            @if (loadedNFT.DogePriceActive)
+            {
+                <div class="col w-100 d-flex justify-content-center align-items-center">
+                    <small class="text-muted">Setted Price: @loadedNFT.DogePrice DOGE</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/doge.jpg" />
+                </div>
+            }
+        </div>
+
+        @if (needNewImage)
+        {
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <div class="col">
+                    <span>This NFT does not contains image. Please upload the image.</span>
+                </div>
+            </div>
+            <UploadImage ImageLinkChanged="@NewImageLinkChanged" />
+        }
+        else
+        {
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <input type="checkbox" @onchange="eventArgs => { overrideImageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Override Image</span><br />
+                </div>
+            </div>
+        }
+    </Spin>
+</Modal>
+
+<Modal Title="NFT Details"
+        Visible="@showNFTDetailsVisible"
+        OnOk="@showNFTDetailsCancel"
+        OnCancel="@showNFTDetailsCancel">
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex justify-content-center align-items-center">
+            @if (loadedNFT != null)
+            {
+                @if (loadedNFT.Type == NFTTypes.CoruzantArticle || loadedNFT.Type == NFTTypes.CoruzantProfile)
+                {
+                    <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
+                                    OwnNFT="@true"
+                                    Address="@AppData.Account.Address"
+                                    SubAccount="@false" />
+                }
+                else
+                {
+                    <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
+                            OwnNFT="@true"
+                            Address="@AppData.Account.Address"
+                            SubAccount="@false" />
+                }
+            }
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> WooCommerceAPIConnected { get; set; }
+
+    INFT loadedNFT = new ImageNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => loadedNFT;
+        set
+        {
+            if (loadedNFT.Utxo != value.Utxo)
+            {
+                loadedNFT = value;
+                category = loadedNFT.Name + "-" + loadedNFT.ShortHash;
+                error = false;
+                errorMeesage = string.Empty;
+                CheckCategory();
+            }
+        }
+    }
+
+    public List<Category> newProductCategories = new List<Category>();
+
+    public List<Category> ShopCategories
+    {
+        get
+        {
+            if (WooCommerceHelpers.IsInitialized && WooCommerceHelpers.Shop != null)
+            {
+                if (WooCommerceHelpers.Shop.Categories != null)
+                    return WooCommerceHelpers.Shop.Categories.Values.ToList().OrderBy(c => c.name).ToList();
+            }
+            return new List<Category>();
+        }
+    }
+
+    private enum ProductUploadNFTType
+    {
+        Unique,
+        Multiple
+    }
+
+    private bool confirmVisible = false;
+    private bool processingSending = false;
+    private bool initialized = false;
+    private bool showNFTDetailsVisible = false;
+    private bool showWooComProductVisible = false;
+    private bool withoutPriceVisible = false;
+    private bool validCategoryName = false;
+    private bool error = false;
+    private bool needNewImage = false;
+
+    private int maxsupply = 1;
+
+    private string apiurl = string.Empty;
+    private string apikey = string.Empty;
+    private string apisecret = string.Empty;
+    private string jwt = string.Empty;
+    private string txid = string.Empty;
+    private string productId = string.Empty;
+    private string category = string.Empty;
+    private string errorMeesage = string.Empty;
+    private string newImageLink = string.Empty;
+
+    private Product product = new Product();
+    private ProductUploadNFTType productUploadNFTType = ProductUploadNFTType.Unique;
+
+    protected override Task OnInitializedAsync()
+    {
+        init();
+        return base.OnInitializedAsync();
+    }
+
+    private void categoryChanged(FocusEventArgs e)
+    {
+        CheckCategory();
+    }
+
+    private async Task overrideImageChanged(object e)
+    {
+        needNewImage = (bool)e;
+        newImageLink = string.Empty;
+        StateHasChanged();
+    }
+
+    private async Task productCategoryChanged(object state, int catid)
+    {
+        if (WooCommerceHelpers.Shop.Categories.TryGetValue(catid, out var cat))
+        {
+            if ((bool)state)
+            {
+                newProductCategories.Add(cat);
+            }
+            else
+            {
+                if (newProductCategories.Contains(cat))
+                    newProductCategories.Remove(cat);
+            }
+            StateHasChanged();
+        }
+    }
+
+    private void NewImageLinkChanged(string link)
+    {
+        if (!string.IsNullOrEmpty(link))
+            newImageLink = link;
+    }
+
+    private async Task init()
+    {
+        if (!WooCommerceHelpers.IsInitialized)
+        {
+            apiurl = await localStorage.GetItemAsync<string>("woocom-apiurl");
+            if (apiurl == null) apiurl = string.Empty;
+            apikey = await localStorage.GetItemAsync<string>("woocom-apikey");
+            if (apikey == null) apikey = string.Empty;
+            apisecret = await localStorage.GetItemAsync<string>("woocom-apisecret");
+            if (apisecret == null) apisecret = string.Empty;
+            jwt = await localStorage.GetItemAsync<string>("woocom-jwt");
+            if (jwt == null) jwt = string.Empty;
+            if (await WooCommerceHelpers.InitStoreApiConnection(apiurl, apikey, apisecret, jwt))
+                await WooCommerceHelpers.Shop.ReLoadCategories();
+        }
+        else
+        {
+            await WooCommerceHelpers.Shop.ReLoadCategories();
+        }
+        StateHasChanged();
+    }
+
+    void ShowConfirm()
+    {
+        if (string.IsNullOrEmpty(loadedNFT.ImageLink))
+            needNewImage = true;
+        else
+            needNewImage = false;
+
+        confirmVisible = true;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    private async Task CheckCategory()
+    {
+        if (await WooCommerceHelpers.Shop.CheckIfCategoryExists(category))
+            validCategoryName = false;
+        else
+            validCategoryName = true;
+        if (loadedNFT.DogeftInfo.Coppies > 0)
+            productUploadNFTType = ProductUploadNFTType.Multiple;
+        maxsupply = loadedNFT.DogeftInfo.Coppies;
+        StateHasChanged();
+    }
+
+    private async Task showWooComProductCancel(MouseEventArgs e)
+    {
+        showWooComProductVisible = false;
+    }
+
+    private async Task withoutPriceConfirm(MouseEventArgs e)
+    {
+        await AddProduct();
+    }
+    private async Task withoutPriceCancel(MouseEventArgs e)
+    {
+        withoutPriceVisible = false;
+        confirmVisible = false;
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        if (!loadedNFT.PriceActive && !loadedNFT.DogePriceActive)
+            withoutPriceVisible = true;
+        else
+            await AddProduct();
+    }
+
+    private async Task showNFTDetails(MouseEventArgs e)
+    {
+        showNFTDetailsVisible = true;
+    }
+    private async Task showNFTDetailsCancel(MouseEventArgs e)
+    {
+        showNFTDetailsVisible = false;
+    }
+
+    private async Task AddProduct()
+    {
+        if (needNewImage && string.IsNullOrEmpty(newImageLink))
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "This product does not contains Image. Please add new Image.");
+            return;
+        }
+
+        try
+        {
+            if (loadedNFT == null)
+                return;
+
+            processingSending = true;
+            StateHasChanged();
+            Product prd = null;
+            if (needNewImage && !string.IsNullOrEmpty(newImageLink)) loadedNFT.ImageLink = newImageLink;
+
+            if (productUploadNFTType == ProductUploadNFTType.Unique)
+            {
+                prd = await WooCommerceHelpers.Shop.AddProduct(loadedNFT, newProductCategories);
+            }
+            else
+            {
+                var options = new Dictionary<string, string>();
+                options.Add("Category", category);
+                prd = await WooCommerceHelpers.Shop.AddProduct(loadedNFT, newProductCategories, maxsupply, options);
+            }
+
+            if (prd == null)
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during try to connect.");
+                error = true;
+                errorMeesage = "Cannot Upload product.";
+            }
+            else
+            {
+                product = prd;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", ex.Message);
+            error = true;
+            errorMeesage = ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            processingSending = false;
+            confirmVisible = false;
+            StateHasChanged();
+            showWooComProductVisible = true;
+            StateHasChanged();
+        }
+    }
+}

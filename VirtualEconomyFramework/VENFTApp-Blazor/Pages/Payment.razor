@@ -17,11 +17,11 @@
 
     @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
     {
-        <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" HideNFTs="true" />
+        <VENFTApp_Blazor.Components.Account.AccountBalances Address="@AppData.Account.Address" HideNFTs="true" />
     }
     else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
     {
-        <VENFTApp_Blazor.Components.DogeAccountBalance />
+        <VENFTApp_Blazor.Components.Doge.DogeAccountBalance />
     }
 
     <div class="row" style="margin-top:10px;">
@@ -50,7 +50,7 @@
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
                                         <span>Receiver Address:</span>
-                                        <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@receiver" MarginLeft="10" />
+                                        <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@receiver" MarginLeft="10" />
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top:10px;">
@@ -99,7 +99,7 @@
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
                                         <span>@message</span>
-                                        <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@message" MarginLeft="10" />
+                                        <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@message" MarginLeft="10" />
                                     </div>
                                 </div>
 
@@ -150,7 +150,7 @@
                                             {
                                                 <a href="https://dogechain.info/tx/@txid" target="_blank">@txid</a>
                                             }
-                                            <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@txid" MarginLeft="10" />
+                                            <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@txid" MarginLeft="10" />
                                         </div>
                                     </div>
                                     <hr />
@@ -250,25 +250,27 @@
         BTC
     }
 
-    Currecncy currecncy = Currecncy.NBL;
-
-    bool accountUnlocked = true;
-    bool unlockAcocuntModalVisible = false;
-    string unlockPassword = string.Empty;
-    bool unlockOrClearCashMessage = false;
-    bool unlockingAccount = false;
-    bool accountUnlockingError = false;
-    bool redirectingBackToShopVisible = false;
-    int redirectingBackToShopCountDown = 5;
-
+    private bool accountUnlocked = true;
+    private bool unlockAcocuntModalVisible = false;
+    private bool unlockOrClearCashMessage = false;
+    private bool unlockingAccount = false;
+    private bool accountUnlockingError = false;
+    private bool redirectingBackToShopVisible = false;
     private bool sendingTransaction = false;
     private bool sucessfullSend = false;
+
+    private int redirectingBackToShopCountDown = 5;
+
     private double AmountToSend = 1;
+
     private string receiver = string.Empty;
     private string message = string.Empty;
     private string currency = string.Empty;
     private string redirect = string.Empty;
     private string txid = string.Empty;
+    private string unlockPassword = string.Empty;
+
+    private Currecncy currecncy = Currecncy.NBL;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -315,6 +317,11 @@
     protected override Task OnInitializedAsync()
     {
         return base.OnInitializedAsync();
+    }
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
     }
 
     private async Task Redirect()
@@ -406,11 +413,6 @@
             }
             NavManager.NavigateTo(redirect);
         }
-    }
-
-    void RefreshedHandler(object sender, EventArgs e)
-    {
-        StateHasChanged();
     }
 
     private async Task UnlockAccountConfirm(MouseEventArgs e)

@@ -1,0 +1,40 @@
+﻿@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:11px;">
+                    <a href="https://bitinfocharts.com/dogecoin/address/@AppData.DogeAccount.Address" style="font-size:11px;" target="_blank">@AppData.DogeAccount.Address</a>
+                </span>
+                <VENFTApp_Blazor.Components.HelperButtons.CopyIcon MarginLeft="15" FontSize="18" TextToCopy="@AppData.DogeAccount.Address" />
+                <VENFTApp_Blazor.Components.HelperButtons.QRIcon MarginLeft="10" FontSize="18" TextToCopy="@AppData.DogeAccount.Address" />
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:10px;">Actual Balance: @AppData.DogeAccount.TotalBalance DOGE</span> <img style="width: 14px;margin-left: 10px;" src="images/doge.jpg" />
+            </div>
+        </div>
+        <div class="row" style="margin-top:2px;margin-bottom:2px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span style="font-size:8px;">Unconfirmed Balance: @AppData.DogeAccount.TotalUnconfirmedBalance DOGE</span> <img style="width: 14px;margin-left: 10px;" src="images/doge.jpg" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppData.DogeAccount != null)
+            AppData.DogeAccount.Refreshed += RefreshedHandler;
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,52 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@using VEDriversLite.Events
+@inject AppData AppData
+
+<div class="row">
+    <div class="col d-flex justify-content-center align-items-center">
+        <button class="btn btn-light" @onclick="() => OpenHelp(pageSection)">Need Help <i class="oi oi-question-mark"></i></button>
+    </div>
+</div>
+
+<Modal Title="VENFT Hep"
+       Visible="@helpModalVisible"
+       OnOk="@CloseHelpModal"
+       OnCancel="@CloseHelpModal" ZIndex="11" Style="width:90%; height: max-content;">
+       <iframe src=@infopageLink style="width: 100%; height: max-content; min-height:600px; min-width: 300px;" frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public string PageSection
+    {
+        get => pageSection;
+        set => pageSection = value;
+    }
+
+    private bool helpModalVisible = false;
+    private string defaultInfopageLink = "https://about.ve-nft.com/gettingstarted.html";
+    private string infopageLink = "https://about.ve-nft.com/gettingstarted.html";
+    private string pageSection = string.Empty;
+
+    protected override Task OnInitializedAsync()
+    {
+        infopageLink = defaultInfopageLink + "#" + pageSection;
+        return base.OnInitializedAsync();
+    }
+
+    public async Task OpenHelp(string _pageSection)
+    {
+        infopageLink = defaultInfopageLink + "#" + _pageSection;
+        helpModalVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task CloseHelpModal(MouseEventArgs e)
+    {
+        helpModalVisible = false;
+        StateHasChanged();
+    }
+}

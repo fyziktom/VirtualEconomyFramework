@@ -34,7 +34,7 @@
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Blazor.Components.HelpButton PageSection="mint" />
+                    <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="mint" />
                 </div>
             </div>
             <div class="row">
@@ -88,7 +88,7 @@
             }
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Blazor.Components.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
+                    <VENFTApp_Blazor.Components.Account.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
                 </div>
             </div>
             <!--
@@ -146,15 +146,15 @@
                         <div class="col d-flex justify-content-center align-items-center">
                             @if (NFTType != NFTTypes.Ticket && NFTType != NFTTypes.Event && NFTType != NFTTypes.CoruzantArticle && NFTType != NFTTypes.CoruzantProfile)
                             {
-                                <VENFTApp_Blazor.Components.MintNFTForm TokenId="@tokenId" Address="@selectedAccountAddress" SubAccount="subAccount" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                                <VENFTApp_Blazor.Components.NFTs.MintNFTForm TokenId="@tokenId" Address="@selectedAccountAddress" SubAccount="subAccount" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
                             }
                             else if (NFTType == NFTTypes.CoruzantArticle || NFTType == NFTTypes.CoruzantProfile)
                             {
-                                <VENFTApp_Blazor.Components.MintCoruzantNFTForm SubAccount="subAccount" Address="@selectedAccountAddress" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                                <VENFTApp_Blazor.Components.Coruzant.MintCoruzantNFTForm SubAccount="subAccount" Address="@selectedAccountAddress" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
                             }
                             else
                             {
-                                <VENFTApp_Blazor.Components.MintEventAndTickets SubAccount="subAccount" Address="@selectedAccountAddress" TokenId="@tokenId" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+                                <VENFTApp_Blazor.Components.NFTs.Tickets.MintEventAndTickets SubAccount="subAccount" Address="@selectedAccountAddress" TokenId="@tokenId" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
                             }
                         </div>
                     </div>
@@ -175,11 +175,11 @@
                                         var nft = NFTs[i];
                                         if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast)
                                         {
-                                            <VENFTApp_Blazor.Components.CoruzantNFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
+                                            <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
                                         }
                                         else if (nft.Type != NFTTypes.Message && nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Receipt)
                                         {
-                                            <VENFTApp_Blazor.Components.NFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
+                                            <VENFTApp_Blazor.Components.NFTs.NFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
                                         }
                                     }
                                 }
@@ -229,24 +229,6 @@
 </div>
 
 @code {
-
-    NFTTypes NFTType = NFTTypes.Image;
-
-    string orderTxId = string.Empty;
-    bool orderSourceTokensVisible = false;
-    bool orderingTokens = false;
-    bool orderingTokensDone = false;
-
-    string tokenId = NFTHelpers.TokenId;
-    private TokenSupplyDto selectedToken = new TokenSupplyDto();
-
-
-    private CancellationTokenSource cts = new CancellationTokenSource();
-    GetTokenMetadataResponse sourceTokensInfo = new GetTokenMetadataResponse();
-
-    string selectedAccountAddress = string.Empty;
-    bool mainAccountSelected = true;
-    bool subAccount = false;
 
     public double SelectedAccountTotalSpendable
     {
@@ -309,6 +291,22 @@
         }
     }
 
+    private bool orderSourceTokensVisible = false;
+    private bool orderingTokens = false;
+    private bool orderingTokensDone = false;
+    private bool mainAccountSelected = true;
+    private bool subAccount = false;
+
+    private string tokenId = NFTHelpers.TokenId;
+    private string orderTxId = string.Empty;
+    private string selectedAccountAddress = string.Empty;
+
+    private TokenSupplyDto selectedToken = new TokenSupplyDto();
+    private CancellationTokenSource cts = new CancellationTokenSource();
+    private GetTokenMetadataResponse sourceTokensInfo = new GetTokenMetadataResponse();
+
+    private NFTTypes NFTType = NFTTypes.Image;
+
     protected override Task OnInitializedAsync()
     {
         try
@@ -332,6 +330,23 @@
 
         return base.OnInitializedAsync();
     }
+
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task nftTypeChangedHandler(NFTTypes type)
+    {
+        StateHasChanged();
+    }
+
+    private void nftSourceTokensChangedHandler(string tokid)
+    {
+        StateHasChanged();
+    }
+
 
     private async Task Redirect()
     {
@@ -359,21 +374,6 @@
         tokenId = NFTHelpers.TokenId;
         mainAccountSelected = true;
         subAccount = false;
-        StateHasChanged();
-    }
-
-    void RefreshedHandler(object sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
-
-    private async Task nftTypeChangedHandler(NFTTypes type)
-    {
-        StateHasChanged();
-    }
-
-    private void nftSourceTokensChangedHandler(string tokid)
-    {
         StateHasChanged();
     }
 

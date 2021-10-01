@@ -17,9 +17,9 @@
                 </div>
             </div>
 
-            <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
+            <VENFTApp_Blazor.Components.Account.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
 
-            <VENFTApp_Blazor.Components.NFTList Address="@AppData.Account.Address" MainAccount="@true" />
+            <VENFTApp_Blazor.Components.NFTs.NFTList Address="@AppData.Account.Address" MainAccount="@true" />
         </div>
     </div>
     <VENFTApp_Blazor.Components.InfoEventModal />
@@ -56,7 +56,7 @@
         NavManager.NavigateTo("/");
     }
 
-    void RefreshedHandler(object sender, EventArgs e)
+    private void RefreshedHandler(object sender, EventArgs e)
     {
         StateHasChanged();
     }

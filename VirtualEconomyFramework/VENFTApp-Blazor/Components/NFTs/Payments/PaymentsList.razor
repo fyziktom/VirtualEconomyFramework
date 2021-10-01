@@ -1,0 +1,350 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+
+<div class="row d-flex justify-content-center align-items-center">
+    <div class="col">
+        <table style="min-width:250px;">
+            <thead>
+                <tr>
+                    <th style="min-width:60px;">Status</th>
+                    <th style="min-width:60px;">Sender</th>
+                    <th style="min-width:60px;">NFT</th>
+                    <th style="min-width:60px;">Price</th>
+                    <th style="min-width:60px;">Details</th>
+                    <th style="min-width:60px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (MainAccount)
+                {
+                    @if (AppData.Account.ReceivedPayments.Count > 0)
+                    {
+                        @foreach (var p in AppData.Account.ReceivedPayments.Values)
+                        {
+                            var pnft = p as PaymentNFT;// new PaymentNFT(p.Utxo);
+                            //pnft.Fill(p).Wait();
+                            <tr style="margin-top:10px;">
+                                <td style="min-width:60px;">
+                                    <div class="row" style="margin-top:5px;">
+                                        <div class="col">
+                                            <div class="row" style="margin-top:5px;">
+                                                <div class="col">
+                                                    @if (pnft.Sender != AppData.Account.Address)
+                                                    {
+                                                        <span class="badge badge-success">Received</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-danger">Returned</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top:5px;">
+                                                <div class="col">
+                                                    @if (pnft.Sender != AppData.Account.Address && pnft.AlreadySoldItem)
+                                                    {
+                                                        <span class="badge badge-warning">Already Sold</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        @if (!pnft.Returned)
+                                                        {
+                                                        <span class="badge badge-primary">Processing</span>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td style="min-width:60px;"><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioTransactionHelpers.ShortenAddress(pnft.Sender)</a></td>
+                                @if (!string.IsNullOrEmpty(pnft.ImageLink))
+                                {
+                                    <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">
+                                        <img class="img-thumbnail" style="max-height:50px; max-width:50px;" src="@pnft.ImageLink" />
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">
+                                        <i class="oi oi-musical-note"></i>
+                                    </td>
+                                }
+                                <td style="min-width:60px;">@pnft.Price NEBL</td>
+
+                                <td class="text-center" style="min-width: 60px; margin-left: 5px;"><a href="https://explorer.nebl.io/tx/@pnft.Utxo" target="_blank"><i class="oi oi-info"></i></a></td>
+                                @if (pnft.AlreadySoldItem)
+                                {
+
+                                    <td style="margin-left:10px;min-width:60px;">
+                                        <div class="row">
+                                            @if (!pnft.Returned)
+                                            {
+                                            <div class="col">
+                                                <ReturnNFTPayment NFT="@pnft" OwnNFT="true" Price="@pnft.Price" Utxo="@pnft.Utxo" UtxoIndex="@pnft.UtxoIndex" />
+                                            </div>
+                                            }
+                                            <div class="col">
+                                                <i class="oi oi-trash" @onclick="() => deletePaymentNFT(pnft)"></i>
+                                            </div>
+                                        </div>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <div class="row">
+                                    <div class="col d-flex align-content-center justify-content-center">
+                                        <span>You dont have any received payments now.</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                    {
+                        @if (sa.ReceivedPayments.Count > 0)
+                        {
+                            @foreach (var p in sa.ReceivedPayments.Values)
+                            {
+                                var pnft = p as PaymentNFT;// new PaymentNFT(p.Utxo);
+                                //pnft.Fill(p).Wait();
+                                <tr style="margin-top:10px;">
+                                    <td style="min-width:60px;">
+                                        <div class="row" style="margin-top:5px;">
+                                            <div class="col">
+                                                <div class="row" style="margin-top:5px;">
+                                                    <div class="col">
+                                                        @if (pnft.Sender != sa.Address)
+                                                        {
+                                                            <span class="badge badge-success">Received</span>
+                                                        }
+                                                        @if (pnft.Returned) 
+                                                        {
+                                                            <span class="badge badge-danger">Returned</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:5px;">
+                                                    <div class="col">
+                                                        @if (pnft.Sender != sa.Address && pnft.AlreadySoldItem)
+                                                        {
+                                                            <span class="badge badge-warning">Already Sold</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge badge-primary">Processing</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioTransactionHelpers.ShortenAddress(pnft.Sender)</a></td>
+                                    @if (!string.IsNullOrEmpty(pnft.ImageLink))
+                                    {
+                                        <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">
+                                            <img class="img-thumbnail" style="max-height:50px; max-width:50px;" src="@pnft.ImageLink" />
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">
+                                            <i class="oi oi-musical-note"></i>
+                                        </td>
+                                    }
+                                    <td>@pnft.Price NEBL</td>
+                                    
+                                    <td class="text-center" style="margin-left:5px;"><a href="https://explorer.nebl.io/tx/@pnft.Utxo" target="_blank"><i class="oi oi-info"></i></a></td>
+                                    @if (pnft.AlreadySoldItem)
+                                    {
+                                        <td style="margin-left:10px;min-width:60px;">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <ReturnNFTPayment NFT="@pnft" OwnNFT="true" Price="@pnft.Price" Utxo="@pnft.Utxo" UtxoIndex="@pnft.UtxoIndex" />
+                                                </div>
+                                                <div class="col">
+                                                    <i class="oi oi-trash" @onclick="() => deletePaymentNFT(pnft)"></i>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5">
+                                    <div class="row">
+                                        <div class="col d-flex align-content-center justify-content-center">
+                                            <span>You dont have any received payments now.</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<Modal Title="NFT Details"
+       Visible="@showNFTDetailsVisible"
+       OnOk="@showNFTDetailsCancel"
+       OnCancel="@showNFTDetailsCancel">
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex justify-content-center align-items-center">
+                <NFT InputNFT="@loadedNFT"
+                     OwnNFT="@true"
+                     Address="@Address"
+                     SubAccount="@SubAccount" />
+        </div>
+    </div>
+</Modal>
+
+<Modal Title="Destroy NFT Payment"
+       Visible="@confirmDestroyVisible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+    <p>Do you really want to destroy this NFT Payment?</p>
+    <p>If this is not your payment you should consider return the amount to the sender.</p>
+</Modal>
+
+@code {
+
+    private string _address = string.Empty;
+    [Parameter]
+    public string Address
+    {
+        get => _address;
+        set
+        {
+            if (!string.IsNullOrEmpty(value) && _address != value)
+            {
+                _address = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public bool MainAccount { get; set; } = true;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    private bool confirmDestroyVisible = false;
+    private bool showNFTDetailsVisible = false;
+
+    private INFT loadedNFT = new ImageNFT("");
+    private NFTTypes nftType = NFTTypes.Image;
+    private INFT nftToDestroy = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppData.Account != null)
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
+            AppData.Account.Refreshed += RefreshedHandler;
+            AppData.Account.SubAccountNFTsChanged -= RefreshedNFTsHandler;
+            AppData.Account.SubAccountNFTsChanged += RefreshedNFTsHandler;
+        }
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    void RefreshedNFTsHandler(object sender, string e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task showNFTDetails(string utxo)
+    {
+        loadedNFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, false);
+
+        if (loadedNFT != null)
+        {
+            StateHasChanged();
+            nftType = loadedNFT.Type;
+            showNFTDetailsVisible = true;
+        }
+        else
+        {
+            loadedNFT = new ImageNFT("");
+            showNFTDetailsVisible = false;
+        }
+        await Task.Delay(100);
+        StateHasChanged();
+    }
+    private async Task showNFTDetailsCancel(MouseEventArgs e)
+    {
+        showNFTDetailsVisible = false;
+    }
+
+    private async Task deletePaymentNFT(INFT loadedNFT)
+    {
+        if (loadedNFT == null)
+            return;
+
+        nftToDestroy = loadedNFT;
+        confirmDestroyVisible = true;
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        confirmDestroyVisible = false;
+        await deletePaymentNFTAction(nftToDestroy);
+    }
+    private async Task HandleCancel(MouseEventArgs e)
+    {
+        confirmDestroyVisible = false;
+    }
+
+    private async Task deletePaymentNFTAction(INFT loadedNFT)
+    {
+        //loadedNFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, true);
+
+        if (loadedNFT != null)
+        {
+            try
+            {
+                (bool, string) res = (false, string.Empty);
+                if (!SubAccount)
+                    res = await AppData.Account.DestroyNFTs(new List<INFT>() { loadedNFT });
+                else
+                    res = await AppData.Account.DestroyNFTOnSubAccount(Address, new List<INFT>() { loadedNFT });
+                if (res.Item1)
+                {
+                    await AppData.Account.ReLoadNFTs();
+                    await AppData.Account.RefreshAddressReceivedPayments();
+
+                    Console.WriteLine("NFT Payment destroyed. TxId: " + res.Item2);
+                }
+                else
+                {
+                    Console.WriteLine("Cannot destroy the NFT Payment. " + res.Item2);
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot delete NFT Payment. " + ex.Message);
+            }
+        }
+        await Task.Delay(100);
+        StateHasChanged();
+    }
+}

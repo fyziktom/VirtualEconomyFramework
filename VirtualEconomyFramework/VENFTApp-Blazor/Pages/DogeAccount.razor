@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <VENFTApp_Blazor.Components.DogeAccountBalance />
+    <VENFTApp_Blazor.Components.Doge.DogeAccountBalance />
 
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex justify-content-center align-items-center">
@@ -40,7 +40,7 @@
                                 </div>
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <VENFTApp_Blazor.Components.DogeAddressInput Receiver="@receiver" AddressCheckedInputed="receiverAddressChangedHandler" />
+                                        <VENFTApp_Blazor.Components.Doge.DogeAddressInput Receiver="@receiver" AddressCheckedInputed="receiverAddressChangedHandler" />
                                         <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
                                     </div>
                                 </div>
@@ -221,7 +221,7 @@
                                     <span class="text-center">Please dont forget to save your private key!!! It is unique key for your Doge address. If you save it you can backup address anytime.</span>
                                 </div>
                             </div>
-                            <VENFTApp_Blazor.Components.DisplayAccountKey DogeAccountKey="true" />
+                            <VENFTApp_Blazor.Components.Account.DisplayAccountKey DogeAccountKey="true" />
                         </div>
                     </div>
                 </div>
@@ -250,7 +250,7 @@
     </div>
     -->
 
-    <VENFTApp_Blazor.Components.UnlockAccount Visible="@unlockAcocuntModalVisible" AccountUnlocked="AccountUnlocked" />
+    <VENFTApp_Blazor.Components.Account.UnlockAccount Visible="@unlockAcocuntModalVisible" AccountUnlocked="AccountUnlocked" />
 
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
@@ -259,28 +259,12 @@
        Visible="@txDetailsVisible"
        OnOk="@CloseTxDetails"
        OnCancel="@CloseTxDetails">
-    <VENFTApp_Blazor.Components.DogeTransactionDetails TxId="@txDetailsTxId" />
+    <VENFTApp_Blazor.Components.Doge.DogeTransactionDetails TxId="@txDetailsTxId" />
 </Modal>
 
 @code {
 
-    int maxLoadedReceivedTxs = 20;
-    int maxLoadedSentTxs = 20;
-
-    string txDetailsTxId = string.Empty;
-    bool txDetailsVisible = false;
-
-    bool withMessage = false;
-    bool withImage = false;
-
-    bool accountUnlocked = true;
-
-    bool unlockAcocuntModalVisible = false;
-
-    private bool sendingTransaction = false;
-    private double AmountToSend = 1;
     private string receiver = string.Empty;
-    private string message = string.Empty;
     public string Receiver
     {
         get => receiver;
@@ -293,6 +277,22 @@
             }
         }
     }
+
+    private bool txDetailsVisible = false;
+    private bool withMessage = false;
+    private bool withImage = false;
+    private bool accountUnlocked = true;
+    private bool unlockAcocuntModalVisible = false;
+    private bool sendingTransaction = false;
+
+    private int maxLoadedReceivedTxs = 20;
+    private int maxLoadedSentTxs = 20;
+
+    private double AmountToSend = 1;
+
+    private string txDetailsTxId = string.Empty;
+    private string message = string.Empty;
+
 
     protected override Task OnInitializedAsync()
     {
@@ -309,6 +309,18 @@
         }
 
         return base.OnInitializedAsync();
+    }
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.DogeAccount = new VEDriversLite.DogeAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
     }
 
     private void AccountUnlocked(string msg)
@@ -377,17 +389,17 @@
         message = newLink;
     }
 
-    private async Task CloseTxDetails(MouseEventArgs e)
-    {
-        txDetailsVisible = false;
-    }
-
     private async Task ShowTxDetails(string txId)
     {
         txDetailsTxId = txId;
         StateHasChanged();
         txDetailsVisible = true;
         StateHasChanged();
+    }
+
+    private async Task CloseTxDetails(MouseEventArgs e)
+    {
+        txDetailsVisible = false;
     }
 
 
@@ -461,15 +473,4 @@
             AppData.DogeAccount.Refreshed += RefreshedHandler;
     }
 
-    void RefreshedHandler(object sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
-
-    private async Task Redirect()
-    {
-        AppData.DogeAccount = new VEDriversLite.DogeAccount();
-        await Task.Delay(500);
-        NavManager.NavigateTo("/");
-    }
 }

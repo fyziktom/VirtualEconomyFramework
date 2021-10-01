@@ -57,9 +57,9 @@
                 </div>
             </div>
         </div>
-        <VENFTApp_Blazor.Components.CreateAccount Visible="@createNewAddressModalVisible" AccountCreated="AccountCreated" />
+        <VENFTApp_Blazor.Components.Account.CreateAccount Visible="@createNewAddressModalVisible" AccountCreated="AccountCreated" />
 
-        <VENFTApp_Blazor.Components.UnlockAccount Visible="@unlockAcocuntModalVisible" AccountUnlocked="AccountUnlocked" />
+        <VENFTApp_Blazor.Components.Account.UnlockAccount Visible="@unlockAcocuntModalVisible" AccountUnlocked="AccountUnlocked" />
 
     </Spin>
     <VENFTApp_Blazor.Components.InfoEventModal />
@@ -91,7 +91,7 @@
             <span>Please Save your new private key to safe place. This will allow you to recovery the address.</span>
         </div>
     </div>
-    <VENFTApp_Blazor.Components.DisplayAccountKey />
+    <VENFTApp_Blazor.Components.Account.DisplayAccountKey />
 </Modal>
 
 <Modal Title="VENFT Hep"
@@ -103,20 +103,19 @@
 
 @code {
 
-    bool helpModalVisible = false;
-    string defaultInfopageLink = "https://about.ve-nft.com/gettingstarted.html";
-    string infopageLink = "https://about.ve-nft.com/gettingstarted.html";
-    string pageSection = string.Empty;
-
-    bool savePrivateKeyVisible = false;
-
-    bool accountCreated = false;
-    bool accountUnlocked = false;
-    bool creatingAddressSpinner = false;
+    private bool helpModalVisible = false;
+    private bool savePrivateKeyVisible = false;
+    private bool accountCreated = false;
+    private bool accountUnlocked = false;
+    private bool creatingAddressSpinner = false;
     private bool createNewAddressModalVisible = false;
-    bool unlockAcocuntModalVisible = false;
-    string key = string.Empty;
-    string address = string.Empty;
+    private bool unlockAcocuntModalVisible = false;
+
+    private string key = string.Empty;
+    private string address = string.Empty;
+    private string defaultInfopageLink = "https://about.ve-nft.com/gettingstarted.html";
+    private string infopageLink = "https://about.ve-nft.com/gettingstarted.html";
+    private string pageSection = string.Empty;
 
     protected override Task OnInitializedAsync()
     {

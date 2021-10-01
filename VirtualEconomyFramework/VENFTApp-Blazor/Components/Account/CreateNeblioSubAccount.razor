@@ -1,0 +1,95 @@
+﻿@using System.IO;
+@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Neblio
+@using VEDriversLite.NeblioAPI
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject HttpClient _client
+@inject NavigationManager NavManager
+
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <button class="btn btn-primary" @onclick="showNewSubAccountModal">Create New SubAccount</button>
+        </div>
+    </div>
+
+<Modal Title="Add New SubAccount"
+       Visible="@addSubAccountVisible"
+       OnOk="@addSubAccountConfirm"
+       OnCancel="@addSubAccountCancel">
+    <div class="row">
+        <div class="col">
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <span>Input New Sub Account Name</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <Input Placeholder="Input New Sub Account Name" @bind-Value="@newSubAccountName" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                </div>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center w-auto">
+                <input type="checkbox" checked="checked" @onchange="eventArgs => { sendInitNeblioChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Send init 0.05 NEBL to this address</span><br />
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> NewAddressCreated { get; set; }
+
+    private string newSubAccountName = string.Empty;
+    private string selectedNewTabFromBookmarkName = "Select From Bookmark";
+
+    private bool sendInitPayment = true;
+    private bool addSubAccountVisible = false;
+
+    private async Task sendInitNeblioChanged(object e)
+    {
+        sendInitPayment = (bool)e;
+        StateHasChanged();
+    }
+
+    private async Task showNewSubAccountModal(MouseEventArgs e)
+    {
+        addSubAccountVisible = true;
+        StateHasChanged();
+    }
+    private async Task addSubAccountCancel(MouseEventArgs e)
+    {
+        addSubAccountVisible = false;
+    }
+
+    private async Task addSubAccountConfirm(MouseEventArgs e)
+    {
+        await addSubAccount();
+    }
+
+    private async Task addSubAccount()
+    {
+        try
+        {
+            addSubAccountVisible = false;
+            StateHasChanged();
+            var res = await AppData.Account.AddSubAccount(newSubAccountName, sendInitPayment);
+            await Task.Delay(50);
+            if (res.Item1)
+            {
+                await localStorage.SetItemAsync("subAccounts", res.Item2);
+                var add = await AppData.Account.GetSubAccountAddressByName(newSubAccountName);
+                if (add.Item1)
+                    await NewAddressCreated.InvokeAsync(add.Item2);
+            }
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+}

@@ -19,11 +19,11 @@
 
     @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
     {
-        <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" HideNFTs="true" />
+        <VENFTApp_Blazor.Components.Account.AccountBalances Address="@AppData.Account.Address" HideNFTs="true" />
     }
     else if (currecncy == Currecncy.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
     {
-        <VENFTApp_Blazor.Components.DogeAccountBalance />
+        <VENFTApp_Blazor.Components.Doge.DogeAccountBalance />
     }
 
     <div class="row" style="margin-top:10px;">
@@ -56,7 +56,7 @@
                                 </div>
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <VENFTApp_Blazor.Components.NFT InputNFT="@NFT" OwnNFT="false" AllowBuy="false" />
+                                        <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@NFT" OwnNFT="false" AllowBuy="false" />
                                     </div>
                                 </div>
                                 @if (isPossibleToBuy && !IsInThePayments())
@@ -64,7 +64,7 @@
                                     <div class="row" style="margin-top:10px;">
                                         <div class="col d-flex justify-content-center align-items-center">
                                             <span>Receiver Address:</span>
-                                            <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@receiver" MarginLeft="10" />
+                                            <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@receiver" MarginLeft="10" />
                                         </div>
                                     </div>
                                     <div class="row" style="margin-top:10px;">
@@ -120,7 +120,7 @@
                                         {
                                             <div class="row" style="margin-top:20px; margin-bottom:10px;">
                                                 <div class="col d-flex justify-content-center align-items-center">
-                                                    <button class="btn btn-secondary" disabled >Not enought Neblio</button>
+                                                    <button class="btn btn-secondary" disabled>Not enought Neblio</button>
                                                 </div>
                                             </div>
                                         }
@@ -128,7 +128,7 @@
                                         {
                                             <div class="row" style="margin-top:20px; margin-bottom:10px;">
                                                 <div class="col d-flex justify-content-center align-items-center">
-                                                    <button class="btn btn-secondary" disabled >Not enought VENFT Tokens</button>
+                                                    <button class="btn btn-secondary" disabled>Not enought VENFT Tokens</button>
                                                 </div>
                                             </div>
                                         }
@@ -173,7 +173,7 @@
                                             {
                                                 <a href="https://dogechain.info/tx/@txid" target="_blank">@txid</a>
                                             }
-                                            <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@txid" MarginLeft="10" />
+                                            <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@txid" MarginLeft="10" />
                                         </div>
                                     </div>
                                     <hr />
@@ -280,33 +280,32 @@
         BTC
     }
 
-    Currecncy currecncy = Currecncy.NBL;
-
-    bool confirmVisible = false;
-
-    bool accountUnlocked = true;
-    bool unlockAcocuntModalVisible = false;
-    string unlockPassword = string.Empty;
-    bool unlockOrClearCashMessage = false;
-    bool unlockingAccount = false;
-    bool accountUnlockingError = false;
-    bool redirectingBackToShopVisible = false;
-    int redirectingBackToShopCountDown = 5;
-
+    private bool confirmVisible = false;
+    private bool accountUnlocked = true;
+    private bool unlockAcocuntModalVisible = false;
+    private bool unlockOrClearCashMessage = false;
+    private bool unlockingAccount = false;
+    private bool accountUnlockingError = false;
+    private bool redirectingBackToShopVisible = false;
+    private bool isPossibleToBuy = false;
     private bool sendingTransaction = false;
     private bool sucessfullSend = false;
+
+    private int redirectingBackToShopCountDown = 5;
+    private int nftUtxoIndex = 0;
+
     private double AmountToSend = 1;
 
+    private string unlockPassword = string.Empty;
     private string nftUtxo = string.Empty;
-    private int nftUtxoIndex = 0;
     private string receiver = string.Empty;
     private string currency = string.Empty;
     private string redirect = string.Empty;
     private string txid = string.Empty;
-    private bool isPossibleToBuy = false;
 
-    INFT NFT = new ImageNFT("");
-    ActiveTab tab = new ActiveTab();
+    private Currecncy currecncy = Currecncy.NBL;
+    private INFT NFT = new ImageNFT("");
+    private ActiveTab tab = new ActiveTab();
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -361,6 +360,24 @@
         return base.OnInitializedAsync();
     }
 
+    private void NFTRefreshedHandler(object sender, string e)
+    {
+        StateHasChanged();
+    }
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private bool IsInThePayments()
+    {
+        if (tab != null && tab.ReceivedPayments.TryGetValue(nftUtxo, out var nnft))
+            if ((nnft as PaymentNFT).NFTUtxoIndex == NFT.UtxoIndex)
+                return true;
+
+        return false;
+    }
+
     private async Task Redirect()
     {
         AppData.DogeAccount = new VEDriversLite.DogeAccount();
@@ -397,20 +414,6 @@
 
             StateHasChanged();
         }
-    }
-
-    void NFTRefreshedHandler(object sender, string e)
-    {
-        StateHasChanged();
-    }
-
-    private bool IsInThePayments()
-    {
-        if (tab != null && tab.ReceivedPayments.TryGetValue(nftUtxo, out var nnft))
-            if ((nnft as PaymentNFT).NFTUtxoIndex == NFT.UtxoIndex)
-                return true;
-
-        return false;
     }
 
     private async Task TryLogin()
@@ -511,11 +514,6 @@
             }
             NavManager.NavigateTo(redirect);
         }
-    }
-
-    void RefreshedHandler(object sender, EventArgs e)
-    {
-        StateHasChanged();
     }
 
     private async Task UnlockAccountConfirm(MouseEventArgs e)

@@ -1,0 +1,251 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Messaging
+@inject AppData AppData
+
+
+<div class="container-fluid overflow-auto h-100" style="min-height:600px;">
+    <div class="row h-100">
+        <div class="col h-100">
+
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row">
+                        <div class="col">
+                            @if (messageTab.IsInBookmark)
+                            {
+                                <span>@messageTab.BookmarkFromAccount.Name - @messageTab.ShortAddress</span>
+                            }
+                            else
+                            {
+                                <span>@messageTab.Address</span>
+                            }
+
+                        </div>
+                    </div>
+                    <VENFTApp_Blazor.Components.HelperButtons.Bookmark IsInBookmarks="@messageTab.IsInBookmark"
+                                                         Address="@messageTab.Address"
+                                                         BookmarkRefreshed="@BookmarkRefreshedHandler" />
+
+                </div>
+            </div>
+            @if (!messageTab.PublicKeyFound)
+            {
+            <div class="row" style="margin-top:20px; margin-left:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small class="text-danger text-center" style="max-width:250px;">Partner Public Key not found. Partner probably has not done any trasaction yet. It will not be possible to send him encrypted message until he will send at least one transaction. You can send him not encrypted message.</small>
+                </div>
+            </div>
+            }
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col">
+                            <button class="btn btn-light" @onclick="showSendMessage">Send New Message <i class="oi oi-location"></i></button>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px; margin-left:10px;">
+                        <div class="col d-flex justify-content-end align-items-end">
+                            <button class="btn btn-light" @onclick="ReloadMessages"><i class="oi oi-reload"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row w-100 h-100" style="margin-top:10px; padding:0px;">
+                <div class="col h-100 d-flex justify-content-center align-items-center">
+                    @if (messageTab.NFTMessages.Count == 0)
+                    {
+                        <p><em><Spin Tip="Loading...No Messages found yet" Style="min-width:100px;"></Spin></em></p>
+                    }
+                    else
+                    {
+                        <div class="card-group w-100 h-100">
+                            @foreach (var nft in messageTab.NFTMessages)
+                            {
+                                if (nft.Type == NFTTypes.Message)
+                                {
+                                    <div class="card w-100" style="margin-left:10px; margin-top:10px; width:250px; min-width:250px; max-width:250px; min-height:220px; max-height:220px; height:220px;">
+                                        <div class="card-body w-100 d-flex justify-content-center align-items-center">
+
+                                            <div class="row w-100" style="margin: 0px;">
+                                                <div class="col w-100" style="padding: 0px;">
+                                                    @if ((nft as MessageNFT).IsReceivedMessage)
+                                                    {
+                                                        <span class="badge badge-primary" style="position: absolute;right: -10px;top: 5px;">Received</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-success" style="position: absolute;right: -10px;top: 5px;">Sent</span>
+                                                    }
+                                                    <div class="row" style="margin: 0px;">
+                                                        <div class="col" style="padding: 0px;">
+                                                            <small class="text-center">@nft.Time</small>
+                                                        </div>
+                                                    </div>
+                                                    @if (nft.Author == AppData.Account.Address)
+                                                    {
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col" style="padding: 0px;">
+                                                                <small class="text-center text-muted mb-2">Sender: Me</small>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="row" style="margin: 0px;">
+                                                            <div class="col" style="padding: 0px;">
+                                                                <small class="text-center text-muted mb-2">Sender: @IsSenderInTheBookmarks(nft.Author)</small>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <hr />
+                                                    <div class="row" style="margin: 0px;">
+                                                        <div class="col" style="padding: 0px;">
+                                                            @if (nft.Name.Length > 35)
+                                                            {
+                                                                <small>@nft.Name.Substring(0, 34) ...</small>
+                                                            }
+                                                            else
+                                                            {
+                                                                <small>@nft.Name</small>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" style="margin: 0px; margin-top:5px;">
+                                                        <div class="col text-center" style="padding: 0px;">
+                                                            @if (nft.Description.Length > 60)
+                                                            {
+                                                                <small>@nft.Description.Substring(0, 59) ...</small>
+                                                            }
+                                                            else
+                                                            {
+                                                                <small>@nft.Description</small>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top:20px;">
+                                                <div class="col d-flex justify-content-end align-items-end">
+                                                    <button class="btn btn-light" @onclick="() => showMessageDetails(nft)"><i class="oi oi-envelope-open"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<Modal Title="Message Details"
+       Visible="@messageDetailsVisible"
+       OnOk="@messageDetailsVisibleCancel"
+       OnCancel="@messageDetailsVisibleCancel">
+    <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" />
+</Modal>
+
+
+<Modal Title="Send Message"
+       Visible="@sendMessageVisible"
+       OnOk="@sendMessageConfirm"
+       OnCancel="@sendMessageCancel">
+    <SendMessage Receiver="@messageTab.Address" />
+</Modal>
+
+@code {
+
+    private MessageTab messageTab = new MessageTab("");
+    [Parameter]
+    public MessageTab InMessageTab
+    {
+        get => messageTab;
+        set
+        {
+            if (value != null)
+            {
+                messageTab = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> ReloadRequest { get; set; }
+
+    private bool sendMessageVisible = false;
+    private bool messageDetailsVisible = false;
+    private string selectedNFTUtxo = string.Empty;
+
+    private INFT nftToShow = new MessageNFT("");
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+
+        await messageTab.Reload(AppData.Account.NFTs);
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private void BookmarkRefreshedHandler(VEDriversLite.Bookmarks.Bookmark bookmark)
+    {
+        StateHasChanged();
+    }
+
+    private string IsSenderInTheBookmarks(string sender)
+    {
+        var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
+        if (s == null)
+            return NeblioTransactionHelpers.ShortenAddress(sender);
+
+        if (!string.IsNullOrEmpty(s.Name))
+            return s.Name;
+        else
+            return NeblioTransactionHelpers.ShortenAddress(sender);
+    }
+
+    private async Task showMessageDetails(INFT nft)
+    {
+        nftToShow = await NFTFactory.CloneNFT(nft);
+        selectedNFTUtxo = nft.Utxo;
+        Console.WriteLine(nft.Utxo);
+        messageDetailsVisible = true;
+    }
+
+    private async Task messageDetailsVisibleCancel()
+    {
+        messageDetailsVisible = false;
+    }
+
+    private async Task showSendMessage()
+    {
+        sendMessageVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task sendMessageCancel(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+    }
+
+    private async Task sendMessageConfirm(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task ReloadMessages(MouseEventArgs e)
+    {
+        await ReloadRequest.InvokeAsync(messageTab.Address);
+    }
+}

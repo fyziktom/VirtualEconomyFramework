@@ -23,7 +23,7 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.HelpButton PageSection="sendpayments" />
+                        <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="sendpayments" />
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
@@ -76,7 +76,7 @@
                 }
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
+                        <VENFTApp_Blazor.Components.Account.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
                     </div>
                 </div>
 
@@ -99,7 +99,7 @@
                     </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <VENFTApp_Blazor.Components.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
+                            <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
                         </div>
                     </div>
                 }
@@ -200,7 +200,7 @@
                     </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <VENFTApp_Blazor.Components.NeblioAddressInput AddressCheckedInputed="@splitNeblioReceiverAddressChangedHandler" />
+                            <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="@splitNeblioReceiverAddressChangedHandler" />
                         </div>
                     </div>
                     <div class="row" style="margin-top:5px;">
@@ -338,7 +338,7 @@
                     </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <VENFTApp_Blazor.Components.NeblioAddressInput AddressCheckedInputed="@splitTokensReceiverAddressChangedHandler" />
+                            <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="@splitTokensReceiverAddressChangedHandler" />
                         </div>
                     </div>
                     <div class="row" style="margin-top:5px;">
@@ -514,11 +514,11 @@
 
                         @if (mainAccountSelected)
                         {
-                            <VENFTApp_Blazor.Components.TransactionsList SubAccount="false" Address="@AppData.Account.Address" @bind-MaxLoadedTx="maxLoadedTransaction" />
+                            <VENFTApp_Blazor.Components.Account.TransactionsList SubAccount="false" Address="@AppData.Account.Address" @bind-MaxLoadedTx="maxLoadedTransaction" />
                         }
                         else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
                         {
-                            <VENFTApp_Blazor.Components.TransactionsList SubAccount="true" Address="@selectedAccountAddress" @bind-MaxLoadedTx="maxLoadedTransaction" />
+                            <VENFTApp_Blazor.Components.Account.TransactionsList SubAccount="true" Address="@selectedAccountAddress" @bind-MaxLoadedTx="maxLoadedTransaction" />
                         }
                     </div>
                 </div>
@@ -531,32 +531,7 @@
 
 
 @code {
-    public enum TxType
-    {
-        Neblio,
-        Tokens,
-        SplitNeblio,
-        SplitTokens
-    }
 
-    TxType txType = TxType.Neblio;
-
-    SplitNeblioDto splitNeblioDto = new SplitNeblioDto();
-    SplitNeblioTokensDto splitNeblioTokenDto = new SplitNeblioTokensDto();
-
-    bool sendingTransaction = false;
-    private string txid = string.Empty;
-
-    private string selectedTokenId = NFTHelpers.TokenId;
-    private TokenSupplyDto selectedToken = new TokenSupplyDto();
-
-    string selectedAccountAddress = string.Empty;
-    bool mainAccountSelected = false;
-    bool subAccount = false;
-
-    private int AmountTokensToSend = 2;
-    private double AmountToSend = 0.001;
-    private int maxLoadedTransaction = 10;
     private string receiver = string.Empty;
     public string Receiver
     {
@@ -621,6 +596,34 @@
         }
     }
 
+    public enum TxType
+    {
+        Neblio,
+        Tokens,
+        SplitNeblio,
+        SplitTokens
+    }
+
+    private TxType txType = TxType.Neblio;
+
+    private SplitNeblioDto splitNeblioDto = new SplitNeblioDto();
+    private SplitNeblioTokensDto splitNeblioTokenDto = new SplitNeblioTokensDto();
+    private TokenSupplyDto selectedToken = new TokenSupplyDto();
+
+    private bool sendingTransaction = false;
+    private bool mainAccountSelected = false;
+    private bool subAccount = false;
+
+    private int AmountTokensToSend = 2;
+    private int maxLoadedTransaction = 10;
+
+    private double AmountToSend = 0.001;
+
+    private string txid = string.Empty;
+    private string selectedTokenId = NFTHelpers.TokenId;
+    private string selectedAccountAddress = string.Empty;
+
+
     protected override Task OnInitializedAsync()
     {
         try
@@ -657,6 +660,44 @@
         return base.OnInitializedAsync();
     }
 
+    private async Task QRTextReaded(string text)
+    {
+        Receiver = text;
+    }
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private void txTypeChangedHandler(TxType type)
+    {
+        StateHasChanged();
+    }
+
+    private async Task tokenTypeChangedHandler(string tokid)
+    {
+        if (mainAccountSelected)
+        {
+            if (AppData.Account.TokensSupplies.TryGetValue(selectedTokenId, out var dto))
+                selectedToken = dto;
+            else
+                selectedToken = new TokenSupplyDto();
+        }
+        else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
+        {
+            if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
+            {
+                if (acc.TokensSupplies.TryGetValue(selectedTokenId, out var dto))
+                    selectedToken = dto;
+                else
+                    selectedToken = new TokenSupplyDto();
+            }
+        }
+        splitNeblioTokenDto.tokenId = selectedTokenId;
+        StateHasChanged();
+    }
+
     private async Task Redirect()
     {
         AppData.Account = new NeblioAccount();
@@ -680,16 +721,6 @@
         selectedTokenId = string.Empty;
         mainAccountSelected = true;
         subAccount = false;
-        StateHasChanged();
-    }
-
-    private async Task QRTextReaded(string text)
-    {
-        Receiver = text;
-    }
-
-    void RefreshedHandler(object sender, EventArgs e)
-    {
         StateHasChanged();
     }
 
@@ -750,34 +781,6 @@
             recs.RemoveAt(i);
         }
         splitNeblioDto.receivers = recs;
-        StateHasChanged();
-    }
-
-    private void txTypeChangedHandler(TxType type)
-    {
-        StateHasChanged();
-    }
-
-    private async Task tokenTypeChangedHandler(string tokid)
-    {
-        if (mainAccountSelected)
-        {
-            if (AppData.Account.TokensSupplies.TryGetValue(selectedTokenId, out var dto))
-                selectedToken = dto;
-            else
-                selectedToken = new TokenSupplyDto();
-        }
-        else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
-        {
-            if (AppData.Account.SubAccounts.TryGetValue(selectedAccountAddress, out var acc))
-            {
-                if (acc.TokensSupplies.TryGetValue(selectedTokenId, out var dto))
-                    selectedToken = dto;
-                else
-                    selectedToken = new TokenSupplyDto();
-            }
-        }
-        splitNeblioTokenDto.tokenId = selectedTokenId;
         StateHasChanged();
     }
 

@@ -1,0 +1,530 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
+@using VEDriversLite.WooCommerce
+@using VEDriversLite.WooCommerce.Dto
+@inject AppData AppData
+
+<div class="container-fluid overflow-auto">
+    <div class="row">
+        <div class="col">
+            <div class="row d-flex justify-content-end align-items-end" style="margin-top:10px;">
+                <div class="col d-flex justify-content-end align-items-end">
+                    <button class="btn btn-light" @onclick="ReloadNFTs"><i class="oi oi-reload"></i></button>
+                    @if (MainAccount || SubAccount)
+                    {
+                        @if (NFTsSelectedForAction.Count == 0)
+                        {
+                            <button class="btn btn-light" @onclick="AllowCheckField" style="margin-left:20px;"><i class="oi oi-pencil"></i></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-light" @onclick="AllowCheckField" style="margin-left:20px;"><i class="oi oi-pencil"></i><span class="badge badge-info" style="margin-left:5px;">@NFTsSelectedForAction.Count</span></button>
+                        }
+                        <button class="btn btn-light" @onclick="DestroSelectedNFTs" style="margin-left:20px;"><i class="oi oi-trash"></i></button>
+                    }
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayVENFTChanged(eventArgs.Value); }" /><span style="margin-left:10px;">VENFT</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayCoruzantChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Coruzant</span><br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayImagesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Images</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayPostsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Posts</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayMusicChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Music</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayTicketsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Tickets</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayEventsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Events</span><br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <Input Placeholder="Search NFTs by Name, Author or tags" autocomplete="random" OnkeyUp="@searchNFTsEnter" MaxLength="100" @bind-Value=@_searchNFTsString @onfocusout="@searchNFTsChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
+               </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    @if (NFTsList.Count == 0)
+                    {
+                        <p>Cannot find any NFTs.</p>
+                    }
+                    else
+                    {
+                        <div class="card-group">
+                            @foreach (var nft in NFTsList)
+                            {
+                                if (IsInFilter(nft))
+                                {
+                                    var isInWoo = false;
+                                    if (ProductsInTheShop.TryGetValue(nft.Utxo + ":" + nft.UtxoIndex.ToString(), out var product))
+                                    {
+                                        isInWoo = true;
+                                    }
+                                    if (displayCoruzant && (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast))
+                                    {
+                                    <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT Address="@_address"
+                                                 InputNFT="@nft"
+                                                 NFTSent="@NFTSentHandler"
+                                                 OwnNFT="@OwnNFT"
+                                                 SubAccount="@SubAccount"
+                                                 DisplayCheckField="@allowNFTCheckField"
+                                                 NFTCheckedChanged="@NFTCheckChangedHandler" />
+                                    }
+                                    else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
+                                    {
+                                        if ((displayImages && nft.Type == NFTTypes.Image) ||
+                                            (displayPosts && nft.Type == NFTTypes.Post) ||
+                                            (displayMusic && nft.Type == NFTTypes.Music) ||
+                                            (displayEvents && nft.Type == NFTTypes.Event) ||
+                                            (displayTickets && nft.Type == NFTTypes.Ticket))
+                                        {
+                                            if ((displayVENFT && nft.TokenId == NFTHelpers.TokenId) ||
+                                                (!displayVENFT && nft.TokenId != NFTHelpers.TokenId))
+                                            {
+                                            <NFT Address="@_address" InputNFT="@nft"
+                                                 NFTSent="@NFTSentHandler"
+                                                 OwnNFT="@OwnNFT"
+                                                 SubAccount="@SubAccount"
+                                                 DisplayCheckField="@allowNFTCheckField"
+                                                 NFTCheckedChanged="@NFTCheckChangedHandler"
+                                                 IsInWooCom="@isInWoo" />
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!--
+    if (InBrowser && canLoadMore && NFTsList.Count > 0)
+    {
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <button class="btn btn-primary" onclick="LoadMoreNFTs" style="width:120px;">Load more NFTs</button>
+            </div>
+        </div>
+    }-->
+        </div>
+    </div>
+</div>
+
+<Modal Title="Destroy NFTs"
+       Style="min-height:200px; min-width:200px;"
+       Visible="@destroyNFTsVisible"
+       OnOk="@destroyNFTsConfirm"
+       OnCancel="@destroyNFTsCancel">
+    <Spin Spinning="@destroyingNFTs" Tip="Destroying NFTs...">
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span>Do you really want to destroy selected NFTs? All will be returned back to you address as source tokens.</span>
+            </div>
+        </div>
+    </Spin>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public Dictionary<string, Product> ProductsInTheShop { get; set; } = new Dictionary<string, Product>();
+
+    private List<INFT> _NFTsList = new List<INFT>();
+    public List<INFT> NFTsList
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(searchNFTsString))
+            {
+                searchNFTsString = string.Empty;
+            }
+            else
+            {
+                searchNFTsString = searchNFTsString.ToLower();
+            }
+            if (MainAccount)
+            {
+                return AppData.Account.NFTs;
+            }
+            else if (SubAccount)
+            {
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var sacc))
+                {
+                    return sacc.NFTs;
+                }
+            }
+            else if (InBrowser)
+            {
+                var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
+                if (tab != null && tab.NFTs != null)
+                {
+                    canLoadMore = tab.CanLoadMore;
+                    return tab.NFTs;
+                }
+            }
+            return new List<INFT>();
+        }
+    }
+
+    [Parameter]
+    public EventCallback<List<INFT>> NFTsChanged { get; set; }
+
+    private string _address = string.Empty;
+    [Parameter]
+    public string Address
+    {
+        get => _address;
+        set
+        {
+            if (!string.IsNullOrEmpty(value) && _address != value)
+            {
+                _address = value;
+                refreshNFTs();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool MainAccount { get; set; } = true;
+
+    [Parameter]
+    public bool InBrowser { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    public bool Clear { get; set; } = false;
+    public bool OwnNFT => MainAccount || SubAccount;
+
+    private bool canLoadMore = false;
+    private bool nftDetailsVisible = false;
+    private bool displayImages = true;
+    private bool displayPosts = true;
+    private bool displayMusic = true;
+    private bool displayTickets = true;
+    private bool displayEvents = true;
+    private bool displayVENFT = true;
+    private bool displayCoruzant = true;
+    private bool displayYouTube = false;
+    private bool displaySpotify = false;
+    private bool allowNFTCheckField = false;
+    private bool destroyNFTsVisible = false;
+    private bool destroyingNFTs = false;
+
+    private int refresh = 5;
+
+    private string lastAddress = string.Empty;
+    private string searchNFTsString = string.Empty;
+    private string _searchNFTsString = string.Empty;
+
+    private List<INFT> NFTsSelectedForAction = new List<INFT>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppData.Account != null)
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
+            AppData.Account.Refreshed += RefreshedHandler;
+            AppData.Account.NFTsChanged -= RefreshedNFTsHandler;
+            AppData.Account.NFTsChanged += RefreshedNFTsHandler;
+            AppData.Account.SubAccountNFTsChanged -= RefreshedNFTsHandler;
+            AppData.Account.SubAccountNFTsChanged += RefreshedNFTsHandler;
+            AppData.Account.TabNFTsChanged -= RefreshedNFTsHandler;
+            AppData.Account.TabNFTsChanged += RefreshedNFTsHandler;
+
+            if (string.IsNullOrEmpty(_address))
+            {
+                Address = AppData.Account.Address;
+                MainAccount = true;
+                InBrowser = false;
+                SubAccount = false;
+                refreshNFTs();
+            }
+        }
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            refreshNFTs();
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    void RefreshedNFTsHandler(object sender, string e)
+    {
+        //Clear = true;
+        //refreshNFTs();
+        StateHasChanged();
+    }
+
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        //refreshNFTs();
+        //StateHasChanged();
+    }
+
+
+    private async Task searchNFTsChanged(EventArgs e)
+    {
+        if (searchNFTsString != _searchNFTsString)
+        {
+            if (!string.IsNullOrEmpty(_searchNFTsString))
+                searchNFTsString = _searchNFTsString;
+            else
+            {
+                searchNFTsString = string.Empty;
+                _searchNFTsString = string.Empty;
+            }
+            StateHasChanged();
+        }
+    }
+
+    public void searchNFTsEnter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            searchNFTsChanged(null);
+        }
+    }
+
+    private async Task NFTCheckChangedHandler((INFT, bool) e)
+    {
+        if (NFTsSelectedForAction.Count > 10 && e.Item2)
+            return; // todo alert messagebox
+
+        if (e.Item2 && !NFTsSelectedForAction.Contains(e.Item1))
+            NFTsSelectedForAction.Add(e.Item1);
+        else
+        {
+            if (NFTsSelectedForAction.Contains(e.Item1))
+                NFTsSelectedForAction.Remove(e.Item1);
+        }
+        StateHasChanged();
+    }
+
+    public bool IsInFilter(INFT nft)
+    {
+        if (!string.IsNullOrEmpty(searchNFTsString))
+        {
+            if (nft.Author.ToLower().Contains(searchNFTsString) || nft.Name.ToLower().Contains(searchNFTsString))
+            {
+                return true;
+            }
+            if (nft.Type == NFTTypes.CoruzantProfile)
+            {
+                if (((nft as CoruzantProfileNFT).Name.ToLower() + (nft as CoruzantProfileNFT).Surname.ToLower()).Contains(searchNFTsString))
+                {
+                    return true;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(nft.Tags))
+            {
+                if (nft.Tags.ToLower().Contains(searchNFTsString))
+                    return true;
+
+                var split = searchNFTsString.Split(' ');
+                if (split.Length > 1)
+                {
+                    var score = 0;
+                    nft.TagsList.ForEach(t =>
+                    {
+                        split.ForEach(s =>
+                        {
+                            if (t.ToLower().Contains(s.ToLower()))
+                                score++;
+                            else if (s.ToLower().Contains(t.ToLower()))
+                                score++;
+                        });
+                    });
+                    if (score > 0)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    private async Task AllowCheckField(MouseEventArgs e)
+    {
+        allowNFTCheckField = !allowNFTCheckField;
+        NFTsSelectedForAction.Clear();
+        StateHasChanged();
+    }
+
+    private async Task DestroSelectedNFTs(MouseEventArgs e)
+    {
+        destroyNFTsVisible = true;
+    }
+    private async Task destroyNFTsCancel(MouseEventArgs e)
+    {
+        destroyNFTsVisible = false;
+    }
+
+    private async Task destroyNFTsConfirm(MouseEventArgs e)
+    {
+        destroyingNFTs = true;
+        StateHasChanged();
+        if (NFTsSelectedForAction.Count > 0)
+        {
+            if (MainAccount)
+            {
+                var res = await AppData.Account.DestroyNFTs(NFTsSelectedForAction);
+                if (res.Item1)
+                    NFTsSelectedForAction.Clear();
+            }
+            else if (SubAccount)
+            {
+                var res = await AppData.Account.DestroyNFTOnSubAccount(_address, NFTsSelectedForAction, true);
+                if (res.Item1)
+                    NFTsSelectedForAction.Clear();
+            }
+        }
+        //await ReloadNFTs(null);
+        allowNFTCheckField = false;
+        destroyingNFTs = false;
+        destroyNFTsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task refreshNFTs()
+    {
+        /*
+        if (Clear)
+        {
+            Clear = false;
+            _NFTsList.Clear();
+        }
+
+        //_NFTsList.Clear();
+        if (MainAccount)
+        {
+            _NFTsList = AppData.Account.NFTs;
+        }
+        else if (SubAccount)
+        {
+            if (AppData.Account.SubAccounts.TryGetValue(Address, out var sacc))
+                _NFTsList = sacc.NFTs;
+        }
+        else if (InBrowser)
+        {
+            var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
+            if (tab != null && tab.NFTs != null)
+            {
+                canLoadMore = tab.CanLoadMore;
+                _NFTsList = tab.NFTs;
+            }
+        }
+        StateHasChanged();
+        */
+    }
+
+    private async Task reloadNFTTab(MouseEventArgs e)
+    {
+        var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == _address);
+        if (tab != null && tab.NFTs != null)
+            await tab.Reload();
+        StateHasChanged();
+    }
+
+    private async Task ReloadNFTs(MouseEventArgs e)
+    {
+        if (InBrowser)
+        {
+            await reloadNFTTab(null);
+        }
+        else if (MainAccount)
+        {
+            await AppData.Account.ReloadUtxos();
+            await AppData.Account.ReLoadNFTs();
+            await AppData.Account.RefreshAddressReceivedPayments();
+            await AppData.Account.RefreshAddressReceivedReceipts();
+        }
+        else if (SubAccount)
+        {
+            if (AppData.Account.SubAccounts.TryGetValue(Address, out var sacc))
+            {
+                await sacc.ReloadUtxos();
+                await sacc.ReLoadNFTs();
+                await sacc.RefreshAddressReceivedPayments();
+                await sacc.RefreshAddressReceivedReceipts();
+            }
+        }
+        _NFTsList.Clear();
+        StateHasChanged();
+        await refreshNFTs();
+        StateHasChanged();
+    }
+
+    void NFTSentHandler(string nfttx)
+    {
+        nftDetailsVisible = false;
+        StateHasChanged();
+        //ReloadNFTs(null);
+    }
+
+    private async Task displayImagesChanged(object e)
+    {
+        displayImages = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayMusicChanged(object e)
+    {
+        displayMusic = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayPostsChanged(object e)
+    {
+        displayPosts = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayTicketsChanged(object e)
+    {
+        displayTickets = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayEventsChanged(object e)
+    {
+        displayEvents = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayVENFTChanged(object e)
+    {
+        displayVENFT = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayCoruzantChanged(object e)
+    {
+        displayCoruzant = (bool)e;
+        StateHasChanged();
+    }
+
+}

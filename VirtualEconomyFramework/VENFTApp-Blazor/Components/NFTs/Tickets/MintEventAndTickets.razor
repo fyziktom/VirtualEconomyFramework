@@ -1,0 +1,961 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
+@using Markdig
+@inject AppData AppData
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col">
+        <Spin spinning="@processingMinting" tip="Sending...">
+            <div class="row">
+                <div class="col">
+                    @if (nftType == NFTTypes.Ticket)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-center">If you have some NFT Event you can load form based on this NFT Event. You must provide NFT Event Origin txid and address of owner.</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-center">Creating NFT Tickets is possible just with already existing NFT Event.</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Event NFT TxId</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Event NFT TxId" MaxLength="100" @onfocusout="eventIdFilled" @bind-Value=@eventId Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        @if (string.IsNullOrEmpty(eventId))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Event Address</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Event NFT Address" MaxLength="100" @bind-Value=@eventAddress Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        @if (string.IsNullOrEmpty(eventAddress))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(eventId) && !string.IsNullOrEmpty(eventAddress))
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Load Event NFT</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary" @onclick="ShowEvent">Check and Load Event NFT</button>
+                                </div>
+                            </div>
+                        }
+                    }
+                    @if ((eventDataLoaded && nftType == NFTTypes.Ticket) || (nftType == NFTTypes.Event))
+                    {
+                        @if ((nftType == NFTTypes.Event && string.IsNullOrEmpty(classOfEventName)) || (nftType == NFTTypes.Ticket && string.IsNullOrEmpty(classOfTicketName)))
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger text-center">Please Select the Type</small>
+                                </div>
+                            </div>
+                        }
+                        @if (nftType == NFTTypes.Event)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Event Type</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <RadioGroup @bind-Value="@classOfEventName" @onselectionchange="stateChangedHandler">
+                                        @foreach (var ev in Enum.GetNames(typeof(ClassOfNFTEvent)))
+                                                {
+                                            <Radio Value="ev">@ev</Radio>
+                                                }
+                                    </RadioGroup>
+                                </div>
+                            </div>
+                        }
+
+                        @if (nftType == NFTTypes.Ticket)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Ticket Type</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <RadioGroup @bind-Value="@classOfTicketName" @onselectionchange="stateChangedHandler">
+                                        @foreach (var ev in Enum.GetNames(typeof(ClassOfNFTTicket)))
+                                                {
+                                            <Radio Value="ev">@ev</Radio>
+                                                }
+                                    </RadioGroup>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Ticket Duration</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <RadioGroup @bind-Value="@durationOfTicketName" @onselectionchange="stateChangedHandler">
+                                        @foreach (var ev in Enum.GetNames(typeof(DurationOfNFTTicket)))
+                                                {
+                                            <Radio Value="ev">@ev</Radio>
+                                                }
+                                    </RadioGroup>
+                                </div>
+                            </div>
+                        }
+
+                        <hr />
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Name</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Type Name" MaxLength="100" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        @if (string.IsNullOrEmpty(name))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Author</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Author of the NFT" MaxLength="100" @bind-Value=@author Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        @if (string.IsNullOrEmpty(author))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Author Link</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Author Link" MaxLength="100" @bind-Value=@authorLink Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Description</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <TextArea Placeholder="Add Description of the NFT" MaxLength="300" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
+                            </div>
+                        </div>
+                        @if (string.IsNullOrEmpty(description))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field</small>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(description))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-info">Remaining @(300-description.Length) from 300 characters.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Text</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <TextArea Placeholder="Add Text" MaxLength="5000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
+                            </div>
+                            @if (!string.IsNullOrEmpty(text))
+                            {
+                                <div class="col d-flexjustify-content-center align-items-center" style="width: 350px; min-height:400px; max-width:350px;">
+                                    <span class="border-light">@((MarkupString)NFTmarkuptext)</span>
+                                </div>
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(text))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-info">Remaining @(5000-text.Length) from 5000 characters.</small>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Event Date</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <DatePicker @bind-value="@eventDate" ShowTime="@true" ShowToday="@true" TValue="DateTime"
+                                            DefaultValue="DateTime.UtcNow"
+                                            Format="yyyy-MM-dd HH:mm:ss" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Location</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Location Name" MaxLength="100" @bind-Value=@location Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        @if (string.IsNullOrEmpty(location) && string.IsNullOrEmpty(locationCoordinates))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field or fill Location Coordinates.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Location Coordinates (example: "39.947041,-75.165295")</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Location Coordinates" MaxLength="100" @bind-Value=@locationCoordinates Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        @if (string.IsNullOrEmpty(locationCoordinates) && string.IsNullOrEmpty(location))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field or fill Location field.</small>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(locationCoordinates))
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Check Event NFT</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <a href="http://www.google.com/maps/place/@locationCoordinates" target="_blank">Check Coordinates</a>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>External Video Link</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add External Video Link" MaxLength="100" @bind-Value=@videoLink Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Tags</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Tags - splitted by space" MaxLength="200" @bind-Value=@tags Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+
+                        <hr />
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Uplod Music</small>
+                            </div>
+                        </div>
+                        <VENFTApp_Blazor.Components.UploadImage NFTType="@NFTTypes.Music" ImageLink="@link" ImageLinkChanged="@LinkChanged" />
+
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Uplod Image</small>
+                            </div>
+                        </div>
+                        <VENFTApp_Blazor.Components.UploadImage NFTType="@NFTTypes.Image" ImageLink="@imagelink" ImageLinkChanged="@ImageLinkChanged" />
+
+                        @if (nftType == NFTTypes.Ticket)
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
+                                </div>
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
+                                </div>
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
+                                </div>
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Mint To Another Address</span><br />
+                                </div>
+                            </div>
+
+                            @if (withPrice)
+                            {
+                                <div class="row" style="margin-top:20px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <small>Price in Neblio</small>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top:5px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@price" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
+                                    </div>
+                                </div>
+                            }
+                            @if (withDogePrice)
+                            {
+                                <div class="row" style="margin-top:20px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <small>Price in Doge</small>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top:5px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <input type="number" step="1" min="2" max="1000000000" @bind="@dogeprice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                                    </div>
+                                </div>
+                            }
+                            @if (withCoppies)
+                            {
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <small>Coppies</small>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:5px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <input type="number" step="1" min="0" max="@AppData.Account.SourceTokensBalance" @bind="@NumberOfCoppies" />
+                                    </div>
+                                </div>
+                            }
+                            @if (toAnotherAddres)
+                            {
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <small>Fill Receiver Address</small>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <VENFTApp_Blazor.Components.Account.CreateNeblioSubAccount NewAddressCreated="newSubAccountCreated" />
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:15px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="mintReceiverAddressChecked" Receiver="@mintReceiverAddress" />
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
+                            </div>
+                        </div>
+                        @if ((string.IsNullOrEmpty(eventId) && (nftType == NFTTypes.Ticket)))
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary disabled" @onclick="ShowMintConfirm">Create NFT</button>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(multimintStatus))
+                            {
+                                <div class="row" style="margin-top:20px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <span>@multimintStatus</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                    else if (nftType == NFTTypes.Ticket && !eventDataLoaded && string.IsNullOrEmpty(eventId))
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Please input event Id</span>
+                            </div>
+                        </div>
+                    }
+                    else if (nftType == NFTTypes.Ticket && !eventDataLoaded && string.IsNullOrEmpty(eventAddress))
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Please input event Address</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </Spin>
+
+        <Modal Title="Mint New NFT"
+               Visible="@confirmVisible"
+               OnOk="@HandleOk"
+               OnCancel="@HandleCancel">
+            <p>"Do you realy want to mint this NFT?"</p>
+        </Modal>
+
+        <Modal Title="Mint To Another Address"
+               Visible="@mintToAnotherAddressConfirmModalVisible"
+               OnOk="@MintToAnotherAddressOk"
+               OnCancel="@MintToAnotherAddressCancel">
+            <p>"You selected another address as receiver of these NFTs. Is it correct?"</p>
+        </Modal>
+
+        <Modal Title="Event Details"
+               Visible="@eventNFTDetailsVisible"
+               OnOk="@eventNFTDetailsClose"
+               OnCancel="@eventNFTDetailsClose">
+            <Spin Tip="Loading Event Data..." Spinning="@loadingEventData">
+                @if (!string.IsNullOrEmpty(loadedEventNFT.Utxo))
+                {
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <NFT InputNFT="@loadedEventNFT" OwnNFT="false" Address="@Address" />
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="loadDataFromEventNFT">Load Data From Event To Form</button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div style="min-width:100px; min-height:50px;"></div>
+                }
+            </Spin>
+        </Modal>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public bool RedirectToNFTsAfterMint { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public string TokenId { get; set; } = string.Empty;
+
+    private NFTTypes nftType = NFTTypes.Event;
+    [Parameter]
+    public NFTTypes NFTType
+    {
+        get => nftType;
+        set => nftType = value;
+    }
+
+    private INFT sourceNFT = new EventNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => sourceNFT;
+        set
+        {
+            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != newNFT.Utxo)
+            {
+                sourceNFT = value;
+                newNFT.Fill(value);
+                LoadData();
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> NFTMinted { get; set; }
+
+    public string NFTmarkuptext => Markdown.ToHtml(text);
+
+    private bool uploadingImage = false;
+    private bool confirmVisible = false;
+    private bool eventNFTDetailsVisible = false;
+    private bool mintToAnotherAddressConfirmModalVisible = false;
+    private bool processingMinting = false;
+    
+    private bool withPrice = false;
+    private bool withDogePrice = false;
+    private bool withCoppies = false;
+    private bool toAnotherAddres = false;
+    private bool loadingEventData = false;
+    private bool eventDataLoaded = false;
+    private bool musicInLink = false;
+
+    private int NumberOfCoppies = 0;
+
+    private double price = 0.0;
+    private double dogeprice = 0.0;
+
+    // nft common properties
+    private string description = string.Empty;
+    private string text = string.Empty;
+    private string tags = string.Empty;
+    private string name = string.Empty;
+    private string surname = string.Empty;
+    private string nickname = string.Empty;
+    private string author = string.Empty;
+    private string imagelink = string.Empty;
+    private string link = string.Empty;
+
+    // special properties
+    private string eventId = string.Empty;
+    private string eventAddress = string.Empty;
+    private string authorLink = string.Empty;
+    private string location = string.Empty;
+    private string locationCoordinates = string.Empty;
+    private string seat = string.Empty;
+    private string videoLink = string.Empty;
+    private string classOfEventName = string.Empty;
+    private string classOfTicketName = string.Empty;
+    private string durationOfTicketName = string.Empty;
+    private DateTime eventDate = DateTime.UtcNow;
+    private ClassOfNFTEvent classOfEvent = ClassOfNFTEvent.PersonalEvent;
+    private ClassOfNFTTicket classOfTicket = ClassOfNFTTicket.Standard;
+    private DurationOfNFTTicket durationOfTicket = DurationOfNFTTicket.Day;
+
+    private string multimintStatus = string.Empty;
+    private string mintReceiverAddress = string.Empty;
+
+    private INFT newNFT = new EventNFT("");
+    private INFT loadedEventNFT = new EventNFT("");
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(AppData.Account.Address))
+        {
+            AppData.Account.NewMintingProcessInfo -= multimintStateChangedHandler;
+            AppData.Account.NewMintingProcessInfo += multimintStateChangedHandler;
+            if (!string.IsNullOrEmpty(AppData.Account.Profile.Nickname))
+                nickname = AppData.Account.Profile.Nickname;
+            if (!string.IsNullOrEmpty(AppData.Account.Profile.Name))
+                author = AppData.Account.Profile.Name + " " + AppData.Account.Profile.Surname;
+        }
+    }
+
+    private void newSubAccountCreated(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            mintReceiverAddress = address;
+        }
+        StateHasChanged();
+    }
+    private void eventIdFilled(EventArgs e)
+    {
+        LoadSender();
+    }
+    private async Task LoadSender()
+    {
+        var add = await NeblioTransactionHelpers.GetTransactionSender(eventId);
+        if (!string.IsNullOrEmpty(add))
+        {
+            eventAddress = add;
+            await ShowEvent(null);
+        }
+        StateHasChanged();
+    }
+    private void mintReceiverAddressChecked(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            mintReceiverAddress = address;
+        }
+        StateHasChanged();
+    }
+    private async Task toAnotherAddressChanged(object e)
+    {
+        toAnotherAddres = (bool)e;
+        if (!toAnotherAddres)
+        {
+            mintReceiverAddress = string.Empty;
+        }
+        StateHasChanged();
+    }
+
+    void ImageLinkChanged(string newLink)
+    {
+        imagelink = newLink;
+    }
+
+    void LinkChanged(string newLink)
+    {
+        link = newLink;
+        musicInLink = true;
+    }
+
+    private void multimintStateChangedHandler(object sender, string e)
+    {
+        multimintStatus = e;
+        StateHasChanged();
+    }
+
+    private void stateChangedHandler(EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task withPriceChanged(object e)
+    {
+        withPrice = (bool)e;
+        if (withPrice)
+            price = 0.0005;
+        else
+            price = 0;
+        StateHasChanged();
+    }
+    private async Task withDogePriceChanged(object e)
+    {
+        withDogePrice = (bool)e;
+        if (withDogePrice)
+            dogeprice = 2;
+        else
+            dogeprice = 0;
+        StateHasChanged();
+    }
+    private async Task withCoppiesChanged(object e)
+    {
+        withCoppies = (bool)e;
+        StateHasChanged();
+    }
+
+    void ShowMintConfirm()
+    {
+        if (!string.IsNullOrEmpty(mintReceiverAddress))
+            mintToAnotherAddressConfirmModalVisible = true;
+        else
+            confirmVisible = true;
+    }
+
+    private async Task MintToAnotherAddressOk(MouseEventArgs e)
+    {
+        mintToAnotherAddressConfirmModalVisible = false;
+        confirmVisible = true;
+    }
+
+    private void MintToAnotherAddressCancel(MouseEventArgs e)
+    {
+        mintToAnotherAddressConfirmModalVisible = false;
+    }
+
+    private async Task ShowEvent(MouseEventArgs e)
+    {
+        eventNFTDetailsVisible = true;
+        loadingEventData = true;
+        StateHasChanged();
+
+        loadedEventNFT = await NFTHelpers.FindEventOnTheAddress(eventAddress, eventId);
+        loadingEventData = false;
+        if (loadedEventNFT == null)
+        {
+            loadedEventNFT = new EventNFT("");
+            eventNFTDetailsVisible = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task loadDataFromEventNFT(MouseEventArgs e)
+    {
+        if (loadedEventNFT == null)
+            return;
+
+        eventId = loadedEventNFT.NFTOriginTxId;
+        eventDate = (loadedEventNFT as EventNFT).EventDate;
+        location = (loadedEventNFT as EventNFT).Location;
+        locationCoordinates = (loadedEventNFT as EventNFT).LocationCoordinates;
+        videoLink = (loadedEventNFT as EventNFT).VideoLink;
+        classOfEvent = (loadedEventNFT as EventNFT).EventClass;
+        authorLink = (loadedEventNFT as EventNFT).AuthorLink;
+        author = (loadedEventNFT as EventNFT).Author;
+        name = (loadedEventNFT as EventNFT).Name;
+        description = (loadedEventNFT as EventNFT).Description;
+        imagelink = (loadedEventNFT as EventNFT).ImageLink;
+        link = (loadedEventNFT as EventNFT).Link;
+        text = (loadedEventNFT as EventNFT).Text;
+        musicInLink = (loadedEventNFT as EventNFT).MusicInLink;
+        classOfEventName = (loadedEventNFT as EventNFT).EventClass.ToString();
+
+        eventNFTDetailsVisible = false;
+        eventDataLoaded = true;
+        StateHasChanged();
+    }
+
+    private async Task eventNFTDetailsClose(MouseEventArgs e)
+    {
+        eventNFTDetailsVisible = false;
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        await MintNewNFT();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    private async Task LoadData()
+    {
+        if (newNFT != null)
+        {
+            description = newNFT.Description;
+            text = newNFT.Text;
+            tags = newNFT.Tags;
+            name = newNFT.Name;
+            author = newNFT.Author;
+            imagelink = newNFT.ImageLink;
+            link = newNFT.Link;
+
+            switch (newNFT.Type)
+            {
+                case NFTTypes.Ticket:
+                    eventId = (newNFT as TicketNFT).EventId;
+                    eventDate = (newNFT as TicketNFT).EventDate;
+                    eventAddress = (newNFT as TicketNFT).EventAddress;
+                    location = (newNFT as TicketNFT).Location;
+                    locationCoordinates = (newNFT as TicketNFT).LocationCoordinates;
+                    videoLink = (newNFT as TicketNFT).VideoLink;
+                    seat = (newNFT as TicketNFT).Seat;
+                    classOfTicket = (newNFT as TicketNFT).TicketClass;
+                    authorLink = (newNFT as TicketNFT).AuthorLink;
+                    musicInLink = (newNFT as TicketNFT).MusicInLink;
+                    classOfTicketName = (newNFT as TicketNFT).TicketClass.ToString();
+                    durationOfTicketName = (newNFT as TicketNFT).TicketDuration.ToString();
+                    break;
+                case NFTTypes.Event:
+                    eventId = (newNFT as EventNFT).EventId;
+                    eventDate = (newNFT as EventNFT).EventDate;
+                    location = (newNFT as EventNFT).Location;
+                    locationCoordinates = (newNFT as EventNFT).LocationCoordinates;
+                    videoLink = (newNFT as EventNFT).VideoLink;
+                    classOfEvent = (newNFT as EventNFT).EventClass;
+                    authorLink = (newNFT as EventNFT).AuthorLink;
+                    musicInLink = (newNFT as EventNFT).MusicInLink;
+                    classOfEventName = (newNFT as EventNFT).EventClass.ToString();
+                    break;
+            }
+        }
+    }
+
+    private async Task MintNewNFT()
+    {
+        if (string.IsNullOrEmpty(classOfEventName) && nftType == NFTTypes.Event)
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "Please Select Event Type.");
+            return;
+        }
+        if (string.IsNullOrEmpty(classOfTicketName) && nftType == NFTTypes.Ticket)
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "Please Select Ticket Type.");
+            return;
+        }
+
+        try
+        {
+            processingMinting = true;
+            confirmVisible = false;
+            StateHasChanged();
+
+            switch (nftType)
+            {
+                case NFTTypes.Ticket:
+                    newNFT = new TicketNFT("")
+                    {
+                        EventId = eventId,
+                        EventDate = eventDate,
+                        EventAddress = eventAddress,
+                        Location = location,
+                        LocationCoordinates = locationCoordinates,
+                        VideoLink = videoLink,
+                        Seat = seat,
+                        MusicInLink = musicInLink,
+                        TicketClass = classOfTicket,
+                        AuthorLink = authorLink,
+                    };
+                    (newNFT as TicketNFT).TicketClass = (ClassOfNFTTicket)Enum.Parse(typeof(ClassOfNFTTicket), classOfTicketName);
+                    (newNFT as TicketNFT).TicketDuration = (DurationOfNFTTicket)Enum.Parse(typeof(DurationOfNFTTicket), durationOfTicketName);
+                    break;
+                case NFTTypes.Event:
+                    newNFT = new EventNFT("")
+                    {
+                        EventId = eventId,
+                        EventDate = eventDate,
+                        Location = location,
+                        MusicInLink = musicInLink,
+                        LocationCoordinates = locationCoordinates,
+                        VideoLink = videoLink,
+                        EventClass = classOfEvent,
+                        AuthorLink = authorLink,
+                    };
+                    (newNFT as EventNFT).EventClass = (ClassOfNFTEvent)Enum.Parse(typeof(ClassOfNFTEvent), classOfEventName);
+                    break;
+            }
+
+            if (!withPrice)
+                newNFT.Price = 0.0;
+
+            if (!string.IsNullOrEmpty(TokenId))
+                newNFT.TokenId = TokenId;
+
+            if (name != null)
+                newNFT.Name = name;
+            if (tags != null)
+                newNFT.Tags = tags;
+            if (author != null)
+                newNFT.Author = author;
+            if (description != null)
+                newNFT.Description = description;
+            if (text != null)
+                newNFT.Text = text;
+            if (link != null)
+                newNFT.Link = link;
+            if (imagelink != null)
+                newNFT.ImageLink = imagelink;
+
+            newNFT.Price = price;
+            if (price > 0)
+                newNFT.PriceActive = true;
+            newNFT.DogePrice = dogeprice;
+            if (dogeprice > 0)
+                newNFT.DogePriceActive = true;
+
+            if (!string.IsNullOrEmpty(sourceNFT.Utxo))
+            {
+                newNFT.Utxo = sourceNFT.Utxo;
+                newNFT.UtxoIndex = sourceNFT.UtxoIndex;
+                newNFT.NFTOriginTxId = sourceNFT.NFTOriginTxId;
+            }
+
+            if (!string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                newNFT.DogeAddress = AppData.DogeAccount.Address;
+
+            (bool, string) res;
+            if (!string.IsNullOrEmpty(newNFT.Utxo))
+            {
+                if (!SubAccount)
+                    res = await AppData.Account.ChangeNFT(newNFT);
+                else
+                    res = await AppData.Account.ChangeNFTOnSubAccount(Address, newNFT);
+            }
+            else if (string.IsNullOrEmpty(newNFT.Utxo) && withCoppies)
+            {
+                if (!SubAccount)
+                    res = await AppData.Account.MintMultiNFTLargeAmount(newNFT, NumberOfCoppies, mintReceiverAddress);
+                else
+                    res = await AppData.Account.MultimintNFTLargeOnSubAccount(Address, newNFT, NumberOfCoppies, mintReceiverAddress);
+            }
+            else
+            {
+                if (!SubAccount)
+                    res = await AppData.Account.MintNFT(newNFT, mintReceiverAddress);
+                else
+                    res = await AppData.Account.MintNFTOnSubAccount(Address, newNFT, mintReceiverAddress);
+            }
+
+            if (res.Item1)
+            {
+                await NFTMinted.InvokeAsync(res.Item2);
+
+                if (RedirectToNFTsAfterMint)
+                {
+                    processingMinting = false;
+                    StateHasChanged();
+                    await Task.Delay(500);
+                    NavManager.NavigateTo("/nfts");
+                }
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            processingMinting = false;
+            StateHasChanged();
+        }
+    }
+}

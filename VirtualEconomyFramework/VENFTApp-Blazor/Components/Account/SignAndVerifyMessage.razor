@@ -1,0 +1,131 @@
+﻿@inject AppData AppData
+
+<div class="card d-flex justify-content-center align-items-center" style="margin-top:10px; min-width:250px;">
+    <div class="card-header w-100" style="padding-top: 5px;padding-bottom: 5px;">
+        <h5 class="text-center w-100">Message signatures</h5>
+    </div>
+    <div class="card-body d-flex justify-content-center align-items-center" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:620px; max-height:800px; max-width:350px;">
+        <Spin Tip="Processing..." Spinning="@processing">
+            <div class="row d-flex justify-content-center align-items-center w-100">
+                <div class="col w-auto">
+                    @if (DisplaySign)
+                    {
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h6>Sign Message</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small class="text-center">
+                                When you sign some message you will create unique hash which can be created just with your private key. 
+                                This is way how some partner can verify that he talks with the owner of the address.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col">
+                            <Input Placeholder="Add message" @bind-Value=@message Style="font-size:12px;" />
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="SignMessage">Sign Message</button>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Result</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:2px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <textarea style="min-width:220px; max-width:220px; min-height:80px;">@signature</textarea>
+                        </div>
+                    </div>
+                    }
+                    @if (DisplayVerify)
+                    {
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h6>Verify Message Signature</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small class="text-center">
+                                When you need to verify that you are talking with owner of some address, send him some text/message, 
+                                he will sign it and then you can verify with this tool if the signature is valid.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add message" @bind-Value=@verifyMessage Style="font-size:12px;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add message signature" @bind-Value=@verifyMessageSignature Style="font-size:12px;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add address" @bind-Value=@verifyMessageAddress Style="font-size:12px;" />
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="VerifyMessageSignature">Verify Signature</button>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Verification Result: @verifyResult</span>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </Spin>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public bool DisplaySign { get; set; } = true;
+    [Parameter]
+    public bool DisplayVerify { get; set; } = true;
+
+    private bool processing = false;
+
+    private string verifyMessageAddress = string.Empty;
+    private string verifyMessageSignature = string.Empty;
+    private string verifyResult = string.Empty;
+    private string verifyMessage = string.Empty;
+    private string message = string.Empty;
+    private string signature = string.Empty;
+
+    private async Task SignMessage(MouseEventArgs e)
+    {
+        processing = true;
+        StateHasChanged();
+        await Task.Delay(50);
+        var res = await AppData.Account.SignMessage(message);
+        signature = res.Item2;
+        processing = false;
+        StateHasChanged();
+    }
+
+    private async Task VerifyMessageSignature(MouseEventArgs e)
+    {
+        processing = true;
+        StateHasChanged();
+        await Task.Delay(50);
+        var res = await AppData.Account.VerifyMessage(verifyMessage, verifyMessageSignature, verifyMessageAddress);
+        verifyResult = res.Item2;
+        processing = false;
+        StateHasChanged();
+    }
+}

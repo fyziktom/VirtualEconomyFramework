@@ -189,7 +189,7 @@
                                 <div class="card-body w-100">
                                     <div class="row" style="margin-top:30px; min-width:250px;">
                                         <div class="col w-100 d-flex justify-content-center align-items-center">
-                                            <VENFTApp_Blazor.Components.WooCommerceConnection />
+                                            <VENFTApp_Blazor.Components.WooCommerce.WooCommerceConnection />
                                         </div>
                                     </div>
                                 </div>
@@ -210,7 +210,7 @@
                                                 </div>
                                                 <div class="row" style="margin-top:10px;">
                                                     <div class="col d-flex justify-content-center align-items-center">
-                                                        <VENFTApp_Blazor.Components.NeblioAddressInput AddressCheckedInputed="@receiverAddressChangedHandler" />
+                                                        <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="@receiverAddressChangedHandler" />
                                                     </div>
                                                 </div>
                                                 <div class="row" style="margin-top:10px;">
@@ -234,6 +234,10 @@
 </div>
 
 @code {
+
+    private bool sending = false;
+    private bool sendingTransaction = false;
+
     private string apiAddress = "https://localhost:5001/api/";
     private string apiToken = string.Empty;
     private string password = string.Empty;
@@ -242,8 +246,6 @@
     private string backupData = string.Empty;
     private string serverResponse = string.Empty;
     private string Receiver = string.Empty;
-    private bool sending = false;
-    private bool sendingTransaction = false;
 
     private ElementReference inputTypeFileElement;
 
@@ -262,13 +264,6 @@
         return base.OnInitializedAsync();
     }
 
-    private async Task Redirect()
-    {
-        AppData.Account = new NeblioAccount();
-        await Task.Delay(500);
-        NavManager.NavigateTo("/");
-    }
-
     private void receiverAddressChangedHandler(string address)
     {
         if (string.IsNullOrEmpty(address))
@@ -280,6 +275,13 @@
         }
         Receiver = address;
         StateHasChanged();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
     }
 
     private async Task SendVENFTAirdrop(MouseEventArgs e)

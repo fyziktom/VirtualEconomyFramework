@@ -1,0 +1,158 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+<Spin Tip="Sending..." Spinning="@sendingTransaction">
+    <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="width: 40px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
+        <i class="oi oi-dollar" style="font-size:12px;"></i>
+    </button>
+</Spin>
+<Modal Title="Buy this NFT"
+       Visible="@sendNFTDialogVisible"
+       OnOk="@sendNFTDialogOK"
+       OnCancel="@sendNFTDialogCancel">
+    <div class="row">
+        <div class="col">
+            <Spin Tip="Sending..." Spinning="@sendingTransaction">
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        This dialog will process the order and payment of this NFT
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        Receiver Address: @receiverAddress
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        Price @Price NEBL <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
+                    </div>
+                </div>
+            </Spin>
+        </div>
+    </div>
+</Modal>
+
+<Modal Title="@confirmTitle"
+       Visible="@confirmVisible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+    <p>@confirmContent</p>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public int UtxoIndex { get; set; }
+    [Parameter]
+    public string Utxo { get; set; }
+    [Parameter]
+    public double Price { get; set; }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    string receiverAddress = string.Empty;
+    [Parameter]
+    public string Receiver
+    {
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                if (receiverAddress != value)
+                    receiverAddress = value;
+            }
+        }
+    }
+
+    private INFT sourceNFT = new ImageNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => sourceNFT;
+        set
+        {
+            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != sourceNFT.Utxo)
+            {
+                sourceNFT = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    private bool sendingTransaction = false;
+    private bool confirmVisible = false;
+    private bool sendNFTDialogVisible = false;
+
+    private string status = string.Empty;
+    private string sendingTransactionState = "Sending Order and Payment...";
+    private string confirmTitle = "Buy NFT?";
+    private string confirmContent = "Do you realy want to buy this NFT?";
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(Utxo))
+            await sendNFT(Utxo);
+    }
+
+    private async Task sendNFTDialogOK(MouseEventArgs e)
+    {
+        confirmVisible = true;
+    }
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+
+    private async Task ShowSendNFTDialog(MouseEventArgs e)
+    {
+        sendNFTDialogVisible = true;
+    }
+    private void sendNFTDialogCancel(MouseEventArgs e)
+    {
+        sendNFTDialogVisible = false;
+    }
+
+    private async Task sendNFT(string utxo)
+    {
+        try
+        {
+            status = "Sending...";
+            confirmVisible = false;
+            sendingTransaction = true;
+            StateHasChanged();
+
+            //var NFT = await NFTFactory.GetNFT("", utxo, UtxoIndex, 0, true);
+
+            if (!string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                sourceNFT.DogeAddress = AppData.DogeAccount.Address;
+            var res = await AppData.Account.SendNFTPayment(receiverAddress, sourceNFT);
+            if (res.Item1)
+                status = res.Item2;
+            else
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
+
+            NFTSent.InvokeAsync(res.Item2);
+        }
+        catch (Exception ex)
+        {
+            status = ex.Message;
+            Console.WriteLine(ex.Message);
+
+        }
+        finally
+        {
+            sendNFTDialogVisible = false;
+            sendingTransaction = false;
+            StateHasChanged();
+        }
+    }
+}

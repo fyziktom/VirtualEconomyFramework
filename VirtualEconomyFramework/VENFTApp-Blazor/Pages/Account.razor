@@ -20,11 +20,11 @@
 
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center">
-            <VENFTApp_Blazor.Components.HelpButton PageSection="account" />
+            <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="account" />
         </div>
     </div>
 
-    <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
+    <VENFTApp_Blazor.Components.Account.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
 
     <div class="row" style="margin-top:10px;">
         <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
@@ -48,7 +48,7 @@
                     }
                     else
                     {
-                    <VENFTApp_Blazor.Components.Profile ReadOnlyProfile="@false" NFT="@AppData.Account.Profile" />
+                    <VENFTApp_Blazor.Components.NFTs.Profile ReadOnlyProfile="@false" NFT="@AppData.Account.Profile" />
                     }
                 </div>
             </div>
@@ -58,7 +58,7 @@
                     <h5 class="text-center">Tokens Supplies</h5>
                 </div>
                 <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
-                    <VENFTApp_Blazor.Components.TokenSupplies />
+                    <VENFTApp_Blazor.Components.Account.TokenSupplies />
                 </div>
             </div>
 
@@ -67,7 +67,7 @@
                     <h5 class="text-center">Lock Unlock Account</h5>
                 </div>
                 <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
-                    <VENFTApp_Blazor.Components.LockUnlockAccount />
+                    <VENFTApp_Blazor.Components.Account.LockUnlockAccount />
                 </div>
             </div>
             <div class="card" style="margin-top:10px;">
@@ -82,7 +82,7 @@
                                     <span class="text-center">Please dont forget to save your private key!!! It is unique key for your Neblio address. If you save it you can backup address anytime.</span>
                                 </div>
                             </div>
-                            <VENFTApp_Blazor.Components.DisplayAccountKey DogeAccountKey="false" />
+                            <VENFTApp_Blazor.Components.Account.DisplayAccountKey DogeAccountKey="false" />
                         </div>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                     <h5 class="text-center">Received NFT Payments</h5>
                 </div>
                 <div class="card-body d-flex justify-content-center align-items-center" style="min-height:150px; padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
-                    <VENFTApp_Blazor.Components.PaymentsList Address="@AppData.Account.Address" MainAccount="true" />
+                    <VENFTApp_Blazor.Components.NFTs.Payments.PaymentsList Address="@AppData.Account.Address" MainAccount="true" />
                 </div>
             </div>
             <div class="card" style="margin-top:10px;">
@@ -124,7 +124,7 @@
                     <h5 class="text-center">Received NFT Receipts</h5>
                 </div>
                 <div class="card-body d-flex justify-content-center align-items-center" style="min-height:150px; padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
-                    <VENFTApp_Blazor.Components.ReceiptsList Address="@AppData.Account.Address" MainAccount="true" />
+                    <VENFTApp_Blazor.Components.NFTs.Payments.ReceiptsList Address="@AppData.Account.Address" MainAccount="true" />
                 </div>
             </div>
             <div class="card" style="margin-top:10px;">
@@ -136,7 +136,7 @@
                         <div class="col">
                             <div class="row" style="margin-top:30px; min-width:350px;">
                                 <div class="col w-100 d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                    <VENFTApp_Blazor.Components.TransactionsList @bind-MaxLoadedTx="maxLoadedTransaction" Address="@AppData.Account.Address" SubAccount="@false" />
+                                    <VENFTApp_Blazor.Components.Account.TransactionsList @bind-MaxLoadedTx="maxLoadedTransaction" Address="@AppData.Account.Address" SubAccount="@false" />
                                 </div>
                             </div>
                         </div>
@@ -154,10 +154,10 @@
                 <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:600px;">
                     <div class="row d-flex justify-content-center align-items-center">
                         <div class="col d-flex justify-content-center align-items-center flex-wrap">
-                            <VENFTApp_Blazor.Components.SignAndVerifyMessage />
-                            <VENFTApp_Blazor.Components.NFTOwnerVerifier />
-                            <VENFTApp_Blazor.Components.NeblioPriceStats />
-                            <VENFTApp_Blazor.Components.NeblioPriceConversion />
+                            <VENFTApp_Blazor.Components.Account.SignAndVerifyMessage />
+                            <VENFTApp_Blazor.Components.NFTs.NFTOwnerVerifier />
+                            <VENFTApp_Blazor.Components.Crypto.NeblioPriceStats />
+                            <VENFTApp_Blazor.Components.Crypto.NeblioPriceConversion />
                         </div>
                     </div>
                 </div>
@@ -178,9 +178,9 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.CopyIcon TextToCopy="@backupData" />
+                        <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@backupData" />
 
-                        <VENFTApp_Blazor.Components.SaveTextAsFile MarginLeft="10" TextToSave="@backupData" FileName="@filename" />
+                        <VENFTApp_Blazor.Components.HelperButtons.SaveTextAsFile MarginLeft="10" TextToSave="@backupData" FileName="@filename" />
                     </div>
                 </div>
             </div>
@@ -192,11 +192,11 @@
 }
 @code {
 
-    private int maxLoadedTransaction = 10;
-    string backupData = string.Empty;
-    string filename = string.Empty;
-    bool downloadBackupDataVisible = false;
+    private bool downloadBackupDataVisible = false;
 
+    private int maxLoadedTransaction = 10;
+    private string backupData = string.Empty;
+    private string filename = string.Empty;
 
     protected override Task OnInitializedAsync()
     {
@@ -214,6 +214,17 @@
 
         return base.OnInitializedAsync();
     }
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private void ProfileRefreshedHandler(object sender, INFT e)
+    {
+        StateHasChanged();
+    }
+
 
     private async Task Load()
     {
@@ -242,7 +253,7 @@
                     bookmarks = string.Empty;
 
                 if (!string.IsNullOrEmpty(bookmarks))
-                     await AppData.Account.LoadBookmarks(bookmarks);
+                    await AppData.Account.LoadBookmarks(bookmarks);
             }
             catch (Exception ex)
             {
@@ -262,16 +273,6 @@
                 Console.WriteLine("Cannot load sub accounts from memory!" + ex.Message);
             }
         }
-    }
-
-    void RefreshedHandler(object sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
-
-    void ProfileRefreshedHandler(object sender, INFT e)
-    {
-        StateHasChanged();
     }
 
     private async Task Redirect()

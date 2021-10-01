@@ -127,14 +127,6 @@
 </div>
 
 @code {
-    bool uploadingImage = false;
-    bool errorUpload = false;
-    private static int attemptsToDisplay = 30;
-    private static int attemptsToDisplayDefault = 30;
-    private static int limitSizeInMB = 10;
-    LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
-    private System.Threading.Timer timer;
-    private ElementReference inputTypeFileElement;
 
     [Parameter]
     public NFTTypes NFTType { get; set; } = NFTTypes.Image;
@@ -164,10 +156,20 @@
     [Parameter]
     public string Partner { get; set; } = string.Empty;
 
+    private bool uploadingImage = false;
+    private bool errorUpload = false;
 
-    long uploadedFileLength = 0;
     byte[] decryptedFile = null;
 
+    private static int attemptsToDisplay = 30;
+    private static int attemptsToDisplayDefault = 30;
+    private static int limitSizeInMB = 10;
+
+    long uploadedFileLength = 0;
+
+    LoadingImageStages loadingImageStage = LoadingImageStages.NotStarted;
+    private System.Threading.Timer timer;
+    private ElementReference inputTypeFileElement;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -175,6 +177,12 @@
         //    JSRuntime.InvokeVoidAsync("jsFunctions.initUpload", DotNetObjectReference.Create(this));
 
         return base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void LinkChanged(EventArgs e)
+    {
+        loadingImageStage = LoadingImageStages.Loaded;
+        ImageLinkChanged.InvokeAsync(_imageLink);
     }
 
     [JSInvokable]
@@ -192,12 +200,6 @@
     {
         uploadingImage = true;
         this.StateHasChanged();
-    }
-
-    private void LinkChanged(EventArgs e)
-    {
-        loadingImageStage = LoadingImageStages.Loaded;
-        ImageLinkChanged.InvokeAsync(_imageLink);
     }
 
     public async Task UploadToIpfsWithButton(MouseEventArgs e)

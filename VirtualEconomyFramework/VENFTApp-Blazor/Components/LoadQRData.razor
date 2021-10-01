@@ -15,7 +15,7 @@
         </div>
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex justify-content-center align-items-center">
-                <CopyButton TextToCopy="@readedText" />
+                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@readedText" />
             </div>
         </div>
     </Spin>
@@ -23,13 +23,6 @@
 
 @code {
 
-    bool doneVisible = false;
-    bool showQRDialogVisible = false;
-    ElementReference qrCodeRef;
-    private string paddingtop = "2px";
-    private string padding = "0px";
-    private string status = "Loading Camera...";
-    private string readedText = string.Empty;
     [Parameter]
     public string ReadedText
     {
@@ -67,6 +60,14 @@
             }
         }
     }
+
+    private bool doneVisible = false;
+    private bool showQRDialogVisible = false;
+    private ElementReference qrCodeRef;
+    private string paddingtop = "2px";
+    private string padding = "0px";
+    private string status = "Loading Camera...";
+    private string readedText = string.Empty;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -140,7 +141,7 @@
         doneVisible = true;
         StateHasChanged();
         await Task.Delay(50);
-        JSRuntime.InvokeVoidAsync("jsFunctions.stopScanning");
+        await JSRuntime.InvokeVoidAsync("jsFunctions.stopScanning");
     }
 }
 

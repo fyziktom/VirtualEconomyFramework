@@ -19,13 +19,13 @@
         </div>
         <div class="row">
             <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.HelpButton PageSection="peoplenfts" />
+                <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="peoplenfts" />
             </div>
         </div>
         
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
+                <VENFTApp_Blazor.Components.Account.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
             </div>
         </div>
 
@@ -105,9 +105,9 @@
                                             </div>
                                             <div class="row" style="margin-top: 10px;">
                                                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                                    <VENFTApp_Blazor.Components.CopyIcon MarginLeft="15" TextToCopy="@addressInOpenTab" />
-                                                    <VENFTApp_Blazor.Components.QRIcon MarginLeft="10" TextToCopy="@addressInOpenTab" />
-                                                    <VENFTApp_Blazor.Components.Bookmark IsInBookmarks="@IsTabInBookmark"
+                                                    <VENFTApp_Blazor.Components.HelperButtons.CopyIcon MarginLeft="15" TextToCopy="@addressInOpenTab" />
+                                                    <VENFTApp_Blazor.Components.HelperButtons.QRIcon MarginLeft="10" TextToCopy="@addressInOpenTab" />
+                                                    <VENFTApp_Blazor.Components.HelperButtons.Bookmark IsInBookmarks="@IsTabInBookmark"
                                                                                          Address="@addressInOpenTab"
                                                                                          BookmarkRefreshed="@BookmarkRefreshedHandler" />
                                                     <i class="oi oi-envelope-closed" style="margin-left:10px; margin-top:0px; font-size:14px;" @onclick="showSendMessage"></i>
@@ -158,7 +158,7 @@
 
                                             <div class="row" style="margin-top:20px">
                                                 <div class="col">
-                                                        <VENFTApp_Blazor.Components.NFTList Address="@addressInOpenTab" SubAccount="false" MainAccount="false" InBrowser="true"/>
+                                                        <VENFTApp_Blazor.Components.NFTs.NFTList Address="@addressInOpenTab" SubAccount="false" MainAccount="false" InBrowser="true"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -281,30 +281,6 @@
 </Modal>
 
 @code {
-        bool sendMessageVisible = false;
-        bool openTabBrowser = false;
-        bool loadingBrowser = false;
-        bool browsePublicAddresses = false;
-        bool copyTextButtonCoppied = false;
-        int holdersPage = 0;
-        bool tabIsLoading = false;
-
-    private string selectedNewTabFromBookmarkName = "Select From Bookmark";
-
-    private bool openTabVisible = false;
-    string addressInOpenTab = string.Empty;
-    private string newTabAddress = string.Empty;
-
-    ProfileNFT tabProfile = new ProfileNFT("");
-    VEDriversLite.Bookmarks.Bookmark tabBookmark = new VEDriversLite.Bookmarks.Bookmark();
-
-    public string GetTabColor(string address)
-    {
-        if (addressInOpenTab == address)
-            return "border bg-white";
-        else
-            return "bg-secondary";
-    }
 
     public bool IsTabInBookmark
     {
@@ -313,6 +289,23 @@
             return !string.IsNullOrEmpty(tabBookmark.Name);
         }
     }
+
+    private bool sendMessageVisible = false;
+    private bool openTabBrowser = false;
+    private bool loadingBrowser = false;
+    private bool browsePublicAddresses = false;
+    private bool copyTextButtonCoppied = false;
+    private bool tabIsLoading = false;
+    private bool openTabVisible = false;
+
+    private int holdersPage = 0;
+
+    private string selectedNewTabFromBookmarkName = "Select From Bookmark";
+    private string addressInOpenTab = string.Empty;
+    private string newTabAddress = string.Empty;
+
+    ProfileNFT tabProfile = new ProfileNFT("");
+    VEDriversLite.Bookmarks.Bookmark tabBookmark = new VEDriversLite.Bookmarks.Bookmark();
 
     protected override Task OnInitializedAsync()
     {
@@ -344,11 +337,12 @@
         return base.OnInitializedAsync();
     }
 
-    void RefreshedHandler(object sender, EventArgs e)
+    private void RefreshedHandler(object sender, EventArgs e)
     {
         StateHasChanged();
     }
-    void NFTsRefreshedHandler(object sender, string e)
+
+    private void NFTsRefreshedHandler(object sender, string e)
     {
         if (addressInOpenTab != e)
         {
@@ -363,12 +357,6 @@
         }
     }
 
-    private async Task browseTabs(MouseEventArgs e)
-    {
-        openTabBrowser = true;
-        StateHasChanged();
-    }
-
     private void receiverAddressChangedHandler(string address)
     {
         if (address.Length < 8)
@@ -380,20 +368,6 @@
         StateHasChanged();
     }
 
-    private string PublicNameInBookmarks(string address, string shortaddress)
-    {
-        var res = AppData.Account.IsInTheBookmarks(address).GetAwaiter().GetResult();
-        if (res.Item1)
-            if (!string.IsNullOrEmpty(res.Item2.Name))
-                return res.Item2.Name;
-        return shortaddress;
-    }
-
-    private void browseTabsClosed(bool e)
-    {
-        openTabBrowser = e;
-        StateHasChanged();
-    }
     private void TabClosedHandler(string addr)
     {
         StateHasChanged();
@@ -407,10 +381,11 @@
         StateHasChanged();
     }
 
-    private async Task QRTextReaded(string text)
+    private void BookmarkRefreshedHandler(VEDriversLite.Bookmarks.Bookmark bookmark)
     {
-        newTabAddress = text;
+        StateHasChanged();
     }
+
 
     private async Task Redirect()
     {
@@ -419,14 +394,49 @@
         NavManager.NavigateTo("/");
     }
 
-    private async Task closePublicAddresses(MouseEventArgs e)
+    public string GetTabColor(string address)
     {
-        browsePublicAddresses = false;
+        if (addressInOpenTab == address)
+            return "border bg-white";
+        else
+            return "bg-secondary";
+    }
+
+    private string PublicNameInBookmarks(string address, string shortaddress)
+    {
+        var res = AppData.Account.IsInTheBookmarks(address).GetAwaiter().GetResult();
+        if (res.Item1)
+            if (!string.IsNullOrEmpty(res.Item2.Name))
+                return res.Item2.Name;
+        return shortaddress;
+    }
+
+
+    private async Task browseTabs(MouseEventArgs e)
+    {
+        openTabBrowser = true;
+        StateHasChanged();
+    }
+
+    private void browseTabsClosed(bool e)
+    {
+        openTabBrowser = e;
+        StateHasChanged();
+    }
+
+    private async Task QRTextReaded(string text)
+    {
+        newTabAddress = text;
     }
 
     private async Task openPublicAddresses(MouseEventArgs e)
     {
         browsePublicAddresses = true;
+    }
+
+    private async Task closePublicAddresses(MouseEventArgs e)
+    {
+        browsePublicAddresses = false;
     }
 
     private async Task LoadBookmarksAndState()
@@ -510,11 +520,6 @@
         }
     }
 
-    private void BookmarkRefreshedHandler(VEDriversLite.Bookmarks.Bookmark bookmark)
-    {
-        StateHasChanged();
-    }
-
     private async Task addNewPublicTabModal(string address)
     {
         browsePublicAddresses = false;
@@ -586,7 +591,7 @@
         StateHasChanged();
     }
 
-    void TabNFTsChanged(object sender, string e)
+    private void TabNFTsChanged(object sender, string e)
     {
         if (tabIsLoading) tabIsLoading = false;
         if (loadingBrowser) loadingBrowser = false;

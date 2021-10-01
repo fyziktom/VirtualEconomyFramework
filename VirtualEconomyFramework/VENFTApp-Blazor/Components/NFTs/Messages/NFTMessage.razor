@@ -1,0 +1,298 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject HttpClient _client
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col">
+        <Spin Tip="Loading..." Spinning="@loading">
+            <span class="badge badge-primary" style="position: absolute;right: 7px;top: 2px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
+
+            @if ((NFT as VEDriversLite.NFT.MessageNFT).IsReceivedMessage && !IsHistory)
+            {
+                <div class="row" style="position: absolute;right: 7px;top: 40px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.NFTs.DestroyNFTButton IsIcon="true" FontSize="20" InputNFT="@NFT" Address="@_address" MainAccount="true" SubAccount="false" />
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(IsSenderInTheBookmarks(NFT.Author)))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>Sender Bookmark Name: @IsSenderInTheBookmarks(NFT.Author)</small>
+                    </div>
+                </div>
+            }
+            else
+            {
+                if (NFT.Author == AppData.Account.Address)
+                {
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Sender Address: Me</small>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Sender Address: @NFT.Author</small>
+                        </div>
+                    </div>
+                }
+            }
+            <hr />
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <h6>Name</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span class="text-center">@NFT.Name</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <h6>Message</h6>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span class="text-center">@NFT.Description</span>
+                </div>
+            </div>
+            <hr />
+            @if (!string.IsNullOrEmpty(NFT.ImageLink))
+            {
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h6>Attachement</h6>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span class="text-info text-center">Message contains encrypted image.</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="refreshImage">Decrypt Image</button>
+                    </div>
+                </div>
+                if ((NFT as MessageNFT).Decrypted && imagetData != null && imagetData.Length > 0)
+                {
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <img src="data:image;base64,@System.Convert.ToBase64String(imagetData)" @onclick="OpenModalWithImage" style="min-height:100px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
+                        </div>
+                    </div>
+                }
+                @if (downloadingImage)
+                {
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Spin Tip="Downloading image..." Spinning="true">
+                                <span>Downloading and encrypting Image. Please wait a while...</span>
+                            </Spin>
+                        </div>
+                    </div>
+                }
+
+            }
+            <hr />
+
+            @if ((NFT as MessageNFT).IsReceivedMessage && !IsHistory)
+            {
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="showSendMessage">Reply</button>
+                    </div>
+                </div>
+
+            }
+            <VENFTApp_Blazor.Components.NFTs.NFTHistory Utxo="@NFT.Utxo" NftType="NFTTypes.Message" IsMessageHistory="true" />
+
+            @if (!string.IsNullOrEmpty(NFT.Utxo))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank" style="font-size:10px;">Show in the Explorer</a>
+                    </div>
+                </div>
+            }
+        </Spin>
+    </div>
+
+    <Modal Title="NFT Image"
+           Style="min-height:200px; height:auto; min-width:200px; width:95%;"
+           Visible="@modalWithImageVisible"
+           OnOk="@modalWithImageClose"
+           OnCancel="@modalWithImageClose">
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <img class="card-img-top" src="data:image;base64,@System.Convert.ToBase64String(imagetData)" style="min-height:100px; height:auto; min-width:200px; max-width:600px; width:90%;" />
+            </div>
+        </div>
+    </Modal>
+
+    <Modal Title="Send Message"
+           Visible="@sendMessageVisible"
+           OnOk="@sendMessageConfirm"
+           OnCancel="@sendMessageCancel">
+        <SendMessage NFT="@NFT" Receiver="@NFT.Author" />
+    </Modal>
+</div>
+
+@code {
+
+    private string _utxo = string.Empty;
+    [Parameter]
+    public string Utxo
+    {
+        get => _utxo;
+        set
+        {
+            if (!string.IsNullOrEmpty(value) && _utxo != value)
+            {
+                _utxo = value;
+                //Load();
+            }
+        }
+    }
+
+    string _address = string.Empty;
+    [Parameter]
+    public string Address
+    {
+        get => _address;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                _address = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool IsHistory { get; set; } = false;
+
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo)
+            {
+                NFT = value;
+                NFT.TxDataRefreshed -= TxDataRefreshedHandler;
+                NFT.TxDataRefreshed += TxDataRefreshedHandler;
+                NFT.StartRefreshingTxData();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private bool modalWithImageVisible = false;
+    private bool downloadingImage = false;
+    private bool sendMessageVisible = false;
+    private bool loading = false;
+
+    private string status = string.Empty;
+
+    private INFT NFT { get; set; } = new MessageNFT("");
+
+    protected override Task OnInitializedAsync()
+    {
+        //if (!string.IsNullOrEmpty(_utxo))
+        //Load();
+        return base.OnInitializedAsync();
+    }
+
+    private void TxDataRefreshedHandler(object sender, GetTransactionInfoResponse info)
+    {
+        StateHasChanged();
+    }
+
+    private async Task Load()
+    {
+        loading = true;
+        StateHasChanged();
+        NFT.TxDataRefreshed -= TxDataRefreshedHandler;
+        await NFT.StopRefreshingData();
+        NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo, 0, 0, true); // todo dynamic index. now messages has 0 always
+
+        if (NFT == null)
+            return;
+
+        await (NFT as MessageNFT).Decrypt(AppData.Account.Secret);
+        //await (NFT as MessageNFT).DecryptImageData(AppData.Account.Secret);
+        await NFT.StartRefreshingTxData();
+        NFT.TxDataRefreshed += TxDataRefreshedHandler;
+        loading = false;
+        StateHasChanged();
+    }
+
+    private byte[] imagetData = null;
+    private async Task refreshImage(MouseEventArgs e)
+    {
+        downloadingImage = true;
+        StateHasChanged();
+        await (NFT as MessageNFT).DecryptImageData(AppData.Account.Secret);
+        imagetData = (NFT as MessageNFT).ImageData;
+        downloadingImage = false;
+        StateHasChanged();
+    }
+
+    private string IsSenderInTheBookmarks(string sender)
+    {
+        var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
+        if (s == null)
+            return string.Empty;
+
+        if (!string.IsNullOrEmpty(s.Name))
+            return s.Name;
+        else
+            return string.Empty;
+    }
+
+    private async Task showSendMessage()
+    {
+        sendMessageVisible = true;
+        StateHasChanged();
+    }
+
+    private async Task sendMessageConfirm(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task sendMessageCancel(MouseEventArgs e)
+    {
+        sendMessageVisible = false;
+    }
+
+    public async Task OpenModalWithImage()
+    {
+        modalWithImageVisible = true;
+        StateHasChanged();
+    }
+
+    public async Task modalWithImageClose(MouseEventArgs e)
+    {
+        modalWithImageVisible = false;
+    }
+
+}

@@ -1,0 +1,73 @@
+﻿@inject IJSRuntime JSRuntime
+<div class="row">
+    <div class="col d-flex justify-content-center align-items-center">
+        @if (!saveTextButtonCoppied)
+        {
+        <i class="oi oi-data-transfer-download" style="margin-left:@marginleft; margin-top:@margintop; font-size:@fontsize;" @onclick="saveText"></i>
+        }
+        else
+        {
+             <i class="oi oi-check" style="margin-left:@marginleft; margin-top:@margintop; font-size:@fontsize;"></i>
+        }
+    </div>
+</div>
+
+@code {
+
+    private string margintop = "0px";
+    [Parameter]
+    public int MarginTop
+    {
+        get => Convert.ToInt32(margintop);
+        set => margintop = value.ToString() + "px";
+    }
+
+    private string marginleft = "0px";
+    [Parameter]
+    public int MarginLeft
+    {
+        get => Convert.ToInt32(marginleft);
+        set => marginleft = value.ToString() + "px";
+    }
+    private string fontsize = "14px";
+    [Parameter]
+    public int FontSize
+    {
+        get => Convert.ToInt32(FontSize);
+        set => fontsize = value.ToString() + "px";
+    }
+    private string textToSave = string.Empty;
+    [Parameter]
+    public string TextToSave
+    {
+        get => textToSave;
+        set => textToSave = value;
+    }
+    private string filename = string.Empty;
+    [Parameter]
+    public string FileName
+    {
+        get => filename;
+        set => filename = value;
+    }
+
+    private bool saveTextButtonCoppied = false;
+
+    private async Task saveText(MouseEventArgs e)
+    {
+        if (string.IsNullOrEmpty(textToSave))
+            return;
+
+        await JSRuntime.InvokeVoidAsync("jsFunctions.downloadText", textToSave, filename);
+        await saveTextButtonTextEfect();
+    }
+
+    private async Task saveTextButtonTextEfect()
+    {
+        saveTextButtonCoppied = true;
+        StateHasChanged();
+        await Task.Delay(1000);
+        saveTextButtonCoppied = false;
+        StateHasChanged();
+    }
+}
