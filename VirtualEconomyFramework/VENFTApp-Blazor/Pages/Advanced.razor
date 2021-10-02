@@ -255,6 +255,8 @@
         {
             if (string.IsNullOrEmpty(AppData.Account.Address))
                 Redirect();
+            if (AppData.Account.WithoutNFTs)
+                AppData.Account.WithoutNFTs = false;
         }
         catch (Exception ex)
         {

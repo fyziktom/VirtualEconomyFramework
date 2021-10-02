@@ -39,6 +39,9 @@ namespace VEDriversLite
         /// List of all active tabs for browsing or interacting with the address. All has possibility to load own list of NFTs.
         /// </summary>
         public List<ActiveTab> Tabs { get; set; } = new List<ActiveTab>();
+        /// <summary>
+        /// Tabs with partners for messaging. It loads their NFT Messages related to you and mix them with yours related to the address in MessageTab
+        /// </summary>
         public List<MessageTab> MessageTabs { get; set; } = new List<MessageTab>();
         /// <summary>
         /// Neblio Sub Accounts. Each can work with own set of NFTs. It is real blockchain address with own Private Key
@@ -50,8 +53,6 @@ namespace VEDriversLite
         /// </summary>
         public List<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
 
-        public CoruzantBrowser CoruzantBrowserInstance { get; set; } = new CoruzantBrowser();
-
         /// <summary>
         /// This event is called whenever info about the address is reloaded. It is periodic event.
         /// </summary>
@@ -61,11 +62,6 @@ namespace VEDriversLite
         /// This event is called whenever some progress during multimint happens
         /// </summary>
         public event EventHandler<string> NewMintingProcessInfo;
-
-        /// <summary>
-        /// This event is called whenever profile nft is updated or found
-        /// </summary>
-        public event EventHandler<INFT> ProfileUpdated;
 
         /// <summary>
         /// This event is called whenever the list of NFTs on SubAccount is changed
@@ -146,7 +142,7 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                // todo
+                Console.WriteLine("Error during start of the load of the Account. " + ex.Message);
             }
             base.FirsLoadingStatus -= NeblioAccount_FirsLoadingStatus;
             var minorRefresh = 2;
@@ -175,7 +171,7 @@ namespace VEDriversLite
                         {
                             if (!firstLoad)
                             {
-                                await ReLoadNFTs();
+                                await ReLoadNFTs(true);
 
                                 tasks[0] = ReloadCoruzantNFTs();
                                 tasks[1] = ReloadCountOfNFTs();
@@ -184,7 +180,7 @@ namespace VEDriversLite
 
                                 await Task.WhenAll(tasks);
                             }
-                            
+                            /*
                             try
                             {
                                 if (Utxos.FirstOrDefault(u => u != null && u.Txid == Profile.Utxo && u.Index == Profile.UtxoIndex) == null)
@@ -198,7 +194,7 @@ namespace VEDriversLite
                             {
                                 //todo
                             }
-
+                            */
                             minorRefresh--;
                             if (minorRefresh < 0)
                             {
@@ -249,6 +245,8 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="password">Input password, which will encrypt the Private key</param>
         /// <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
+        /// <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
+        /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
         public async Task<bool> CreateNewAccount(string password, bool saveToFile = false, string filename = "key.txt", bool awaitFirstLoad = false)
         {
@@ -301,6 +299,11 @@ namespace VEDriversLite
         /// Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="filename">filename with stored key.</param>
+        /// <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
+        /// Great when you want just do simple payment. 
+        /// You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
+        /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
         public async Task<bool> LoadAccount(string password, string filename = "key.txt", bool withoutNFTs = false, bool awaitFirstLoad = false)
         {
@@ -345,7 +348,12 @@ namespace VEDriversLite
         /// Load account just for observation
         /// You cannot sign tx when you load address this way
         /// </summary>
-        /// <param name="address">Address you want to observe</param>
+        /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="address">Account Address</param>
+        /// <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
+        /// Great when you want just do simple payment. 
+        /// You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
+        /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
         public async Task<bool> LoadAccountWithDummyKey(string password, string address, bool withoutNFTs = false, bool awaitFirstLoad = false)
         {
@@ -383,6 +391,12 @@ namespace VEDriversLite
         /// Load account from filename backup from VENFT App (default "backup.json") file placed in the root exe directory. Doesnt work in WABS
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="fromString">BackupDataDto serialized object with key and address</param>
+        /// <param name="filename">load from BackupDataDto from file. backup.json as default.</param>
+        /// <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
+        /// Great when you want just do simple payment. 
+        /// You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
+        /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
         public async Task<bool> LoadAccountFromVENFTBackup(string password, string fromString = "", string filename = "backup.json", bool withoutNFTs = false, bool awaitFirstLoad = false)
         {
@@ -451,9 +465,13 @@ namespace VEDriversLite
         /// It expect the private key is encrypted by the password.
         /// It uses AES encryption
         /// </summary>
-        /// <param name="password"></param>
-        /// <param name="encryptedKey"></param>
-        /// <param name="address"></param>
+        /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="encryptedKey">Private key encrypted with AES (you must provide pass in this case) or not encrypted (you do not need password)</param>
+        /// <param name="address">Neblio Address related to the private key (if empty it will be calculated from the private key).</param>
+        /// <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
+        /// Great when you want just do simple payment. 
+        /// You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
+        /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
         public async Task<bool> LoadAccount(string password, string encryptedKey, string address = "", bool withoutNFTs = false, bool awaitFirstLoad = false)
         {
@@ -774,6 +792,12 @@ namespace VEDriversLite
             }
             return (true, JsonConvert.SerializeObject(Tabs));
         }
+        /// <summary>
+        /// Select active tab based on Address. It will deselect all other tabs
+        /// This will start the refreshing for the selected tab if is not running yet and stop the others tabs refreshing.
+        /// </summary>
+        /// <param name="address">Address of tab to select</param>
+        /// <returns></returns>
         public async Task SelectTab(string address)
         {
             Tabs.ForEach(async (t) => {
@@ -901,6 +925,11 @@ namespace VEDriversLite
 
             return (true, JsonConvert.SerializeObject(MessageTabs));
         }
+        /// <summary>
+        /// Select Message tab. It will Reload the tab NFTs if the count of the NFTs is 0.
+        /// </summary>
+        /// <param name="address">Address of Message Tab to select</param>
+        /// <returns></returns>
         public async Task SelectMessageTab(string address)
         {
             foreach (var t in MessageTabs)
@@ -1010,9 +1039,12 @@ namespace VEDriversLite
         /// <summary>
         /// Add new Sub Account
         /// </summary>
-        /// <param name="address"></param>
+        /// <param name="name">Name of new SubAccount</param>
         /// <param name="sendNeblioToAccount">Set This true if you want to load some Neblio to this address after it is created.</param>
         /// <param name="neblioAmountToSend">Amount of neblio for initial load of the address, 0.05 is default = 250 tx</param>
+        /// <param name="sendTokenToAccount">Initial amount of tokens to send to the new SubAccount</param>
+        /// <param name="tokenAmountToSend">Initial amount of Neblio to send to the new SubAccount</param>
+        /// <param name="tokenId">Token Id which should be send to the new SubAccount</param>
         /// <returns>true and string with serialized tabs list as json string</returns>
         public async Task<(bool, string)> AddSubAccount(string name,
                                                         bool sendNeblioToAccount = false,
@@ -1314,7 +1346,11 @@ namespace VEDriversLite
         /// Split Neblio Tokens on SubAccount
         /// </summary>
         /// <param name="address">Neblio Address of SubAccount</param>
-        /// <param name="NFT">NFT on the SubAccount which should be minted</param>
+        /// <param name="tokenId">Id of token to split</param>
+        /// <param name="metadata">metadata</param>
+        /// <param name="receivers">list of the receivers of the transaction.</param>
+        /// <param name="lots">Number of lots on the Output of tx.</param>
+        /// <param name="amount">Amount of the tokens in one lot.</param>
         /// <returns>true and string with new TxId</returns>
         public async Task<(bool, string)> SplitNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string, string> metadata, List<string> receivers, int lots, int amount)
         {
@@ -1410,7 +1446,7 @@ namespace VEDriversLite
         /// Destroy NFTs on SubAccount
         /// </summary>
         /// <param name="address">Neblio Address of SubAccount</param>
-        /// <param name="NFT">NFT on the SubAccount which should be send</param>
+        /// <param name="NFTs">NFTs on the SubAccount which should be send</param>
         /// /// <param name="sendToMainAccount">If this is set, function will rewrite receiver to main Account Address</param>
         /// <returns>true and string with new TxId</returns>
         public async Task<(bool, string)> DestroyNFTOnSubAccount(string address, ICollection<INFT> NFTs, bool sendToMainAccount = false)

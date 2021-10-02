@@ -61,10 +61,11 @@
                     else
                     {
                         <div class="card-group w-100 h-100">
-                            @foreach (var nft in messageTab.NFTMessages)
+                            @for (int i = 0; i < messageTab.NFTMessages.Count; i++)
                             {
-                                if (nft.Type == NFTTypes.Message)
+                                if (messageTab.NFTMessages[i].Type == NFTTypes.Message)
                                 {
+                                    var nft = messageTab.NFTMessages[i];
                                     <div class="card w-100" style="margin-left:10px; margin-top:10px; width:250px; min-width:250px; max-width:250px; min-height:220px; max-height:220px; height:220px;">
                                         <div class="card-body w-100 d-flex justify-content-center align-items-center">
 
@@ -151,12 +152,11 @@
     <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" />
 </Modal>
 
-
 <Modal Title="Send Message"
        Visible="@sendMessageVisible"
        OnOk="@sendMessageConfirm"
        OnCancel="@sendMessageCancel">
-    <SendMessage Receiver="@messageTab.Address" />
+    <SendMessage Receiver="@messageTab.Address" MessageSent="NFTSentHandler" />
 </Modal>
 
 @code {
@@ -170,7 +170,11 @@
         {
             if (value != null)
             {
-                messageTab = value;
+                if (messageTab.Address != value.Address)
+                {
+                    messageTab = value;
+                    LoadTab();
+                }
             }
         }
     }
@@ -188,17 +192,28 @@
     {
         if (AppData.Account != null)
             AppData.Account.Refreshed += RefreshedHandler;
-
-        await messageTab.Reload(AppData.Account.NFTs);
     }
 
-    void RefreshedHandler(object sender, EventArgs e)
+    private void NFTSentHandler(string e)
+    {
+        messageDetailsVisible = false;
+        StateHasChanged();
+    }
+
+    private void RefreshedHandler(object sender, EventArgs e)
     {
         StateHasChanged();
     }
 
     private void BookmarkRefreshedHandler(VEDriversLite.Bookmarks.Bookmark bookmark)
     {
+        StateHasChanged();
+    }
+
+    private async Task LoadTab()
+    {
+        if (messageTab.NFTs.Count == 0)
+            await messageTab.Reload(AppData.Account.NFTs);
         StateHasChanged();
     }
 

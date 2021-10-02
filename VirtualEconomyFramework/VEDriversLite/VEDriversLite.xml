@@ -655,6 +655,21 @@
             <returns>Object containing collection of Utxos</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="F:VEDriversLite.DogeTransactionHelpers.FromSatToMainRatio">
+            <summary>
+            Conversion ration for Doge to convert from sat to 1 DOGE
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.DogeTransactionHelpers.Network">
+            <summary>
+            NBitcoin Instance of Mainet Network of Dogecoin
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.DogeTransactionHelpers.MinimumConfirmations">
+            <summary>
+            Minimum number of confirmation to send the transaction
+            </summary>
+        </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.GetAddressAndKey(VEDriversLite.Security.EncryptionKey,System.String)">
             <summary>
             Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
@@ -673,15 +688,82 @@
             <param name="address">NBitcoin address - must match with the provided key</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double)">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransaction(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double)">
             <summary>
-            Function will send standard Neblio transaction
+            Function will send standard Neblio transaction - sync version
             </summary>
             <param name="data">Send data, please see SendTxData class for the details</param>
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="utxos">Optional input neblio utxo</param>
             <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
             <returns>New Transaction Hash - TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double)">
+            <summary>
+            Function will send standard Neblio transaction - Async version
+            </summary>
+            <param name="data">Send data, please see SendTxData class for the details</param>
+            <param name="ekey">Input EncryptionKey of the account</param>
+            <param name="utxos">Optional input neblio utxo</param>
+            <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
+            <returns>New Transaction Hash - TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double)">
+            <summary>
+            Function will send standard Neblio transaction with included message.
+            </summary>
+            <param name="data">Send data, please see SendTxData class for the details - this include field for custom message</param>
+            <param name="ekey">Input EncryptionKey of the account</param>
+            <param name="utxos">Optional input neblio utxo</param>
+            <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
+            <returns>New Transaction Hash - TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(System.Collections.Generic.Dictionary{System.String,System.Double},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double,System.String,System.String)">
+            <summary>
+            Function will send standard Neblio transaction with message and outputs which goes to different addresses
+            </summary>
+            <param name="receiverAmount">Dictionary of all receivers and amounts to send them</param>
+            <param name="ekey">Input EncryptionKey of the account</param>
+            <param name="utxos">Optional input neblio utxo</param>
+            <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
+            <param name="password">Password for encrypted key if it is encrypted and locked</param>
+            <param name="message">Custom message</param>
+            <returns>New Transaction Hash - TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.ParseTotalSentValue(VEDriversLite.DogeAPI.GetTransactionInfoResponse)">
+            <summary>
+            Parse the total sent value from Doge Tx Info. It takes all outputs together.
+            </summary>
+            <param name="txinfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.ParseDogeMessage(VEDriversLite.DogeAPI.GetTransactionInfoResponse)">
+            <summary>
+            Parse Message from Doge transaction (from OP_RETURN)
+            </summary>
+            <param name="txinfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.ValidateDogeAddress(System.String)">
+            <summary>
+            Verify the Dogecoin address
+            </summary>
+            <param name="dogeAddress">Excpected Dogecoin address</param>
+            <returns>true and Address if it is correct Dogecoin Address</returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.IsPrivateKeyValid(System.String)">
+            <summary>
+            Verify the Dogecoin private key
+            </summary>
+            <param name="privatekey">Excpected Dogecoin private key</param>
+            <returns>true and NBitcoin.BitcoinSecret if it is correct Dogecoin private key</returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.GetAddressFromPrivateKey(System.String)">
+            <summary>
+            Get Address from Dogecoin private key
+            </summary>
+            <param name="privatekey">Excpected Dogecoin private key</param>
+            <returns>true and Address if it is correct Dogecoin private key</returns>
         </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.GetClient">
             <summary>
@@ -788,6 +870,11 @@
             List of all active tabs for browsing or interacting with the address. All has possibility to load own list of NFTs.
             </summary>
         </member>
+        <member name="P:VEDriversLite.NeblioAccount.MessageTabs">
+            <summary>
+            Tabs with partners for messaging. It loads their NFT Messages related to you and mix them with yours related to the address in MessageTab
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NeblioAccount.SubAccounts">
             <summary>
             Neblio Sub Accounts. Each can work with own set of NFTs. It is real blockchain address with own Private Key
@@ -806,11 +893,6 @@
         <member name="E:VEDriversLite.NeblioAccount.NewMintingProcessInfo">
             <summary>
             This event is called whenever some progress during multimint happens
-            </summary>
-        </member>
-        <member name="E:VEDriversLite.NeblioAccount.ProfileUpdated">
-            <summary>
-            This event is called whenever profile nft is updated or found
             </summary>
         </member>
         <member name="E:VEDriversLite.NeblioAccount.SubAccountNFTsChanged">
@@ -859,6 +941,8 @@
             </summary>
             <param name="password">Input password, which will encrypt the Private key</param>
             <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
+            <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
+            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.Boolean,System.Boolean)">
@@ -866,6 +950,11 @@
             Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
             </summary>
             <param name="password">Passwotd to decrypt the loaded private key</param>
+            <param name="filename">filename with stored key.</param>
+            <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
+            Great when you want just do simple payment. 
+            You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
+            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadAccountWithDummyKey(System.String,System.String,System.Boolean,System.Boolean)">
@@ -873,7 +962,12 @@
             Load account just for observation
             You cannot sign tx when you load address this way
             </summary>
-            <param name="address">Address you want to observe</param>
+            <param name="password">Passwotd to decrypt the loaded private key</param>
+            <param name="address">Account Address</param>
+            <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
+            Great when you want just do simple payment. 
+            You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
+            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String,System.String,System.Boolean,System.Boolean)">
@@ -881,6 +975,12 @@
             Load account from filename backup from VENFT App (default "backup.json") file placed in the root exe directory. Doesnt work in WABS
             </summary>
             <param name="password">Passwotd to decrypt the loaded private key</param>
+            <param name="fromString">BackupDataDto serialized object with key and address</param>
+            <param name="filename">load from BackupDataDto from file. backup.json as default.</param>
+            <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
+            Great when you want just do simple payment. 
+            You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
+            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String,System.Boolean,System.Boolean)">
@@ -889,9 +989,13 @@
             It expect the private key is encrypted by the password.
             It uses AES encryption
             </summary>
-            <param name="password"></param>
-            <param name="encryptedKey"></param>
-            <param name="address"></param>
+            <param name="password">Passwotd to decrypt the loaded private key</param>
+            <param name="encryptedKey">Private key encrypted with AES (you must provide pass in this case) or not encrypted (you do not need password)</param>
+            <param name="address">Neblio Address related to the private key (if empty it will be calculated from the private key).</param>
+            <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
+            Great when you want just do simple payment. 
+            You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
+            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadBookmarks(System.String)">
@@ -951,6 +1055,14 @@
             <param name="address">Neblio Address which tab should be removed</param>
             <returns>true and string with serialized tabs list as json string</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.SelectTab(System.String)">
+            <summary>
+            Select active tab based on Address. It will deselect all other tabs
+            This will start the refreshing for the selected tab if is not running yet and stop the others tabs refreshing.
+            </summary>
+            <param name="address">Address of tab to select</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.SerializeTabs">
             <summary>
             Return serialized list of ActiveTabs as Json stirng
@@ -978,6 +1090,13 @@
             <param name="address">Neblio Address which tab should be removed</param>
             <returns>true and string with serialized tabs list as json string</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.SelectMessageTab(System.String)">
+            <summary>
+            Select Message tab. It will Reload the tab NFTs if the count of the NFTs is 0.
+            </summary>
+            <param name="address">Address of Message Tab to select</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.SerializeMessageTabs">
             <summary>
             Return serialized list of MessageTabs as Json stirng
@@ -995,9 +1114,12 @@
             <summary>
             Add new Sub Account
             </summary>
-            <param name="address"></param>
+            <param name="name">Name of new SubAccount</param>
             <param name="sendNeblioToAccount">Set This true if you want to load some Neblio to this address after it is created.</param>
             <param name="neblioAmountToSend">Amount of neblio for initial load of the address, 0.05 is default = 250 tx</param>
+            <param name="sendTokenToAccount">Initial amount of tokens to send to the new SubAccount</param>
+            <param name="tokenAmountToSend">Initial amount of Neblio to send to the new SubAccount</param>
+            <param name="tokenId">Token Id which should be send to the new SubAccount</param>
             <returns>true and string with serialized tabs list as json string</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.RemoveSubAccount(System.String)">
@@ -1084,7 +1206,11 @@
             Split Neblio Tokens on SubAccount
             </summary>
             <param name="address">Neblio Address of SubAccount</param>
-            <param name="NFT">NFT on the SubAccount which should be minted</param>
+            <param name="tokenId">Id of token to split</param>
+            <param name="metadata">metadata</param>
+            <param name="receivers">list of the receivers of the transaction.</param>
+            <param name="lots">Number of lots on the Output of tx.</param>
+            <param name="amount">Amount of the tokens in one lot.</param>
             <returns>true and string with new TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.GetNFTVerifyQRCodeFromSubAccount(System.String,System.String)">
@@ -1116,7 +1242,7 @@
             Destroy NFTs on SubAccount
             </summary>
             <param name="address">Neblio Address of SubAccount</param>
-            <param name="NFT">NFT on the SubAccount which should be send</param>
+            <param name="NFTs">NFTs on the SubAccount which should be send</param>
             /// <param name="sendToMainAccount">If this is set, function will rewrite receiver to main Account Address</param>
             <returns>true and string with new TxId</returns>
         </member>
@@ -2883,19 +3009,74 @@
             Dto for info about actual Token supply on address
             </summary>
         </member>
+        <member name="P:VEDriversLite.TokenSupplyDto.TokenSymbol">
+            <summary>
+            Symbol of token - up to 5 unique letters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.TokenSupplyDto.TokenId">
+            <summary>
+            Token Id hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.TokenSupplyDto.Amount">
+            <summary>
+            Amount of tokens available
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.TokenSupplyDto.ImageUrl">
+            <summary>
+            Token icon image url
+            </summary>
+        </member>
         <member name="T:VEDriversLite.TokenOwnerDto">
             <summary>
             Dto for info about owner of some kind of the tokens
             </summary>
         </member>
-        <member name="T:VEDriversLite.NeblioAPIScripPubKeyDto">
+        <member name="P:VEDriversLite.TokenOwnerDto.Address">
             <summary>
-            Dto for serialization of response from Neblio API
+            Address of the Owner
             </summary>
         </member>
-        <member name="T:VEDriversLite.SignResultDto">
+        <member name="P:VEDriversLite.TokenOwnerDto.ShortenAddress">
             <summary>
-            Dto for serialization of response from Neblio API
+            Shorten Address of the Owner
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.TokenOwnerDto.AmountOfTokens">
+            <summary>
+            Amount of the tokens on the Owner Address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.TokenOwnerDto.AmountOfNFTs">
+            <summary>
+            Amount of the NFTs on the Owner Address
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.FromSatToMainRatio">
+            <summary>
+            Conversion ration for Neblio to convert from sat to 1 NEBL
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.MaximumTokensOutpus">
+            <summary>
+            Maximum number of outputs which carry some token in the Neblio transaction
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.MaximumNeblioOutpus">
+            <summary>
+            Maximum number of outputs without tokens in the Neblio transaction
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.Network">
+            <summary>
+            NBitcoin Instance of Mainet Network of Neblio
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.MinimumConfirmations">
+            <summary>
+            Minimum number of confirmation to send the transaction
             </summary>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.ShortenAddress(System.String)">
@@ -2911,6 +3092,13 @@
             </summary>
             <param name="txid"></param>
             <param name="withDots">default true. add .... between start and end of the tx hash</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.LoadAllowedTokensInfo(System.Collections.Generic.List{System.String})">
+            <summary>
+            Load informations about allowed tokens.
+            </summary>
+            <param name="tokenIds">List of allowed tokens to works with.</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressAndKey(VEDriversLite.Security.EncryptionKey,System.String)">

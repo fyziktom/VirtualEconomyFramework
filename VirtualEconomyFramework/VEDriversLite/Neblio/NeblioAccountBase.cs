@@ -686,6 +686,8 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, string)> VerifyMessage(string message, string signature, string address)
         {
+            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))
+                return (false, "You must fill all inputs.");
             var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(address);
             if (!ownerpubkey.Item1)
                 return (false, "Owner did not activate the function. He must have filled the profile.");
@@ -700,6 +702,10 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, string)> EncryptMessage(string message)
         {
+            if (string.IsNullOrEmpty(message))
+                return (false, "You must fill the message.");
+            if (Secret == null)
+                return (false, "Account is not loaded.");
             return await ECDSAProvider.EncryptMessage(message, Secret.PubKey.ToString());
         }
 
@@ -710,6 +716,10 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, string)> DecryptMessage(string emessage)
         {
+            if (string.IsNullOrEmpty(emessage))
+                return (false, "You must fill the encrypted message.");
+            if (Secret == null)
+                return (false, "Account is not loaded.");
             return await ECDSAProvider.DecryptMessage(emessage, Secret);
         }
 
@@ -721,6 +731,10 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<OwnershipVerificationCodeDto> GetNFTVerifyCode(string txid)
         {
+            if (string.IsNullOrEmpty(txid))
+                return new OwnershipVerificationCodeDto();
+            if (Secret == null)
+                return new OwnershipVerificationCodeDto();
             var res = await OwnershipVerifier.GetCodeInDto(txid, Secret);
             if (res != null)
                 return res;
@@ -735,6 +749,10 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(OwnershipVerificationCodeDto, byte[])> GetNFTVerifyQRCode(string txid)
         {
+            if (string.IsNullOrEmpty(txid))
+                return (new OwnershipVerificationCodeDto(), new byte[0]);
+            if (Secret == null)
+                return (new OwnershipVerificationCodeDto(), new byte[0]);
             var res = await OwnershipVerifier.GetQRCode(txid, Secret);
             if (res.Item1)
                 return (res.Item2.Item1, res.Item2.Item2);
@@ -749,6 +767,8 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, string)> SignMessage(string message)
         {
+            if (string.IsNullOrEmpty(message))
+                return (false, "You must fill the message.");
             if (IsLocked())
             {
                 await InvokeAccountLockedEvent();
@@ -1487,7 +1507,7 @@ namespace VEDriversLite.Neblio
 
                 if (rtxid != null)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Post Changed");
+                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Changed");
                     return (true, rtxid);
                 }
             }
@@ -1544,7 +1564,7 @@ namespace VEDriversLite.Neblio
 
                 if (rtxid != null)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Post Changed");
+                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Message sent.");
                     return (true, rtxid);
                 }
             }
@@ -1555,7 +1575,7 @@ namespace VEDriversLite.Neblio
             }
 
             await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
-            return (false, "Unexpected error during send.");
+            return (false, "Unexpected error during sending message.");
         }
 
 

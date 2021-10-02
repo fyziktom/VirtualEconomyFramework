@@ -13,6 +13,7 @@ namespace VEDriversLite.Messaging
 {
     public class MessageTab
     {
+        private object _lock = new object();
         public MessageTab(string address)
         {
             Address = address;
@@ -52,8 +53,8 @@ namespace VEDriversLite.Messaging
             if (NFTs == null)
                 NFTs = new List<INFT>();
 
-            if (NFTs.Count > 0)
-                Profile = await NFTHelpers.FindProfileNFT(NFTs);
+            //if (NFTs.Count > 0)
+            //    Profile = await NFTHelpers.FindProfileNFT(NFTs);
 
             await RefreshMessages(innfts);
         }
@@ -70,9 +71,12 @@ namespace VEDriversLite.Messaging
             {
                 PublicKeyFound = false;
             }
-            NFTMessages.Clear();
-            NFTMessages = await NFTHelpers.LoadAddressNFTMessages(Address, AccountAddress, NFTs);
-
+            
+            var msgs = await NFTHelpers.LoadAddressNFTMessages(Address, AccountAddress, NFTs);
+            lock (_lock)
+            {
+                NFTMessages = msgs;
+            }
             // add related messages from main account
             await AddAccoundMessages(innfts);
 
@@ -85,15 +89,21 @@ namespace VEDriversLite.Messaging
         public async Task AddAccoundMessages(List<INFT> innfts)
         {
             var msgs = await NFTHelpers.LoadAddressNFTMessages(Address, AccountAddress, innfts);
-            foreach (var m in msgs)
-                NFTMessages.Add(m);
+            lock (_lock)
+            {
+                foreach (var m in msgs)
+                    NFTMessages.Add(m);
+            }
         }
 
         private async Task DecryptMessages()
         {
-            foreach (var m in NFTMessages)
-                if (m.Type == NFTTypes.Message)
-                    await (m as MessageNFT).Decrypt(AccountSecret);
+            var dmsgst = new Task[NFTMessages.Count];
+
+            for (int i = 0; i < NFTMessages.Count; i++)
+                dmsgst[i] = (NFTMessages[i] as MessageNFT).Decrypt(AccountSecret);
+
+            await Task.WhenAll(dmsgst);
         }
 
         public void LoadBookmark(Bookmark bkm)

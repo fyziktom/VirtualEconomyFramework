@@ -246,7 +246,7 @@ namespace VEDriversLite.NFT
                     //if (wait)
                     //    await (nft as MessageNFT).LoadLastData(meta);
                     //else
-                    (nft as MessageNFT).LoadLastData(meta);
+                    await (nft as MessageNFT).LoadLastData(meta);
                     break;
                 case NFTTypes.Ticket:
                     nft = new TicketNFT(utxo);

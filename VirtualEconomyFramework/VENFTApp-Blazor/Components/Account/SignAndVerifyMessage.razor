@@ -10,80 +10,135 @@
                 <div class="col w-auto">
                     @if (DisplaySign)
                     {
-                    <div class="row">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <h6>Sign Message</h6>
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <h6>Sign Message</h6>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small class="text-center">
-                                When you sign some message you will create unique hash which can be created just with your private key. 
-                                This is way how some partner can verify that he talks with the owner of the address.
-                            </small>
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-center">
+                                    When you sign some message you will create unique hash which can be created just with your private key.
+                                    This is way how some partner can verify that he talks with the owner of the address.
+                                </small>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col">
-                            <Input Placeholder="Add message" @bind-Value=@message Style="font-size:12px;" />
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col">
+                                <Input Placeholder="Add message" @bind-Value=@message Style="font-size:12px;" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <button class="btn btn-primary" @onclick="SignMessage">Sign Message</button>
+                        @if (string.IsNullOrEmpty(message))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(message))
+                        {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary" @onclick="SignMessage">Sign Message</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Result</small>
+                        }
+                        else
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary">Input the message</button>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Result</small>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:2px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <textarea style="min-width:220px; max-width:220px; min-height:80px;">@signature</textarea>
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <textarea style="min-width:220px; max-width:220px; min-height:80px;">@signature</textarea>
+                            </div>
                         </div>
-                    </div>
                     }
                     @if (DisplayVerify)
                     {
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <h6>Verify Message Signature</h6>
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <h6>Verify Message Signature</h6>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small class="text-center">
-                                When you need to verify that you are talking with owner of some address, send him some text/message, 
-                                he will sign it and then you can verify with this tool if the signature is valid.
-                            </small>
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-center">
+                                    When you need to verify that you are talking with owner of some address, send him some text/message,
+                                    he will sign it and then you can verify with this tool if the signature is valid.
+                                </small>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add message" @bind-Value=@verifyMessage Style="font-size:12px;" />
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add message" @bind-Value=@verifyMessage Style="font-size:12px;" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add message signature" @bind-Value=@verifyMessageSignature Style="font-size:12px;" />
+                        @if (string.IsNullOrEmpty(verifyMessage))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add message signature" @bind-Value=@verifyMessageSignature Style="font-size:12px;" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add address" @bind-Value=@verifyMessageAddress Style="font-size:12px;" />
+                        @if (string.IsNullOrEmpty(verifyMessageSignature))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add address" @bind-Value=@verifyMessageAddress Style="font-size:12px;" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <button class="btn btn-primary" @onclick="VerifyMessageSignature">Verify Signature</button>
+                        @if (string.IsNullOrEmpty(verifyMessageAddress))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(verifyMessage) && !string.IsNullOrEmpty(verifyMessageAddress) && !string.IsNullOrEmpty(verifyMessageSignature))
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary" @onclick="VerifyMessageSignature">Verify Signature</button>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary disabled">Fill all inputs</button>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Verification Result: @verifyResult</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <span>Verification Result: @verifyResult</span>
-                        </div>
-                    </div>
                     }
                 </div>
             </div>

@@ -7,7 +7,7 @@
 {
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center">
-            <button class="btn btn-secondary" @onclick="deleteNFT">Delete <i class="oi oi-trash" style="pointer-events: none; width: 50px; font-size: @fontsize;"></i></button>
+            <button type="button" class="btn btn-secondary" @onclick="deleteNFT">Delete <i class="oi oi-trash" style="font-size:@fontsize;" aria-hidden="true"></i></button>
         </div>
     </div>
 }
@@ -15,7 +15,7 @@ else
 {
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center">
-            <button class="btn btn-light" @onclick="deleteNFT"><i class="oi oi-trash" style="pointer-events: none; font-size: @fontsize;"></i></button>
+            <button type="button" class="btn btn-light" @onclick="deleteNFT"><i class="oi oi-trash" style="font-size:@fontsize;" aria-hidden="true"></i></button>
         </div>
     </div>
 }

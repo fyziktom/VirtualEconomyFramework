@@ -15,7 +15,12 @@
             {
                 <div class="row" style="position: absolute;right: 7px;top: 40px;">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.NFTs.DestroyNFTButton IsIcon="true" FontSize="20" InputNFT="@NFT" Address="@_address" MainAccount="true" SubAccount="false" />
+                        <VENFTApp_Blazor.Components.NFTs.DestroyNFTButton IsIcon="true" 
+                                                                          FontSize="20" 
+                                                                          InputNFT="@NFT" 
+                                                                          Address="@_address" 
+                                                                          MainAccount="true" 
+                                                                          SubAccount="false" />
                     </div>
                 </div>
             }
@@ -65,7 +70,7 @@
             </div>
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <span class="text-center">@NFT.Description</span>
+                    <span class="text-center" style="max-width:250px;">@NFT.Description</span>
                 </div>
             </div>
             <hr />
@@ -230,19 +235,19 @@
 
     private async Task Load()
     {
+        if (NFT == null)
+            return;
+
         loading = true;
         StateHasChanged();
         NFT.TxDataRefreshed -= TxDataRefreshedHandler;
         await NFT.StopRefreshingData();
-        NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, _utxo, 0, 0, true); // todo dynamic index. now messages has 0 always
-
-        if (NFT == null)
-            return;
-
-        await (NFT as MessageNFT).Decrypt(AppData.Account.Secret);
-        //await (NFT as MessageNFT).DecryptImageData(AppData.Account.Secret);
-        await NFT.StartRefreshingTxData();
+        
+        if(!(NFT as MessageNFT).Decrypted)
+            await (NFT as MessageNFT).Decrypt(AppData.Account.Secret);
+        
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
+        await NFT.StartRefreshingTxData();
         loading = false;
         StateHasChanged();
     }
@@ -298,10 +303,13 @@
         modalWithImageVisible = false;
     }
 
-    void NFTSentHandler(string e)
+    private void NFTSentHandler(string e)
     {
         modalWithImageVisible = false;
         sendMessageVisible = false;
+        loading = false;
+        NFT.StopRefreshingData();
+        StateHasChanged();
         NFTSent.InvokeAsync(e);
         StateHasChanged();
     }

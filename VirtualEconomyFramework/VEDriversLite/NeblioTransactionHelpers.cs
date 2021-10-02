@@ -21,9 +21,21 @@ namespace VEDriversLite
     /// </summary>
     public class TokenSupplyDto
     {
+        /// <summary>
+        /// Symbol of token - up to 5 unique letters
+        /// </summary>
         public string TokenSymbol { get; set; } = string.Empty;
+        /// <summary>
+        /// Token Id hash
+        /// </summary>
         public string TokenId { get; set; } = string.Empty;
+        /// <summary>
+        /// Amount of tokens available
+        /// </summary>
         public double Amount { get; set; } = 0.0;
+        /// <summary>
+        /// Token icon image url
+        /// </summary>
         public string ImageUrl { get; set; } = string.Empty;
     }
     /// <summary>
@@ -31,30 +43,22 @@ namespace VEDriversLite
     /// </summary>
     public class TokenOwnerDto
     {
+        /// <summary>
+        /// Address of the Owner
+        /// </summary>
         public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// Shorten Address of the Owner
+        /// </summary>
         public string ShortenAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// Amount of the tokens on the Owner Address
+        /// </summary>
         public int AmountOfTokens { get; set; } = 0;
+        /// <summary>
+        /// Amount of the NFTs on the Owner Address
+        /// </summary>
         public int AmountOfNFTs { get; set; } = 0;
-    }
-
-    /// <summary>
-    /// Dto for serialization of response from Neblio API
-    /// </summary>
-    public class NeblioAPIScripPubKeyDto // todo move to Neblio API
-    {
-        public string asm { get; set; } = string.Empty;
-        public string hex { get; set; } = string.Empty;
-        public string type { get; set; } = string.Empty;
-        public int reqSigs { get; set; } = 0;
-        public ICollection<string> addresses { get; set; }
-    }
-    /// <summary>
-    /// Dto for serialization of response from Neblio API
-    /// </summary>
-    public class SignResultDto // todo move to Neblio API
-    {
-        public string hex { get; set; }
-        public bool complete { get; set; }
     }
 
     public static class NeblioTransactionHelpers
@@ -62,10 +66,25 @@ namespace VEDriversLite
         private static HttpClient httpClient = new HttpClient();
         private static IClient _client;
         private static string BaseURL = "https://ntp1node.nebl.io/";
+        /// <summary>
+        /// Conversion ration for Neblio to convert from sat to 1 NEBL
+        /// </summary>
         public static double FromSatToMainRatio = 100000000;
+        /// <summary>
+        /// Maximum number of outputs which carry some token in the Neblio transaction
+        /// </summary>
         public static int MaximumTokensOutpus = 10;
+        /// <summary>
+        /// Maximum number of outputs without tokens in the Neblio transaction
+        /// </summary>
         public static int MaximumNeblioOutpus = 25;
+        /// <summary>
+        /// NBitcoin Instance of Mainet Network of Neblio
+        /// </summary>
         public static Network Network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
+        /// <summary>
+        /// Minimum number of confirmation to send the transaction
+        /// </summary>
         public static int MinimumConfirmations = 2;
         public static Dictionary<string, GetTokenMetadataResponse> TokensInfo = new Dictionary<string, GetTokenMetadataResponse>();
         public static event EventHandler<IEventInfo> NewEventInfo;
@@ -107,6 +126,11 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Load informations about allowed tokens.
+        /// </summary>
+        /// <param name="tokenIds">List of allowed tokens to works with.</param>
+        /// <returns></returns>
         public static async Task LoadAllowedTokensInfo(List<string> tokenIds)
         {
             foreach(var tok in tokenIds)

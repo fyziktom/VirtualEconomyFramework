@@ -31,17 +31,18 @@
 
             <div class="row w-100 h-100" style="margin-top:10px;">
                 <div class="col h-100 d-flex justify-content-center align-items-center">
-                    @if (_nfts.Count == 0)
+                    @if (NFTsList.Count == 0)
                     {
                         <p><em><Spin Tip="Loading...No Messages found yet" Style="min-width:100px;"></Spin></em></p>
                     }
                     else
                     {
                         <div class="card-group w-100">
-                            @foreach (var nft in _nfts)
+                            @for (int i = 0; i < NFTsList.Count; i++)
                             {
-                                if (nft.Type == NFTTypes.Message)
+                                if (NFTsList[i].Type == NFTTypes.Message)
                                 {
+                                    var nft = NFTsList[i];
                                     <div class="card w-100" style="margin-left:10px; margin-top:10px; width:250px; min-width:250px; max-width:250px; max-height:200px; height:200px;">
                                         <div class="card-body w-100 d-flex justify-content-center align-items-start">
 
@@ -124,7 +125,7 @@
        Visible="@messageDetailsVisible"
        OnOk="@messageDetailsVisibleCancel"
        OnCancel="@messageDetailsVisibleCancel">
-    <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" Address="@_address" />
+    <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" Address="@_address" NFTSent="NFTSentHandler" />
 </Modal>
 
 
@@ -137,17 +138,22 @@
 
 @code {
 
-    private List<INFT> _nfts = new List<INFT>();
-    [Parameter]
-    public List<INFT> NFTs
+    public List<INFT> NFTsList
     {
-        get => _nfts;
-        set
+        get
         {
-            if (value != null)
+            if (MainAccount)
             {
-                _nfts = value;
+                return AppData.Account.NFTs;
             }
+            else if (SubAccount)
+            {
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var sacc))
+                {
+                    return sacc.NFTs;
+                }
+            }
+            return new List<INFT>();
         }
     }
 
@@ -163,18 +169,26 @@
         {
             if (!string.IsNullOrEmpty(value))
             {
-                _nfts = new List<INFT>();
+                //_nfts = new List<INFT>();
                 _address = value;
-                _nfts = AppData.Account.NFTs;
-                StateHasChanged();
+                //_nfts = AppData.Account.NFTs;
+                //StateHasChanged();
             }
         }
     }
 
+    [Parameter]
+    public bool MainAccount { get; set; } = true;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    public bool OwnNFT => MainAccount || SubAccount;
+
     private bool sendMessageVisible = false;
     private bool messageDetailsVisible = false;
 
-    private int refresh = 5;
+    private int refresh = 30;
     private int lastCount = 0;
 
     private string selectedNFTUtxo = string.Empty;
@@ -188,8 +202,8 @@
         {
             AppData.Account.Refreshed += RefreshedHandler;
             AppData.Account.NFTsChanged += NFTsChangedHandler;
+            DecryptMessages();
         }
-        DecryptMessages();
     }
 
     private void RefreshedHandler(object sender, EventArgs e)
@@ -203,20 +217,36 @@
         {
             refresh--;
         }
-        
+
         StateHasChanged();
     }
-    void NFTsChangedHandler(object sender, string e)
+
+    private void NFTsChangedHandler(object sender, string e)
     {
-        _nfts = AppData.Account.NFTs;
-        DecryptMessages();
+        //_nfts = AppData.Account.NFTs;
+        //DecryptMessages();
+    }
+
+    private void NFTSentHandler(string e)
+    {
+        messageDetailsVisible = false;
+        StateHasChanged();
     }
 
     private async Task DecryptMessages()
     {
-        foreach (var m in _nfts)
-            if (m.Type == NFTTypes.Message && !(m as MessageNFT).Decrypted)
-                await (m as MessageNFT).Decrypt(AppData.Account.Secret);
+        for (int i = 0; i < AppData.Account.NFTs.Count; i++)
+            if (AppData.Account.NFTs[i].Type == NFTTypes.Message && !(AppData.Account.NFTs[i] as MessageNFT).Decrypted)
+            {
+                try
+                {
+                    await (AppData.Account.NFTs[i] as MessageNFT).Decrypt(AppData.Account.Secret);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Cannot decrypt the Message. " + ex.Message);
+                }
+            }
         StateHasChanged();
     }
 
@@ -238,8 +268,8 @@
         {
             await AppData.Account.ReloadUtxos();
             await AppData.Account.ReLoadNFTs();
-            _nfts = AppData.Account.NFTs;
-            lastCount = _nfts.Count;
+            //_nfts = AppData.Account.NFTs;
+            lastCount = NFTsList.Count;
             lastAddress = _address;
             await Task.Delay(50);
             StateHasChanged();
@@ -249,8 +279,9 @@
     private async Task showMessageDetails(INFT nft)
     {
         nftToShow = await NFTFactory.CloneNFT(nft);
+        StateHasChanged();
         selectedNFTUtxo = nft.Utxo;
-        Console.WriteLine(nft.Utxo);
+        //Console.WriteLine(nft.Utxo);
         messageDetailsVisible = true;
     }
 

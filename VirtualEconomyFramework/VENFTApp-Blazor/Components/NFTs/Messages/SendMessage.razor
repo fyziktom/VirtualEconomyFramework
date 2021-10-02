@@ -244,6 +244,8 @@
             confirmVisible = false;
             StateHasChanged();
 
+            await newNFT.StopRefreshingData();
+
             var res = await AppData.Account.SendMessageNFT(newNFT.Name, newNFT.Description, receiver, newNFT.Utxo, encrypt, imagelink);
 
             if (res.Item1)

@@ -24,13 +24,15 @@
                 <div class="row w-100" style="margin-left:0px; padding:0px;">
                     <div class="col w-100 d-flex justify-content-center align-items-center" style="margin-left:0px; padding:0px;">
 
-                        <Collapse DefaultActiveKey="@(new[]{"Add"})" OnChange="Callback" Accordion Style="width:100%;">
+                        <Collapse Class="@(loadingBrowser?"disabled":"")" DefaultActiveKey="@(new[]{"Add"})" OnChange="Callback" Accordion Style="width:100%;">
                             <Panel Header="All My Received" Key="AllMyReceived">
                                 <HeaderTemplate>
                                     <span class="oi oi-home" aria-hidden="true"></span> All My Received
                                 </HeaderTemplate>
                                 <ChildContent>
-                                    <VENFTApp_Blazor.Components.NFTs.Messages.MessageList NFTs="@AppData.Account.NFTs" Address="@AppData.Account.Address" />
+                                    <VENFTApp_Blazor.Components.NFTs.Messages.MessageList Address="@AppData.Account.Address"
+                                                                                          MainAccount="true"
+                                                                                          SubAccount="false"/>
                                 </ChildContent>
                             </Panel>
                             @foreach (var mt in AppData.Account.MessageTabs)
@@ -145,6 +147,8 @@
             {
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
+                if (AppData.Account.WithoutNFTs)
+                    AppData.Account.WithoutNFTs = false;
                 LoadStateFromMemory();
             }
         }
@@ -184,6 +188,9 @@
 
     private void Callback(string[] keys)
     {
+        if (loadingBrowser)
+            return;
+
         var key = keys.Last();
         if (string.IsNullOrEmpty(key))
             return;

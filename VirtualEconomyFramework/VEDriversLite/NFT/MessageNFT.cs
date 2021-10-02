@@ -33,6 +33,8 @@ namespace VEDriversLite.NFT
 
         public bool IsReceivedMessage { get; set; } = false;
 
+        private bool runningDecryption = false;
+
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             GetPartnerAsync();
@@ -87,6 +89,9 @@ namespace VEDriversLite.NFT
 
         public async Task<bool> Decrypt(NBitcoin.BitcoinSecret secret)
         {
+            if (runningDecryption)
+                return false;
+
             if (Decrypted)
                 return false;
 
@@ -107,6 +112,8 @@ namespace VEDriversLite.NFT
                 IsReceivedMessage = true;
             }
 
+            runningDecryption = true;
+
             Description = await DecryptProperty(Description, secret);
             Name = await DecryptProperty(Name, secret);
             Text = await DecryptProperty(Text, secret);
@@ -114,6 +121,7 @@ namespace VEDriversLite.NFT
             Link = await DecryptProperty(Link, secret);
 
             Decrypted = true;
+            runningDecryption = false;
 
             return true;
         }
@@ -148,19 +156,32 @@ namespace VEDriversLite.NFT
         {
             if (!string.IsNullOrEmpty(prop))
             {
-                try
+                if (IsBase64String(prop))
                 {
-                    var d = await ECDSAProvider.DecryptStringWithSharedSecret(prop, Partner, secret);
-                    if (d.Item1)
-                        return d.Item2;
+                    try
+                    {
+                        var d = await ECDSAProvider.DecryptStringWithSharedSecret(prop, Partner, secret);
+                        if (d.Item1)
+                            return d.Item2;
+                        else
+                            return prop;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Cannot decrypt property in NFT Message. " + ex.Message);
+                        return prop;
+                    }
                 }
-                catch(Exception ex)
-                {
-                    Console.WriteLine("Cannot decrypt property in NFT Message. " + ex.Message);
+                else
                     return prop;
-                }
             }
             return string.Empty;
+        }
+
+        public static bool IsBase64String(string base64)
+        {
+            Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
+            return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
         }
 
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")

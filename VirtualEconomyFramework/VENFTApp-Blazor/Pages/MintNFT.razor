@@ -320,6 +320,8 @@
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
                 selectedAccountAddress = AppData.Account.Address;
+                if (AppData.Account.WithoutNFTs)
+                    AppData.Account.WithoutNFTs = false;
                 mainAccountSelected = true;
             }
         }

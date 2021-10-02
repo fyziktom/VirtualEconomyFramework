@@ -277,7 +277,7 @@
        Visible="@sendMessageVisible"
        OnOk="@sendMessageConfirm"
        OnCancel="@sendMessageCancel">
-    <VENFTApp_Blazor.Components.SendMessage Receiver="@addressInOpenTab" />
+    <VENFTApp_Blazor.Components.NFTs.Messages.SendMessage Receiver="@addressInOpenTab" MessageSent="@MessageSentHandler" />
 </Modal>
 
 @code {
@@ -381,8 +381,15 @@
         StateHasChanged();
     }
 
+    private void MessageSentHandler(string e)
+    {
+        sendMessageVisible = false;
+        StateHasChanged();
+    }
+
     private void BookmarkRefreshedHandler(VEDriversLite.Bookmarks.Bookmark bookmark)
     {
+        AppData.Account.Tabs.FirstOrDefault(t => t.Address == addressInOpenTab).BookmarkFromAccount = bookmark;
         StateHasChanged();
     }
 

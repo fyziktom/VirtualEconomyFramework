@@ -330,6 +330,10 @@
                 {
                     redirect = rdc;
                 }
+                else
+                {
+                    redirect = string.Empty;
+                }
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("curr", out var curr))
                 {
                     if (curr == "DGC") currecncy = Currecncy.DGC;
