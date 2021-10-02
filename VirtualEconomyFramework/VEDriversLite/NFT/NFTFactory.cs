@@ -75,12 +75,14 @@ namespace VEDriversLite.NFT
                                               NFTTypes justType = NFTTypes.Image,
                                               bool skipTheType = false,
                                               NFTTypes skipType = NFTTypes.Image,
-                                              string address = "")
+                                              string address = "",
+                                              NeblioAPI.GetTransactionInfoResponse txinfo = null)
         {
             NFTTypes type = NFTTypes.Image;
             INFT nft = null;
 
-            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
+            if (txinfo == null)
+                txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
             if (txinfo == null)
                 return null;
             if (txinfo.Vout == null)

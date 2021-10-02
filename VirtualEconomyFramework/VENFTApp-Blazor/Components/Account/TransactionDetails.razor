@@ -161,13 +161,17 @@
             @if (nftType == NFTTypes.CoruzantArticle || nftType == NFTTypes.CoruzantProfile)
             {
                 <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
-                             OwnNFT="@true"
+                             OwnNFT="@false"
                              Address="@Address"
                              SubAccount="@SubAccount" />
             }
             else if (nftType == NFTTypes.Message)
             {
-                <VENFTApp_Blazor.Components.NFTs.Messages.NFTMessage Utxo="@loadedNFT.Utxo" />
+                <VENFTApp_Blazor.Components.NFTs.Messages.NFTMessage Utxo="@loadedNFT.Utxo" 
+                                                                     InputNFT="@loadedNFT" 
+                                                                     OwnNFT="false" 
+                                                                     Address="@Address" 
+                                                                     IsHistory="true" />
             }
             else if (nftType == NFTTypes.Payment || nftType == NFTTypes.Receipt)
             {
@@ -180,7 +184,7 @@
             else
             {
                 <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
-                     OwnNFT="@true"
+                     OwnNFT="@false"
                      Address="@Address"
                      SubAccount="@SubAccount" />
             }
@@ -203,14 +207,11 @@
         get => txId;
         set
         {
-            if (!string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(value) && txId != value)
             {
-                if (txId != value)
-                {
-                    lasttxid = txId;
-                    txId = value;
-                    Load(true);
-                }
+                lasttxid = txId;
+                txId = value;
+                StartRefreshing(true);
             }
         }
     }
@@ -237,50 +238,81 @@
 
     protected override Task OnInitializedAsync()
     {
-        StartRefreshing();
         return base.OnInitializedAsync();
     }
 
     private string getOutputAddress(Vout i)
     {
-        var add = i.ScriptPubKey.Addresses?.ToArray()?[0];
-        if (!string.IsNullOrEmpty(add))
+        try
         {
-            if (add == AppData.Account.Address)
-                return "Main Account";
-            if (AppData.Account.SubAccounts.TryGetValue(add, out var sacc))
+            var add = i.ScriptPubKey.Addresses?.ToArray()?[0];
+            if (!string.IsNullOrEmpty(add))
             {
-                if (!string.IsNullOrEmpty(sacc.Name))
-                    return sacc.Name;
-                else
-                    return sacc.BookmarkFromAccount.Name;
+                if (add == AppData.Account.Address)
+                    return "Main Account";
+                if (AppData.Account.SubAccounts.TryGetValue(add, out var sacc))
+                {
+                    if (!string.IsNullOrEmpty(sacc.Name))
+                        return sacc.Name;
+                    else
+                        return sacc.BookmarkFromAccount.Name;
+                }
+                return add;
             }
-            return add;
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Cannot load the Output Address from Vout. " + ex.Message);
         }
         return string.Empty;
     }
 
     private string getInputAddress(Vin i)
     {
-        var add = i.PreviousOutput.Addresses?.ToArray()?[0];
-        if (!string.IsNullOrEmpty(add))
-        {
-            if (add == AppData.Account.Address)
-                return "Main Account";
-            if (AppData.Account.SubAccounts.TryGetValue(add, out var sacc))
+        try {
+            var add = i.PreviousOutput.Addresses?.ToArray()?[0];
+            if (!string.IsNullOrEmpty(add))
             {
-                if (!string.IsNullOrEmpty(sacc.Name))
-                    return sacc.Name;
-                else
-                    return sacc.BookmarkFromAccount.Name;
+                if (add == AppData.Account.Address)
+                    return "Main Account";
+                if (AppData.Account.SubAccounts.TryGetValue(add, out var sacc))
+                {
+                    if (!string.IsNullOrEmpty(sacc.Name))
+                        return sacc.Name;
+                    else
+                        return sacc.BookmarkFromAccount.Name;
+                }
+                return add;
             }
-            return add;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot load the Input Address from Vin. " + ex.Message);
         }
         return string.Empty;
     }
 
     private async Task showNFTDetails(MouseEventArgs e)
     {
+        if (loadedNFT.Type == NFTTypes.Message)
+        {
+            try
+            {
+                if (Address == AppData.Account.Address)
+                {
+                    await (loadedNFT as MessageNFT).Decrypt(AppData.Account.Secret);
+                }
+                else if (SubAccount && AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                {
+                    await (loadedNFT as MessageNFT).Decrypt(sa.Secret);
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Cannot decrypt the NFT Message: {loadedNFT.Utxo}." + ex.Message);
+            }
+        }
+        StateHasChanged();
         showNFTDetailsVisible = true;
     }
     private async Task showNFTDetailsCancel(MouseEventArgs e)
@@ -288,9 +320,13 @@
         showNFTDetailsVisible = false;
     }
 
-    async Task StartRefreshing()
+    async Task StartRefreshing(bool newTx = false)
     {
-        await Load();
+        await Load(newTx);
+        if (txdetailsTimer != null)
+        {
+            txdetailsTimer.Dispose();
+        }
         txdetailsTimer = new System.Threading.Timer(async (object stateInfo) =>
         {
             if (!string.IsNullOrEmpty(txId))
@@ -330,68 +366,74 @@
 
             var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txId);
 
-            var outs = txinfo.Vout.ToList();
-            var toks = false;
-            var tokid = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
-            foreach (var o in outs)
+            if (newTx)
             {
-                if (o.Tokens.Count > 0)
+                var outs = txinfo.Vout.ToList();
+                var toks = false;
+                var tokid = NFTHelpers.TokenId;
+                foreach (var o in outs)
                 {
-                    toks = true;
-                    tokid = o.Tokens.ToArray()[0]?.TokenId;
-                    tokenInfo = await NeblioTransactionHelpers.GetTokenInfo(tokid);
-                }
-            }
-
-            try
-            {
-                var vins = txinfo.Vin.ToList();
-                if (vins != null)
-                {
-                    if (vins.Count > 0)
+                    if (o.Tokens.Count > 0)
                     {
-                        fromAddress = vins[0].PreviousOutput.Addresses.FirstOrDefault();
-                        if (fromAddress == null)
-                            fromAddress = string.Empty;
-
-                        if (fromAddress != AppData.Account.Address)
-                            receivedFromAnotherAddress = true;
-                        else
-                            receivedFromAnotherAddress = false;
+                        toks = true;
+                        tokid = o.Tokens.ToArray()[0]?.TokenId;
+                        tokenInfo = await NeblioTransactionHelpers.GetTokenInfo(tokid);
                     }
                 }
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Error during geting the address. " + ex.Message);
-                txDetailsLoading = false;
-            }
 
-            if (toks)
-            {
-                Dictionary<string, string> meta = new Dictionary<string, string>();
                 try
                 {
-                    meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokid,txId);
-
-                    if (meta != null)
+                    var vins = txinfo.Vin.ToList();
+                    if (vins != null)
                     {
-                        txInDetailsMetadata = meta;
-                        if (meta.TryGetValue("NFT", out var nft))
-                            if (nft == "true")
-                                NFTTransaction = true;
+                        if (vins.Count > 0)
+                        {
+                            fromAddress = vins[0].PreviousOutput.Addresses.FirstOrDefault();
+                            if (fromAddress == null)
+                                fromAddress = string.Empty;
 
-                        if (NFTTransaction)
-                            loadedNFT = await NFTFactory.GetNFT(tokid, txId, 0, 0, false);
-                        else
-                            loadedNFT = new ImageNFT("");
-                        nftType = loadedNFT.Type;
+                            if (fromAddress != AppData.Account.Address)
+                                receivedFromAnotherAddress = true;
+                            else
+                                receivedFromAnotherAddress = false;
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("Error during geting the address. " + ex.Message);
                     txDetailsLoading = false;
-                    //todo
+                }
+
+                if (toks)
+                {
+                    try
+                    {
+                        var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokid, txId);
+
+                        if (meta != null)
+                        {
+                            txInDetailsMetadata = meta;
+                            if (meta.TryGetValue("NFT", out var nft))
+                            {
+                                if (nft == "true")
+                                    NFTTransaction = true;
+                                else
+                                    NFTTransaction = false;
+
+                                if (NFTTransaction)
+                                    loadedNFT = await NFTFactory.GetNFT(tokid, txId, 0, 0, false, txinfo: txinfo);
+                                if (loadedNFT == null || !NFTTransaction)
+                                    loadedNFT = new ImageNFT("");
+                                nftType = loadedNFT.Type;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        txDetailsLoading = false;
+                        //todo
+                    }
                 }
             }
 

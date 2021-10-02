@@ -55,9 +55,9 @@
                                     </tr>
                                 }
                             }
-                            @if (maxLoadedTxs < TransactionsDetails.Count)
+                            @if (maxLoadedTxs < Transactions.Count)
                             {
-                                var diff = TransactionsDetails.Count - maxLoadedTxs;
+                                var diff = Transactions.Count - maxLoadedTxs;
                                 @if (diff < 10)
                                 {
                                     <tr><td colspan="4"> <button class="btn btn-secondary" @onclick="loadNextTx">Show Next @diff transactions</button></td></tr>
@@ -228,10 +228,9 @@
 
     private async Task loadNextTx()
     {
-        maxLoadedTxs += 10;
         if (Transactions.Count > 0)
         {
-            var txtoload = maxLoadedTxs;
+            var txtoload = maxLoadedTxs + 10;
             if (txtoload > Transactions.Count)
                 txtoload = Transactions.Count;
             for (int i = TransactionsDetails.Count-1; i < txtoload; i++)
@@ -274,6 +273,7 @@
                 }
             }
         }
+        maxLoadedTxs += 10;
         await MaxLoadedTxChanged.InvokeAsync(maxLoadedTxs);
         StateHasChanged();
     }

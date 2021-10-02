@@ -48,8 +48,22 @@
                     }
                     else
                     {
-                    <VENFTApp_Blazor.Components.NFTs.Profile ReadOnlyProfile="@false" NFT="@AppData.Account.Profile" />
+                        <VENFTApp_Blazor.Components.NFTs.Profile ReadOnlyProfile="@false" NFT="@AppData.Account.Profile" />
                     }
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:10px;">
+                <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
+                    <h5 class="text-center">Request Payment</h5>
+                </div>
+                <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px;">
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span class="text-center">Here you can create QR code of request for payment with specific amount and message which will goes to your address.</span>
+                        </div>
+                    </div>
+                    <VENFTApp_Blazor.Components.Account.RequestPayment Address="@AppData.Account.Address" DisplayButton="true" />
                 </div>
             </div>
 
@@ -234,6 +248,8 @@
             AppData.Account.Refreshed += RefreshedHandler;
             AppData.Account.ProfileUpdated -= ProfileRefreshedHandler;
             AppData.Account.ProfileUpdated += ProfileRefreshedHandler;
+            if (AppData.Account.WithoutNFTs)
+                AppData.Account.WithoutNFTs = false;
         }
 
         try

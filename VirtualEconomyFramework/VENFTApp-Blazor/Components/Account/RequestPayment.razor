@@ -1,0 +1,145 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+@if (DisplayButton)
+{
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <button class="btn btn-primary" @onclick="ShowRequestPaymentDialog">Request Payment</button>
+        </div>
+    </div>
+}
+
+<Modal Title="Request Payment"
+       Visible="@showLinkDialogVisible"
+       OnOk="@showLinkDialogCancel"
+       Style="width:100%; min-width:250px; max-width:400px;"
+       OnCancel="@showLinkDialogCancel">
+
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
+            <h6 class="text-center">Message in payment</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+            <Input Placeholder="Type the payment message" MaxLength="200" @bind-Value=@message Style="font-size:12px; width:90%; min-width:250px; max-width:400px;" />
+        </div>
+    </div>
+    @if (string.IsNullOrEmpty(message))
+    {
+        <div class="row" style="margin-top:2px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <small class="text-danger">You must fill this field.</small>
+            </div>
+        </div>
+    }
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
+            <h6 class="text-center">Amount to request in the Payment</h6>
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+            <input type="number" step="0.0001" min="0.0001" max="20000" @bind="@AmountToSend" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
+            <button class="btn btn-primary" @onclick="ShowLink">@(string.IsNullOrEmpty(paymentLink)?"Show Payment Link and QR Code":"Refresh Payment link and QR Code")</button>
+        </div>
+    </div>
+    <hr />
+    @if (!string.IsNullOrEmpty(paymentLink))
+    {
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                <a href="@paymentLink" target="_blank" class="text-center" style="width:90%;max-width:350px;">@paymentLink</a>
+            </div>
+        </div>
+    }
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+            <div @ref=qrCodeRef></div>
+        </div>
+    </div>
+    @if (!string.IsNullOrEmpty(paymentLink))
+    {
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@paymentLink" />
+            </div>
+        </div>
+    }
+    </Modal>
+
+@code {
+
+    private bool showLink = false;
+    [Parameter]
+    public bool ShowLinkDialog
+    {
+        get => showLink;
+        set
+        {
+            if (!showLink && value)
+            {
+                showLink = true;
+                ShowRequestPaymentDialog();
+            }
+            else if (!value)
+            {
+                showLink = false;
+                showLinkDialogVisible = false;
+            }
+        }
+    }
+
+    [Parameter]
+    public bool DisplayButton { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<bool> DialogClosed { get; set; }
+
+    private double AmountToSend = 1.0;
+    private string message = string.Empty;
+    private string paymentLink = string.Empty;
+    private bool showLinkDialogVisible = false;
+    private ElementReference qrCodeRef;
+
+    private async Task ShowLink()
+    {
+        if (string.IsNullOrEmpty(message))
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "Message cannot be empty.");
+            return;
+        }
+        if (AmountToSend <= 0)
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "Minimal amount is 0.0001 NEBL.");
+            return;
+        }
+        paymentLink = $"https://ve-nft.com/payment?add={Address}&msg={message}&curr=NEBL&amnt={AmountToSend}";// &rdc=https%3A%2F%2Fabout.ve-nft.com%2F";
+        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { paymentLink, qrCodeRef });
+        StateHasChanged();
+    }
+
+    private async Task ShowRequestPaymentDialog()
+    {
+        showLinkDialogVisible = true;
+        StateHasChanged();
+    }
+    private async Task showLinkDialogCancel(MouseEventArgs e)
+    {
+        await DialogClosed.InvokeAsync(false);
+        showLinkDialogVisible = false;
+    }
+
+}

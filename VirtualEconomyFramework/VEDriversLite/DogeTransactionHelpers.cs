@@ -18,8 +18,17 @@ namespace VEDriversLite
     {
         private static HttpClient httpClient = new HttpClient();
         private static IClient _client;
+        /// <summary>
+        /// Conversion ration for Doge to convert from sat to 1 DOGE
+        /// </summary>
         public static double FromSatToMainRatio = 100000000;
+        /// <summary>
+        /// NBitcoin Instance of Mainet Network of Dogecoin
+        /// </summary>
         public static Network Network = NBitcoin.Altcoins.Dogecoin.Instance.Mainnet;
+        /// <summary>
+        /// Minimum number of confirmation to send the transaction
+        /// </summary>
         public static int MinimumConfirmations = 1;
 
         private static ConcurrentDictionary<string, GetTransactionInfoResponse> transactionDetails = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
@@ -144,13 +153,21 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Function will send standard Neblio transaction - sync version
+        /// </summary>
+        /// <param name="data">Send data, please see SendTxData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="utxos">Optional input neblio utxo</param>
+        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         public static string SendDogeTransaction(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
         {
             var res = SendDogeTransactionAsync(data, ekey, utxos, fee).GetAwaiter().GetResult();
             return res;
         }
         /// <summary>
-        /// Function will send standard Neblio transaction
+        /// Function will send standard Neblio transaction - Async version
         /// </summary>
         /// <param name="data">Send data, please see SendTxData class for the details</param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
@@ -159,8 +176,6 @@ namespace VEDriversLite
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
         {
-            var res = "ERROR";
-
             if (data == null)
                 throw new Exception("Data cannot be null!");
 
@@ -242,11 +257,16 @@ namespace VEDriversLite
             }
         }
 
-
+        /// <summary>
+        /// Function will send standard Neblio transaction with included message.
+        /// </summary>
+        /// <param name="data">Send data, please see SendTxData class for the details - this include field for custom message</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="utxos">Optional input neblio utxo</param>
+        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
         {
-            var res = "ERROR";
-
             if (data == null)
                 throw new Exception("Data cannot be null!");
 
@@ -332,10 +352,18 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Function will send standard Neblio transaction with message and outputs which goes to different addresses
+        /// </summary>
+        /// <param name="receiverAmount">Dictionary of all receivers and amounts to send them</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="utxos">Optional input neblio utxo</param>
+        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
+        /// <param name="password">Password for encrypted key if it is encrypted and locked</param>
+        /// <param name="message">Custom message</param>
+        /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string,double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 200000000, string password = "", string message = "")
         {
-            var res = "ERROR";
-
             if (receiverAmount == null)
                 throw new Exception("Receivers Dictionary cannot be null!");
 
@@ -430,7 +458,11 @@ namespace VEDriversLite
             }
         }
 
-
+        /// <summary>
+        /// Parse the total sent value from Doge Tx Info. It takes all outputs together.
+        /// </summary>
+        /// <param name="txinfo"></param>
+        /// <returns></returns>
         public static async Task<(bool, double)> ParseTotalSentValue(GetTransactionInfoResponse txinfo)
         {
             if (txinfo == null)
@@ -453,6 +485,11 @@ namespace VEDriversLite
             return (true, value);
         }
 
+        /// <summary>
+        /// Parse Message from Doge transaction (from OP_RETURN)
+        /// </summary>
+        /// <param name="txinfo"></param>
+        /// <returns></returns>
         public static async Task<(bool,string)> ParseDogeMessage(GetTransactionInfoResponse txinfo)
         {
             if (txinfo == null)
@@ -494,6 +531,11 @@ namespace VEDriversLite
         ///////////////////////////////////////////
         // Tools for addresses
 
+        /// <summary>
+        /// Verify the Dogecoin address
+        /// </summary>
+        /// <param name="dogeAddress">Excpected Dogecoin address</param>
+        /// <returns>true and Address if it is correct Dogecoin Address</returns>
         public static async Task<(bool, string)> ValidateDogeAddress(string dogeAddress)
         {
             try
@@ -516,6 +558,11 @@ namespace VEDriversLite
             return (false, string.Empty);
         }
 
+        /// <summary>
+        /// Verify the Dogecoin private key
+        /// </summary>
+        /// <param name="privatekey">Excpected Dogecoin private key</param>
+        /// <returns>true and NBitcoin.BitcoinSecret if it is correct Dogecoin private key</returns>
         public static async Task<(bool, BitcoinSecret)> IsPrivateKeyValid(string privatekey)
         {
             try
@@ -538,6 +585,12 @@ namespace VEDriversLite
             }
             return (false, null);
         }
+
+        /// <summary>
+        /// Get Address from Dogecoin private key
+        /// </summary>
+        /// <param name="privatekey">Excpected Dogecoin private key</param>
+        /// <returns>true and Address if it is correct Dogecoin private key</returns>
         public static async Task<(bool, string)> GetAddressFromPrivateKey(string privatekey)
         {
             try
