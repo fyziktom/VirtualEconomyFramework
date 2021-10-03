@@ -135,31 +135,37 @@ namespace VEDriversLite.Neblio
         [JsonIgnore]
         public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
         /// <summary>
-        /// This event is called whenever info about the address is reloaded. It is periodic event.
+        /// This event is fired whenever info about the address is reloaded. It is periodic event.
         /// </summary>
         public event EventHandler Refreshed;
         /// <summary>
-        /// This event is called whenever some important thing happen. You can obtain success, error and info messages.
+        /// This event is fired whenever some important thing happen. You can obtain success, error and info messages.
         /// </summary>
         public event EventHandler<IEventInfo> NewEventInfo;
 
         /// <summary>
-        /// This event is called whenever the list of NFTs is changed
+        /// This event is fired whenever the list of NFTs is changed
         /// </summary>
         public event EventHandler<string> NFTsChanged;
 
         /// <summary>
-        /// This event is called whenever some progress during multimint happens
+        /// This event is fired whenever some progress during multimint happens
         /// </summary>
         public event EventHandler<string> NewMintingProcessInfo;
 
         /// <summary>
-        /// This event is called whenever profile nft is updated or found
+        /// This event is fired whenever profile nft is updated or found
         /// </summary>
         public event EventHandler<INFT> ProfileUpdated;
+        /// <summary>
+        /// This event is fired whenever some NFT is in received payment too and it should be blocked for any further action.
+        /// It provides Utxo and UtxoIndex as touple.
+        /// Event is fired also for the SubAccounts when it is registred from Main Account
+        /// </summary>
+        public event EventHandler<(string,int)> NFTAddedToPayments;
 
         /// <summary>
-        /// This event is called during first loading of the account to keep updated the user
+        /// This event is fired during first loading of the account to keep updated the user
         /// </summary>
         public event EventHandler<string> FirsLoadingStatus;
 
@@ -524,17 +530,38 @@ namespace VEDriversLite.Neblio
             {
                 lock (_lock)
                 {
-                    ReceivedPayments.Clear();
+                    var firstpnft = ReceivedPayments.Values.FirstOrDefault();
                     var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+                    var ffirstpnft = pnfts.FirstOrDefault();
 
-                    foreach (var p in pnfts)
-                        ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+                    if ((firstpnft != null && ffirstpnft != null) || firstpnft == null && ffirstpnft != null)
+                    {
+                        if ((firstpnft == null && ffirstpnft != null) || (firstpnft != null && (firstpnft.Utxo != ffirstpnft.Utxo)))
+                        {
+                            ReceivedPayments.Clear();
+                            foreach (var p in pnfts)
+                            {
+                                ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+                                if (NFTs.Where(nft => NFTHelpers.IsBuyableNFT(nft.Type))
+                                        .FirstOrDefault(n => n.Utxo == (p as PaymentNFT).NFTUtxoTxId && 
+                                                             n.UtxoIndex == (p as PaymentNFT).NFTUtxoIndex) != null)
+                                {
+                                    NFTAddedToPayments?.Invoke(Address, ((p as PaymentNFT).NFTUtxoTxId, (p as PaymentNFT).NFTUtxoIndex));
+                                }
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot refresh address received payments. " + ex.Message);
             }
+        }
+
+        public void FireNFTAddedToPayments(string address, (string,int) e)
+        {
+            NFTAddedToPayments?.Invoke(address, e);
         }
 
         /// <summary>
@@ -548,11 +575,19 @@ namespace VEDriversLite.Neblio
             {
                 lock (_lock)
                 {
-                    ReceivedReceipts.Clear();
+                    var firstpnft = ReceivedPayments.Values.FirstOrDefault();
                     var pnfts = NFTs.Where(n => n.Type == NFTTypes.Receipt).ToList();
+                    var ffirstpnft = pnfts.FirstOrDefault();
 
-                    foreach (var p in pnfts)
-                        ReceivedReceipts.TryAdd(p.NFTOriginTxId, p);
+                    if ((firstpnft != null && ffirstpnft != null) || firstpnft == null && ffirstpnft != null)
+                    {
+                        if ((firstpnft == null && ffirstpnft != null) || (firstpnft != null && (firstpnft.Utxo != ffirstpnft.Utxo)))
+                        {
+                            ReceivedReceipts.Clear();
+                            foreach (var p in pnfts)
+                                ReceivedReceipts.TryAdd(p.NFTOriginTxId, p);
+                        }
+                    }
                 }
             }
             catch (Exception ex)

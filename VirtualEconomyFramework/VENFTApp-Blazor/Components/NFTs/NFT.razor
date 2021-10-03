@@ -4,9 +4,8 @@
 @inject AppData AppData
 @inject IJSRuntime jsRuntime
 
-@if (nft != null)
-{
-    @if (!string.IsNullOrEmpty(nft.Utxo))
+
+    @if (nft != null && !string.IsNullOrEmpty(nft.Utxo))
     {
     <div class="card" style="margin-left:10px; margin-top:10px;min-width:250px; width:250px; max-width:250px; min-height:400px; max-height:600px;">
         <div class="card-header" style="padding: 0px;">
@@ -154,30 +153,11 @@
                     var enft = nft as EventNFT;
                     <VENFTApp_Blazor.Components.NFTs.Tickets.NFTEventClass EventClass="@enft.EventClass" />
                 }
-                @switch (nft.Type)
-                {
-                    case NFTTypes.Image:
-                        <span class="badge badge-primary">Image</span>
-                        break;
-                    case NFTTypes.Ticket:
-                        <span class="badge badge-secondary">Ticket</span>
-                        break;
-                    case NFTTypes.Event:
-                        <span class="badge badge-success">Event</span>
-                        break;
-                    case NFTTypes.Post:
-                        <span class="badge badge-info">Post</span>
-                        break;
-                    case NFTTypes.Profile:
-                        <span class="badge badge-light">Profile</span>
-                        break;
-                    case NFTTypes.Music:
-                        <span class="badge badge-warning">Music</span>
-                        break;
-                }
+
+                <VENFTApp_Blazor.Components.NFTs.NFTTypeBadge NFTType="@nft.Type"/>
             </div>
 
-            <button class="btn btn-light" @onclick="async () => ShowShareNFT(nft.Utxo)"
+            <button class="btn btn-light" @onclick="ShowShareNFT"
                     style="position:absolute; right: 7px;top: 230px; width: 30px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
                 <i class="oi oi-share" style="font-size:12px;"></i>
             </button>
@@ -230,13 +210,6 @@
                     </div>
                 </div>
             </div>
-            <!--
-    <div class="row">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-            <VENFTApp_Blazor.Components.NFTThumbnail Name="nft.Name" Type="nft.Type" Author="nft.Author" Description="nft.Description" />
-        </div>
-    </div>
-    -->
         </div>
         @if (!HideButtons)
         {
@@ -249,21 +222,24 @@
                             </button>
                         </div>
 
-                        @if (AllowBuy)
-                        {
-                        @if (!_isInThePayments && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
+                        @if (AllowBuy && !_isInThePayments && !OwnNFT && nft.PriceActive && nft.Type != NFTTypes.Payment && !string.IsNullOrEmpty(_address))
                         {
                             <div class="col d-flex w-auto" style="margin-left:15px;">
-                                <VENFTApp_Blazor.Components.NFTs.Payments.SendNFTPayment NFT="@nft" Utxo="@nft.Utxo" UtxoIndex="@nft.UtxoIndex" OwnNFT="false" Receiver="@_address" Price="@nft.Price" NFTSent="@NFTSent" />
+                                <VENFTApp_Blazor.Components.NFTs.Payments.SendNFTPayment NFT="@nft" 
+                                                                                         Utxo="@nft.Utxo" 
+                                                                                         UtxoIndex="@nft.UtxoIndex" 
+                                                                                         OwnNFT="false" 
+                                                                                         Receiver="@_address" 
+                                                                                         Price="@nft.Price" 
+                                                                                         NFTSent="@NFTSent" />
                             </div>
-                        }
                         }
                     </div>
 
                     <div class="row d-flex justify-content-center align-items-center">
                         @if (!_isInThePayments)
                         {
-                            if (OwnNFT && nft.PriceActive)
+                            @if (OwnNFT && nft.PriceActive)
                             {
                                 <div class="col">
                                     <small class="text-muted">Setted Price: @nft.Price NEBL <img style="width: 8px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" /></small>
@@ -283,12 +259,13 @@
         }
     </div>
 
+    <!--NFT Details Modal-->
     <Modal Title="NFT Details"
            Visible="@nftDetailsVisible"
            OnOk="@CloseNFTDetails"
            OnCancel="@CloseNFTDetails">
         <VENFTApp_Blazor.Components.NFTs.NFTDetails UtxoIndex="@nft.UtxoIndex" 
-                                               Utxo="@nftDetailsUtxo"
+                                               Utxo="@nft.Utxo"
                                                InputNFT="@nft"
                                                NFTSent="@NFTSentHandler" 
                                                OwnNFT="@OwnNFT"
@@ -296,6 +273,7 @@
                                                SubAccount="@SubAccount"/>
     </Modal>
 
+    <!--Modal With Image-->
     <Modal Title="NFT Image"
            Style="min-height:200px; min-width:200px;"
            Visible="@modalWithImageVisible"
@@ -308,60 +286,13 @@
         </div>
     </Modal>
 
-    <Modal Title="Share NFT"
-           Visible="@shareNFTVisible"
-           OnOk="@CloseShareNFT"
-           OnCancel="@CloseShareNFT">
-        <div class="row">
-            <div class="col">
-                <a href="@shareNFTUtxo" target="_blank">Share NFT Link</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareNFTUtxo" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.HelperButtons.QRIcon TextToCopy="@shareNFTUtxo" FontSize="25" />
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <a href="@shareBuyNFTUtxo" target="_blank">Buy NFT Link</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareBuyNFTUtxo" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.HelperButtons.QRIcon TextToCopy="@shareBuyNFTUtxo" FontSize="25" />
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <span>Transaction Id and index</span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <a href="https://explorer.nebl.io/tx/@nft.Utxo" target="_blank">@shareNFTUtxoAndIndex</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareNFTUtxoAndIndex" />
-            </div>
-        </div>
-    </Modal>
-    }
+    <VENFTApp_Blazor.Components.NFTs.ShareNFT NFTUtxo="@nft.Utxo" 
+                                              NFTUtxoIndex="@nft.UtxoIndex" 
+                                              DisplayButton="false" 
+                                              ShowShareNFTDialog="@shareNFTVisible"
+                                              DialogClosed="ShareDialogClosedHandler"/>
 }
+
 @code {
 
     [Parameter]
@@ -389,7 +320,7 @@
             if (value != null && value.Utxo != nft.Utxo)
             {
                 nft = value;
-                setTimer();
+                _isInThePayments = IsInThePayments(nft.Utxo);
                 setBgColor();
                 StateHasChanged();
             }
@@ -427,20 +358,46 @@
     private bool nftDetailsVisible = false;
     private bool modalWithImageVisible = false;
 
-    private string shareNFTUtxo = string.Empty;
-    private string shareBuyNFTUtxo = string.Empty;
-    private string shareNFTUtxoAndIndex = string.Empty;
-    private string nftDetailsUtxo = string.Empty;
     private string modalWithImageLink = string.Empty;
 
-    private System.Threading.Timer isInPaymentsTimer;
+    protected override Task OnInitializedAsync()
+    {
+        RegisterEvents();
+        return base.OnInitializedAsync();
+    }
 
+    private void RegisterEvents()
+    {
+        if (!string.IsNullOrEmpty(AppData.Account.Address))
+        {
+            AppData.Account.NFTAddedToPayments -= NFTInPaymentsHandler;
+            AppData.Account.NFTAddedToPayments += NFTInPaymentsHandler;
+        }
+    }
 
-    void NFTSentHandler(string nfttx)
+    private void NFTSentHandler(string nfttx)
     {
         nftDetailsVisible = false;
+        shareNFTVisible = false;
         StateHasChanged();
         NFTSent.InvokeAsync(nfttx);
+    }
+
+    private void ShareDialogClosedHandler(bool e)
+    {
+        shareNFTVisible = false;
+    }
+
+    private void NFTInPaymentsHandler(object sender, (string, int) e)
+    {
+        if (!string.IsNullOrEmpty(e.Item1) && (string)sender == _address)
+        {
+            if (e.Item1 == nft.Utxo && e.Item2 == nft.UtxoIndex)
+            {
+                _isInThePayments = true;
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task checkNFTChanged(object e)
@@ -459,37 +416,9 @@
         StateHasChanged();
     }
 
-    private async Task setTimer()
-    {
-        if (isInPaymentsTimer != null)
-        {
-            isInPaymentsTimer.Dispose();
-            isInPaymentsTimer = null;
-        }
-        isInPaymentsTimer = new System.Threading.Timer(async (object stateInfo) =>
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(nft.Utxo))
-                {
-                    _isInThePayments = IsInThePayments(nft.Utxo);
-                }
-                else
-                {
-                    _isInThePayments = false;
-                }
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot read tx details. " + ex.Message);
-            }
-        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
-    }
-
     private bool IsInThePayments(string utxo)
     {
-        if (nft.Type == NFTTypes.Image || nft.Type == NFTTypes.Music || nft.Type == NFTTypes.Post || nft.Type == NFTTypes.Ticket)
+        if (NFTHelpers.IsBuyableNFT(nft.Type))
         {
             if (OwnNFT)
             {
@@ -521,11 +450,8 @@
         return false;
     }
 
-    private async Task ShowShareNFT(string utxo)
+    private void ShowShareNFT()
     {
-        shareNFTUtxo = "https://nft.ve-nft.com/?txid=" + utxo;
-        shareBuyNFTUtxo = "https://ve-nft.com/buynft?utxo=" + utxo + "&index=" + nft.UtxoIndex;
-        shareNFTUtxoAndIndex = nft.Utxo + ":" + nft.UtxoIndex.ToString();
         StateHasChanged();
         shareNFTVisible = true;
     }
@@ -537,7 +463,6 @@
 
     private async Task ShowNFTDetails(string utxo)
     {
-        nftDetailsUtxo = utxo;
         nftDetailsVisible = true;
     }
 

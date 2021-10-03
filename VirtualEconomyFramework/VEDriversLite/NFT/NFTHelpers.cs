@@ -82,6 +82,23 @@ namespace VEDriversLite.NFT
         }
 
         /// <summary>
+        /// Return true if the type is allowed to buy and sell
+        /// Actually are supported Image, Music, Post, Ticket NFTs.
+        /// </summary>
+        /// <param name="nftType"></param>
+        /// <returns></returns>
+        public static bool IsBuyableNFT(NFTTypes nftType)
+        {
+            if (nftType == NFTTypes.Image || 
+                nftType == NFTTypes.Music || 
+                nftType == NFTTypes.Post || 
+                nftType == NFTTypes.Ticket)
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
         /// Process new received info from Neblio Transaction Helpers class. Now just resend higher
         /// </summary>
         /// <param name="sender"></param>

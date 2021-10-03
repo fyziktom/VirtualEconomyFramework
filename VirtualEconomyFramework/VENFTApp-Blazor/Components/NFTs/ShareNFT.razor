@@ -1,0 +1,164 @@
+﻿@if (DisplayButton)
+{
+    @if (!isIcon)
+    {
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <button type="button" class="btn btn-secondary" @onclick="showShareNFTDialog">Show Share Links <i class="oi oi-share" style="font-size:@fontsize;" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <button type="button" class="btn btn-light" @onclick="showShareNFTDialog"><i class="oi oi-share" style="font-size:@fontsize;" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    }
+}
+
+<Modal Title="Share NFT"
+       Visible="@shareNFTDialogVisible"
+       OnOk="@CloseShareNFT"
+       OnCancel="@CloseShareNFT">
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <a href="@shareNFTUtxo" target="_blank">Share NFT Link</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareNFTUtxo" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <VENFTApp_Blazor.Components.HelperButtons.QRIcon TextToCopy="@shareNFTUtxo" FontSize="25" />
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <a href="@shareBuyNFTUtxo" target="_blank">Buy NFT Link</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareBuyNFTUtxo" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <VENFTApp_Blazor.Components.HelperButtons.QRIcon TextToCopy="@shareBuyNFTUtxo" FontSize="25" />
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <span>Transaction Id and index</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <a href="https://explorer.nebl.io/tx/@nftUtxo" target="_blank">@shareNFTUtxoAndIndex</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareNFTUtxoAndIndex" />
+        </div>
+    </div>
+</Modal>
+
+@code {
+
+    private bool isIcon { get; set; } = false;
+    [Parameter]
+    public bool IsIcon
+    {
+        get => isIcon;
+        set => isIcon = value;
+    }
+
+    private bool showLinks = false;
+    [Parameter]
+    public bool ShowShareNFTDialog
+    {
+        get => showLinks;
+        set
+        {
+            if (!showLinks && value)
+            {
+                showLinks = true;
+                showShareNFTDialog(null);
+            }
+            else if (!value)
+            {
+                showLinks = false;
+                shareNFTDialogVisible = false;
+            }
+        }
+    }
+
+    private string nftUtxo = string.Empty;
+    [Parameter]
+    public string NFTUtxo
+    {
+        get => nftUtxo;
+        set
+        {
+            if (!string.IsNullOrEmpty(value) && value != nftUtxo)
+            {
+                nftUtxo = value;
+            }
+        }
+    }
+
+    private int nftUtxoIndex = 0;
+    [Parameter]
+    public int NFTUtxoIndex
+    {
+        get => nftUtxoIndex;
+        set
+        {
+            if (value != nftUtxoIndex)
+                nftUtxoIndex = value;
+        }
+    }
+
+    private string fontsize = "14px";
+    [Parameter]
+    public int FontSize
+    {
+        get => Convert.ToInt32(FontSize);
+        set => fontsize = value.ToString() + "px";
+    }
+
+    [Parameter]
+    public bool DisplayButton { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<bool> DialogClosed { get; set; }
+
+    private bool shareNFTDialogVisible = false;
+    private string shareNFTUtxo = string.Empty;
+    private string shareBuyNFTUtxo = string.Empty;
+    private string shareNFTUtxoAndIndex = string.Empty;
+
+    private void showShareNFTDialog(MouseEventArgs e)
+    {
+        shareNFTUtxo = "https://nft.ve-nft.com/?txid=" + nftUtxo;
+        shareBuyNFTUtxo = "https://ve-nft.com/buynft?utxo=" + nftUtxo + "&index=" + nftUtxoIndex;
+        shareNFTUtxoAndIndex = nftUtxo + ":" + nftUtxoIndex.ToString();
+        StateHasChanged();
+        shareNFTDialogVisible = true;
+    }
+
+    private void CloseShareNFT(MouseEventArgs e)
+    {
+        DialogClosed.InvokeAsync(false);
+        shareNFTDialogVisible = false;
+    }
+
+}

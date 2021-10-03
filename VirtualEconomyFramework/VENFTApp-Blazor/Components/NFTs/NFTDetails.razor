@@ -27,7 +27,13 @@
                 {
                     <div class="row" style="position: absolute;right: 7px;top: 30px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <VENFTApp_Blazor.Components.NFTs.DestroyNFTButton IsIcon="true" NFTDestroyed="@NFTDestroyed" FontSize="20" InputNFT="@NFT" Address="@Address" MainAccount="@((OwnNFT && !SubAccount)?true:false)" SubAccount="@SubAccount" />
+                            <VENFTApp_Blazor.Components.NFTs.DestroyNFTButton IsIcon="true" 
+                                                                              NFTDestroyed="@NFTDestroyed" 
+                                                                              FontSize="20" 
+                                                                              InputNFT="@NFT" 
+                                                                              Address="@Address" 
+                                                                              MainAccount="@((OwnNFT && !SubAccount)?true:false)" 
+                                                                              SubAccount="@SubAccount" />
                         </div>
                     </div>
                 }
@@ -557,7 +563,6 @@
             if (!string.IsNullOrEmpty(value) && _utxo != value)
             {
                 _utxo = value;
-                //Load();
             }
         }
     }

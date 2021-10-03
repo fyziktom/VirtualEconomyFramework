@@ -684,6 +684,12 @@ namespace VEDriversLite
         #endregion
 
         #region Tabs
+
+        private void T_NFTAddedToPayments(object sender, (string, int) e)
+        {
+            FireNFTAddedToPayments(sender as string, e);
+        }
+
         /// <summary>
         /// Load tabs from previous serialized string.
         /// </summary>
@@ -718,6 +724,7 @@ namespace VEDriversLite
                         }
                         t.Selected = false;
                         t.NFTsChanged += T_NFTsChanged;
+                        t.NFTAddedToPayments += T_NFTAddedToPayments;
                     }
                 }
                 return firstAdd;
@@ -748,6 +755,7 @@ namespace VEDriversLite
                 tab.BookmarkFromAccount = bkm.Item2;
                 tab.Selected = true;
                 tab.NFTsChanged += T_NFTsChanged;
+                tab.NFTAddedToPayments += T_NFTAddedToPayments;
 
                 foreach (var t in Tabs)
                     await t.StopRefreshing();
@@ -776,6 +784,8 @@ namespace VEDriversLite
             {
                 await tab.StopRefreshing();
                 tab.NFTsChanged -= T_NFTsChanged;
+                tab.NFTAddedToPayments -= T_NFTAddedToPayments;
+
                 Tabs.Remove(tab);
             }
             else
@@ -999,6 +1009,7 @@ namespace VEDriversLite
                                 nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
                                 nsa.NewEventInfo += Nsa_NewEventInfo;
                                 nsa.NFTsChanged += Nsa_NFTsChanged;
+                                nsa.NFTAddedToPayments += Nsa_NFTAddedToPayments;
                                 nsa.FirsLoadingStatus += Nsa_NFTLoadingStateChangedHandler;
                                 await nsa.StartRefreshingData();
                                 nsa.Name = nsa.BookmarkFromAccount.Name;
@@ -1024,6 +1035,11 @@ namespace VEDriversLite
         private void Nsa_NFTsChanged(object sender, string e)
         {
            SubAccountNFTsChanged?.Invoke(sender, (sender as NeblioSubAccount).Address);
+        }
+
+        private void Nsa_NFTAddedToPayments(object sender, (string,int) e)
+        {
+           FireNFTAddedToPayments(sender as string, e);
         }
 
         private void Nsa_NewMintingProcessInfo(object sender, string e)
@@ -1070,6 +1086,7 @@ namespace VEDriversLite
                 nsa.NewMintingProcessInfo += Nsa_NewMintingProcessInfo;
                 nsa.NFTsChanged += Nsa_NFTsChanged;
                 nsa.FirsLoadingStatus += Nsa_NFTLoadingStateChangedHandler;
+                nsa.NFTAddedToPayments += Nsa_NFTAddedToPayments;
                 await nsa.StartRefreshingData();
                 nsa.Name = name;
                 SubAccounts.TryAdd(nsa.Address, nsa);
@@ -1113,6 +1130,7 @@ namespace VEDriversLite
                 sacc.NFTsChanged -= Nsa_NFTsChanged;
                 sacc.NewEventInfo -= Nsa_NewEventInfo;
                 sacc.FirsLoadingStatus -= Nsa_NFTLoadingStateChangedHandler;
+                sacc.NFTAddedToPayments -= Nsa_NFTAddedToPayments;
                 SubAccounts.Remove(address);
             }
 

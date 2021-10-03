@@ -225,6 +225,7 @@
 
     private async Task ReloadProfile()
     {
+        await AppData.Account.ReloadUtxos();
         await AppData.Account.ReLoadNFTs();
         profileNFT = AppData.Account.Profile;
         StateHasChanged();

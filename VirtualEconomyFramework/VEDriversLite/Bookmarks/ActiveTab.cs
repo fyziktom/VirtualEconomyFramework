@@ -51,6 +51,11 @@ namespace VEDriversLite.Bookmarks
         /// This event is called during first loading of the account to keep updated the user
         /// </summary>
         public event EventHandler<string> FirsLoadingStatus;
+        /// <summary>
+        /// This event is fired whenever some NFT is in received payment too and it should be blocked for any further action.
+        /// It provides Utxo and UtxoIndex as touple.
+        /// </summary>
+        public event EventHandler<(string, int)> NFTAddedToPayments;
 
 
         private System.Timers.Timer refreshTimer = new System.Timers.Timer();
@@ -153,13 +158,44 @@ namespace VEDriversLite.Bookmarks
             }
         }
 
+        /// <summary>
+        /// This function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. 
+        /// This list is cleared at the start of this function
+        /// </summary>
+        /// <returns></returns>
         public async Task RefreshAddressReceivedPayments()
         {
-            ReceivedPayments.Clear();
-            var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
-            if (pnfts.Count > 0)
-                foreach (var p in pnfts)
-                    ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+            try
+            {
+                lock (_lock)
+                {
+                    var firstpnft = ReceivedPayments.Values.FirstOrDefault();
+                    var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
+                    var ffirstpnft = pnfts.FirstOrDefault();
+
+                    if ((firstpnft != null && ffirstpnft != null) || firstpnft == null && ffirstpnft != null)
+                    {
+                        if ((firstpnft == null && ffirstpnft != null) || (firstpnft != null && (firstpnft.Utxo != ffirstpnft.Utxo)))
+                        {
+                            ReceivedPayments.Clear();
+                            foreach (var p in pnfts)
+                            {
+                                ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
+                                if (NFTs.Where(nft => NFTHelpers.IsBuyableNFT(nft.Type))
+                                        .FirstOrDefault(n => n.Utxo == (p as PaymentNFT).NFTUtxoTxId && 
+                                                             n.UtxoIndex == (p as PaymentNFT).NFTUtxoIndex) != null)
+                                {
+                                    NFTAddedToPayments?.Invoke(Address, ((p as PaymentNFT).NFTUtxoTxId, (p as PaymentNFT).NFTUtxoIndex));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot refresh address received payments. " + ex.Message);
+            }
         }
 
         public void LoadBookmark(Bookmark bkm)
