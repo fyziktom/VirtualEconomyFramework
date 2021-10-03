@@ -60,6 +60,7 @@ namespace VEDriversLite.NFT
         GetTransactionInfoResponse TxDetails { get; set; }
         event EventHandler<GetTransactionInfoResponse> TxDataRefreshed;
 
+        bool IsSpendable();
         Task FillCommon(INFT nft);
         Task Fill(INFT NFT);
         Task LoadLastData(IDictionary<string, string> metadata);
@@ -72,7 +73,7 @@ namespace VEDriversLite.NFT
         Task LoadHistory();
         Task ClearPrices();
         Task StopRefreshingData();
-        Task StartRefreshingTxData();
+        Task StartRefreshingTxData(int interval = 5000);
         Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");
     }
 }

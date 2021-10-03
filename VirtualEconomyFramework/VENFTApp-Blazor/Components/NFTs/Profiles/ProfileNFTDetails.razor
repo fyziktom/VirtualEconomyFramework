@@ -1,0 +1,107 @@
+﻿@using VEDriversLite.NFT
+@using Markdig
+
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <h6>@NFT.Name @NFT.Surname</h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <small>@NFT.Author</small>
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(NFT.Description))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Bio</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
+                </div>
+            </div>
+        }
+
+        @if (NFT.TagsList.Count > 0)
+        {
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Tags</span>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center">
+                @foreach (var tag in NFT.TagsList)
+                {
+                    <div class="col d-flex justify-content-center align-items-center w-auto">
+                        <small>#@tag</small>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(NFT.Link))
+        {
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <a href="@NFT.Link" target="_blank">Connected Link</a>
+                </div>
+            </div>
+        }
+        <hr />
+        <div class="row" style="margin-top:20px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <a href="@NFT.ImageLink" target="_blank">
+                    @if (!string.IsNullOrEmpty(NFT.ImageLink))
+                    {
+                        <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; max-width:250px; min-width:50px;" />
+                    }
+                    else
+                    {
+                        <Spin Tip="Loading..." Spinning="true">
+                            <img src="@NFT.ImageLink" style="min-height:100px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
+                        </Spin>
+                    }
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private ProfileNFT NFT { get; set; } = new ProfileNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.Profile)
+            {
+                NFT = value as ProfileNFT;
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
+
+}

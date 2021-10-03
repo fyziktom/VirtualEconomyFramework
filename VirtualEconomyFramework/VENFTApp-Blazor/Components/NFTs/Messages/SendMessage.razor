@@ -77,7 +77,7 @@
                             </div>
                         </div>
                     }
-                    else if (!string.IsNullOrEmpty(newNFT.Utxo) && newNFT.TxDetails.Confirmations < NeblioTransactionHelpers.MinimumConfirmations)
+                    else if (!string.IsNullOrEmpty(newNFT.Utxo) && !newNFT.IsSpendable())
                     {
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">

@@ -48,6 +48,19 @@
             This event is called during first loading of the account to keep updated the user
             </summary>
         </member>
+        <member name="E:VEDriversLite.Bookmarks.ActiveTab.NFTAddedToPayments">
+            <summary>
+            This event is fired whenever some NFT is in received payment too and it should be blocked for any further action.
+            It provides Utxo and UtxoIndex as touple.
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.RefreshAddressReceivedPayments">
+            <summary>
+            This function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. 
+            This list is cleared at the start of this function
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:VEDriversLite.DogeAccount.Address">
             <summary>
             Doge Address hash
@@ -3609,32 +3622,39 @@
         </member>
         <member name="E:VEDriversLite.Neblio.NeblioAccountBase.Refreshed">
             <summary>
-            This event is called whenever info about the address is reloaded. It is periodic event.
+            This event is fired whenever info about the address is reloaded. It is periodic event.
             </summary>
         </member>
         <member name="E:VEDriversLite.Neblio.NeblioAccountBase.NewEventInfo">
             <summary>
-            This event is called whenever some important thing happen. You can obtain success, error and info messages.
+            This event is fired whenever some important thing happen. You can obtain success, error and info messages.
             </summary>
         </member>
         <member name="E:VEDriversLite.Neblio.NeblioAccountBase.NFTsChanged">
             <summary>
-            This event is called whenever the list of NFTs is changed
+            This event is fired whenever the list of NFTs is changed
             </summary>
         </member>
         <member name="E:VEDriversLite.Neblio.NeblioAccountBase.NewMintingProcessInfo">
             <summary>
-            This event is called whenever some progress during multimint happens
+            This event is fired whenever some progress during multimint happens
             </summary>
         </member>
         <member name="E:VEDriversLite.Neblio.NeblioAccountBase.ProfileUpdated">
             <summary>
-            This event is called whenever profile nft is updated or found
+            This event is fired whenever profile nft is updated or found
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Neblio.NeblioAccountBase.NFTAddedToPayments">
+            <summary>
+            This event is fired whenever some NFT is in received payment too and it should be blocked for any further action.
+            It provides Utxo and UtxoIndex as touple.
+            Event is fired also for the SubAccounts when it is registred from Main Account
             </summary>
         </member>
         <member name="E:VEDriversLite.Neblio.NeblioAccountBase.FirsLoadingStatus">
             <summary>
-            This event is called during first loading of the account to keep updated the user
+            This event is fired during first loading of the account to keep updated the user
             </summary>
         </member>
         <member name="P:VEDriversLite.Neblio.NeblioAccountBase.AccountKey">
@@ -4145,6 +4165,14 @@
             <summary>
             Deinit handler to receive event info messages from Neblio Transaction Helpers class
             </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.IsBuyableNFT(VEDriversLite.NFT.NFTTypes)">
+            <summary>
+            Return true if the type is allowed to buy and sell
+            Actually are supported Image, Music, Post, Ticket NFTs.
+            </summary>
+            <param name="nftType"></param>
+            <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.NeblioTransactionHelpers_NewEventInfo(System.Object,VEDriversLite.Events.IEventInfo)">
             <summary>

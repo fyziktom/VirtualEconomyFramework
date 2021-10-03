@@ -1,0 +1,154 @@
+﻿@using VEDriversLite.NFT
+@using Markdig
+
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <h6>@NFT.Name</h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <small>@NFT.Author</small>
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(NFT.Description))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Description</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(NFT.Text))
+        {
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Text</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@((MarkupString) NFTmarkuptext)</span>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <span>Event Details</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <small>Date: @NFT.EventDate.ToString()</small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <small>Location: @NFT.Location</small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <a href="http://www.google.com/maps/place/@NFT.LocationCoordinates" target="_blank">Location Link</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <a href="@NFT.AuthorLink" target="_blank">Author Link</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <a href="@NFT.VideoLink" target="_blank">Video Link</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span>Event Type</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <VENFTApp_Blazor.Components.NFTs.Tickets.NFTEventClass EventClass="@NFT.EventClass" />
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(NFT.Link))
+        {
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <a href="@NFT.Link" target="_blank">Connected Link</a>
+                </div>
+            </div>
+        }
+        <hr />
+        <div class="row" style="margin-top:20px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <a href="@NFT.ImageLink" target="_blank">
+                    @if (!string.IsNullOrEmpty(NFT.ImageLink) || !string.IsNullOrEmpty(NFT.Link))
+                    {
+                        @if (NFT.MusicInLink)
+                        {
+                            <video controls="" autoplay="" name="media" title="@NFT.Name" style="min-height: 100px; max-height: 150px; width: auto; min-width: 150px; max-width: 250px;">
+                                <source src="@NFT.Link" type="audio/mpeg">
+                            </video>
+                        }
+                        else
+                        {
+                            <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
+                        }
+                    }
+                    else
+                    {
+                        <Spin Tip="Loading..." Spinning="true">
+                            <div style="width:100px; height:50px;"></div>
+                        </Spin>
+                    }
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private EventNFT NFT { get; set; } = new EventNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.Event)
+            {
+                NFT = value as EventNFT;
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
+
+}

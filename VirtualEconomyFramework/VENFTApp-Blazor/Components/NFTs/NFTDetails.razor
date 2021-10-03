@@ -27,305 +27,61 @@
                 {
                     <div class="row" style="position: absolute;right: 7px;top: 30px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <VENFTApp_Blazor.Components.NFTs.DestroyNFTButton IsIcon="true" 
-                                                                              NFTDestroyed="@NFTDestroyed" 
-                                                                              FontSize="20" 
-                                                                              InputNFT="@NFT" 
-                                                                              Address="@Address" 
-                                                                              MainAccount="@((OwnNFT && !SubAccount)?true:false)" 
+                            <VENFTApp_Blazor.Components.NFTs.Actions.DestroyNFTButton IsIcon="true"
+                                                                              NFTDestroyed="@NFTSentHandler"
+                                                                              FontSize="20"
+                                                                              InputNFT="@NFT"
+                                                                              Address="@Address"
+                                                                              MainAccount="@((OwnNFT && !SubAccount)?true:false)"
                                                                               SubAccount="@SubAccount" />
                         </div>
                     </div>
                 }
             }
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <h6>@NFT.Name @(NFT.Type == NFTTypes.Profile ? (NFT as ProfileNFT).Surname : string.Empty)</h6>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <small>@NFT.Author</small>
-                </div>
-            </div>
-            @if (!string.IsNullOrEmpty(NFT.Description) && NFT.Type != NFTTypes.Profile)
+            
+            @switch (NFT.Type)
             {
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Description</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
-                    </div>
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(NFT.Description) && NFT.Type == NFTTypes.Profile)
-            {
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Bio</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
-                    </div>
-                </div>
-            }
-            @if (NFT.TagsList.Count > 0)
-            {
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Tags</span>
-                    </div>
-                </div>
-                <div class="row d-flex justify-content-center align-items-center">
-                    @foreach (var tag in NFT.TagsList)
-                    {
-                        <div class="col d-flex justify-content-center align-items-center w-auto">
-                            <small>#@tag</small>
-                        </div>
-                    }
-                </div>
-            }
-            @if ((NFT.Type == NFTTypes.Post && !string.IsNullOrEmpty(NFT.Text)) ||
-         (NFT.Type == NFTTypes.Event && !string.IsNullOrEmpty(NFT.Text)))
-            {
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Text</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>@((MarkupString) NFTmarkuptext)</span>
-                    </div>
-                </div>
-            }
-            @if (NFT.Type == NFTTypes.Ticket)
-            {
-                var nft = NFT as TicketNFT;
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Event Details</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.NFTs.Tickets.ShowNFTEvent Address="@Address"
-                                                                              SubAccount="@SubAccount"
-                                                                              OwnNFT="@OwnNFT"
-                                                                              InputNFT="@NFT"
-                                                                              DisplayButton="true"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <small>Date: @nft.EventDate.ToString()</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <small>Location: @nft.Location</small>
-                    </div>
-                </div>
-                @if (!string.IsNullOrEmpty(nft.LocationCoordinates))
-                {
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <a href="http://www.google.com/maps/place/@nft.LocationCoordinates" target="_blank">Location Link</a>
-                        </div>
-                    </div>
-                }
-                @if (!string.IsNullOrEmpty(nft.Seat))
-                {
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <small>Seat: @nft.Seat</small>
-                        </div>
-                    </div>
-                }
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Ticket Type</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.NFTs.Tickets.TicketDurationBadge TicketDuration="@nft.TicketDuration"/>
-                        <VENFTApp_Blazor.Components.NFTs.Tickets.TicketClassBadge TicketClass="@nft.TicketClass" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <a href="@nft.AuthorLink" target="_blank">Author Link</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="@nft.VideoLink" target="_blank">Video Link</a>
-                    </div>
-                </div>
-                @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music)
-                {
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <a href="@NFT.Link" target="_blank">Connected Link</a>
-                        </div>
-                    </div>
-                }
-                
-                <VENFTApp_Blazor.Components.NFTs.Tickets.UseTicket InputNFT="@NFT" 
-                                                                   Address="@Address" 
-                                                                   OwnNFT="@OwnNFT" 
-                                                                   SubAccount="@SubAccount" 
-                                                                   DisplayButton="true"
-                                                                   NFTSent="@NFTSentHandler"/>
-            }
-            @if (NFT.Type == NFTTypes.Event)
-            {
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <span>Event Details</span>
-                    </div>
-                </div>
-                var nft = NFT as EventNFT;
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <small>Date: @nft.EventDate.ToString()</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <small>Location: @nft.Location</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="http://www.google.com/maps/place/@nft.LocationCoordinates" target="_blank">Location Link</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="@nft.AuthorLink" target="_blank">Author Link</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="@nft.VideoLink" target="_blank">Video Link</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Event Type</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.NFTs.Tickets.NFTEventClass EventClass="@nft.EventClass" />
-                    </div>
-                </div>
+                case NFTTypes.Image:<VENFTApp_Blazor.Components.NFTs.Images.ImageNFTDetails InputNFT="@NFT"
+                                                                                            Address="@Address"
+                                                                                            SubAccount="@SubAccount"
+                                                                                            OwnNFT="@OwnNFT"
+                                                                                            NFTSent="@NFTSentHandler" />
+                    break;
+                case NFTTypes.Post: <VENFTApp_Blazor.Components.NFTs.Posts.PostNFTDetails InputNFT="@NFT"
+                                                                                          Address="@Address"
+                                                                                          SubAccount="@SubAccount"
+                                                                                          OwnNFT="@OwnNFT"
+                                                                                          NFTSent="@NFTSentHandler" />
+                    break;
+                case NFTTypes.Music: <VENFTApp_Blazor.Components.NFTs.Music.MusicNFTDetails InputNFT="@NFT"
+                                                                                            Address="@Address"
+                                                                                            SubAccount="@SubAccount"
+                                                                                            OwnNFT="@OwnNFT"
+                                                                                            NFTSent="@NFTSentHandler" />
+                    break;
+                case NFTTypes.Profile: <VENFTApp_Blazor.Components.NFTs.Profiles.ProfileNFTDetails InputNFT="@NFT"
+                                                                                              Address="@Address"
+                                                                                              SubAccount="@SubAccount"
+                                                                                              OwnNFT="@OwnNFT"
+                                                                                              NFTSent="@NFTSentHandler" />
+                    break;
+                case NFTTypes.Ticket: <VENFTApp_Blazor.Components.NFTs.Tickets.TicketNFTDetails InputNFT="@NFT"
+                                                                                                Address="@Address"
+                                                                                                SubAccount="@SubAccount"
+                                                                                                OwnNFT="@OwnNFT"
+                                                                                                NFTSent="@NFTSentHandler" />
+                    break;
+                case NFTTypes.Event: <VENFTApp_Blazor.Components.NFTs.Tickets.EventNFTDetails InputNFT="@NFT"
+                                                                                              Address="@Address"
+                                                                                              SubAccount="@SubAccount"
+                                                                                              OwnNFT="@OwnNFT"
+                                                                                              NFTSent="@NFTSentHandler" />
+                    break;
 
-                @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music)
-                {
-                    <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                            <a href="@NFT.Link" target="_blank">Connected Link</a>
-                        </div>
-                    </div>
-                }
             }
-            @if (!string.IsNullOrEmpty(NFT.Link) && NFT.Type != NFTTypes.Music && (NFT.Type != NFTTypes.Ticket && NFT.Type != NFTTypes.Event))
-            {
-                <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <a href="@NFT.Link" target="_blank">Connected Link</a>
-                    </div>
-                </div>
-            }
-            <hr />
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                    <a href="@NFT.ImageLink" target="_blank">
-                        @if (NFT.Type == NFTTypes.Ticket)
-                        {
-                            var tnft = NFT as TicketNFT;
-                            @if (!string.IsNullOrEmpty(NFT.ImageLink) || !string.IsNullOrEmpty(NFT.Link))
-                            {
-                                @if (tnft.MusicInLink)
-                                {
-                                    <video controls="" autoplay="" name="media" title="@NFT.Name" @onplay="VideoStartedPlay" style="min-height: 100px; max-height: 150px; width: auto; min-width: 150px; max-width: 250px;">
-                                        <source src="@NFT.Link" type="audio/mpeg">
-                                    </video>
-                                }
-                                else
-                                {
-                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
-                                }
-                            }
-                            else
-                            {
-                                <Spin Tip="Loading..." Spinning="true">
-                                    <div style="width:100px; height:50px;"></div>
-                                </Spin>
-                            }
-                        }
-                        else if (NFT.Type == NFTTypes.Event)
-                        {
-                            var enft = NFT as EventNFT;
-                            @if (!string.IsNullOrEmpty(NFT.ImageLink) || !string.IsNullOrEmpty(NFT.Link))
-                            {
-                                @if (enft.MusicInLink)
-                                {
-                                    <video controls="" autoplay="" name="media" title="@NFT.Name" @onplay="VideoStartedPlay" style="min-height: 100px; max-height: 150px; width: auto; min-width: 150px; max-width: 250px;">
-                                        <source src="@NFT.Link" type="audio/mpeg">
-                                    </video>
-                                }
-                                else
-                                {
-                                    <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
-                                }
-                            }
-                            else
-                            {
-                                <Spin Tip="Loading..." Spinning="true">
-                                    <div style="width:100px; height:50px;"></div>
-                                </Spin>
-                            }
-                        }
-                        else if (NFT.Type == NFTTypes.Music)
-                        {
-                            @if (!string.IsNullOrEmpty(NFT.Link))
-                            {
-                                <video controls="" autoplay="" name="media" title="@NFT.Name" @onplay="VideoStartedPlay" style="min-height: 100px; max-height: 150px; width: auto; min-width: 150px; max-width: 250px;">
-                                    <source src="@NFT.Link" type="audio/mpeg">
-                                </video>
-                            }
-                            else
-                            {
-                                <Spin Tip="Loading..." Spinning="true">
-                                    <div style="width:100px; height:50px;"></div>
-                                </Spin>
-                            }
-                        }
-                        else
-                        {
-                            @if (!string.IsNullOrEmpty(NFT.ImageLink))
-                            {
-                                <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; max-width:250px; min-width:50px;" />
-                            }
-                            else
-                            {
-                                <Spin Tip="Loading..." Spinning="true">
-                                    <img src="@NFT.ImageLink" style="min-height:100px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
-                                </Spin>
-                            }
-                        }
-                    </a>
-                </div>
-            </div>
+
+            <NFTTags TagsList="@NFT.TagsList" />
+
             <div class="row" style="margin-top:20px;">
                 @if (!AppData.Account.ReceivedPayments.ContainsKey(NFT.Utxo))
                 {
@@ -352,187 +108,18 @@
                     </div>
                 }
             </div>
-            @if (OwnNFT)
-            {
-                @if (NFT.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
-                {
-                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <button class="btn btn-primary" @onclick="ShowOwnershipQRCode" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <i class="oi oi-grid-four-up"></i>
-                                            </div>
-                                        </div>
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <span style="font-size: 12px;">QR</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            @if (NFT.Type == NFTTypes.Post || NFT.Type == NFTTypes.Event || NFT.Type == NFTTypes.Profile)
-                            {
-                                <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px; margin-left: 20px;">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="row d-flex justify-content-center align-items-center">
-                                                <div class="col">
-                                                    <i class="oi oi-pencil"></i>
-                                                </div>
-                                            </div>
-                                            <div class="row d-flex justify-content-center align-items-center">
-                                                <div class="col">
-                                                    <span style="font-size: 12px;">Edit</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </button>
-                            }
-                            <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog()" style="min-width:65px; max-width:65px; width:65px; height:65px; margin-left: 20px;">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <i class="oi oi-location"></i>
-                                            </div>
-                                        </div>
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <span style="font-size: 12px;">Send</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            <button class="btn btn-primary" @onclick="async () => ShowMoveNFTDialog()" style="min-width:65px; max-width:65px; width:65px; height:65px; margin-left: 20px;">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <i class="oi oi-transfer"></i>
-                                            </div>
-                                        </div>
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <span style="font-size: 12px;">Move</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <!--
-                    <button class="btn btn-primary" onclick="async () => ShowSendNFTToDogeftDialog()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row d-flex justify-content-center align-items-center">
-                                    <div class="col">
-                                        <img style="width:23px;" src="images/dogeicon-w.png" />
-                                    </div>
-                                </div>
-                                <div class="row d-flex justify-content-center align-items-center">
-                                    <div class="col">
-                                        <span style="font-size: 12px;">Dogeft</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </button>
-                    -->
-                            <button class="btn btn-primary" @onclick="async () => ShowSetPriceNFTDialog()" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <i class="oi oi-dollar"></i>
-                                            </div>
-                                        </div>
-                                        <div class="row d-flex justify-content-center align-items-center">
-                                            <div class="col">
-                                                <span style="font-size: 12px;">Sell</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            @if (WooCommerceHelpers.IsInitialized)
-                            {
-                                <VENFTApp_Blazor.Components.WooCommerce.WooCommerceAddProductButton NFT="@NFT" />
-                            }
 
-                        </div>
-                    </div>
-                }
-            }
+            <VENFTApp_Blazor.Components.NFTs.Actions.NFTActions InputNFT="@NFT"
+                        Utxo="@NFT.Utxo"
+                        UtxoIndex="@NFT.UtxoIndex"
+                        Address="@Address"
+                        OwnNFT="@OwnNFT"
+                        SubAccount="@SubAccount"
+                        NFTSent="@NFTSentHandler" />
 
             <NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
         </Spin>
     </div>
-
-    <SendNFT NFT="@NFT"
-             NFTSent="@NFTSentHandler"
-             @bind-SendNFTDialogVisible="sendNFTDialogVisible"
-             Address="@Address"
-             SubAccount="@SubAccount" />
-    <MoveNFTToSubAccount NFT="@NFT"
-             NFTSent="@NFTSentHandler"
-             @bind-SendNFTDialogVisible="moveNFTDialogVisible"
-             Address="@Address"
-             SubAccount="@SubAccount" />
-
-    <SendNFTToDogeft NFT="@NFT"
-                     NFTSent="@NFTSentHandler"
-                     @bind-SendNFTDialogVisible="sendNFTToDogeftDialogVisible"
-                     Address="@Address"
-                     SubAccount="@SubAccount" />
-
-    <VENFTApp_Blazor.Components.NFTs.Payments.SetNFTPrice NFT="@NFT"
-                 NFTSent="@NFTSentHandler"
-                 Address="@Address"
-                 SubAccount="@SubAccount"
-                 @bind-SetPriceNFTDialogVisible="setPriceNFTDialogVisible" />
-
-    <Modal Title="Create or edit post NFT"
-           Visible="@createNewPostVisible"
-           OnOk="@createNewPostConfirm"
-           OnCancel="@createNewPostCancel">
-        @if (NFT.Type == NFTTypes.Event)
-        {
-            <VENFTApp_Blazor.Components.NFTs.Tickets.MintEventAndTickets NFT="@NFT"
-                                                            SubAccount="@SubAccount"
-                                                            Address="@Address"
-                                                            TokenId="@NFT.TokenId"
-                                                            NFTMinted="@NFTMinted"
-                                                            NFTType="@NFT.Type"
-                                                            RedirectToNFTsAfterMint="false" />
-        }
-        else
-        {
-            <MintNFTForm NFTType="NFT.Type"
-                         NFT="@NFT"
-                         TokenId="@NFT.TokenId"
-                         RedirectToNFTsAfterMint="false"
-                         NFTMinted="@NFTMinted"
-                         Address="@Address"
-                         SubAccount="@SubAccount" />
-        }
-    </Modal>
-
-    <VENFTApp_Blazor.Components.NFTs.OwnershipQRCode Address="@Address" 
-                                                     OwnNFT="@OwnNFT" 
-                                                     SubAccount="@SubAccount" 
-                                                     InputNFT="@NFT"
-                                                     DisplayButton="false" 
-                                                     ShowOwnershipCodeDialog="@ownershipQRCodeVisible"
-                                                     DialogClosed="@ShowOwnerShipQRCodeClosedHandler"/>
 
 </div>
 
@@ -545,11 +132,8 @@
         get => NFT;
         set
         {
-            if (value != null && value.Utxo != NFT.Utxo && value.IsLoaded)
-            {
+            if (value != null && value.Utxo != NFT.Utxo)
                 LoadNFT(value);
-                StateHasChanged();
-            }
         }
     }
 
@@ -561,9 +145,7 @@
         set
         {
             if (!string.IsNullOrEmpty(value) && _utxo != value)
-            {
                 _utxo = value;
-            }
         }
     }
 
@@ -575,9 +157,7 @@
         set
         {
             if (_utxoIndex != value)
-            {
                 _utxoIndex = value;
-            }
         }
     }
 
@@ -597,13 +177,6 @@
     public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
 
     private bool loading = false;
-    private bool loadingEventData = false;
-    private bool createNewPostVisible = false;
-    private bool sendNFTDialogVisible = false;
-    private bool moveNFTDialogVisible = false;
-    private bool ownershipQRCodeVisible = false;
-    private bool sendNFTToDogeftDialogVisible = false;
-    private bool setPriceNFTDialogVisible = false;
 
     private string status = string.Empty;
     private string songName = string.Empty;
@@ -628,16 +201,6 @@
         StateHasChanged();
     }
 
-    private void ShowOwnershipQRCode(MouseEventArgs e)
-    {
-        ownershipQRCodeVisible = true;
-    }
-    private async Task ShowOwnerShipQRCodeClosedHandler(bool e)
-    {
-        ownershipQRCodeVisible = e;
-        StateHasChanged();
-    }
-
     private async Task LoadNFT(INFT nft)
     {
         loading = true;
@@ -654,6 +217,7 @@
 
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
         await NFT.StartRefreshingTxData();
+
         loading = false;
         StateHasChanged();
     }
@@ -661,69 +225,10 @@
     private async Task VideoStartedPlay()
     {
         await JSRuntime.InvokeVoidAsync("setMusicInfo", NFT.Name, NFT.Author, NFT.Description);
-
-        // not work - handler is not called, I had to add little hack in onafterrender
     }
 
-    private async Task ShowMoveNFTDialog()
+    private void NFTSentHandler(string e)
     {
-        moveNFTDialogVisible = true;
-    }
-    private async Task ShowSendNFTDialog()
-    {
-        sendNFTDialogVisible = true;
-    }
-    private async Task ShowSendNFTToDogeftDialog()
-    {
-        sendNFTToDogeftDialogVisible = true;
-    }
-
-    private async Task ShowSetPriceNFTDialog()
-    {
-        setPriceNFTDialogVisible = true;
-    }
-
-    private async Task ShowUpdatePostNFTDialog()
-    {
-        createNewPostVisible = true;
-    }
-
-    private async Task createNewPostConfirm(MouseEventArgs e)
-    {
-        createNewPostVisible = false;
-    }
-
-    private async Task createNewPostCancel(MouseEventArgs e)
-    {
-        createNewPostVisible = false;
-    }
-
-    void NFTSentHandler(string e)
-    {
-        moveNFTDialogVisible = false;
-        sendNFTDialogVisible = false;
-        setPriceNFTDialogVisible = false;
-        sendNFTToDogeftDialogVisible = false;
-        NFTSent.InvokeAsync(e);
-        StateHasChanged();
-    }
-
-    void NFTMinted(string e)
-    {
-        createNewPostVisible = false;
-        setPriceNFTDialogVisible = false;
-        sendNFTDialogVisible = false;
-        sendNFTToDogeftDialogVisible = false;
-        NFTSent.InvokeAsync(e);
-        StateHasChanged();
-    }
-
-    void NFTDestroyed(string e)
-    {
-        createNewPostVisible = false;
-        setPriceNFTDialogVisible = false;
-        sendNFTDialogVisible = false;
-        sendNFTToDogeftDialogVisible = false;
         NFTSent.InvokeAsync(e);
         StateHasChanged();
     }

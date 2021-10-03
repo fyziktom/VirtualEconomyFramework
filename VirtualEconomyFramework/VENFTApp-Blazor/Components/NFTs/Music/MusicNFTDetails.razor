@@ -1,0 +1,102 @@
+﻿@using VEDriversLite.NFT
+@using Markdig
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <h6>@NFT.Name</h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <small>@NFT.Author</small>
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(NFT.Description))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Description</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
+                </div>
+            </div>
+        }
+
+        <hr />
+        <div class="row" style="margin-top:20px;">
+            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <a href="@NFT.Link" target="_blank">
+                    @if (!string.IsNullOrEmpty(NFT.Link))
+                    {
+                        <video controls="" autoplay="" name="media" title="@NFT.Name" @onplay="VideoStartedPlay" style="min-height: 100px; max-height: 150px; width: auto; min-width: 150px; max-width: 250px;">
+                            <source src="@NFT.Link" type="audio/mpeg">
+                        </video>
+                    }
+                    else
+                    {
+                        <Spin Tip="Loading..." Spinning="true">
+                            <div style="width:100px; height:50px;"></div>
+                        </Spin>
+                    }
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private INFT NFT { get; set; } = new ImageNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.Music)
+            {
+                NFT = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
+
+    private string songName = string.Empty;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!string.IsNullOrEmpty(NFT.Name) && NFT.Name != songName)
+        {
+            songName = NFT.Name;
+            VideoStartedPlay();
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task VideoStartedPlay()
+    {
+        await JSRuntime.InvokeVoidAsync("setMusicInfo", NFT.Name, NFT.Author, NFT.Description);
+    }
+
+}

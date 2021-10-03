@@ -1,0 +1,306 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@using VEDriversLite.WooCommerce
+@using VEDriversLite.WooCommerce.Dto
+@using Newtonsoft.Json
+@using Markdig
+@inject AppData AppData
+@inject HttpClient _client
+@inject IJSRuntime JSRuntime
+
+@if (OwnNFT)
+{
+    @if (NFT.IsSpendable())
+    {
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <button class="btn btn-primary" @onclick="ShowOwnershipQRCode" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <i class="oi oi-grid-four-up"></i>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <span style="font-size: 12px;">QR</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+                @if (NFT.Type == NFTTypes.Post || NFT.Type == NFTTypes.Event || NFT.Type == NFTTypes.Profile)
+                {
+                    <button class="btn btn-secondary" @onclick="ShowUpdatePostNFTDialog" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px; margin-left: 20px;">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row d-flex justify-content-center align-items-center">
+                                    <div class="col">
+                                        <i class="oi oi-pencil"></i>
+                                    </div>
+                                </div>
+                                <div class="row d-flex justify-content-center align-items-center">
+                                    <div class="col">
+                                        <span style="font-size: 12px;">Edit</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </button>
+                }
+                <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="min-width:65px; max-width:65px; width:65px; height:65px; margin-left: 20px;">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <i class="oi oi-location"></i>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <span style="font-size: 12px;">Send</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+                <button class="btn btn-primary" @onclick="ShowMoveNFTDialog" style="min-width:65px; max-width:65px; width:65px; height:65px; margin-left: 20px;">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <i class="oi oi-transfer"></i>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <span style="font-size: 12px;">Move</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <!--
+                <button class="btn btn-primary" onclick="ShowSendNFTToDogeftDialog" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <img style="width:23px;" src="images/dogeicon-w.png" />
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <span style="font-size: 12px;">Dogeft</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+                -->
+                <button class="btn btn-primary" @onclick="ShowSetPriceNFTDialog" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px;">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <i class="oi oi-dollar"></i>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col">
+                                    <span style="font-size: 12px;">Sell</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+                @if (WooCommerceHelpers.IsInitialized)
+                {
+                    <VENFTApp_Blazor.Components.WooCommerce.WooCommerceAddProductButton NFT="@NFT" />
+                }
+
+            </div>
+        </div>
+    }
+}
+
+<SendNFT NFT="@NFT"
+         NFTSent="@NFTSentHandler"
+         @bind-SendNFTDialogVisible="sendNFTDialogVisible"
+         Address="@Address"
+         SubAccount="@SubAccount" />
+<MoveNFTToSubAccount NFT="@NFT"
+                     NFTSent="@NFTSentHandler"
+                     @bind-SendNFTDialogVisible="moveNFTDialogVisible"
+                     Address="@Address"
+                     SubAccount="@SubAccount" />
+
+<SendNFTToDogeft NFT="@NFT"
+                 NFTSent="@NFTSentHandler"
+                 @bind-SendNFTDialogVisible="sendNFTToDogeftDialogVisible"
+                 Address="@Address"
+                 SubAccount="@SubAccount" />
+
+<VENFTApp_Blazor.Components.NFTs.Payments.SetNFTPrice NFT="@NFT"
+                                                      NFTSent="@NFTSentHandler"
+                                                      Address="@Address"
+                                                      SubAccount="@SubAccount"
+                                                      @bind-SetPriceNFTDialogVisible="setPriceNFTDialogVisible" />
+
+<Modal Title="Create or edit post NFT"
+       Visible="@createNewPostVisible"
+       OnOk="@createNewPostConfirm"
+       OnCancel="@createNewPostCancel">
+    @if (NFT.Type == NFTTypes.Event)
+    {
+        <VENFTApp_Blazor.Components.NFTs.Tickets.MintEventAndTickets NFT="@NFT"
+                                                                     SubAccount="@SubAccount"
+                                                                     Address="@Address"
+                                                                     TokenId="@NFT.TokenId"
+                                                                     NFTMinted="@NFTSentHandler"
+                                                                     NFTType="@NFT.Type"
+                                                                     RedirectToNFTsAfterMint="false" />
+    }
+    else
+    {
+        <MintNFTForm NFTType="NFT.Type"
+                     NFT="@NFT"
+                     TokenId="@NFT.TokenId"
+                     RedirectToNFTsAfterMint="false"
+                     NFTMinted="@NFTSentHandler"
+                     Address="@Address"
+                     SubAccount="@SubAccount" />
+    }
+</Modal>
+
+<VENFTApp_Blazor.Components.NFTs.Verification.OwnershipQRCode Address="@Address"
+                                                 OwnNFT="@OwnNFT"
+                                                 SubAccount="@SubAccount"
+                                                 InputNFT="@NFT"
+                                                 DisplayButton="false"
+                                                 ShowOwnershipCodeDialog="@ownershipQRCodeVisible"
+                                                 DialogClosed="@ShowOwnerShipQRCodeClosedHandler" />
+
+@code {
+    private INFT NFT { get; set; } = new ImageNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo)
+            {
+                NFT = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private string _utxo = string.Empty;
+    [Parameter]
+    public string Utxo
+    {
+        get => _utxo;
+        set
+        {
+            if (!string.IsNullOrEmpty(value) && _utxo != value)
+                _utxo = value;
+        }
+    }
+
+    private int _utxoIndex = 0;
+    [Parameter]
+    public int UtxoIndex
+    {
+        get => _utxoIndex;
+        set
+        {
+            if (_utxoIndex != value)
+                _utxoIndex = value;
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    private bool createNewPostVisible = false;
+    private bool sendNFTDialogVisible = false;
+    private bool moveNFTDialogVisible = false;
+    private bool ownershipQRCodeVisible = false;
+    private bool sendNFTToDogeftDialogVisible = false;
+    private bool setPriceNFTDialogVisible = false;
+
+    private void ShowOwnershipQRCode(MouseEventArgs e)
+    {
+        ownershipQRCodeVisible = true;
+    }
+    private async Task ShowOwnerShipQRCodeClosedHandler(bool e)
+    {
+        ownershipQRCodeVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task ShowMoveNFTDialog()
+    {
+        moveNFTDialogVisible = true;
+    }
+    private async Task ShowSendNFTDialog()
+    {
+        sendNFTDialogVisible = true;
+    }
+    private async Task ShowSendNFTToDogeftDialog()
+    {
+        sendNFTToDogeftDialogVisible = true;
+    }
+
+    private async Task ShowSetPriceNFTDialog()
+    {
+        setPriceNFTDialogVisible = true;
+    }
+
+    private async Task ShowUpdatePostNFTDialog()
+    {
+        createNewPostVisible = true;
+    }
+
+    private async Task createNewPostConfirm(MouseEventArgs e)
+    {
+        createNewPostVisible = false;
+    }
+    private async Task createNewPostCancel(MouseEventArgs e)
+    {
+        createNewPostVisible = false;
+    }
+
+    private void CloseModals()
+    {
+        createNewPostVisible = false;
+        moveNFTDialogVisible = false;
+        sendNFTDialogVisible = false;
+        setPriceNFTDialogVisible = false;
+        sendNFTToDogeftDialogVisible = false;
+    }
+
+    private void NFTSentHandler(string e)
+    {
+        CloseModals();
+        NFTSent.InvokeAsync(e);
+        StateHasChanged();
+    }
+}

@@ -296,7 +296,7 @@
         </Spin>
     </div>
 
-    <VENFTApp_Blazor.Components.NFTs.SendNFT NFT="@NFT"
+    <VENFTApp_Blazor.Components.NFTs.Actions.SendNFT NFT="@NFT"
                                              NFTSent="@NFTSentHandler"
                                              @bind-SendNFTDialogVisible="sendNFTDialogVisible"
                                              Address="@Address"
@@ -326,7 +326,7 @@
         </div>
     </Modal>
 
-    <VENFTApp_Blazor.Components.NFTs.OwnershipQRCode Address="@Address"
+    <VENFTApp_Blazor.Components.NFTs.Verification.OwnershipQRCode Address="@Address"
                                                      OwnNFT="@OwnNFT"
                                                      SubAccount="@SubAccount"
                                                      InputNFT="@NFT"
@@ -455,8 +455,8 @@
         await TryToLoadProfile();
 
         LoadBuzzproudPodcastLink();
-        await NFT.StartRefreshingTxData();
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
+        await NFT.StartRefreshingTxData();
         loading = false;
         StateHasChanged();
     }

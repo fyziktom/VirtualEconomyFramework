@@ -15,7 +15,7 @@
             {
                 <div class="row" style="position: absolute;right: 7px;top: 40px;">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.NFTs.DestroyNFTButton IsIcon="true" 
+                        <VENFTApp_Blazor.Components.NFTs.Actions.DestroyNFTButton IsIcon="true" 
                                                                           FontSize="20" 
                                                                           InputNFT="@NFT" 
                                                                           Address="@_address" 
@@ -204,6 +204,7 @@
                 NFT.TxDataRefreshed -= TxDataRefreshedHandler;
                 NFT.TxDataRefreshed += TxDataRefreshedHandler;
                 NFT.StartRefreshingTxData();
+
                 StateHasChanged();
             }
         }
@@ -242,10 +243,10 @@
         StateHasChanged();
         NFT.TxDataRefreshed -= TxDataRefreshedHandler;
         await NFT.StopRefreshingData();
-        
-        if(!(NFT as MessageNFT).Decrypted)
+
+        if (!(NFT as MessageNFT).Decrypted)
             await (NFT as MessageNFT).Decrypt(AppData.Account.Secret);
-        
+
         NFT.TxDataRefreshed += TxDataRefreshedHandler;
         await NFT.StartRefreshingTxData();
         loading = false;

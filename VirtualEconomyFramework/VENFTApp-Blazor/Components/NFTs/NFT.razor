@@ -319,6 +319,7 @@
         {
             if (value != null && value.Utxo != nft.Utxo)
             {
+                NFTChecked = false;
                 nft = value;
                 _isInThePayments = IsInThePayments(nft.Utxo);
                 setBgColor();

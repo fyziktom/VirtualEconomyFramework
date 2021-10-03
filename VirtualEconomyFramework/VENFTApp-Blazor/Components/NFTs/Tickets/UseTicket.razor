@@ -14,7 +14,7 @@
     }
     else
     {
-        if (OwnNFT && NFT.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
+        if (OwnNFT && NFT.IsSpendable())
         {
             <div class="row">
                 <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">

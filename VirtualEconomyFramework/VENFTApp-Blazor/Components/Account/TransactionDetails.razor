@@ -323,25 +323,30 @@
     async Task StartRefreshing(bool newTx = false)
     {
         await Load(newTx);
-        if (txdetailsTimer != null)
+        if (txInDetails.Confirmations < (NeblioTransactionHelpers.MinimumConfirmations + 2))
         {
-            txdetailsTimer.Dispose();
-        }
-        txdetailsTimer = new System.Threading.Timer(async (object stateInfo) =>
-        {
-            if (!string.IsNullOrEmpty(txId))
-            {
-                try
-                {
-                    await Load();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Cannot read tx details. " + ex.Message);
-                }
-            }
+            if (txdetailsTimer != null)
+                await txdetailsTimer.DisposeAsync();
 
-        }, new System.Threading.AutoResetEvent(false), 10000, 10000);
+            txdetailsTimer = new System.Threading.Timer(async (object stateInfo) =>
+            {
+                if (!string.IsNullOrEmpty(txId))
+                {
+                    try
+                    {
+                        await Load();
+                        if (txInDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations + 2))
+                            await txdetailsTimer.DisposeAsync();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Cannot read tx details. " + ex.Message);
+                    }
+                }
+
+            }, new System.Threading.AutoResetEvent(false), 10000, 10000);
+        }
     }
 
     async Task Load(bool newTx = false)
@@ -421,7 +426,7 @@
                                 else
                                     NFTTransaction = false;
 
-                                if (NFTTransaction)
+                                if (NFTTransaction && loadedNFT.Utxo != txId)
                                     loadedNFT = await NFTFactory.GetNFT(tokid, txId, 0, 0, false, txinfo: txinfo);
                                 if (loadedNFT == null || !NFTTransaction)
                                     loadedNFT = new ImageNFT("");

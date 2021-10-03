@@ -1,0 +1,42 @@
+﻿@if (tagsList.Count > 0)
+{
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <span>Tags</span>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center align-items-center">
+        @foreach (var tag in tagsList)
+        {
+            <div class="col d-flex justify-content-center align-items-center w-auto">
+                <small>#@tag</small>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <small class="text-muted">No Tags in the NFT</small>
+        </div>
+    </div>
+}
+
+@code {
+    private List<string> tagsList { get; set; } = new List<string>();
+    [Parameter]
+    public List<string> TagsList
+    {
+        get => tagsList;
+        set
+        {
+            if (value != null)
+            {
+                tagsList = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

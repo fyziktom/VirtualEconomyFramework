@@ -52,6 +52,14 @@ namespace VEDriversLite.NFT
         public abstract Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");
 
         public abstract Task Fill(INFT NFT);
+
+        public bool IsSpendable()
+        {
+            if (TxDetails != null)
+                return (TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations);
+            else
+                return false;
+        }
         public async Task LoadHistory()
         {
             History = await NFTHelpers.LoadNFTsHistory(Utxo);
@@ -77,6 +85,7 @@ namespace VEDriversLite.NFT
             UtxoIndex = nft.UtxoIndex;
             Time = nft.Time;
             Tags = nft.Tags;
+            TagsList = nft.TagsList;
             Text = nft.Text;
             DogeAddress = nft.DogeAddress;
             DogeftInfo = nft.DogeftInfo;
@@ -299,44 +308,48 @@ namespace VEDriversLite.NFT
         public async Task StopRefreshingData()
         {
             if (txdetailsTimer != null)
-                txdetailsTimer.Dispose();
+                await txdetailsTimer.DisposeAsync();
         }
         
-        public async Task StartRefreshingTxData()
+        public async Task StartRefreshingTxData(int interval = 5000)
         {
-            TxDetails.Confirmations = 0;
-            TxDetails.Time = 0;
+            if (TxDetails.Confirmations < (NeblioTransactionHelpers.MinimumConfirmations + 2))
+            {
+                TxDetails.Confirmations = 0;
+                TxDetails.Time = 0;
 
-            if (txdetailsTimer != null)
-            {
-                txdetailsTimer.Dispose();
-            }
+                await StopRefreshingData();
 
-            try
-            {
-                TxDetails = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot read tx details. " + ex.Message);
-            }
-
-            txdetailsTimer = new System.Threading.Timer(async (object stateInfo) =>
-            {
-                if (!string.IsNullOrEmpty(Utxo))
+                try
                 {
-                    try
-                    {
-                        TxDetails = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
-                        TxDataRefreshed?.Invoke(this, TxDetails);
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine("Cannot read tx details. " + ex.Message);
-                    }
+                    TxDetails = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
+                    TxDataRefreshed?.Invoke(this, TxDetails);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot read tx details. " + ex.Message);
                 }
 
-            }, new System.Threading.AutoResetEvent(false), 5000, 5000);
+                txdetailsTimer = new System.Threading.Timer(async (object stateInfo) =>
+                {
+                    if (!string.IsNullOrEmpty(Utxo))
+                    {
+                        try
+                        {
+                            var txi = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
+                            TxDetails = txi;
+                            TxDataRefreshed?.Invoke(this, TxDetails);
+                            if (TxDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations + 2))
+                                await StopRefreshingData();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Cannot read tx details. " + ex.Message);
+                        }
+                    }
+
+                }, new System.Threading.AutoResetEvent(false), interval, interval);
+            }
         }
     }
 }
