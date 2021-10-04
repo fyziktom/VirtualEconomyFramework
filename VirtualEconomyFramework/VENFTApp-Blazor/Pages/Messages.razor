@@ -232,8 +232,13 @@
             {
                 var msgTabs = await localStorage.GetItemAsync<string>("messagingTabs");
                 if (!string.IsNullOrEmpty(msgTabs))
+                {
                     if (AppData.Account.MessageTabs.Count == 0)
+                    {
                         addressInOpenTab = await AppData.Account.LoadMessageTabs(msgTabs);
+                        
+                    }
+                }
             }
             catch (Exception ex)
             {

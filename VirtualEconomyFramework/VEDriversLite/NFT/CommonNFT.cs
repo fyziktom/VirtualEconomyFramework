@@ -33,6 +33,7 @@ namespace VEDriversLite.NFT
         public bool DogePriceActive { get; set; } = false;
         public string DogeAddress { get; set; } = string.Empty;
         public bool IsLoaded { get; set; } = false;
+        public bool IsInThePayments { get; set; } = false;
         public DogeftInfo DogeftInfo { get; set; } = new DogeftInfo();
         public NFTSoldInfo SoldInfo { get; set; } = new NFTSoldInfo();
         public string ShortHash => $"{NeblioTransactionHelpers.ShortenTxId(Utxo, false, 16)}:{UtxoIndex}";
@@ -91,6 +92,7 @@ namespace VEDriversLite.NFT
             DogeftInfo = nft.DogeftInfo;
             SoldInfo = nft.SoldInfo;
             TxDetails = nft.TxDetails;
+            IsInThePayments = nft.IsInThePayments;
         }
         public async Task ClearSoldInfo()
         {

@@ -13,65 +13,65 @@
         <div class="col">
             <Spin spinning="@creatingAddressSpinner" tip="Creating Address...">
                 <div class="row">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Welcome in VENFT App</span>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>If you do not know this project please read <a href="https://about.ve-nft.com/" target="_blank">about it here</a></span>
                     </div>
                 </div>
                 <div class="row" style="margin-bottom:10px;">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>You are here first time. This dialog will create new wallet for you.</span>
                     </div>
                 </div>
                 <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="newaddress"/>
                 <div class="row" style="margin-top:10px;">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <h4>Start With One Simple Step</h4>
                     </div>
                 </div>
                 <div class="row" style="margin-top:20px;">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Create new wallet with type your new password (8 chars minimum)</span>
                     </div>
                 </div>
 
                 <div class="row" style="margin-top:20px;">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Input Password:</span>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <InputPassword Placeholder="Input password" @bind-Value="@password" style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
                 <div class="row">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Confirm Password:</span>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <InputPassword Placeholder="Input password" @bind-Value="@passwordConfirm" style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
                 <div class="row">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Please Fill Password longer than 8 characters</span>
                     </div>
                 </div>
                 <hr />
                 <div class="row" style="margin-top:10px;">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Optional - If you have Neblio or Dogecoin private key you can import it</span>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="d-flex justify-content-center align-items-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <button class="btn btn-secondary" @onclick="showImportAccount">Import address</button>
                     </div>
                 </div>

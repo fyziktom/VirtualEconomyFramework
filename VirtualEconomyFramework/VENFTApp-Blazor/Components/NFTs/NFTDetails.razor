@@ -12,17 +12,20 @@
 <div class="row">
     <div class="col">
         <Spin Tip="Loading..." Spinning="@loading">
-            @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId) && !string.IsNullOrEmpty(NFT.Utxo))
+            @if (!string.IsNullOrEmpty(NFT.Utxo))
             {
-                <div style="position: absolute;right: 5px;top: -20px;">
-                    <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">
-                        <span class="badge badge-primary">Mint Info</span>
-                    </a>
-                    <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
-                        <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
-                    </a>
-                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
-                </div>
+            <div style="position: absolute;right: 5px;top: -20px;">
+                @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId))
+                {
+                <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">
+                    <span class="badge badge-primary">Mint Info</span>
+                </a>
+                }
+                <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
+                    <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
+                </a>
+                <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
+            </div>
                 @if (OwnNFT)
                 {
                     <div class="row" style="position: absolute;right: 7px;top: 30px;">
@@ -83,7 +86,7 @@
             <NFTTags TagsList="@NFT.TagsList" />
 
             <div class="row" style="margin-top:20px;">
-                @if (!AppData.Account.ReceivedPayments.ContainsKey(NFT.Utxo))
+                @if (!NFT.IsInThePayments)
                 {
                     @if (OwnNFT)
                     {
@@ -132,8 +135,10 @@
         get => NFT;
         set
         {
-            if (value != null && value.Utxo != NFT.Utxo)
-                LoadNFT(value);
+            if (value != null && value.Utxo != NFT.Utxo)// && value.Utxo != NFT.Utxo)
+                LoadNFT(value, false);
+            else if (value != null && value.Utxo == NFT.Utxo && value.TxDetails.Confirmations != NFT.TxDetails.Confirmations)
+                LoadNFT(value, true);
         }
     }
 
@@ -201,25 +206,34 @@
         StateHasChanged();
     }
 
-    private async Task LoadNFT(INFT nft)
+    private async Task LoadNFT(INFT nft, bool same)
     {
-        loading = true;
-        StateHasChanged();
-        if (!string.IsNullOrEmpty(NFT.Utxo))
+        if (!same)
         {
-            NFT.TxDataRefreshed -= TxDataRefreshedHandler;
-            await NFT.StopRefreshingData();
+            loading = true;
+            StateHasChanged();
+            if (!string.IsNullOrEmpty(NFT.Utxo))
+            {
+                NFT.TxDataRefreshed -= TxDataRefreshedHandler;
+                await NFT.StopRefreshingData();
+            }
+
+            //NFT = await NFTFactory.CloneNFT(nft);
+            NFT = nft;
+            if (NFT == null)
+                return;
+
+            NFT.TxDataRefreshed += TxDataRefreshedHandler;
+            await NFT.StartRefreshingTxData();
+
+            loading = false;
+            StateHasChanged();
         }
-
-        NFT = await NFTFactory.CloneNFT(nft);
-        if (NFT == null)
-            return;
-
-        NFT.TxDataRefreshed += TxDataRefreshedHandler;
-        await NFT.StartRefreshingTxData();
-
-        loading = false;
-        StateHasChanged();
+        else
+        {
+            await NFT.Fill(nft);
+            StateHasChanged();
+        }
     }
 
     private async Task VideoStartedPlay()

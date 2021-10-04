@@ -427,7 +427,7 @@
                         {
                             <div class="row" style="margin-top:20px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <button class="btn btn-primary" @onclick="ShowMintConfirm">Create NFT</button>
+                                    <button class="btn btn-primary" @onclick="ShowMintConfirm">@(string.IsNullOrEmpty(sourceNFT.Utxo)? "Create NFT" : "Apply Changes")</button>
                                 </div>
                             </div>
 

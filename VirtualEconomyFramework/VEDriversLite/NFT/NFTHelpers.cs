@@ -563,15 +563,15 @@ namespace VEDriversLite.NFT
                                     if (!withoutMessages)
                                     {
                                         if (!justMessages && !justPayments)
-                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime);
+                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, address:address);
                                         else if (justMessages && !justPayments)
-                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, loadJustType:true, justType:NFTTypes.Message);
+                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait:true, loadJustType:true, justType:NFTTypes.Message, address: address);
                                         else if (!justMessages && justPayments)
-                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, loadJustType:true, justType:NFTTypes.Payment);
+                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, loadJustType:true, justType:NFTTypes.Payment, address: address);
                                     }
                                     else
                                     {
-                                        nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, skipTheType: true, skipType: NFTTypes.Message);
+                                        nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, skipTheType: true, skipType: NFTTypes.Message, address: address);
                                     }
                                     if (nft != null)
                                     {

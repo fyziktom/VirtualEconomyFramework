@@ -17,8 +17,9 @@ namespace VEDriversLite
         public static List<string> PublicAddresses = new List<string>();
         public static ConcurrentDictionary<string, IAdminAction> AdminActionsRequests = new ConcurrentDictionary<string, IAdminAction>();
         public static ConcurrentDictionary<string, NFTHash> NFTHashs = new ConcurrentDictionary<string, NFTHash>();
-        public static ConcurrentDictionary<string, IDictionary<string,string>> NFTCache = new ConcurrentDictionary<string, IDictionary<string, string>>();
-        public static bool AllowCache { get; set; } = false;
+        public static ConcurrentDictionary<string, NFTCacheDto> NFTCache = new ConcurrentDictionary<string, NFTCacheDto>();
+        public static bool AllowCache { get; set; } = true;
+        public static int MaxCachedItems { get; set; } = 250;
         public static string WooCommerceStoreUrl { get; set; } = string.Empty;
         public static string WooCommerceStoreUrlWithCred => WooCommerceStoreUrl.Replace("https://", $"https://{WooCommerceStoreAPIKey}:{WooCommerceStoreSecret}@");
         public static string WooCommerceStoreAPIKey { get; set; } = string.Empty;

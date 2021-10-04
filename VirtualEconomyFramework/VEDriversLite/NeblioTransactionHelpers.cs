@@ -3,6 +3,7 @@ using NBitcoin.Altcoins;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -87,6 +88,8 @@ namespace VEDriversLite
         /// </summary>
         public static int MinimumConfirmations = 2;
         public static Dictionary<string, GetTokenMetadataResponse> TokensInfo = new Dictionary<string, GetTokenMetadataResponse>();
+        public static ConcurrentDictionary<string, GetTransactionInfoResponse> TransactionInfoCache = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
+        public static ConcurrentDictionary<string, GetTokenMetadataResponse> TokenTxMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>();
         public static event EventHandler<IEventInfo> NewEventInfo;
 
         /// <summary>
@@ -2422,11 +2425,23 @@ namespace VEDriversLite
         {
             if (string.IsNullOrEmpty(txid))
                 return string.Empty;
+            if (TransactionInfoCache.TryGetValue(txid, out var txinfo))
+                return txinfo.Hex;
             var tx = await GetClient().GetTransactionInfoAsync(txid);
             if (tx != null)
+            {
+                AddToTransactionInfoCache(tx);
                 return tx.Hex;
+            }
             else
                 return string.Empty;
+        }
+
+        private static void AddToTransactionInfoCache(GetTransactionInfoResponse txinfo)
+        {
+            if (txinfo == null) return;
+            if (txinfo.Confirmations > MinimumConfirmations + 2)
+                TransactionInfoCache.TryAdd(txinfo.Txid, txinfo);
         }
 
         /// <summary>
@@ -2516,7 +2531,14 @@ namespace VEDriversLite
                     {
                         try
                         {
-                            var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                            GetTransactionInfoResponse tx = null;
+                            if (TransactionInfoCache.TryGetValue(utx.Txid, out var txinfo))
+                                tx = txinfo;
+                            else
+                            {
+                                tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                                if (tx != null) AddToTransactionInfoCache(tx);
+                            }
                             if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                             {
                                 resp.Add(utx);
@@ -2553,7 +2575,14 @@ namespace VEDriversLite
             foreach (var ut in uts)
                 if (ut != null && ut.Blockheight > 0)
                 {
-                    var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                    GetTransactionInfoResponse tx = null;
+                    if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
+                        tx = txinfo;
+                    else
+                    {
+                        tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                        AddToTransactionInfoCache(tx);
+                    }
                     if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                         return (true, (double)ut.Index);
                 }
@@ -2583,7 +2612,14 @@ namespace VEDriversLite
                     if (toks[0].TokenId == tokenId)
                         if ((toks[0].Amount > 0 && !isMint) || (toks[0].Amount > 1 && isMint))
                         {
-                            var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                            GetTransactionInfoResponse tx = null;
+                            if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
+                                tx = txinfo;
+                            else
+                            {
+                                tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                                if (tx != null) AddToTransactionInfoCache(tx);
+                            }
                             if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                                 return (true, (double)ut.Index);
                         }
@@ -2617,7 +2653,14 @@ namespace VEDriversLite
                     var toks = ut.Tokens.ToArray();
                     if (toks[0].TokenId == tokenId && toks[0].Amount == 1)
                     {
-                        var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                        GetTransactionInfoResponse tx = null;
+                        if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
+                            tx = txinfo;
+                        else
+                        {
+                            tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                            if (tx != null) AddToTransactionInfoCache(tx);
+                        }
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                             return (true, (double)ut.Index);
                     }
@@ -2650,7 +2693,14 @@ namespace VEDriversLite
                     var toks = ut.Tokens.ToArray();
                     if (toks[0].TokenId == tokenId && toks[0].Amount == 1)
                     {
-                        var tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                        GetTransactionInfoResponse tx = null;
+                        if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
+                            tx = txinfo;
+                        else
+                        {
+                            tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                            if (tx != null) AddToTransactionInfoCache(tx);
+                        }
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                             return (true, ut);
                     }
@@ -2684,7 +2734,14 @@ namespace VEDriversLite
                     var tok = utx.Tokens.ToArray()?[0];
                     if (tok != null && tok.TokenId == tokenId && tok?.Amount > 3)
                     {
-                        var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                        GetTransactionInfoResponse tx = null;
+                        if (TransactionInfoCache.TryGetValue(utx.Txid, out var txinfo))
+                            tx = txinfo;
+                        else
+                        {
+                            tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                            if (tx != null) AddToTransactionInfoCache(tx);
+                        }
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                         {
                             founded += (double)tok.Amount;
@@ -2730,22 +2787,42 @@ namespace VEDriversLite
             
             var founded = 0.0;
             utxos = utxos.OrderBy(u => u.Value).ToList();
-            foreach (var utx in utxos)
-                if (utx.Blockheight > 0 && utx.Tokens.Count > 0 && utx.Value == oneTokenSat)
+            foreach (var ut in utxos)
+                if (ut.Blockheight > 0 && ut.Tokens.Count > 0 && ut.Value == oneTokenSat)
                 {
-                    var tok = utx.Tokens.ToArray()?[0];
+                    var tok = ut.Tokens.ToArray()?[0];
                     if (tok != null && tok.TokenId == tokenId && tok?.Amount > lotAmount)
                     {
-                        var tx = await _client.GetTransactionInfoAsync(utx.Txid);
+                        GetTransactionInfoResponse tx = null;
+                        if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
+                            tx = txinfo;
+                        else
+                        {
+                            tx = await _client.GetTransactionInfoAsync(ut.Txid);
+                            if (tx != null) AddToTransactionInfoCache(tx);
+                        }
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                         {
                             founded += (double)tok.Amount;
-                            return utx;
+                            return ut;
                         }
                     }
                 }
                         
             return null;
+        }
+
+        private static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0)
+        {
+            if (TokenTxMetadataCache.TryGetValue(txid, out var tinfo))
+                return tinfo;
+            else
+            {
+                var info = await GetClient().GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
+                if (info != null)
+                    TokenTxMetadataCache.TryAdd(txid, info);
+                return info;
+            }
         }
 
         /// <summary>
@@ -2760,7 +2837,7 @@ namespace VEDriversLite
                 return new Dictionary<string, string>();
 
             var resp = new Dictionary<string, string>();
-            var info = await GetClient().GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
+            var info = await GetTokenMetadataOfUtxoCache(tokenid, txid, 0);
             
             if (info.MetadataOfUtxo != null && info.MetadataOfUtxo.UserData.Meta.Count > 0)
                 foreach (var o in info.MetadataOfUtxo.UserData.Meta)
@@ -2822,8 +2899,15 @@ namespace VEDriversLite
                 return new GetTransactionInfoResponse();
             try
             {
-                var info = await GetClient().GetTransactionInfoAsync(txid);
-                return info;
+                GetTransactionInfoResponse tx = null;
+                if (TransactionInfoCache.TryGetValue(txid, out var txinfo))
+                    tx = txinfo;
+                else
+                {
+                    tx = await _client.GetTransactionInfoAsync(txid);
+                    if (tx != null) AddToTransactionInfoCache(tx);
+                }
+                return tx;
             }
             catch(Exception ex)
             {
@@ -2844,7 +2928,15 @@ namespace VEDriversLite
             try
             {
                 if (txinfo == null)
-                    txinfo = await GetClient().GetTransactionInfoAsync(txid);
+                {
+                    if (TransactionInfoCache.TryGetValue(txid, out var txi))
+                        txinfo = txi;
+                    else
+                    {
+                        txinfo = await GetClient().GetTransactionInfoAsync(txid);
+                        if (txinfo != null) AddToTransactionInfoCache(txinfo);
+                    }
+                }
                 var send = txinfo.Vin.ToList()[0]?.PreviousOutput?.Addresses.ToList()[0];
                 return send;
             }
@@ -2867,8 +2959,15 @@ namespace VEDriversLite
             try
             {
                 if (txinfo == null)
-                    txinfo = await GetClient().GetTransactionInfoAsync(txid);
-
+                {
+                    if (TransactionInfoCache.TryGetValue(txid, out var txi))
+                        txinfo = txi;
+                    else
+                    {
+                        txinfo = await GetClient().GetTransactionInfoAsync(txid);
+                        if (txinfo != null) AddToTransactionInfoCache(txinfo);
+                    }
+                }
                 var rec = txinfo.Vout.ToList()[0]?.ScriptPubKey.Addresses.ToList()[0];
                 if (!string.IsNullOrEmpty(rec))
                     return rec;

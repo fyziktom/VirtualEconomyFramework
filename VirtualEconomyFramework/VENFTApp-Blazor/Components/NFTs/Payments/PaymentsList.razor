@@ -18,9 +18,9 @@
             <tbody>
                 @if (MainAccount)
                 {
-                    @if (AppData.Account.ReceivedPayments.Count > 0)
+                    @if (Payments.Count > 0)
                     {
-                        @foreach (var p in AppData.Account.ReceivedPayments.Values)
+                        @foreach (var p in Payments)
                         {
                             var pnft = p as PaymentNFT;// new PaymentNFT(p.Utxo);
                             //pnft.Fill(p).Wait();
@@ -244,6 +244,19 @@
     [Parameter]
     public bool SubAccount { get; set; } = false;
 
+    public List<INFT> Payments
+    {
+        get
+        {
+            if (MainAccount)
+                return AppData.Account.ReceivedPayments.Values.ToList();
+            else if (SubAccount && !MainAccount)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var sacc))
+                    return sacc.ReceivedPayments.Values.ToList();
+            return new List<INFT>();
+        }
+    }
+
     private bool confirmDestroyVisible = false;
     private bool showNFTDetailsVisible = false;
 
@@ -257,6 +270,10 @@
         {
             AppData.Account.Refreshed -= RefreshedHandler;
             AppData.Account.Refreshed += RefreshedHandler;
+            AppData.Account.NFTsChanged -= RefreshedNFTsHandler;
+            AppData.Account.NFTsChanged += RefreshedNFTsHandler;
+            AppData.Account.NFTAddedToPayments += NFTAddedToPaymentsHandler;
+            AppData.Account.NFTAddedToPayments += NFTAddedToPaymentsHandler;
             AppData.Account.SubAccountNFTsChanged -= RefreshedNFTsHandler;
             AppData.Account.SubAccountNFTsChanged += RefreshedNFTsHandler;
         }
@@ -272,9 +289,14 @@
         StateHasChanged();
     }
 
+    void NFTAddedToPaymentsHandler(object sender, (string,int) e)
+    {
+        StateHasChanged();
+    }
+
     private async Task showNFTDetails(string utxo)
     {
-        loadedNFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, false);
+        loadedNFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, true);
 
         if (loadedNFT != null)
         {
@@ -316,8 +338,6 @@
 
     private async Task deletePaymentNFTAction(INFT loadedNFT)
     {
-        //loadedNFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, true);
-
         if (loadedNFT != null)
         {
             try
@@ -329,6 +349,7 @@
                     res = await AppData.Account.DestroyNFTOnSubAccount(Address, new List<INFT>() { loadedNFT });
                 if (res.Item1)
                 {
+                    await AppData.Account.ReloadUtxos();
                     await AppData.Account.ReLoadNFTs();
                     await AppData.Account.RefreshAddressReceivedPayments();
 

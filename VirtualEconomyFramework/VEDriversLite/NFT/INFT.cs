@@ -53,6 +53,7 @@ namespace VEDriversLite.NFT
         int UtxoIndex { get; set; }
         string ShortHash { get; }
         bool IsLoaded { get; set; }
+        bool IsInThePayments { get; set; }
         NFTSoldInfo SoldInfo { get; set; }
         DateTime Time { get; set; }
         List<INFT> History { get; set; }

@@ -457,7 +457,9 @@ namespace VEDriversLite.Neblio
 
                     var lastnft = NFTs.FirstOrDefault();
                     var lastcount = NFTs.Count;
-                    var nfts = await NFTHelpers.LoadAddressNFTs(Address, Utxos.ToList(), NFTs.ToList(), fireProfileEvent, withoutMessages:withoutMessages);
+                    var nfts = await NFTHelpers.LoadAddressNFTs(Address, Utxos, NFTs.ToList(), fireProfileEvent, withoutMessages:withoutMessages);
+                    if (nfts == null)
+                        return;
                     lock (_lock)
                     {
                         NFTs = nfts;
@@ -534,20 +536,19 @@ namespace VEDriversLite.Neblio
                     var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
                     var ffirstpnft = pnfts.FirstOrDefault();
 
-                    if ((firstpnft != null && ffirstpnft != null) || firstpnft == null && ffirstpnft != null)
+                    //if ((firstpnft != null && ffirstpnft != null) || (firstpnft == null && ffirstpnft != null))
                     {
-                        if ((firstpnft == null && ffirstpnft != null) || (firstpnft != null && (firstpnft.Utxo != ffirstpnft.Utxo)))
+                        //if ((firstpnft == null && ffirstpnft != null) || (firstpnft != null && (firstpnft.Utxo != ffirstpnft.Utxo)))
                         {
                             ReceivedPayments.Clear();
                             foreach (var p in pnfts)
                             {
                                 ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
-                                if (NFTs.Where(nft => NFTHelpers.IsBuyableNFT(nft.Type))
-                                        .FirstOrDefault(n => n.Utxo == (p as PaymentNFT).NFTUtxoTxId && 
-                                                             n.UtxoIndex == (p as PaymentNFT).NFTUtxoIndex) != null)
-                                {
+                                var _nft = NFTs.Where(nft => NFTHelpers.IsBuyableNFT(nft.Type))
+                                               .FirstOrDefault(n => n.Utxo == (p as PaymentNFT).NFTUtxoTxId &&
+                                                                    n.UtxoIndex == (p as PaymentNFT).NFTUtxoIndex);
+                                if (_nft != null)
                                     NFTAddedToPayments?.Invoke(Address, ((p as PaymentNFT).NFTUtxoTxId, (p as PaymentNFT).NFTUtxoIndex));
-                                }
                             }
                         }
                     }

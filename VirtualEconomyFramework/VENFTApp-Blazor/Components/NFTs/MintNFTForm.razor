@@ -282,7 +282,7 @@
                     {
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <button class="btn btn-primary" @onclick="ShowMintConfirm">@(string.IsNullOrEmpty(sourceUtxo)? "Create NFT" : "Edit NFT")</button>
+                                <button class="btn btn-primary" @onclick="ShowMintConfirm">@(string.IsNullOrEmpty(sourceUtxo)? "Create NFT" : "Apply Changes")</button>
                             </div>
                         </div>
                         @if (!string.IsNullOrEmpty(multimintStatus))

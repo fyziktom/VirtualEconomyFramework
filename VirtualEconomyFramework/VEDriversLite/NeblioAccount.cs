@@ -15,6 +15,7 @@ using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
+using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
 using VEDriversLite.WooCommerce;
 
@@ -518,9 +519,16 @@ namespace VEDriversLite
             try
             {
                 var output = string.Empty;
+                var nout = new Dictionary<string, NFTCacheDto>();
+                
                 lock (_lock)
                 {
-                    output = JsonConvert.SerializeObject(VEDLDataContext.NFTCache);
+                    foreach (var n in VEDLDataContext.NFTCache)
+                    {
+                        if ((DateTime.UtcNow - n.Value.LastAccess) < new TimeSpan(1, 0, 0, 0))
+                            nout.Add(n.Key, n.Value);
+                    }
+                    output = JsonConvert.SerializeObject(nout);
                 }
                 return output;
             }
@@ -536,7 +544,7 @@ namespace VEDriversLite
             if (string.IsNullOrEmpty(cacheString)) return false;
             try
             {
-                var nfts = JsonConvert.DeserializeObject<ConcurrentDictionary<string, IDictionary<string, string>>>(cacheString);
+                var nfts = JsonConvert.DeserializeObject<ConcurrentDictionary<string, NFTCacheDto>>(cacheString);
                 if (nfts != null)
                 {
                     lock (_lock)
@@ -554,7 +562,7 @@ namespace VEDriversLite
             }
         }
 
-        public async Task<bool> LoadCacheNFTsFromString(IDictionary<string, IDictionary<string, string>> nfts)
+        public async Task<bool> LoadCacheNFTsFromString(IDictionary<string, NFTCacheDto> nfts)
         {
             try
             {

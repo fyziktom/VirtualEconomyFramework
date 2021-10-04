@@ -262,7 +262,7 @@
             {
                 try
                 {
-                    var cch = await localStorage.GetItemAsync<IDictionary<string, IDictionary<string, string>>>("nftcache");
+                    var cch = await localStorage.GetItemAsync<IDictionary<string, VEDriversLite.NFT.Dto.NFTCacheDto>>("nftcache");
                     var resload = await AppData.Account.LoadCacheNFTsFromString(cch);
                 }
                 catch (Exception ex)

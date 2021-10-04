@@ -317,13 +317,13 @@
         get => nft;
         set
         {
-            if (value != null && value.Utxo != nft.Utxo)
+            if (value != null)
             {
                 NFTChecked = false;
                 nft = value;
                 _isInThePayments = IsInThePayments(nft.Utxo);
+                nft.IsInThePayments = _isInThePayments;
                 setBgColor();
-                StateHasChanged();
             }
         }
     }
@@ -396,6 +396,7 @@
             if (e.Item1 == nft.Utxo && e.Item2 == nft.UtxoIndex)
             {
                 _isInThePayments = true;
+                nft.IsInThePayments = true;
                 StateHasChanged();
             }
         }
