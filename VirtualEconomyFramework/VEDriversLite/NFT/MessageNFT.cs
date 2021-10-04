@@ -37,7 +37,7 @@ namespace VEDriversLite.NFT
 
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
-            GetPartnerAsync();
+            GetPartnerAsync().GetAwaiter().GetResult();
         }
 
         private async Task GetPartnerAsync()
@@ -96,7 +96,7 @@ namespace VEDriversLite.NFT
                 return false;
 
             if (string.IsNullOrEmpty(Partner))
-                throw new Exception("Cannot decrypt without loaded Partner address.");
+                return false;//throw new Exception("Cannot decrypt without loaded Partner address.");
 
             var add = secret.PubKey.GetAddress(NeblioTransactionHelpers.Network);
 
@@ -105,7 +105,7 @@ namespace VEDriversLite.NFT
                 IsReceivedMessage = false;
                 Partner = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo);
                 if (string.IsNullOrEmpty(Partner))
-                    throw new Exception("Cannot decrypt without loaded Partner address.");
+                    return false;//throw new Exception("Cannot decrypt without loaded Partner address.");
             }
             else
             {

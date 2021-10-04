@@ -90,6 +90,8 @@ namespace VEDriversLite
         public static Dictionary<string, GetTokenMetadataResponse> TokensInfo = new Dictionary<string, GetTokenMetadataResponse>();
         public static ConcurrentDictionary<string, GetTransactionInfoResponse> TransactionInfoCache = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
         public static ConcurrentDictionary<string, GetTokenMetadataResponse> TokenTxMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>();
+        public static ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)> AddressInfoCache = new ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)>();
+
         public static event EventHandler<IEventInfo> NewEventInfo;
 
         /// <summary>
@@ -139,7 +141,7 @@ namespace VEDriversLite
             foreach(var tok in tokenIds)
                 if (!TokensInfo.TryGetValue(tok, out var tokinfo))
                 {
-                    var info = await GetClient().GetTokenMetadataAsync(tok, 0);
+                    var info = await GetTokenMetadata(tok);
                     if (info != null)
                         TokensInfo.Add(tok, info);
                 }
@@ -2355,8 +2357,33 @@ namespace VEDriversLite
         {
             if (string.IsNullOrEmpty(addr))
                 return new GetAddressInfoResponse();
-            var address = await GetClient().GetAddressInfoAsync(addr);
-            return address;
+            GetAddressInfoResponse ainfo = null;
+            if (AddressInfoCache.TryGetValue(addr, out var info))
+            {
+                if ((DateTime.UtcNow - info.Item1) < new TimeSpan(0, 0, 1))
+                {
+                    ainfo = info.Item2;
+                    return ainfo;
+                }
+                else
+                {
+                    var address = await GetClient().GetAddressInfoAsync(addr);
+                    if (address != null)
+                    {
+                        if (AddressInfoCache.TryRemove(addr, out info))
+                            AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
+                        return address;
+                    }
+                }
+            }
+            else
+            {
+                var address = await GetClient().GetAddressInfoAsync(addr);
+                if (address != null)
+                        AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
+                return address;
+            }
+            return new GetAddressInfoResponse();
         }
 
         /// <summary>
@@ -2405,7 +2432,7 @@ namespace VEDriversLite
                 return new List<Utxos>();
 
             if (addressinfo == null)
-                addressinfo = await GetClient().GetAddressInfoAsync(addr);
+                addressinfo = await AddressInfoUtxosAsync(addr);
 
             var utxos = new List<Utxos>();
             if (addressinfo?.Utxos != null)
@@ -2425,14 +2452,9 @@ namespace VEDriversLite
         {
             if (string.IsNullOrEmpty(txid))
                 return string.Empty;
-            if (TransactionInfoCache.TryGetValue(txid, out var txinfo))
-                return txinfo.Hex;
-            var tx = await GetClient().GetTransactionInfoAsync(txid);
+            var tx = await GetTransactionInfo(txid);
             if (tx != null)
-            {
-                AddToTransactionInfoCache(tx);
                 return tx.Hex;
-            }
             else
                 return string.Empty;
         }
@@ -2455,7 +2477,7 @@ namespace VEDriversLite
             if (string.IsNullOrEmpty(addr))
                 return new List<Utxos>();
             if (addressinfo == null)
-                addressinfo = await GetClient().GetAddressInfoAsync(addr);
+                addressinfo = await AddressInfoUtxosAsync(addr);
 
             var utxos = new List<Utxos>();
             try
@@ -2518,31 +2540,24 @@ namespace VEDriversLite
             GetAddressInfoResponse addinfo = null;
             var resp = new List<Utxos>();
 
-            addinfo = await GetClient().GetAddressInfoAsync(addr);
+            addinfo = await AddressInfoUtxosAsync(addr);
             var utxos = addinfo.Utxos;
             if (utxos == null)
                 return resp;
             utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
 
             var founded = 0.0;
-            foreach (var utx in utxos)
-                if (utx.Blockheight > 0 && utx.Value > 10000 && utx.Tokens?.Count == 0)
-                    if (((double)utx.Value) > (minAmount * FromSatToMainRatio))
+            foreach (var ut in utxos)
+                if (ut.Blockheight > 0 && ut.Value > 10000 && ut.Tokens?.Count == 0)
+                    if (((double)ut.Value) > (minAmount * FromSatToMainRatio))
                     {
                         try
                         {
-                            GetTransactionInfoResponse tx = null;
-                            if (TransactionInfoCache.TryGetValue(utx.Txid, out var txinfo))
-                                tx = txinfo;
-                            else
-                            {
-                                tx = await _client.GetTransactionInfoAsync(utx.Txid);
-                                if (tx != null) AddToTransactionInfoCache(tx);
-                            }
+                            var tx = await GetTransactionInfo(ut.Txid);
                             if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                             {
-                                resp.Add(utx);
-                                founded += ((double)utx.Value / FromSatToMainRatio);
+                                resp.Add(ut);
+                                founded += ((double)ut.Value / FromSatToMainRatio);
                                 if (founded > requiredAmount)
                                     return resp;
                             }
@@ -2564,7 +2579,7 @@ namespace VEDriversLite
         /// <returns>true and index of utxo</returns>
         public static async Task<(bool, double)> ValidateNeblioUtxo(string address, string txid)
         {
-            var info = await GetClient().GetAddressInfoAsync(address);
+            var info = await AddressInfoUtxosAsync(address);
             if (info == null)
                 return (false, 0);
 
@@ -2575,14 +2590,7 @@ namespace VEDriversLite
             foreach (var ut in uts)
                 if (ut != null && ut.Blockheight > 0)
                 {
-                    GetTransactionInfoResponse tx = null;
-                    if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
-                        tx = txinfo;
-                    else
-                    {
-                        tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                        AddToTransactionInfoCache(tx);
-                    }
+                    var tx = await GetTransactionInfo(ut.Txid);
                     if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                         return (true, (double)ut.Index);
                 }
@@ -2600,7 +2608,7 @@ namespace VEDriversLite
         /// <returns>true and index of utxo</returns>
         public static async Task<(bool, double)> ValidateNeblioTokenUtxo(string address, string txid, string tokenId, bool isMint = false)
         {
-            var addinfo = await GetClient().GetAddressInfoAsync(address);
+            var addinfo = await AddressInfoUtxosAsync(address);
             var utxos = addinfo.Utxos;
             if (utxos == null)
                 return (false, 0);
@@ -2612,14 +2620,7 @@ namespace VEDriversLite
                     if (toks[0].TokenId == tokenId)
                         if ((toks[0].Amount > 0 && !isMint) || (toks[0].Amount > 1 && isMint))
                         {
-                            GetTransactionInfoResponse tx = null;
-                            if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
-                                tx = txinfo;
-                            else
-                            {
-                                tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                                if (tx != null) AddToTransactionInfoCache(tx);
-                            }
+                            var tx = await GetTransactionInfo(ut.Txid);
                             if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                                 return (true, (double)ut.Index);
                         }
@@ -2638,7 +2639,7 @@ namespace VEDriversLite
         /// <returns>true and index of utxo</returns>
         public static async Task<(bool, double)> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid, int indx)
         {
-            var addinfo = await GetClient().GetAddressInfoAsync(address);
+            var addinfo = await AddressInfoUtxosAsync(address);
             var utxos = addinfo.Utxos;
             if (utxos == null)
                 return (false, 0);
@@ -2653,14 +2654,7 @@ namespace VEDriversLite
                     var toks = ut.Tokens.ToArray();
                     if (toks[0].TokenId == tokenId && toks[0].Amount == 1)
                     {
-                        GetTransactionInfoResponse tx = null;
-                        if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
-                            tx = txinfo;
-                        else
-                        {
-                            tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                            if (tx != null) AddToTransactionInfoCache(tx);
-                        }
+                        var tx = await GetTransactionInfo(ut.Txid);
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                             return (true, (double)ut.Index);
                     }
@@ -2678,7 +2672,7 @@ namespace VEDriversLite
         /// <returns>true and index of utxo</returns>
         public static async Task<(bool, Utxos)> ValidateOneTokenNFTUtxoReturnUtxo(string address, string tokenId, string txid, int indx)
         {
-            var addinfo = await GetClient().GetAddressInfoAsync(address);
+            var addinfo = await AddressInfoUtxosAsync(address);
             var utxos = addinfo.Utxos;
             if (utxos == null)
                 return (false, null);
@@ -2693,14 +2687,7 @@ namespace VEDriversLite
                     var toks = ut.Tokens.ToArray();
                     if (toks[0].TokenId == tokenId && toks[0].Amount == 1)
                     {
-                        GetTransactionInfoResponse tx = null;
-                        if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
-                            tx = txinfo;
-                        else
-                        {
-                            tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                            if (tx != null) AddToTransactionInfoCache(tx);
-                        }
+                        var tx = await GetTransactionInfo(ut.Txid);
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                             return (true, ut);
                     }
@@ -2719,7 +2706,7 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<List<Utxos>> FindUtxoForMintNFT(string addr, string tokenId, int numberToMint = 1, double oneTokenSat = 10000)
         {
-            var addinfo = await GetClient().GetAddressInfoAsync(addr);
+            var addinfo = await AddressInfoUtxosAsync(addr);
             var utxos = addinfo.Utxos;
             var resp = new List<Utxos>();
             var founded = 0.0;
@@ -2728,24 +2715,17 @@ namespace VEDriversLite
                 return resp;
 
             utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
-            foreach (var utx in utxos)
-                if (utx.Blockheight > 0 && utx.Tokens.Count > 0)
+            foreach (var ut in utxos)
+                if (ut.Blockheight > 0 && ut.Tokens.Count > 0)
                 {
-                    var tok = utx.Tokens.ToArray()?[0];
+                    var tok = ut.Tokens.ToArray()?[0];
                     if (tok != null && tok.TokenId == tokenId && tok?.Amount > 3)
                     {
-                        GetTransactionInfoResponse tx = null;
-                        if (TransactionInfoCache.TryGetValue(utx.Txid, out var txinfo))
-                            tx = txinfo;
-                        else
-                        {
-                            tx = await _client.GetTransactionInfoAsync(utx.Txid);
-                            if (tx != null) AddToTransactionInfoCache(tx);
-                        }
+                        var tx = await GetTransactionInfo(ut.Txid);
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                         {
                             founded += (double)tok.Amount;
-                            resp.Add(utx);
+                            resp.Add(ut);
                             if (founded > numberToMint)
                                 break;
                         }
@@ -2780,7 +2760,7 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<Utxos> FindUtxoToSplit(string addr, string tokenId, int lotAmount = 100, double oneTokenSat = 10000)
         {
-            var addinfo = await GetClient().GetAddressInfoAsync(addr);
+            var addinfo = await AddressInfoUtxosAsync(addr);
             var utxos = addinfo.Utxos;
             if (utxos == null)
                 return null;
@@ -2793,14 +2773,7 @@ namespace VEDriversLite
                     var tok = ut.Tokens.ToArray()?[0];
                     if (tok != null && tok.TokenId == tokenId && tok?.Amount > lotAmount)
                     {
-                        GetTransactionInfoResponse tx = null;
-                        if (TransactionInfoCache.TryGetValue(ut.Txid, out var txinfo))
-                            tx = txinfo;
-                        else
-                        {
-                            tx = await _client.GetTransactionInfoAsync(ut.Txid);
-                            if (tx != null) AddToTransactionInfoCache(tx);
-                        }
+                        var tx = await GetTransactionInfo(ut.Txid);
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
                         {
                             founded += (double)tok.Amount;
@@ -2904,16 +2877,17 @@ namespace VEDriversLite
                     tx = txinfo;
                 else
                 {
-                    tx = await _client.GetTransactionInfoAsync(txid);
-                    if (tx != null) AddToTransactionInfoCache(tx);
+                    tx = await GetClient().GetTransactionInfoAsync(txid);
+                    AddToTransactionInfoCache(tx);
                 }
-                return tx;
+                if (tx != null)
+                    return tx;
             }
             catch(Exception ex)
             {
-                Console.WriteLine("Cannot load tx info. " + ex.Message);
-                return new GetTransactionInfoResponse();
+                Console.WriteLine($"Cannot load tx {txid} info. " + ex.Message);
             }
+            return new GetTransactionInfoResponse();
         }
 
         /// <summary>
@@ -2928,15 +2902,9 @@ namespace VEDriversLite
             try
             {
                 if (txinfo == null)
-                {
-                    if (TransactionInfoCache.TryGetValue(txid, out var txi))
-                        txinfo = txi;
-                    else
-                    {
-                        txinfo = await GetClient().GetTransactionInfoAsync(txid);
-                        if (txinfo != null) AddToTransactionInfoCache(txinfo);
-                    }
-                }
+                    txinfo = await GetTransactionInfo(txid);
+                if (txinfo == null)
+                    return string.Empty;
                 var send = txinfo.Vin.ToList()[0]?.PreviousOutput?.Addresses.ToList()[0];
                 return send;
             }
@@ -2960,19 +2928,18 @@ namespace VEDriversLite
             {
                 if (txinfo == null)
                 {
-                    if (TransactionInfoCache.TryGetValue(txid, out var txi))
-                        txinfo = txi;
-                    else
-                    {
-                        txinfo = await GetClient().GetTransactionInfoAsync(txid);
-                        if (txinfo != null) AddToTransactionInfoCache(txinfo);
-                    }
+                    var tx = await GetTransactionInfo(txid);
+                    if (tx != null) 
+                        txinfo = tx;
                 }
-                var rec = txinfo.Vout.ToList()[0]?.ScriptPubKey.Addresses.ToList()[0];
-                if (!string.IsNullOrEmpty(rec))
-                    return rec;
-                else
-                    return string.Empty;
+
+                if (txinfo != null)
+                {
+                    var rec = txinfo.Vout.ToList()[0]?.ScriptPubKey.Addresses.ToList()[0];
+                    if (!string.IsNullOrEmpty(rec))
+                        return rec;
+                }
+                return string.Empty;
             }
             catch (Exception ex)
             {
@@ -3111,6 +3078,7 @@ namespace VEDriversLite
             return null;
         }
 
+        public static ConcurrentDictionary<string, GetTokenMetadataResponse> TokenMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>();
         /// <summary>
         /// Get token issue metadata. Contains image url, issuer, and other info
         /// </summary>
@@ -3122,13 +3090,23 @@ namespace VEDriversLite
                 return new GetTokenMetadataResponse();
             try
             {
-                var tokeninfo = await GetClient().GetTokenMetadataAsync(tokenId, 0);
-                return tokeninfo;
+                GetTokenMetadataResponse tokeninfo = null;
+                if (TokenMetadataCache.TryGetValue(tokenId, out var ti))
+                    tokeninfo = ti;
+                else
+                {
+                    tokeninfo = await GetClient().GetTokenMetadataAsync(tokenId, 0);
+                    TokenMetadataCache.TryAdd(tokenId, tokeninfo);
+                }
+                if (tokeninfo != null)
+                    return tokeninfo;
+                else
+                    return new GetTokenMetadataResponse();
             }
             catch(Exception ex)
             {
                 Console.WriteLine("Cannot load token metadata. " + ex.Message);
-                return null;
+                return new GetTokenMetadataResponse();
             }
         }
 
@@ -3144,7 +3122,7 @@ namespace VEDriversLite
             var t = new TokenSupplyDto();
             try
             {
-                var info = await GetClient().GetTokenMetadataAsync(tokenId, 0);
+                var info = await GetTokenMetadata(tokenId);
                 t.TokenSymbol = info.MetadataOfIssuance.Data.TokenName;
                 var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance.Data.Urls));
 

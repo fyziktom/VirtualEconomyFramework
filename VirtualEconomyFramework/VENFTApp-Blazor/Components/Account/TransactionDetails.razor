@@ -427,7 +427,7 @@
                                     NFTTransaction = false;
 
                                 if (NFTTransaction && loadedNFT.Utxo != txId)
-                                    loadedNFT = await NFTFactory.GetNFT(tokid, txId, 0, 0, false, txinfo: txinfo);
+                                    loadedNFT = await NFTFactory.GetNFT(tokid, txId, 0, 0, true, txinfo: txinfo);
                                 if (loadedNFT == null || !NFTTransaction)
                                     loadedNFT = new ImageNFT("");
                                 nftType = loadedNFT.Type;
