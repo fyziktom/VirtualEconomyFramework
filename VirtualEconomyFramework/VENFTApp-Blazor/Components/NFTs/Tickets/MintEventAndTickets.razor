@@ -461,11 +461,32 @@
             </div>
         </Spin>
 
-        <Modal Title="Mint New NFT"
+        <Modal Title="@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")"
                Visible="@confirmVisible"
                OnOk="@HandleOk"
                OnCancel="@HandleCancel">
-            <p>"Do you realy want to mint this NFT?"</p>
+            @if (!string.IsNullOrEmpty(NFT.Utxo))
+            {
+                switch (nftType)
+                {
+                    case NFTTypes.Event:
+                        <p>Do you realy want to update this Event?</p>
+                        break;
+                }
+            }
+            else
+            {
+                switch (nftType)
+                {
+                    case NFTTypes.Event:
+                        <p>Do you realy want to create this Event?</p>
+                        break;
+                    case NFTTypes.Ticket:
+                        <p>Do you realy want to create this Ticket?</p>
+                        break;
+                }
+            }
+
         </Modal>
 
         <Modal Title="Mint To Another Address"
@@ -477,8 +498,8 @@
 
         <Modal Title="Event Details"
                Visible="@eventNFTDetailsVisible"
-               OnOk="@eventNFTDetailsClose"
-               OnCancel="@eventNFTDetailsClose">
+               OnCancel="@eventNFTDetailsClose"
+               Footer="null">
             <Spin Tip="Loading Event Data..." Spinning="@loadingEventData">
                 @if (!string.IsNullOrEmpty(loadedEventNFT.Utxo))
                 {

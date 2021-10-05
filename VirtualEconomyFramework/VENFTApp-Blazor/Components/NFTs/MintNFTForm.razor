@@ -298,11 +298,41 @@
             </div>
         </Spin>
 
-        <Modal Title="Mint New NFT"
+        <Modal Title="@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")"
                Visible="@confirmVisible"
                OnOk="@HandleOk"
                OnCancel="@HandleCancel">
-            <p>"Do you realy want to mint this NFT?"</p>
+            @if (!string.IsNullOrEmpty(NFT.Utxo))
+            {
+                switch (nftType)
+                {
+                    case NFTTypes.Post:
+                        <p>Do you realy want to update this Post?</p>
+                        break;
+                    case NFTTypes.Profile:
+                        <p>Do you realy want to update this Profile?</p>
+                        break;
+                }
+            }
+            else
+            {
+                switch (nftType)
+                {
+                    case NFTTypes.Post:
+                        <p>Do you realy want to create this Post?</p>
+                        break;
+                    case NFTTypes.Profile:
+                        <p>Do you realy want to create this Profile?</p>
+                        break;
+                    case NFTTypes.Image:
+                        <p>Do you realy want to create this Image?</p>
+                        break;
+                    case NFTTypes.Music:
+                        <p>Do you realy want to create this Music?</p>
+                        break;
+                }
+            }
+
         </Modal>
 
         <Modal Title="Mint To Another Address"

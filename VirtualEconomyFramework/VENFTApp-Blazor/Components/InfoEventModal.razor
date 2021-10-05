@@ -6,8 +6,9 @@
 
 <Modal Title="Event Info"
        Visible="@infoEventModalVisible"
-       OnOk="@CloseInfoEventModal"
-       OnCancel="@CloseInfoEventModal" ZIndex="10">
+       OnCancel="@CloseInfoEventModal"
+       Footer="null"
+       ZIndex="10">
         <div class="row">
             <div class="col">
                 @if (eventInfo != null)

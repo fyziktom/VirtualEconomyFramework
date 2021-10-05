@@ -525,7 +525,7 @@ namespace VEDriversLite
                 {
                     foreach (var n in VEDLDataContext.NFTCache)
                     {
-                        if ((DateTime.UtcNow - n.Value.LastAccess) < new TimeSpan(1, 0, 0, 0))
+                        if ((DateTime.UtcNow - n.Value.LastAccess) < new TimeSpan(10, 0, 0, 0))
                             nout.Add(n.Key, n.Value);
                     }
                     output = JsonConvert.SerializeObject(nout);

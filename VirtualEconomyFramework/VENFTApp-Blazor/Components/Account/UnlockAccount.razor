@@ -12,6 +12,8 @@
 <Modal Title="Unlock Account"
        Visible="@unlockAcocuntModalVisible"
        OnOk="@UnlockAccountConfirm"
+       CancelButtonProps="new ButtonProps() {  Disabled = unlockingAccount }"
+       OkButtonProps="new ButtonProps() { Disabled = unlockingAccount }"
        OnCancel="@UnclockAccountCancel">
     <div class="row">
         <div class="col">
@@ -407,6 +409,8 @@
 
     private void UnclockAccountCancel(MouseEventArgs e)
     {
+        if (unlockingAccount) return;
+
         removeAccountCounter++;
         if (removeAccountCounter > 100)
             removeExistingAccountVisible = true;

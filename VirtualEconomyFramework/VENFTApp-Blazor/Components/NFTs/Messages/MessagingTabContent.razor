@@ -147,9 +147,9 @@
 
 <Modal Title="Message Details"
        Visible="@messageDetailsVisible"
-       OnOk="@messageDetailsVisibleCancel"
-       OnCancel="@messageDetailsVisibleCancel">
-    <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" />
+       OnCancel="@messageDetailsVisibleCancel"
+       Footer="null">
+    <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" NFTSent="NFTSentHandler" />
 </Modal>
 
 <Modal Title="Send Message"
@@ -196,6 +196,7 @@
 
     private void NFTSentHandler(string e)
     {
+        sendMessageVisible = false;
         messageDetailsVisible = false;
         StateHasChanged();
     }

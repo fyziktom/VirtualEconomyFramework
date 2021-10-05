@@ -262,8 +262,8 @@
     <!--NFT Details Modal-->
     <Modal Title="NFT Details"
            Visible="@nftDetailsVisible"
-           OnOk="@CloseNFTDetails"
-           OnCancel="@CloseNFTDetails">
+           OnCancel="@CloseNFTDetails"
+           Footer="null">
         <VENFTApp_Blazor.Components.NFTs.NFTDetails UtxoIndex="@nft.UtxoIndex" 
                                                Utxo="@nft.Utxo"
                                                InputNFT="@nft"

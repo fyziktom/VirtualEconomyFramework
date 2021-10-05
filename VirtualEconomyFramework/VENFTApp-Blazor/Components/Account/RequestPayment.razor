@@ -15,9 +15,9 @@
 
 <Modal Title="Request Payment"
        Visible="@showLinkDialogVisible"
-       OnOk="@showLinkDialogCancel"
        Style="width:100%; min-width:250px; max-width:400px;"
-       OnCancel="@showLinkDialogCancel">
+       OnCancel="@showLinkDialogCancel"
+       Footer="null">
 
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
@@ -29,11 +29,11 @@
             <Input Placeholder="Type the payment message" MaxLength="200" @bind-Value=@message Style="font-size:12px; width:90%; min-width:250px; max-width:400px;" />
         </div>
     </div>
-    @if (string.IsNullOrEmpty(message))
+    @if (string.IsNullOrEmpty(message) || string.IsNullOrWhiteSpace(message))
     {
         <div class="row" style="margin-top:2px;">
             <div class="col d-flex justify-content-center align-items-center">
-                <small class="text-danger">You must fill this field.</small>
+                <small class="text-danger">You must fill this field. Or it will add default message "Sent with VENFT App".</small>
             </div>
         </div>
     }
@@ -116,10 +116,9 @@
 
     private async Task ShowLink()
     {
-        if (string.IsNullOrEmpty(message))
+        if (string.IsNullOrEmpty(message) || string.IsNullOrWhiteSpace(message))
         {
-            await JSRuntime.InvokeVoidAsync("alertMessage", "Message cannot be empty.");
-            return;
+            message = "Sent with VENFT App";
         }
         if (AmountToSend <= 0)
         {

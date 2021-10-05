@@ -4,8 +4,9 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 
-<Modal Title="Please create new Address"
+<Modal Title="Please Create Account"
        Visible="@createNewAddressModalVisible"
        OnOk="@HandleOk"
        OnCancel="@HandleCancel">
@@ -14,20 +15,17 @@
             <Spin spinning="@creatingAddressSpinner" tip="Creating Address...">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <span>Welcome in VENFT App</span>
+                        <h6>Welcome in VENFT App</h6>
                     </div>
                 </div>
+
                 <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>If you do not know this project please read <a href="https://about.ve-nft.com/" target="_blank">about it here</a></span>
+                    <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                        <span class="text-center" style="width:90%;max-width:200px;">If you do not know this project please read <a href="https://about.ve-nft.com/" target="_blank">about it here</a></span>
                     </div>
                 </div>
-                <div class="row" style="margin-bottom:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>You are here first time. This dialog will create new wallet for you.</span>
-                    </div>
-                </div>
-                <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="newaddress"/>
+
+                <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="newaddress" />
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex justify-content-center align-items-center">
                         <h4>Start With One Simple Step</h4>
@@ -35,10 +33,9 @@
                 </div>
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <span>Create new wallet with type your new password (8 chars minimum)</span>
+                        <span>Create an account with type your new password (8 chars minimum)</span>
                     </div>
                 </div>
-
                 <div class="row" style="margin-top:20px;">
                     <div class="col d-flex justify-content-center align-items-center">
                         <span>Input Password:</span>
@@ -64,6 +61,11 @@
                         <span>Please Fill Password longer than 8 characters</span>
                     </div>
                 </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="HandleOk">Create Account</button>
+                    </div>
+                </div>
                 <hr />
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex justify-content-center align-items-center">
@@ -72,41 +74,46 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <button class="btn btn-secondary" @onclick="showImportAccount">Import address</button>
+                        <button class="btn btn-secondary" @onclick="showImportAccount">Import Existing Account</button>
                     </div>
                 </div>
-                
-                @if (!string.IsNullOrEmpty(password))
-                {
-                    if (password.Length > 4)
-                    {
-                        if (!string.IsNullOrEmpty(passwordConfirm))
+
+                <div class="row" style="margin-top:15px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+
+                        @if (!string.IsNullOrEmpty(password))
                         {
-                            if (passwordConfirm != password)
+                            if (password.Length > 4)
                             {
-                                <Alert Type="@AlertType.Warning"
-                                       Message="Warrning"
-                                       Description="Passwords not match!"
-                                       ShowIcon="true" />
-                            }
-                            else
-                            {
-                                <Alert Type="@AlertType.Success"
-                                       Message="Success"
-                                       Description="Passwords Match. Please confirm to create address!"
-                                       ShowIcon="true" />
+                                if (!string.IsNullOrEmpty(passwordConfirm))
+                                {
+                                    if (passwordConfirm != password)
+                                    {
+                                        <Alert Type="@AlertType.Warning"
+                                               Message="Warrning"
+                                               Description="Passwords not match!"
+                                               ShowIcon="true" />
+                                    }
+                                    else
+                                    {
+                                        <Alert Type="@AlertType.Success"
+                                               Message="Success"
+                                               Description="Passwords Match. Please confirm to create an account!"
+                                               ShowIcon="true" />
+                                    }
+                                }
                             }
                         }
-                    }
-                }
 
-                @if (mustCreateAddressMessage)
-                {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="You must create new account for continue. There is no account saved in your local browser memory."
-                           ShowIcon="true" />
-                }
+                        @if (mustCreateAddressMessage)
+                        {
+                            <Alert Type="@AlertType.Error"
+                                   Message="Error"
+                                   Description="You must create new account for continue. There is no account saved in your local browser memory."
+                                   ShowIcon="true" />
+                        }
+                    </div>
+                </div>
             </Spin>
         </div>
     </div>
@@ -114,25 +121,27 @@
 
 <VENFTApp_Blazor.Components.Account.ImportAccount Visible="@importAccountVisible" AccountImported="AccountImported" />
 
+
 @if (accountCreatedError)
 {
     <Alert Type="@AlertType.Error"
            Message="Error"
+           Style="margin-top:15px;"
            Description="@errorMessage"
            ShowIcon="true" />
 }
 
 @code {
 
-        [Parameter]
-        public bool Visible
+    [Parameter]
+    public bool Visible
     {
-            get => createNewAddressModalVisible;
-            set => createNewAddressModalVisible = value;
-        }
+        get => createNewAddressModalVisible;
+        set => createNewAddressModalVisible = value;
+    }
 
-        [Parameter]
-        public EventCallback<string> AccountCreated { get; set; }
+    [Parameter]
+    public EventCallback<string> AccountCreated { get; set; }
 
     private string key = string.Empty;
     private string address = string.Empty;
@@ -190,11 +199,16 @@
                 }
             }
         }
+        else
+        {
+            passState = PasswordCheckStates.ShortPassword;
+        }
     }
 
     private async Task HandleOk(MouseEventArgs e)
     {
         await CheckPassState();
+
         if (passState == PasswordCheckStates.PasswordMatch)
         {
             try
@@ -229,10 +243,15 @@
             }
             catch (Exception ex)
             {
-                errorMessage = "Your Neblio address was not created." + ex.Message;
+                errorMessage = "Your Account was not created." + ex.Message;
                 accountCreatedError = true;
             }
         }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "Please fill your new password.");
+        }
+
     }
 
     private void HandleCancel(MouseEventArgs e)

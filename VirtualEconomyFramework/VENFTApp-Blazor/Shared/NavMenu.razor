@@ -1,4 +1,6 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@inject AppData AppData
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href=""><img src="images/VENFT_logo.png" style="max-height:80px; min-width:100px; max-width:150px;" /></a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -6,7 +8,7 @@
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
+    <ul class="nav flex-column @IsDisabled">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
@@ -22,18 +24,13 @@
                 <span class="oi oi-envelope-closed" aria-hidden="true"></span> Messages
             </NavLink>
         </li>
-        <!--<li class="nav-item px-3">
-        <NavLink class="nav-link" href="nfts">
-            <span class="oi oi-image" aria-hidden="true"></span> NFTs
-        </NavLink>
-    </li>-->
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="nftexplorer">
                 <span class="oi oi-folder" aria-hidden="true"></span> My NFTs
             </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="mint">
+            <NavLink class="nav-link " href="mint">
                 <span class="oi oi-plus" aria-hidden="true"></span> New NFT
             </NavLink>
         </li>
@@ -53,23 +50,57 @@
             </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="advanced">
+            <NavLink class="nav-link " href="advanced">
                 <span class="oi oi-wrench" aria-hidden="true"></span> Advanced
             </NavLink>
         </li>
         <!--
-    <li class="nav-item px-3">
-        <NavLink class="nav-link" href="tools">
-            <span class="oi oi-browser" aria-hidden="true"></span> Tools
-        </NavLink>
-    </li>-->
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="tools">
+                <span class="oi oi-browser" aria-hidden="true"></span> Tools
+            </NavLink>
+        </li>-->
     </ul>
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
 
+    public string IsDisabled
+    {
+        get
+        {
+            if (AppData.Account.IsLocked())
+                return "disabled";
+            else
+                return string.Empty;
+        }
+    }
+
+    private bool collapseNavMenu = true;
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(AppData.Account.Address))
+            {
+                AppData.Account.Refreshed -= RefreshedHandler;
+                AppData.Account.Refreshed += RefreshedHandler;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot register Account refresh handler in the NavMenu. " + ex.Message);
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
 
     private void ToggleNavMenu()
     {

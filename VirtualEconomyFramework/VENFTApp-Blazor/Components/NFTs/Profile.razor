@@ -71,8 +71,8 @@
 
 <Modal Title="Create new profile NFT"
        Visible="@createNewProfileVisible"
-       OnOk="@createNewProfileConfirm"
-       OnCancel="@createNewProfileCancel">
+       OnCancel="@createNewProfileCancel"
+       Footer="null">
         <MintNFTForm NFTType="NFTTypes.Profile" NFT="@profileNFT" RedirectToNFTsAfterMint="false" NFTMinted="ProfileChanged" TokenId="@tokenIdForProfile" />
 </Modal>
 
@@ -211,11 +211,6 @@
             }
         }
         createNewProfileVisible = true;
-    }
-
-    private async Task createNewProfileConfirm(MouseEventArgs e)
-    {
-        createNewProfileVisible = false;
     }
 
     private async Task createNewProfileCancel(MouseEventArgs e)

@@ -15,9 +15,9 @@
 
 <Modal Title="Ownership QR Code"
        Visible="@showOwnershipDialogVisible"
-       OnOk="@showOwnershipDialogCancel"
        Style="width:auto; max-width:300px;"
-       OnCancel="@showOwnershipDialogCancel">
+       OnCancel="@showOwnershipDialogCancel"
+       Footer="null">
     <Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
         <div class="row">
             <div class="col d-flex justify-content-center align-items-center">

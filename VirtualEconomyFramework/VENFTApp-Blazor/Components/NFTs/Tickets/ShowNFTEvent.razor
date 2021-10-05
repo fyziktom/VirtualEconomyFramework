@@ -15,8 +15,8 @@
 
 <Modal Title="Event Details"
        Visible="@showEventNFTDialogVisible"
-       OnOk="@eventNFTDetailsClose"
-       OnCancel="@eventNFTDetailsClose">
+       OnCancel="@eventNFTDetailsClose"
+       Footer="null">
     <Spin Tip="Loading Event Data..." Spinning="@showEventNFTDialogLoading">
         @if (!string.IsNullOrEmpty(NFT.Utxo))
         {

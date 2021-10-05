@@ -149,8 +149,8 @@
 
     <Modal Title="Send Message"
            Visible="@sendMessageVisible"
-           OnOk="@sendMessageConfirm"
-           OnCancel="@sendMessageCancel">
+           OnCancel="@sendMessageCancel"
+           Footer="null">
         <SendMessage NFT="@NFT" Receiver="@NFT.Author" MessageSent="@NFTSentHandler" />
     </Modal>
 </div>
@@ -279,12 +279,6 @@
     private async Task showSendMessage()
     {
         sendMessageVisible = true;
-        StateHasChanged();
-    }
-
-    private async Task sendMessageConfirm(MouseEventArgs e)
-    {
-        sendMessageVisible = false;
         StateHasChanged();
     }
 
