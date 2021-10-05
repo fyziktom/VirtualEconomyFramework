@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VEDriversLite;
 using VEDriversLite.Common;
 using VEDriversLite.Dto;
+using VEDriversLite.Neblio;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.Security;
@@ -22,6 +23,7 @@ namespace TestVEDriversLite
         private static string password = string.Empty;
         private static NeblioAccount account = new NeblioAccount();
         private static DogeAccount dogeAccount = new DogeAccount();
+        private static object _lock = new object();
 
         [TestEntry]
         public static void Help(string param)
@@ -45,13 +47,18 @@ namespace TestVEDriversLite
         public static async Task GenerateNewAccountAsync(string param)
         {
             password = param;
-            await account.CreateNewAccount(password, true);
+            account.FirsLoadingStatus -= Account_FirsLoadingStatus;
+            account.FirsLoadingStatus += Account_FirsLoadingStatus;
+            await account.CreateNewAccount(password, true, awaitFirstLoad:true);
             Console.WriteLine($"Account created.");
             Console.WriteLine($"Address: {account.Address}");
             Console.WriteLine($"Encrypted Private Key: {await account.AccountKey.GetEncryptedKey("", true)}");
-            StartRefreshingData(null);
         }
 
+        private static void Account_FirsLoadingStatus(object sender, string e)
+        {
+            Console.WriteLine($"Loading Account {(sender as NeblioAccount).Address}: {e}.");
+        }
 
         [TestEntry]
         public static void LoadAccount(string param)
@@ -64,6 +71,8 @@ namespace TestVEDriversLite
                 throw new Exception("Password cannot be empty.");
 
             password = param;
+            account.FirsLoadingStatus -= Account_FirsLoadingStatus;
+            account.FirsLoadingStatus += Account_FirsLoadingStatus;
             await account.LoadAccount(password, awaitFirstLoad:true);
         }
 
@@ -79,6 +88,8 @@ namespace TestVEDriversLite
                 throw new Exception("Please input pass,filename");
             var pass = split[0];
             var file = split[1];
+            account.FirsLoadingStatus -= Account_FirsLoadingStatus;
+            account.FirsLoadingStatus += Account_FirsLoadingStatus;
             await account.LoadAccount(pass, file, false, awaitFirstLoad: true);
         }
 
@@ -107,6 +118,9 @@ namespace TestVEDriversLite
                 Console.WriteLine("wrong input.");
                 return;
             }
+
+            account.FirsLoadingStatus -= Account_FirsLoadingStatus;
+            account.FirsLoadingStatus += Account_FirsLoadingStatus;
             await account.LoadAccount(pass, file, false, awaitFirstLoad: true);
 
             Console.WriteLine("Loading account NFTs...");
@@ -185,6 +199,8 @@ namespace TestVEDriversLite
                 throw new Exception("Please input pass,filename");
             var pass = split[0];
             var file = split[1];
+            account.FirsLoadingStatus -= Account_FirsLoadingStatus;
+            account.FirsLoadingStatus += Account_FirsLoadingStatus;
             await account.LoadAccountFromVENFTBackup(pass,filename: file, awaitFirstLoad:true);
 
             //StartRefreshingData(null);
@@ -217,7 +233,9 @@ namespace TestVEDriversLite
             var pass = split[0];
             var ekey = split[1];
             var addr = split[2];
-            await account.LoadAccount(pass, ekey, addr);
+            account.FirsLoadingStatus -= Account_FirsLoadingStatus;
+            account.FirsLoadingStatus += Account_FirsLoadingStatus;
+            await account.LoadAccount(pass, ekey, addr, awaitFirstLoad:true);
         }
 
         [TestEntry]
@@ -272,6 +290,148 @@ namespace TestVEDriversLite
             var res = await account.SendNeblioPayment(receiver, amount);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
+        }
+
+        [TestEntry]
+        public static void SendAllNFTsBackToOwners(string param)
+        {
+            SendAllNFTsBackToOwnersAsync(param);
+        }
+        /// <summary>
+        /// Function will send all NFTs on the address back to the creator (based on minting tx info).
+        /// You can pass Neblio Sub Account Address as the parameter.
+        /// </summary>
+        /// <param name="param">Leave empty for Main Account or fill Sub Account Address</param>
+        /// <returns></returns>
+        public static async Task SendAllNFTsBackToOwnersAsync(string param)
+        {
+
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("Send All NFTs Back to Owner started");
+            Console.WriteLine($"Parameter: {param}");
+            Console.WriteLine("-------------------------");
+
+            List<INFT> nfts = new List<INFT>();
+            bool isSubAccount = false;
+            if (!string.IsNullOrEmpty(param))
+            {
+                var va = await NeblioTransactionHelpers.ValidateNeblioAddress(param);
+                if (va.Item1)
+                {
+                    if (account.SubAccounts.TryGetValue(param, out var sa))
+                    {
+                        isSubAccount = true;
+                        lock (_lock)
+                        {
+                            nfts = sa.NFTs;
+                        }
+                    }
+                    else
+                    {
+                        isSubAccount = false;
+                        Console.WriteLine("The provided parameter is the Sub Account address. Exiting the function. ");
+                        return;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("The provided parameter is not the Neblio address. Exiting the function. ");
+                    return;
+                }
+            }
+            else
+            {
+                lock (_lock)
+                {
+                    nfts = account.NFTs;
+                }
+            }
+
+            Console.WriteLine($"Total count of NFTs to process is {nfts.Count}.");
+
+            var filename = $"{DateTime.UtcNow.ToString("dd_MM_yyyy_hh_mm_ss")}-sendNFTsBackToOwners.txt";
+            Console.WriteLine($"Saving file. {filename}");
+            FileHelpers.AppendLineToTextFile("NFTName\tOwner\tTxid", filename);
+
+            foreach (var nft in nfts)
+            {
+                Console.WriteLine($"Getting creator for NFT {nft.Utxo}:{nft.UtxoIndex}.");
+                var sender = await NeblioTransactionHelpers.GetTransactionSender(nft.NFTOriginTxId);
+                if (string.IsNullOrEmpty(sender))
+                    sender = await NeblioTransactionHelpers.GetTransactionSender(nft.Utxo, nft.TxDetails);
+                if (!string.IsNullOrEmpty(sender))
+                {
+                    Console.WriteLine($"Creator of NFT {nft.Utxo}:{nft.UtxoIndex} is {sender}.");
+                    var skip = false;
+                    if (!isSubAccount && sender == account.Address) skip = true;
+                    if (isSubAccount && account.SubAccounts.TryGetValue(sender, out var sac)) skip = true;
+                    if (!skip)
+                    {
+                        try
+                        {
+                            (bool, string) res = (false, string.Empty);
+                            var done = false;
+                            int attempts = 100;
+                            Console.WriteLine($"Sending NFT {nft.Utxo}:{nft.UtxoIndex} back to {sender}.");
+                            while (!done && attempts > 0)
+                            {
+                                try
+                                {
+                                    Console.WriteLine($"Try to send {101 - attempts} of 100 max attempts.");
+                                    if (!isSubAccount)
+                                        res = await account.SendNFT(sender, nft);
+                                    else
+                                        res = await account.SendNFTFromSubAccount(param, sender, nft);
+                                    if (res.Item1)
+                                    {
+                                        Console.WriteLine($" NFT {nft.Name} was send to the owner {sender} in txid: {res.Item2}");
+                                        Console.WriteLine(res);
+                                        FileHelpers.AppendLineToTextFile($"{nft.Name}\t{sender}\t{res.Item2}", filename);
+                                        done = true;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Cannot send the NFT {nft.Utxo}:{nft.UtxoIndex} back to the Owner {sender}. " + res.Item2);
+                                        await TryAgainWait(5);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Cannot send the NFT {nft.Utxo}:{nft.UtxoIndex} back to the Owner {sender}. " + ex.Message);
+                                    await TryAgainWait(5);
+                                }
+                            }
+                            await Task.Delay(5);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Cannot send the NFT {nft.Name} with txid: {nft.Utxo} with index: {nft.UtxoIndex}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"NFT {nft.Utxo}:{nft.UtxoIndex} was created on same address {sender} as trying to send from. It is skiped.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Cannot find sender for the NFT {nft.Utxo}:{nft.UtxoIndex}. It is skiped.");
+                }
+            }
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("Script ends.");
+            Console.WriteLine("-------------------------");
+        }
+
+        private static async Task TryAgainWait(int seconds)
+        {
+            Console.Write("Try again in: ");
+            while (seconds > 0)
+            {
+                await Task.Delay(1000);
+                seconds--;
+                if (seconds <= 0) break;
+            }
         }
 
         [TestEntry]
