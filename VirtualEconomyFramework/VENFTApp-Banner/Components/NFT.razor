@@ -13,28 +13,30 @@
                         {
                             <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                         }
-                        else
+                        else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
                         {
                             <Spin Tip="Loading..." Style="min-width:50px;">
-                                <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
+                                <NoImageLoaded />
                             </Spin>
                         }
+                        else
+                        {
+                            <NoImageLoaded />
+                        }
                         break;
-                    case NFTTypes.Post:
+                    case NFTTypes.Profile:
                         @if (!string.IsNullOrEmpty(nft.ImageLink))
                         {
                             <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                         }
                         else
                         {
-                            <Spin Tip="Loading..." Style="min-width:50px;">
-                                <img src="@nft.ImageLink" style="min-width:100px; max-height:200px;  max-width:250px;" />
-                            </Spin>
+                            <NoImageLoaded />
                         }
                         break;
                     case NFTTypes.Ticket:
                         var tnft = nft as TicketNFT;
-                        @if (!string.IsNullOrEmpty(nft.ImageLink))
+                        @if (!string.IsNullOrEmpty(nft.ImageLink) || !string.IsNullOrEmpty(nft.Link))
                         {
                             @if (tnft.MusicInLink)
                             {
@@ -52,14 +54,12 @@
                         }
                         else
                         {
-                            <Spin Tip="Loading..." Style="min-width:50px;">
-                                <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
-                            </Spin>
+                            <NoImageLoaded />
                         }
                         break;
                     case NFTTypes.Event:
                         var enft = nft as EventNFT;
-                        @if (!string.IsNullOrEmpty(nft.ImageLink))
+                        @if (!string.IsNullOrEmpty(nft.ImageLink) || !string.IsNullOrEmpty(nft.Link))
                         {
                             @if (enft.MusicInLink)
                             {
@@ -77,9 +77,23 @@
                         }
                         else
                         {
+                            <NoImageLoaded />
+                        }
+                        break;
+                    case NFTTypes.Post:
+                        @if (!string.IsNullOrEmpty(nft.ImageLink))
+                        {
+                            <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                        }
+                        else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
+                        {
                             <Spin Tip="Loading..." Style="min-width:50px;">
-                                <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
+                                <NoImageLoaded />
                             </Spin>
+                        }
+                        else
+                        {
+                            <NoImageLoaded />
                         }
                         break;
                     case NFTTypes.Music:
@@ -271,16 +285,16 @@
 
 <Modal Title="NFT Details"
        Visible="@nftDetailsVisible"
-       OnOk="@CloseNFTDetails"
-       OnCancel="@CloseNFTDetails">
+       OnCancel="@CloseNFTDetails"
+       Footer="null">
     <NFTDetails Utxo="@nftDetailsUtxo" OwnNFT="@OwnNFT" InputNFT="@nft" />
 </Modal>
 
 <Modal Title="NFT Image"
        Style="min-height:200px; min-width:200px;"
        Visible="@modalWithImageVisible"
-       OnOk="@modalWithImageClose"
-       OnCancel="@modalWithImageClose">
+       OnCancel="@modalWithImageClose"
+       Footer="null">
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center">
             <img class="card-img-top" src="@modalWithImageLink" style="min-height:100px; height:auto; min-width:200px; width:auto;" />

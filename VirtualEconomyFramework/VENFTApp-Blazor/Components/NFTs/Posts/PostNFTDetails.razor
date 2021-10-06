@@ -4,12 +4,12 @@
 <div class="row">
     <div class="col">
         <div class="row" style="margin-top:10px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <h6>@NFT.Name</h6>
             </div>
         </div>
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <small>@NFT.Author</small>
             </div>
         </div>
@@ -44,24 +44,28 @@
         @if (!string.IsNullOrEmpty(NFT.Link))
         {
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <a href="@NFT.Link" target="_blank">Connected Link</a>
                 </div>
             </div>
         }
         <hr />
         <div class="row" style="margin-top:20px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <a href="@NFT.ImageLink" target="_blank">
                     @if (!string.IsNullOrEmpty(NFT.ImageLink))
                     {
-                        <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; max-width:250px; min-width:50px;" />
+                        <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:100%; max-width:250px; min-width:50px;" />
+                    }
+                    else if (string.IsNullOrEmpty(NFT.ImageLink) && !NFT.IsLoaded)
+                    {
+                        <Spin Tip="Loading...">
+                            <NoImageLoaded />
+                        </Spin>
                     }
                     else
                     {
-                        <Spin Tip="Loading..." Spinning="true">
-                            <img src="@NFT.ImageLink" style="min-height:100px; max-height:150px; width:auto; min-width:50px; max-width:250px;" />
-                        </Spin>
+                        <NoImageLoaded />
                     }
                 </a>
             </div>

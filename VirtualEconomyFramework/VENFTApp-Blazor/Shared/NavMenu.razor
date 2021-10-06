@@ -85,8 +85,8 @@
         {
             if (!string.IsNullOrEmpty(AppData.Account.Address))
             {
-                AppData.Account.Refreshed -= RefreshedHandler;
-                AppData.Account.Refreshed += RefreshedHandler;
+                AppData.Account.AccountFirsLoadFinished -= RefreshedHandler;
+                AppData.Account.AccountFirsLoadFinished += RefreshedHandler;
             }
         }
         catch (Exception ex)
@@ -97,7 +97,7 @@
         return base.OnInitializedAsync();
     }
 
-    private void RefreshedHandler(object sender, EventArgs e)
+    private void RefreshedHandler(object sender, string e)
     {
         StateHasChanged();
     }

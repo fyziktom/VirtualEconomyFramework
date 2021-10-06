@@ -76,6 +76,10 @@ namespace VEDriversLite
         /// This event is called during first loading of the account to keep updated the user
         /// </summary>
         public event EventHandler<string> FirsLoadingStatus;
+        /// <summary>
+        /// This event is called when first loading of the account is finished
+        /// </summary>
+        public event EventHandler<string> AccountFirsLoadFinished;
 
         /// <summary>
         /// This function will register event info from NeblioTransactionHelpers class.
@@ -148,6 +152,7 @@ namespace VEDriversLite
             base.FirsLoadingStatus -= NeblioAccount_FirsLoadingStatus;
             var minorRefresh = 2;
             var firstLoad = true;
+            AccountFirsLoadFinished?.Invoke(Address, "OK");
             // todo cancelation token
             _ = Task.Run(async () =>
             {
@@ -181,21 +186,7 @@ namespace VEDriversLite
 
                                 await Task.WhenAll(tasks);
                             }
-                            /*
-                            try
-                            {
-                                if (Utxos.FirstOrDefault(u => u != null && u.Txid == Profile.Utxo && u.Index == Profile.UtxoIndex) == null)
-                                {
-                                    Profile = await NFTHelpers.FindProfileNFT(NFTs);
-                                    if (!string.IsNullOrEmpty(Profile.Utxo))
-                                        ProfileUpdated?.Invoke(this, Profile);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                //todo
-                            }
-                            */
+
                             minorRefresh--;
                             if (minorRefresh < 0)
                             {

@@ -14,7 +14,7 @@
     </div>
     <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:620px;">
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center w-100 h-100">
+            <div class="col d-flex justify-content-center align-items-center w-100 h-100">
 
                 <div class="row">
                     <div class="col">
@@ -35,49 +35,49 @@
                         </div>
                         <Spin Tip="Processing..." Spinning="@processing">
                             <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <button @onclick=ReadCode>Verify</button>
                                 </div>
                             </div>
                             <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <div id="CameraStream" @ref=qrCodeRef></div>
                                 </div>
                             </div>
                             <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <h4>Results</h4>
                                 </div>
                             </div>
                             <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <h6>Read: @readresult</h6>
                                 </div>
                             </div>
                             <!--
                             <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <textarea>message</textarea>
                                 </div>
                             </div>
                             -->
                             <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <h6>Result</h6>
                                 </div>
                             </div>
                             <div class="row" style="margin-top:2px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <span>@result</span>
                                 </div>
                             </div>
                             <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <small>Owner: @ownerAddress</small>
                                 </div>
                             </div>
                             <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <small>Sender: @senderAddress</small>
                                 </div>
                             </div>

@@ -19,30 +19,30 @@
         <div class="col">
             <Spin Tip="@state" Spinning="@unlockingAccount">
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Please Input password to unlock existing account</span>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Shorten Address of the Account is: @NeblioTransactionHelpers.ShortenAddress(address)</span>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                        <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@unlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@UnlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
 
                 @if (removeAccountCounter > 60)
                 {
                     <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <span class="text-danger">Want to delete account?</span>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <small>Click @(100-removeAccountCounter) more and you can delete existing account!</small>
                         </div>
                     </div>
@@ -87,17 +87,17 @@
        OnOk="@removeExistingAccountCountdownCancel"
        OnCancel="@removeExistingAccountCountdownCancel">
     <div class="row">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+        <div class="col d-flex justify-content-center align-items-center">
             <p>Delete of existing account will happen in:</p>
        </div>
     </div>
     <div class="row">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+        <div class="col d-flex justify-content-center align-items-center">
            <h6>@deleteOfAccountCountdown seconds</h6>
        </div>
     </div>
     <div class="row">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+        <div class="col d-flex justify-content-center align-items-center">
             <button class="btn btn-danger" style="width:200px;height:100px;margin-top:30px;" @onclick="removeExistingAccountCountdownCancel">STOP IT</button>
         </div>
     </div>
@@ -116,6 +116,12 @@
     [Parameter]
     public EventCallback<string> AccountUnlocked { get; set; }
 
+    private string unlockPassword = string.Empty;
+    public string UnlockPassword
+    {
+        get => (unlockPassword == null)?string.Empty:unlockPassword;
+        set => unlockPassword = value;
+    }
     private bool unlockOrClearCashMessage = false;
     private bool unlockingAccount = false;
     private bool accountUnlockingError = false;
@@ -129,7 +135,6 @@
 
     private string key = string.Empty;
     private string address = string.Empty;
-    private string unlockPassword = string.Empty;
     private string state = "Unlocking Account...";
 
     private System.Threading.Timer txDeleteAccount;
@@ -242,16 +247,16 @@
         {
             AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
             AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
-            if (string.IsNullOrEmpty(unlockPassword))
+            if (string.IsNullOrEmpty(UnlockPassword))
                 return;
-            if (unlockPassword.Length < 5)
+            if (UnlockPassword.Length < 5)
                 return;
 
             state = "Unlocking Account...";
             unlockingAccount = true;
             StateHasChanged();
 
-            var pass = unlockPassword;
+            var pass = UnlockPassword;
 
             if (string.IsNullOrEmpty(address))
                 address = await localStorage.GetItemAsync<string>("address");
@@ -259,13 +264,14 @@
             key = await localStorage.GetItemAsync<string>("key");
 
             await Task.Delay(50);
-
+            var resload = false;
             if (VEDLDataContext.AllowCache)
             {
                 try
                 {
                     var cch = await localStorage.GetItemAsync<IDictionary<string, VEDriversLite.NFT.Dto.NFTCacheDto>>("nftcache");
-                    var resload = await AppData.Account.LoadCacheNFTsFromString(cch);
+                    resload = await AppData.Account.LoadCacheNFTsFromString(cch);
+                    if (!resload) Console.WriteLine("Cannot load data from cache.");
                 }
                 catch (Exception ex)
                 {
@@ -273,12 +279,16 @@
                 }
             }
 
-            await AppData.Account.LoadAccount(pass, key, address, awaitFirstLoad: true); // put here your password
+            try
+            {
+                resload = await AppData.Account.LoadAccount(pass, key, address, awaitFirstLoad: true); // put here your password
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot load the Main Account. " + ex.Message);
+            }
 
-            await Task.Delay(50);
-            StateHasChanged();
-            var kt = await AppData.Account.AccountKey.GetEncryptedKey();
-            if (!string.IsNullOrEmpty(kt))
+            if (resload)
             {
                 state = "Loading Bookmarks...";
                 await Task.Delay(50);
@@ -337,18 +347,15 @@
                 StateHasChanged();
                 await AccountUnlocked.InvokeAsync("OK");
             }
-            else
-            {
-                unlockingAccount = false;
-            }
         }
         catch (Exception ex)
         {
             accountUnlockingError = true;
-            // todo
+            Console.WriteLine("Cannot unlock the account. " + ex.Message);
         }
         finally
         {
+            UnlockPassword = string.Empty;
             AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
             unlockingAccount = false;
             StateHasChanged();
@@ -357,53 +364,73 @@
 
     public async Task LoadDogeAccount()
     {
-        if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
+        try
         {
-            var address = await localStorage.GetItemAsync<string>("dogeaddress");
-            if (string.IsNullOrEmpty(address))
+            if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
             {
-                // create and save doge address and key
-                await AppData.DogeAccount.CreateNewAccount(unlockPassword, false);
-                address = AppData.DogeAccount.Address;
-                var k = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
-                await localStorage.SetItemAsync("dogeaddress", address);
-                await localStorage.SetItemAsync("dogekey", k);
+                var address = await localStorage.GetItemAsync<string>("dogeaddress");
+                if (string.IsNullOrEmpty(address))
+                {
+                    // create and save doge address and key
+                    await AppData.DogeAccount.CreateNewAccount(unlockPassword, false);
+                    address = AppData.DogeAccount.Address;
+                    var k = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                    await localStorage.SetItemAsync("dogeaddress", address);
+                    await localStorage.SetItemAsync("dogekey", k);
+                }
+                else
+                {
+                    var pass = unlockPassword;
+                    var k = await localStorage.GetItemAsync<string>("dogekey");
+                    await Task.Delay(100);
+                    await AppData.DogeAccount.LoadAccount(pass, k, address);
+                }
             }
-            else
-            {
-                var pass = unlockPassword;
-                var k = await localStorage.GetItemAsync<string>("dogekey");
-                await Task.Delay(100);
-                await AppData.DogeAccount.LoadAccount(pass, k, address);
-            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Cannot load Dogeaccount. " + ex.Message);
         }
     }
 
     private async Task LoadSubAccounts()
     {
-        if (AppData.Account.SubAccounts.Count == 0)
+        try
         {
-            try
+            if (AppData.Account.SubAccounts.Count == 0)
             {
-                var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
-                if (!string.IsNullOrEmpty(subAccounts))
-                    if (AppData.Account.SubAccounts.Count == 0)
-                        await AppData.Account.LoadSubAccounts(subAccounts);
+                try
+                {
+                    var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
+                    if (!string.IsNullOrEmpty(subAccounts))
+                        if (AppData.Account.SubAccounts.Count == 0)
+                            await AppData.Account.LoadSubAccounts(subAccounts);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot load sub accounts from memory!" + ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot load sub accounts from memory!" + ex.Message);
-            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Cannot load SubAccounts. " + ex.Message);
         }
 
     }
 
-    public void UnlockAccountEnter(KeyboardEventArgs e)
+    public async Task UnlockAccountEnter(KeyboardEventArgs e)
     {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        try
         {
-            StateHasChanged();
-            UnlockAccountConfirm(null);
+            if (e.Code == "Enter" || e.Code == "NumpadEnter")
+            {
+                await UnlockAccountConfirm(null);
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Cannot unlock account. " + ex.Message);
         }
     }
 

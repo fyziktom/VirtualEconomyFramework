@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col">
         <div class="row" style="margin-top:10px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 @if (AppData.Account.IsLocked())
                 {
                     <span>Wallet is Locked</span>
@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="row" style="margin-top:10px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 @if (AppData.Account.IsLocked())
                 {
                     <button class="btn btn-primary" @onclick="unlockWallet">Unlock Wallet</button>
@@ -37,12 +37,12 @@
     <div class="row">
         <div class="col">
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <span>Please Input password</span>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <InputPassword Placeholder="Input password" @bind-Value=@password @onkeydown="@UnlockAccountEnter" Style="font-size:12px; min-width:150px; max-width:250px;" />
                 </div>
             </div>

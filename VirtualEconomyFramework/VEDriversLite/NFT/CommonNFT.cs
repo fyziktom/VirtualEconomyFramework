@@ -93,6 +93,7 @@ namespace VEDriversLite.NFT
             SoldInfo = nft.SoldInfo;
             TxDetails = nft.TxDetails;
             IsInThePayments = nft.IsInThePayments;
+            IsLoaded = nft.IsLoaded;
         }
         public async Task ClearSoldInfo()
         {

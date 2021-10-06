@@ -39,6 +39,7 @@ namespace VEDriversLite.NFT
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }
+            IsLoaded = true;
         }
 
         public async Task GetLastData()
@@ -53,6 +54,7 @@ namespace VEDriversLite.NFT
                 SourceTxId = nftData.SourceTxId;
                 NFTOriginTxId = nftData.NFTOriginTxId;
             }
+            IsLoaded = true;
         }
 
 

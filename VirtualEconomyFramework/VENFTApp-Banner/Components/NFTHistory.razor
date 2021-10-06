@@ -3,12 +3,12 @@
 <div class="row">
     <div class="col">
         <div class="row" style="margin-top:20px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <button class="btn btn-primary" @onclick="LoadNFTHistory"><i class="oi oi-timer"></i> Load NFT History</button>
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <Spin Tip="Loading History..." Spinning="@loadingNFTHistory">
                     <table class="table table-striped" style="max-width:350px;">
                         <thead>

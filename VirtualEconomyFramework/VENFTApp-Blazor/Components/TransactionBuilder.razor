@@ -29,22 +29,22 @@
         <div class="row">
             <div class="col">
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <h1>Neblio Transaction Builder</h1>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <h5>Load Sender</h5>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <Input Placeholder="Add sender address" readonly="readonly" @bind-Value=@sender Style="font-size:12px; min-width:250px; max-width:350px;" />
                     </div>
                 </div>
                 <div class="row" style="margin-top:25px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <button class="btn btn-primary" @onclick="AddSender">Load Main Address as Sender</button>
                     </div>
                 </div>
@@ -270,17 +270,17 @@
            OnOk="@addNeblioToOutputConfirm"
            OnCancel="@addNeblioToOutputCancel">
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <p>Add New Neblio Output</p>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <input type="number" step="10000" min="10000" @bind="@newNeblioAmount" />
                     </div>
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <button class="btn btn-primary" @onclick="AddNeblioOutput">Add Neblio</button>
                     </div>
                 </div>
@@ -294,16 +294,16 @@
            OnOk="@addReceiverToOutputConfirm"
            OnCancel="@addReceiverToOutputCancel">
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <p>Add Receiver To Output</p>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <Input Placeholder="Add receiver address" @bind-Value=@newReceiver Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
@@ -325,7 +325,7 @@
             @if (!string.IsNullOrEmpty(transaction.Sender.Address))
             {
                 <div class="row" style="margin-top:25px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -383,7 +383,7 @@
             else
             {
                 <div class="row" style="margin-top:25px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <h3>No sender loaded</h3>
                     </div>
                 </div>

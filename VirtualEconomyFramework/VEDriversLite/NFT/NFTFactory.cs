@@ -483,6 +483,7 @@ namespace VEDriversLite.NFT
                 nft.UtxoIndex = utxoindex;
                 nft.TxDetails = txinfo;
                 nft.TokenId = tokid;
+                nft.IsLoaded = true;
                 await nft.LoadLastData(metadata);
                 if (nft.Type == NFTTypes.Message)
                     (nft as MessageNFT).Decrypted = false;

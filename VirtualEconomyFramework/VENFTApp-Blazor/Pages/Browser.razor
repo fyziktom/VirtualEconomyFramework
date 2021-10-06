@@ -31,7 +31,7 @@
 
         <!--
         <div class="row" style="margin-top:10px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <button onclick="browseTabs" class="btn btn-secondary" type="button">Browse Tabs</button>
                 <VENFTApp_Blazor.Components.OpenedTabList Open="openTabBrowser"
                                                           BrowseTabsClosed="browseTabsClosed"
@@ -104,7 +104,7 @@
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-top: 10px;">
-                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                <div class="col d-flex justify-content-center align-items-center">
                                                     <VENFTApp_Blazor.Components.HelperButtons.CopyIcon MarginLeft="15" TextToCopy="@addressInOpenTab" />
                                                     <VENFTApp_Blazor.Components.HelperButtons.QRIcon MarginLeft="10" TextToCopy="@addressInOpenTab" />
                                                     <VENFTApp_Blazor.Components.HelperButtons.Bookmark IsInBookmarks="@IsTabInBookmark"
@@ -115,38 +115,38 @@
                                             </div>
                                             <!--
                                             <div class="row" style="margin-top:10px;">
-                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                <div class="col d-flex justify-content-center align-items-center">
                                                     <h3>Profile</h3>
                                                 </div>
                                             </div>-->
                                             <div class="row bg-light" style="margin-top:5px;">
-                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                <div class="col d-flex justify-content-center align-items-center">
                                                     <div class="row">
-                                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                        <div class="col d-flex justify-content-center align-items-center">
                                                             <img src="@tabProfile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                                                         </div>
                                                     </div>
                                                     <div class="row" style="margin-left:20px;">
                                                         <div class="col">
                                                             <div class="row">
-                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                <div class="col d-flex justify-content-center align-items-center">
                                                                     <span>Name: @tabProfile.Name @tabProfile.Surname</span>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
-                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                <div class="col d-flex justify-content-center align-items-center">
                                                                     Nick: @tabProfile.Nickname
                                                                 </div>
                                                             </div>
                                                             <div class="row">
-                                                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                <div class="col d-flex justify-content-center align-items-center">
                                                                     Bio: @tabProfile.Description
                                                                 </div>
                                                             </div>
                                                             @if (!string.IsNullOrEmpty(tabProfile.Link))
                                                             {
                                                                 <div class="row">
-                                                                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                                                    <div class="col d-flex justify-content-center align-items-center">
                                                                         <a href="@tabProfile.Link" target="_blank">Webpage</a>
                                                                     </div>
                                                                 </div>
@@ -181,12 +181,12 @@
     <div class="row">
         <div class="col">
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <span>Select from Bookmarks</span>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
                         <Overlay>
                             <Menu>
@@ -208,17 +208,17 @@
             </div>
             
             <div class="row" style="margin-top:20px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <button @onclick="openPublicAddresses" class="btn btn-secondary" type="button">Or Browse Public Addresses</button>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <span>Or Input Neblio Address</span>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <VENFTApp_Blazor.Components.Account.NeblioAddressInput Receiver="@newTabAddress" AddressCheckedInputed="receiverAddressChangedHandler"/>
                     <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
                 </div>
@@ -233,7 +233,7 @@
        OnOk="@closePublicAddresses"
        OnCancel="@closePublicAddresses">
     <div class="row" style="margin-top:10px;">
-        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+        <div class="col d-flex justify-content-center align-items-center">
 
             @if (AppData.VENFTOwners.Count == 0)
             {

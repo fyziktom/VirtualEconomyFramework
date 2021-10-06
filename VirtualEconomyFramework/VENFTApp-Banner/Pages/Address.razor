@@ -22,33 +22,33 @@
                 @if (tab.Profile != null)
                 {
                     <div class="row bg-light" style="margin-top:5px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <div class="row">
-                                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                <div class="col d-flex justify-content-center align-items-center">
                                     <img src="@tab.Profile.ImageLink" style="min-height:50px; max-height:100px; width:auto;" />
                                 </div>
                             </div>
                             <div class="row" style="margin-left:20px;">
                                 <div class="col">
                                     <div class="row">
-                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                        <div class="col d-flex justify-content-center align-items-center">
                                             <span>Name: @tab.Profile.Name @tab.Profile.Surname</span>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                        <div class="col d-flex justify-content-center align-items-center">
                                             Nick: @tab.Profile.Nickname
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                        <div class="col d-flex justify-content-center align-items-center">
                                             Bio: @tab.Profile.Description
                                         </div>
                                     </div>
                                     @if (!string.IsNullOrEmpty(tab.Profile.Link))
                                     {
                                         <div class="row">
-                                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                                            <div class="col d-flex justify-content-center align-items-center">
                                                 <a href="@tab.Profile.Link" target="_blank">Webpage</a>
                                             </div>
                                         </div>
@@ -98,7 +98,7 @@
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     @if (tab.NFTs.Count == 0)
                     {
                         <div class="row" style="margin-top:10px;">
@@ -140,6 +140,11 @@
                 </div>
             </div>
             <div class="row" style="margin-top:50px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span class="text-center">If you do not know VENFT App you can explore more here:</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
                 <div class="col d-flex justify-content-center align-items-center">
                     <small class="text-center"><a href="https://about.ve-nft.com/" target="_blank">VENFT App 2021</a></small>
                 </div>

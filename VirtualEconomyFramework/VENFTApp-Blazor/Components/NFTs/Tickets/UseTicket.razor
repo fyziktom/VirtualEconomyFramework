@@ -7,7 +7,7 @@
     @if (NFT.Used)
     {
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <span><b>This ticket is Used!</b></span>
             </div>
         </div>
@@ -17,7 +17,7 @@
         if (OwnNFT && NFT.IsSpendable())
         {
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <button class="btn btn-primary" @onclick="showUseTicketDialog">Use Ticket</button>
                 </div>
             </div>

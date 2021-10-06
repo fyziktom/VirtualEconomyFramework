@@ -14,7 +14,7 @@
                 @if (eventInfo != null)
                 {
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             @switch (eventInfo.Type)
                             {
                                 case EventType.Info:
@@ -30,56 +30,56 @@
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <h5>Address</h5>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <span>@eventInfo.Address</span>
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <h5>@eventInfo.Title</h5>
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <h5>Message</h5>
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <span>@eventInfo.Message</span>
                         </div>
                     </div>
                     @if (!string.IsNullOrEmpty(eventInfo.TxId))
                     {
                         <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <h5>TxId</h5>
                             </div>
                         </div>
                         <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <span><a href="https://explorer.nebl.io/tx/@eventInfo.TxId" target="_blank">Show in explorer</a></span>
                             </div>
                         </div>
                         <div class="row" style="margin-top:2px;">
-                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                            <div class="col d-flex justify-content-center align-items-center">
                                 <small>It takes about one minute before explorer load new tx.</small>
                             </div>
                         </div>
                     }
                     <!--
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <h5>Progress</h5>
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <span>eventInfo.Progress %</span>
                         </div>
                     </div>-->

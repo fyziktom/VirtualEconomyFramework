@@ -160,7 +160,9 @@
 <Modal Title="Destroy NFT Payment"
        Visible="@confirmDestroyVisible"
        OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
+       OnCancel="@HandleCancel"
+       OkButtonProps="new ButtonProps() { Loading = destroyingNFTPayment }"
+       CancelButtonProps="new ButtonProps() { Loading = destroyingNFTPayment }">
     <p>Do you really want to destroy this NFT Receipt?</p>
     <p>After destroy the token is connected to Source Tokens and you can use it for the minting.</p>
 </Modal>
@@ -188,6 +190,7 @@
     public bool SubAccount { get; set; } = false;
 
     private bool confirmDestroyVisible = false;
+    private bool destroyingNFTPayment = false;
     private bool showNFTDetailsVisible = false;
 
     private INFT loadedNFTPayment = new PaymentNFT("");
@@ -254,7 +257,6 @@
 
     private async Task HandleOk(MouseEventArgs e)
     {
-        confirmDestroyVisible = false;
         await deletePaymentNFTAction(nftToDestroy);
     }
     private async Task HandleCancel(MouseEventArgs e)
@@ -270,6 +272,9 @@
         {
             try
             {
+                destroyingNFTPayment = true;
+                StateHasChanged();
+
                 (bool, string) res = (false, string.Empty);
                 if (!SubAccount)
                     res = await AppData.Account.DestroyNFTs(new List<INFT>() { loadedNFT });
@@ -290,6 +295,11 @@
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot delete NFT Payment. " + ex.Message);
+            }
+            finally
+            {
+                destroyingNFTPayment = false;
+                confirmDestroyVisible = false;
             }
         }
         await Task.Delay(100);

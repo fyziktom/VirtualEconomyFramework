@@ -206,12 +206,12 @@
         <div class="col">
             <Spin Tip="Unlocking..." Spinning="@unlockingAccount">
                 <div class="row">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <span>Please Input password</span>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                    <div class="col d-flex justify-content-center align-items-center">
                         <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@unlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
                     </div>
                 </div>
@@ -241,22 +241,22 @@
     <div class="row">
         <div class="col">
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <span>You will be redirected back to the Shop in </span>
                 </div>
             </div>
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <h6>@redirectingBackToShopCountDown @((redirectingBackToShopCountDown > 1)? "seconds" : "second")</h6>
                 </div>
             </div>
             <div class="row" style="margin-top:10px;">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <span>Redirect address:</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <span>@redirect</span>
                 </div>
             </div>

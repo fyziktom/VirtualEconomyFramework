@@ -4,12 +4,12 @@
 <div class="row">
     <div class="col">
         <div class="row" style="margin-top:10px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <h6>@NFT.Name</h6>
             </div>
         </div>
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <small>@NFT.Author</small>
             </div>
         </div>
@@ -42,7 +42,7 @@
         }
 
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <span>Event Details</span>
             </div>
         </div>
@@ -56,19 +56,19 @@
             </div>
         </div>
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <small>Date: @NFT.EventDate.ToString()</small>
             </div>
         </div>
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <small>Location: @NFT.Location</small>
             </div>
         </div>
         @if (!string.IsNullOrEmpty(NFT.LocationCoordinates))
         {
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <a href="http://www.google.com/maps/place/@NFT.LocationCoordinates" target="_blank">Location Link</a>
                 </div>
             </div>
@@ -76,7 +76,7 @@
         @if (!string.IsNullOrEmpty(NFT.Seat))
         {
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <small>Seat: @NFT.Seat</small>
                 </div>
             </div>
@@ -98,14 +98,14 @@
             </div>
         </div>
         <div class="row">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <a href="@NFT.VideoLink" target="_blank">Video Link</a>
             </div>
         </div>
         @if (!string.IsNullOrEmpty(NFT.Link))
         {
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                <div class="col d-flex justify-content-center align-items-center">
                     <a href="@NFT.Link" target="_blank">Connected Link</a>
                 </div>
             </div>
@@ -120,7 +120,7 @@
 
         <hr />
         <div class="row" style="margin-top:20px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 <a href="@NFT.ImageLink" target="_blank">
                     @if (!string.IsNullOrEmpty(NFT.ImageLink) || !string.IsNullOrEmpty(NFT.Link))
                     {

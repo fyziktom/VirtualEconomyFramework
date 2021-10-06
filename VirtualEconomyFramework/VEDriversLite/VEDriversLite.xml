@@ -923,6 +923,11 @@
             This event is called during first loading of the account to keep updated the user
             </summary>
         </member>
+        <member name="E:VEDriversLite.NeblioAccount.AccountFirsLoadFinished">
+            <summary>
+            This event is called when first loading of the account is finished
+            </summary>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.InitHandlers">
             <summary>
             This function will register event info from NeblioTransactionHelpers class.

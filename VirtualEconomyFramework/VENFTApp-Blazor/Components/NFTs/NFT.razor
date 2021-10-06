@@ -22,11 +22,15 @@
                             {
                                 <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                             }
-                            else
+                            else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
                             {
                                 <Spin Tip="Loading..." Style="min-width:50px;">
-                                    <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
+                                    <NoImageLoaded />
                                 </Spin>
+                            }
+                            else
+                            {
+                                <NoImageLoaded />
                             }
                             break;
                         case NFTTypes.Profile:
@@ -36,9 +40,7 @@
                             }
                             else
                             {
-                                <Spin Tip="Loading..." Style="min-width:50px;">
-                                    <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
-                                </Spin>
+                                <NoImageLoaded />
                             }
                             break;
                         case NFTTypes.Ticket:
@@ -61,9 +63,7 @@
                             }
                             else
                             {
-                                <Spin Tip="Loading..." Style="min-width:50px;">
-                                    <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
-                                </Spin>
+                                <NoImageLoaded />
                             }
                             break;
                         case NFTTypes.Event:
@@ -86,9 +86,7 @@
                             }
                             else
                             {
-                                <Spin Tip="Loading..." Style="min-width:50px;">
-                                    <img src="@nft.ImageLink" style="max-height:200px;  max-width:250px;" />
-                                </Spin>
+                                <NoImageLoaded />
                             }
                             break;
                         case NFTTypes.Post:
@@ -96,11 +94,15 @@
                             {
                                 <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                             }
+                            else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
+                            {
+                                <Spin Tip="Loading...">
+                                    <NoImageLoaded />
+                                </Spin>
+                            }
                             else
                             {
-                                <Spin Tip="Loading..." Style="min-width:50px;">
-                                    <img src="@nft.ImageLink" style="min-width:100px; max-height:200px;  max-width:250px;" />
-                                </Spin>
+                                <NoImageLoaded />
                             }
                             break;
                         case NFTTypes.Music:
@@ -277,8 +279,8 @@
     <Modal Title="NFT Image"
            Style="min-height:200px; min-width:200px;"
            Visible="@modalWithImageVisible"
-           OnOk="@modalWithImageClose"
-           OnCancel="@modalWithImageClose">
+           OnCancel="@modalWithImageClose"
+           Footer="null">
         <div class="row">
             <div class="col d-flex justify-content-center align-items-center">
                 <img class="card-img-top" src="@modalWithImageLink" style="min-height:100px; height:auto; min-width:200px; width:auto;" />

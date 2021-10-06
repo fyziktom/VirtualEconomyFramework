@@ -15,7 +15,7 @@
                 <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
 
                     <div class="row">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             @if (NFTType == NFTTypes.Music)
                             {
                                 <span>Upload Music</span>
@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             @if (NFTType == NFTTypes.Music)
                             {
                                 <input type="file" @ref=inputTypeFileElement /> <!--accept="audio/*" />-->
@@ -42,13 +42,13 @@
                         </div>
                     </div>
                     <div class="row" style="margin-top:3px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             <small class="text-info">Upload limit size is 10 MB.</small>
                         </div>
                     </div>
 
                     <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+                        <div class="col d-flex justify-content-center align-items-center">
                             @if (NFTType == NFTTypes.Music)
                             {
                                 <button @onclick=ReadFile>Upload Music</button>
@@ -64,7 +64,7 @@
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 @if (NFTType == NFTTypes.Music)
                 {
                     <Input Placeholder="Music Link" @bind-Value=@_imageLink @onfocusout="LinkChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
@@ -76,7 +76,7 @@
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 @if (NFTType == NFTTypes.Music)
                 {
                 <p>Audio Preview:</p>
@@ -88,7 +88,7 @@
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
-            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
+            <div class="col d-flex justify-content-center align-items-center">
                 @switch (loadingImageStage)
                 {
                     case LoadingImageStages.NotStarted:
