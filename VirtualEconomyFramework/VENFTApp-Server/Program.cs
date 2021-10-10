@@ -8,12 +8,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace VENFTApp_Server
 {
     public class Program
     {
+        //private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        static Program()
+        {
+            //var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            //XmlConfigurator.Configure(logRepository, new FileInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log4net.config")));
+        }
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -24,6 +31,10 @@ namespace VENFTApp_Server
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddHostedService<MarketplaceNFTsCore>();
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

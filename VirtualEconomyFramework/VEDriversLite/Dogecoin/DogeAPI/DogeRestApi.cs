@@ -19,7 +19,7 @@ namespace VEDriversLite.DogeAPI
         private System.Net.Http.HttpClient _httpClient;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public string APIKey { get; set; } = "";
+        public string APIKey { get; set; } = "C___qMrmNbRHwRmOpvkSht4GlaHSdWPM";
         //public string APIKey { get; set; } = "";
 
         public Client(System.Net.Http.HttpClient httpClient)

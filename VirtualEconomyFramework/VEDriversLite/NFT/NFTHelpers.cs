@@ -1,4 +1,4 @@
-using Ipfs.Http;
+﻿using Ipfs.Http;
 using NBitcoin;
 using Newtonsoft.Json;
 using System;
@@ -49,11 +49,13 @@ namespace VEDriversLite.NFT
                 "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
                 Coruzant.CoruzantNFTHelpers.CoruzantTokenId };
 
-        public static string InfuraKey = "";
-        public static string InfuraSecret = "";
+        public static string InfuraKey = "1urI71lwIaCjNo4b2kyL8LQ5Rlf";
+        public static string InfuraSecret = "ce9c8fb81ab177c713841cecc3f9af51";
+        public static string InfuraAPIURL = "https://ipfs.infura.io:5001";
         public static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
         private static string TokenSymbol = "VENFT";
-        public static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
+        public static readonly IpfsClient ipfs = new IpfsClient(InfuraAPIURL);
+        public static IpfsClient ipfsInfura = null;
 
         public static event EventHandler<IEventInfo> NewEventInfo;
 
@@ -107,7 +109,13 @@ namespace VEDriversLite.NFT
         {
             NewEventInfo?.Invoke(null, e);
         }
-
+        /// <summary>
+        /// Obsolete function - just example how to redirect upload through different server
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileContentType"></param>
+        /// <returns></returns>
         public static async Task<string> UploadImage(Stream stream, string fileName, string fileContentType = "multipart/form-data")
         {
             var link = string.Empty;
@@ -169,6 +177,36 @@ namespace VEDriversLite.NFT
             return link;
         }
 
+        public static void LoadConnectionInfo(string ipfsKey = "", string ipfsSecret = "", string apiurl = "")
+        {
+            var refresh = false;
+            if (!string.IsNullOrEmpty(apiurl) && apiurl != InfuraAPIURL)
+            {
+                InfuraAPIURL = apiurl;
+                refresh = true;
+            }
+            if (!string.IsNullOrEmpty(ipfsKey) && ipfsKey != InfuraKey)
+            {
+                InfuraKey = ipfsKey;
+                refresh = true;
+            }
+            if (!string.IsNullOrEmpty(ipfsSecret) && ipfsSecret != InfuraSecret)
+            {
+                InfuraSecret = ipfsSecret;
+                refresh = true;
+            }
+            try
+            {
+                if (refresh || ipfsInfura == null)
+                    ipfsInfura = CreateIpfsClient(InfuraAPIURL, InfuraKey, InfuraSecret);
+                ipfsInfura.UserAgent = "VEFramework";
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot load ipfs client after apiurl, key and secret change. " + ex.Message);
+            }
+
+        }
         public static IpfsClient CreateIpfsClient(string IpfsHostUrl, string IpfsHostUserName, string IpfsHostPassword)
         {
             var c = new IpfsClient(IpfsHostUrl);
@@ -200,11 +238,13 @@ namespace VEDriversLite.NFT
                 if (stream.Length <= 0)
                     return string.Empty;
                 var link = string.Empty;
-                var ipfsClient = CreateIpfsClient("https://ipfs.infura.io:5001", InfuraKey, InfuraSecret);
-                ipfsClient.UserAgent = "VEFramework";
-                var reslink = await ipfsClient.FileSystem.AddAsync(stream, fileName);
-                //var reslink = await ipfs.FileSystem.AddAsync(stream, fileName);
 
+                if (ipfsInfura == null)
+                    ipfsInfura = CreateIpfsClient(InfuraAPIURL, InfuraKey, InfuraSecret);
+                ipfsInfura.UserAgent = "VEFramework";
+                var reslink = await ipfsInfura.FileSystem.AddAsync(stream, fileName);
+                //var reslink = await ipfs.FileSystem.AddAsync(stream, fileName);
+                
                 if (reslink != null)
                 {
                     var hash = reslink.ToLink().Id.ToString();
@@ -246,16 +286,20 @@ namespace VEDriversLite.NFT
 
         public static async Task<byte[]> IPFSDownloadFromInfuraAsync(string hash)
         {
-            var ipfsClient = CreateIpfsClient("https://ipfs.infura.io:5001", InfuraKey, InfuraSecret);
+            var ipfsClient = CreateIpfsClient(InfuraAPIURL, InfuraKey, InfuraSecret);
             ipfsClient.UserAgent = "VEFramework";
-
-            using (var stream = await ipfsClient.FileSystem.ReadFileAsync(hash))
+            try
             {
-                using (var ms = new MemoryStream())
-                {
-                    stream.CopyTo(ms);
-                    return ms.ToArray();
-                }
+                using (var stream = await ipfsClient.FileSystem.ReadFileAsync(hash))
+                    using (var ms = new MemoryStream())
+                    {
+                        stream.CopyTo(ms);
+                        return ms.ToArray();
+                    }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot read the file from IPFS from Infura. " + ex.Message);
             }
             return null;
         }
@@ -263,14 +307,18 @@ namespace VEDriversLite.NFT
         public static async Task<byte[]> IPFSDownloadFromPublicAsync(string hash)
         {
             ipfs.UserAgent = "VEFramework";
-
-            using (var stream = await ipfs.FileSystem.ReadFileAsync(hash))
+            try 
+            { 
+                using (var stream = await ipfs.FileSystem.ReadFileAsync(hash))
+                    using (var ms = new MemoryStream())
+                    {
+                        stream.CopyTo(ms);
+                        return ms.ToArray();
+                    }
+            }
+            catch (Exception ex)
             {
-                using (var ms = new MemoryStream())
-                {
-                    stream.CopyTo(ms);
-                    return ms.ToArray();
-                }
+                Console.WriteLine("Cannot read the file from IPFS from public gateway. " + ex.Message);
             }
             return null;
         }

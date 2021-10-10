@@ -51,10 +51,6 @@ namespace VENFTApp_Server.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
-
-        public static string InfuraKey = "";
-        public static string InfuraSecret = "";
-
         [HttpPost]
         [AllowCrossSiteJsonAttribute]
         [Route("upload")]
@@ -67,6 +63,7 @@ namespace VENFTApp_Server.Controllers
             try
             {
                 var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, file.FileName);
+                //var imageLink = await NFTHelpers.UploadInfura(stream, file.FileName);
                 var link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
                 return link;
             }
@@ -86,75 +83,16 @@ namespace VENFTApp_Server.Controllers
                 return "Error. Provided null file.";
 
             using var stream = file.OpenReadStream();
-            
             try
             {
-                if (stream.Length <= 0)
-                    return string.Empty;
-
-                var link = string.Empty;
-                var ipfsClient = NFTHelpers.CreateIpfsClient("https://ipfs.infura.io:5001", InfuraKey, InfuraSecret);
-                ipfsClient.UserAgent = "VEFramework";
-                IFileSystemNode reslink = null;
-                using (var ms = new MemoryStream())
-                {
-                    stream.CopyTo(ms);
-                    reslink = await ipfsClient.FileSystem.AddAsync(ms, file.FileName);
-                }
-
-                if (reslink != null)
-                {
-                    var hash = reslink.ToLink().Id.ToString();
-                    link = "https://gateway.ipfs.io/ipfs/" + hash;
-
-                    var loaded = false;
-                    var attempts = 50;
-                    while (attempts > 0 && !loaded)
-                    {
-                        try
-                        {
-                            //var resp = await ipfsClient.FileSystem.GetAsync(hash);
-                            //var respb = await IPFSDownloadFromPublicAsync(hash);
-                            var respb = await IPFSDownloadFromInfuraAsync(hash);
-                            if (respb != null)
-                            {
-                                var resp = new MemoryStream(respb);
-                                if (resp != null && resp.Length >= (stream.Length * 0.8))
-                                    loaded = true;
-                                else
-                                    await Task.Delay(1000);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            await Task.Delay(1000);
-                        }
-                        attempts--;
-                    }
-                }
-                return link;
+                var imageLink = await NFTHelpers.UploadInfura(stream, file.FileName);
+                return imageLink;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
             }
             return string.Empty;
-        }
-
-        public static async Task<byte[]> IPFSDownloadFromInfuraAsync(string hash)
-        {
-            var ipfsClient = NFTHelpers.CreateIpfsClient("https://ipfs.infura.io:5001", InfuraKey, InfuraSecret);
-            ipfsClient.UserAgent = "VEFramework";
-
-            using (var stream = await ipfsClient.FileSystem.ReadFileAsync(hash))
-            {
-                using (var ms = new MemoryStream())
-                {
-                    stream.CopyTo(ms);
-                    return ms.ToArray();
-                }
-            }
-            return null;
         }
 
         /*
@@ -210,6 +148,7 @@ namespace VENFTApp_Server.Controllers
             return string.Empty;
         }
         */
+
         [AllowCrossSiteJsonAttribute]
         [HttpGet("GetAccountBalance/{address}")]
         public string GetAccountBalance(string address)
@@ -225,6 +164,53 @@ namespace VENFTApp_Server.Controllers
         public async Task<IDictionary<string,TokenOwnerDto>> GetVENFTOwners()
         {
             return MainDataContext.VENFTTokenOwners;
+        }
+
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet("GetPublicSellNFTs")]
+        public async Task<IDictionary<string, INFT>> GetPublicSellNFTs()
+        {
+            return MainDataContext.PublicSellNFTs;
+        }
+
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet("GetPublicSellNFTsPage/{pageNumber}")]
+        public async Task<List<INFT>> GetPublicSellNFTsPage(int pageNumber)
+        {
+            var itemStart = pageNumber * 25;
+            if ((itemStart + 25) < MainDataContext.PublicSellNFTsList.Count)
+            {
+                return MainDataContext.PublicSellNFTsList.GetRange(itemStart, 25);
+            }
+            else if (((itemStart + 25) >= MainDataContext.PublicSellNFTsList.Count) && itemStart < MainDataContext.PublicSellNFTsList.Count)
+            {
+                var diff = MainDataContext.PublicSellNFTsList.Count - itemStart;
+                return MainDataContext.PublicSellNFTsList.GetRange(itemStart, diff);
+            }
+
+            return new List<INFT>();
+        }
+
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet("GetAddressTabNFTs/{address}")]
+        public async Task<List<INFT>> GetAddressTabNFTs(string address)
+        {
+            var res = new List<INFT>();
+            if (MainDataContext.VENFTOwnersTabs.TryGetValue(address, out var tab))
+            {
+                tab.NFTs.ForEach(n => {
+                    n.TxDetails = null;
+                    res.Add(n); 
+                });
+            }
+            return res;
+        }
+
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet("GetStoredTabsAddresses")]
+        public async Task<List<string>> GetStoredTabsAddresses()
+        {
+            return MainDataContext.VENFTOwnersTabs.Keys.ToList();
         }
 
         [AllowCrossSiteJsonAttribute]

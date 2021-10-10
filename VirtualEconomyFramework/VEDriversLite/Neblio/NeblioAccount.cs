@@ -118,17 +118,20 @@ namespace VEDriversLite
             {
                 base.FirsLoadingStatus += NeblioAccount_FirsLoadingStatus;
                 FirsLoadingStatus?.Invoke(this, "Loading of address data started.");
+
                 AddressInfo = new GetAddressResponse();
                 AddressInfo.Transactions = new List<string>();
 
                 await ReloadUtxos();
-                await Task.WhenAll(new Task[2] {
+                await Task.WhenAll(new Task[3] {
                                 ReloadMintingSupply(),
-                                ReloadTokenSupply()
-                            });
+                                ReloadTokenSupply(),
+                                ExchangePriceService.InitPriceService(Cryptocurrencies.ExchangeRatesAPITypes.Coingecko)
+                });
 
                 FirsLoadingStatus?.Invoke(this, "Utxos loaded");
                 Refreshed?.Invoke(this, null);
+
                 if (!WithoutNFTs)
                 {
                     FirsLoadingStatus?.Invoke(this, "Loading NFTs started.");
@@ -141,6 +144,7 @@ namespace VEDriversLite
                     tasks[3] = RefreshAddressReceivedReceipts();
                     await Task.WhenAll(tasks);
 
+                    RegisterPriceServiceEventHandler();
                     Refreshed?.Invoke(this, null);
                     FirsLoadingStatus?.Invoke(this, "Main Account NFTs Loaded.");
                 }
@@ -193,8 +197,6 @@ namespace VEDriversLite
                                 try
                                 {
                                     await CheckPayments();
-                                    //if (!string.IsNullOrEmpty(ConnectedDogeAccountAddress))
-                                    //  await CheckDogePayments();
                                 }
                                 catch(Exception ex)
                                 {
@@ -208,7 +210,6 @@ namespace VEDriversLite
                     catch (Exception ex)
                     {
                         Console.WriteLine("Exception in neblio main loop. " + ex.Message);
-                        //await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
                     }
 
                     if (firstLoad)

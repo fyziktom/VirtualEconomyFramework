@@ -1,0 +1,256 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Cryptocurrencies
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject HttpClient _client
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col" style="margin-top:10px;">
+
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                <span class="text-center">Actual Exchange Rates from Coingecko</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span class="text-center">NEBL/USD </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small class="text-center">$@NeblUsdPrice</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span class="text-center">Dogecoin/USD </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small class="text-center">$@DogecoinUsdPrice</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span class="text-center">NEBL/DOGE </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small class="text-center">@NeblDogecoinPrice</small><img style="width: 15px;margin-left: 5px;" src="images/doge.jpg" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:15px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span style="width:60px;">USD </span>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center">
+                <input type="number"
+                       class="@IsSelectedCurrencyToEditInputBackground(CurrencyTypes.USD)"
+                       @onclick="() => SelectCurrencyToEdit(CurrencyTypes.USD)"
+                       step="0.001"
+                       min="0.001"
+                       max="20000"
+                       @bind="@priceCalculator.USDAmount"
+                       style="min-width:50px; max-width:100px;" />
+            </div>
+            <div class="col d-flex justify-content-center align-items-center" style="margin-left:10px;">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="() => AddOne(CurrencyTypes.USD)">+1</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="() => RemoveOne(CurrencyTypes.USD)" style="margin-left:5px;">-1</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:5px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span style="width:60px;">NEBL </span>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center">
+                <input type="number"
+                       class="@IsSelectedCurrencyToEditInputBackground(CurrencyTypes.NEBL)"
+                       @onclick="() => SelectCurrencyToEdit(CurrencyTypes.NEBL)"
+                       step="0.001"
+                       min="0.001"
+                       max="20000"
+                       @bind="@priceCalculator.NeblioAmount"
+                       style="min-width:50px; max-width:100px;" />
+            </div>
+            <div class="col d-flex justify-content-center align-items-center" style="margin-left:10px;">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="() => AddOne(CurrencyTypes.NEBL)">+1</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="() => RemoveOne(CurrencyTypes.NEBL)" style="margin-left:5px;">-1</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:5px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span style="width:60px;">DOGE </span>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center">
+                <input type="number"
+                       class="@IsSelectedCurrencyToEditInputBackground(CurrencyTypes.DOGE)"
+                       @onclick="() => SelectCurrencyToEdit(CurrencyTypes.DOGE)"
+                       step="0.001"
+                       min="0.001"
+                       max="20000"
+                       @bind="@priceCalculator.DogeAmount"
+                       style="min-width:50px; max-width:100px;" />
+            </div>
+            <div class="col d-flex justify-content-center align-items-center" style="margin-left:10px;">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="() => AddOne(CurrencyTypes.DOGE)">+1</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-primary" @onclick="() => RemoveOne(CurrencyTypes.DOGE)" style="margin-left:5px;">-1</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public bool DisplayButton { get; set; } = false;
+
+    private double neblUsdPrice = 0.001;
+    [Parameter]
+    public double NeblUsdPrice
+    {
+        get => neblUsdPrice;
+        set
+        {
+            if (value > 0 && neblUsdPrice != value)
+                neblUsdPrice = value;
+        }
+    }
+
+    private double dogecoinUsdPrice = 0.001;
+    [Parameter]
+    public double DogecoinUsdPrice
+    {
+        get => dogecoinUsdPrice;
+        set
+        {
+            if (value > 0 && dogecoinUsdPrice != value)
+                dogecoinUsdPrice = value;
+        }
+    }
+
+    [Parameter]
+
+    public EventCallback<IDictionary<CurrencyTypes, double>> AmountsChanged { get; set; }
+
+    public double NeblDogecoinPrice
+    {
+        get => priceCalculator.NeblDogecoinPrice;
+    }
+
+    private CurrencyTypes SelectedCurrencyToEdit = CurrencyTypes.USD;
+
+    private VEDriversLite.Cryptocurrencies.PriceCalculator priceCalculator = new VEDriversLite.Cryptocurrencies.PriceCalculator();
+
+    protected override void OnInitialized()
+    {
+        if (priceCalculator != null)
+        {
+            priceCalculator.PriceEdited -= PriceEditedHandler;
+            priceCalculator.PriceEdited += PriceEditedHandler;
+        }
+        if (AppData.Account.ExchangePriceService != null && AppData.Account.ExchangePriceService.IsActive)
+        {
+            AppData.Account.ExchangePriceService.PricesRefreshed -= PriceRefreshedHandler;
+            AppData.Account.ExchangePriceService.PricesRefreshed += PriceRefreshedHandler;
+            SetNewPrices(AppData.Account.ExchangePriceService.ActualCurrenciesRates, true, CurrencyTypes.USD);
+        }
+
+        base.OnInitialized();
+    }
+
+    private void PriceEditedHandler(object sender, CurrencyTypes e)
+    {
+        StateHasChanged();
+        FirePriceEvent();
+    }
+
+    private void PriceRefreshedHandler(object sender, IDictionary<CurrencyTypes, double> e)
+    {
+        SetNewPrices(e, true, SelectedCurrencyToEdit);
+    }
+
+    private async Task SetNewPrices(IDictionary<CurrencyTypes, double> prices, bool recalc = false, CurrencyTypes vs_curr_type = CurrencyTypes.USD)
+    {
+        if (prices.TryGetValue(CurrencyTypes.NEBL, out var nup))
+            NeblUsdPrice = nup;
+        if (prices.TryGetValue(CurrencyTypes.DOGE, out var dup))
+            DogecoinUsdPrice = dup;
+        await priceCalculator.SetPrices(neblUsdPrice, dogecoinUsdPrice, recalc, vs_curr_type);
+        if (recalc)
+            await FirePriceEvent();
+    }
+
+    private async Task FirePriceEvent()
+    {
+        var e = new Dictionary<CurrencyTypes, double>();
+        e.Add(CurrencyTypes.NEBL, priceCalculator.NeblioAmount);
+        e.Add(CurrencyTypes.DOGE, priceCalculator.DogeAmount);
+        await AmountsChanged.InvokeAsync(e);
+    }
+
+    public string IsSelectedCurrencyToEditInputBackground(CurrencyTypes type)
+    {
+        if (type == SelectedCurrencyToEdit)
+            return "bg-light";
+        else
+            return "bg-white";
+    }
+
+    private void SelectCurrencyToEdit(CurrencyTypes type)
+    {
+        SelectedCurrencyToEdit = type;
+    }
+
+    private async Task AddOne(CurrencyTypes type)
+    {
+        SelectCurrencyToEdit(type);
+        await priceCalculator.AddOneToAmount(type);
+        await FirePriceEvent();
+    }
+    private async Task RemoveOne(CurrencyTypes type)
+    {
+        SelectCurrencyToEdit(type);
+        await priceCalculator.RemoveOneFromAmount(type);
+        await FirePriceEvent();
+    }
+}

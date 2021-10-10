@@ -42,10 +42,14 @@ namespace VENFTApp_Server
             var dogeAddressForShop = string.Empty;
             var dogeDepositAddressForShop = string.Empty;
 
+            MainDataContext.IsAPIWithCredentials = settings.GetValue<bool>("IsAPIWithCredentials", true);
+            MainDataContext.LoadAllVENFTOwnersWithAllNFTs = settings.GetValue<bool>("LoadAllVENFTOwnersWithAllNFTs", false);
+
             MainDataContext.IpfsSecret = settings.GetValue<string>("IpfsSecret", string.Empty);
             MainDataContext.IpfsProjectID = settings.GetValue<string>("IpfsProjectID", string.Empty);
-            MainDataContext.IsAPIWithCredentials = settings.GetValue<bool>("IsAPIWithCredentials", false);
-            
+            if (!string.IsNullOrEmpty(MainDataContext.IpfsSecret) && !string.IsNullOrEmpty(MainDataContext.IpfsProjectID))
+                NFTHelpers.LoadConnectionInfo(MainDataContext.IpfsProjectID, MainDataContext.IpfsSecret);
+
             try
             {
                 /*

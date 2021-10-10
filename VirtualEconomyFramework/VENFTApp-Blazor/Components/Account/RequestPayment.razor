@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.Cryptocurrencies
 @using Newtonsoft.Json
 @inject AppData AppData
 @inject HttpClient _client
@@ -34,7 +35,7 @@
     {
         <div class="row" style="margin-top:2px;">
             <div class="col d-flex justify-content-center align-items-center">
-                <small class="text-danger text-center">You must fill this field. Or it will add default message "Sent with VENFT App".</small>
+                <small class="text-info text-center">You should fill this field. Otherwise, it will add default message "Sent with VENFT App".</small>
             </div>
         </div>
     }
@@ -43,121 +44,17 @@
             <h6 class="text-center">Set the amount to request in the Payment</h6>
         </div>
     </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
-            <span class="text-center">Actual Exchange Rates from Coingecko</span>
-        </div>
-    </div>
-    <div class="row" style="margin-top:10px;">
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span class="text-center">NEBL/USD </span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <small class="text-center">$@(Math.Round(NeblUsdPrice, 4))</small>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span class="text-center">Dogecoin/USD </span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <small class="text-center">$@(Math.Round(DogecoinUsdPrice,4))</small>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span class="text-center">NEBL/DOGE </span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <small class="text-center">@(Math.Round(NeblDogecoinPrice,4))</small><img style="width: 15px;margin-left: 5px;" src="images/doge.jpg" />
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row" style="margin-top:15px;">
-        <div class="col d-flex justify-content-center align-items-center">
-            <span style="width:60px;">USD </span>
-        </div>
-        <div class="col d-flex justify-content-center align-items-center">
-            <input type="number" step="0.001" min="0.001" max="20000" @bind="@AmountToSendUSD" style="min-width:50px; max-width:100px;" />
-        </div>
-        <div class="col d-flex justify-content-center align-items-center" style="margin-left:10px;">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <button class="btn btn-primary" @onclick="() => AmountToSendUSD += 1">+1</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <button class="btn btn-primary" @onclick="() => AmountToSendUSD -= 1" style="margin-left:5px;">-1</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row" style="margin-top:5px;">
-        <div class="col d-flex justify-content-center align-items-center">
-            <span style="width:60px;">NEBL </span>
-        </div>
-        <div class="col d-flex justify-content-center align-items-center">
-            <input type="number" step="0.001" min="0.001" max="20000" @bind="@AmountToSendNEBL" style="min-width:50px; max-width:100px;" />
-        </div>
-        <div class="col d-flex justify-content-center align-items-center" style="margin-left:10px;">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <button class="btn btn-primary" @onclick="() => AmountToSendNEBL += 1">+1</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <button class="btn btn-primary" @onclick="() => AmountToSendNEBL -= 1" style="margin-left:5px;">-1</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row" style="margin-top:5px;">
-        <div class="col d-flex justify-content-center align-items-center">
-            <span style="width:60px;">DOGE </span>
-        </div>
-        <div class="col d-flex justify-content-center align-items-center">
-            <input type="number" step="0.001" min="0.001" max="20000" @bind="@AmountToSendDOGE" style="min-width:50px; max-width:100px;" />
-        </div>
-        <div class="col d-flex justify-content-center align-items-center" style="margin-left:10px;">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <button class="btn btn-primary" @onclick="() => AmountToSendDOGE += 1">+1</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <button class="btn btn-primary" @onclick="() => AmountToSendDOGE -= 1" style="margin-left:5px;">-1</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <VENFTApp_Blazor.Components.Crypto.PriceCalculator AmountsChanged="@AmountsChangedHandler" />
 
     <div class="row" style="margin-top:15px;">
         <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
-            <button class="btn btn-primary" @onclick="() => ShowLink(true,false)">@(string.IsNullOrEmpty(paymentLink)? "Show Payment Link and QR Code for Neblio" : "Refresh Payment link and QR Code for Neblio")</button>
+            <button class="btn btn-primary" @onclick="() => ShowLink(CurrencyTypes.NEBL)">@(string.IsNullOrEmpty(paymentLink)? "Show Payment Link and QR Code for Neblio" : "Refresh Payment link and QR Code for Neblio")</button>
         </div>
     </div>
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
-            <button class="btn btn-primary" @onclick="() => ShowLink(false,true)">@(string.IsNullOrEmpty(paymentLink)? "Show Payment Link and QR Code for Doge" : "Refresh Payment link and QR Code for Doge")</button>
+            <button class="btn btn-primary" @onclick="() => ShowLink(CurrencyTypes.DOGE)">@(string.IsNullOrEmpty(paymentLink)? "Show Payment Link and QR Code for Doge" : "Refresh Payment link and QR Code for Doge")</button>
         </div>
     </div>
     <hr style="margin-top:10px;" />
@@ -215,187 +112,38 @@
     [Parameter]
     public EventCallback<bool> DialogClosed { get; set; }
 
-    private double amountToSendUSD = 1.0;
-    public double AmountToSendUSD
-    {
-        get => amountToSendUSD;
-        set
-        {
-            if (value > 0.001)
-            {
-                amountToSendUSD = value;
-                recalcAmounts(CalcByCurrency.USD);
-            }
-        }
-    }
-    private double amountToSendNEBL = 1.0;
-    public double AmountToSendNEBL
-    {
-        get => amountToSendNEBL;
-        set
-        {
-            if (value > 0.001)
-            {
-                amountToSendNEBL = value;
-                recalcAmounts(CalcByCurrency.NEBL);
-            }
-        }
-    }
-    private double amountToSendDOGE = 1.0;
-    public double AmountToSendDOGE
-    {
-        get => amountToSendDOGE;
-        set
-        {
-            if (value > 0.001)
-            {
-                amountToSendDOGE = value;
-                recalcAmounts(CalcByCurrency.DOGE);
-            }
-        }
-    }
-
     private bool showLinkDialogVisible = false;
 
     private double AmountToSend = 1.0;
-    private double NeblUsdPrice = 0.0;
-    private double DogecoinUsdPrice = 0.0;
-    private double NeblDogecoinPrice = 0.0;
+
+    private double NeblioAmount = 1.0;
+    private double DogeAmount = 1.0;
 
     private string message = string.Empty;
     private string paymentLink = string.Empty;
 
+    private CurrencyTypes SelectedCurrencyToRequest = CurrencyTypes.NEBL;
+
     private ElementReference qrCodeRef;
-    private System.Threading.Timer txdetailsTimer;
 
-    private class CoingeckoUsdPriceDto
+    private void AmountsChangedHandler(IDictionary<CurrencyTypes, double> e)
     {
-        public double usd { get; set; }
-    }
-    private class CoingeckoDto
-    {
-        public CoingeckoUsdPriceDto neblio { get; set; } = new CoingeckoUsdPriceDto();
-        public CoingeckoUsdPriceDto dogecoin { get; set; } = new CoingeckoUsdPriceDto();
+        if (e.TryGetValue(CurrencyTypes.NEBL, out var n))
+            NeblioAmount = n;
+        if (e.TryGetValue(CurrencyTypes.DOGE, out var d))
+            DogeAmount = d;
     }
 
-    protected override void OnInitialized()
+    private async Task ShowLink(CurrencyTypes currency)
     {
-        StartRefreshingExchangeRates();
-        base.OnInitialized();
-    }
-
-    private async Task StartRefreshingExchangeRates()
-    {
-        await GetExchangeRate();
-        recalcAmounts(CalcByCurrency.USD);
-        if (txdetailsTimer != null)
-            await txdetailsTimer.DisposeAsync();
-
-        txdetailsTimer = new System.Threading.Timer(async (object stateInfo) =>
-        {
-            try
-            {
-                await GetExchangeRate();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot read tx details. " + ex.Message);
-            }
-
-        }, new System.Threading.AutoResetEvent(false), 30000, 30000);
-    }
-
-    private async Task GetExchangeRate(string currency = "", string vs_currency = "")
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(currency)) currency = "neblio,dogecoin";
-            if (string.IsNullOrEmpty(vs_currency)) vs_currency = "usd";
-            var req = new HttpRequestMessage(HttpMethod.Get, $"https://api.coingecko.com/api/v3/simple/price?ids={currency}&vs_currencies={vs_currency}");
-            req.Headers.Add("Accept", "application/json");
-            req.Headers.Add("mode", "no-cors");
-
-            var resp = await _client.SendAsync(req);
-            var respmsg = await resp.Content.ReadAsStringAsync();
-            if (string.IsNullOrEmpty(respmsg))
-                return;
-
-            try
-            {
-                var prices = JsonConvert.DeserializeObject<CoingeckoDto>(respmsg);
-                if (prices != null)
-                {
-                    NeblUsdPrice = prices.neblio.usd;
-                    DogecoinUsdPrice = prices.dogecoin.usd;
-                    NeblDogecoinPrice = NeblUsdPrice / DogecoinUsdPrice;
-                    StateHasChanged();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot deserialize the price. " + ex.Message);
-            }
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine("Cannot get the price from the Coingecko API. " + ex.Message);
-        }
-    }
-
-    private void Round()
-    {
-        amountToSendUSD = (Math.Round(amountToSendUSD, 4) != 0)? Math.Round(amountToSendUSD, 4):0.001;
-        amountToSendNEBL = (Math.Round(amountToSendNEBL, 4) != 0) ? Math.Round(amountToSendNEBL, 4) : 0.001;
-        amountToSendDOGE = (Math.Round(amountToSendDOGE, 4) != 0) ? Math.Round(amountToSendDOGE, 4) : 0.001;
-    }
-
-    enum CalcByCurrency
-    {
-        USD,
-        NEBL,
-        DOGE
-    }
-    private CalcByCurrency calcByCurrency = CalcByCurrency.USD;
-
-    private void recalcAmounts(CalcByCurrency curr = CalcByCurrency.USD)
-    {
-        if (NeblDogecoinPrice == 0 || NeblUsdPrice == 0 || DogecoinUsdPrice == 0) return;
-        if (amountToSendUSD == 0) amountToSendUSD = 0.001;
-        if (amountToSendNEBL == 0) amountToSendNEBL = 0.001;
-        if (amountToSendDOGE == 0) amountToSendDOGE = 0.001;
-
-        switch (curr)
-        {
-            case CalcByCurrency.USD:
-                amountToSendUSD = (Math.Round(amountToSendUSD, 4) > 0) ? Math.Round(amountToSendUSD, 4) : 0.001;
-                amountToSendNEBL = AmountToSendUSD / NeblUsdPrice;
-                amountToSendDOGE = AmountToSendUSD / DogecoinUsdPrice;
-                break;
-            case CalcByCurrency.NEBL:
-                amountToSendNEBL = (Math.Round(amountToSendNEBL, 4) > 0) ? Math.Round(amountToSendNEBL, 4) : 0.001;
-                amountToSendUSD = AmountToSendNEBL * NeblUsdPrice;
-                amountToSendDOGE = AmountToSendNEBL * NeblDogecoinPrice;
-                break;
-            case CalcByCurrency.DOGE:
-                amountToSendDOGE = (Math.Round(amountToSendDOGE, 4) > 0) ? Math.Round(amountToSendDOGE, 4) : 0.001;
-                amountToSendNEBL = NeblDogecoinPrice / AmountToSendDOGE;
-                amountToSendUSD = AmountToSendDOGE * DogecoinUsdPrice;
-                break;
-        }
-
-        Round();
-
-        StateHasChanged();
-    }
-
-    private async Task ShowLink(bool isNeblio, bool isDoge)
-    {
-        var curr = isNeblio ? "NEBL" : "DOGE";
+        SelectedCurrencyToRequest = currency;
+        var curr = (currency == CurrencyTypes.NEBL) ? "NEBL" : "DOGE";
         var addr = Address;
-        if (isDoge)
+        if (currency == CurrencyTypes.DOGE)
             addr = AppData.DogeAccount.Address;
 
-        AmountToSend = isNeblio ? AmountToSendNEBL : AmountToSendDOGE;
+        AmountToSend = (currency == CurrencyTypes.NEBL) ? NeblioAmount : DogeAmount;
+
         var msg = message;
         if (string.IsNullOrEmpty(msg) || string.IsNullOrWhiteSpace(msg))
             msg = "Sent with VENFT App";
