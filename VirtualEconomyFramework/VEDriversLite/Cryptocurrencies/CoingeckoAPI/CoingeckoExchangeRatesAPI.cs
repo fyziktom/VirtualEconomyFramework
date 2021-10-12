@@ -14,9 +14,19 @@ namespace VEDriversLite.Cryptocurrencies.CoingeckoAPI
     {
         public double usd { get; set; }
     }
+    /// <summary>
+    /// Class for deserialization the data from the Coingecko
+    /// It works now just for the neblio and dogecoin
+    /// </summary>
     public class CoingeckoDto
     {
+        /// <summary>
+        /// Neblio price against the USD
+        /// </summary>
         public CoingeckoUsdPriceDto neblio { get; set; } = new CoingeckoUsdPriceDto();
+        /// <summary>
+        /// Dogecoin price against the USD
+        /// </summary>
         public CoingeckoUsdPriceDto dogecoin { get; set; } = new CoingeckoUsdPriceDto();
     }
     public class CoingeckoExchangeRatesAPI : CommonExchangeRatesAPI, IDisposable
@@ -28,6 +38,11 @@ namespace VEDriversLite.Cryptocurrencies.CoingeckoAPI
             Type  = ExchangeRatesAPITypes.Coingecko;
         }
 
+        /// <summary>
+        /// Return prices from the API
+        /// Now it obtains just the prices for neblio and dogecoin against USD
+        /// </summary>
+        /// <returns></returns>
         public override async Task<bool> GetPriceFromAPI()
         {
             try

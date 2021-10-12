@@ -12,6 +12,11 @@ namespace VEDriversLite.Security
         const int saltSize = 128 / 8;
         const int keySize = 256 / 8;
 
+        /// <summary>
+        /// Create hash of the password to store
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public static async Task<byte[]> HashPassword(string password)
         {
             using (var algorithm = new Rfc2898DeriveBytes(password, saltSize, iterations))
@@ -22,7 +27,12 @@ namespace VEDriversLite.Security
                 return salt;
             }
         }
-
+        /// <summary>
+        /// Verify the password against the hash of the password
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="hash"></param>
+        /// <returns></returns>
         public static async Task<bool> VerifyPassword(string password, byte[] hash)
         {
             if (hash.Length != saltSize + keySize) return false;
@@ -37,6 +47,11 @@ namespace VEDriversLite.Security
             }
         }
 
+        /// <summary>
+        /// Compute SHA256 Hash
+        /// </summary>
+        /// <param name="rawData"></param>
+        /// <returns></returns>
         public static string ComputeSha256Hash(string rawData)
         {
             // Create a SHA256   

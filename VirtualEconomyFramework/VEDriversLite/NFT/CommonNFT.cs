@@ -11,49 +11,164 @@ namespace VEDriversLite.NFT
 {
     public abstract class CommonNFT : INFT
     {
+        /// <summary>
+        /// Text form of the NFT type like "NFT Image" or "NFT Post"
+        /// The parsing is in the Common NFT
+        /// </summary>
         public string TypeText { get; set; } = string.Empty;
+        /// <summary>
+        /// NFT Type by enum of NFTTypes
+        /// </summary>
         public NFTTypes Type { get; set; }
+        /// <summary>
+        /// Name of the NFT
+        /// </summary>
         public string Name { get; set; } = string.Empty;
+        /// <summary>
+        /// Author of the NFT
+        /// </summary>
         public string Author { get; set; } = string.Empty;
+        /// <summary>
+        /// Description of the NFT - for longer text please use the "Text" property
+        /// </summary>
         public string Description { get; set; } = string.Empty;
+        /// <summary>
+        /// Text of the NFT - prepared for the longer texts
+        /// </summary>
         public string Text { get; set; } = string.Empty;
+        /// <summary>
+        /// Link to some webiste in the NFT
+        /// </summary>
         public string Link { get; set; } = string.Empty;
+        /// <summary>
+        /// Link to the icon of the NFT
+        /// </summary>
         public string IconLink { get; set; } = string.Empty;
+        /// <summary>
+        /// Link to the image in the NFT
+        /// </summary>
         public string ImageLink { get; set; } = string.Empty;
+        /// <summary>
+        /// List of the tags separated by space
+        /// </summary>
         public string Tags { get; set; } = string.Empty;
+        /// <summary>
+        /// Parsed tag list. It is parsed in Common NFT class
+        /// </summary>
         public List<string> TagsList { get; set; } = new List<string>();
+        /// <summary>
+        /// NFT Utxo hash
+        /// </summary>
         public string Utxo { get; set; } = string.Empty;
-        public string TokenId { get; set; } = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8"; // VENFT tokens as default
-        public string SourceTxId { get; set; } = string.Empty;
+        /// <summary>
+        /// NFT Utxo Index
+        /// </summary>
         public int UtxoIndex { get; set; } = 0;
-        public string NFTOriginTxId { get; set; } = string.Empty;
-        public double Price { get; set; } = 0.0;
-        public bool PriceActive { get; set; } = false;
-        public double DogePrice { get; set; } = 0.0;
-        public bool DogePriceActive { get; set; } = false;
-        public string DogeAddress { get; set; } = string.Empty;
-        public bool IsLoaded { get; set; } = false;
-        public bool IsInThePayments { get; set; } = false;
-        public DogeftInfo DogeftInfo { get; set; } = new DogeftInfo();
-        public NFTSoldInfo SoldInfo { get; set; } = new NFTSoldInfo();
+        /// <summary>
+        /// Shorten hash including index number
+        /// </summary>
         public string ShortHash => $"{NeblioTransactionHelpers.ShortenTxId(Utxo, false, 16)}:{UtxoIndex}";
+        /// <summary>
+        /// NFT Origin transaction hash - minting transaction in the case of original NFTs (Image, Music, Ticket)
+        /// </summary>
+        public string NFTOriginTxId { get; set; } = string.Empty;
+        /// <summary>
+        /// Source tx where the input for the NFT Minting was taken
+        /// </summary>
+        public string SourceTxId { get; set; } = string.Empty;
+        /// <summary>
+        /// Id of the token on what the NFT is created
+        /// </summary>
+        public string TokenId { get; set; } = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8"; // VENFT tokens as default
+        /// <summary>
+        /// Price of the NFT in the Neblio
+        /// </summary>
+        public double Price { get; set; } = 0.0;
+        /// <summary>
+        /// PriceActive is setted automatically when the price is setted up
+        /// </summary>
+        public bool PriceActive { get; set; } = false;
+        /// <summary>
+        /// Price of the NFT in the Dogecoin
+        /// </summary>
+        public double DogePrice { get; set; } = 0.0;
+        /// <summary>
+        /// DogePriceActive is setted automatically when the price is setted up
+        /// </summary>
+        public bool DogePriceActive { get; set; } = false;
+        /// <summary>
+        /// Related Doge Address to this NFT. If it is created by VENFT App it is filled automatically during the minting request
+        /// </summary>
+        public string DogeAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// If the NFT is fully loaded this flag is set
+        /// </summary>
+        public bool IsLoaded { get; set; } = false;
+        /// <summary>
+        /// If the NFT is alredy saw in the payment this is set
+        /// </summary>
+        public bool IsInThePayments { get; set; } = false;
+        /// <summary>
+        /// Info for publishing NFT to the Dogeft
+        /// </summary>
+        public DogeftInfo DogeftInfo { get; set; } = new DogeftInfo();
+        /// <summary>
+        /// If the NFT is sold this will be filled
+        /// </summary>
+        public NFTSoldInfo SoldInfo { get; set; } = new NFTSoldInfo();
+        /// <summary>
+        /// DateTime stamp taken from the blockchain trnsaction
+        /// </summary>
         public DateTime Time { get; set; } = DateTime.UtcNow;
+        /// <summary>
+        /// History of this NFT
+        /// </summary>
         [JsonIgnore]
         public List<INFT> History { get; set; } = new List<INFT>();
-
+        /// <summary>
+        /// The transaction info details
+        /// </summary>
         [JsonIgnore]
         public GetTransactionInfoResponse TxDetails { get; set; } = new GetTransactionInfoResponse();
         [JsonIgnore]
         private System.Threading.Timer txdetailsTimer;
-
+        /// <summary>
+        /// This event is fired when the transaction info is refreshed
+        /// </summary>
         public event EventHandler<GetTransactionInfoResponse> TxDataRefreshed;
-
+        /// <summary>
+        /// Parse the origin data of the NFT.
+        /// It will track the NFT to its origin and use the data from the origin
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public abstract Task ParseOriginData(IDictionary<string, string> lastmetadata);
-
+        /// <summary>
+        /// Retrive the Metadata of the actual NFT. 
+        /// It will take the correct properties and translate them to the dictionary which can be add to the token transaction metdata
+        /// If the NFT contains encrypted metadata with use of Shared Secret (EDCH) like NFT Message you must provide the parameters if you need to do encryption
+        /// </summary>
+        /// <param name="address">Address of the sender of the NFT</param>
+        /// <param name="key">Private key of the sender of the NFT</param>
+        /// <param name="receiver">Receiver of the NFT</param>
+        /// <returns></returns>
         public abstract Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");
-
+        /// <summary>
+        /// Fill common and specific properties of the NFT
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public abstract Task Fill(INFT NFT);
-
+        /// <summary>
+        /// Parse specific information related to the specific kind of the NFT. 
+        /// This function must be overwritte in specific NFT class
+        /// </summary>
+        /// <param name="meta"></param>
+        public abstract void ParseSpecific(IDictionary<string, string> meta);
+        /// <summary>
+        /// Return info if the transaction is spendable
+        /// </summary>
+        /// <returns></returns>
         public bool IsSpendable()
         {
             if (TxDetails != null)
@@ -61,11 +176,20 @@ namespace VEDriversLite.NFT
             else
                 return false;
         }
+        /// <summary>
+        /// Load NFT history.
+        /// It will load fully all history steps of this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task LoadHistory()
         {
             History = await NFTHelpers.LoadNFTsHistory(Utxo);
         }
-
+        /// <summary>
+        /// Fill common properties for the NFT
+        /// </summary>
+        /// <param name="nft"></param>
+        /// <returns></returns>
         public async Task FillCommon(INFT nft)
         {
             IconLink = nft.IconLink;
@@ -95,10 +219,18 @@ namespace VEDriversLite.NFT
             IsInThePayments = nft.IsInThePayments;
             IsLoaded = nft.IsLoaded;
         }
+        /// <summary>
+        /// Clear the object with SoldInfo of NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task ClearSoldInfo()
         {
             SoldInfo = new NFTSoldInfo();
         }
+        /// <summary>
+        /// Clear all the prices inside of the NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task ClearPrices()
         {
             DogePrice = 0.0;
@@ -115,9 +247,12 @@ namespace VEDriversLite.NFT
                     if (!string.IsNullOrEmpty(s))
                         TagsList.Add(s);
         }
-
-        public abstract void ParseSpecific(IDictionary<string, string> meta);
-
+        /// <summary>
+        /// Load last data of the NFT.
+        /// It means that it will take just the last data and not tracking the origin for the orign data
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
         public async Task LoadLastData(IDictionary<string, string> metadata)
         {
             if (metadata != null)
@@ -136,7 +271,10 @@ namespace VEDriversLite.NFT
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Parse price from the metadata of the NFT
+        /// </summary>
+        /// <param name="meta"></param>
         public void ParsePrice(IDictionary<string, string> meta)
         {
             if (meta.TryGetValue("Price", out var price))
@@ -161,7 +299,10 @@ namespace VEDriversLite.NFT
             else
                 DogePriceActive = false;
         }
-
+        /// <summary>
+        /// Parse info about the sellfrom the metadata of the NFT
+        /// </summary>
+        /// <param name="meta"></param>
         public void ParseSoldInfo(IDictionary<string, string> meta)
         {
             if (meta.TryGetValue("SoldInfo", out var sinf))
@@ -173,7 +314,10 @@ namespace VEDriversLite.NFT
                 catch (Exception ex) { Console.WriteLine("Cannot parse sold info in the NFT"); }
             }
         }
-
+        /// <summary>
+        /// Parse common properties from the dictionary of metadata
+        /// </summary>
+        /// <param name="meta"></param>
         public void ParseCommon(IDictionary<string,string> meta)
         {
             if (meta.TryGetValue("Name", out var name))
@@ -216,7 +360,11 @@ namespace VEDriversLite.NFT
             if (meta.TryGetValue("NFTOriginTxId", out var nfttxid))
                 NFTOriginTxId = nfttxid;
         }
-
+        /// <summary>
+        /// Parse dogeft info from the metadata
+        /// </summary>
+        /// <param name="meta"></param>
+        /// <returns></returns>
         public async Task ParseDogeftInfo(IDictionary<string,string> meta)
         {
             if (meta.TryGetValue("DogeAddress", out var dadd))
@@ -230,7 +378,10 @@ namespace VEDriversLite.NFT
                 catch (Exception ex) { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
             }
         }
-
+        /// <summary>
+        /// Get common metadata of the NFT as dictionary
+        /// </summary>
+        /// <returns>Dicrionary with preapred common metadata for the NFT transaction</returns>
         public async Task<IDictionary<string,string>> GetCommonMetadata()
         {
             var metadata = new Dictionary<string, string>();
@@ -307,13 +458,20 @@ namespace VEDriversLite.NFT
                 metadata.Add("NFTOriginTxId", NFTOriginTxId);
             return metadata;
         }
-
+        /// <summary>
+        /// Stop the auto refreshin of the tx info data
+        /// </summary>
+        /// <returns></returns>
         public async Task StopRefreshingData()
         {
             if (txdetailsTimer != null)
                 await txdetailsTimer.DisposeAsync();
         }
-        
+        /// <summary>
+        /// Start auto refreshing of the tx info data
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public async Task StartRefreshingTxData(int interval = 5000)
         {
             if (TxDetails.Confirmations < (NeblioTransactionHelpers.MinimumConfirmations + 2))

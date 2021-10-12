@@ -17,6 +17,11 @@ namespace VEDriversLite.UnstoppableDomains
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
             return _client;
         }
+        /// <summary>
+        /// Load the information from the Unstoppable Domains API
+        /// </summary>
+        /// <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+        /// <returns></returns>
         public static async Task<GetAddressDetailsResponse> GetAddressDetails(string uAddress)
         {
             var addinfo = await GetClient().GetAddressDetailsAsync(uAddress);
@@ -25,6 +30,11 @@ namespace VEDriversLite.UnstoppableDomains
             else
                 return new GetAddressDetailsResponse();
         }
+        /// <summary>
+        /// Get Neblio Address if exists
+        /// </summary>
+        /// <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+        /// <returns>Address if exists, string.Empty if not exists</returns>
         public static async Task<string> GetNeblioAddress(string uAddress)
         {
             var addinfo = await GetClient().GetAddressDetailsAsync(uAddress);
@@ -35,6 +45,11 @@ namespace VEDriversLite.UnstoppableDomains
 
             return string.Empty;
         }
+        /// <summary>
+        /// Get BTC Address if exists
+        /// </summary>
+        /// <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+        /// <returns>Address if exists, string.Empty if not exists</returns>
         public static async Task<string> GetBTCAddress(string uAddress)
         {
             var addinfo = await GetClient().GetAddressDetailsAsync(uAddress);
@@ -45,6 +60,11 @@ namespace VEDriversLite.UnstoppableDomains
 
             return string.Empty;
         }
+        /// <summary>
+        /// Get ETH Address if exists
+        /// </summary>
+        /// <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+        /// <returns>Address if exists, string.Empty if not exists</returns>
         public static async Task<string> GetETHAddress(string uAddress)
         {
             var addinfo = await GetClient().GetAddressDetailsAsync(uAddress);
@@ -55,6 +75,11 @@ namespace VEDriversLite.UnstoppableDomains
 
             return string.Empty;
         }
+        /// <summary>
+        /// Get LTC Address if exists
+        /// </summary>
+        /// <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+        /// <returns>Address if exists, string.Empty if not exists</returns>
         public static async Task<string> GetLTCAddress(string uAddress)
         {
             var addinfo = await GetClient().GetAddressDetailsAsync(uAddress);
@@ -65,6 +90,11 @@ namespace VEDriversLite.UnstoppableDomains
 
             return string.Empty;
         }
+        /// <summary>
+        /// Get DOGE Address if exists
+        /// </summary>
+        /// <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+        /// <returns>Address if exists, string.Empty if not exists</returns>
         public static async Task<string> GetDOGEAddress(string uAddress)
         {
             var addinfo = await GetClient().GetAddressDetailsAsync(uAddress);

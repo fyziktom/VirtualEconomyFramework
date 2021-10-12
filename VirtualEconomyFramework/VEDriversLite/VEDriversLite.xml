@@ -61,6 +61,60 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.FileHelpers.ClearEmptyDirs(System.String)">
+            <summary>
+            Remove all the empty folders in the main folder
+            </summary>
+            <param name="DataFolder">Main folder address</param>
+        </member>
+        <member name="M:VEDriversLite.FileHelpers.CopyFile(System.String,System.String)">
+            <summary>
+            Copy file from one to another destionation
+            </summary>
+            <param name="sourceFilePath">Input file destionation</param>
+            <param name="destinatinFilePath">Final file destination</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.FileHelpers.CheckOrCreateTheFolder(System.String,System.String,System.Boolean)">
+            <summary>
+            Check if the folder exists in the inputed location. If not exists, it will create it
+            The new folder name can contains the automatic datetime stamp and optional suffix
+            </summary>
+            <param name="_outputFolderPath">The path to check</param>
+            <param name="suffix">Sufix for the new folder</param>
+            <param name="withdatetime">If you want to add datetime stamp automatically</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.FileHelpers.AppendLineToTextFile(System.String,System.String)">
+            <summary>
+            Add line to the end of some file.
+            If the file does not exists it will create the new file.
+            </summary>
+            <param name="line">New line which should be added to the file</param>
+            <param name="outputPath">Output path of the file</param>
+        </member>
+        <member name="M:VEDriversLite.FileHelpers.WriteTextToFile(System.String,System.String)">
+            <summary>
+            Write whole text into the file.
+            If the file does not exists it will create the new file.
+            </summary>
+            <param name="path">Output path of the file</param>
+            <param name="content">content text</param>
+        </member>
+        <member name="M:VEDriversLite.FileHelpers.ReadTextFromFile(System.String)">
+            <summary>
+            Read all the text from the file
+            </summary>
+            <param name="path">Path of the input file</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.FileHelpers.IsFileExists(System.String)">
+            <summary>
+            Check if the file exists
+            </summary>
+            <param name="path">Path of the file</param>
+            <returns>true if the file exists</returns>
+        </member>
         <member name="M:VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)">
             <summary>
             Convert Unix Time stamp in miliseconds to DateTime
@@ -73,6 +127,361 @@
             Convert DateTime to Unix timestamp in miliseconds
             </summary>
             <param name="dateTime"></param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoDto">
+            <summary>
+            Class for deserialization the data from the Coingecko
+            It works now just for the neblio and dogecoin
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoDto.neblio">
+            <summary>
+            Neblio price against the USD
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoDto.dogecoin">
+            <summary>
+            Dogecoin price against the USD
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoExchangeRatesAPI.GetPriceFromAPI">
+            <summary>
+            Return prices from the API
+            Now it obtains just the prices for neblio and dogecoin against USD
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.Type">
+            <summary>
+            Type of the Exchange provider
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.Name">
+            <summary>
+            Name of the provider
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.APIUrl">
+            <summary>
+            Main API url of the provider
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.IsRefreshing">
+            <summary>
+            If the exchange rates provider is in autorefreshing mode this is true
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.Prices">
+            <summary>
+            Last state of the prices
+            Key is the pair like neblio/usd or dogecoin/usd
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.AvailablePairsData">
+            <summary>
+            Available pairs in the Prices dictionary
+            For example neblio/usd, dogecoin/usd, etc.
+            Please check this list if you need key for the dictionary to get exact pair
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.PricesRefreshed">
+            <summary>
+            This event fires when prices are successfully refreshed
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPriceFromAPI">
+            <summary>
+            Return prices from the API
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes[],VEDriversLite.Cryptocurrencies.CurrencyTypes)">
+            <summary>
+            Get price from the list of last refreshed prices.
+            You can obtain more currencies against one vs_currency.
+            If the prices have not been loaded yet, it will try to obtain them from the API.
+            </summary>
+            <param name="currencies">Array of the currency prices what you want to obtain against the vs_currency. 
+            For example input new CurrencyTypes[2]{ CurrencyTypes.NEBL, CurrencyTypes.DOGE }</param>
+            <param name="vs_currency">All currencies requested are related to this vs_currency. If you will not fill this parameter. the USD is selected as default</param>
+            <returns>Dictionary of the prices of inputed currencies</returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.StartRefreshingData(System.Int32)">
+            <summary>
+            Start auto refreshing of the data. It is protected with checking the IsRefreshing to prevent double start.
+            </summary>
+            <param name="period">You can change the period - default 30000ms</param>
+            <returns>true if successful start</returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.Dispose">
+            <summary>
+            Stop the auto refreshing of the data.
+            </summary>
+            <returns>true if successful stop</returns>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.Type">
+            <summary>
+            Type of the Exchange provider
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.Name">
+            <summary>
+            Name of the provider
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.APIUrl">
+            <summary>
+            Main API url of the provider
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.IsRefreshing">
+            <summary>
+            If the exchange rates provider is in autorefreshing mode this is true
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.Prices">
+            <summary>
+            Last state of the prices
+            Key is the pair like neblio/usd or dogecoin/usd
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.AvailablePairsData">
+            <summary>
+            Available pairs in the Prices dictionary
+            For example neblio/usd, dogecoin/usd, etc.
+            Please check this list if you need key for the dictionary to get exact pair
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.PricesRefreshed">
+            <summary>
+            This event fires when prices are successfully refreshed
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPriceFromAPI">
+            <summary>
+            Return prices from the API
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes[],VEDriversLite.Cryptocurrencies.CurrencyTypes)">
+            <summary>
+            Get price from the list of last refreshed prices.
+            You can obtain more currencies against one vs_currency.
+            If the prices have not been loaded yet, it will try to obtain them from the API.
+            </summary>
+            <param name="currencies">Array of the currency prices what you want to obtain against the vs_currency. 
+            For example input new CurrencyTypes[2]{ CurrencyTypes.NEBL, CurrencyTypes.DOGE }</param>
+            <param name="vs_currency">All currencies requested are related to this vs_currency. If you will not fill this parameter. the USD is selected as default</param>
+            <returns>Dictionary of the prices of inputed currencies</returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.StartRefreshingData(System.Int32)">
+            <summary>
+            Start auto refreshing of the data. It is protected with checking the IsRefreshing to prevent double start.
+            </summary>
+            <param name="period">You can change the period - default 30000ms</param>
+            <returns>true if successful start</returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.StopRefreshingData">
+            <summary>
+            Stop the auto refreshing of the data.
+            </summary>
+            <returns>true if successful stop</returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.Dispose">
+            <summary>
+            Dispose the Exchange rates API object.
+            If the price refresh timer is running it is disposed too.
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.Cryptocurrencies.PriceCalculator.MinimalAmount">
+            <summary>
+            Minimal amount to use in the calculator
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceCalculator.NeblioAmount">
+            <summary>
+            Amount of Neblio
+            It can be input directly and all other prices are calculated based on this input.
+            Otherwise it offers value which is recalculated based on the other currency input.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceCalculator.DogeAmount">
+            <summary>
+            Amount of Doge
+            It can be input directly and all other prices are calculated based on this input.
+            Otherwise it offers value which is recalculated based on the other currency input.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceCalculator.USDAmount">
+            <summary>
+            Amount of USD
+            It can be input directly and all other prices are calculated based on this input.
+            Otherwise it offers value which is recalculated based on the other currency input.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceCalculator.CZKAmount">
+            <summary>
+            Amount of CZK - not available now - need own API provider
+            It can be input directly and all other prices are calculated based on this input.
+            Otherwise it offers value which is recalculated based on the other currency input.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceCalculator.RelatedAddress">
+            <summary>
+            If the Price calculator is related to some specific address it should be filled here
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceCalculator.RelatedAddressCurrency">
+            <summary>
+            Main Currency on the related account
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.Cryptocurrencies.PriceCalculator.NeblUsdPrice">
+            <summary>
+            Loaded price rate of Neblio/USD
+            Must be loaded from external source with use of SetPrices function
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.Cryptocurrencies.PriceCalculator.DogecoinUsdPrice">
+            <summary>
+            Loaded price rate of Dogecoin/USD
+            Must be loaded from external source with use of SetPrices function
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceCalculator.NeblDogecoinPrice">
+            <summary>
+            Loaded price rate of Neblio/Dogecoin
+            It is calculated automatically in the SetPrices function
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Cryptocurrencies.PriceCalculator.PriceEdited">
+            <summary>
+            When some price is edited this event is fired and it contains the information which currency was changed
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceCalculator.SetPrices(System.Double,System.Double,System.Boolean,VEDriversLite.Cryptocurrencies.CurrencyTypes)">
+            <summary>
+            Set prices of exchange rates. You must fill this otherwise class will not work
+            You can use the IExchangeRatesAPI implementations as the source of these rates.
+            If this class is used by PriceService class, the prices are loaded inside of this class from IExchangeRatesAPI provider.
+            </summary>
+            <param name="neblUSDPrice">Exchange rate for neblio/usd price</param>
+            <param name="dogecoinUsdPrice">Exchange rate for dogecoin/usd price</param>
+            <param name="recalc">set true if you want to recalculate prices after load of the new exchange rates</param>
+            <param name="vs_curr_type">if the recal is true, you should select the vs_currency for recalculation. Default is USD</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceCalculator.AddOneToAmount(VEDriversLite.Cryptocurrencies.CurrencyTypes)">
+            <summary>
+            If you want to add 1 to amount of some specific currency you can use this function.
+            This is good for the +1 Button.
+            </summary>
+            <param name="curr">Selected currency to increment</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceCalculator.RemoveOneFromAmount(VEDriversLite.Cryptocurrencies.CurrencyTypes)">
+            <summary>
+            If you want to remove 1 to amount of some specific currency you can use this function.
+            This is good for the -1 Button.
+            If the price after remove one is below MinimalAmount constant it is replaced with MinimalAmount
+            </summary>
+            <param name="curr">Selected currency to decrement</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceCalculator.RecalcAmounts(VEDriversLite.Cryptocurrencies.CurrencyTypes)">
+            <summary>
+            Recalculate the amounts based on some specific currency. 
+            For example if you will change the USD it must recalculate price of Neblio and Dogecoin. If you will change Neblio it will recalculate USD and Dogecoin, etc.
+            </summary>
+            <param name="curr">Selected currency as base - this currecny was changed and other should be recalculated automatically</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceCalculator.SetDefaultPricesIfNotValid">
+            <summary>
+            Check the prices and if there is price below MinimalAmount it will replace it with the MinimalAmount
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceCalculator.RoundOne(System.Double,System.Int32)">
+            <summary>
+            Round or set MinimalAmount if the amound will be under it.
+            </summary>
+            <param name="number">Input number to round</param>
+            <param name="decimals">Number of digits</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceCalculator.RoundAll(System.Int32)">
+            <summary>
+            RoundOne all available currencies in the calculator
+            </summary>
+            <param name="decimals">Number of digits</param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceService.IsActive">
+            <summary>
+            If the PriceService is Active this is set to true
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.Cryptocurrencies.PriceService.MinimalAmount">
+            <summary>
+            Minimal amount to use in the PriceService
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceService.RelatedAddress">
+            <summary>
+            If the PriceService is related to some specific address it should be filled here
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceService.RelatedAddressCurrency">
+            <summary>
+            Main Currency on the related account
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.PriceService.CurrenciesCalculator">
+            <summary>
+            PriceCalculator instance
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.Cryptocurrencies.PriceService.ActualCurrenciesRates">
+            <summary>
+            Actual Currency rates against the USD
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Cryptocurrencies.PriceService.PricesRefreshed">
+            <summary>
+            When the prices have been refreshed this event is fired.
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceService.RoundOneNumber(System.Double,System.Int32)">
+            <summary>
+            Round or set MinimalAmount if the amound will be under it.
+            </summary>
+            <param name="number">Input number to round</param>
+            <param name="decimals">Number of digits</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceService.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes,System.Boolean)">
+            <summary>
+            Return specific selected Currency rate against the USD
+            </summary>
+            <param name="type">CurrencyType</param>
+            <param name="round">Round it with RoundOneNumber function</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceService.InitPriceService(VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes,System.String,VEDriversLite.Cryptocurrencies.CurrencyTypes)">
+            <summary>
+            Initialize the PriceService. It will load and init the Exchange Rates API provider as well
+            </summary>
+            <param name="typeOfAPI">Type of used IExchangeRatesAPI provider</param>
+            <param name="relatedAddress">Related address for this PriceService</param>
+            <param name="relatedAddressType">Related address currency for this PriceService</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.PriceService.RefreshPricesAsync">
+            <summary>
+            This function will refresh the prices in the ActualCurrenciesRates dictionary
+            It also set the prices into PriceCalculator instance and fires the PriceRefreshed Event.
+            </summary>
             <returns></returns>
         </member>
         <member name="P:VEDriversLite.DogeAccount.Address">
@@ -1132,6 +1541,28 @@
             Great when you want just do simple payment. 
             You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
             <param name="awaitFirstLoad"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.CacheNFTs">
+            <summary>
+            Serialize the NFTCache dictionary
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.LoadCacheNFTsFromString(System.String)">
+            <summary>
+            Load the data from the stirng to the Dictionary of the NFTs cache
+            The input string must be serialized NFTCache dictionary from VEDriversLite with use of the function CacheNFTs from this class
+            </summary>
+            <param name="cacheString">Input serialized NFTCache dictionary as string</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.LoadCacheNFTsFromString(System.Collections.Generic.IDictionary{System.String,VEDriversLite.NFT.Dto.NFTCacheDto})">
+            <summary>
+            Load the NFTCache data from the input dictionary to the Dictionary of the NFTs cache
+            The input must be dictionary which contains NFTCacheDto as value with cache data
+            </summary>
+            <param name="cacheString">Input NFTCache dictionary</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadBookmarks(System.String)">
@@ -4167,6 +4598,274 @@
             <param name="tokenId">Token Id hash</param>
             <returns></returns>
         </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.TypeText">
+            <summary>
+            Text form of the NFT type like "NFT Image" or "NFT Post"
+            The parsing is in the Common NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Type">
+            <summary>
+            NFT Type by enum of NFTTypes
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Name">
+            <summary>
+            Name of the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Author">
+            <summary>
+            Author of the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Description">
+            <summary>
+            Description of the NFT - for longer text please use the "Text" property
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Text">
+            <summary>
+            Text of the NFT - prepared for the longer texts
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Link">
+            <summary>
+            Link to some webiste in the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.IconLink">
+            <summary>
+            Link to the icon of the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.ImageLink">
+            <summary>
+            Link to the image in the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Tags">
+            <summary>
+            List of the tags separated by space
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.TagsList">
+            <summary>
+            Parsed tag list. It is parsed in Common NFT class
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Utxo">
+            <summary>
+            NFT Utxo hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.UtxoIndex">
+            <summary>
+            NFT Utxo Index
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.ShortHash">
+            <summary>
+            Shorten hash including index number
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.NFTOriginTxId">
+            <summary>
+            NFT Origin transaction hash - minting transaction in the case of original NFTs (Image, Music, Ticket)
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.SourceTxId">
+            <summary>
+            Source tx where the input for the NFT Minting was taken
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.TokenId">
+            <summary>
+            Id of the token on what the NFT is created
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Price">
+            <summary>
+            Price of the NFT in the Neblio
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.PriceActive">
+            <summary>
+            PriceActive is setted automatically when the price is setted up
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.DogePrice">
+            <summary>
+            Price of the NFT in the Dogecoin
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.DogePriceActive">
+            <summary>
+            DogePriceActive is setted automatically when the price is setted up
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.DogeAddress">
+            <summary>
+            Related Doge Address to this NFT. If it is created by VENFT App it is filled automatically during the minting request
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.IsLoaded">
+            <summary>
+            If the NFT is fully loaded this flag is set
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.IsInThePayments">
+            <summary>
+            If the NFT is alredy saw in the payment this is set
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.DogeftInfo">
+            <summary>
+            Info for publishing NFT to the Dogeft
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.SoldInfo">
+            <summary>
+            If the NFT is sold this will be filled
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Time">
+            <summary>
+            DateTime stamp taken from the blockchain trnsaction
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.History">
+            <summary>
+            History of this NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.TxDetails">
+            <summary>
+            The transaction info details
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.NFT.CommonNFT.TxDataRefreshed">
+            <summary>
+            This event is fired when the transaction info is refreshed
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse the origin data of the NFT.
+            It will track the NFT to its origin and use the data from the origin
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Retrive the Metadata of the actual NFT. 
+            It will take the correct properties and translate them to the dictionary which can be add to the token transaction metdata
+            If the NFT contains encrypted metadata with use of Shared Secret (EDCH) like NFT Message you must provide the parameters if you need to do encryption
+            </summary>
+            <param name="address">Address of the sender of the NFT</param>
+            <param name="key">Private key of the sender of the NFT</param>
+            <param name="receiver">Receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill common and specific properties of the NFT
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific information related to the specific kind of the NFT. 
+            This function must be overwritte in specific NFT class
+            </summary>
+            <param name="meta"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.IsSpendable">
+            <summary>
+            Return info if the transaction is spendable
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.LoadHistory">
+            <summary>
+            Load NFT history.
+            It will load fully all history steps of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.FillCommon(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill common properties for the NFT
+            </summary>
+            <param name="nft"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.ClearSoldInfo">
+            <summary>
+            Clear the object with SoldInfo of NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.ClearPrices">
+            <summary>
+            Clear all the prices inside of the NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.LoadLastData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Load last data of the NFT.
+            It means that it will take just the last data and not tracking the origin for the orign data
+            </summary>
+            <param name="metadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParsePrice(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse price from the metadata of the NFT
+            </summary>
+            <param name="meta"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseSoldInfo(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse info about the sellfrom the metadata of the NFT
+            </summary>
+            <param name="meta"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseCommon(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse common properties from the dictionary of metadata
+            </summary>
+            <param name="meta"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseDogeftInfo(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse dogeft info from the metadata
+            </summary>
+            <param name="meta"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.GetCommonMetadata">
+            <summary>
+            Get common metadata of the NFT as dictionary
+            </summary>
+            <returns>Dicrionary with preapred common metadata for the NFT transaction</returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.StopRefreshingData">
+            <summary>
+            Stop the auto refreshin of the tx info data
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.StartRefreshingTxData(System.Int32)">
+            <summary>
+            Start auto refreshing of the tx info data
+            </summary>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NFT.Coruzant.CoruzantBrowser.LoadTabs(System.String)">
             <summary>
             Load tabs from previous serialized string.
@@ -4283,6 +4982,307 @@
             <summary>
             Author Deposit Doge address where Dogeft will send the reward from sale
             </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.Dto.NFTCacheDto">
+            <summary>
+            Class offers way how to store the loaded NFT data for the recovering of the NFT after reload without requesting API
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.NFTCacheDto.LastAccess">
+            <summary>
+            Last time when the NFT was loaded from the cash
+            this helps to remove old not used NFTs from the cache
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.NFTCacheDto.FirstSave">
+            <summary>
+            indicate when the NFT was saved in the cash first time
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.Dto.NFTHash">
+            <summary>
+            Dto for shorten informations for the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.TypeText">
+            <summary>
+            Text form of the NFT type like "NFT Image" or "NFT Post"
+            The parsing is in the Common NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Type">
+            <summary>
+            NFT Type by enum of NFTTypes
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Name">
+            <summary>
+            Name of the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Author">
+            <summary>
+            Author of the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Description">
+            <summary>
+            Description of the NFT - for longer text please use the "Text" property
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Text">
+            <summary>
+            Text of the NFT - prepared for the longer texts
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Link">
+            <summary>
+            Link to some webiste in the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.IconLink">
+            <summary>
+            Link to the icon of the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.ImageLink">
+            <summary>
+            Link to the image in the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Tags">
+            <summary>
+            List of the tags separated by space
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.TagsList">
+            <summary>
+            Parsed tag list. It is parsed in Common NFT class
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Utxo">
+            <summary>
+            NFT Utxo hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.UtxoIndex">
+            <summary>
+            NFT Utxo Index
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.ShortHash">
+            <summary>
+            Shorten hash including index number
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.NFTOriginTxId">
+            <summary>
+            NFT Origin transaction hash - minting transaction in the case of original NFTs (Image, Music, Ticket)
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.SourceTxId">
+            <summary>
+            Source tx where the input for the NFT Minting was taken
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.TokenId">
+            <summary>
+            Id of the token on what the NFT is created
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Price">
+            <summary>
+            Price of the NFT in the Neblio
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.PriceActive">
+            <summary>
+            PriceActive is setted automatically when the price is setted up
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.DogePrice">
+            <summary>
+            Price of the NFT in the Dogecoin
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.DogePriceActive">
+            <summary>
+            DogePriceActive is setted automatically when the price is setted up
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.DogeAddress">
+            <summary>
+            Related Doge Address to this NFT. If it is created by VENFT App it is filled automatically during the minting request
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.DogeftInfo">
+            <summary>
+            Info for publishing NFT to the Dogeft
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.IsLoaded">
+            <summary>
+            If the NFT is fully loaded this flag is set
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.IsInThePayments">
+            <summary>
+            If the NFT is alredy saw in the payment this is set
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.SoldInfo">
+            <summary>
+            If the NFT is sold this will be filled
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Time">
+            <summary>
+            DateTime stamp taken from the blockchain trnsaction
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.History">
+            <summary>
+            History of this NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.TxDetails">
+            <summary>
+            The transaction info details
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.NFT.INFT.TxDataRefreshed">
+            <summary>
+            This event is fired when the transaction info is refreshed
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.IsSpendable">
+            <summary>
+            Return info if the transaction is spendable
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.FillCommon(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill common properties for the NFT
+            </summary>
+            <param name="nft"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill common and specific properties of the NFT
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.LoadLastData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Load last data of the NFT.
+            It means that it will take just the last data and not tracking the origin for the orign data
+            </summary>
+            <param name="metadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse the origin data of the NFT.
+            It will track the NFT to its origin and use the data from the origin
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.ParseSoldInfo(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse info about the sellfrom the metadata of the NFT
+            </summary>
+            <param name="meta"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.ParsePrice(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse price from the metadata of the NFT
+            </summary>
+            <param name="meta"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific information related to the specific kind of the NFT. 
+            This function must be overwritte in specific NFT class
+            </summary>
+            <param name="meta"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.ParseDogeftInfo(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse dogeft info from the metadata
+            </summary>
+            <param name="meta"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.ClearSoldInfo">
+            <summary>
+            Clear the object with SoldInfo of NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.LoadHistory">
+            <summary>
+            Load NFT history.
+            It will load fully all history steps of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.ClearPrices">
+            <summary>
+            Clear all the prices inside of the NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.StopRefreshingData">
+            <summary>
+            Stop the auto refreshin of the tx info data
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.StartRefreshingTxData(System.Int32)">
+            <summary>
+            Start auto refreshing of the tx info data
+            </summary>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Retrive the Metadata of the actual NFT. 
+            It will take the correct properties and translate them to the dictionary which can be add to the token transaction metdata
+            If the NFT contains encrypted metadata with use of Shared Secret (EDCH) like NFT Message you must provide the parameters if you need to do encryption
+            </summary>
+            <param name="address">Address of the sender of the NFT</param>
+            <param name="key">Private key of the sender of the NFT</param>
+            <param name="receiver">Receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.Decrypt(NBitcoin.BitcoinSecret)">
+            <summary>
+            this function will decrypt the NFT if it is possile
+            It needs the owner Private Key to create shared password which the combination of the sender public key.
+            </summary>
+            <param name="secret">Owner Private Key</param>
+            <returns>true if success</returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.DecryptImageData(NBitcoin.BitcoinSecret)">
+            <summary>
+            This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
+            Then the image is saved in ImageData as bytes.
+            </summary>
+            <param name="secret">NFT Owner Private Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.DecryptProperty(System.String,NBitcoin.BitcoinSecret)">
+            <summary>
+            Decrypt the specific property with use of shared secret
+            </summary>
+            <param name="prop">Property content</param>
+            <param name="secret">NFT Owner Private Key</param>
+            <returns></returns>
         </member>
         <member name="E:VEDriversLite.NFT.NFTHelpers.ProfileNFTFound">
             <summary>
@@ -4563,6 +5563,216 @@
             <param name="txid"></param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyDogeMessage(System.String,System.String,System.String)">
+            <summary>
+            Verify the Dogecoin message signed by some dogecoin private key
+            </summary>
+            <param name="message">input original message</param>
+            <param name="signature">signature made by some dogecoin address</param>
+            <param name="address">Dogecoin address</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,System.String)">
+            <summary>
+            Verify the Neblio message signed by some Neblio private key
+            </summary>
+            <param name="message">input original message</param>
+            <param name="signature">signature made by some Neblio address</param>
+            <param name="address">Neblio address</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,NBitcoin.PubKey)">
+            <summary>
+            Verify the Neblio message signed by some Neblio Private Key.
+            This function uses the Public Key instead of the Address for the verification
+            </summary>
+            <param name="message">input original message</param>
+            <param name="signature">signature made by some Neblio address</param>
+            <param name="address">Neblio address</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.SignMessage(System.String,System.String)">
+            <summary>
+            Sign the Message with Neblio Private Key
+            </summary>
+            <param name="message">Message to sign</param>
+            <param name="privateKey">Neblio Private Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.SignMessage(System.String,NBitcoin.BitcoinSecret)">
+            <summary>
+            Sign the Message with Neblio Private Key
+            </summary>
+            <param name="message">Message to sign</param>
+            <param name="secret">Neblio Private Key in form of the BitcoinSecret</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptMessage(System.String,System.String)">
+            <summary>
+            Decrypt the message with use of the Neblio Private Key
+            </summary>
+            <param name="cryptedMessage">Encrypted Message to decrypt</param>
+            <param name="privateKey">Neblio Private Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptMessage(System.String,NBitcoin.BitcoinSecret)">
+            <summary>
+            Decrypt the message with use of the Neblio Private Key
+            </summary>
+            <param name="cryptedMessage">Encrypted Message to decrypt</param>
+            <param name="secret">Neblio Private Key in form of BitcoinSecret</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptMessage(System.String,System.String)">
+            <summary>
+            Encrypt the message with use of Public Key
+            </summary>
+            <param name="message">Message to encrypt</param>
+            <param name="publicKey">Public Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,System.String)">
+            <summary>
+            Obtain the Shared secret based on the Neblio Address and Neblio Private Key
+            </summary>
+            <param name="bobAddress">Neblio Address of the receiver</param>
+            <param name="key">Private Key of the sender</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,NBitcoin.BitcoinSecret)">
+            <summary>
+            Obtain the Shared secret based on the Neblio Address and Neblio Private Key
+            </summary>
+            <param name="bobAddress">Neblio Address of the receiver</param>
+            <param name="secret">Private Key of the sender in the form of the BitcoinSecret</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,System.String)">
+            <summary>
+            Encrypt the string with Shared secret
+            </summary>
+            <param name="message">Message to encrypt</param>
+            <param name="bobAddress">Receiver Neblio Address</param>
+            <param name="key">Neblio Private Key of the Sender</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)">
+            <summary>
+            Encrypt the string with Shared secret
+            </summary>
+            <param name="message">Message to encrypt</param>
+            <param name="bobAddress">Receiver Neblio Address</param>
+            <param name="key">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptBytesWithSharedSecret(System.Byte[],System.String,NBitcoin.BitcoinSecret)">
+            <summary>
+            Encrypt the bytes with Shared secret
+            </summary>
+            <param name="inputBytes">Array of the bytes to encrypt</param>
+            <param name="bobAddress">Receiver Neblio Address</param>
+            <param name="secret">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecretWithKey(System.String,System.String,System.String)">
+            <summary>
+            Encrypt the string with Shared secret
+            </summary>
+            <param name="message">Message to encrypt</param>
+            <param name="bobAddress">Receiver Neblio Address</param>
+            <param name="key">Shared secret key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,System.String)">
+            <summary>
+            Decrypt the string with Shared secret
+            </summary>
+            <param name="emessage">Message to decrypt</param>
+            <param name="bobAddress">Receiver Neblio Address</param>
+            <param name="key">Shared secret key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)">
+            <summary>
+            Decrypt the string with Shared secret
+            </summary>
+            <param name="emessage">Message to decrypt</param>
+            <param name="bobAddress">Receiver Neblio Address</param>
+            <param name="secret">Neblio Private Key in form of the BitcoinSecret</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptBytesWithSharedSecret(System.Byte[],System.String,NBitcoin.BitcoinSecret)">
+            <summary>
+            Decrypt the bytes with Shared secret
+            </summary>
+            <param name="ebytes">Array of the bytes to decrypt</param>
+            <param name="bobAddress">Receiver Neblio Address</param>
+            <param name="secret">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey(System.String,System.String,System.String)">
+            <summary>
+            Dencrypt the string with Shared secret
+            </summary>
+            <param name="emessage">Message to decrypt</param>
+            <param name="bobAddress">Receiver Neblio Address</param>
+            <param name="key">Shared secret key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.SecurityUtils.HashPassword(System.String)">
+            <summary>
+            Create hash of the password to store
+            </summary>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.SecurityUtils.VerifyPassword(System.String,System.Byte[])">
+            <summary>
+            Verify the password against the hash of the password
+            </summary>
+            <param name="password"></param>
+            <param name="hash"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.SecurityUtils.ComputeSha256Hash(System.String)">
+            <summary>
+            Compute SHA256 Hash
+            </summary>
+            <param name="rawData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.SymetricProvider.EncryptString(System.String,System.String)">
+            <summary>
+            Symmetrical encryption of the text.
+            </summary>
+            <param name="key">Password for the encryption</param>
+            <param name="plainText">Text which should be encrypted</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.SymetricProvider.EncryptBytes(System.String,System.Byte[])">
+            <summary>
+            Symmetrical encryption of the bytes
+            </summary>
+            <param name="key">Password for the encryption</param>
+            <param name="bytes">Bytes array which should be encrypted</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.SymetricProvider.DecryptString(System.String,System.String)">
+            <summary>
+            Symmetrical decryption of the text
+            </summary>
+            <param name="key">Password for the encryption</param>
+            <param name="cipherText">Text which should be decrypted</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.SymetricProvider.DecryptBytes(System.String,System.Byte[])">
+            <summary>
+            Symmetrical decryption of the bytes
+            </summary>
+            <param name="key">Password for the encryption</param>
+            <param name="bytes">Bytes array which should be decrypted</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.UnstoppableDomains.IClient.GetAddressDetailsAsync(System.String)">
             <summary>Returns the Details of Unstoppable Domain address</summary>
             <param name="address">Crypto address</param>
@@ -4602,6 +5812,103 @@
         </member>
         <member name="P:VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.WhoIs">
             <summary>Success flag</summary>
+        </member>
+        <member name="M:VEDriversLite.UnstoppableDomains.UnstoppableDomainsHelpers.GetAddressDetails(System.String)">
+            <summary>
+            Load the information from the Unstoppable Domains API
+            </summary>
+            <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.UnstoppableDomains.UnstoppableDomainsHelpers.GetNeblioAddress(System.String)">
+            <summary>
+            Get Neblio Address if exists
+            </summary>
+            <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+            <returns>Address if exists, string.Empty if not exists</returns>
+        </member>
+        <member name="M:VEDriversLite.UnstoppableDomains.UnstoppableDomainsHelpers.GetBTCAddress(System.String)">
+            <summary>
+            Get BTC Address if exists
+            </summary>
+            <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+            <returns>Address if exists, string.Empty if not exists</returns>
+        </member>
+        <member name="M:VEDriversLite.UnstoppableDomains.UnstoppableDomainsHelpers.GetETHAddress(System.String)">
+            <summary>
+            Get ETH Address if exists
+            </summary>
+            <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+            <returns>Address if exists, string.Empty if not exists</returns>
+        </member>
+        <member name="M:VEDriversLite.UnstoppableDomains.UnstoppableDomainsHelpers.GetLTCAddress(System.String)">
+            <summary>
+            Get LTC Address if exists
+            </summary>
+            <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+            <returns>Address if exists, string.Empty if not exists</returns>
+        </member>
+        <member name="M:VEDriversLite.UnstoppableDomains.UnstoppableDomainsHelpers.GetDOGEAddress(System.String)">
+            <summary>
+            Get DOGE Address if exists
+            </summary>
+            <param name="uAddress">UnstoppableDomain address - like "something.crypto"</param>
+            <returns>Address if exists, string.Empty if not exists</returns>
+        </member>
+        <member name="F:VEDriversLite.VEDLDataContext.NFTHashs">
+            <summary>
+            NFT Hashes list. Usually it should contains list of all available NFTs in your app
+            It should just speed up the testing
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.VEDLDataContext.NFTCache">
+            <summary>
+            Public list of the NFT Cache
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.VEDLDataContext.AllowCache">
+            <summary>
+            If you will set this in you can control cache in you app. It is not implemented in the main logic of the App, just you can use it as common flag
+            Example use is in VENFT App in omponent UnlockingAccount.razor
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.VEDLDataContext.MaxCachedItems">
+            <summary>
+            Maximum items in the Cache dictionary
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.VEDLDataContext.WooCommerceStoreUrl">
+            <summary>
+            Woo Commerce URL of your store
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.VEDLDataContext.WooCommerceStoreUrlWithCred">
+            <summary>
+            If you use credentials inside of the WooCommerce API requests it is created here automatically - usually do not work with cors
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.VEDLDataContext.WooCommerceStoreAPIKey">
+            <summary>
+            WooCommerce API key - you can obtain this key in the admin section of the WooCommerce
+            Please install the WoC API plugin to enable this in the WoC
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.VEDLDataContext.WooCommerceStoreSecret">
+            <summary>
+            WooCommerce API secret - you can obtain this key in the admin section of the WooCommerce
+            Please install the WoC API plugin to enable this in the WoC
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.VEDLDataContext.WooCommerceStoreJWTToken">
+            <summary>
+            If you will install the JWT plugin in the WordPress the JWT token can be stored here. 
+            It should be obtained automatically after setup the login and pass
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.VEDLDataContext.WooCommerceStoreCheckoutFieldCustomerNeblioAddress">
+            <summary>
+            This is the name of the Neblio Address field in the checkout form in WoC
+            </summary>
         </member>
         <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.ConnectedDogeAccountAddress">
             <summary>

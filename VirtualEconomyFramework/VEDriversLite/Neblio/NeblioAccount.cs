@@ -126,7 +126,7 @@ namespace VEDriversLite
                 await Task.WhenAll(new Task[3] {
                                 ReloadMintingSupply(),
                                 ReloadTokenSupply(),
-                                ExchangePriceService.InitPriceService(Cryptocurrencies.ExchangeRatesAPITypes.Coingecko)
+                                ExchangePriceService.InitPriceService(Cryptocurrencies.ExchangeRatesAPITypes.Coingecko, Address, Cryptocurrencies.CurrencyTypes.NEBL)
                 });
 
                 FirsLoadingStatus?.Invoke(this, "Utxos loaded");
@@ -506,6 +506,10 @@ namespace VEDriversLite
             return false;
         }
 
+        /// <summary>
+        /// Serialize the NFTCache dictionary
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> CacheNFTs()
         {
             try
@@ -531,6 +535,12 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Load the data from the stirng to the Dictionary of the NFTs cache
+        /// The input string must be serialized NFTCache dictionary from VEDriversLite with use of the function CacheNFTs from this class
+        /// </summary>
+        /// <param name="cacheString">Input serialized NFTCache dictionary as string</param>
+        /// <returns></returns>
         public async Task<bool> LoadCacheNFTsFromString(string cacheString)
         {
             if (string.IsNullOrEmpty(cacheString)) return false;
@@ -553,7 +563,12 @@ namespace VEDriversLite
                 return false;
             }
         }
-
+        /// <summary>
+        /// Load the NFTCache data from the input dictionary to the Dictionary of the NFTs cache
+        /// The input must be dictionary which contains NFTCacheDto as value with cache data
+        /// </summary>
+        /// <param name="cacheString">Input NFTCache dictionary</param>
+        /// <returns></returns>
         public async Task<bool> LoadCacheNFTsFromString(IDictionary<string, NFTCacheDto> nfts)
         {
             try

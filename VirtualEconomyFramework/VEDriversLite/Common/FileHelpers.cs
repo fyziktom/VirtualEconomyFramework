@@ -17,6 +17,10 @@ namespace VEDriversLite
     }
     public static class FileHelpers
     {
+        /// <summary>
+        /// Remove all the empty folders in the main folder
+        /// </summary>
+        /// <param name="DataFolder">Main folder address</param>
         public static void ClearEmptyDirs(string DataFolder)
         {
             var directories = Directory.GetDirectories(DataFolder);
@@ -30,6 +34,12 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Copy file from one to another destionation
+        /// </summary>
+        /// <param name="sourceFilePath">Input file destionation</param>
+        /// <param name="destinatinFilePath">Final file destination</param>
+        /// <returns></returns>
         public static bool CopyFile(string sourceFilePath, string destinatinFilePath)
         {
             try
@@ -63,7 +73,14 @@ namespace VEDriversLite
             string date = DateTime.Today.ToShortDateString().Replace('.', '_').Replace('/', '_');
             return date;
         }
-
+        /// <summary>
+        /// Check if the folder exists in the inputed location. If not exists, it will create it
+        /// The new folder name can contains the automatic datetime stamp and optional suffix
+        /// </summary>
+        /// <param name="_outputFolderPath">The path to check</param>
+        /// <param name="suffix">Sufix for the new folder</param>
+        /// <param name="withdatetime">If you want to add datetime stamp automatically</param>
+        /// <returns></returns>
         public static string CheckOrCreateTheFolder(string _outputFolderPath, string suffix = "", bool withdatetime = false)
         {
             string OutputDirectory = string.Empty;
@@ -95,17 +112,31 @@ namespace VEDriversLite
                 return string.Empty;
             }
         }
-
+        /// <summary>
+        /// Add line to the end of some file.
+        /// If the file does not exists it will create the new file.
+        /// </summary>
+        /// <param name="line">New line which should be added to the file</param>
+        /// <param name="outputPath">Output path of the file</param>
         public static void AppendLineToTextFile(string line, string outputPath)
         {
             File.AppendAllText(outputPath, line + Environment.NewLine);
         }
-
+        /// <summary>
+        /// Write whole text into the file.
+        /// If the file does not exists it will create the new file.
+        /// </summary>
+        /// <param name="path">Output path of the file</param>
+        /// <param name="content">content text</param>
         public static void WriteTextToFile(string path, string content)
         {
             File.WriteAllText(path, content);
         }
-
+        /// <summary>
+        /// Read all the text from the file
+        /// </summary>
+        /// <param name="path">Path of the input file</param>
+        /// <returns></returns>
         public static string ReadTextFromFile(string path)
         {
             if (File.Exists(path))
@@ -113,7 +144,11 @@ namespace VEDriversLite
             else
                 return string.Empty;
         }
-
+        /// <summary>
+        /// Check if the file exists
+        /// </summary>
+        /// <param name="path">Path of the file</param>
+        /// <returns>true if the file exists</returns>
         public static bool IsFileExists(string path)
         {
             if (File.Exists(path))

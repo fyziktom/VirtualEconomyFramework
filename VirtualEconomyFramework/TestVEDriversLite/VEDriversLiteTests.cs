@@ -21,7 +21,13 @@ namespace TestVEDriversLite
     public static class VEDriversLiteTests
     {
         private static string password = string.Empty;
+        /// <summary>
+        /// Global Main Neblio Account used in most of the functions
+        /// </summary>
         private static NeblioAccount account = new NeblioAccount();
+        /// <summary>
+        /// Global Main Dogecoin Account used in most of the functions
+        /// </summary>
         private static DogeAccount dogeAccount = new DogeAccount();
         private static object _lock = new object();
 
@@ -35,10 +41,13 @@ namespace TestVEDriversLite
             Console.WriteLine("- run GenerateNewAccount if you dont have account. It will create file key.txt where is your new address and key.");
             Console.WriteLine("- run LoadAccount if you have account and stored key.txt file");
             Console.WriteLine("- run LoadAccountWithCreds if you have account but you want to fill manually pass,ekey,address");
-            Console.WriteLine("Start of auto refreshing account data is called after successfull load");
             Console.WriteLine("---------------------------------");
         }
 
+        /// <summary>
+        /// This function will create new Neblio Account.
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void GenerateNewAccount(string param)
         {
@@ -54,12 +63,21 @@ namespace TestVEDriversLite
             Console.WriteLine($"Address: {account.Address}");
             Console.WriteLine($"Encrypted Private Key: {await account.AccountKey.GetEncryptedKey("", true)}");
         }
-
+        /// <summary>
+        /// This handler provides the data from the initial loading of the account.
+        /// It can be used for loading progressbar label, etc.
+        /// </summary>
+        /// <param name="sender">Address which is loading</param>
+        /// <param name="e">This contains message what is going on during the initial load.</param>
         private static void Account_FirsLoadingStatus(object sender, string e)
         {
             Console.WriteLine($"Loading Account {(sender as NeblioAccount).Address}: {e}.");
         }
 
+        /// <summary>
+        /// Load Neblio account from the file key.txt
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void LoadAccount(string param)
         {
@@ -76,6 +94,10 @@ namespace TestVEDriversLite
             await account.LoadAccount(password, awaitFirstLoad:true);
         }
 
+        /// <summary>
+        /// Load Neblio Account from specific file
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void LoadAccountFromFile(string param)
         {
@@ -93,6 +115,10 @@ namespace TestVEDriversLite
             await account.LoadAccount(pass, file, false, awaitFirstLoad: true);
         }
 
+        /// <summary>
+        /// Load Neblio account and destroy all NFTs on it
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void LoadAccountFromFileAndDestroyAllNFTs(string param)
         {
@@ -187,6 +213,11 @@ namespace TestVEDriversLite
 
         }
 
+        /// <summary>
+        /// Load VENFT App Backup.
+        /// It loads Neblio Account, Dogecoin Account, All Neblio SubAccount, Tabs, MessageTabs and bookmarks
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void LoadAccountFromVENFTBackup(string param)
         {
@@ -206,6 +237,10 @@ namespace TestVEDriversLite
             //StartRefreshingData(null);
         }
 
+        /// <summary>
+        /// This is not necessary. Most of the load account functions already call it.
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void StartRefreshingData(string param)
         {
@@ -220,6 +255,10 @@ namespace TestVEDriversLite
             Console.WriteLine("Refreshing started.");
         }
 
+        /// <summary>
+        /// Load Neblio Account with the Credentials like password, private key and address
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void LoadAccountWithCreds(string param)
         {
@@ -238,6 +277,10 @@ namespace TestVEDriversLite
             await account.LoadAccount(pass, ekey, addr, awaitFirstLoad:true);
         }
 
+        /// <summary>
+        /// Return decrypted private key form the Neblio Account
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void GetDecryptedPrivateKey(string param)
         {
@@ -254,6 +297,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Display some Neblio Account details such as Balance, Number of NFTs, etc.
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void DisplayAccountDetails(string param)
         {
@@ -274,6 +321,10 @@ namespace TestVEDriversLite
             Console.WriteLine("-----------------------------------------------------");
         }
 
+        /// <summary>
+        /// Send classic Neblio transaction
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendTransaction(string param)
         {
@@ -292,17 +343,17 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
-        [TestEntry]
-        public static void SendAllNFTsBackToOwners(string param)
-        {
-            SendAllNFTsBackToOwnersAsync(param);
-        }
         /// <summary>
         /// Function will send all NFTs on the address back to the creator (based on minting tx info).
         /// You can pass Neblio Sub Account Address as the parameter.
         /// </summary>
         /// <param name="param">Leave empty for Main Account or fill Sub Account Address</param>
         /// <returns></returns>
+        [TestEntry]
+        public static void SendAllNFTsBackToOwners(string param)
+        {
+            SendAllNFTsBackToOwnersAsync(param);
+        }
         public static async Task SendAllNFTsBackToOwnersAsync(string param)
         {
 
@@ -434,6 +485,10 @@ namespace TestVEDriversLite
             }
         }
 
+        /// <summary>
+        /// Send classic Neblio transaction which includes message
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendTransactionWithMessage(string param)
         {
@@ -453,7 +508,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
-
+        /// <summary>
+        /// Send special Neblio split transaction. It can split the neblio coin to multiple lots
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendSplitTransaction(string param)
         {
@@ -474,6 +532,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Destroy specific NFT or list of the NFts
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void DestroyNFTs(string param)
         {
@@ -482,6 +544,7 @@ namespace TestVEDriversLite
         public static async Task DestroyNFTsAsync(string param)
         {
             var nfts = new List<INFT>();
+
             var nftlist = new List<(string, int)>()
             {
                 ("5d5ccf74b2d142c063e01bec584b98edd73e5ca529cf2810db36114eb6bfd208",0),
@@ -503,6 +566,11 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Send Airdrop transaction to some Neblio Address
+        /// This can send tokens and neblio in the same transaction
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendAirdrop(string param)
         {
@@ -524,7 +592,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
-
+        /// <summary>
+        /// Send 100 VENFT Tokens airdrop including 0.05NEBL
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendVENFTAirdrop(string param)
         {
@@ -544,6 +615,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Send automatic VENFT Airdrop for multiple addresses based on the list with these addresses.
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendVENFTAirdropFromFile(string param)
         {
@@ -593,6 +668,10 @@ namespace TestVEDriversLite
             }
         }
 
+        /// <summary>
+        /// Send classci Neblio transaction with the tokens.
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendTokenTransaction(string param)
         {
@@ -620,6 +699,11 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Mint new Neblio NFT.
+        /// In this example the ImageNFT is created
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void MintNFT(string param)
         {
@@ -679,6 +763,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Mint Neblio NFT Ticket
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void MintNFTTicket(string param)
         {
@@ -786,6 +874,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Mint Neblio Ticket based on provided hash of existing EventNFT
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void MintNFTTicketFromEvent(string param)
         {
@@ -872,6 +964,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Mint Neblio NFT Event
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void MintNFTEvent(string param)
         {
@@ -908,6 +1004,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Change informations inside of Neblio EventNFT
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void ChangeNFTEvent(string param)
         {
@@ -936,9 +1036,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
-
-
-
+        /// <summary>
+        /// Send the Neblio NFT
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendNFT(string param)
         {
@@ -966,6 +1067,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Split Neblio tokens transaction. This transaction can split the token lot to smaller lots
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SplitNeblioTokens(string param)
         {
@@ -991,6 +1096,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Split Neblio transaction. This transaction can split the Neblio coin to lot to smaller lots
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SplitNeblio(string param)
         {
@@ -1014,6 +1123,12 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Write the Neblio price into the NFT
+        /// This will enable the NFT for the sale
+        /// If you want to remove the price, just resend the NFT to yourself
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void WritePriceToNFT(string param)
         {
@@ -1040,6 +1155,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Send NFT payments for some specific NFT which is available to buy.
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendNFTPayment(string param)
         {
@@ -1069,6 +1188,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Return unwanted or bad NFT Payment
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void ReturnNFTPayment(string param)
         {
@@ -1095,6 +1218,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Obtain and test the Verification code of the NFT
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void VerificationOfNFTs(string param)
         {
@@ -1128,6 +1255,10 @@ namespace TestVEDriversLite
             Console.WriteLine(vres.NFT.Name);
         }
 
+        /// <summary>
+        /// Sign the message with use of the Neblio Private Key
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SignMessage(string param)
         {
@@ -1145,6 +1276,10 @@ namespace TestVEDriversLite
             Console.WriteLine(signature.Item2);
         }
 
+        /// <summary>
+        /// Verify the message with use of the Neblio address
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void VerifyMessage(string param)
         {
@@ -1167,6 +1302,10 @@ namespace TestVEDriversLite
             Console.WriteLine(ver.Item2);
         }
 
+        /// <summary>
+        /// Obtain the transaction details from the Neblio API
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void GetTxDetails(string param)
         {
@@ -1200,7 +1339,10 @@ namespace TestVEDriversLite
             Console.WriteLine("-------------");
         }
 
-
+        /// <summary>
+        /// Load the specific NFT details
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void GetNFTDetails(string param)
         {
@@ -1236,6 +1378,10 @@ namespace TestVEDriversLite
             Console.WriteLine(nft.ImageLink);
         }
 
+        /// <summary>
+        /// Encrypt the message with use of the Neblio Address
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void EncryptMessage(string param)
         {
@@ -1259,6 +1405,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Encrypt the file content with use of Neblio Address
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void EncryptTextFileContent(string param)
         {
@@ -1293,6 +1443,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Decrypt the message with use of the Neblio Private Key
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void DecryptMessage(string param)
         {
@@ -1310,6 +1464,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Encrypt the message with use of the shared secret. You must provide address of the receiver
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void EncryptMessageWithSharedSecret(string param)
         {
@@ -1323,13 +1481,18 @@ namespace TestVEDriversLite
                 throw new Exception("Account is locked.");
             var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length < 2)
-                throw new Exception("Please input message,address.");
+                throw new Exception("Please input message,receiverAddress.");
 
             var res = await ECDSAProvider.EncryptStringWithSharedSecret(split[0], split[1], account.Secret);
             Console.WriteLine("Encrypted message is: ");
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Decrypt the message with use of the shared secret.
+        /// you must provide the receiver Neblio address.
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void DecryptMessageWithSharedSecret(string param)
         {
@@ -1343,13 +1506,17 @@ namespace TestVEDriversLite
                 throw new Exception("Account is locked.");
             var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length < 2)
-                throw new Exception("Please input message,address.");
+                throw new Exception("Please input message,receiverAddress.");
 
             var res = await ECDSAProvider.DecryptStringWithSharedSecret(split[0], split[1], account.Secret);
             Console.WriteLine("Decrypted message is: ");
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Classic symmetrical encryption based on the AES
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void AESEncryptMessage(string param)
         {
@@ -1366,6 +1533,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Classic symmetrical decryption based on the AES
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void AESDecryptMessage(string param)
         {
@@ -1382,6 +1553,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+        /// <summary>
+        /// Send the Message NFT. It can contains the encrypted metadata with use of the shared secret.
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void SendMessageNFT(string param)
         {
@@ -1405,6 +1580,10 @@ namespace TestVEDriversLite
             Console.WriteLine(res.Item2);
         }
 
+        /// <summary>
+        /// Load the MessageNFT and decrypt the included data with use of the shared secret
+        /// </summary>
+        /// <param name="param"></param>
         [TestEntry]
         public static void LoadMessageNFT(string param)
         {

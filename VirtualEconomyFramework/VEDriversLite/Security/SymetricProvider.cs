@@ -11,6 +11,12 @@ namespace VEDriversLite.Security
     //https://www.c-sharpcorner.com/article/encryption-and-decryption-using-a-symmetric-key-in-c-sharp/
     public static class SymetricProvider
     {
+        /// <summary>
+        /// Symmetrical encryption of the text.
+        /// </summary>
+        /// <param name="key">Password for the encryption</param>
+        /// <param name="plainText">Text which should be encrypted</param>
+        /// <returns></returns>
         public static async Task<string> EncryptString(string key, string plainText)
         {
             byte[] iv = new byte[16];
@@ -44,6 +50,12 @@ namespace VEDriversLite.Security
             return Convert.ToBase64String(array);
         }
 
+        /// <summary>
+        /// Symmetrical encryption of the bytes
+        /// </summary>
+        /// <param name="key">Password for the encryption</param>
+        /// <param name="bytes">Bytes array which should be encrypted</param>
+        /// <returns></returns>
         public static async Task<byte[]> EncryptBytes(string key, byte[] bytes)
         {
             byte[] iv = new byte[16];
@@ -69,7 +81,12 @@ namespace VEDriversLite.Security
                 }
             }
         }
-
+        /// <summary>
+        /// Symmetrical decryption of the text
+        /// </summary>
+        /// <param name="key">Password for the encryption</param>
+        /// <param name="cipherText">Text which should be decrypted</param>
+        /// <returns></returns>
         public static async Task<string> DecryptString(string key, string cipherText)
         {
             byte[] iv = new byte[16];
@@ -99,7 +116,12 @@ namespace VEDriversLite.Security
                 }
             }
         }
-
+        /// <summary>
+        /// Symmetrical decryption of the bytes
+        /// </summary>
+        /// <param name="key">Password for the encryption</param>
+        /// <param name="bytes">Bytes array which should be decrypted</param>
+        /// <returns></returns>
         public static async Task<byte[]> DecryptBytes(string key, byte[] cipherBytes)
         {
             byte[] iv = new byte[16];

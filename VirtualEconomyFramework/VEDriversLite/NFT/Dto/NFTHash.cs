@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.NFT.Dto
 {
+    /// <summary>
+    /// Dto for shorten informations for the NFT
+    /// </summary>
     public class NFTHash
     {
         public string MainAddress { get; set; } = string.Empty;

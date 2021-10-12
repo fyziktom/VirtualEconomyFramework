@@ -87,6 +87,12 @@ namespace VEDriversLite.NFT
                 Partner = rec;
         }
 
+        /// <summary>
+        /// this function will decrypt the NFT if it is possile
+        /// It needs the owner Private Key to create shared password which the combination of the sender public key.
+        /// </summary>
+        /// <param name="secret">Owner Private Key</param>
+        /// <returns>true if success</returns>
         public async Task<bool> Decrypt(NBitcoin.BitcoinSecret secret)
         {
             if (runningDecryption)
@@ -126,6 +132,12 @@ namespace VEDriversLite.NFT
             return true;
         }
 
+        /// <summary>
+        /// This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
+        /// Then the image is saved in ImageData as bytes.
+        /// </summary>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
         public async Task<bool> DecryptImageData(NBitcoin.BitcoinSecret secret)
         {
             if (!string.IsNullOrEmpty(ImageLink) && ImageLink.Contains("https://gateway.ipfs.io/ipfs/"))
@@ -152,6 +164,12 @@ namespace VEDriversLite.NFT
             return false;
         }
 
+        /// <summary>
+        /// Decrypt the specific property with use of shared secret
+        /// </summary>
+        /// <param name="prop">Property content</param>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
         private async Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret)
         {
             if (!string.IsNullOrEmpty(prop))
@@ -183,7 +201,7 @@ namespace VEDriversLite.NFT
             Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
             return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
         }
-
+        
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             var metadata = await GetCommonMetadata();
