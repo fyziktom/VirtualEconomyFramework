@@ -38,14 +38,14 @@ namespace VEDriversLite.WooCommerce.Dto
         public string permalink { get; set; } = string.Empty;
         public string slug { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
-        public string regular_price { get; set; } = "0.0";
+        public string regular_price { get; set; } = string.Empty;
         public string status { get; set; } = "publish";
         public bool _virtual { get; set; } = true;
         public bool enable_html_description { get; set; } = false;
         public bool downloadable { get; set; } = true;
         public string type { get; set; } = "simple";
         public int? stock_quantity { get; set; } = 1;
-        public bool manage_stock { get; set; } = true;
+        public bool manage_stock { get; set; } = false;
         public string stock_status { get; set; } = "instock";
         public StockStatus stock_status_enum
         {
