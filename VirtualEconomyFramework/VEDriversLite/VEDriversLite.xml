@@ -5563,6 +5563,11 @@
             <param name="txid"></param>
             <returns></returns>
         </member>
+        <member name="P:VEDriversLite.NFT.ProductNFT.UnitPrice">
+            <summary>
+            Price in USD per one Unit
+            </summary>
+        </member>
         <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyDogeMessage(System.String,System.String,System.String)">
             <summary>
             Verify the Dogecoin message signed by some dogecoin private key

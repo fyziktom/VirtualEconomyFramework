@@ -1068,6 +1068,121 @@ namespace TestVEDriversLite
         }
 
         /// <summary>
+        /// Mint Neblio NFT Producer Profile
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void MintNFTProducerProfile(string param)
+        {
+            MintNFTProducerProfileAsync(param);
+        }
+        public static async Task MintNFTProducerProfileAsync(string param)
+        {
+            Console.WriteLine("Minting NFT Product");
+            // create NFT object
+            var nft = new ProfileNFT("");
+
+            nft.Author = "HARDWARIO";
+            nft.Name = "HARDWARIO";
+            nft.Description = "We design and manufacture unique IoT devices.";
+            nft.Link = "https://www.hardwario.com/";
+            nft.ID = "04998511";
+            nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmX1FJhwjohbWnTCLUqj85Mg5jbUCrhaRDiTTME2bHbe8f";
+
+            Console.WriteLine("Start of minting producer profile.");
+
+            var res = await account.MintNFT(nft);
+
+            
+            if (res.Item1)
+                if (!string.IsNullOrEmpty(res.Item2))
+                    await MintNFTProductAsync(res.Item2 + ":0");
+            
+            Console.WriteLine("New TxId hash is: ");
+
+            Console.WriteLine(res);
+        }
+
+        /// <summary>
+        /// Mint Neblio NFT Product
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void MintNFTProduct(string param)
+        {
+            MintNFTProductAsync(param);
+        }
+        public static async Task MintNFTProductAsync(string param)
+        {
+            Console.WriteLine("Minting NFT Product");
+            // create NFT object
+            var nft = new ProductNFT("");
+            
+            nft.Author = "HARDWARIO";
+            nft.Name = "CHESTER";
+            nft.ProducerProfileNFT = "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf:0";
+            nft.Description = "Extensible IoT gateway for Industry 4.0, smart city, e-metering, and agricultural applications. CHESTER connects sensors, actuators, PLC controllers, and other devices to the internet. Flexible power supply and LPWAN communication technologies enable reliable connectivity from distant and deep indoor places.";
+            nft.Tags = "IoT Gateway CHESTER HARDWARIO HW FW Industry40";
+            nft.Link = "https://www.hardwario.com/chester/";
+            nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmRiZy9ERxCqXQknTD8TPysQjN7mzZLhLnrq3appp1kFwi";
+            nft.Datasheet = "https://gateway.ipfs.io/ipfs/QmPs7A7nnTCXXdXwQo6brHAEXLsMwv2tCEUK44HjaiyS9c";
+            nft.UnitPrice = 120; // in USD
+            
+            Console.WriteLine("Start of minting product.");
+
+            var res = await account.MintNFT(nft);
+
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        /// <summary>
+        /// Mint Neblio NFT Product
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void MintNFTInvoice(string param)
+        {
+            MintNFTInvoiceAsync(param);
+        }
+        public static async Task MintNFTInvoiceAsync(string param)
+        {
+            Console.WriteLine("Minting NFT Invoice");
+            // create NFT object
+            var nft = new InvoiceNFT("");
+
+            // load the product
+            var pnft = await NFTFactory.GetNFT("", "48a56bb7c84cbb2bf3fb12ce175dd1994ead775c4959b06167efb61beaa907dd", 0, 0, true, true, NFTTypes.Product);
+            // load the profile
+            INFT profile = null;
+            if (!string.IsNullOrEmpty(account.Profile.Utxo))
+                profile = await NFTFactory.GetNFT("", "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf", 0, 0, true);
+            else
+                profile = account.Profile;
+
+            var buyerProfile = await NFTFactory.GetNFT("", "1b8a4b68257fffe943fcf821552e5f108a15dcbed4b7cbfe95ad613abb1c22cf", 0, 0, true);
+
+            nft.Author = "HARDWARIO";
+            nft.Name = "CHESTER IoT Gateway Invoice";
+            nft.Tags = "IoT Gateway CHESTER HARDWARIO HW FW Industry40";
+            nft.Link = pnft.Link;
+            nft.ImageLink = pnft.ImageLink;
+
+            nft.AddInvoiceItem(pnft.Utxo, pnft.UtxoIndex, (pnft as ProductNFT).UnitPrice, 3);
+            nft.AddInvoiceItem(pnft.Utxo, pnft.UtxoIndex, (pnft as ProductNFT).UnitPrice, 5);
+
+            nft.SellerProfileNFT = profile.Utxo + ":" + profile.UtxoIndex;
+            nft.BuyerProfileNFT = buyerProfile.Utxo + ":" + buyerProfile.UtxoIndex;
+
+            Console.WriteLine("Start of minting invoice.");
+
+            var res = await account.MintNFT(nft);
+
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        /// <summary>
         /// Split Neblio tokens transaction. This transaction can split the token lot to smaller lots
         /// </summary>
         /// <param name="param"></param>

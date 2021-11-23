@@ -47,7 +47,17 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <Input MaxLength="50" Placeholder="Type your nickname" @bind-Value=@nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                <Input MaxLength="100" Placeholder="Type your nickname" @bind-Value=@nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>ID</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input MaxLength="100" Placeholder="Type your ID" @bind-Value=@profileId Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
                     }
@@ -68,24 +78,24 @@
                     {
                         @if (nftType != NFTTypes.Music)
                         {
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Webpage</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add your webpage" MaxLength="200" @bind-Value=@link Style="font-size:12px; min-width:250px; max-width:350px;" />
-                            </div>
-                        </div>
-                        @if (!string.IsNullOrEmpty(link))
-                        {
-                            <div class="row" style="margin-top:3px;">
+                            <div class="row" style="margin-top:10px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <a href="@link" target="_blank" class="text-info">Test the link</a>
+                                    <small>Webpage</small>
                                 </div>
                             </div>
-                        }
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <Input Placeholder="Add your webpage" MaxLength="200" @bind-Value=@link Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(link))
+                            {
+                                <div class="row" style="margin-top:3px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <a href="@link" target="_blank" class="text-info">Test the link</a>
+                                    </div>
+                                </div>
+                            }
                         }
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
@@ -410,6 +420,7 @@
     private string tags = string.Empty;
     private string surname = string.Empty;
     private string nickname = string.Empty;
+    private string profileId = string.Empty;
     private string author = string.Empty;
     private string imagelink = string.Empty;
     private string link = string.Empty;
@@ -535,6 +546,7 @@
                     newNFT = new ProfileNFT("");
                     surname = (sourceNFT as ProfileNFT).Surname;
                     nickname = (sourceNFT as ProfileNFT).Nickname;
+                    profileId = (sourceNFT as ProfileNFT).ID;
                     break;
                 case NFTTypes.Post:
                     newNFT = new PostNFT("");
@@ -577,6 +589,7 @@
                     {
                         Surname = surname,
                         Nickname = nickname,
+                        ID = profileId
                     };
                     break;
                 case NFTTypes.Music:

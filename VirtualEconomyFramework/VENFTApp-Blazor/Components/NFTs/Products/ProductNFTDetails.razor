@@ -22,21 +22,20 @@
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <span style="max-width:100%;">@((MarkupString)NFTDescriptionMarkuptext)</span>
+                    <span>@((MarkupString)NFTDescriptionMarkuptext)</span>
                 </div>
             </div>
         }
-
-        @if (!string.IsNullOrEmpty(NFT.Text))
+        @if (!string.IsNullOrEmpty((NFT as ProductNFT).Datasheet))
         {
-            <div class="row">
+            <div class="row" style="margin-top:10px;">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <span>Text</span>
+                    <span>Datasheet</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <span style="max-width:100%;">@((MarkupString) NFTmarkuptext)</span>
+                    <a href="@((NFT as ProductNFT).Datasheet)" target="_blank">Click to explore the Datasheet</a>
                 </div>
             </div>
         }
@@ -55,7 +54,7 @@
                 <a href="@NFT.ImageLink" target="_blank">
                     @if (!string.IsNullOrEmpty(NFT.ImageLink))
                     {
-                        <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:100%; max-width:250px; min-width:50px;" />
+                        <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:auto; max-width:250px; min-width:50px;" />
                     }
                     else if (string.IsNullOrEmpty(NFT.ImageLink) && !NFT.IsLoaded)
                     {
@@ -75,16 +74,16 @@
 
 @code {
 
-    private PostNFT NFT { get; set; } = new PostNFT("");
+    private INFT NFT { get; set; } = new ProductNFT("");
     [Parameter]
     public INFT InputNFT
     {
         get => NFT;
         set
         {
-            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.Post)
+            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.Product)
             {
-                NFT = value as PostNFT;
+                NFT = value;
                 StateHasChanged();
             }
         }

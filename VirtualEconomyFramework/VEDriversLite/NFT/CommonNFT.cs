@@ -407,6 +407,12 @@ namespace VEDriversLite.NFT
                 case NFTTypes.Payment:
                     metadata.Add("Type", "NFT Payment");
                     break;
+                case NFTTypes.Invoice:
+                    metadata.Add("Type", "NFT Invoice");
+                    break;
+                case NFTTypes.Product:
+                    metadata.Add("Type", "NFT Product");
+                    break;
                 case NFTTypes.Ticket:
                     metadata.Add("Type", "NFT Ticket");
                     break;

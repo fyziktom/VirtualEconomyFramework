@@ -1,0 +1,136 @@
+﻿@using VEDriversLite.NFT
+@using Markdig
+
+<div class="row">
+    <div class="col">
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <h6>@NFT.Name</h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <small>@((NFT as InvoiceNFT).SellerProfileNFT)</small>
+            </div>
+        </div>
+
+        @if (Items.Count > 0)
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Items</span>
+                </div>
+            </div>
+            @foreach (var item in Items)
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Name: @item.InvoiceProductNFT.Name</span>
+                    </div>
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.NFTs.Payments.ShowNFTProductOnInvoiceDetails InputNFT="@item.InvoiceProductNFT" DisplayButton="true" />
+                    </div>
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Unit Price: $ @item.ItemPrice</span>
+                    </div>
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Count: @item.ItemCount</span>
+                    </div>
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Total: $ @(item.ItemPrice * item.ItemCount)</span>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Total Price</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small>$ @((NFT as InvoiceNFT).TotalPrice)</small>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty((NFT as InvoiceNFT).Link))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Link</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="@((NFT as InvoiceNFT).Link)" target="_blank">Click to explore the File for Invoice</a>
+                </div>
+            </div>
+        }
+        @if ((NFT as InvoiceNFT).AlreadyPaid)
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>This Invoice has been already paid.</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="https://explorer.nebl.io/tx/@((NFT as InvoiceNFT).OriginalPaymentTxId)" target="_blank">Payment transaction in explorer</a>
+                </div>
+            </div>
+        }
+        <hr />
+
+    </div>
+</div>
+
+@code {
+
+    private INFT NFT { get; set; } = new InvoiceNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.Invoice)
+            {
+                NFT = value;
+                LoadItems();
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
+    public List<InvoiceItem> Items = new List<InvoiceItem>();
+
+    private async Task LoadItems()
+    {
+        Items = (NFT as InvoiceNFT).InvoiceItems;
+        if (Items != null)
+        {
+            Items.ForEach(async (item) => {
+                var nft = await NFTFactory.GetNFT(NFT.TokenId, item.ItemUtxo, item.ItemUtxoIndex, 0, true);
+                if (nft != null && nft.Type == NFTTypes.Product)
+                {
+                    item.InvoiceProductNFT = nft as ProductNFT;
+                }
+            });
+            StateHasChanged();
+        }
+    }
+
+}

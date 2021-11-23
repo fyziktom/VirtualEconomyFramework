@@ -66,15 +66,18 @@ namespace VEDriversLite.Cryptocurrencies.CoingeckoAPI
                 var respmsg = string.Empty;
                 try
                 {
-                    respmsg = await resp.Content.ReadAsStringAsync();
+                    if (resp != null && resp.IsSuccessStatusCode)
+                        if (resp.Content != null)
+                            respmsg = await resp.Content.ReadAsStringAsync();
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error during reading response message from Coingecko API. " + ex.Message);
                 }
+
                 if (string.IsNullOrEmpty(respmsg))
                 {
-                    Console.WriteLine("Cannot obtain or parse response message. Exiting the Coingecko read API function. " + ((resp != null)?resp.StatusCode.GetTypeCode().ToString():string.Empty) );
+                    //Console.WriteLine("Cannot obtain or parse response message. Exiting the Coingecko read API function. " + ((resp != null)?resp.StatusCode.GetTypeCode().ToString():string.Empty) );
                     return (false);
                 }
 

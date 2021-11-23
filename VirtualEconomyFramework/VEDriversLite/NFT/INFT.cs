@@ -17,6 +17,8 @@ namespace VEDriversLite.NFT
         YouTube,
         Spotify,
         Payment,
+        Invoice,
+        Product,
         Message,
         Ticket,
         Event,

@@ -14,34 +14,34 @@
         <Spin Tip="Loading..." Spinning="@loading">
             @if (!string.IsNullOrEmpty(NFT.Utxo))
             {
-            <div style="position: absolute;right: 5px;top: -20px;">
-                @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId))
-                {
-                <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">
-                    <span class="badge badge-primary">Mint Info</span>
-                </a>
-                }
-                <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
-                    <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
-                </a>
-                <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
-            </div>
+                <div style="position: absolute;right: 5px;top: -20px;">
+                    @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId))
+                    {
+                        <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">
+                            <span class="badge badge-primary">Mint Info</span>
+                        </a>
+                    }
+                    <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
+                        <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
+                    </a>
+                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
+                </div>
                 @if (OwnNFT)
                 {
                     <div class="row" style="position: absolute;right: 7px;top: 30px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <VENFTApp_Blazor.Components.NFTs.Actions.DestroyNFTButton IsIcon="true"
-                                                                              NFTDestroyed="@NFTSentHandler"
-                                                                              FontSize="20"
-                                                                              InputNFT="@NFT"
-                                                                              Address="@Address"
-                                                                              MainAccount="@((OwnNFT && !SubAccount)?true:false)"
-                                                                              SubAccount="@SubAccount" />
+                                                                                      NFTDestroyed="@NFTSentHandler"
+                                                                                      FontSize="20"
+                                                                                      InputNFT="@NFT"
+                                                                                      Address="@Address"
+                                                                                      MainAccount="@((OwnNFT && !SubAccount)?true:false)"
+                                                                                      SubAccount="@SubAccount" />
                         </div>
                     </div>
                 }
             }
-            
+
             @switch (NFT.Type)
             {
                 case NFTTypes.Image:<VENFTApp_Blazor.Components.NFTs.Images.ImageNFTDetails InputNFT="@NFT"
@@ -49,6 +49,18 @@
                                                                                             SubAccount="@SubAccount"
                                                                                             OwnNFT="@OwnNFT"
                                                                                             NFTSent="@NFTSentHandler" />
+                    break;
+                case NFTTypes.Product:<VENFTApp_Blazor.Components.NFTs.Products.ProductNFTDetails InputNFT="@NFT"
+                                                                                                  Address="@Address"
+                                                                                                  SubAccount="@SubAccount"
+                                                                                                  OwnNFT="@OwnNFT"
+                                                                                                  NFTSent="@NFTSentHandler" />
+                    break;
+                case NFTTypes.Invoice:<VENFTApp_Blazor.Components.NFTs.Payments.InvoiceNFTDetails InputNFT="@NFT"
+                                                                                                  Address="@Address"
+                                                                                                  SubAccount="@SubAccount"
+                                                                                                  OwnNFT="@OwnNFT"
+                                                                                                  NFTSent="@NFTSentHandler" />
                     break;
                 case NFTTypes.Post: <VENFTApp_Blazor.Components.NFTs.Posts.PostNFTDetails InputNFT="@NFT"
                                                                                           Address="@Address"
@@ -63,10 +75,10 @@
                                                                                             NFTSent="@NFTSentHandler" />
                     break;
                 case NFTTypes.Profile: <VENFTApp_Blazor.Components.NFTs.Profiles.ProfileNFTDetails InputNFT="@NFT"
-                                                                                              Address="@Address"
-                                                                                              SubAccount="@SubAccount"
-                                                                                              OwnNFT="@OwnNFT"
-                                                                                              NFTSent="@NFTSentHandler" />
+                                                                                                   Address="@Address"
+                                                                                                   SubAccount="@SubAccount"
+                                                                                                   OwnNFT="@OwnNFT"
+                                                                                                   NFTSent="@NFTSentHandler" />
                     break;
                 case NFTTypes.Ticket: <VENFTApp_Blazor.Components.NFTs.Tickets.TicketNFTDetails InputNFT="@NFT"
                                                                                                 Address="@Address"
@@ -113,12 +125,12 @@
             </div>
 
             <VENFTApp_Blazor.Components.NFTs.Actions.NFTActions InputNFT="@NFT"
-                        Utxo="@NFT.Utxo"
-                        UtxoIndex="@NFT.UtxoIndex"
-                        Address="@Address"
-                        OwnNFT="@OwnNFT"
-                        SubAccount="@SubAccount"
-                        NFTSent="@NFTSentHandler" />
+                                                                Utxo="@NFT.Utxo"
+                                                                UtxoIndex="@NFT.UtxoIndex"
+                                                                Address="@Address"
+                                                                OwnNFT="@OwnNFT"
+                                                                SubAccount="@SubAccount"
+                                                                NFTSent="@NFTSentHandler" />
 
             <NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
         </Spin>

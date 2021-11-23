@@ -32,6 +32,12 @@ namespace VEDriversLite.NFT
                         case "NFT Payment":
                             type = NFTTypes.Payment;
                             break;
+                        case "NFT Invoice":
+                            type = NFTTypes.Invoice;
+                            break;
+                        case "NFT Product":
+                            type = NFTTypes.Product;
+                            break;
                         case "NFT Music":
                             type = NFTTypes.Music;
                             break;
@@ -247,6 +253,22 @@ namespace VEDriversLite.NFT
                     nft.UtxoIndex = utxoindex;
                     await (nft as ReceiptNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.Invoice:
+                    nft = new InvoiceNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as InvoiceNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.Product:
+                    nft = new ProductNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as ProductNFT).LoadLastData(meta);
+                    break;
                 case NFTTypes.Message:
                     nft = new MessageNFT(utxo);
                     nft.TokenId = tokid;
@@ -367,6 +389,14 @@ namespace VEDriversLite.NFT
                     nft = new ReceiptNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
+                case NFTTypes.Invoice:
+                    nft = new InvoiceNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Product:
+                    nft = new ProductNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
                 case NFTTypes.Message:
                     nft = new MessageNFT(NFT.Utxo);
                     await nft.Fill(NFT);
@@ -459,6 +489,12 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Receipt:
                     nft = new ReceiptNFT(utxo);
+                    break;
+                case NFTTypes.Invoice:
+                    nft = new InvoiceNFT(utxo);
+                    break;
+                case NFTTypes.Product:
+                    nft = new ProductNFT(utxo);
                     break;
                 case NFTTypes.Message:
                     nft = new MessageNFT(utxo);

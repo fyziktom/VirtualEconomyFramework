@@ -18,6 +18,7 @@ namespace VEDriversLite.NFT
         public int Age { get; set; } = 0;
         public string Surname { get; set; } = string.Empty;
         public string Nickname { get; set; } = string.Empty;
+        public string ID { get; set; } = string.Empty;
         public string RelationshipStatus { get; set; } = string.Empty;
 
         public override async Task Fill(INFT NFT)
@@ -38,6 +39,8 @@ namespace VEDriversLite.NFT
                 Surname = surname;
             if (metadata.TryGetValue("Nickname", out var nickname))
                 Nickname = nickname;
+            if (metadata.TryGetValue("ID", out var id))
+                ID = id;
             if (metadata.TryGetValue("RelationshipStatus", out var relationshipStatus))
                 RelationshipStatus = relationshipStatus;
             if (metadata.TryGetValue("Age", out var age))
@@ -80,6 +83,8 @@ namespace VEDriversLite.NFT
             metadata.Add("Surname", Surname);
             metadata.Add("Nickname", Nickname);
             metadata.Add("Age", Age.ToString());
+            if (!string.IsNullOrEmpty(ID))
+                metadata.Add("ID", ID);
 
             return metadata;
         }

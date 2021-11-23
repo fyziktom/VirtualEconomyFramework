@@ -1,0 +1,115 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+@if (DisplayButton)
+{
+    <div class="row">
+        <div class="col d-flex justify-content-center align-items-center">
+            <button class="btn btn-primary" @onclick="ShowProduct">Info</button>
+        </div>
+    </div>
+}
+
+<Modal Title="NFT Product Details"
+       Visible="@showProductNFTDialogVisible"
+       OnCancel="@NFTDetailsClose"
+       Footer="null">
+    <Spin Tip="Loading Product Data..." Spinning="@showProductNFTDialogLoading">
+        @if (!string.IsNullOrEmpty(NFT.Utxo))
+        {
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <NFT InputNFT="@NFT" OwnNFT="false" Address="@Address" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div style="min-width:100px; min-height:50px;"></div>
+        }
+    </Spin>
+</Modal>
+
+@code {
+
+    private bool showProductNFTDialog = false;
+    [Parameter]
+    public bool ShowProductNFTDialog
+    {
+        get => showProductNFTDialog;
+        set
+        {
+            if (!showProductNFTDialog && value)
+            {
+                showProductNFTDialog = true;
+            }
+            else if (!value)
+            {
+                showProductNFTDialog = false;
+                showProductNFTDialogVisible = false;
+            }
+        }
+    }
+
+    [Parameter]
+    public bool DisplayButton { get; set; } = false;
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    private INFT NFT { get; set; } = new ProductNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo)
+            {
+                NFT = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> DialogClosed { get; set; }
+
+    private bool showProductNFTDialogVisible = false;
+    private bool showProductNFTDialogLoading = false;
+
+    private INFT loadedNFTProduct = new ProductNFT("");
+
+    private async Task ShowProduct(MouseEventArgs e)
+    {
+        if (NFT != null)
+        {
+            if (NFT.Type != NFTTypes.Product)
+                return;
+            showProductNFTDialogVisible = true;
+            //showProductNFTDialogLoading = true;
+            StateHasChanged();
+        }
+        else
+        {
+            showProductNFTDialogVisible = false;
+            //showProductNFTDialogLoading = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task NFTDetailsClose(MouseEventArgs e)
+    {
+        await DialogClosed.InvokeAsync(false);
+        showProductNFTDialogVisible = false;
+        showProductNFTDialogLoading = false;
+    }
+}

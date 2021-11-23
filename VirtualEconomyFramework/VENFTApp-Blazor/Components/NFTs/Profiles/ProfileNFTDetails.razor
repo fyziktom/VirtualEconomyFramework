@@ -52,6 +52,19 @@
                 </div>
             </div>
         }
+        @if (!string.IsNullOrEmpty(NFT.ID))
+        {
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>ID</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@NFT.ID</span>
+                </div>
+            </div>
+        }
         <hr />
         <div class="row" style="margin-top:20px;">
             <div class="col d-flex justify-content-center align-items-center">

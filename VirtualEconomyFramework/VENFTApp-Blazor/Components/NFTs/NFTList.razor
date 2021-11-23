@@ -50,6 +50,12 @@
                             <input type="checkbox" checked="checked" @onchange="eventArgs => { displayMusicChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Music</span><br />
                         </div>
                         <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayProductsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Products</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayInvoicesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Invoices</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
                             <input type="checkbox" checked="checked" @onchange="eventArgs => { displayTicketsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Tickets</span><br />
                         </div>
                         <div class="col d-flex justify-content-center align-items-center w-auto">
@@ -95,6 +101,8 @@
                                     else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
                                     {
                                         if ((displayImages && nft.Type == NFTTypes.Image) ||
+                                            (displayProducts && nft.Type == NFTTypes.Product) ||
+                                            (displayInvoices && nft.Type == NFTTypes.Invoice) ||
                                             (displayPosts && nft.Type == NFTTypes.Post) ||
                                             (displayMusic && nft.Type == NFTTypes.Music) ||
                                             (displayEvents && nft.Type == NFTTypes.Event) ||
@@ -223,6 +231,8 @@
     private bool nftDetailsVisible = false;
     private bool displayImages = true;
     private bool displayPosts = true;
+    private bool displayProducts = true;
+    private bool displayInvoices = true;
     private bool displayMusic = true;
     private bool displayTickets = true;
     private bool displayEvents = true;
@@ -504,6 +514,16 @@
     private async Task displayPostsChanged(object e)
     {
         displayPosts = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayProductsChanged(object e)
+    {
+        displayProducts = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayInvoicesChanged(object e)
+    {
+        displayInvoices = (bool)e;
         StateHasChanged();
     }
     private async Task displayTicketsChanged(object e)
