@@ -49,6 +49,22 @@
                                 <NoImageLoaded />
                             }
                             break;
+                        case NFTTypes.Order:
+                            @if (!string.IsNullOrEmpty(nft.ImageLink))
+                            {
+                                <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                            }
+                            else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
+                            {
+                                <Spin Tip="Loading..." Style="min-width:50px;">
+                                    <NoImageLoaded />
+                                </Spin>
+                            }
+                            else
+                            {
+                                <NoImageLoaded />
+                            }
+                            break;
                         case NFTTypes.Product:
                             @if (!string.IsNullOrEmpty(nft.ImageLink))
                             {

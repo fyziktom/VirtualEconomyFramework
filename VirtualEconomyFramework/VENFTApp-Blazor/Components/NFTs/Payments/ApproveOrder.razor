@@ -1,0 +1,145 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+@if (DisplayButton)
+{
+    if (OwnNFT && NFT.IsSpendable())
+    {
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <small>Optional Note</small>
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <TextArea Placeholder="Add Note if you need..." MaxLength="160" @bind-Value=@note Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <button class="btn btn-primary" @onclick="showApproveOrderDialog">Approve Order</button>
+            </div>
+        </div>
+
+    }
+}
+
+<Modal Title="Approve NFT Order"
+       Visible="@showApproveOrderVisible"
+       OnOk="@ApproveOrderConfirm"
+       OnCancel="@ApproveOrderCancel">
+    <Spin Tip="Writing Approve state..." Spinning="@loading">
+        <span class="text-center">Do you really want to approve this order?</span>
+    </Spin>
+</Modal>
+
+@code {
+    private OrderNFT NFT { get; set; } = new OrderNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo && NFT.Type == NFTTypes.Order)
+            {
+                NFT = value as OrderNFT;
+            }
+        }
+    }
+
+    private bool showApproveOrder = false;
+    [Parameter]
+    public bool ShowApproveOrderDialog
+    {
+        get => showApproveOrder;
+        set
+        {
+            if (!showApproveOrder && value)
+            {
+                showApproveOrder = true;
+                showApproveOrderVisible = true;
+            }
+            else if (!value)
+            {
+                showApproveOrder = false;
+                showApproveOrderVisible = false;
+            }
+        }
+    }
+
+    [Parameter]
+    public bool DisplayButton { get; set; } = false;
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ProfileUtxo { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> DialogClosed { get; set; }
+
+    private bool loading = false;
+    private bool showApproveOrderVisible = false;
+    private string note = string.Empty;
+
+    private async Task showApproveOrderDialog(MouseEventArgs e)
+    {
+        showApproveOrderVisible = true;
+    }
+
+    private async Task ApproveOrderCancel(MouseEventArgs e)
+    {
+        showApproveOrderVisible = false;
+    }
+
+    private async Task ApproveOrderConfirm(MouseEventArgs e)
+    {
+        if (string.IsNullOrEmpty(ProfileUtxo))
+        {
+            await JSRuntime.InvokeVoidAsync("alertMessage", "You have to fill the profile in your account to allow this function. Please check the account tab to fill the profile.");
+            return;
+        }
+
+        try
+        {
+            loading = true;
+            showApproveOrder = false;
+            StateHasChanged();
+            (bool, string) res;
+            NFT.ApprovedByProfile = ProfileUtxo;
+            if (!string.IsNullOrEmpty(note))
+                NFT.ApprovedNote = note;
+            if (!SubAccount)
+                res = await AppData.Account.ChangeNFT(NFT);
+            else
+                res = await AppData.Account.UseTicketNFTOnSubAccount(Address, NFT);
+            if (res.Item1)
+            {
+                await DialogClosed.InvokeAsync(false);
+                await NFTSent.InvokeAsync(res.Item2);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

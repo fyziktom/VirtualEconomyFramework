@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite.NFT
 @using Markdig
+@inject AppData AppData
 
 <div class="row">
     <div class="col">
@@ -10,7 +11,7 @@
         </div>
         <div class="row">
             <div class="col d-flex justify-content-center align-items-center">
-                <small>@((NFT as InvoiceNFT).SellerProfileNFT)</small>
+                <small>@((NFT as OrderNFT).SellerProfileNFT)</small>
             </div>
         </div>
 
@@ -43,11 +44,11 @@
             }
             <div class="row" style="margin-top:15px;">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <span>Total Price: $ @((NFT as InvoiceNFT).TotalPrice)</span>
+                    <span>Total Price: $ @((NFT as OrderNFT).TotalPrice)</span>
                 </div>
             </div>
         }
-        @if (!string.IsNullOrEmpty((NFT as InvoiceNFT).FileLink))
+        @if (!string.IsNullOrEmpty((NFT as OrderNFT).FileLink))
         {
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex justify-content-center align-items-center">
@@ -56,33 +57,61 @@
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <a href="@((NFT as InvoiceNFT).FileLink)" target="_blank">Click to explore the File for Invoice</a>
+                    <a href="@((NFT as OrderNFT).FileLink)" target="_blank">Click to explore the File for Invoice</a>
                 </div>
             </div>
         }
-        @if (!string.IsNullOrEmpty((NFT as InvoiceNFT).OrderTxId))
+        @if (!string.IsNullOrEmpty((NFT as OrderNFT).ApprovedByProfile))
         {
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <span>Order NFT</span>
+                    <span>This Order has been already approved.</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Blazor.Components.NFTs.Payments.ShowNFTOrderOnInvoiceDetails InputNFT="@LoadedOrderNFT" DisplayButton="true" />
+                    <a href="https://explorer.nebl.io/tx/@((NFT as OrderNFT).ApprovedByProfile)" target="_blank">Profile in explorer</a>
                 </div>
             </div>
+            @if (!string.IsNullOrEmpty((NFT as OrderNFT).ApprovedNote))
+            {
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@((NFT as OrderNFT).ApprovedNote)</span>
+                    </div>
+                </div>
+            }
         }
-        @if ((NFT as InvoiceNFT).AlreadyPaid)
+        else
         {
             <div class="row" style="margin-top:10px;">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <span>This Invoice has been already paid.</span>
+                    <span>This Order must be approved.</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col">
+                    <VENFTApp_Blazor.Components.NFTs.Payments.ApproveOrder InputNFT="@NFT"
+                                                                           Address="@Address"
+                                                                           OwnNFT="@OwnNFT"
+                                                                           DisplayButton="@true"
+                                                                           SubAccount="@SubAccount"
+                                                                           ProfileUtxo="@ProfileUtxo"
+                                                                           NFTSent="@NFTSent" />
+                </div>
+            </div>
+        }
+
+        @if ((NFT as OrderNFT).AlreadyPaid)
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>This Order has been already paid.</span>
                 </div>
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-center align-items-center">
-                    <a href="https://explorer.nebl.io/tx/@((NFT as InvoiceNFT).OriginalPaymentTxId)" target="_blank">Payment transaction in explorer</a>
+                    <a href="https://explorer.nebl.io/tx/@((NFT as OrderNFT).OriginalPaymentTxId)" target="_blank">Payment transaction in explorer</a>
                 </div>
             </div>
         }
@@ -93,14 +122,14 @@
 
 @code {
 
-    private INFT NFT { get; set; } = new InvoiceNFT("");
+    private INFT NFT { get; set; } = new OrderNFT("");
     [Parameter]
     public INFT InputNFT
     {
         get => NFT;
         set
         {
-            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.Invoice)
+            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.Order)
             {
                 NFT = value;
                 LoadItems();
@@ -124,14 +153,32 @@
     public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
     public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
     public List<InvoiceItem> Items = new List<InvoiceItem>();
-    public INFT LoadedOrderNFT = new OrderNFT("");
 
+    private string ProfileUtxo = string.Empty;
+
+    private async Task LoadProfileUtxo()
+    {
+        if (SubAccount)
+        {
+            if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                if (!string.IsNullOrEmpty(sa.Profile.Utxo))
+                    ProfileUtxo = sa.Profile.Utxo;
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(AppData.Account.Profile.Utxo))
+                ProfileUtxo = AppData.Account.Profile.Utxo;
+        }
+    }
     private async Task LoadItems()
     {
-        Items = (NFT as InvoiceNFT).InvoiceItems;
+
+        await LoadProfileUtxo();
+        Items = (NFT as OrderNFT).InvoiceItems;
         if (Items != null)
         {
-            Items.ForEach(async (item) => {
+            Items.ForEach(async (item) =>
+            {
                 var nft = await NFTFactory.GetNFT(NFT.TokenId, item.ItemUtxo, item.ItemUtxoIndex, 0, true);
                 if (nft != null && nft.Type == NFTTypes.Product)
                 {
@@ -140,8 +187,6 @@
             });
             StateHasChanged();
         }
-
-        LoadedOrderNFT = await NFTFactory.GetNFT("", (NFT as InvoiceNFT).OrderTxId, 0, 0, true);
     }
 
 }

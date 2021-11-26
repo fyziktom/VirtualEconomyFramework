@@ -56,6 +56,9 @@
                             <input type="checkbox" checked="checked" @onchange="eventArgs => { displayInvoicesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Invoices</span><br />
                         </div>
                         <div class="col d-flex justify-content-center align-items-center w-auto">
+                            <input type="checkbox" checked="checked" @onchange="eventArgs => { displayOrdersChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Orders</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center w-auto">
                             <input type="checkbox" checked="checked" @onchange="eventArgs => { displayTicketsChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Tickets</span><br />
                         </div>
                         <div class="col d-flex justify-content-center align-items-center w-auto">
@@ -103,6 +106,7 @@
                                         if ((displayImages && nft.Type == NFTTypes.Image) ||
                                             (displayProducts && nft.Type == NFTTypes.Product) ||
                                             (displayInvoices && nft.Type == NFTTypes.Invoice) ||
+                                            (displayOrders && nft.Type == NFTTypes.Order) ||
                                             (displayPosts && nft.Type == NFTTypes.Post) ||
                                             (displayMusic && nft.Type == NFTTypes.Music) ||
                                             (displayEvents && nft.Type == NFTTypes.Event) ||
@@ -233,6 +237,7 @@
     private bool displayPosts = true;
     private bool displayProducts = true;
     private bool displayInvoices = true;
+    private bool displayOrders = true;
     private bool displayMusic = true;
     private bool displayTickets = true;
     private bool displayEvents = true;
@@ -524,6 +529,11 @@
     private async Task displayInvoicesChanged(object e)
     {
         displayInvoices = (bool)e;
+        StateHasChanged();
+    }
+    private async Task displayOrdersChanged(object e)
+    {
+        displayOrders = (bool)e;
         StateHasChanged();
     }
     private async Task displayTicketsChanged(object e)

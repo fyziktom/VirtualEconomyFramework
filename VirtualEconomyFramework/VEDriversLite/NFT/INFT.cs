@@ -23,6 +23,7 @@ namespace VEDriversLite.NFT
         Ticket,
         Event,
         Receipt,
+        Order,
         CoruzantArticle = 101,
         CoruzantPremiumArticle = 102,
         CoruzantPodcast = 103,

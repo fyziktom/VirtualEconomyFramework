@@ -35,6 +35,9 @@ namespace VEDriversLite.NFT
                         case "NFT Invoice":
                             type = NFTTypes.Invoice;
                             break;
+                        case "NFT Order":
+                            type = NFTTypes.Order;
+                            break;
                         case "NFT Product":
                             type = NFTTypes.Product;
                             break;
@@ -261,6 +264,14 @@ namespace VEDriversLite.NFT
                     nft.UtxoIndex = utxoindex;
                     await (nft as InvoiceNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.Order:
+                    nft = new OrderNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as OrderNFT).LoadLastData(meta);
+                    break;
                 case NFTTypes.Product:
                     nft = new ProductNFT(utxo);
                     nft.TokenId = tokid;
@@ -393,6 +404,10 @@ namespace VEDriversLite.NFT
                     nft = new InvoiceNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
+                case NFTTypes.Order:
+                    nft = new OrderNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
                 case NFTTypes.Product:
                     nft = new ProductNFT(NFT.Utxo);
                     await nft.Fill(NFT);
@@ -492,6 +507,9 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Invoice:
                     nft = new InvoiceNFT(utxo);
+                    break;
+                case NFTTypes.Order:
+                    nft = new OrderNFT(utxo);
                     break;
                 case NFTTypes.Product:
                     nft = new ProductNFT(utxo);

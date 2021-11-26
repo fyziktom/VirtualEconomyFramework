@@ -7,35 +7,26 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT
 {
-    public class InvoiceItem
-    {
-        public string ItemUtxo { get; set; } = string.Empty;
-        public int ItemUtxoIndex { get; set; } = 0;
-        public double ItemPrice { get; set; } = 0.0;
-        public int ItemCount { get; set; } = 0;
 
-        [JsonIgnore]
-        public ProductNFT InvoiceProductNFT { get; set; } = new ProductNFT("");
-    }
-
-    public class InvoiceNFT : CommonNFT
+    public class OrderNFT : CommonNFT
     {
-        public InvoiceNFT(string utxo)
+        public OrderNFT(string utxo)
         {
             Utxo = utxo;
-            Type = NFTTypes.Invoice;
-            TypeText = "NFT Invoice";
+            Type = NFTTypes.Order;
+            TypeText = "NFT Order";
         }
         public List<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
 
         public string SellerProfileNFT { get; set; } = string.Empty;
         public string BuyerProfileNFT { get; set; } = string.Empty;
         public string OriginalPaymentTxId { get; set; } = string.Empty;
-        public string OrderTxId { get; set; } = string.Empty;
         public string FileLink { get; set; } = string.Empty;
         public double TotalPrice { get; set; } = 0.0;
-
-        public bool AlreadyPaid = false;
+        public string ApprovedByProfile { get; set; } = string.Empty;
+        public string ApprovedNote { get; set; } = string.Empty;
+        public bool Aprooved { get; set; } = false;
+        public bool AlreadyPaid { get; set; } = false;
 
         public DateTime ExposeDate { get; set; } = DateTime.UtcNow;
         public int MaxCountOfDaysFromExposeToPayment { get; set; } = 30;
@@ -58,16 +49,17 @@ namespace VEDriversLite.NFT
             Price = NFT.Price;
             PriceActive = NFT.PriceActive;
 
-            var pnft = NFT as InvoiceNFT;
+            var pnft = NFT as OrderNFT;
             InvoiceItems = pnft.InvoiceItems;
             SellerProfileNFT = pnft.SellerProfileNFT;
             TotalPrice = pnft.TotalPrice;
             BuyerProfileNFT = pnft.BuyerProfileNFT;
             OriginalPaymentTxId = pnft.OriginalPaymentTxId;
-            OrderTxId = pnft.OrderTxId;
             AlreadyPaid = pnft.AlreadyPaid;
             ExposeDate = pnft.ExposeDate;
             FileLink = pnft.FileLink;
+            ApprovedByProfile = pnft.ApprovedByProfile;
+            ApprovedNote = pnft.ApprovedNote;
             MaxCountOfDaysFromExposeToPayment = pnft.MaxCountOfDaysFromExposeToPayment;
             MaxCountOfDaysAfterPaymentDate = pnft.MaxCountOfDaysAfterPaymentDate;
         }
@@ -80,8 +72,10 @@ namespace VEDriversLite.NFT
                 BuyerProfileNFT = buyer;
             if (metadata.TryGetValue("FileLink", out var filelink))
                 FileLink = filelink;
-            if (metadata.TryGetValue("OrderTxId", out var ordertx))
-                OrderTxId = ordertx;
+            if (metadata.TryGetValue("ApprovedByProfile", out var appby))
+                ApprovedByProfile = appby;
+            if (metadata.TryGetValue("ApprovedNote", out var appnote))
+                ApprovedNote = appnote;
             if (metadata.TryGetValue("ExposeDay", out var date))
             {
                 try
@@ -146,9 +140,11 @@ namespace VEDriversLite.NFT
             metadata.Add("Buyer", BuyerProfileNFT);
             metadata.Add("ExposeDate", ExposeDate.ToString());
             if (!string.IsNullOrEmpty(FileLink))
-                metadata.Add("FileLink", FileLink);            
-            if (!string.IsNullOrEmpty(OrderTxId))
-                metadata.Add("OrderTxId", OrderTxId);
+                metadata.Add("FileLink", FileLink);
+            if (!string.IsNullOrEmpty(ApprovedByProfile))
+                metadata.Add("ApprovedByProfile", ApprovedByProfile);
+            if (!string.IsNullOrEmpty(ApprovedNote))
+                metadata.Add("ApprovedNote", ApprovedNote);
 
             if (InvoiceItems.Count > 0)
             {
