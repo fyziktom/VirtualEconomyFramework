@@ -484,6 +484,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.CommonRefreshInterval">
+            <summary>
+            Common data refresh interval in miliseconds
+            Default value is 10s = 10000ms
+            This is usually used for request type of the communication
+            </summary>
+        </member>
         <member name="P:VEDriversLite.DogeAccount.Address">
             <summary>
             Doge Address hash
@@ -5260,12 +5267,13 @@
             <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.MessageNFT.Decrypt(NBitcoin.BitcoinSecret)">
+        <member name="M:VEDriversLite.NFT.MessageNFT.Decrypt(NBitcoin.BitcoinSecret,System.Boolean)">
             <summary>
             this function will decrypt the NFT if it is possile
             It needs the owner Private Key to create shared password which the combination of the sender public key.
             </summary>
             <param name="secret">Owner Private Key</param>
+            <param name="decryptEvenOnSameAddress">Set true when you have preset the partner address manually - for example encryption on same address. </param>
             <returns>true if success</returns>
         </member>
         <member name="M:VEDriversLite.NFT.MessageNFT.DecryptImageData(NBitcoin.BitcoinSecret)">

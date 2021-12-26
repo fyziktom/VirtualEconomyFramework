@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NFT.Coruzant;
+using VEDriversLite.NFT.DevicesNFTs;
 
 namespace VEDriversLite.NFT
 {
@@ -67,6 +68,27 @@ namespace VEDriversLite.NFT
                             break;
                         case "NFT CoruzantProfile":
                             type = NFTTypes.CoruzantProfile;
+                            break;
+                        case "NFT Device":
+                            type = NFTTypes.Device;
+                            break;
+                        case "NFT IoTDevice":
+                            type = NFTTypes.IoTDevice;
+                            break;
+                        case "NFT Protocol":
+                            type = NFTTypes.Protocol;
+                            break;
+                        case "NFT HWSrc":
+                            type = NFTTypes.HWSrc;
+                            break;
+                        case "NFT FWSrc":
+                            type = NFTTypes.FWSrc;
+                            break;
+                        case "NFT SWSrc":
+                            type = NFTTypes.SWSrc;
+                            break;
+                        case "NFT MechSrc":
+                            type = NFTTypes.MechSrc;
                             break;
                     }
                     return type;
@@ -337,6 +359,83 @@ namespace VEDriversLite.NFT
                     else
                         (nft as CoruzantProfileNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.Device:
+                    nft = new DeviceNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    if (wait)
+                        await (nft as DeviceNFT).LoadLastData(meta);
+                    else
+                        (nft as DeviceNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.IoTDevice:
+                    nft = new IoTDeviceNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    if (wait)
+                        await (nft as IoTDeviceNFT).LoadLastData(meta);
+                    else
+                        (nft as IoTDeviceNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.Protocol:
+                    nft = new ProtocolNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    if (wait)
+                        await (nft as ProtocolNFT).LoadLastData(meta);
+                    else
+                        (nft as ProtocolNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.HWSrc:
+                    nft = new HWSrcNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    if (wait)
+                        await (nft as HWSrcNFT).LoadLastData(meta);
+                    else
+                        (nft as HWSrcNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.FWSrc:
+                    nft = new FWSrcNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    if (wait)
+                        await (nft as FWSrcNFT).LoadLastData(meta);
+                    else
+                        (nft as FWSrcNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.SWSrc:
+                    nft = new SWSrcNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    if (wait)
+                        await (nft as SWSrcNFT).LoadLastData(meta);
+                    else
+                        (nft as SWSrcNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.MechSrc:
+                    nft = new MechSrcNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    if (wait)
+                        await (nft as MechSrcNFT).LoadLastData(meta);
+                    else
+                        (nft as MechSrcNFT).LoadLastData(meta);
+                    break;
             }
 
             if (VEDLDataContext.AllowCache && tokid == NFTHelpers.TokenId && VEDLDataContext.NFTCache.Count < VEDLDataContext.MaxCachedItems)
@@ -430,6 +529,34 @@ namespace VEDriversLite.NFT
                     return nft;
                 case NFTTypes.CoruzantProfile:
                     nft = new CoruzantProfileNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Device:
+                    nft = new DeviceNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.IoTDevice:
+                    nft = new IoTDeviceNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.Protocol:
+                    nft = new ProtocolNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.HWSrc:
+                    nft = new HWSrcNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.FWSrc:
+                    nft = new FWSrcNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.SWSrc:
+                    nft = new SWSrcNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.MechSrc:
+                    nft = new MechSrcNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
             }
@@ -528,6 +655,27 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.CoruzantProfile:
                     nft = new CoruzantProfileNFT(utxo);
+                    break;
+                case NFTTypes.Device:
+                    nft = new DeviceNFT(utxo);
+                    break;
+                case NFTTypes.IoTDevice:
+                    nft = new IoTDeviceNFT(utxo);
+                    break;
+                case NFTTypes.Protocol:
+                    nft = new ProtocolNFT(utxo);
+                    break;
+                case NFTTypes.HWSrc:
+                    nft = new HWSrcNFT(utxo);
+                    break;
+                case NFTTypes.FWSrc:
+                    nft = new FWSrcNFT(utxo);
+                    break;
+                case NFTTypes.SWSrc:
+                    nft = new SWSrcNFT(utxo);
+                    break;
+                case NFTTypes.MechSrc:
+                    nft = new MechSrcNFT(utxo);
                     break;
             }
 

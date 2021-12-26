@@ -17,18 +17,27 @@ namespace VEDriversLite.NFT
         YouTube,
         Spotify,
         Payment,
-        Invoice,
-        Product,
         Message,
         Ticket,
         Event,
         Receipt,
         Order,
+        Invoice,
+        Product,
         CoruzantArticle = 101,
         CoruzantPremiumArticle = 102,
         CoruzantPodcast = 103,
         CoruzantPremiumPodcast = 104,
-        CoruzantProfile = 105
+        CoruzantProfile = 105,
+        Device = 1001,
+        IoTDevice = 1002,
+        Protocol = 1003,
+        HWSrc = 1004,
+        FWSrc = 1005,
+        SWSrc = 1006,
+        MechSrc = 1007,
+
+
     }
     public interface INFT
     {

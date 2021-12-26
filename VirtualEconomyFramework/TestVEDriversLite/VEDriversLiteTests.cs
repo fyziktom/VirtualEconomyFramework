@@ -12,6 +12,7 @@ using VEDriversLite.Dto;
 using VEDriversLite.Neblio;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
+using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.Security;
 using VEDriversLite.UnstoppableDomains;
 using VEDriversLite.WooCommerce;
@@ -1137,7 +1138,7 @@ namespace TestVEDriversLite
         }
 
         /// <summary>
-        /// Mint Neblio NFT Product
+        /// Mint Neblio NFT Invoice
         /// </summary>
         /// <param name="param"></param>
         [TestEntry]
@@ -1152,7 +1153,7 @@ namespace TestVEDriversLite
             var nft = new InvoiceNFT("");
 
             // load the product
-            var pnft = await NFTFactory.GetNFT("", "48a56bb7c84cbb2bf3fb12ce175dd1994ead775c4959b06167efb61beaa907dd", 0, 0, true, true, NFTTypes.Product);
+            var pnft = await NFTFactory.GetNFT("", "a09cb9f28d2b7c1e0820cdb819832e86fb2b0b98f0abe979e40bb7262807f15f", 0, 0, true, true, NFTTypes.Product);
             // load the profile
             INFT profile = null;
             if (!string.IsNullOrEmpty(account.Profile.Utxo))
@@ -1167,6 +1168,55 @@ namespace TestVEDriversLite
             nft.Tags = "IoT Gateway CHESTER HARDWARIO HW FW Industry40";
             nft.Link = pnft.Link;
             nft.ImageLink = pnft.ImageLink;
+            nft.FileLink = "";
+
+            nft.AddInvoiceItem(pnft.Utxo, pnft.UtxoIndex, (pnft as ProductNFT).UnitPrice, 3);
+            nft.AddInvoiceItem(pnft.Utxo, pnft.UtxoIndex, (pnft as ProductNFT).UnitPrice, 5);
+
+            nft.SellerProfileNFT = profile.Utxo + ":" + profile.UtxoIndex;
+            nft.BuyerProfileNFT = buyerProfile.Utxo + ":" + buyerProfile.UtxoIndex;
+            nft.OrderTxId = "8ad2e3c6d3bd6fcf096fbf682bfbb7a181ba143785b27231a0955620f814ff84";
+
+            Console.WriteLine("Start of minting invoice.");
+
+            var res = await account.MintNFT(nft);
+
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        /// <summary>
+        /// Mint Neblio NFT Order
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void MintNFTOrder(string param)
+        {
+            MintNFTOrderAsync(param);
+        }
+        public static async Task MintNFTOrderAsync(string param)
+        {
+            Console.WriteLine("Minting NFT Order");
+            // create NFT object
+            var nft = new OrderNFT("");
+
+            // load the product
+            var pnft = await NFTFactory.GetNFT("", "a09cb9f28d2b7c1e0820cdb819832e86fb2b0b98f0abe979e40bb7262807f15f", 0, 0, true, true, NFTTypes.Product);
+            // load the profile
+            INFT profile = null;
+            if (!string.IsNullOrEmpty(account.Profile.Utxo))
+                profile = await NFTFactory.GetNFT("", "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf", 0, 0, true);
+            else
+                profile = account.Profile;
+
+            var buyerProfile = await NFTFactory.GetNFT("", "1b8a4b68257fffe943fcf821552e5f108a15dcbed4b7cbfe95ad613abb1c22cf", 0, 0, true);
+
+            nft.Author = "HARDWARIO";
+            nft.Name = "CHESTER IoT Gateway Order";
+            nft.Tags = "IoT Gateway CHESTER HARDWARIO HW FW Industry40";
+            nft.Link = pnft.Link;
+            nft.ImageLink = pnft.ImageLink;
+            nft.FileLink = "";
 
             nft.AddInvoiceItem(pnft.Utxo, pnft.UtxoIndex, (pnft as ProductNFT).UnitPrice, 3);
             nft.AddInvoiceItem(pnft.Utxo, pnft.UtxoIndex, (pnft as ProductNFT).UnitPrice, 5);
@@ -1174,7 +1224,7 @@ namespace TestVEDriversLite
             nft.SellerProfileNFT = profile.Utxo + ":" + profile.UtxoIndex;
             nft.BuyerProfileNFT = buyerProfile.Utxo + ":" + buyerProfile.UtxoIndex;
 
-            Console.WriteLine("Start of minting invoice.");
+            Console.WriteLine("Start of minting order.");
 
             var res = await account.MintNFT(nft);
 
@@ -1736,7 +1786,8 @@ namespace TestVEDriversLite
             Console.WriteLine($"Account created.");
             Console.WriteLine($"Address: {dogeAccount.Address}");
             Console.WriteLine($"Encrypted Private Key: {await dogeAccount.AccountKey.GetEncryptedKey("", true)}");
-            StartRefreshingData(null);
+            Console.WriteLine($"Decrypted Private Key: {await dogeAccount.AccountKey.GetEncryptedKey("", false)}");
+            //StartRefreshingData(null);
         }
 
         [TestEntry]
@@ -2080,7 +2131,643 @@ namespace TestVEDriversLite
         //////////////////////////////////////////////////////////////////
 
         //////////////////////////////////////////////////////////////////
+        #region Devices
 
+        private static string IoTProtocolNFTUtxo = string.Empty;
+        private static string IoTHWSrcNFTUtxo = string.Empty;
+        private static string IoTFWSrcNFTUtxo = string.Empty;
+        private static string IoTSWSrcNFTUtxo = string.Empty;
+        private static string IoTMechSrcNFTUtxo = string.Empty;
+        private static string IoTDeviceNFTUtxo = string.Empty;
+        private static string IoTIoTDeviceNFTUtxo = string.Empty;
+
+        [TestEntry]
+        public static void IoTCreateEmptyNFTProtocolFile(string param)
+        {
+            IoTCreateEmptyNFTProtocolFileAsync(param);
+        }
+        public static async Task IoTCreateEmptyNFTProtocolFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for Protocol NFT.");
+            // create NFT object
+            var nft = new ProtocolNFT("");
+            // Example data
+            nft.Name = "HARDWARIO-CHESTER";
+            nft.Version = "CHESTER-1-0-0";
+            nft.Description = "";
+            nft.Author = "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf";
+            nft.Tags = "hardwario technologies industry40 iot gateway protocol";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+        
+        [TestEntry]
+        public static void IoTCreateNFTProtocolFormFile(string param)
+        {
+            IoTCreateNFTProtocolFormFileAsync(param);
+        }
+        public static async Task IoTCreateNFTProtocolFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent);
+                if (inft.Type == NFTTypes.Protocol)
+                {
+                    var nft = JsonConvert.DeserializeObject<ProtocolNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            IoTProtocolNFTUtxo = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for Protocol NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        [TestEntry]
+        public static void IoTCreateEmptyHWSrcNFTFile(string param)
+        {
+            IoTCreateEmptyHWSrcNFTFileAsync(param);
+        }
+        public static async Task IoTCreateEmptyHWSrcNFTFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for HWSrc NFT.");
+            // create NFT object
+            var nft = new HWSrcNFT("");
+            // Example data
+            nft.Name = "HARDWARIO-CHESTER";
+            nft.Version = "CHESTER-1-0-0";
+            nft.Description = "";
+            nft.Tool = "Eagle";//just example
+            nft.RepositoryType = "GitHub";
+            nft.RepositoryLink = "https://github.com/hardwario/bc-hardware";//just example
+            nft.Author = "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf";
+            nft.Tags = "hardwario technologies industry40 iot gateway hardware";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void IoTCreateHWSrcNFTFormFile(string param)
+        {
+            IoTCreateHWSrcNFTFormFileAsync(param);
+        }
+        public static async Task IoTCreateHWSrcNFTFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent);
+                if (inft.Type == NFTTypes.HWSrc)
+                {
+                    var nft = JsonConvert.DeserializeObject<HWSrcNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            IoTHWSrcNFTUtxo = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for HWSrc NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        [TestEntry]
+        public static void IoTCreateEmptyFWSrcNFTFile(string param)
+        {
+            IoTCreateEmptyFWSrcNFTFileAsync(param);
+        }
+        public static async Task IoTCreateEmptyFWSrcNFTFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for FWSrc NFT.");
+            // create NFT object
+            var nft = new FWSrcNFT("");
+            // Example data
+            nft.Name = "HARDWARIO-CHESTER";
+            nft.Version = "CHESTER-1-0-0";
+            nft.Description = "";
+            nft.Tool = "gcc";
+            nft.RepositoryType = "GitHub";
+            nft.RepositoryLink = "https://github.com/hardwario/twr-sdk";//just example
+            nft.Author = "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf";
+            nft.Tags = "hardwario technologies industry40 iot gateway firmware";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void IoTCreateFWSrcNFTFormFile(string param)
+        {
+            IoTCreateFWSrcNFTFormFileAsync(param);
+        }
+        public static async Task IoTCreateFWSrcNFTFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent);
+                if (inft.Type == NFTTypes.FWSrc)
+                {
+                    var nft = JsonConvert.DeserializeObject<FWSrcNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            IoTFWSrcNFTUtxo = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for FWSrc NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        [TestEntry]
+        public static void IoTCreateEmptySWSrcNFTFile(string param)
+        {
+            IoTCreateEmptySWSrcNFTFileAsync(param);
+        }
+        public static async Task IoTCreateEmptySWSrcNFTFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for SWSrc NFT.");
+            // create NFT object
+            var nft = new HWSrcNFT("");
+            // Example data
+            nft.Name = "HARDWARIO-CHESTER";
+            nft.Version = "CHESTER-1-0-0";
+            nft.Description = "";
+            nft.Tool = "npm"; //just example
+            nft.RepositoryType = "GitHub";
+            nft.RepositoryLink = "https://github.com/hardwario/bch-playground";//just example
+            nft.Author = "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf";
+            nft.Tags = "hardwario technologies industry40 iot gateway software";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void IoTCreateSWSrcNFTFormFile(string param)
+        {
+            IoTCreateSWSrcNFTFormFileAsync(param);
+        }
+        public static async Task IoTCreateSWSrcNFTFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent);
+                if (inft.Type == NFTTypes.SWSrc)
+                {
+                    var nft = JsonConvert.DeserializeObject<SWSrcNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            IoTSWSrcNFTUtxo = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for SWSrc NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        [TestEntry]
+        public static void IoTCreateEmptyMechSrcNFTFile(string param)
+        {
+            IoTCreateEmptyMechSrcNFTFileAsync(param);
+        }
+        public static async Task IoTCreateEmptyMechSrcNFTFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for MechSrc NFT.");
+            // create NFT object
+            var nft = new MechSrcNFT("");
+            // Example data
+            nft.Name = "HARDWARIO-CHESTER";
+            nft.Version = "CHESTER-1-0-0";
+            nft.Description = "";
+            nft.Tool = "SolidWorks";//just example
+            nft.RepositoryType = "GitHub";
+            nft.RepositoryLink = "https://github.com/hardwario/bc-hardware";//just example
+            nft.Author = "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf";
+            nft.Tags = "hardwario technologies industry40 iot gateway mechanical";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void IoTCreateMechSrcNFTFormFile(string param)
+        {
+            IoTCreateMechSrcNFTFormFileAsync(param);
+        }
+        public static async Task IoTCreateMechSrcNFTFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent);
+                if (inft.Type == NFTTypes.MechSrc)
+                {
+                    var nft = JsonConvert.DeserializeObject<MechSrcNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            IoTMechSrcNFTUtxo = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for MechSrc NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        [TestEntry]
+        public static void IoTCreateEmptyDeviceNFTFile(string param)
+        {
+            IoTCreateEmptyDeviceNFTFileAsync(param);
+        }
+        public static async Task IoTCreateEmptyDeviceNFTFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for Device NFT.");
+            // create NFT object
+            var nft = new DeviceNFT("");
+            // Example data
+            nft.Name = "HARDWARIO-CHESTER";
+            nft.Version = "CHESTER-1-0-0";
+            nft.Description = "";
+            nft.ProtocolNFTHash = IoTProtocolNFTUtxo;
+            nft.HWSrcNFTHash = IoTHWSrcNFTUtxo;
+            nft.FWSrcNFTHash = IoTFWSrcNFTUtxo;
+            nft.SWSrcNFTHash = IoTSWSrcNFTUtxo;
+            nft.MechSrcNFTHash = IoTMechSrcNFTUtxo;
+            nft.Author = "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf";
+            nft.Link = "https://gateway.ipfs.io/ipfs/QmPs7A7nnTCXXdXwQo6brHAEXLsMwv2tCEUK44HjaiyS9c"; // link to the datasheet
+            nft.Tags = "hardwario technologies industry40 iot gateway mechanical";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void IoTCreateDeviceNFTFormFile(string param)
+        {
+            IoTCreateDeviceNFTFormFileAsync(param);
+        }
+        public static async Task IoTCreateDeviceNFTFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent);
+                if (inft.Type == NFTTypes.Device)
+                {
+                    var nft = JsonConvert.DeserializeObject<DeviceNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            IoTDeviceNFTUtxo = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for Device NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+
+        [TestEntry]
+        public static void IoTCreateIoTDeviceNFT(string param)
+        {
+            IoTCreateIoTDeviceNFTAsync(param);
+        }
+        public static async Task IoTCreateIoTDeviceNFTAsync(string param)
+        {
+            Console.WriteLine("Creating IoT Device NFT...");
+            if (param == null) param = string.Empty;
+
+            if (param.Contains("dummyaccount"))
+            {
+                //create dummy account - just because of the testing the encryption of the messages
+                account = new NeblioAccount();
+                await account.CreateNewAccount("", awaitFirstLoad: true);
+            }
+            else
+            {
+                if (account == null || string.IsNullOrEmpty(account.Address))
+                {
+                    Console.WriteLine("Please load the account or use as parameter of this function \" dummyaccount \".");
+                    return;
+                }
+            }
+
+            var nft = new IoTDeviceNFT("");
+
+            nft.Author = "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf"; //hardwario profile utxo
+
+            nft.Address = account.Address;
+            nft.AutoActivation = true;
+            nft.IDDSettings.IoTComType = VEDriversLite.Devices.IoTCommunicationType.API;
+            nft.IDDSettings.ComSchemeType = VEDriversLite.Devices.CommunicationSchemeType.Requests;
+            nft.IoTDDType = VEDriversLite.Devices.IoTDataDriverType.HARDWARIO;
+
+            if (param.Contains("chesterdevice") || (!param.Contains("chesterdevice") && !param.Contains("minteddevice")))
+            {
+                nft.DeviceNFTHash = "f78605d6adb3979019213f3d002bff4aa45ae77802fc8e67eb900af7962c8184";
+            }
+            else if (param.Contains("minteddevice"))
+            {
+                nft.DeviceNFTHash = IoTDeviceNFTUtxo;
+            }
+            if (!string.IsNullOrEmpty(nft.DeviceNFTHash))
+            {
+                try
+                {
+                    await nft.LoadDeviceNFT();
+                    await (nft.SourceDeviceNFT as DeviceNFT).LoadSourceNFTs();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Cannot load the DeviceNFT or Source of the DeviceNFT. " + ex.Message);
+                }
+            }
+            else
+            {
+                if (account == null || string.IsNullOrEmpty(account.Address))
+                {
+                    Console.WriteLine("Please load the create DeviceNFT first and use \" minteddevice \" as parameter or use predefined \" chesterdevice \" as parameter.");
+                    return;
+                }
+            }
+            //nft.Utxo = "f6f58d275e5aa00b8879edc164ac605ff413fe8462e042beaca9cb6a6b860aaf"; //now just random for testing
+            nft.EncryptMessages = true; //encrypt all messages
+            nft.EncryptSetting = true;//encrypt connection settings in metadata when minting NFT
+            nft.AllowConsoleOutputWhenNewMessage = true; //allow console output when the new message will arrive from IoTDataDriver to IoTDeviceNFT
+            //nft.RunJustOwn = true; this will check if the NFT was minted or resend on same address. otherwise it will not allow to init it!
+            nft.IDDSettings.ConnectionParams.Url = "https://api.hardwario.cloud/v1/messages/receive";
+            nft.IDDSettings.ConnectionParams.Token = "3d002bff4aa45ae77802fc8e6_3d002bff4aa45ae77802fc8e6_3d002bff4aa45ae77802fc8e6";
+            nft.LocationCoordinates = "37.7880168,-122.3959002";
+
+            var mtd = await nft.GetMetadata(account.Address, account.Secret.ToString(), account.Address); // just for the test of the encryption of the settings
+
+            nft.NewMessage += Nft_NewMessage;
+
+            if (nft.EncryptSetting)
+                await nft.InitCommunication(account.Secret);
+            else
+                await nft.InitCommunication();
+
+            int attemtps = 1;
+            while (attemtps > 0)
+            {
+                Console.WriteLine("Waiting 15s for reading values...");
+                await Task.Delay(15000);
+                attemtps--;
+                Console.WriteLine($"Only {attemtps} from 1 cycles left.");
+            }
+            Console.WriteLine("Reading complete!");
+            Console.WriteLine("Readed messages from IoT Device NFT:");
+            await nft.DeInitCommunication();
+            //var msgs = new Dictionary<string, INFT>(nft.MessageNFTs);
+            var metaforTest = new Dictionary<string, string>();
+            var testname = string.Empty;
+            var testdescription = string.Empty;
+            foreach (var msg in nft.MessageNFTs)
+            {
+                Console.WriteLine($"Message: {msg.Key} is: {msg.Value.Description}");
+                try
+                {
+                    var meta = await msg.Value.GetMetadata(account.Address, account.Secret.ToString(), account.Address);
+                    if (metaforTest.Count == 0)
+                    {
+                        metaforTest = new Dictionary<string, string>(meta);
+                        testname = msg.Value.Name;
+                        testdescription = msg.Value.Description;
+                    }
+                    Console.WriteLine($"\tMetadata of the NFT Message are:");
+                    foreach (var m in meta)
+                        Console.WriteLine($"\t\"{m.Key}\": {m.Value}");
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine($"Cannot get the NFT Message Metadata: {ex.Message}");
+                }
+            }
+
+            try
+            {
+                var loadedNFTMessage = new MessageNFT("");
+                await loadedNFTMessage.LoadLastData(metaforTest);
+                loadedNFTMessage.Partner = account.Address;
+                Console.WriteLine("-----------------------------");
+                Console.WriteLine("Decrypted loaded Message NFT:");
+                Console.WriteLine("Author: " + loadedNFTMessage.Author);
+                Console.WriteLine("Name: " + loadedNFTMessage.Name);
+                Console.WriteLine("Description: " + loadedNFTMessage.Description);
+                await loadedNFTMessage.Decrypt(account.Secret, true);
+                Console.WriteLine("Decrypted Name: " + loadedNFTMessage.Name);
+                Console.WriteLine("Decrypted Description: " + loadedNFTMessage.Description);
+                if (loadedNFTMessage.Name == testname && loadedNFTMessage.Description == testdescription)
+                    Console.WriteLine("The loading of IoT Message NFT and decryption works.");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot decrypt the NFT Message: " + ex.Message);
+            }
+
+            Console.WriteLine("---------------------------------------------------------");
+            Console.WriteLine("---------------Metadata of IoTDeviceNFT---------------------");
+            try
+            {
+                var meta = await nft.GetMetadata(account.Address, account.Secret.ToString(), account.Address);
+                Console.WriteLine($"\tMetadata of the NFT are:");
+                foreach (var m in meta)
+                    Console.WriteLine($"\t\"{m.Key}\": {m.Value}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Cannot get the IoTDeviceNFT Metadata: {ex.Message}");
+            }
+        }
+
+        private static void Nft_NewMessage(object sender, INFT e)
+        {
+            Console.WriteLine("New Message received from the IoTDevice to main.");
+            if (account.TotalSpendableBalance > 0.01)
+            {
+                var res = account.SendMessageNFT(e.Name, e.Description, account.Address).GetAwaiter().GetResult();
+                if(res.Item1)
+                    Console.WriteLine($"NFT Message from IoTDeviceNFT {(sender as IoTDeviceNFT).Utxo} was minted OK. New Tx Hash is: {res.Item2}.");
+            }
+        }
+
+        #endregion
+        //////////////////////////////////////////////////////////////////
+
+
+        //////////////////////////////////////////////////////////////////
         #region Tools
 
         [TestEntry]
@@ -2292,7 +2979,7 @@ namespace TestVEDriversLite
                 Console.WriteLine("Cannot pin " + param);
             }
             #endregion
-            ///////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////
         }
 
         [TestEntry]

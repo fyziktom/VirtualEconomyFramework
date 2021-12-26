@@ -230,11 +230,19 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret)
         {
-            var bobPubKey = await NFTHelpers.GetPubKeyFromLastFoundTx(bobAddress);
-            if (!bobPubKey.Item1)
-                return (false, "Cannot find public key, input address did not have any spent transations for key extraction.");
+            var aliceadd = secret.PubKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
+            var bpkey = secret.PubKey;
+            if (aliceadd.ToString() != bobAddress.ToString())
+            {
+                var bobPubKey = await NFTHelpers.GetPubKeyFromLastFoundTx(bobAddress);
 
-            var sharedKey = bobPubKey.Item2.GetSharedPubkey(secret.PrivateKey);
+                if (!bobPubKey.Item1)
+                    return (false, "Cannot find public key, input address did not have any spent transations for key extraction.");
+                else
+                    bpkey = bobPubKey.Item2;
+            }
+
+            var sharedKey = bpkey.GetSharedPubkey(secret.PrivateKey);
             if (sharedKey == null || string.IsNullOrEmpty(sharedKey.Hash.ToString()))
                 return (false, "Cannot create shared secret from keys.");
             else
@@ -277,6 +285,7 @@ namespace VEDriversLite.Security
                 return (false, "Input secret cannot null.");
 
             var key = await GetSharedSecret(bobAddress, secret);
+
             if (!key.Item1)
                 return key;
 

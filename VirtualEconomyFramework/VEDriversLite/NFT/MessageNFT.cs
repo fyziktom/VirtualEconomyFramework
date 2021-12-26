@@ -92,8 +92,9 @@ namespace VEDriversLite.NFT
         /// It needs the owner Private Key to create shared password which the combination of the sender public key.
         /// </summary>
         /// <param name="secret">Owner Private Key</param>
+        /// <param name="decryptEvenOnSameAddress">Set true when you have preset the partner address manually - for example encryption on same address. </param>
         /// <returns>true if success</returns>
-        public async Task<bool> Decrypt(NBitcoin.BitcoinSecret secret)
+        public async Task<bool> Decrypt(NBitcoin.BitcoinSecret secret, bool decryptEvenOnSameAddress = false)
         {
             if (runningDecryption)
                 return false;
@@ -106,7 +107,7 @@ namespace VEDriversLite.NFT
 
             var add = secret.PubKey.GetAddress(NeblioTransactionHelpers.Network);
 
-            if (Partner == add.ToString())
+            if (Partner == add.ToString() && !decryptEvenOnSameAddress)
             {
                 IsReceivedMessage = false;
                 Partner = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo);

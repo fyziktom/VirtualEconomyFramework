@@ -437,6 +437,27 @@ namespace VEDriversLite.NFT
                 case NFTTypes.CoruzantPremiumPodcast:
                     metadata.Add("Type", "NFT CoruzantPremiumPodcast");
                     break;
+                case NFTTypes.Device:
+                    metadata.Add("Type", "NFT Device");
+                    break;
+                case NFTTypes.IoTDevice:
+                    metadata.Add("Type", "NFT IoTDevice");
+                    break;
+                case NFTTypes.Protocol:
+                    metadata.Add("Type", "NFT Protocol");
+                    break;
+                case NFTTypes.HWSrc:
+                    metadata.Add("Type", "NFT HWSrc");
+                    break;
+                case NFTTypes.FWSrc:
+                    metadata.Add("Type", "NFT FWSrc");
+                    break;
+                case NFTTypes.SWSrc:
+                    metadata.Add("Type", "NFT SWSrc");
+                    break;
+                case NFTTypes.MechSrc:
+                    metadata.Add("Type", "NFT MechSrc");
+                    break;
             }
             
             metadata.Add("Name", Name);
