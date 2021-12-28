@@ -851,13 +851,17 @@ namespace VEDriversLite.NFT
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> SendMessageNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<string> SendMessageNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string rewriteAuthor = "")
         {
             if (NFT.Type != NFTTypes.Message)
                 throw new Exception("This is not Message NFT.");
 
             // thanks to filled params it will return encrypted metadata with shared secret
             var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
+            if (!string.IsNullOrEmpty(rewriteAuthor))
+                if (metadata.ContainsKey("Author"))
+                    metadata["Author"] = rewriteAuthor;
+
             var fee = CalculateFee(metadata);
             try
             {

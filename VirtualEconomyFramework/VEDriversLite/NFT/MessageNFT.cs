@@ -249,7 +249,12 @@ namespace VEDriversLite.NFT
                 }
 
                 metadata["Name"] = ename;
-                metadata["Author"] = address;
+
+                if (!string.IsNullOrEmpty(Author))
+                    metadata["Author"] = address;
+                else
+                    metadata["Author"] = Author;
+
                 metadata["Description"] = edescription;
                 if (!string.IsNullOrEmpty(etext))
                     metadata["Text"] = etext;

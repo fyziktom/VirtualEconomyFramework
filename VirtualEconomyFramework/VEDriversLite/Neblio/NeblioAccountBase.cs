@@ -1592,7 +1592,7 @@ namespace VEDriversLite.Neblio
         /// </summary>
         /// <param name="NFT"></param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendMessageNFT(string name, string message, string receiver, string utxo = "", bool encrypt = true, string imagelink = "", string link = "", string text = "")
+        public async Task<(bool, string)> SendMessageNFT(string name, string message, string receiver, string utxo = "", bool encrypt = true, string imagelink = "", string link = "", string text = "", string rewriteAuthor = "")
         {
             MessageNFT nft = new MessageNFT("");
 
@@ -1626,7 +1626,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendMessageNFT(Address, receiver, AccountKey, nft, res.Item2, tres.Item2);
+                var rtxid = await NFTHelpers.SendMessageNFT(Address, receiver, AccountKey, nft, res.Item2, tres.Item2, rewriteAuthor:rewriteAuthor);
 
                 if (rtxid != null)
                 {

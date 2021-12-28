@@ -2302,7 +2302,7 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendMessageNFT(System.String,System.String,System.String,System.String,System.Boolean,System.String,System.String,System.String)">
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendMessageNFT(System.String,System.String,System.String,System.String,System.Boolean,System.String,System.String,System.String,System.String)">
             <summary>
             Send NFT.
             </summary>
@@ -5426,7 +5426,7 @@
             <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.SendMessageNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.SendMessageNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
             <summary>
             This function will new Post NFT.
             </summary>

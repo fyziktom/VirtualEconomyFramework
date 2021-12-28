@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite;
 using VEDriversLite.Common;
+using VEDriversLite.Devices;
 using VEDriversLite.Dto;
 using VEDriversLite.Neblio;
 using VEDriversLite.NFT;
@@ -2666,9 +2667,15 @@ namespace TestVEDriversLite
             nft.EncryptSetting = true;//encrypt connection settings in metadata when minting NFT
             nft.AllowConsoleOutputWhenNewMessage = true; //allow console output when the new message will arrive from IoTDataDriver to IoTDeviceNFT
             //nft.RunJustOwn = true; this will check if the NFT was minted or resend on same address. otherwise it will not allow to init it!
-            nft.IDDSettings.ConnectionParams.Url = "https://api.hardwario.cloud/v1/messages/receive";
-            nft.IDDSettings.ConnectionParams.Token = "3d002bff4aa45ae77802fc8e6_3d002bff4aa45ae77802fc8e6_3d002bff4aa45ae77802fc8e6";
-            nft.LocationCoordinates = "37.7880168,-122.3959002";
+            nft.IDDSettings.ConnectionParams.Url = "https://api.hardwario.cloud/v1";
+            nft.IDDSettings.ConnectionParams.GroupId = "61c895b629d3ef00117bdaec";
+            nft.IDDSettings.ConnectionParams.DeviceId = "5f7722790305b500185b2847";
+            nft.IDDSettings.ConnectionParams.Secured = true;
+            nft.IDDSettings.ConnectionParams.SType = VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer;
+            nft.IDDSettings.ConnectionParams.Token = "";
+            nft.IDDSettings.ConnectionParams.CommonRefreshInterval = 10000;
+            
+            nft.LocationCoordinates = "37.7880168,-122.3959002"; // obtain actual from hardwario chester messages? setting flag for this option?
 
             var mtd = await nft.GetMetadata(account.Address, account.Secret.ToString(), account.Address); // just for the test of the encryption of the settings
 
@@ -2679,13 +2686,13 @@ namespace TestVEDriversLite
             else
                 await nft.InitCommunication();
 
-            int attemtps = 1;
+            int attemtps = 100;
             while (attemtps > 0)
             {
-                Console.WriteLine("Waiting 15s for reading values...");
-                await Task.Delay(15000);
+                Console.WriteLine("Waiting 60s for reading values...");
+                await Task.Delay(60000);
                 attemtps--;
-                Console.WriteLine($"Only {attemtps} from 1 cycles left.");
+                Console.WriteLine($"Only {attemtps} from 100 cycles left.");
             }
             Console.WriteLine("Reading complete!");
             Console.WriteLine("Readed messages from IoT Device NFT:");
@@ -2694,47 +2701,51 @@ namespace TestVEDriversLite
             var metaforTest = new Dictionary<string, string>();
             var testname = string.Empty;
             var testdescription = string.Empty;
-            foreach (var msg in nft.MessageNFTs)
+            Console.WriteLine($"Total Number of loaded messages: {nft.MessageNFTs.Count}");
+            if (param.Contains("writedownallmessages"))
             {
-                Console.WriteLine($"Message: {msg.Key} is: {msg.Value.Description}");
+                foreach (var msg in nft.MessageNFTs)
+                {
+                    Console.WriteLine($"Message: {msg.Key} is: {msg.Value.Description}");
+                    try
+                    {
+                        var meta = await msg.Value.GetMetadata(account.Address, account.Secret.ToString(), account.Address);
+                        if (metaforTest.Count == 0)
+                        {
+                            metaforTest = new Dictionary<string, string>(meta);
+                            testname = msg.Value.Name;
+                            testdescription = msg.Value.Description;
+                        }
+                        Console.WriteLine($"\tMetadata of the NFT Message are:");
+                        foreach (var m in meta)
+                            Console.WriteLine($"\t\"{m.Key}\": {m.Value}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Cannot get the NFT Message Metadata: {ex.Message}");
+                    }
+                }
+
                 try
                 {
-                    var meta = await msg.Value.GetMetadata(account.Address, account.Secret.ToString(), account.Address);
-                    if (metaforTest.Count == 0)
-                    {
-                        metaforTest = new Dictionary<string, string>(meta);
-                        testname = msg.Value.Name;
-                        testdescription = msg.Value.Description;
-                    }
-                    Console.WriteLine($"\tMetadata of the NFT Message are:");
-                    foreach (var m in meta)
-                        Console.WriteLine($"\t\"{m.Key}\": {m.Value}");
+                    var loadedNFTMessage = new MessageNFT("");
+                    await loadedNFTMessage.LoadLastData(metaforTest);
+                    loadedNFTMessage.Partner = account.Address;
+                    Console.WriteLine("-----------------------------");
+                    Console.WriteLine("Decrypted loaded Message NFT:");
+                    Console.WriteLine("Author: " + loadedNFTMessage.Author);
+                    Console.WriteLine("Name: " + loadedNFTMessage.Name);
+                    Console.WriteLine("Description: " + loadedNFTMessage.Description);
+                    await loadedNFTMessage.Decrypt(account.Secret, true);
+                    Console.WriteLine("Decrypted Name: " + loadedNFTMessage.Name);
+                    Console.WriteLine("Decrypted Description: " + loadedNFTMessage.Description);
+                    if (loadedNFTMessage.Name == testname && loadedNFTMessage.Description == testdescription)
+                        Console.WriteLine("The loading of IoT Message NFT and decryption works.");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"Cannot get the NFT Message Metadata: {ex.Message}");
+                    Console.WriteLine("Cannot decrypt the NFT Message: " + ex.Message);
                 }
-            }
-
-            try
-            {
-                var loadedNFTMessage = new MessageNFT("");
-                await loadedNFTMessage.LoadLastData(metaforTest);
-                loadedNFTMessage.Partner = account.Address;
-                Console.WriteLine("-----------------------------");
-                Console.WriteLine("Decrypted loaded Message NFT:");
-                Console.WriteLine("Author: " + loadedNFTMessage.Author);
-                Console.WriteLine("Name: " + loadedNFTMessage.Name);
-                Console.WriteLine("Description: " + loadedNFTMessage.Description);
-                await loadedNFTMessage.Decrypt(account.Secret, true);
-                Console.WriteLine("Decrypted Name: " + loadedNFTMessage.Name);
-                Console.WriteLine("Decrypted Description: " + loadedNFTMessage.Description);
-                if (loadedNFTMessage.Name == testname && loadedNFTMessage.Description == testdescription)
-                    Console.WriteLine("The loading of IoT Message NFT and decryption works.");
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Cannot decrypt the NFT Message: " + ex.Message);
             }
 
             Console.WriteLine("---------------------------------------------------------");
@@ -2755,13 +2766,82 @@ namespace TestVEDriversLite
         private static void Nft_NewMessage(object sender, INFT e)
         {
             Console.WriteLine("New Message received from the IoTDevice to main.");
+            MintNFTMessageForIoTDeviceEvent((sender as IoTDeviceNFT).Utxo, e.Name, e.Description, e);
+        }
+
+        private static async Task MintNFTMessageForIoTDeviceEvent(string senderUtxo, string name, string message, INFT nft)
+        {
             if (account.TotalSpendableBalance > 0.01)
             {
-                var res = account.SendMessageNFT(e.Name, e.Description, account.Address).GetAwaiter().GetResult();
-                if(res.Item1)
-                    Console.WriteLine($"NFT Message from IoTDeviceNFT {(sender as IoTDeviceNFT).Utxo} was minted OK. New Tx Hash is: {res.Item2}.");
+                //var res = await account.MintNFT(nft);
+                var res = await account.SendMessageNFT(name, message, account.Address, rewriteAuthor: "9cd2ea2fdd98bc5d39c56f652ba8a123f1e739c45520b97e59c12be1619a5b4d");
+                if (res.Item1)
+                    Console.WriteLine($"NFT Message from IoTDeviceNFT {senderUtxo} was minted OK. New Tx Hash is: {res.Item2}.");
+                else
+                    Console.WriteLine($"Cannot mint the NFT: {res.Item2}");
             }
         }
+
+
+        [TestEntry]
+        public static void GetMessagesFromHardwarioCloud(string param)
+        {
+            GetMessagesFromHardwarioCloudAsync(param);
+        }
+        public static async Task GetMessagesFromHardwarioCloudAsync(string param)
+        {
+            Console.WriteLine("---------------------------------------------");
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+            {
+                Console.WriteLine("Error: Please input groupid,deviceid,apitoken");
+                return;
+            }
+            var groupid = split[0];
+            var deviceid = split[1];
+            var apitoken = split[2];
+            Console.WriteLine("Requesting the HARDWARIO Cloud...");
+            Console.WriteLine($"\tDevice:{deviceid}");
+            Console.WriteLine($"\tGroup:{groupid}");
+            Console.WriteLine($"\tApiToken:{apitoken}");
+
+            HARDWARIOIoTDataDriver hwiotdd = new HARDWARIOIoTDataDriver();
+            await hwiotdd.SetConnParams(new VEDriversLite.Devices.Dto.CommonConnectionParams()
+            {
+                Url = "https://api.hardwario.cloud/v1",
+                Secured = true,
+                SType = VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer,
+                Token = apitoken
+            });
+            try
+            {
+                //var resp = await hwiotdd.HWApiClient.GetMessages(deviceid, groupid);
+                var resp = await hwiotdd.HWApiClient.GetUnreadedMessage(deviceid, groupid);
+                if (resp.Item1)
+                {
+                    Console.WriteLine("Response from HARSWARIO Cloud:");
+                    Console.WriteLine(JsonConvert.SerializeObject(resp.Item2, Formatting.Indented));
+
+                    Console.WriteLine("Post to  HARSWARIO Cloud to confirm read of the message:");
+                    var resp1 = await hwiotdd.HWApiClient.ConfirmReadOfMessage(deviceid, groupid, resp.Item2.id);
+
+                    Console.WriteLine("Response from HARSWARIO Cloud:");
+                    if (resp1.Item1)
+                        Console.WriteLine(JsonConvert.SerializeObject(resp1.Item2, Formatting.Indented));
+                    else
+                        Console.WriteLine("Cannot confirm read info to HARDWARIO Cloud.");
+                }
+                else
+                    Console.WriteLine("Cannot obtain info from HARDWARIO Cloud.");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot obtain info from HARDWARIO Cloud.");
+                Console.WriteLine($"Exception Message: {ex.Message}.");
+            }
+            Console.WriteLine("---------------------------------------------");
+        }
+
 
         #endregion
         //////////////////////////////////////////////////////////////////

@@ -1,7 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Devices.APIs.HARDWARIO;
+using VEDriversLite.Devices.APIs.HARDWARIO.Dto;
 using VEDriversLite.Devices.Dto;
 using VEDriversLite.NFT;
 
@@ -11,12 +16,17 @@ namespace VEDriversLite.Devices
     {
         public override event EventHandler<string> NewDataReceived;
 
+        public HARDWARIOApiClient HWApiClient { get; set; } = new HARDWARIOApiClient();
+
+
         private readonly Random _random = new Random();
+
+        private string lastmessageid = string.Empty;
 
         public override async Task DeInit()
         {
             if (CancelToken != null)
-                CancelTokenSource.Cancel();            
+                CancelTokenSource.Cancel();
         }
 
         public override async Task Init(INFT nft)
@@ -34,11 +44,15 @@ namespace VEDriversLite.Devices
                         quit = true;
 
                     var res = await RequestNewMessageFromAPI();
-                    if (res.Item1 && !string.IsNullOrEmpty(res.Item2))
+                    if (res.Item1 && !string.IsNullOrEmpty(res.Item2.id))
                     {
-                        NewDataReceived?.Invoke(this, res.Item2);
+                        if (res.Item2.id != lastmessageid)
+                        {
+                            NewDataReceived?.Invoke(this, JsonConvert.SerializeObject(res.Item2));
+                            lastmessageid = res.Item2.id;
+                        }
                     }
-                    
+
                     await Task.Delay(CommonConnParams.CommonRefreshInterval);
                 }
 
@@ -49,15 +63,33 @@ namespace VEDriversLite.Devices
 
         public override async Task SetConnParams(CommonConnectionParams ccop)
         {
-            if(ccop != null)
+            if (ccop != null)
                 CommonConnParams = ccop;
+
+            HWApiClient?.SetCommonConnectionParameters(ccop);
         }
 
-        private async Task<(bool,string)> RequestNewMessageFromAPI()
+        private async Task<(bool, HWDto)> RequestNewMessageFromAPI()
         {
+            /* test data
             var temp = _random.Next(20, 30);
             var tempf = _random.Next(10, 99);
-            return (true,"{ \"temperature\":" + $"{temp}.{tempf}" + " }");
+            return (true, "{ \"temperature\":" + $"{temp}.{tempf}" + " }");
+            */
+
+            try
+            {
+                var msgs = await HWApiClient?.GetMessages(CommonConnParams.DeviceId, CommonConnParams.GroupId);
+                if (msgs.Item1 && msgs.Item2.Count > 0)
+                    return (true, msgs.Item2[0]);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot get the message from the Hardwario API: " + ex.Message);
+            }
+
+            return (false, new HWDto());
         }
+
     }
 }

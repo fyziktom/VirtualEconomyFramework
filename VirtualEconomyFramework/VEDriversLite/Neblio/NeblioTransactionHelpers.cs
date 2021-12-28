@@ -1286,6 +1286,7 @@ namespace VEDriversLite
                 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
+                
                 if (!string.IsNullOrEmpty(data.CustomMessage))
                 {
                     diffinSat -= 10000;

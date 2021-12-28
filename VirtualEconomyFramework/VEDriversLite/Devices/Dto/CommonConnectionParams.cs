@@ -7,7 +7,9 @@ namespace VEDriversLite.Devices.Dto
     public enum CommunitacionSecurityType
     {
         None,
-        SSL
+        SSL,
+        Bearer,
+        JWT
     }
     public class CommonConnectionParams
     {
@@ -20,6 +22,9 @@ namespace VEDriversLite.Devices.Dto
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Token { get; set; } = string.Empty;
+        public string GroupId { get; set; } = string.Empty;
+        public string DeviceId { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
         /// <summary>
         /// Common data refresh interval in miliseconds
         /// Default value is 10s = 10000ms
