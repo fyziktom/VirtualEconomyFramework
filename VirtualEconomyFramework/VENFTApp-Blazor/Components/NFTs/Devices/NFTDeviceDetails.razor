@@ -1,0 +1,260 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Neblio
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.DevicesNFTs
+@using Markdig
+@inject AppData AppData
+
+<div class="row">
+    <div class="col">
+        @if (!string.IsNullOrEmpty(NFT.Utxo))
+        {
+            <div style="position: absolute;right: 5px;top: -20px;">
+                @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId))
+                {
+                    <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">
+                        <span class="badge badge-primary">Mint Info</span>
+                    </a>
+                }
+                <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
+                    <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
+                </a>
+                <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
+            </div>
+            @if (OwnNFT)
+            {
+                <div class="row" style="position: absolute;right: 7px;top: 40px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.NFTs.Actions.DestroyNFTButton IsIcon="true"
+                                                                                  FontSize="20"
+                                                                                  InputNFT="@NFT"
+                                                                                  Address="@Address"
+                                                                                  MainAccount="@(!SubAccount)"
+                                                                                  SubAccount="SubAccount"
+                                                                                  NFTDestroyed="NFTSentHandler" />
+                    </div>
+                </div>
+            }
+        }
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <h6>@NFT.Name</h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <small>@NFT.Author</small>
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(NFT.Description))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Description</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span style="max-width:100%;">@((MarkupString)NFTDescriptionMarkuptext)</span>
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(NFT.Text))
+        {
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Text</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span style="max-width:100%;">@((MarkupString) NFTmarkuptext)</span>
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(NFT.Link))
+        {
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="@NFT.Link" target="_blank">Connected Link</a>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(NFT.Version))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Version</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@NFT.Version</span>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(NFT.ProtocolNFTHash))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Protocol NFT Hash</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="https://explorer.nebl.io/tx/@NFT.ProtocolNFTHash" target="_blank">@NFT.ProtocolNFTHash</a>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(NFT.HWSrcNFTHash))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>HW Source NFT Hash</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="https://explorer.nebl.io/tx/@NFT.HWSrcNFTHash" target="_blank">@NFT.HWSrcNFTHash</a>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(NFT.FWSrcNFTHash))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>FW Source NFT Hash</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="https://explorer.nebl.io/tx/@NFT.FWSrcNFTHash" target="_blank">@NFT.FWSrcNFTHash</a>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(NFT.SWSrcNFTHash))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>SW Source NFT Hash</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="https://explorer.nebl.io/tx/@NFT.SWSrcNFTHash" target="_blank">@NFT.SWSrcNFTHash</a>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(NFT.MechSrcNFTHash))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Mechanics Source NFT Hash</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="https://explorer.nebl.io/tx/@NFT.MechSrcNFTHash" target="_blank">@NFT.MechSrcNFTHash</a>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(NFT.MAC))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>MAC</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@NFT.MAC</span>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(NFT.UniqueId))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Unique ID</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@NFT.UniqueId</span>
+                </div>
+            </div>
+        }
+
+        <hr />
+        <div class="row" style="margin-top:20px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <a href="@NFT.ImageLink" target="_blank">
+                    @if (!string.IsNullOrEmpty(NFT.ImageLink))
+                    {
+                        <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:100%; max-width:250px; min-width:50px;" />
+                    }
+                    else if (string.IsNullOrEmpty(NFT.ImageLink) && !NFT.IsLoaded)
+                    {
+                        <Spin Tip="Loading...">
+                            <NoImageLoaded />
+                        </Spin>
+                    }
+                    else
+                    {
+                        <NoImageLoaded />
+                    }
+                </a>
+            </div>
+        </div>
+        <hr />
+
+        <VENFTApp_Blazor.Components.NFTs.Actions.NFTActions InputNFT="@NFT"
+                                                            Utxo="@NFT.Utxo"
+                                                            UtxoIndex="@NFT.UtxoIndex"
+                                                            Address="@Address"
+                                                            OwnNFT="@OwnNFT"
+                                                            SubAccount="@SubAccount"
+                                                            NFTSent="@NFTSentHandler" />
+    </div>
+</div>
+
+@code {
+
+    private DeviceNFT NFT { get; set; } = new DeviceNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.Device)
+            {
+                NFT = value as DeviceNFT;
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
+
+    private void NFTSentHandler(string e)
+    {
+        NFTSent.InvokeAsync(e);
+        StateHasChanged();
+    }
+}

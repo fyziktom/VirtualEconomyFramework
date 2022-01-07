@@ -36,6 +36,7 @@ namespace VEDriversLite.NFT
         FWSrc = 1005,
         SWSrc = 1006,
         MechSrc = 1007,
+        IoTMessage = 1008,
 
 
     }

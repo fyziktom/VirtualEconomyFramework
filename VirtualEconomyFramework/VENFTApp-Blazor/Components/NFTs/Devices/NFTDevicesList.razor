@@ -1,0 +1,249 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.DevicesNFTs
+@inject AppData AppData
+
+<div class="container-fluid overflow-auto h-100" style="min-height:600px;">
+    <div class="row h-100">
+        <div class="col h-100">
+
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col">
+                            <button class="btn btn-light" @onclick="showMintDevice"><i class="oi oi-plus"></i></button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-light" @onclick="ReloadNFTs"><i class="oi oi-reload"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+
+            <div class="row w-100 h-50" style="margin-top:10px;">
+                <div class="col h-100 d-flex justify-content-center align-items-center">
+                    @if (NFTsList.Count == 0)
+                    {
+                        <p><em><Spin Tip="Loading...No devices found yet" Style="min-width:100px;"></Spin></em></p>
+                    }
+                    else
+                    {
+                        <hr />
+                        <div class="row">
+                            <div class="col justify-content-center align-items-center">
+                                @for (int i = 0; i < NFTsList.Count; i++)
+                                {
+                                    if (NFTsList[i].Type == NFTTypes.Device)
+                                    {
+                                        var nft = NFTsList[i];
+                                        <div class="row border-dark" style="margin-top: 5px;margin-bottom: 5px;margin-right: 10px;margin-left: 10px;">
+                                            <div class="col">
+                                                <div class="row">
+                                                    @if (nft.Name.Length > 20)
+                                                    {
+                                                        <div class="col"><span>Name: @nft.Name.Substring(0, 19) ...</span></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="col"><span>Name: @nft.Name</span></div>
+                                                    }
+                                                </div>
+                                                <div class="row">
+                                                    @if (nft.Author == AppData.Account.Address || nft.Author == AppData.Account.Profile.Utxo)
+                                                    {
+                                                        <div class="col"><span>Name: </span></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        @if (nft.Author.Length > 20)
+                                                        {
+                                                            <div class="col"><span>Author: @nft.Author.Substring(0, 19) ...</span></div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="col"><span>Author: @nft.Author</span></div>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="row">
+                                                    @if (nft.Description.Length > 20)
+                                                    {
+                                                        <div class="col"><span>Description: @nft.Description.Substring(0, 29) ...</span></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="col"><span>Description: @nft.Description</span></div>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                            <div class="col-auto"><button class="btn btn-light" @onclick="() => showDeviceDetails(nft)"><i class="oi oi-info"></i> Details</button></div>
+                                        </div>
+                                        <hr />
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Title="Device Details"
+       Visible="@deviceDetailsVisible"
+       OnCancel="@deviceDetailsVisibleCancel"
+       Footer="null">
+    <NFTDeviceDetails InputNFT="@nftToShow" Address="@_address" NFTSent="NFTSentHandler" OwnNFT="OwnNFT" SubAccount="SubAccount" />
+</Modal>
+
+<Modal Title="Mint NFT Device"
+       Visible="@mintDeviceVisible"
+       OnOk="@mintDeviceConfirm"
+       OnCancel="@mintDeviceCancel">
+    <MintNFTDevice NFTMinted="NFTSentHandler" Address="@_address" />
+</Modal>
+
+@code {
+
+    public List<INFT> NFTsList
+    {
+        get
+        {
+            if (MainAccount)
+            {
+                return AppData.Account.NFTs;
+            }
+            else if (SubAccount)
+            {
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var sacc))
+                {
+                    return sacc.NFTs;
+                }
+            }
+            return new List<INFT>();
+        }
+    }
+
+    [Parameter]
+    public EventCallback<List<INFT>> NFTsChanged { get; set; }
+
+    private string _address = string.Empty;
+    [Parameter]
+    public string Address
+    {
+        get => _address;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                //_nfts = new List<INFT>();
+                _address = value;
+                //_nfts = AppData.Account.NFTs;
+                //StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool MainAccount { get; set; } = true;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    public bool OwnNFT => MainAccount || SubAccount;
+
+    private bool mintDeviceVisible = false;
+    private bool deviceDetailsVisible = false;
+
+    private int refresh = 30;
+    private int lastCount = 0;
+
+    private string selectedNFTUtxo = string.Empty;
+    private string lastAddress = string.Empty;
+
+    private INFT nftToShow = new MessageNFT("");
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppData.Account != null)
+        {
+            AppData.Account.Refreshed += RefreshedHandler;
+            AppData.Account.NFTsChanged += NFTsChangedHandler;
+        }
+    }
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        if (lastCount != AppData.Account.NFTs.Count || refresh < 0)
+        {
+            refresh = 10;
+        }
+        else
+        {
+            refresh--;
+        }
+
+        StateHasChanged();
+    }
+
+    private void NFTsChangedHandler(object sender, string e)
+    {
+        //_nfts = AppData.Account.NFTs;
+        //DecryptMessages();
+    }
+
+    private void NFTSentHandler(string e)
+    {
+        mintDeviceVisible = false;
+        deviceDetailsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task ReloadNFTs()
+    {
+        if (!string.IsNullOrEmpty(_address))
+        {
+            await AppData.Account.ReloadUtxos();
+            await AppData.Account.ReLoadNFTs();
+            //_nfts = AppData.Account.NFTs;
+            lastCount = NFTsList.Count;
+            lastAddress = _address;
+            await Task.Delay(50);
+            StateHasChanged();
+        }
+    }
+
+    private async Task showDeviceDetails(INFT nft)
+    {
+        nftToShow = await NFTFactory.CloneNFT(nft);
+        StateHasChanged();
+        selectedNFTUtxo = nft.Utxo;
+        //Console.WriteLine(nft.Utxo);
+        deviceDetailsVisible = true;
+    }
+
+    private async Task deviceDetailsVisibleCancel()
+    {
+        deviceDetailsVisible = false;
+    }
+    
+    private async Task showMintDevice()
+    {
+        mintDeviceVisible = true;
+    }
+
+    private async Task mintDeviceCancel(MouseEventArgs e)
+    {
+        mintDeviceVisible = false;
+    }
+
+    private async Task mintDeviceConfirm(MouseEventArgs e)
+    {
+        mintDeviceVisible = false;
+    }
+}

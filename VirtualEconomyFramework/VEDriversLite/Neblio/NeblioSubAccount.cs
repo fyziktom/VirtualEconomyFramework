@@ -202,7 +202,7 @@ namespace VEDriversLite.Neblio
                 tasks[0] = ReloadTokenSupply();
                 tasks[1] = ReloadMintingSupply();
                 FirsLoadingStatus?.Invoke(Address, $"Loading of Sub Account {Name} NFTs started.");
-                tasks[2] = ReLoadNFTs();
+                tasks[2] = ReLoadNFTs(withoutMessages:true);
                 await Task.WhenAll(tasks);
 
                 tasks[0] = ReloadCoruzantNFTs();
@@ -232,7 +232,7 @@ namespace VEDriversLite.Neblio
                             await ReloadUtxos();
                             tasks[0] = ReloadTokenSupply();
                             tasks[1] = ReloadMintingSupply();
-                            tasks[2] = ReLoadNFTs();
+                            tasks[2] = ReLoadNFTs(withoutMessages:true);
 
                             await Task.WhenAll(tasks);
 

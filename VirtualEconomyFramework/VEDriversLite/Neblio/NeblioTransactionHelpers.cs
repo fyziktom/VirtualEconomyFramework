@@ -1,4 +1,4 @@
-﻿using NBitcoin;
+using NBitcoin;
 using NBitcoin.Altcoins;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -2152,7 +2152,8 @@ namespace VEDriversLite
             if (ut != null)
                 dto.Sendutxo.Add(ut.Txid + ":" + ((int)ut.Index).ToString());
 
-            dto.To.FirstOrDefault().Amount += (double)ut.Tokens?.ToList().FirstOrDefault()?.Amount; // add minting Utxo amount
+            
+            dto.To.FirstOrDefault().Amount += (double)ut?.Tokens?.ToList().FirstOrDefault()?.Amount; // add minting Utxo amount
             
             if (dto.Sendutxo.Count < 2)
                 throw new Exception("This kind of transaction requires Token input utxo list with at least 2 token utox (NFT + Minting).");

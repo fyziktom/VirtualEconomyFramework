@@ -102,7 +102,7 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO
                 var apiurl = $"{CommonConnParams.Url}/messages/confirm";//?group_id={group}&device_id={deviceid}";
 
                 var httpClient = GetClient(apitoken);
-                /*
+                
                 var content = new StringContent(
                   JsonConvert.SerializeObject(new messageConfirm(messageid)),
                   System.Text.Encoding.UTF8,
@@ -110,8 +110,8 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO
                 );
 
                 var res = await httpClient.PostAsync(apiurl, content);
-                */
-
+                
+                /*
                 var requestMessage = new HttpRequestMessage
                 {
                     Method = HttpMethod.Post,
@@ -128,9 +128,9 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO
                     else
                         throw new Exception("Cannot request Hardwario cloud without API Token.");
                 }
-
+                
                 var res = await httpClient.SendAsync(requestMessage);
-
+                */
                 if (res.IsSuccessStatusCode)
                 {
                     var resmsg = await res.Content.ReadAsStringAsync();

@@ -16,6 +16,7 @@ using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
+using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.Security;
 using VEDriversLite.WooCommerce;
 
@@ -861,7 +862,7 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(amount);
+            var res = await CheckSpendableNeblio(amount + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
@@ -911,7 +912,7 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(amount);
+            var res = await CheckSpendableNeblio(amount + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
@@ -975,7 +976,7 @@ namespace VEDriversLite.Neblio
                 return (false, "Account is locked.");
             }
 
-            var res = await CheckSpendableNeblio(totalAmount + 0.0002);
+            var res = await CheckSpendableNeblio(totalAmount + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
@@ -1592,6 +1593,55 @@ namespace VEDriversLite.Neblio
         /// </summary>
         /// <param name="NFT"></param>
         /// <returns></returns>
+        public async Task<(bool, string)> SendIoTMessageNFT(INFT nft, string sender, string receiver = "")
+        {
+            if (string.IsNullOrEmpty(receiver))
+                receiver = sender;
+
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(0.001);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
+                return (false, res.Item1);
+            }
+
+            var tres = await CheckSpendableNeblioTokens(nft.TokenId, 3);
+            if (tres.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs");
+                return (false, tres.Item1);
+            }
+
+            try
+            {
+                var rtxid = await NFTHelpers.SendIoTMessageNFT(Address, receiver, AccountKey, nft, res.Item2, tres.Item2);
+
+                if (rtxid != null)
+                {
+                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Message sent.");
+                    return (true, rtxid);
+                }
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during sending message.");
+        }
+
+        /// <summary>
+        /// Send NFT.
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> SendMessageNFT(string name, string message, string receiver, string utxo = "", bool encrypt = true, string imagelink = "", string link = "", string text = "", string rewriteAuthor = "")
         {
             MessageNFT nft = new MessageNFT("");
@@ -1801,7 +1851,7 @@ namespace VEDriversLite.Neblio
                 return (false, "Account is locked.");
             }
 
-            var res = await CheckSpendableNeblio(neblioAmount);
+            var res = await CheckSpendableNeblio(neblioAmount + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
@@ -1900,6 +1950,88 @@ namespace VEDriversLite.Neblio
 
             await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
+        }
+
+        #endregion
+
+        #region NFTIoTDevicesProcessing
+        public async Task<(bool, string)> InitAllAutoIoTDeviceNFT()
+        {
+            try
+            {
+                NFTs.Where(n => n.Type == NFTTypes.IoTDevice).ToList()?.ForEach(async (nft) =>
+                {
+                    if ((nft as IoTDeviceNFT).AutoActivation && !(nft as IoTDeviceNFT).Active)
+                        await InitIoTDeviceNFT(nft.Utxo, nft.UtxoIndex);
+                });
+                return (true, "OK");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool, string)> InitIoTDeviceNFT(string utxo, int utxoindex = 0)
+        {
+            try
+            {
+                var nft = NFTs.First(n => n.Type == NFTTypes.IoTDevice && n.Utxo == utxo && n.UtxoIndex == utxoindex);
+                if (nft != null && !(nft as IoTDeviceNFT).Active)
+                {
+                    (nft as IoTDeviceNFT).NewMessage += NeblioAccountBase_NewMessage;
+                    await (nft as IoTDeviceNFT).InitCommunication(Secret);
+                    Console.WriteLine($"IoT NFT Device {utxo}:{utxoindex} Initialized.");
+                }
+                return (true, "OK");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool, string)> DeInitIoTDeviceNFT(string utxo, int utxoindex = 0)
+        {
+            try
+            {
+                var nft = NFTs.First(n => n.Type == NFTTypes.IoTDevice && n.Utxo == utxo && n.UtxoIndex == utxoindex);
+                if (nft != null && (nft as IoTDeviceNFT).Active)
+                {
+                    (nft as IoTDeviceNFT).NewMessage -= NeblioAccountBase_NewMessage;
+                    await (nft as IoTDeviceNFT).DeInitCommunication();
+                    Console.WriteLine($"IoT NFT Device {utxo}:{utxoindex} Deinitialized.");
+                }
+                return (true, "OK");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        private void NeblioAccountBase_NewMessage(object sender, (string, INFT) e)
+        {
+            var n = e.Item2;
+            Console.WriteLine("New Message received from the IoTDevice to main.");
+            MintNFTMessageForIoTDeviceEvent((sender as IoTDeviceNFT).Utxo, n.Name, n.Description, n, e.Item1, (sender as IoTDeviceNFT));
+        }
+
+        private async Task MintNFTMessageForIoTDeviceEvent(string senderUtxo, string name, string message, INFT nft, string messagekey, IoTDeviceNFT sender)
+        {
+            if (TotalSpendableBalance > 0.01)
+            {
+                var receiver = sender.ReceivingMessageAddress;
+                if (string.IsNullOrEmpty(receiver)) receiver = Address;
+                var res = await SendIoTMessageNFT(nft, Address, receiver);
+                if (res.Item1)
+                {
+                    Console.WriteLine($"NFT Message from IoTDeviceNFT {senderUtxo} was minted OK. New Tx Hash is: {res.Item2}.");
+                    sender.MarkMessageAsProcessed(messagekey);
+                }
+                else
+                    Console.WriteLine($"Cannot mint the NFT: {res.Item2}");
+            }
         }
 
         #endregion

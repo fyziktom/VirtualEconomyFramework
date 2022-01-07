@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT.Dto;
+using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
 {
@@ -458,6 +459,9 @@ namespace VEDriversLite.NFT
                 case NFTTypes.MechSrc:
                     metadata.Add("Type", "NFT MechSrc");
                     break;
+                case NFTTypes.IoTMessage:
+                    metadata.Add("Type", "NFT IoTMessage");
+                    break;
             }
             
             metadata.Add("Name", Name);
@@ -488,6 +492,81 @@ namespace VEDriversLite.NFT
                 metadata.Add("NFTOriginTxId", NFTOriginTxId);
             return metadata;
         }
+
+        /// <summary>
+        /// This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
+        /// Then the image is saved in ImageData as bytes.
+        /// </summary>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
+        public static async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner)
+        {
+            if (!string.IsNullOrEmpty(imageLink) && imageLink.Contains("https://gateway.ipfs.io/ipfs/"))
+            {
+                byte[] ImageData;
+                var hash = imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty);
+                try
+                {
+                    var bytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
+                    var dbytesres = await ECDSAProvider.DecryptBytesWithSharedSecret(bytes, partner, secret);
+                    if (dbytesres.Item1)
+                    {
+                        ImageData = dbytesres.Item2;
+                        var bl = ImageData.Length;
+                        return (true, ImageData);
+                    }
+                    else
+                        ImageData = null;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot download the file from ipfs or decrypt it. " + ex.Message);
+                }
+            }
+            return (false, null);
+        }
+
+        /// <summary>
+        /// Decrypt the specific property with use of shared secret
+        /// </summary>
+        /// <param name="prop">Property content</param>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
+        public static async Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "")
+        {
+            if (!string.IsNullOrEmpty(prop))
+            {
+                if (IsBase64String(prop))
+                {
+                    if (string.IsNullOrEmpty(partner) && !string.IsNullOrEmpty(address))
+                        partner = address;
+
+                    try
+                    {
+                        var d = await ECDSAProvider.DecryptStringWithSharedSecret(prop, partner, secret);
+                        if (d.Item1)
+                            return d.Item2;
+                        else
+                            return prop;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Cannot decrypt property in NFT Message. " + ex.Message);
+                        return prop;
+                    }
+                }
+                else
+                    return prop;
+            }
+            return string.Empty;
+        }
+
+        public static bool IsBase64String(string base64)
+        {
+            Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
+            return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
+        }
+
         /// <summary>
         /// Stop the auto refreshin of the tx info data
         /// </summary>

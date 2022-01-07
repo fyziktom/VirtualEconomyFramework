@@ -31,7 +31,7 @@
                         </div>
                     </div>
                 </button>
-                @if (NFT.Type == NFTTypes.Post || NFT.Type == NFTTypes.Event || NFT.Type == NFTTypes.Profile)
+                @if (NFT.Type == NFTTypes.Post || NFT.Type == NFTTypes.Event || NFT.Type == NFTTypes.Profile || NFT.Type == NFTTypes.Device || NFT.Type == NFTTypes.IoTDevice)
                 {
                     <button class="btn btn-secondary" @onclick="ShowUpdatePostNFTDialog" style="min-width: 65px; max-width: 65px; width: 65px; height: 65px; margin-left: 20px;">
                         <div class="row">
@@ -157,7 +157,7 @@
 <Modal Title="Create or edit post NFT"
        Visible="@createNewPostVisible"
        OnCancel="@createNewPostCancel"
-       Footer="null" >
+       Footer="null">
     @if (NFT.Type == NFTTypes.Event)
     {
         <VENFTApp_Blazor.Components.NFTs.Tickets.MintEventAndTickets NFT="@NFT"
@@ -170,13 +170,36 @@
     }
     else
     {
-        <MintNFTForm NFTType="NFT.Type"
-                     NFT="@NFT"
-                     TokenId="@NFT.TokenId"
-                     RedirectToNFTsAfterMint="false"
-                     NFTMinted="@NFTSentHandler"
-                     Address="@Address"
-                     SubAccount="@SubAccount" />
+        if (NFT.Type == NFTTypes.Device)
+        {
+            <VENFTApp_Blazor.Components.NFTs.Devices.MintNFTDevice NFTType="NFT.Type"
+                                                                   NFT="@NFT"
+                                                                   TokenId="@NFT.TokenId"
+                                                                   RedirectToNFTsAfterMint="false"
+                                                                   NFTMinted="@NFTSentHandler"
+                                                                   Address="@Address"
+                                                                   SubAccount="@SubAccount" />
+        }
+        else if (NFT.Type == NFTTypes.IoTDevice)
+        {
+            <VENFTApp_Blazor.Components.NFTs.Devices.MintNFTIoTDevice NFTType="NFT.Type"
+                         NFT="@NFT"
+                         TokenId="@NFT.TokenId"
+                         RedirectToNFTsAfterMint="false"
+                         NFTMinted="@NFTSentHandler"
+                         Address="@Address"
+                         SubAccount="@SubAccount" />
+        }
+        else
+        {
+            <MintNFTForm NFTType="NFT.Type"
+                         NFT="@NFT"
+                         TokenId="@NFT.TokenId"
+                         RedirectToNFTsAfterMint="false"
+                         NFTMinted="@NFTSentHandler"
+                         Address="@Address"
+                         SubAccount="@SubAccount" />
+        }
     }
 </Modal>
 

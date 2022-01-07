@@ -252,14 +252,33 @@
 
     private string IsSenderInTheBookmarks(string sender)
     {
-        var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
-        if (s == null)
-            return NeblioTransactionHelpers.ShortenAddress(sender);
+        if (!string.IsNullOrEmpty(sender))
+        {
+            var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
+            var r = NeblioTransactionHelpers.ValidateNeblioAddress(sender).GetAwaiter().GetResult();
+            if (r.Item1)
+            {
+                if (s == null)
+                    return NeblioTransactionHelpers.ShortenAddress(sender);
 
-        if (!string.IsNullOrEmpty(s.Name))
-            return s.Name;
+                if (!string.IsNullOrEmpty(s.Name))
+                    return s.Name;
+                else
+                    return NeblioTransactionHelpers.ShortenAddress(sender);
+            }
+            else
+            {
+                if (sender.Length < 10)
+                    return sender;
+                else
+                    return sender.Substring(0, 5) + "...";
+            }
+        }
         else
-            return NeblioTransactionHelpers.ShortenAddress(sender);
+        {
+            return string.Empty;
+        }
+
     }
 
     private async Task ReloadNFTs()

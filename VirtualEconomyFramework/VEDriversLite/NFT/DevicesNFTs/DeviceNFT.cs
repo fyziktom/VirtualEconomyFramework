@@ -25,6 +25,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
         public string MAC { get; set; } = string.Empty;
         public string UniqueId { get; set; } = string.Empty;
 
+
         [JsonIgnore]
         public INFT LoadedProtocolNFT { get; set; } = new ProtocolNFT("");
         [JsonIgnore]

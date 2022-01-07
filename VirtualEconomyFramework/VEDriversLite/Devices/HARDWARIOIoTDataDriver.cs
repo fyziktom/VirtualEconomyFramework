@@ -43,16 +43,22 @@ namespace VEDriversLite.Devices
                     if (CancelToken.IsCancellationRequested)
                         quit = true;
 
-                    var res = await RequestNewMessageFromAPI();
-                    if (res.Item1 && !string.IsNullOrEmpty(res.Item2.id))
+                    try
                     {
-                        if (res.Item2.id != lastmessageid)
+                        var res = await RequestNewMessageFromAPI();
+                        if (res.Item1 && !string.IsNullOrEmpty(res.Item2.id))
                         {
-                            NewDataReceived?.Invoke(this, JsonConvert.SerializeObject(res.Item2));
-                            lastmessageid = res.Item2.id;
+                            if (res.Item2.id != lastmessageid)
+                            {
+                                NewDataReceived?.Invoke(this, JsonConvert.SerializeObject(res.Item2));
+                                lastmessageid = res.Item2.id;
+                            }
                         }
                     }
-
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Cannot obtain new message from the HARDWARIO Cloud API. " + ex.Message);
+                    }
                     await Task.Delay(CommonConnParams.CommonRefreshInterval);
                 }
 

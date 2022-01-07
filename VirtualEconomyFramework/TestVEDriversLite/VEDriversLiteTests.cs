@@ -1483,7 +1483,8 @@ namespace TestVEDriversLite
                 throw new Exception("TxId must be filled.");
 
             Console.WriteLine("Input Tx Id Hash");
-            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(param);
+            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(param); //get old tx info from neblio api
+
             // sign it with loaded account
             Console.WriteLine("Timestamp");
             Console.WriteLine(TimeHelpers.UnixTimestampToDateTime((double)txinfo.Blocktime));
@@ -2662,8 +2663,13 @@ namespace TestVEDriversLite
                     return;
                 }
             }
+
+            nft.Name = nft.SourceDeviceNFT.Name;
+            nft.Description = nft.SourceDeviceNFT.Description;
+            nft.ImageLink = nft.SourceDeviceNFT.ImageLink;
+            nft.Link = nft.SourceDeviceNFT.Link;
             //nft.Utxo = "f6f58d275e5aa00b8879edc164ac605ff413fe8462e042beaca9cb6a6b860aaf"; //now just random for testing
-            nft.EncryptMessages = true; //encrypt all messages
+            nft.EncryptMessages = false; //encrypt all messages
             nft.EncryptSetting = true;//encrypt connection settings in metadata when minting NFT
             nft.AllowConsoleOutputWhenNewMessage = true; //allow console output when the new message will arrive from IoTDataDriver to IoTDeviceNFT
             //nft.RunJustOwn = true; this will check if the NFT was minted or resend on same address. otherwise it will not allow to init it!
@@ -2677,6 +2683,8 @@ namespace TestVEDriversLite
             
             nft.LocationCoordinates = "37.7880168,-122.3959002"; // obtain actual from hardwario chester messages? setting flag for this option?
 
+            //var resp = await account.MintNFT(nft);
+
             var mtd = await nft.GetMetadata(account.Address, account.Secret.ToString(), account.Address); // just for the test of the encryption of the settings
 
             nft.NewMessage += Nft_NewMessage;
@@ -2686,14 +2694,30 @@ namespace TestVEDriversLite
             else
                 await nft.InitCommunication();
 
-            int attemtps = 100;
+            
+            int attemtps = 10000;
             while (attemtps > 0)
             {
                 Console.WriteLine("Waiting 60s for reading values...");
                 await Task.Delay(60000);
                 attemtps--;
-                Console.WriteLine($"Only {attemtps} from 100 cycles left.");
+                Console.WriteLine($"Only {attemtps} from 10000 cycles left.");
             }
+            
+            /*
+            while (true)
+            {
+                Console.WriteLine("Waiting 10 minutes for new values:");
+                for (var i = 0; i < 10; i++)
+                {
+                    await Task.Delay(60000);
+                    Console.Write($"# {i} m,");
+                }
+            }
+            //await Task.Delay(-1); //wait forewer
+            */
+
+            
             Console.WriteLine("Reading complete!");
             Console.WriteLine("Readed messages from IoT Device NFT:");
             await nft.DeInitCommunication();
@@ -2763,10 +2787,11 @@ namespace TestVEDriversLite
             }
         }
 
-        private static void Nft_NewMessage(object sender, INFT e)
+        private static void Nft_NewMessage(object sender, (string,INFT) e)
         {
+            var n = e.Item2;
             Console.WriteLine("New Message received from the IoTDevice to main.");
-            MintNFTMessageForIoTDeviceEvent((sender as IoTDeviceNFT).Utxo, e.Name, e.Description, e);
+            MintNFTMessageForIoTDeviceEvent((sender as IoTDeviceNFT).Utxo, n.Name, n.Description, n);
         }
 
         private static async Task MintNFTMessageForIoTDeviceEvent(string senderUtxo, string name, string message, INFT nft)
@@ -2774,7 +2799,7 @@ namespace TestVEDriversLite
             if (account.TotalSpendableBalance > 0.01)
             {
                 //var res = await account.MintNFT(nft);
-                var res = await account.SendMessageNFT(name, message, account.Address, rewriteAuthor: "9cd2ea2fdd98bc5d39c56f652ba8a123f1e739c45520b97e59c12be1619a5b4d");
+                var res = await account.SendMessageNFT(name, message, account.Address, encrypt:(nft as MessageNFT).Encrypt, rewriteAuthor: "9cd2ea2fdd98bc5d39c56f652ba8a123f1e739c45520b97e59c12be1619a5b4d");
                 if (res.Item1)
                     Console.WriteLine($"NFT Message from IoTDeviceNFT {senderUtxo} was minted OK. New Tx Hash is: {res.Item2}.");
                 else

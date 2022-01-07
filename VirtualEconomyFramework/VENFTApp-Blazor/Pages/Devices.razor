@@ -1,0 +1,78 @@
+﻿@using System.IO;
+@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject HttpClient _client
+@inject NavigationManager NavManager
+@page "/devices"
+
+<div class="container-fluid overflow-auto">
+    <div class="row">
+        <div class="col">
+            <VENFTApp_Blazor.Components.Account.AccountBalances Address="@AppData.Account.Address" SubAccount="false" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h6>My Devices</h6>
+                        </div>
+                    </div>
+                    <VENFTApp_Blazor.Components.NFTs.Devices.NFTDevicesList Address="@AppData.Account.Address" MainAccount="@true" />
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h6>My IoT Devices</h6>
+                        </div>
+                    </div>
+                    <VENFTApp_Blazor.Components.NFTs.Devices.NFTIoTDevicesList Address="@AppData.Account.Address" MainAccount="@true" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <VENFTApp_Blazor.Components.InfoEventModal />
+</div>
+
+@code {
+
+    protected override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(AppData.Account.Address))
+            {
+                Redirect();
+            }
+            else
+            {
+                if (AppData.Account != null)
+                    AppData.Account.Refreshed += RefreshedHandler;
+            }
+        }
+        catch (Exception ex)
+        {
+            Redirect();
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Redirect()
+    {
+        AppData.Account = new NeblioAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+}

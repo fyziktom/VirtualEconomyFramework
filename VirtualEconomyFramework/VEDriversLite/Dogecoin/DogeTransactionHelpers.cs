@@ -675,11 +675,17 @@ namespace VEDriversLite
         /// <returns>This object contains list of spended Txs.</returns>
         public static async Task<List<SpentTx>> AddressSpendTxsAsync(string addr)
         {
-            var txs = await GetClient().GetAddressSentTxAsync(addr);
-            if (txs.Data != null)
-                if (txs.Data.Transactions != null)
-                    return txs.Data.Transactions.ToList();
-
+            try
+            {
+                var txs = await GetClient().GetAddressSentTxAsync(addr);
+                if (txs != null && txs?.Data != null)
+                    if (txs?.Data.Transactions != null)
+                        return txs?.Data.Transactions.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot obtain dogecoin address info from the api.");
+            }
             return new List<SpentTx>();
         }
 

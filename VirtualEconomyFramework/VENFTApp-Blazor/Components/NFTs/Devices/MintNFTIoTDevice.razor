@@ -1,0 +1,938 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.DevicesNFTs
+@using VEDriversLite.Devices
+@using VEDriversLite.Devices.Dto
+@using Markdig
+@inject AppData AppData
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col">
+        <Spin spinning="@loading" tip="Loading...">
+        <Spin spinning="@processingMinting" tip="Minting...">
+            <div class="row">
+                <div class="col">
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Mint from template</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Input NFT IoT Device Hash</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="NFT IoT Device Hash" MaxLength="100" @bind-Value=@templateNFTDeviceHash Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="LoadFromTemplate">Load From Template NFT</button>
+                        </div>
+                    </div>
+                    @if (templateNFTHasEncryptedSetting && !templateNFT.DecryptedSetting)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Input NFT IoT Device has encrypted settings. If it is your NFT you can decrypt it.</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary" @onclick="TryToDecryptTemplate">Decrypt Settings</button>
+                            </div>
+                        </div>
+                    }
+
+                    <hr />
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Name</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Type Name" MaxLength="100" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+                    @if (string.IsNullOrEmpty(name))
+                    {
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-danger">You must fill this field.</small>
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Author</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add Author of the NFT" MaxLength="100" @bind-Value=@author Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+                    @if (string.IsNullOrEmpty(author))
+                    {
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-danger">You must fill this field.</small>
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Description</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <TextArea Placeholder="Add Description of the NFT" MaxLength="300" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
+                        </div>
+                    </div>
+                    @if (string.IsNullOrEmpty(description))
+                    {
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-danger">You must fill this field</small>
+                            </div>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(description))
+                    {
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-info">Remaining @(300-description.Length) from 300 characters.</small>
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Device NFT Hash</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add Device NFT Hash" MaxLength="100" @bind-Value=@deviceNFTHash Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Text</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <TextArea Placeholder="Add Text" MaxLength="5000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
+                        </div>
+                        @if (!string.IsNullOrEmpty(text))
+                        {
+                            <div class="col d-flexjustify-content-center align-items-center" style="width: 350px; min-height:400px; max-width:350px;">
+                                <span class="border-light">@((MarkupString)NFTmarkuptext)</span>
+                            </div>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(text))
+                    {
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-info">Remaining @(5000-text.Length) from 5000 characters.</small>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Tags</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add Tags - splitted by space" MaxLength="200" @bind-Value=@tags Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Receiving Message Address</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h5>IoT Driver Settings</h5>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Driver Type</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <RadioGroup @bind-Value="@iotddtype">
+                                <Radio Value="IoTDataDriverType.Common">Common</Radio>
+                                <Radio Value="IoTDataDriverType.HARDWARIO">HARDWARIO</Radio>
+                                <Radio Value="IoTDataDriverType.PLFramework">PLFramework</Radio>
+                                <Radio Value="IoTDataDriverType.M5Stack">M5Stack</Radio>
+                            </RadioGroup>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Connection Url</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add Connection Url" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Url Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Group Id</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add Group Id" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.GroupId Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Device Id</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Add Device Id" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.DeviceId Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Secured API</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <RadioGroup @bind-Value="@iddSettings.ConnectionParams.Secured">
+                                <Radio Value="true">API is secured</Radio>
+                                <Radio Value="false">API is open</Radio>
+                            </RadioGroup>
+                        </div>
+                    </div>
+                    @if (iddSettings.ConnectionParams.Secured)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Security Type</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <RadioGroup @bind-Value="@iddSettings.ConnectionParams.SType">
+                                    <Radio Value="CommunitacionSecurityType.Bearer">Bearer</Radio>
+                                    <Radio Value="CommunitacionSecurityType.SSL">SSL</Radio>
+                                    <!--<Radio Value="CommunitacionSecurityType.JWT">JWT</Radio>-->
+                                </RadioGroup>
+                            </div>
+                        </div>
+
+                        @if (iddSettings.ConnectionParams.SType == CommunitacionSecurityType.Bearer)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>API Token</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <Input Placeholder="Add Connection Url" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Token Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                </div>
+                            </div>
+                        }
+                        else if (iddSettings.ConnectionParams.SType == CommunitacionSecurityType.SSL)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>User</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <Input Placeholder="Add User" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Username Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Password</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <InputPassword Placeholder="Add Password" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Password Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Common Refresh Interval</small>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:5px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <input type="number" step="10" min="100" max="10000000" @bind="@iddSettings.ConnectionParams.CommonRefreshInterval" /> ms
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Auto Activate</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <RadioGroup @bind-Value="@autoActivate">
+                                <Radio Value="true">Auto Activated Enable</Radio>
+                                <Radio Value="false">Auto Activated Disable</Radio>
+                            </RadioGroup>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Encrypt Settings</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <RadioGroup @bind-Value="@encryptSettings">
+                                <Radio Value="true">Encrypt Settings</Radio>
+                                <Radio Value="false">Settings not encrypted</Radio>
+                            </RadioGroup>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Encrypt Messages</small>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <RadioGroup @bind-Value="@encryptMessages">
+                                <Radio Value="true">Encrypt Messages</Radio>
+                                <Radio Value="false">Messages not encrypted</Radio>
+                            </RadioGroup>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!--Todo: add upload datasheet or another pdf-->
+
+                    <div class="row" style="margin-top:2px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Uplod Image</small>
+                        </div>
+                    </div>
+                    <VENFTApp_Blazor.Components.UploadImage NFTType="@NFTTypes.Image" ImageLink="@imagelink" ImageLinkChanged="@ImageLinkChanged" />
+
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Mint To Another Address</span><br />
+                        </div>
+                    </div>
+
+                    @if (withPrice)
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Price in Neblio</small>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@price" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
+                            </div>
+                        </div>
+                    }
+                    @if (withDogePrice)
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Price in Doge</small>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="number" step="1" min="2" max="1000000000" @bind="@dogeprice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                            </div>
+                        </div>
+                    }
+                    @if (withCoppies)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Coppies</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="number" step="1" min="0" max="@AppData.Account.SourceTokensBalance" @bind="@NumberOfCoppies" />
+                            </div>
+                        </div>
+                    }
+                    @if (toAnotherAddres)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Fill Receiver Address</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <VENFTApp_Blazor.Components.Account.CreateNeblioSubAccount NewAddressCreated="newSubAccountCreated" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:15px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="mintReceiverAddressChecked" Receiver="@mintReceiverAddress" />
+                            </div>
+                        </div>
+                    }
+
+
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
+                        </div>
+                    </div>
+                    @if (string.IsNullOrEmpty(deviceNFTHash))
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary disabled" @onclick="ShowMintConfirm">Create NFT</button>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Please fill at Device NFT Hash</small>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary" @onclick="ShowMintConfirm">@(string.IsNullOrEmpty(sourceNFT.Utxo) ? "Create NFT" : "Apply Changes")</button>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(multimintStatus))
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <span>@multimintStatus</span>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </Spin>
+        </Spin>
+
+        <Modal Title="@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")"
+               Visible="@confirmVisible"
+               OnOk="@HandleOk"
+               OnCancel="@HandleCancel">
+            <p>Do you realy want to @(string.IsNullOrEmpty(NFT.Utxo)?"create":"update") this Device?</p>
+        </Modal>
+
+        <Modal Title="Mint To Another Address"
+               Visible="@mintToAnotherAddressConfirmModalVisible"
+               OnOk="@MintToAnotherAddressOk"
+               OnCancel="@MintToAnotherAddressCancel">
+            <p>"You selected another address as receiver of these NFTs. Is it correct?"</p>
+        </Modal>
+
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public bool RedirectToNFTsAfterMint { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public string TokenId { get; set; } = string.Empty;
+
+    private NFTTypes nftType = NFTTypes.Device;
+    [Parameter]
+    public NFTTypes NFTType
+    {
+        get => nftType;
+        set => nftType = value;
+    }
+
+    private INFT sourceNFT = new DeviceNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => sourceNFT;
+        set
+        {
+            if (value != null && !string.IsNullOrEmpty(value.Utxo) && value.Utxo != newNFT.Utxo)
+            {
+                sourceNFT = value;
+                newNFT.Fill(value);
+                LoadData();
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> NFTMinted { get; set; }
+
+    public string NFTmarkuptext => Markdown.ToHtml(text);
+
+    private bool loading = false;
+    private bool uploadingImage = false;
+    private bool confirmVisible = false;
+    private bool deviceNFTDetailsVisible = false;
+    private bool mintToAnotherAddressConfirmModalVisible = false;
+    private bool processingMinting = false;
+
+    private bool withPrice = false;
+    private bool withDogePrice = false;
+    private bool withCoppies = false;
+    private bool toAnotherAddres = false;
+    private bool loadingEventData = false;//todo
+    private bool eventDataLoaded = false;//todo
+
+    private int NumberOfCoppies = 0;
+
+    private double price = 0.0;
+    private double dogeprice = 0.0;
+
+    // nft common properties
+    private string description = string.Empty;
+    private string text = string.Empty;
+    private string tags = string.Empty;
+    private string name = string.Empty;
+    private string surname = string.Empty;
+    private string nickname = string.Empty;
+    private string author = string.Empty;
+    private string imagelink = string.Empty;
+    private string link = string.Empty;
+
+    // special properties
+    private bool autoActivate = false;
+    private bool encryptMessages = false;
+    private bool encryptSettings = false;
+    private bool runJustOwn = false;
+
+    private string deviceNFTHash = string.Empty;
+    private string location = string.Empty;
+    private string locationCoordinates = string.Empty;
+    private string receivingMessageAddress = string.Empty;
+
+    private IoTDataDriverSettings iddSettings = new IoTDataDriverSettings();
+    private IoTDataDriverType iotddtype = IoTDataDriverType.HARDWARIO;
+
+    private string multimintStatus = string.Empty;
+    private string mintReceiverAddress = string.Empty;
+
+    private IoTDeviceNFT templateNFT = new IoTDeviceNFT("");
+    private string templateNFTDeviceHash = string.Empty;
+    private bool templateNFTHasEncryptedSetting = false;
+
+    private INFT newNFT = new IoTDeviceNFT("");
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(AppData.Account.Address))
+        {
+            AppData.Account.NewMintingProcessInfo -= multimintStateChangedHandler;
+            AppData.Account.NewMintingProcessInfo += multimintStateChangedHandler;
+            if (!string.IsNullOrEmpty(AppData.Account.Profile.Nickname))
+                nickname = AppData.Account.Profile.Nickname;
+            if (!string.IsNullOrEmpty(AppData.Account.Profile.Name))
+                author = AppData.Account.Profile.Name + " " + AppData.Account.Profile.Surname;
+        }
+    }
+
+    private void newSubAccountCreated(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            mintReceiverAddress = address;
+        }
+        StateHasChanged();
+    }
+
+    private void mintReceiverAddressChecked(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            mintReceiverAddress = address;
+        }
+        StateHasChanged();
+    }
+    private async Task toAnotherAddressChanged(object e)
+    {
+        toAnotherAddres = (bool)e;
+        if (!toAnotherAddres)
+        {
+            mintReceiverAddress = string.Empty;
+        }
+        StateHasChanged();
+    }
+
+    void ImageLinkChanged(string newLink)
+    {
+        imagelink = newLink;
+    }
+
+    void LinkChanged(string newLink)
+    {
+        link = newLink;
+    }
+
+    private void multimintStateChangedHandler(object sender, string e)
+    {
+        multimintStatus = e;
+        StateHasChanged();
+    }
+
+    private void stateChangedHandler(EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task withPriceChanged(object e)
+    {
+        withPrice = (bool)e;
+        if (withPrice)
+            price = 0.0005;
+        else
+            price = 0;
+        StateHasChanged();
+    }
+    private async Task withDogePriceChanged(object e)
+    {
+        withDogePrice = (bool)e;
+        if (withDogePrice)
+            dogeprice = 2;
+        else
+            dogeprice = 0;
+        StateHasChanged();
+    }
+    private async Task withCoppiesChanged(object e)
+    {
+        withCoppies = (bool)e;
+        StateHasChanged();
+    }
+
+    void ShowMintConfirm()
+    {
+        if (!string.IsNullOrEmpty(mintReceiverAddress))
+            mintToAnotherAddressConfirmModalVisible = true;
+        else
+            confirmVisible = true;
+    }
+
+    private async Task MintToAnotherAddressOk(MouseEventArgs e)
+    {
+        mintToAnotherAddressConfirmModalVisible = false;
+        confirmVisible = true;
+    }
+
+    private void MintToAnotherAddressCancel(MouseEventArgs e)
+    {
+        mintToAnotherAddressConfirmModalVisible = false;
+    }
+
+    private void receiverAddressChangedHandler(string address)
+    {
+        if (address.Length < 8)
+        {
+            receivingMessageAddress = string.Empty;
+            return;
+        }
+        receivingMessageAddress = address;
+        StateHasChanged();
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        await MintNewNFT();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        confirmVisible = false;
+    }
+
+    private async Task LoadData()
+    {
+        if (newNFT != null)
+        {
+            description = newNFT.Description;
+            text = newNFT.Text;
+            tags = newNFT.Tags;
+            name = newNFT.Name;
+            author = newNFT.Author;
+            imagelink = newNFT.ImageLink;
+            link = newNFT.Link;
+
+            if (newNFT.Type == NFTTypes.IoTDevice)
+            {
+                var n = newNFT as IoTDeviceNFT;
+
+                deviceNFTHash = n.DeviceNFTHash;
+
+                autoActivate = n.AutoActivation;
+                encryptMessages = n.EncryptMessages;
+                encryptSettings = n.EncryptSetting;
+                runJustOwn = n.RunJustOwn;
+                location = n.Location;
+                locationCoordinates = n.LocationCoordinates;
+                iddSettings = n.IDDSettings;
+                iotddtype = n.IoTDDType;
+                receivingMessageAddress = n.ReceivingMessageAddress;
+            }
+        }
+    }
+
+    private async Task LoadFromTemplate()
+    {
+        try
+        {
+            loading = true;
+            StateHasChanged();
+            var nft = await NFTFactory.GetNFT("", templateNFTDeviceHash, 0, 0, true);
+            // todo this is not NFT
+            if (nft != null)
+            {
+                description = nft.Description;
+                text = nft.Text;
+                tags = nft.Tags;
+                name = nft.Name;
+                author = nft.Author;
+                imagelink = nft.ImageLink;
+                link = nft.Link;
+
+                if (nft.Type == NFTTypes.IoTDevice)
+                {
+                    var n = nft as IoTDeviceNFT;
+                    templateNFT = await NFTFactory.CloneNFT(n) as IoTDeviceNFT;
+
+                    deviceNFTHash = n.DeviceNFTHash;
+
+                    autoActivate = n.AutoActivation;
+                    encryptMessages = n.EncryptMessages;
+                    encryptSettings = n.EncryptSetting;
+                    runJustOwn = n.RunJustOwn;
+                    location = n.Location;
+                    locationCoordinates = n.LocationCoordinates;
+                    iddSettings = n.IDDSettings;
+                    iotddtype = n.IoTDDType;
+                    receivingMessageAddress = n.ReceivingMessageAddress;
+
+                    if (n.EncryptSetting) templateNFTHasEncryptedSetting = true;
+
+                }
+                //todo: this is not NFT Device
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot load the NFT Device from the template. " + ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task TryToDecryptTemplate()
+    {
+        try
+        {
+            loading = true;
+            StateHasChanged();
+            if (templateNFT != null && templateNFT.Type == NFTTypes.IoTDevice &&
+                !string.IsNullOrEmpty(templateNFT.EncryptedSettingString) &&
+                !templateNFT.DecryptedSetting)
+            {
+                await templateNFT.DecryptSetting(AppData.Account.Secret);
+                iddSettings = templateNFT.IDDSettings;
+                iotddtype = templateNFT.IoTDDType;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot load the NFT Device from the template. " + ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task MintNewNFT()
+    {
+
+        try
+        {
+            processingMinting = true;
+            confirmVisible = false;
+            StateHasChanged();
+
+            newNFT = new IoTDeviceNFT("")
+            {
+                Address = Address,
+                DeviceNFTHash = deviceNFTHash,
+                AutoActivation = autoActivate,
+                EncryptMessages = encryptMessages,
+                EncryptSetting = encryptSettings,
+                RunJustOwn = runJustOwn,
+                Location = location,
+                LocationCoordinates = locationCoordinates,
+                IDDSettings = iddSettings,
+                IoTDDType = iotddtype,
+                ReceivingMessageAddress = receivingMessageAddress
+            };
+
+            if (!withPrice)
+                newNFT.Price = 0.0;
+
+            if (!string.IsNullOrEmpty(TokenId))
+                newNFT.TokenId = TokenId;
+
+            if (name != null)
+                newNFT.Name = name;
+            if (tags != null)
+                newNFT.Tags = tags;
+            if (author != null)
+                newNFT.Author = author;
+            if (description != null)
+                newNFT.Description = description;
+            if (text != null)
+                newNFT.Text = text;
+            if (link != null)
+                newNFT.Link = link;
+            if (imagelink != null)
+                newNFT.ImageLink = imagelink;
+
+            newNFT.Price = price;
+            if (price > 0)
+                newNFT.PriceActive = true;
+            newNFT.DogePrice = dogeprice;
+            if (dogeprice > 0)
+                newNFT.DogePriceActive = true;
+
+            if (!string.IsNullOrEmpty(sourceNFT.Utxo))
+            {
+                newNFT.Utxo = sourceNFT.Utxo;
+                newNFT.UtxoIndex = sourceNFT.UtxoIndex;
+                newNFT.NFTOriginTxId = sourceNFT.NFTOriginTxId;
+            }
+
+            if (!string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                newNFT.DogeAddress = AppData.DogeAccount.Address;
+
+            (bool, string) res;
+            if (!string.IsNullOrEmpty(newNFT.Utxo))
+            {
+                if (!SubAccount)
+                    res = await AppData.Account.ChangeNFT(newNFT);
+                else
+                    res = await AppData.Account.ChangeNFTOnSubAccount(Address, newNFT);
+            }
+            else if (string.IsNullOrEmpty(newNFT.Utxo) && withCoppies)
+            {
+                if (!SubAccount)
+                    res = await AppData.Account.MintMultiNFTLargeAmount(newNFT, NumberOfCoppies, mintReceiverAddress);
+                else
+                    res = await AppData.Account.MultimintNFTLargeOnSubAccount(Address, newNFT, NumberOfCoppies, mintReceiverAddress);
+            }
+            else
+            {
+                if (!SubAccount)
+                    res = await AppData.Account.MintNFT(newNFT, mintReceiverAddress);
+                else
+                    res = await AppData.Account.MintNFTOnSubAccount(Address, newNFT, mintReceiverAddress);
+            }
+
+            if (res.Item1)
+            {
+                await NFTMinted.InvokeAsync(res.Item2);
+
+                if (RedirectToNFTsAfterMint)
+                {
+                    processingMinting = false;
+                    StateHasChanged();
+                    await Task.Delay(500);
+                    NavManager.NavigateTo("/nfts");
+                }
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alertMessage", "Some error during minting: " + res.Item2);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            processingMinting = false;
+            StateHasChanged();
+        }
+    }
+}

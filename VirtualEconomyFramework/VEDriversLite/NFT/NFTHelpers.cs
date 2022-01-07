@@ -816,7 +816,7 @@ namespace VEDriversLite.NFT
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string receiver = "")
         {
-            var metadata = await NFT.GetMetadata();
+            var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
@@ -902,6 +902,62 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// This function will new Post NFT.
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata</param>
+        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <returns>New Tx Id Hash</returns>
+        public static async Task<string> SendIoTMessageNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        {
+            if (NFT.Type != NFTTypes.IoTMessage)
+                throw new Exception("This is not Message NFT.");
+
+            // thanks to filled params it will return encrypted metadata with shared secret
+            var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
+
+            var fee = CalculateFee(metadata);
+            try
+            {
+                // send tx
+                var rtxid = string.Empty;
+                if (string.IsNullOrEmpty(NFT.Utxo))
+                {
+                    var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
+                    {
+                        Id = NFT.TokenId, // id of token
+                        Metadata = metadata,
+                        SenderAddress = address,
+                        ReceiverAddress = receiver
+                    };
+                    rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos, fee);
+                }
+                else
+                {
+                    var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+                    {
+                        Id = NFT.TokenId, // id of token
+                        Metadata = metadata,
+                        Amount = 1,
+                        sendUtxo = new List<string>() { NFT.Utxo },
+                        SenderAddress = address,
+                        ReceiverAddress = receiver
+                    };
+                    rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+                }
+                if (rtxid != null)
+                    return rtxid;
+                else
+                    return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         /// <summary>
         /// This function will new Post NFTs as multimint. 

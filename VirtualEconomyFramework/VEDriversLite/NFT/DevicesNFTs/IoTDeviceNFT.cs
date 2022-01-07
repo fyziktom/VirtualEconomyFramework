@@ -20,8 +20,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
             TypeText = "NFT IoTDevice";
         }
 
+        private static object _lock = new object();
         public string DeviceNFTHash { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
+        public string ReceivingMessageAddress { get; set; } = string.Empty;
         public string IoTDataDriverTypeText { get; set; } = string.Empty;
         [JsonIgnore]
         public IoTDataDriverType IoTDDType { get; set; } = IoTDataDriverType.HARDWARIO;
@@ -52,7 +54,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
         public string EncryptedLocationString { get; set; } = string.Empty;
         public string EncryptedLocationCoordinatesString { get; set; } = string.Empty;
 
-        public event EventHandler<INFT> NewMessage;
+        public event EventHandler<(string,INFT)> NewMessage;
 
         [JsonIgnore]
         public IIoTDataDriver IoTDataDriver { get; set; }
@@ -71,7 +73,8 @@ namespace VEDriversLite.NFT.DevicesNFTs
             MessageNFTs = nft.MessageNFTs;
             SourceDeviceNFT = nft.SourceDeviceNFT;
             IoTDataDriver = nft.IoTDataDriver;
-            
+            ReceivingMessageAddress = nft.ReceivingMessageAddress;
+
             Location = nft.Location;
             LocationCoordinates = nft.LocationCoordinates;
             LocationCoordinatesLat = nft.LocationCoordinatesLat;
@@ -98,6 +101,8 @@ namespace VEDriversLite.NFT.DevicesNFTs
             {
                 EncryptSetting = false;
             }
+            if (metadata.TryGetValue("RcvMsgAdd", out var rmsg))
+                ReceivingMessageAddress = rmsg;
             if (metadata.TryGetValue("DeviceNFT", out var dh))
                 DeviceNFTHash = dh;
             if (metadata.TryGetValue("Address", out var add))
@@ -149,6 +154,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
                     Console.WriteLine($"Cannot parse enum type of the IoTDataDriverType in NFT: {Utxo}, exception: {ex.Message} ");
                 }
             }
+
+            //just for the test
+            Console.WriteLine("Metadata:");
+            foreach(var meta in metadata)
+                Console.WriteLine($"\t{meta.Key}:{meta.Value}");
 
             if (metadata.TryGetValue("IDDSettings", out var idd))
             {
@@ -242,6 +252,8 @@ namespace VEDriversLite.NFT.DevicesNFTs
             if (!string.IsNullOrEmpty(Address))
                 metadata.Add("Address", Address);
 
+            if (string.IsNullOrEmpty(receiver) && !string.IsNullOrEmpty(address))
+                receiver = address;
 
             metadata.Add("IoTDataDriverType", Enum.GetName(typeof(IoTDataDriverType), IoTDDType));
 
@@ -258,33 +270,74 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 }
                 else
                 {
-                    var res = await ECDSAProvider.EncryptStringWithSharedSecret(JsonConvert.SerializeObject(IDDSettings), receiver, key);
-                    if (res.Item1)
+                    try
                     {
-                        metadata.Add("IDDSettings", res.Item2);
-                        EncryptedSettingString = res.Item2;
+                        var res = await ECDSAProvider.EncryptStringWithSharedSecret(JsonConvert.SerializeObject(IDDSettings), receiver, key);
+                        if (res.Item1)
+                        {
+                            metadata.Add("IDDSettings", res.Item2);
+                            EncryptedSettingString = res.Item2;
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(EncryptedSettingString))
+                                metadata.Add("IDDSettings", EncryptedSettingString);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        if (!string.IsNullOrEmpty(EncryptedSettingString))
+                            metadata.Add("IDDSettings", EncryptedSettingString);
                     }
 
                     if (!string.IsNullOrEmpty(Location))
                     {
-                        var resl = await ECDSAProvider.EncryptStringWithSharedSecret(Location, receiver, key);
-                        if (resl.Item1)
+                        try
                         {
-                            metadata.Add("Location", resl.Item2);
-                            EncryptedLocationString = resl.Item2;
+                            var resl = await ECDSAProvider.EncryptStringWithSharedSecret(Location, receiver, key);
+                            if (resl.Item1)
+                            {
+                                metadata.Add("Location", resl.Item2);
+                                EncryptedLocationString = resl.Item2;
+                            }
+                            else
+                            {
+                                if (!string.IsNullOrEmpty(EncryptedLocationString))
+                                    metadata.Add("Location", EncryptedLocationString);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            if (!string.IsNullOrEmpty(EncryptedLocationString))
+                                metadata.Add("Location", EncryptedLocationString);
                         }
                     }
                     if (!string.IsNullOrEmpty(LocationCoordinates))
                     {
-                        var resl = await ECDSAProvider.EncryptStringWithSharedSecret(LocationCoordinates, receiver, key);
-                        if (resl.Item1)
+                        try
                         {
-                            metadata.Add("LocationC", resl.Item2);
-                            EncryptedLocationCoordinatesString = resl.Item2;
+                            var resl = await ECDSAProvider.EncryptStringWithSharedSecret(LocationCoordinates, receiver, key);
+                            if (resl.Item1)
+                            {
+                                metadata.Add("LocationC", resl.Item2);
+                                EncryptedLocationCoordinatesString = resl.Item2;
+                            }
+                            else
+                            {
+                                if (!string.IsNullOrEmpty(EncryptedLocationCoordinatesString))
+                                    metadata.Add("LocationC", EncryptedLocationCoordinatesString);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            if (!string.IsNullOrEmpty(EncryptedLocationCoordinatesString))
+                                metadata.Add("LocationC", EncryptedLocationCoordinatesString);
                         }
                     }
                 }
             }
+            if (!string.IsNullOrEmpty(ReceivingMessageAddress))
+                metadata.Add("RcvMsgAdd", ReceivingMessageAddress);
             if (AutoActivation)
                 metadata.Add("AutoActivation", "true");
             if (EncryptMessages)
@@ -312,6 +365,64 @@ namespace VEDriversLite.NFT.DevicesNFTs
             }
         }
 
+        public async Task DecryptSetting(BitcoinSecret secret = null)
+        {
+            if (EncryptSetting && !DecryptedSetting)
+            {
+                if (secret == null)
+                {
+                    Console.WriteLine($"Please fill the BitcoinSecret for decryption of the connection setting in the IoTDeviceNFT {Utxo}.");
+                    return;
+                }
+                try
+                {
+                    if (string.IsNullOrEmpty(Address))
+                        Address = secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+
+                    var d = await ECDSAProvider.DecryptStringWithSharedSecret(EncryptedSettingString, Address, secret);
+                    if (d.Item1)
+                    {
+                        IDDSettings = JsonConvert.DeserializeObject<IoTDataDriverSettings>(d.Item2);
+                        DecryptedSetting = true;
+                    }
+                    if (!string.IsNullOrEmpty(EncryptedLocationString))
+                    {
+                        var l = await ECDSAProvider.DecryptStringWithSharedSecret(EncryptedLocationString, Address, secret);
+                        if (l.Item1)
+                            Location = l.Item2;
+                    }
+                    if (!string.IsNullOrEmpty(EncryptedLocationCoordinatesString))
+                    {
+                        var lc = await ECDSAProvider.DecryptStringWithSharedSecret(EncryptedLocationCoordinatesString, Address, secret);
+                        if (lc.Item1)
+                        {
+                            LocationCoordinates = lc.Item2;
+                            var split = lc.Item2.Split(',');
+                            if (split.Length > 1)
+                            {
+                                try
+                                {
+                                    LocationCoordinatesLat = Convert.ToDouble(split[0], CultureInfo.InvariantCulture);
+                                    LocationCoordinatesLen = Convert.ToDouble(split[1], CultureInfo.InvariantCulture);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Cannot parse location coordinates in IoTDeviceNFT {Utxo}.");
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Cannot decrypt the setting in IoTDeviceNFT {Utxo}, exception {ex.Message}");
+                    return;
+                }
+
+            }
+        }
+
         public async Task InitCommunication(BitcoinSecret secret = null)
         {
             try
@@ -327,61 +438,17 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 if (IoTDataDriver != null)
                 {
                     IoTDataDriver.NewDataReceived += IoTDataDriver_NewDataReceived;
-                    if (EncryptSetting)
-                    {
-                        if (secret == null)
-                        {
-                            Console.WriteLine($"Please fill the BitcoinSecret for decryption of the connection setting in the IoTDeviceNFT {Utxo}.");
-                            return;
-                        }
-                        try
-                        {
-                            var d = await ECDSAProvider.DecryptStringWithSharedSecret(EncryptedSettingString, Address, secret);
-                            if (d.Item1)
-                                IDDSettings = JsonConvert.DeserializeObject<IoTDataDriverSettings>(d.Item2);
-                            if (!string.IsNullOrEmpty(EncryptedLocationString))
-                            {
-                                var l = await ECDSAProvider.DecryptStringWithSharedSecret(EncryptedLocationString, Address, secret);
-                                if (l.Item1)
-                                    Location = l.Item2;
-                            }
-                            if (!string.IsNullOrEmpty(EncryptedLocationCoordinatesString))
-                            {
-                                var lc = await ECDSAProvider.DecryptStringWithSharedSecret(EncryptedLocationCoordinatesString, Address, secret);
-                                if (lc.Item1)
-                                {
-                                    LocationCoordinates = lc.Item2;
-                                    var split = lc.Item2.Split(',');
-                                    if (split.Length > 1)
-                                    {
-                                        try
-                                        {
-                                            LocationCoordinatesLat = Convert.ToDouble(split[0], CultureInfo.InvariantCulture);
-                                            LocationCoordinatesLen = Convert.ToDouble(split[1], CultureInfo.InvariantCulture);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Console.WriteLine($"Cannot parse location coordinates in IoTDeviceNFT {Utxo}.");
-                                        }
-                                    }
-                                }
-                            }
-                            DecryptedSetting = true;
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Cannot decrypt the setting in IoTDeviceNFT {Utxo}, exception {ex.Message}");
-                            return;
-                        }
 
-                    }
+                    await DecryptSetting(secret);
+
                     await IoTDataDriver.SetConnParams(IDDSettings.ConnectionParams);
                     await IoTDataDriver.Init(null);
-
+                    Active = true;
                 }
             }
             catch (Exception ex)
             {
+                Active = false;
                 Console.WriteLine("Cannot deserialize the IoT Driver Setting, when initializing the new IoTDataDrvier.");
             }
         }
@@ -390,13 +457,28 @@ namespace VEDriversLite.NFT.DevicesNFTs
         {
             if(AllowConsoleOutputWhenNewMessage)
                 Console.WriteLine($"IoT-{DateTime.UtcNow.ToString("MM-DD-yyyy-hh-mm-ss")}: New IoT message is: " + e);
-            var msg = new MessageNFT("");
+            var msg = new IoTMessageNFT("");
             msg.Author = $"{Utxo}:{UtxoIndex}";
             msg.Name = "IoTDeviceMessage";
             msg.Description = e;
             msg.Encrypt = EncryptMessages;
-            MessageNFTs.Add("ToProcess-" + DateTime.UtcNow.ToString("dd-MM-yyyy-hh-mm-ss-ff"), msg);
-            NewMessage?.Invoke(this, msg);
+            var mn = "ToProcess-" + DateTime.UtcNow.ToString("dd-MM-yyyy-hh-mm-ss-ff");
+            MessageNFTs.Add(mn, msg);
+            NewMessage?.Invoke(this, (mn,msg));
+        }
+
+        public bool MarkMessageAsProcessed(string messageName)
+        {
+            if (MessageNFTs.TryGetValue(messageName, out var nft))
+            {
+                lock (_lock)
+                {
+                    MessageNFTs.Remove(messageName);
+                    MessageNFTs.Add(messageName.Replace("ToProcess", "Processed"), nft);
+                }
+                return true;
+            }
+            return false;
         }
 
         public async Task DeInitCommunication()
@@ -405,6 +487,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
             {
                 IoTDataDriver.NewDataReceived -= IoTDataDriver_NewDataReceived;
                 await IoTDataDriver.DeInit();
+                Active = false;
             }
         }
     }

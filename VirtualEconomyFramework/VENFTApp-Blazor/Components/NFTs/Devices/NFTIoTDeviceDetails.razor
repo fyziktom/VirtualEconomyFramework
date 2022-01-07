@@ -1,0 +1,459 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Neblio
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.DevicesNFTs
+@using Markdig
+@inject AppData AppData
+
+<div class="row">
+    <div class="col">
+        <Spin Tip="Loading..." Spinning="@loading">
+            @if (!string.IsNullOrEmpty(NFT.Utxo))
+            {
+                <div style="position: absolute;right: 5px;top: -20px;">
+                    @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId))
+                    {
+                        <a href="https://explorer.nebl.io/tx/@NFT.NFTOriginTxId" target="_blank">
+                            <span class="badge badge-primary">Mint Info</span>
+                        </a>
+                    }
+                    <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
+                        <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
+                    </a>
+                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
+                </div>
+                @if (OwnNFT)
+                {
+                    <div class="row" style="position: absolute;right: 7px;top: 40px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <VENFTApp_Blazor.Components.NFTs.Actions.DestroyNFTButton IsIcon="true"
+                                                                                      FontSize="20"
+                                                                                      InputNFT="@NFT"
+                                                                                      Address="@Address"
+                                                                                      MainAccount="@(!SubAccount)"
+                                                                                      SubAccount="SubAccount"
+                                                                                      NFTDestroyed="NFTSentHandler" />
+                        </div>
+                    </div>
+                }
+            }
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <h6>@NFT.Name</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small>@NFT.Author</small>
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(NFT.Description))
+            {
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Description</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span style="max-width:100%;">@((MarkupString)NFTDescriptionMarkuptext)</span>
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(NFT.Text))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Text</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span style="max-width:100%;">@((MarkupString) NFTmarkuptext)</span>
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(NFT.Link))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <a href="@NFT.Link" target="_blank">Connected Link</a>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small>Location: @NFT.Location</small>
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(NFT.LocationCoordinates))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <a href="http://www.google.com/maps/place/@NFT.LocationCoordinates" target="_blank">Location Link</a>
+                    </div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(NFT.DeviceNFTHash))
+            {
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Device NFT Hash</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <a href="https://explorer.nebl.io/tx/@NFT.DeviceNFTHash" target="_blank">@NFT.DeviceNFTHash</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-light" @onclick="showDeviceDetails"><i class="oi oi-info"></i> Details</button>
+                    </div>
+                </div>
+
+            }
+
+            @if (!string.IsNullOrEmpty(NFT.ReceivingMessageAddress))
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h6>Receiving Message Address</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>@IsSenderInTheBookmarks(NFT.ReceivingMessageAddress)</small>
+                    </div>
+                </div>
+            }
+
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Active right now</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span class="@(NFT.Active?"text-success":"text-warning")">@(NFT.Active?"Device is Active":"Device is Deactivated")</span>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Auto Activation</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@(NFT.AutoActivation?"Activated":"Deactivated")</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Run Just Own NFTs</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@(NFT.RunJustOwn?"Run Just Own IoT NFT":"Run every IoT NFT")</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Encrypt Messages</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@(NFT.EncryptMessages?"Encrypted":"Not encrypted")</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Encrypt Setting</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@(NFT.EncryptSetting?"Encrypted":"Not Encrypted")</span>
+                </div>
+            </div>
+            @if (NFT.EncryptSetting && !NFT.DecryptedSetting)
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button class="btn btn-light" @onclick="Decrypt"><i class="oi oi-lock-locked"></i> Decrypt</button>
+                    </div>
+                </div>
+            }
+            else if ((NFT.EncryptSetting && NFT.DecryptedSetting) || !NFT.EncryptSetting)
+            {
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h6>IoT Data Driver Settings</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>IoT Data Driver Type</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>@(NFT.IoTDataDriverTypeText)</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>Connection Url</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>@(NFT.IDDSettings.ConnectionParams.Url)</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>Group Id</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>@(NFT.IDDSettings.ConnectionParams.GroupId)</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>Device Id</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>@(NFT.IDDSettings.ConnectionParams.DeviceId)</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>Secured API</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>@(NFT.IDDSettings.ConnectionParams.Secured ? "Secured API" : "Not Secured API")</small>
+                    </div>
+                </div>
+                @if (NFT.IDDSettings.ConnectionParams.Secured)
+                {
+                    if (NFT.IDDSettings.ConnectionParams.SType == VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer)
+                    {
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Token</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-wrap w-100" style="max-width:250px;">@(NFT.IDDSettings.ConnectionParams.Token)</small>
+                            </div>
+                        </div>
+                    }
+                    else if (NFT.IDDSettings.ConnectionParams.SType == VEDriversLite.Devices.Dto.CommunitacionSecurityType.SSL)
+                    {
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>User Name</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>@(NFT.IDDSettings.ConnectionParams.Username)</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Password</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>@(NFT.IDDSettings.ConnectionParams.Password)</small>
+                            </div>
+                        </div>
+                    }
+
+                }
+            }
+            <hr />
+            <div class="row" style="margin-top:20px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <a href="@NFT.ImageLink" target="_blank">
+                        @if (!string.IsNullOrEmpty(NFT.ImageLink))
+                        {
+                            <img src="@NFT.ImageLink" style="min-height:50px; max-height:150px; width:100%; max-width:250px; min-width:50px;" />
+                        }
+                        else if (string.IsNullOrEmpty(NFT.ImageLink) && !NFT.IsLoaded)
+                        {
+                            <Spin Tip="Loading...">
+                                <NoImageLoaded />
+                            </Spin>
+                        }
+                        else
+                        {
+                            <NoImageLoaded />
+                        }
+                    </a>
+                </div>
+            </div>
+            <hr />
+
+            <VENFTApp_Blazor.Components.NFTs.Actions.NFTActions InputNFT="@(NFT as INFT)"
+                                                                Utxo="@NFT.Utxo"
+                                                                UtxoIndex="@NFT.UtxoIndex"
+                                                                Address="@Address"
+                                                                OwnNFT="@OwnNFT"
+                                                                SubAccount="@SubAccount"
+                                                                NFTSent="@NFTSentHandler" />
+
+            <hr />
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>@(NFT.Active ? "Init" : "DeInit") Communication</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    @if (NFT.Active)
+                    {
+                        <button class="btn btn-light" @onclick="deInitIoTDeviceCommunication"><i class="oi oi-info"></i> DeInit Communication</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-light" @onclick="initIoTDeviceCommunication"><i class="oi oi-info"></i> Init Communication</button>
+                    }
+                </div>
+            </div>
+        </Spin>
+    </div>
+</div>
+
+<Modal Title="Device Details"
+       Visible="@deviceDetailsVisible"
+       OnCancel="@deviceDetailsVisibleCancel"
+       Footer="null">
+    <NFTDeviceDetails InputNFT="@nftToShow" Address="@Address" />
+</Modal>
+
+@code {
+
+    private IoTDeviceNFT NFT { get; set; } = new IoTDeviceNFT("");
+    [Parameter]
+    public INFT InputNFT
+    {
+        get => NFT;
+        set
+        {
+            if (value != null && value.Utxo != NFT.Utxo && value.Type == NFTTypes.IoTDevice)
+            {
+                NFT = value as IoTDeviceNFT;
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool OwnNFT { get; set; } = false;
+
+    [Parameter]
+    public bool SubAccount { get; set; } = false;
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> NFTSent { get; set; }
+
+    public string NFTmarkuptext => Markdown.ToHtml(NFT.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(NFT.Description);
+
+
+    private bool loading = false;
+    private bool deviceDetailsVisible = false;
+    private INFT nftToShow = new DeviceNFT("");
+
+    private async Task Decrypt()
+    {
+        loading = true;
+        await Task.Delay(50);
+        StateHasChanged();
+        await Task.Delay(50);
+        await NFT.DecryptSetting(AppData.Account.Secret);
+        loading = false;
+        StateHasChanged();
+    }
+
+    private async Task showDeviceDetails()
+    {
+        loading = true;
+        StateHasChanged();
+
+        await NFT.LoadDeviceNFT();
+        nftToShow = await NFTFactory.CloneNFT(NFT.SourceDeviceNFT as INFT);
+        loading = false;
+        StateHasChanged();
+        deviceDetailsVisible = true;
+    }
+
+    private async Task deviceDetailsVisibleCancel()
+    {
+        deviceDetailsVisible = false;
+    }
+
+    private void NFTSentHandler(string e)
+    {
+        NFTSent.InvokeAsync(e);
+        StateHasChanged();
+    }
+
+    private async Task initIoTDeviceCommunication()
+    {
+        await AppData.Account.InitIoTDeviceNFT(NFT.Utxo, NFT.UtxoIndex);
+    }
+    private async Task deInitIoTDeviceCommunication()
+    {
+        await AppData.Account.DeInitIoTDeviceNFT(NFT.Utxo, NFT.UtxoIndex);
+    }
+
+    private string IsSenderInTheBookmarks(string sender)
+    {
+        if (!string.IsNullOrEmpty(sender))
+        {
+            var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
+            var r = NeblioTransactionHelpers.ValidateNeblioAddress(sender).GetAwaiter().GetResult();
+            if (r.Item1)
+            {
+                if (s == null)
+                    return NeblioTransactionHelpers.ShortenAddress(sender);
+
+                if (!string.IsNullOrEmpty(s.Name))
+                    return s.Name;
+                else
+                    return NeblioTransactionHelpers.ShortenAddress(sender);
+            }
+            else
+            {
+                if (sender.Length < 10)
+                    return sender;
+                else
+                    return sender.Substring(0, 5) + "...";
+            }
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+}

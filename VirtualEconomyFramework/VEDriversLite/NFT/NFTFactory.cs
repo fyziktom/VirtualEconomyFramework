@@ -90,6 +90,9 @@ namespace VEDriversLite.NFT
                         case "NFT MechSrc":
                             type = NFTTypes.MechSrc;
                             break;
+                        case "NFT IoTMessage":
+                            type = NFTTypes.IoTMessage;
+                            break;
                     }
                     return type;
                 }
@@ -197,7 +200,7 @@ namespace VEDriversLite.NFT
                 if (justType != type)
                     return null;
             if (skipTheType)
-                if (skipType == type)
+                if (skipType == type || (skipType == NFTTypes.Message && type == NFTTypes.IoTMessage))
                     return null;
 
             var Time = TimeHelpers.UnixTimestampToDateTime(time);
@@ -436,31 +439,42 @@ namespace VEDriversLite.NFT
                     else
                         (nft as MechSrcNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.IoTMessage:
+                    nft = new IoTMessageNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as IoTMessageNFT).LoadLastData(meta);
+                    break;
             }
 
             if (VEDLDataContext.AllowCache && tokid == NFTHelpers.TokenId && VEDLDataContext.NFTCache.Count < VEDLDataContext.MaxCachedItems)
             {
-                try
+                if (nft.Type != NFTTypes.IoTDevice)
                 {
-                    var mtd = await nft.GetMetadata();
-                    if (!VEDLDataContext.NFTCache.TryGetValue($"{nft.Utxo}:{nft.UtxoIndex}", out var m))
+                    try
                     {
-                        VEDLDataContext.NFTCache.TryAdd($"{nft.Utxo}:{nft.UtxoIndex}", new Dto.NFTCacheDto()
+                        var mtd = await nft.GetMetadata();
+                        if (!VEDLDataContext.NFTCache.TryGetValue($"{nft.Utxo}:{nft.UtxoIndex}", out var m))
                         {
-                            Address = address,
-                            NFTType = nft.Type,
-                            Metadata = mtd,
-                            Utxo = nft.Utxo,
-                            UtxoIndex = nft.UtxoIndex,
-                            NumberOfReads = 0,
-                            LastAccess = DateTime.UtcNow,
-                            FirstSave = DateTime.UtcNow
-                        });
+                            VEDLDataContext.NFTCache.TryAdd($"{nft.Utxo}:{nft.UtxoIndex}", new Dto.NFTCacheDto()
+                            {
+                                Address = address,
+                                NFTType = nft.Type,
+                                Metadata = mtd,
+                                Utxo = nft.Utxo,
+                                UtxoIndex = nft.UtxoIndex,
+                                NumberOfReads = 0,
+                                LastAccess = DateTime.UtcNow,
+                                FirstSave = DateTime.UtcNow
+                            });
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Cannot load NFT {utxo} of type {nft.TypeText} to NFTCache dictionary. " + ex.Message);
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Cannot load NFT {utxo} of type {nft.TypeText} to NFTCache dictionary. " + ex.Message);
+                    }
                 }
             }
 
@@ -559,6 +573,10 @@ namespace VEDriversLite.NFT
                     nft = new MechSrcNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
+                case NFTTypes.IoTMessage:
+                    nft = new IoTMessageNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
             }
 
             return null;
@@ -578,6 +596,8 @@ namespace VEDriversLite.NFT
                     return null;
                 }
             }
+
+            if (type == NFTTypes.IoTDevice) return null;
 
             if (utxoindex == 1 && metadata.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
             {
@@ -677,6 +697,9 @@ namespace VEDriversLite.NFT
                 case NFTTypes.MechSrc:
                     nft = new MechSrcNFT(utxo);
                     break;
+                case NFTTypes.IoTMessage:
+                    nft = new IoTMessageNFT(utxo);
+                    break;
             }
 
             if (nft != null)
@@ -689,7 +712,11 @@ namespace VEDriversLite.NFT
                 await nft.LoadLastData(metadata);
                 if (nft.Type == NFTTypes.Message)
                     (nft as MessageNFT).Decrypted = false;
-                
+                if (nft.Type == NFTTypes.IoTMessage)
+                    (nft as IoTMessageNFT).Decrypted = false;
+                if (nft.Type == NFTTypes.IoTDevice)
+                    (nft as IoTDeviceNFT).DecryptedSetting = false;
+
                 return nft;
             }
             else

@@ -5,25 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Security;
 
-namespace VEDriversLite.NFT
+namespace VEDriversLite.NFT.DevicesNFTs
 {
-    public class MessageNFT : CommonNFT
+    public class IoTMessageNFT : CommonNFT
     {
-        public MessageNFT(string utxo)
+        public IoTMessageNFT(string utxo)
         {
             Utxo = utxo;
-            Type = NFTTypes.Message;
-            TypeText = "NFT Message";
+            Type = NFTTypes.IoTMessage;
+            TypeText = "NFT IoTMessage";
         }
 
         public override async Task Fill(INFT NFT) 
         {
             await FillCommon(NFT);
-            IsReceivedMessage = (NFT as MessageNFT).IsReceivedMessage;
-            Partner = (NFT as MessageNFT).Partner;
-            Encrypt = (NFT as MessageNFT).Encrypt;
-            Decrypted = (NFT as MessageNFT).Decrypted;
-            ImageData = (NFT as MessageNFT).ImageData;
+            IsReceivedMessage = (NFT as IoTMessageNFT).IsReceivedMessage;
+            Partner = (NFT as IoTMessageNFT).Partner;
+            Encrypt = (NFT as IoTMessageNFT).Encrypt;
+            Decrypted = (NFT as IoTMessageNFT).Decrypted;
+            ImageData = (NFT as IoTMessageNFT).ImageData;
         }
 
         public bool Encrypt { get; set; } = true;
@@ -181,8 +181,6 @@ namespace VEDriversLite.NFT
                 metadata["Name"] = ename;
 
                 if (!string.IsNullOrEmpty(Author))
-                    metadata["Author"] = address;
-                else
                     metadata["Author"] = Author;
 
                 metadata["Description"] = edescription;

@@ -258,8 +258,12 @@
     {
         downloadingImage = true;
         StateHasChanged();
-        await (NFT as MessageNFT).DecryptImageData(AppData.Account.Secret);
-        imagetData = (NFT as MessageNFT).ImageData;
+        var res = await CommonNFT.DecryptImageData(AppData.Account.Secret, NFT.ImageLink, (NFT as MessageNFT).Partner);
+        if (res.Item1)
+        {
+            imagetData = res.Item2;
+            (NFT as MessageNFT).ImageData = res.Item2;
+        }
         downloadingImage = false;
         StateHasChanged();
     }

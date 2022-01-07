@@ -15,6 +15,7 @@ using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
+using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
 using VEDriversLite.WooCommerce;
@@ -145,8 +146,10 @@ namespace VEDriversLite
                     await Task.WhenAll(tasks);
 
                     RegisterPriceServiceEventHandler();
+                    
                     Refreshed?.Invoke(this, null);
                     FirsLoadingStatus?.Invoke(this, "Main Account NFTs Loaded.");
+
                 }
             }
             catch (Exception ex)
@@ -157,6 +160,7 @@ namespace VEDriversLite
             var minorRefresh = 2;
             var firstLoad = true;
             AccountFirsLoadFinished?.Invoke(Address, "OK");
+
             // todo cancelation token
             _ = Task.Run(async () =>
             {
@@ -196,7 +200,17 @@ namespace VEDriversLite
                             {
                                 try
                                 {
+                                    try
+                                    {
+                                        await InitAllAutoIoTDeviceNFT();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("Cannot init the IoT Devices. " + ex.Message);
+                                    }
+                                    await Task.Delay(500);
                                     await CheckPayments();
+
                                 }
                                 catch(Exception ex)
                                 {
@@ -591,7 +605,6 @@ namespace VEDriversLite
                 return false;
             }
         }
-
 
         #region Bookmarks
 

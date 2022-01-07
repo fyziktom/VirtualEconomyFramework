@@ -13,7 +13,7 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO.Dto
         public string organization_id { get; set; } = string.Empty;
         public string label { get; set; } = string.Empty;
         public string name { get; set; } = string.Empty;
-        public string raw { get; set; } = string.Empty;
+        //public string raw { get; set; } = string.Empty;
 
         public HWDataDto data { get; set; } = new HWDataDto();
     }
