@@ -277,229 +277,87 @@ namespace VEDriversLite
         }
 
         /// <summary>
-        /// Function will obtain correct Utxos for token transaction
-        /// Older version, not recommended to use now
+        /// This function will calculate the fee based of the known lenght of the intputs and the outputs
+        /// If there is the OP_RETURN output it is considered as the customMessage. Please fill it for token transactions.
+        /// Token transaction also will add just for sure one output to calculation of the size for the case there will be some tokens back to original address
         /// </summary>
-        /// <param name="address">Account address - sender</param>
-        /// <param name="tokenId">Token Id hash</param>
-        /// <param name="amount">Amount to send</param>
-        /// <param name="tokenUtxos">you can add own input utxos it can contain info about indes separated by ':' or doesnt</param>
-        /// <param name="inputNeblUtxo">you can add input Neblio utxo. It is need for the fee</param>
-        /// <param name="fee">Fee for the tx. 10000 is minimum, 20000 for token with metadata</param>
-        /// <param name="isItMintNFT">if you set this true you must provide input token utxo which is not verified again</param>
-        /// <param name="isNFTtx">if you sending NFT - 1 token - you need to set this to run correct verifying function</param>
-        /// <param name="sendEvenNeblUtxoNotFound">if you set this and provide neblio utxo which is not valid, another is searched and used if it is available</param>
+        /// <param name="numOfInputs">Number of input of the transaction "in" vector</param>
+        /// <param name="numOfOutputs">Number of outpus of the transaction "out" vector</param>
+        /// <param name="customMessageInOPReturn">Custom message - "OP_RETURN" output</param>
+        /// <param name="isTokenTransaction">Token transaction will add another output for getting back the tokens</param>
         /// <returns></returns>
-        private static async Task<ICollection<string>> GetUtxoListForTx(string address, 
-                                                                        string tokenId, 
-                                                                        double amount, 
-                                                                        ICollection<string> tokenUtxos, 
-                                                                        string inputNeblUtxo, 
-                                                                        double fee = 10000, 
-                                                                        bool isItMintNFT = false, 
-                                                                        bool isNFTtx = false, 
-                                                                        bool sendEvenNeblUtxoNotFound = false)
+        public static double CalcFee(int numOfInputs, int numOfOutputs, string customMessageInOPReturn, bool isTokenTransaction)
         {
-            var Sendutxo = new List<string>();
+            var basicFee = 10000;
 
-            // neblio API accept sendUtxo (both token and nebl) or from and it will find some unspecified spendable
-            // if you correct format of sendUtxo is hash:index for example for token tx you must send this
-            // 
-            // "4213dfd34dca0b691a5c0e41080c098681e6f1be45935e7b36cad3559fe6b446:0" - token utxo
-            // "255b33cfe724800bf158b63985ed2cafc39db897d3dfb475b7535cdec0b69923:1" - nebl utxo
-            //
-            // to simplify this in the function is used search for nebl utxo! it means if you want to send just one token you will fill just one utxo of this token
+            // inputs
+            var blankInput = 41;
+            var inputScriptSignatureAddress = 25;
+            var inputSignature = 56;
+            var signedInput = blankInput + inputSignature;
 
-            if (tokenUtxos?.Count != 0)
-            {
-                if (!isItMintNFT)
-                {
-                    foreach (var it in tokenUtxos)
-                    {
-                        var itt = it;
-                        var indx = 0;
-                        if (it.Contains(':'))
-                        {
-                            var splt = it.Split(':');
-                            if (splt.Length > 1)
-                            {
-                                itt = splt[0];
-                                indx = Convert.ToInt32(splt[1]);
-                            }
-                        }
+            // outputs
+            var outputWithAddress = 34;
+            var emptyOpReturn = 11; // OP_RETURN with custom message with 10 characters had 21 bytes...etc.
 
-                        (bool, double) voutstate;
+            //common properties in each transaction
+            var commonPropertiesSize = 214;
 
-                        if (!isNFTtx)
-                            voutstate = await ValidateNeblioTokenUtxo(address, tokenId, itt);
-                        else
-                            voutstate = await ValidateOneTokenNFTUtxo(address, tokenId, itt, indx);
+            var expectedSize = signedInput * numOfInputs + outputWithAddress * numOfOutputs + commonPropertiesSize;
 
-                        if (voutstate.Item1)
-                            Sendutxo.Add(itt + ":" + ((int)voutstate.Item2).ToString()); // copy received utxos and add item number of vout after validation
-                    }
-                }
-                else
-                {
-                    // if isItMing flag is set the utxo was already found and checked by internal function
-                    foreach (var u in tokenUtxos)
-                    {
-                        var itt = u;
-                        if (u.Contains(':'))
-                            itt = u.Split(':')[0];
+            // add custom message if there is some
+            if (!string.IsNullOrEmpty(customMessageInOPReturn))
+                expectedSize += emptyOpReturn + customMessageInOPReturn.Length;
 
-                        var voutstate = await ValidateNeblioTokenUtxo(address, itt, tokenId, true);
+            // Expected outputs for the rest of the coins/tokens
+            expectedSize += outputWithAddress; // NEBL
+            if (isTokenTransaction) expectedSize += outputWithAddress;
 
-                        if (voutstate.Item1)
-                            Sendutxo.Add(itt + ":" + ((int)voutstate.Item2).ToString());
+            double size_m = ((double)expectedSize / 1024);
+            if (size_m > 4)
+                throw new Exception("Cannot send transaction bigger than 4kB on Neblio network!");
 
-                    }
-                }
-            }
-            else
-            {
-                // if not utxo provided, check the un NFT tokens sources. These with more than 1 token
-                var utxs = await FindUtxoForMintNFT(address, tokenId, (int)amount);
-                var ut = utxs.FirstOrDefault();
-                if (ut != null)
-                    Sendutxo.Add(ut.Txid + ":" + ((int)ut.Index).ToString());
-            }
+            var fee = basicFee + ((int)size_m) * basicFee;
 
-            if (Sendutxo.Count == 0)
-                throw new Exception("Cannot find any spendable token source Utxos");
-
-            NBitcoin.Altcoins.Neblio.NeblioTransaction neblUtxo = null;
-
-            // need some neblio too
-            // to be sure to have last tx request it from neblio network
-            // set some minimum amount
-            var utxos = await GetAddressNeblUtxo(address, 0.0001, 2 * (fee / FromSatToMainRatio)); // to be sure find at leas 2 times of expected fee
-                                                                                                              // create raw Tx with NBitcoin
-
-            if (utxos == null || utxos.Count == 0)
-                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
-
-            var found = false;
-            if (!string.IsNullOrEmpty(inputNeblUtxo))
-            {
-                foreach (var u in utxos)
-                {
-                    if (u.Txid == inputNeblUtxo)
-                    {
-                        Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
-                        found = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!found && !sendEvenNeblUtxoNotFound && !string.IsNullOrEmpty(inputNeblUtxo))
-                throw new Exception("Input Neblio Utxo is not spendable!");
-
-            if (!found && string.IsNullOrEmpty(inputNeblUtxo))
-            {
-                foreach (var u in utxos)
-                {
-                    if ((u.Value) >= fee)
-                    {
-                        Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
-                        break;
-                    }
-                }
-            }
-
-            return Sendutxo;
-
+            if (isTokenTransaction)
+                fee += basicFee;
+            
+            return fee;
         }
 
-        public static string SendNTP1TokenAPI(SendTokenTxData data, NeblioAccount account, double fee = 20000, bool isItMintNFT = false, bool isNFTtx = false)
+        /// <summary>
+        /// This function will crate empty Transaction object based on Neblio network standard
+        /// Then add the Neblio Inputs and sumarize their value
+        /// </summary>
+        /// <param name="nutxos">List of Neblio Utxos to use</param>
+        /// <param name="address">Address of the owner</param>
+        /// <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
+        public static (Transaction, double) GetTransactionWithNeblioInputs(ICollection<Utxos> nutxos, BitcoinAddress address)
         {
-            var res = SendNTP1TokenAPIAsync(data, account, fee, isItMintNFT, isNFTtx).GetAwaiter().GetResult();
-            return res;
-        }
-        public static async Task<string> SendNTP1TokenAPIAsync(SendTokenTxData data, NeblioAccount account, double fee = 20000, bool isItMintNFT = false, bool isNFTtx = false)
-        {
-            var res = "ERROR";
+            // create template for new tx from last one
+            var transaction = Transaction.Create(Network);
 
-            // load key and address
-            BitcoinSecret keyfromFile = null;
-            BitcoinAddress addressForTx = null;
+            var allNeblInputCoins = 0.0; //this is because of the optimization. When we iterate through values we can sum them for later use
             try
             {
-                var k = await GetAddressAndKey(account.AccountKey, data.Password);
-                keyfromFile = k.Item2;
-                addressForTx = k.Item1;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-
-            // create and init send token request dto for Neblio API
-            var dto = new SendTokenRequest();
-            try
-            {
-                dto = GetSendTokenObject(data.Amount, fee, data.ReceiverAddress, data.Id);
-
-                if (data.Metadata != null)
+                // add inputs of tx
+                foreach (var utxo in nutxos)
                 {
-                    foreach (var d in data.Metadata)
+                    transaction.Inputs.Add(new TxIn()
                     {
-                        var obj = new JObject();
-                        obj[d.Key] = d.Value;
-                        dto.Metadata.UserData.Meta.Add(obj);
-                    }
+                        PrevOut = new OutPoint(uint256.Parse(utxo.Txid), (int)utxo.Index),
+                        ScriptSig = address.ScriptPubKey,
+                    });
+                    allNeblInputCoins += (double)utxo.Value / FromSatToMainRatio;
                 }
+                return (transaction, allNeblInputCoins);
             }
             catch (Exception ex)
             {
-                throw ex;
+                Console.WriteLine("Exception during loading inputs. " + ex.Message);
             }
 
-            // load utxos list if exists, other case leave it to Neblio API
-            if (data.sendUtxo.Count > 0)
-            {
-                dto.Sendutxo = await GetUtxoListForTx(account.Address,
-                                                      data.Id,
-                                                      data.Amount,
-                                                      data.sendUtxo,
-                                                      data.NeblUtxo, fee, isItMintNFT, isNFTtx, data.SendEvenNeblUtxoNotFound);
-
-                if (dto.Sendutxo.Count < 2)
-                    throw new Exception("Cannot load correct utxos. Loaded just one as input.");
-            }
-            else
-            {
-                dto.From = new List<string>() { data.SenderAddress };
-            }
-
-            // create raw tx
-            var hexToSign = string.Empty;
-            try
-            {
-                hexToSign = await SendRawNTP1TxAsync(dto);
-                if (string.IsNullOrEmpty(hexToSign))
-                    throw new Exception("Cannot get correct raw token hex.");
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Exception during sending raw token tx" + ex.Message);
-            }
-
-            // parse raw hex to NBitcoin transaction object
-            if (!Transaction.TryParse(hexToSign, Network, out var transaction))
-                throw new Exception("Cannot parse token tx raw hex.");
-
-            try
-            {
-                return await SignAndBroadcast(transaction, keyfromFile, addressForTx);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return (null, 0);
         }
 
         public static string MintNFTToken(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
@@ -553,6 +411,8 @@ namespace VEDriversLite
 
             data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", tutxo.Txid));
             data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
+
+            fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
@@ -673,6 +533,8 @@ namespace VEDriversLite
 
             data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", tutxo.Txid));
             data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
+
+            fee = CalcFee(2, 1 + coppies, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
@@ -858,6 +720,9 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
 
             metadata.Add("TransactionType", "Token Split");
+
+            fee = CalcFee(2, lots, JsonConvert.SerializeObject(metadata), true);
+
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
             try
@@ -1045,6 +910,8 @@ namespace VEDriversLite
             if (nutxo == null)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
 
+            fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
+
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
             try
@@ -1138,6 +1005,8 @@ namespace VEDriversLite
             if (nutxo == null)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
 
+            fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
+
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
             try
@@ -1200,6 +1069,7 @@ namespace VEDriversLite
             }
         }
 
+
         public static string SendNeblioTransactionAPI(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
         {
             var res = SendNeblioTransactionAPIAsync(data, ekey, nutxos, fee).GetAwaiter().GetResult();
@@ -1215,11 +1085,8 @@ namespace VEDriversLite
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendNeblioTransactionAPIAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
         {
-            var res = "ERROR";
-
             if (data == null)
                 throw new Exception("Data cannot be null!");
-
             if (ekey == null)
                 throw new Exception("Account cannot be null!");
 
@@ -1248,48 +1115,25 @@ namespace VEDriversLite
                 throw ex;
             }
 
-            // create template for new tx from last one
-            var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
+            var tx = GetTransactionWithNeblioInputs(nutxos, addressForTx);
+            if (tx.Item1 == null)
+                throw new Exception("Cannot create the transaction object.");
 
+            var transaction = tx.Item1;
+            var allNeblInputCoins = tx.Item2;
             try
             {
-                // add inputs of tx
-                foreach (var utxo in nutxos)
-                {
-                    var txh = await GetTxHex(utxo.Txid);
-                    if (Transaction.TryParse(txh, Network, out var txin))
-                    {
-                        transaction.Inputs.Add(txin, (int)utxo.Index);
-                        transaction.Inputs.Last().ScriptSig = addressForTx.ScriptPubKey;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Exception during loading inputs. " + ex.Message);
-            }
 
-            try
-            {
-                
-                if (!string.IsNullOrEmpty(data.CustomMessage) && fee == 10000)
-                {
-                    fee = 10000;
-                }
+                fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
-                var allNeblCoins = 0.0;
-                foreach (var u in nutxos)
-                    allNeblCoins += (double)u.Value;
-
-                var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
-                var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
+                var diff = (allNeblInputCoins - data.Amount) - (fee / FromSatToMainRatio);
                 
                 // create outputs
-                transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
-                
+                transaction.Outputs.Add(new Money(Convert.ToInt64(data.Amount * FromSatToMainRatio)), recaddr.ScriptPubKey); // send to receiver required amount
+
                 if (!string.IsNullOrEmpty(data.CustomMessage))
                 {
-                    diffinSat -= 10000;
+                    diff -= (10000 / FromSatToMainRatio); // 10000 sat is need as value for minimal output even if it holds the OP_RETURN
                     var bytes = Encoding.UTF8.GetBytes(data.CustomMessage);
                     transaction.Outputs.Add(new TxOut()
                     {
@@ -1297,7 +1141,7 @@ namespace VEDriversLite
                         ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
                     });
                 }
-                transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+                transaction.Outputs.Add(new Money(Convert.ToInt64(diff * FromSatToMainRatio)), addressForTx.ScriptPubKey); // get diff back to sender address
             }
             catch (Exception ex)
             {
@@ -1349,7 +1193,7 @@ namespace VEDriversLite
                 var k = await GetAddressAndKey(ekey);
                 key = k.Item2;
                 addressForTx = k.Item1;
-                if (receivers.Count > 0)
+                if (receivers != null && receivers.Count > 0)
                 {
                     foreach (var r in receivers)
                     {
@@ -1372,42 +1216,26 @@ namespace VEDriversLite
             if ((receiversAddresses.Count > 1 && lots > 1) && (receiversAddresses.Count != lots))
                 throw new Exception($"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receiversAddresses.Count}, Lost {lots}. Some of input address may be wrong.");
 
-            // create template for new tx from last one
-            var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
+            var tx = GetTransactionWithNeblioInputs(nutxos, addressForTx);
+            if (tx.Item1 == null)
+                throw new Exception("Cannot create the transaction object.");
+
+            var transaction = tx.Item1;
+            var allNeblInputCoins = tx.Item2;
 
             try
             {
-                // add inputs of tx
-                foreach (var utxo in nutxos)
-                {
-                    var txh = await GetTxHex(utxo.Txid);
-                    if (Transaction.TryParse(txh, Network, out var txin))
-                    {
-                        transaction.Inputs.Add(txin, (int)utxo.Index);
-                        transaction.Inputs.Last().ScriptSig = addressForTx.ScriptPubKey;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Exception during loading inputs. " + ex.Message);
-            }
-
-            try
-            {
-                var allNeblCoins = 0.0;
-                foreach (var u in nutxos)
-                    allNeblCoins += (double)u.Value;
+                fee = CalcFee(transaction.Inputs.Count, 1, "", false);
 
                 var totalAmount = 0.0;
                 for (int i = 0; i < lots; i++)
                     totalAmount += amount;
 
                 var amountinSat = Convert.ToUInt64(totalAmount * FromSatToMainRatio);
-                if (amountinSat > allNeblCoins)
+                if (amountinSat > allNeblInputCoins)
                     throw new Exception("Not enought neblio for splitting.");
 
-                var diffinSat = Convert.ToUInt64(allNeblCoins) - amountinSat - Convert.ToUInt64(fee);
+                var diffinSat = Convert.ToUInt64(allNeblInputCoins) - amountinSat - Convert.ToUInt64(fee);
                 var splitinSat = Convert.ToUInt64(amount * FromSatToMainRatio);
                 // create outputs
 
@@ -1461,11 +1289,8 @@ namespace VEDriversLite
                                                                           int paymentUtxoIndexToReturn = 0, 
                                                                           double fee = 20000)
         {
-            var res = "ERROR";
-
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
-
             if (neblAmount == 0)
                 throw new Exception("Neblio amount cannot be 0 in Token+Nebl transaction.");
 
@@ -1512,13 +1337,6 @@ namespace VEDriversLite
                     Txid = paymentUtxoToReturn,
                     Index = paymentUtxoIndexToReturn
                 };
-                /*
-                var pr = await ValidateOneTokenNFTUtxoReturnUtxo(data.SenderAddress, data.Id, paymentUtxoToReturn, paymentUtxoIndexToReturn);
-                if (pr.Item1)
-                    tutxo = pr.Item2;
-                else
-                    throw new Exception("Payment NFT Utxo is not spendable.");
-                */
             }
             if (nutxos == null || nutxos.Count == 0)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
@@ -1531,7 +1349,7 @@ namespace VEDriversLite
             var dto = new SendTokenRequest();
             try
             {
-                dto = GetSendTokenObject(1, fee, data.ReceiverAddress, data.Id);
+                dto = GetSendTokenObject(1, 50000, data.ReceiverAddress, data.Id); //set maximum fee
 
                 if (data.Metadata != null)
                     foreach (var d in data.Metadata)
@@ -1570,55 +1388,28 @@ namespace VEDriversLite
             if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
 
-            ////
-
-            ICollection<Utxos> neblutxos = null;
-            try
-            {
-                // to be sure to have last tx request it from neblio network
-                neblutxos = await GetAddressNeblUtxo(data.SenderAddress, (fee / FromSatToMainRatio), (neblAmount + 2*(fee/FromSatToMainRatio)));
-                // create raw Tx with NBitcoin
-                if (neblutxos == null)
-                    throw new Exception("Cannot send transaction, cannot load sender address history!");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot send transaction, cannot load sender address history! " + ex.Message);
-            }
+            var allNeblInputCoins = 0.0; //this is because of the optimization. When we iterate through values we can sum them for later use
 
             try
             {
                 transaction.Inputs.Clear();
-                
-                foreach(var u in dto.Sendutxo)
-                {
-                    var txh = await GetTxHex(u.Split(':')[0]);
-                    if (Transaction.TryParse(txh, Network, out var txin))
-                    {
-                        transaction.Inputs.Add(txin, Convert.ToInt32(u.Split(':')[1]));
-                    }
-                }
 
-                // remove token carrier, will be added later - just for minting new nft
-                if (string.IsNullOrEmpty(paymentUtxoToReturn))
-                    transaction.Outputs.RemoveAt(3);
-
-                // add inputs of neblio utxo for payment part
-                foreach (var u in neblutxos)
+                // add token input
+                transaction.Inputs.Add(new TxIn()
                 {
-                    if (!dto.Sendutxo.Any(ut => ((ut.Split(':')[0] == u.Txid) && ut.Split(':')[1] == ((int)u.Index).ToString())))
+                    PrevOut = new OutPoint(uint256.Parse(tutxo.Txid), (int)tutxo.Index),
+                    ScriptSig = addressForTx.ScriptPubKey,
+                });
+
+                // add inputs with Neblio to pay the payment for the NFT
+                foreach (var utxo in nutxos)
+                {
+                    transaction.Inputs.Add(new TxIn()
                     {
-                        var txh = await GetTxHex(u.Txid);
-                        if (Transaction.TryParse(txh, Network, out var txin))
-                        {
-                            transaction.Inputs.Add(txin, (int)u.Index);
-                        }
-                    }
-                    else
-                    {
-                        // if the input is same as for nebl tx remove it and recalc + add it later
-                        transaction.Outputs.RemoveAt(2);
-                    }
+                        PrevOut = new OutPoint(uint256.Parse(utxo.Txid), (int)utxo.Index),
+                        ScriptSig = addressForTx.ScriptPubKey,
+                    });
+                    allNeblInputCoins += (double)utxo.Value / FromSatToMainRatio;
                 }
             }
             catch (Exception ex)
@@ -1628,12 +1419,16 @@ namespace VEDriversLite
 
             try
             {
-                var allNeblCoins = 0.0;
-                foreach (var u in neblutxos)
-                    allNeblCoins += (double)u.Value;
+                // remove token carrier, will be added later - just for minting new nft
+                if (string.IsNullOrEmpty(paymentUtxoToReturn))
+                    transaction.Outputs.RemoveAt(3);
+                //remove old calculated output with the diff
+                transaction.Outputs.RemoveAt(2);
+
+                fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
 
                 var amountinSat = Convert.ToUInt64(neblAmount * FromSatToMainRatio);
-                var balanceinSat = Convert.ToUInt64(allNeblCoins);
+                var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
 
                 if ((amountinSat + fee) > balanceinSat)
                     throw new Exception("Not enought spendable Neblio on the address.");
@@ -1642,7 +1437,8 @@ namespace VEDriversLite
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
-                transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
                 if (string.IsNullOrEmpty(paymentUtxoToReturn)) // just for minting new payment nft
                     transaction.Outputs.Add(new Money(10000), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
             }
@@ -1705,18 +1501,15 @@ namespace VEDriversLite
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
             }
-            /*
-            var tutxos = await FindUtxoForMintNFT(data.SenderAddress, "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", (int)data.Amount);
+
             if (tutxos == null || tutxos.Count == 0)
-                throw new Exception("Cannot send transaction, cannot load sender token utxos, for buying you need at least 5 VENFT lot!");
-            */
+                throw new Exception("Cannot send transaction, cannot load sender token utxos!");
             var tutxo = tutxos.FirstOrDefault();
             if (tutxo == null)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
 
             if (nutxos == null || nutxos.Count == 0)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
-
             var nutxo = nutxos.FirstOrDefault();
             if (nutxo == null)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
@@ -1743,8 +1536,20 @@ namespace VEDriversLite
             if (tutxo.Txid == nutxo.Txid && tutxo.Index == nutxo.Index)
                 throw new Exception("Same input for token and neblio. Wrong input.");
 
-            dto.Sendutxo.Add(tutxo.Txid + ":" + ((int)tutxo.Index).ToString());
-            dto.Sendutxo.Add(nutxo.Txid + ":" + ((int)nutxo.Index).ToString());
+            // add inputs to the transaction for Neblio API
+            var numberOfUsedTutxos = 0;
+            var loadedtokens = 0.0;
+            foreach (var tu in tutxos)
+            {
+                if (loadedtokens < data.Amount)
+                {
+                    dto.Sendutxo.Add(tu.Txid + ":" + ((int)tu.Index).ToString());
+                    loadedtokens += (double)tu.Tokens.ToList()[0].Amount;
+                    numberOfUsedTutxos++;
+                }
+            }
+            foreach (var u in nutxos)
+                dto.Sendutxo.Add(u.Txid + ":" + ((int)u.Index).ToString());
 
             // create raw tx
             var hexToSign = string.Empty;
@@ -1764,58 +1569,38 @@ namespace VEDriversLite
             if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
 
-            ////
 
-            ICollection<Utxos> neblutxos = null;
-            try
-            {
-                // to be sure to have last tx request it from neblio network
-                neblutxos = await GetAddressNeblUtxo(data.SenderAddress, (fee / FromSatToMainRatio), (neblAmount + 2 * (fee / FromSatToMainRatio)));
-                // create raw Tx with NBitcoin
-                if (neblutxos == null)
-                    throw new Exception("Cannot send transaction, cannot load sender address history!");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot send transaction, cannot load sender address history! " + ex.Message);
-            }
+            // this flag will check, remove, add token return output carrier, will be added later
             var outputForTokensBack = true;
+
+            var allNeblInputCoins = 0.0; //this is because of the optimization. When we iterate through values we can sum them for later use
 
             try
             {
                 transaction.Inputs.Clear();
 
-                foreach (var u in dto.Sendutxo)
+                foreach (var utxo in tutxos)
                 {
-                    var txh = await GetTxHex(u.Split(':')[0]);
-                    if (Transaction.TryParse(txh, Network, out var txin))
+                    if (numberOfUsedTutxos > 0)
                     {
-                        transaction.Inputs.Add(txin, Convert.ToInt32(u.Split(':')[1]));
+                        transaction.Inputs.Add(new TxIn()
+                        {
+                            PrevOut = new OutPoint(uint256.Parse(utxo.Txid), (int)utxo.Index),
+                            ScriptSig = addressForTx.ScriptPubKey,
+                        });
+                        numberOfUsedTutxos--;
                     }
                 }
 
-                // remove token carrier, will be added later
-                if (transaction.Outputs.Count > 3)
-                    transaction.Outputs.RemoveAt(3);
-                else
-                    outputForTokensBack = false;
-
-                // add inputs of neblio utxo for payment part
-                foreach (var u in neblutxos)
+                // add inputs with Neblio to pay the payment for the NFT
+                foreach (var utxo in nutxos)
                 {
-                    if (!dto.Sendutxo.Any(ut => ((ut.Split(':')[0] == u.Txid) && ut.Split(':')[1] == ((int)u.Index).ToString())))
+                    transaction.Inputs.Add(new TxIn()
                     {
-                        var txh = await GetTxHex(u.Txid);
-                        if (Transaction.TryParse(txh, Network, out var txin))
-                        {
-                            transaction.Inputs.Add(txin, (int)u.Index);
-                        }
-                    }
-                    else
-                    {
-                        // if the input is same as for nebl tx remove it and recalc + add it later
-                        transaction.Outputs.RemoveAt(2);
-                    }
+                        PrevOut = new OutPoint(uint256.Parse(utxo.Txid), (int)utxo.Index),
+                        ScriptSig = addressForTx.ScriptPubKey,
+                    });
+                    allNeblInputCoins += (double)utxo.Value / FromSatToMainRatio;
                 }
             }
             catch (Exception ex)
@@ -1825,12 +1610,22 @@ namespace VEDriversLite
 
             try
             {
-                var allNeblCoins = 0.0;
-                foreach (var u in neblutxos)
-                    allNeblCoins += (double)u.Value;
+                // remove token return output carrier, will be added later
+                // if the minting supply has more than needed we will need to return the rest to main address
+                // Neblio API add this output automatically
+                if (transaction.Outputs.Count > 3)
+                    transaction.Outputs.RemoveAt(3);
+                else
+                    outputForTokensBack = false;
+
+                //remove old calculated output with the diff
+                if (transaction.Outputs.Count > 2)
+                    transaction.Outputs.RemoveAt(2);
 
                 var amountinSat = Convert.ToUInt64(neblAmount * FromSatToMainRatio);
-                var balanceinSat = Convert.ToUInt64(allNeblCoins);
+                var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
+
+                fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
 
                 if ((amountinSat + fee) > balanceinSat)
                     throw new Exception("Not enought spendable Neblio on the address.");
@@ -1839,7 +1634,8 @@ namespace VEDriversLite
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
-                transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
                 if (outputForTokensBack)
                     transaction.Outputs.Add(new Money(10000), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
             }
@@ -1899,6 +1695,10 @@ namespace VEDriversLite
                 transaction.Sign(key, coins);
 
                 var sx = transaction.ToString();
+
+                bool end = false;
+                if (end) 
+                    return string.Empty;
 
                 if (tx == sx)
                     throw new Exception("Transaction was not signed. Probably not spendable source.");
@@ -2029,6 +1829,9 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
             dto.Sendutxo.Add(nutxo.Txid + ":" + ((int)nutxo.Index).ToString());
 
+            fee = CalcFee(dto.Sendutxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            dto.Fee = fee;
+
             // create raw tx
             var hexToSign = string.Empty;
             try
@@ -2087,6 +1890,8 @@ namespace VEDriversLite
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
             }
+
+            fee = CalcFee(data.sendUtxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
@@ -2570,7 +2375,7 @@ namespace VEDriversLite
                         }
                     }
                 
-            return resp;
+            return new List<Utxos>();
         }
 
         /// <summary>
@@ -2985,100 +2790,6 @@ namespace VEDriversLite
             return bytes;
         }
 
-        /// <summary>
-        /// Not recommended to use now. It split tokens to lots, but doing it in separated transactions. Will be changed to do it in one tx soon.
-        /// </summary>
-        /// <param name="account"></param>
-        /// <param name="address"></param>
-        /// <param name="password"></param>
-        /// <param name="tokenId"></param>
-        /// <param name="lotAmount"></param>
-        /// <param name="numberOfLots"></param>
-        /// <returns></returns>
-        public static async Task<List<string>> SplitTheTokens(NeblioAccount account, string address, string password, string tokenId, int lotAmount, int numberOfLots)
-        {
-            var listofFinalUtxo = new List<string>();
-
-            if (lotAmount > 1)
-            {
-                for (int i = 0; i < numberOfLots; i++)
-                {
-                    try
-                    {
-                        Console.WriteLine($"Starting spliting lot number {i}!");
-
-                        var utxoFound = false;
-                        var attempts = 120;
-                        Utxos sutx = null;
-                        Utxos neblUtxo = null;
-
-                        while (!utxoFound)
-                        {
-                            sutx = await NeblioTransactionHelpers.FindUtxoToSplit(address, tokenId, lotAmount + 2);
-                            var neblUtxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, 0.0002);
-                            neblUtxo = neblUtxos?.FirstOrDefault();
-                            if (sutx != null && neblUtxo != null)
-                            {
-                                utxoFound = true;
-                                break;
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Waiting for source Utxo for spliting for item {i} of {numberOfLots}!");
-                                await Task.Delay(1000);
-                                attempts--;
-                                if (attempts < 0)
-                                {
-                                    Console.WriteLine("Too long to get utxo for spliting!");
-                                    throw new Exception("Cannot find Utxos for spliting!");
-                                }
-                            }
-                        }
-
-                        if (sutx != null && neblUtxo != null)
-                        {
-                            Console.WriteLine("Utxo for spliting found, start spliting!");
-
-                            var meta = new Dictionary<string, string>();
-                            meta.Add("Split Coin Process", "true");
-
-                            var sendutxos = new List<string>();
-
-                            sendutxos.Add(sutx.Txid + ":" + sutx.Index);
-
-                            var dto = new SendTokenTxData()
-                            {
-                                Amount = lotAmount,
-                                Id = tokenId,
-                                Metadata = meta,
-                                Password = password,
-                                SenderAddress = address,
-                                ReceiverAddress = address,
-                                sendUtxo = sendutxos,
-                                UseRPCPrimarily = false
-                            };
-
-                            var resp = await NeblioTransactionHelpers.SendNTP1TokenAPIAsync(dto, account, isItMintNFT: true);
-
-                            if (!string.IsNullOrEmpty(resp))
-                            {
-                                Console.WriteLine($"Succesfully splited in txid {resp}!");
-                                listofFinalUtxo.Add(resp);
-                            }
-
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Cannot split tokens! " + ex);
-                    }
-                }
-
-                return listofFinalUtxo;
-            }
-
-            return null;
-        }
 
         public static ConcurrentDictionary<string, GetTokenMetadataResponse> TokenMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>();
         /// <summary>

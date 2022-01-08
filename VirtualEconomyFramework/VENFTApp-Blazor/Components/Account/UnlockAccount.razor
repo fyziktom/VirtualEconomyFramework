@@ -263,6 +263,8 @@
 
             key = await localStorage.GetItemAsync<string>("key");
 
+            AppData.Account.RunningAsVENFTBlazorApp = true;
+
             await Task.Delay(50);
             var resload = false;
             if (VEDLDataContext.AllowCache)

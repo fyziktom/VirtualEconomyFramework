@@ -1,4 +1,4 @@
-﻿using Ipfs.Http;
+using Ipfs.Http;
 using NBitcoin;
 using Newtonsoft.Json;
 using System;
@@ -1197,7 +1197,7 @@ namespace VEDriversLite.NFT
             if (!nft.PriceActive)
                 throw new Exception("NFT is not for sale.");
 
-            if (nutxos.Count > 10)
+            if (nutxos.Count > 20)
                 throw new Exception("The Utxos for the Neblio are too many for one transaction. Please load some bigger Utxo for the big payment like this.");
 
             var paymentnft = new PaymentNFT("");

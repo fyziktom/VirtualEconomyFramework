@@ -24,8 +24,15 @@ namespace VEDriversLite.DogeAPI
         /// <summary>Broadcasts a signed raw transaction to the network</summary>
         /// <returns>An object containing the TXID if the broadcast was successful</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ChainSoBroadcastTxResponse> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest body);
-        System.Threading.Tasks.Task<ChainSoBroadcastTxResponse> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<BroadcastTxResponse> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest body);
+        System.Threading.Tasks.Task<BroadcastTxResponse> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest body, System.Threading.CancellationToken cancellationToken);
+
+        /// <summary>Broadcasts a signed raw transaction to the network</summary>
+        /// <returns>An object containing the TXID if the broadcast was successful</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<BroadcastTxResponse> VENFTBroadcastTxAsync(VENFTBroadcastTxRequest body);
+        System.Threading.Tasks.Task<BroadcastTxResponse> VENFTBroadcastTxAsync(VENFTBroadcastTxRequest body, System.Threading.CancellationToken cancellationToken);
+
 
         /// <summary>Information On an Doge Transaction</summary>
         /// <param name="txid">Doge txid to get information on.</param>

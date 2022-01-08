@@ -221,13 +221,13 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccount(string password)
+        public async Task<bool> LoadAccount(string password, string filename = "dogekey.txt")
         {
-            if (FileHelpers.IsFileExists("dogekey.txt"))
+            if (FileHelpers.IsFileExists(filename))
             {
                 try
                 {
-                    var k = FileHelpers.ReadTextFromFile("dogekey.txt");
+                    var k = FileHelpers.ReadTextFromFile(filename);
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
                     AccountKey = new EncryptionKey(kdto.Key, fromDb: true);
@@ -388,7 +388,23 @@ namespace VEDriversLite
         public async Task ReloadUtxos()
         {
             var count = Utxos.Count;
-            var ux = await DogeTransactionHelpers.AddressUtxosAsync(Address);
+
+            GetAddressUtxosResponse ux = null;
+            try
+            {
+                ux = await DogeTransactionHelpers.AddressUtxosAsync(Address);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot get dogecoin address utxos. Please check the internet connection. " + ex.Message);
+                return;
+            }
+            if (ux == null)
+            {
+                Console.WriteLine("Cannot get dogecoin address utxos. Please check the internet connection. ");
+                return;
+            }
+
             var ouxox = ux.Data.Utxos.OrderBy(u => u.Confirmations).ToList();
 
             if (ouxox.Count > 0)
@@ -425,8 +441,23 @@ namespace VEDriversLite
         {
             try
             {
-                var txs = await DogeTransactionHelpers.AddressSpendTxsAsync(Address);
-                txs.Reverse();
+                List<SpentTx> txs = null;
+                try
+                {
+                    txs = await DogeTransactionHelpers.AddressSpendTxsAsync(Address);
+                    txs.Reverse();
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot get dogecoin address spent transactions. Please check the internet connection or API provider. " + ex.Message);
+                    return null;
+                }
+                if (txs == null)
+                {
+                    Console.WriteLine("Cannot get dogecoin address spent transactions. Please check the internet  or API provider. ");
+                    return null;
+                }
                 SentTransactions = txs;
                 return txs;
             }
@@ -446,8 +477,23 @@ namespace VEDriversLite
         {
             try
             {
-                var txs = await DogeTransactionHelpers.AddressReceivedTxsAsync(Address);
-                txs.Reverse();
+                List<ReceivedTx> txs = null;
+                try
+                {
+                    txs = await DogeTransactionHelpers.AddressReceivedTxsAsync(Address); 
+                    txs.Reverse();
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot get dogecoin address received transactions. Please check the internet connection or API provider. " + ex.Message);
+                    return null;
+                }
+                if (txs == null)
+                {
+                    Console.WriteLine("Cannot get dogecoin address received transactions. Please check the internet  or API provider. ");
+                    return null;
+                }
                 ReceivedTransactions = txs;
                 return txs;
             }
@@ -517,13 +563,6 @@ namespace VEDriversLite
                 CustomMessage = message
             };
 
-            if (res.Item2.Count >= 5 && res.Item2.Count < 10 && fee == 100000000)
-                fee = 200000000;
-            else if (res.Item2.Count >= 10 && res.Item2.Count < 18)
-                fee = 300000000;
-            else if (res.Item2.Count >= 18)
-                fee = 400000000;
-
             try
             {
                 // send tx
@@ -562,7 +601,7 @@ namespace VEDriversLite
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableDoge(amount + 3);
+            var res = await CheckSpendableDoge(amount + 5);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
@@ -573,13 +612,6 @@ namespace VEDriversLite
             {
                 res.Item2 = utxos;
             }
-
-            if (res.Item2.Count >= 5 && res.Item2.Count < 10 && fee == 100000000)
-                fee = 200000000;
-            else if (res.Item2.Count >= 10 && res.Item2.Count < 18)
-                fee = 300000000;
-            else if (res.Item2.Count >= 18)
-                fee = 400000000;
 
             // fill input data for sending tx
             var dto = new SendTxData() // please check SendTxData for another properties such as specify source UTXOs
@@ -631,24 +663,16 @@ namespace VEDriversLite
             var totam = 0.0;
             foreach(var r in receiverAmounts)
                 totam += r.Value;
-            var res = await CheckSpendableDoge(totam + 3);
+            var res = await CheckSpendableDoge(totam + 5);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
                 return (false, res.Item1);
             }
-
             if (utxos.Count > 0)
             {
                 res.Item2 = utxos;
             }
-
-            if (res.Item2.Count >= 5 && res.Item2.Count < 10 && fee == 100000000)
-                fee = 200000000;
-            else if (res.Item2.Count >= 10 && res.Item2.Count < 18)
-                fee = 300000000;
-            else if (res.Item2.Count >= 18)
-                fee = 400000000;
 
             try
             {

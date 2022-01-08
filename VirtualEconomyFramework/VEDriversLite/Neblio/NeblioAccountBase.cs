@@ -1764,7 +1764,7 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent("Cannot send NFT Payment without provided Utxo TxId of this NFT", "Cannot send Payment for NFT");
                 return (false, "Cannot send NFT without provided Utxo TxId.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableNeblio(NFT.Price + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");

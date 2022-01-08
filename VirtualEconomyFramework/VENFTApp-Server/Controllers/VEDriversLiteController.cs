@@ -128,6 +128,77 @@ namespace VENFTApp_Server.Controllers
             }
         }
 
+        #region dogecoin
+
+
+        public class BroadcastTransactionRequestDto
+        {
+            public string network { get; set; } = "Neblio";
+            public string tx_hex { get; set; } = string.Empty;
+        }
+        public class BroadcastTransactionResponseDto
+        {
+            public BroadcastDataResponseDto data { get; set; } = new BroadcastDataResponseDto();
+        }
+        public class BroadcastDataResponseDto
+        {
+            public string network { get; set; } = "Neblio";
+            public string txid { get; set; } = string.Empty;
+        }
+        /// <summary>
+        /// Get Neblio account NFTs. 
+        /// This data is loaded from VEDriversLite
+        /// </summary>
+        /// <returns>Account Balance Response Dto</returns>
+        [AllowCrossSiteJsonAttribute]
+        [HttpPost]
+        [Route("BroadcastTransaction")]
+        public async Task<BroadcastTransactionResponseDto> BroadcastTransaction([FromBody] BroadcastTransactionRequestDto data)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(data.tx_hex))
+                    return (new BroadcastTransactionResponseDto());
+                var resp = new BroadcastTransactionResponseDto();
+                if (data.network == "neblio")
+                {
+                    var txid = await NeblioTransactionHelpers.BroadcastSignedTransaction(data.tx_hex);
+                    if (!string.IsNullOrEmpty(txid))
+                    {
+                        resp.data = new BroadcastDataResponseDto() { network = "neblio", txid = txid };
+                        return resp;
+                    }
+                    else
+                        return (new BroadcastTransactionResponseDto());
+                }
+                else if (data.network == "dogecoin")
+                {
+                    var txid = await DogeTransactionHelpers.ChainSoBroadcastTxAsync(
+                        new VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest() 
+                        { 
+                            tx_hex = data.tx_hex 
+                        });
+
+                    if (!string.IsNullOrEmpty(txid))
+                    {
+                        resp.data = new BroadcastDataResponseDto() { network = "dogecoin", txid = txid };
+                        return resp;
+                    }
+                    else
+                        return (new BroadcastTransactionResponseDto());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot Broadcast Dogecoin transaction.! Exception: " + ex.Message);
+            }
+
+            return (new BroadcastTransactionResponseDto());
+        }
+
+        #endregion
+
+
         #region NFTs
 
         public class GetAccountNFTsRequestDto

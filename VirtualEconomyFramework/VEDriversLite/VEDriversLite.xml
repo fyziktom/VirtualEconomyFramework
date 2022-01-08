@@ -596,7 +596,7 @@
             <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.DogeAccount.LoadAccount(System.String)">
+        <member name="M:VEDriversLite.DogeAccount.LoadAccount(System.String,System.String)">
             <summary>
             Load account from "key.txt" file placed in the root exe directory. Doesnt work in WABS
             </summary>
@@ -793,6 +793,17 @@
             <returns>An object containing the TXID if the broadcast was successful</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="M:VEDriversLite.DogeAPI.Client.VENFTBroadcastTxAsync(VEDriversLite.DogeAPI.VENFTBroadcastTxRequest)">
+            <summary>Broadcasts a signed raw transaction to the network</summary>
+            <returns>An object containing the TXID if the broadcast was successful</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
+        <member name="M:VEDriversLite.DogeAPI.Client.VENFTBroadcastTxAsync(VEDriversLite.DogeAPI.VENFTBroadcastTxRequest,System.Threading.CancellationToken)">
+            <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+            <summary>Broadcasts a signed raw transaction to the network</summary>
+            <returns>An object containing the TXID if the broadcast was successful</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
         <member name="M:VEDriversLite.DogeAPI.IJsonClient.RpcAsync(VEDriversLite.DogeAPI.RpcRequest)">
             <summary>Send a JSON-RPC call to a localhost neblio-Qt or nebliod node</summary>
             <returns>Object containing the JSON response from the Neblio node.</returns>
@@ -947,6 +958,12 @@
         <member name="P:VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest.tx_hex">
             <summary>Signed raw tx hex to broadcast</summary>
         </member>
+        <member name="P:VEDriversLite.DogeAPI.VENFTBroadcastTxRequest.network">
+            <summary>Signed raw tx hex to broadcast</summary>
+        </member>
+        <member name="P:VEDriversLite.DogeAPI.VENFTBroadcastTxRequest.tx_hex">
+            <summary>Signed raw tx hex to broadcast</summary>
+        </member>
         <member name="P:VEDriversLite.DogeAPI.BroadcastTxResponse.Data">
             <summary>Txid of successfully broadcasted transaction</summary>
         </member>
@@ -1074,6 +1091,11 @@
             <returns>An object containing the TXID if the broadcast was successful</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.VENFTBroadcastTxAsync(VEDriversLite.DogeAPI.VENFTBroadcastTxRequest)">
+            <summary>Broadcasts a signed raw transaction to the network</summary>
+            <returns>An object containing the TXID if the broadcast was successful</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
         <member name="M:VEDriversLite.DogeAPI.IClient.GetTransactionInfoAsync(System.String)">
             <summary>Information On an Doge Transaction</summary>
             <param name="txid">Doge txid to get information on.</param>
@@ -1130,6 +1152,27 @@
             <param name="key">NBitcoin Key - must contain Private Key</param>
             <param name="address">NBitcoin address - must match with the provided key</param>
             <returns>New Transaction Hash - TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.CalcFee(System.Int32,System.Int32,System.String,System.Boolean)">
+            <summary>
+            This function will calculate the fee based of the known lenght of the intputs and the outputs
+            If there is the OP_RETURN output it is considered as the customMessage. Please fill it for token transactions.
+            Token transaction also will add just for sure one output to calculation of the size for the case there will be some tokens back to original address
+            </summary>
+            <param name="numOfInputs">Number of input of the transaction "in" vector</param>
+            <param name="numOfOutputs">Number of outpus of the transaction "out" vector</param>
+            <param name="customMessageInOPReturn">Custom message - "OP_RETURN" output</param>
+            <param name="isTokenTransaction">Token transaction will add another output for getting back the tokens</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.GetTransactionWithDogecoinInputs(System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},NBitcoin.BitcoinAddress)">
+            <summary>
+            This function will crate empty Transaction object based on Neblio network standard
+            Then add the Neblio Inputs and sumarize their value
+            </summary>
+            <param name="nutxos">List of Neblio Utxos to use</param>
+            <param name="address">Address of the owner</param>
+            <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
         </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransaction(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double)">
             <summary>
@@ -1224,6 +1267,13 @@
         <member name="M:VEDriversLite.DogeTransactionHelpers.ChainSoBroadcastTxAsync(VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest)">
             <summary>
             Broadcast of signed transaction. with chain.so
+            </summary>
+            <param name="data">tx hex</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.DogeTransactionHelpers.VENFTBroadcastTxAsync(VEDriversLite.DogeAPI.VENFTBroadcastTxRequest)">
+            <summary>
+            Broadcast of signed transaction. with VENFT API
             </summary>
             <param name="data">tx hex</param>
             <returns></returns>
@@ -4248,21 +4298,26 @@
             <param name="tokenId">Token Id hash</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetUtxoListForTx(System.String,System.String,System.Double,System.Collections.Generic.ICollection{System.String},System.String,System.Double,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.CalcFee(System.Int32,System.Int32,System.String,System.Boolean)">
             <summary>
-            Function will obtain correct Utxos for token transaction
-            Older version, not recommended to use now
+            This function will calculate the fee based of the known lenght of the intputs and the outputs
+            If there is the OP_RETURN output it is considered as the customMessage. Please fill it for token transactions.
+            Token transaction also will add just for sure one output to calculation of the size for the case there will be some tokens back to original address
             </summary>
-            <param name="address">Account address - sender</param>
-            <param name="tokenId">Token Id hash</param>
-            <param name="amount">Amount to send</param>
-            <param name="tokenUtxos">you can add own input utxos it can contain info about indes separated by ':' or doesnt</param>
-            <param name="inputNeblUtxo">you can add input Neblio utxo. It is need for the fee</param>
-            <param name="fee">Fee for the tx. 10000 is minimum, 20000 for token with metadata</param>
-            <param name="isItMintNFT">if you set this true you must provide input token utxo which is not verified again</param>
-            <param name="isNFTtx">if you sending NFT - 1 token - you need to set this to run correct verifying function</param>
-            <param name="sendEvenNeblUtxoNotFound">if you set this and provide neblio utxo which is not valid, another is searched and used if it is available</param>
+            <param name="numOfInputs">Number of input of the transaction "in" vector</param>
+            <param name="numOfOutputs">Number of outpus of the transaction "out" vector</param>
+            <param name="customMessageInOPReturn">Custom message - "OP_RETURN" output</param>
+            <param name="isTokenTransaction">Token transaction will add another output for getting back the tokens</param>
             <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionWithNeblioInputs(System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},NBitcoin.BitcoinAddress)">
+            <summary>
+            This function will crate empty Transaction object based on Neblio network standard
+            Then add the Neblio Inputs and sumarize their value
+            </summary>
+            <param name="nutxos">List of Neblio Utxos to use</param>
+            <param name="address">Address of the owner</param>
+            <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.MintNFTTokenAsync(VEDriversLite.MintNFTData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
             <summary>
@@ -4554,18 +4609,6 @@
             </summary>
             <param name="txid">tx id hash</param>
             <returns>Sender address</returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitTheTokens(VEDriversLite.NeblioAccount,System.String,System.String,System.String,System.Int32,System.Int32)">
-            <summary>
-            Not recommended to use now. It split tokens to lots, but doing it in separated transactions. Will be changed to do it in one tx soon.
-            </summary>
-            <param name="account"></param>
-            <param name="address"></param>
-            <param name="password"></param>
-            <param name="tokenId"></param>
-            <param name="lotAmount"></param>
-            <param name="numberOfLots"></param>
-            <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenMetadata(System.String)">
             <summary>

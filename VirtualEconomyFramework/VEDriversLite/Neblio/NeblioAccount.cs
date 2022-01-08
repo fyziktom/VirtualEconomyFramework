@@ -36,6 +36,7 @@ namespace VEDriversLite
         private static object _lock { get; set; } = new object();
 
         public string LastCheckedDogePaymentUtxo { get; set; } = string.Empty;
+        public bool RunningAsVENFTBlazorApp { get; set; } = false;
 
         /// <summary>
         /// List of all active tabs for browsing or interacting with the address. All has possibility to load own list of NFTs.
@@ -200,15 +201,18 @@ namespace VEDriversLite
                             {
                                 try
                                 {
-                                    try
+                                    if (!RunningAsVENFTBlazorApp)
                                     {
-                                        await InitAllAutoIoTDeviceNFT();
+                                        try
+                                        {
+                                            await InitAllAutoIoTDeviceNFT();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine("Cannot init the IoT Devices. " + ex.Message);
+                                        }
+                                        await Task.Delay(500);
                                     }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine("Cannot init the IoT Devices. " + ex.Message);
-                                    }
-                                    await Task.Delay(500);
                                     await CheckPayments();
 
                                 }

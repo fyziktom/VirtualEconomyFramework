@@ -1334,7 +1334,7 @@ namespace TestVEDriversLite
         {
             var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length < 3)
-                throw new Exception("Please input utxo, utxoindex, price");
+                throw new Exception("Please input utxo, utxoindex, receiver");
 
             Console.WriteLine("Input NFT Utxo: ");
             var nftutxo = split[0];
@@ -1803,8 +1803,23 @@ namespace TestVEDriversLite
                 throw new Exception("Password cannot be empty.");
 
             password = param;
-            await dogeAccount.LoadAccount(password);
+            await dogeAccount.LoadAccount(password); // read from default file dogekey.txt
             //DogeStartRefreshingData(null);
+        }
+
+        [TestEntry]
+        public static void DogeLoadAccountFromFile(string param)
+        {
+            LoadDogeAccountFromFileAsync(param);
+        }
+        public static async Task LoadDogeAccountFromFileAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input pass,filename");
+            var pass = split[0];
+            var file = split[1];
+            await dogeAccount.LoadAccount(pass,file);
         }
 
         [TestEntry]

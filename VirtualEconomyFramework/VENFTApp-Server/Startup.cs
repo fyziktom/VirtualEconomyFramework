@@ -55,7 +55,7 @@ namespace VENFTApp_Server
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "VEconomy API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "VENFTApp-Server API V1");
             });
 
             app.UseRouting();

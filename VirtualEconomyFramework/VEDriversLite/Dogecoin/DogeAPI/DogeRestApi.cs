@@ -19,8 +19,8 @@ namespace VEDriversLite.DogeAPI
         private System.Net.Http.HttpClient _httpClient;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public string APIKey { get; set; } = "C___qMrmNbRHwRmOpvkSht4GlaHSdWPM";
-        //public string APIKey { get; set; } = "";
+        //public string APIKey { get; set; } = "C___qMrmNbRHwRmOpvkSht4GlaHSdWPM";
+        public string APIKey { get; set; } = "";
 
         public Client(System.Net.Http.HttpClient httpClient)
         {
@@ -573,7 +573,7 @@ namespace VEDriversLite.DogeAPI
         /// <summary>Broadcasts a signed raw transaction to the network</summary>
         /// <returns>An object containing the TXID if the broadcast was successful</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<ChainSoBroadcastTxResponse> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest body)
+        public System.Threading.Tasks.Task<BroadcastTxResponse> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest body)
         {
             return ChainSoBroadcastTxAsync(body, System.Threading.CancellationToken.None);
         }
@@ -582,7 +582,7 @@ namespace VEDriversLite.DogeAPI
         /// <summary>Broadcasts a signed raw transaction to the network</summary>
         /// <returns>An object containing the TXID if the broadcast was successful</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ChainSoBroadcastTxResponse> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<BroadcastTxResponse> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest body, System.Threading.CancellationToken cancellationToken)
         {
             if (body == null)
                 throw new System.ArgumentNullException("Add TxHex into body");
@@ -592,6 +592,95 @@ namespace VEDriversLite.DogeAPI
             //var bsurl = "https://chain.so/api/v2/";
             //urlBuilder_.Append(bsurl != null ? bsurl.TrimEnd('/') : "").Append("/pushtx");
             //urlBuilder_.Append(bsurl != null ? bsurl.TrimEnd('/') : "").Append("/send_tx/DOGE");
+            
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    //request_.Headers.Add("Access-Control-Request-Method", "POST, OPTIONS");
+                    //request_.Headers.Add("Access-Control-Request-Headers", "Authorization, Content-Type");
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<BroadcastTxResponse>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<Error>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<Error>("Unexpected error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>Broadcasts a signed raw transaction to the network</summary>
+        /// <returns>An object containing the TXID if the broadcast was successful</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<BroadcastTxResponse> VENFTBroadcastTxAsync(VENFTBroadcastTxRequest body)
+        {
+            return VENFTBroadcastTxAsync(body, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Broadcasts a signed raw transaction to the network</summary>
+        /// <returns>An object containing the TXID if the broadcast was successful</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<BroadcastTxResponse> VENFTBroadcastTxAsync(VENFTBroadcastTxRequest body, System.Threading.CancellationToken cancellationToken)
+        {
+            if (body == null)
+                throw new System.ArgumentNullException("Add TxHex into body");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            BaseUrl = "https://venftappserver.azurewebsites.net/vedlapi/";
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/BroadcastTransaction");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -630,7 +719,7 @@ namespace VEDriversLite.DogeAPI
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<ChainSoBroadcastTxResponse>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<BroadcastTxResponse>(response_, headers_).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -1236,11 +1325,23 @@ namespace VEDriversLite.DogeAPI
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class VENFTBroadcastTxRequest
+    {
+        /// <summary>Signed raw tx hex to broadcast</summary>
+        [Newtonsoft.Json.JsonProperty("network", Required = Newtonsoft.Json.Required.Always)]
+        public string network { get; set; }
+        /// <summary>Signed raw tx hex to broadcast</summary>
+        [Newtonsoft.Json.JsonProperty("tx_hex", Required = Newtonsoft.Json.Required.Always)]
+        public string tx_hex { get; set; }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class BroadcastTxResponse
     {
         /// <summary>Txid of successfully broadcasted transaction</summary>
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public BTData Data { get; set; }
+        //public BTData Data { get; set; }//for blockchair broadcast need
+        public ChainSoBroadcastTxResponse Data { get; set; }//for chainso broadcast need and also for VENFT too
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]

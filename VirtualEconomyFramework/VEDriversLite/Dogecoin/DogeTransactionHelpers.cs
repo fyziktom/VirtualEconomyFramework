@@ -143,15 +143,95 @@ namespace VEDriversLite
             try
             {
                 var txhex = transaction.ToHex();
-                var res = await BroadcastTxAsync(new BroadcastTxRequest() { data = txhex });
+                //var res = await BroadcastTxAsync(new BroadcastTxRequest() { data = txhex });
                 //var res = await ChainSoBroadcastTxAsync(new ChainSoBroadcastTxRequest() { tx_hex = txhex });
+                var res = await VENFTBroadcastTxAsync(new VENFTBroadcastTxRequest() { network = "dogecoin", tx_hex = txhex });
                 return res;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Cannot Broadcast the dogecoin transaction. Trouble with Dogecoin API. ");
             }
         }
+
+        /// <summary>
+        /// This function will calculate the fee based of the known lenght of the intputs and the outputs
+        /// If there is the OP_RETURN output it is considered as the customMessage. Please fill it for token transactions.
+        /// Token transaction also will add just for sure one output to calculation of the size for the case there will be some tokens back to original address
+        /// </summary>
+        /// <param name="numOfInputs">Number of input of the transaction "in" vector</param>
+        /// <param name="numOfOutputs">Number of outpus of the transaction "out" vector</param>
+        /// <param name="customMessageInOPReturn">Custom message - "OP_RETURN" output</param>
+        /// <param name="isTokenTransaction">Token transaction will add another output for getting back the tokens</param>
+        /// <returns></returns>
+        public static double CalcFee(int numOfInputs, int numOfOutputs, string customMessageInOPReturn, bool isTokenTransaction)
+        {
+            var basicFee = 300000; //0.003 per 1 byte
+
+            // inputs
+            var blankInput = 41;
+            var inputSignature = 56;
+            var signedInput = blankInput + inputSignature;
+
+            // outputs
+            var outputWithAddress = 34;
+            var emptyOpReturn = 11; // OP_RETURN with custom message with 10 characters had 21 bytes...etc.
+
+            //common properties in each transaction
+            var commonPropertiesSize = 214;
+
+            var expectedSize = signedInput * numOfInputs + outputWithAddress * numOfOutputs + commonPropertiesSize;
+
+            // add custom message if there is some
+            if (!string.IsNullOrEmpty(customMessageInOPReturn))
+                expectedSize += emptyOpReturn + customMessageInOPReturn.Length;
+
+            // Expected outputs for the rest of the coins/tokens
+            expectedSize += outputWithAddress; // DOGECOIN
+            if (isTokenTransaction) expectedSize += outputWithAddress;
+
+            if (expectedSize > 10000)
+                throw new Exception("Cannot send transaction bigger than 10kB on DOGE network!");
+
+            var fee = expectedSize * basicFee;
+            return fee;
+        }
+
+        /// <summary>
+        /// This function will crate empty Transaction object based on Neblio network standard
+        /// Then add the Neblio Inputs and sumarize their value
+        /// </summary>
+        /// <param name="nutxos">List of Neblio Utxos to use</param>
+        /// <param name="address">Address of the owner</param>
+        /// <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
+        public static (Transaction, double) GetTransactionWithDogecoinInputs(ICollection<Utxo> dutxos, BitcoinAddress address)
+        {
+            // create template for new tx from last one
+            var transaction = Transaction.Create(Network);
+
+            var allNeblInputCoins = 0.0; //this is because of the optimization. When we iterate through values we can sum them for later use
+            try
+            {
+                // add inputs of tx
+                foreach (var utxo in dutxos)
+                {
+                    transaction.Inputs.Add(new TxIn()
+                    {
+                        PrevOut = new OutPoint(uint256.Parse(utxo.TxId), (int)utxo.N),
+                        ScriptSig = address.ScriptPubKey,
+                    });
+                    allNeblInputCoins += Convert.ToDouble(utxo.Value,CultureInfo.InvariantCulture);
+                }
+                return (transaction, allNeblInputCoins);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception during loading inputs. " + ex.Message);
+            }
+
+            return (null, 0);
+        }
+
 
         /// <summary>
         /// Function will send standard Neblio transaction - sync version
@@ -208,34 +288,21 @@ namespace VEDriversLite
             }
 
             // create template for new tx from last one
-            var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
+            var tx = GetTransactionWithDogecoinInputs(utxos, addressForTx);
+            if (tx.Item1 == null)
+                throw new Exception("Cannot create the transaction object.");
 
+            var transaction = tx.Item1;
+            var allDogelCoins = tx.Item2;
             try
             {
-                // add inputs of tx
-                foreach (var utxo in utxos)
-                {
-                    var txin = new TxIn(new OutPoint(uint256.Parse(utxo.TxId), utxo.N));
-                    txin.ScriptSig = addressForTx.ScriptPubKey;
-                    transaction.Inputs.Add(txin);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Exception during loading inputs. " + ex.Message);
-            }
+                fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
-            try
-            {
-                var allNeblCoins = 0.0;
-                foreach (var u in utxos)
-                    allNeblCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture);
-
-                if (allNeblCoins < (data.Amount))
+                if (allDogelCoins < (data.Amount))
                     throw new Exception("Not enough Doge to spend.");
 
                 var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
-                var diffinSat = (Convert.ToUInt64(allNeblCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
+                var diffinSat = (Convert.ToUInt64(allDogelCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
@@ -253,7 +320,7 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Cannot Broadcast the dogecoin transaction. Trouble with Dogecoin API. ");
             }
         }
 
@@ -299,31 +366,19 @@ namespace VEDriversLite
             }
 
             // create template for new tx from last one
-            var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
+            var tx = GetTransactionWithDogecoinInputs(utxos, addressForTx);
+            if (tx.Item1 == null)
+                throw new Exception("Cannot create the transaction object.");
+
+            var transaction = tx.Item1;
+            var allDogelCoins = tx.Item2;
 
             try
             {
-                // add inputs of tx
-                foreach (var utxo in utxos)
-                {
-                    var txin = new TxIn(new OutPoint(uint256.Parse(utxo.TxId), utxo.N));
-                    txin.ScriptSig = addressForTx.ScriptPubKey;
-                    transaction.Inputs.Add(txin);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Exception during loading inputs. " + ex.Message);
-            }
-
-            try
-            {
-                var allNeblCoins = 0.0;
-                foreach (var u in utxos)
-                    allNeblCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture);
+                fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
                 var amountinSat = Convert.ToUInt64(data.Amount) * Convert.ToUInt64(FromSatToMainRatio);
-                var diffinSat = (Convert.ToUInt64(allNeblCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
+                var diffinSat = (Convert.ToUInt64(allDogelCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
@@ -348,7 +403,7 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Cannot Broadcast the dogecoin transaction. Trouble with Dogecoin API. ");
             }
         }
 
@@ -400,28 +455,16 @@ namespace VEDriversLite
             }
 
             // create template for new tx from last one
-            var transaction = Transaction.Create(Network); // new NBitcoin.Altcoins.Neblio.NeblioTransaction(network.Consensus.ConsensusFactory);//neblUtxo.Clone();
+            var tx = GetTransactionWithDogecoinInputs(utxos, addressForTx);
+            if (tx.Item1 == null)
+                throw new Exception("Cannot create the transaction object.");
+
+            var transaction = tx.Item1;
+            var allDogeInputCoins = tx.Item2;
 
             try
             {
-                // add inputs of tx
-                foreach (var utxo in utxos)
-                {
-                    var txin = new TxIn(new OutPoint(uint256.Parse(utxo.TxId), utxo.N));
-                    txin.ScriptSig = addressForTx.ScriptPubKey;
-                    transaction.Inputs.Add(txin);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Exception during loading inputs. " + ex.Message);
-            }
-
-            try
-            {
-                var allCoins = 0.0;
-                foreach (var u in utxos)
-                    allCoins += Convert.ToDouble(u.Value, CultureInfo.InvariantCulture);
+                fee = CalcFee(transaction.Inputs.Count, receiverAmount.Count, message, false);
 
                 UInt64 totalamnt = 0;
                 foreach (var r in receiverAmount)
@@ -440,7 +483,7 @@ namespace VEDriversLite
                     ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
                 });
 
-                var diffinSat = (Convert.ToUInt64(allCoins) * FromSatToMainRatio) - totalamnt - Convert.ToUInt64(fee);
+                var diffinSat = (Convert.ToUInt64(allDogeInputCoins) * FromSatToMainRatio) - totalamnt - Convert.ToUInt64(fee);
                 if (diffinSat > 0)
                     transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
             }
@@ -643,7 +686,18 @@ namespace VEDriversLite
         public static async Task<string> ChainSoBroadcastTxAsync(ChainSoBroadcastTxRequest data)
         {
             var info = await GetClient().ChainSoBroadcastTxAsync(data);
-            return info.TxId;
+            return info.Data.TxId;
+        }
+
+        /// <summary>
+        /// Broadcast of signed transaction. with VENFT API
+        /// </summary>
+        /// <param name="data">tx hex</param>
+        /// <returns></returns>
+        public static async Task<string> VENFTBroadcastTxAsync(VENFTBroadcastTxRequest data)
+        {
+            var info = await GetClient().VENFTBroadcastTxAsync(data);
+            return info.Data.TxId;
         }
 
         /// <summary>
@@ -758,11 +812,21 @@ namespace VEDriversLite
         public static async Task<ICollection<Utxo>> GetAddressSpendableUtxo(string addr, double minAmount = 0.0001, double requiredAmount = 0.0001)
         {
             var resp = new List<Utxo>();
-
-            var addinfo = await GetClient().GetAddressUtxosAsync(addr);
+            GetAddressUtxosResponse addinfo = null;
+            try
+            {
+                addinfo = await GetClient().GetAddressUtxosAsync(addr);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot obtain dogecoin address Utxos."  + ex.Message);
+                return null;
+            }
+            if (addinfo == null)
+                return null;
             var utxos = addinfo.Data.Utxos;
             if (utxos == null)
-                return resp;
+                return null;
             utxos = utxos.OrderBy(u => Convert.ToDouble(u.Value, CultureInfo.InvariantCulture)).Reverse().ToList();
 
             var founded = 0.0;
@@ -778,7 +842,7 @@ namespace VEDriversLite
                             return resp;
                     }
             }
-            return new List<Utxo>();
+            return null;
         }
     }
 }
