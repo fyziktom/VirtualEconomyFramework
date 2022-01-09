@@ -330,7 +330,14 @@ namespace VEDriversLite.NFT
             if (meta.TryGetValue("Link", out var link))
                 Link = link;
             if (meta.TryGetValue("Image", out var imagelink))
+            {
                 ImageLink = imagelink;
+                if (!string.IsNullOrEmpty(ImageLink))
+                {
+                    if (ImageLink.Contains("https://gateway.ipfs.io"))
+                        ImageLink = ImageLink.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
+                }
+            }
             if (meta.TryGetValue("IconLink", out var iconlink))
                 IconLink = iconlink;
             if (meta.TryGetValue("Type", out var type))

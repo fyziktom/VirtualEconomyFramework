@@ -101,6 +101,13 @@ namespace VEDriversLite.Neblio
         /// </summary>
         [JsonIgnore]
         public List<INFT> CoruzantNFTs { get; set; } = new List<INFT>();
+
+        /// <summary>
+        /// List of actual address HARDWARIO NFTs. Based on Utxos list
+        /// </summary>
+        [JsonIgnore]
+        public List<INFT> HardwarioNFTs { get; set; } = new List<INFT>();
+        
         /// <summary>
         /// Received payments (means Payment NFT) of this address.
         /// </summary>
@@ -289,8 +296,48 @@ namespace VEDriversLite.Neblio
 
         #endregion
 
-
         #region LoadAccount
+
+        /// <summary>
+        /// This function will take all utxos and try to request all their txinfo and metadata info as parallel as possible
+        /// The responses from the Neblio API are stored in the cashe, so most of them are not need to call anymore and they will be taken from the memory
+        /// This speed up a loading a lot
+        /// </summary>
+        /// <returns></returns>
+        public async Task TxCashPreload()
+        {
+            // cash preload just for the NFT utxos?
+            //var nftutxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens, new GetAddressInfoResponse() { Utxos = Utxos });
+
+            Console.WriteLine("Cash of the TxInfo preload started...");
+            if (Utxos != null && Utxos.Count > 1)
+            {
+                var txinfotasks = new Task[Utxos.Count * 2];
+                var u = 0;
+                for (var i = 0; (i + 2) < txinfotasks.Length; i += 2)
+                {
+                    if (i < txinfotasks.Length)
+                        txinfotasks[i] = NeblioTransactionHelpers.GetTransactionInfo(Utxos[u].Txid);
+                    if (i < txinfotasks.Length + 1)
+                    {
+                        var tokid = Utxos[u].Tokens?.FirstOrDefault()?.TokenId;
+                        if (!string.IsNullOrEmpty(tokid))
+                        {
+                            if (!VEDLDataContext.NFTCache.ContainsKey(Utxos[u].Txid))
+                                txinfotasks[i + 1] = NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, Utxos[u].Txid);
+                        }
+                    }
+                    u++;
+                }
+                for (var t = 0; t < txinfotasks.Length; t++)
+                {
+                    if (txinfotasks[t] == null) txinfotasks[t] = Task.Delay(1);
+                }
+
+                await Task.WhenAll(txinfotasks);
+            }
+            Console.WriteLine("Cash of the TxInfo preload end...");
+        }
 
         /// <summary>
         /// Load account Key. If there is password it is used to decrypt the private key
@@ -320,7 +367,6 @@ namespace VEDriversLite.Neblio
         }
 
         #endregion
-
 
         #region AccountStatsLoad
 
@@ -393,6 +439,22 @@ namespace VEDriversLite.Neblio
                 lock (_lock)
                 {
                     CoruzantNFTs = nftc;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reload hardwario NFTs list
+        /// </summary>
+        /// <returns></returns>
+        public async Task ReloadHardwarioNFTs()
+        {
+            var nftc = await HardwarioNFTHelpers.GetHARDWARIONFTs(NFTs);
+            if (nftc != null)
+            {
+                lock (_lock)
+                {
+                    HardwarioNFTs = nftc;
                 }
             }
         }
@@ -1493,54 +1555,6 @@ namespace VEDriversLite.Neblio
             return (false, "Unexpected error during send.");
         }
 
-
-        /// <summary>
-        /// This function will change profile NFT. It need as input previous loaded Profile NFT.
-        /// </summary>
-        /// <param name="NFT"></param>
-        /// <returns></returns>
-        public async Task<(bool, string)> ChangeProfileNFT(INFT NFT)
-        {
-            var nft = await NFTFactory.CloneNFT(NFT);
-
-            if (IsLocked())
-            {
-                await InvokeAccountLockedEvent();
-                return (false, "Account is locked.");
-            }
-            if (string.IsNullOrEmpty(NFT.Utxo))
-            {
-                await InvokeErrorDuringSendEvent("Cannot change profile without providen Utxo TxId.", "Cannot change the profile.");
-                return (false, "Cannot change Profile without provided Utxo TxId.");
-            }
-            var res = await CheckSpendableNeblio(0.001);
-            if (res.Item2 == null)
-            {
-                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
-                return (false, res.Item1);
-            }
-
-            try
-            {
-                var rtxid = await NFTHelpers.ChangeNFT(Address, AccountKey, nft, res.Item2);
-
-                if (rtxid != null)
-                {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Profile Changed");
-                    Profile = NFT as ProfileNFT;
-                    return (true, rtxid);
-                }
-            }
-            catch (Exception ex)
-            {
-                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
-                return (false, ex.Message);
-            }
-
-            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
-            return (false, "Unexpected error during send.");
-
-        }
 
         /// <summary>
         /// Change Post NFT. It requeires previous loadedPost NFT as input.

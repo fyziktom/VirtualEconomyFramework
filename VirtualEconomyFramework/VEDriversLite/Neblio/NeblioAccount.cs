@@ -36,6 +36,10 @@ namespace VEDriversLite
         private static object _lock { get; set; } = new object();
 
         public string LastCheckedDogePaymentUtxo { get; set; } = string.Empty;
+        /// <summary>
+        /// This will block the automatic start of the NFT IoT Devices. 
+        /// It is recommended to use NFT IoT devices in the services instead of the web assembly
+        /// </summary>
         public bool RunningAsVENFTBlazorApp { get; set; } = false;
 
         /// <summary>
@@ -137,13 +141,24 @@ namespace VEDriversLite
                 if (!WithoutNFTs)
                 {
                     FirsLoadingStatus?.Invoke(this, "Loading NFTs started.");
+
+                    try
+                    {
+                        await TxCashPreload();
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Cannot finish the preload." + ex.Message);
+                    }
+
                     await ReLoadNFTs(true);
 
-                    var tasks = new Task[4];
+                    var tasks = new Task[5];
                     tasks[0] = ReloadCoruzantNFTs();
-                    tasks[1] = ReloadCountOfNFTs();
-                    tasks[2] = RefreshAddressReceivedPayments();
-                    tasks[3] = RefreshAddressReceivedReceipts();
+                    tasks[1] = ReloadHardwarioNFTs();
+                    tasks[2] = ReloadCountOfNFTs();
+                    tasks[3] = RefreshAddressReceivedPayments();
+                    tasks[4] = RefreshAddressReceivedReceipts();
                     await Task.WhenAll(tasks);
 
                     RegisterPriceServiceEventHandler();
@@ -166,7 +181,7 @@ namespace VEDriversLite
             _ = Task.Run(async () =>
             {
                 IsRefreshingRunning = true;
-                var tasks = new Task[4];
+                var tasks = new Task[5];
 
                 while (true)
                 {
@@ -189,9 +204,10 @@ namespace VEDriversLite
                                 await ReLoadNFTs(true);
 
                                 tasks[0] = ReloadCoruzantNFTs();
-                                tasks[1] = ReloadCountOfNFTs();
-                                tasks[2] = RefreshAddressReceivedPayments();
-                                tasks[3] = RefreshAddressReceivedReceipts();
+                                tasks[1] = ReloadHardwarioNFTs();
+                                tasks[2] = ReloadCountOfNFTs();
+                                tasks[3] = RefreshAddressReceivedPayments();
+                                tasks[4] = RefreshAddressReceivedReceipts();
 
                                 await Task.WhenAll(tasks);
                             }
@@ -240,9 +256,8 @@ namespace VEDriversLite
                         await Task.Delay(interval);
                     }
                 }
-                IsRefreshingRunning = false;
             });
-
+            IsRefreshingRunning = false;
             return await Task.FromResult("RUNNING");
         }
 
@@ -1570,6 +1585,7 @@ namespace VEDriversLite
         #endregion
 
         #region DogePaymentsHandling
+        // will be redesing
 
         public async Task ConnectDogeAccount(string address)
         {

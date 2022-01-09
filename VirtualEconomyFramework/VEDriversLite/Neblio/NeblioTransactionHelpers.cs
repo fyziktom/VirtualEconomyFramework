@@ -2299,7 +2299,15 @@ namespace VEDriversLite
             catch (Exception ex)
             {
             }
-            return utxos;
+            if (utxos != null && utxos.Count > 0)
+            {
+                var ouxox = utxos.OrderBy(u => u.Blocktime).Reverse().ToList();
+                return ouxox;
+            }
+            else
+            {
+                return new List<Utxos>();
+            }
         }
 
         /// <summary>
@@ -2592,7 +2600,7 @@ namespace VEDriversLite
             return null;
         }
 
-        private static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0)
+        public static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0)
         {
             if (TokenTxMetadataCache.TryGetValue(txid, out var tinfo))
                 return tinfo;

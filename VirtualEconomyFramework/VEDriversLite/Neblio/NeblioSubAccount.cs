@@ -198,16 +198,27 @@ namespace VEDriversLite.Neblio
                 AddressInfo.Transactions = new List<string>();
                 await ReloadUtxos();
 
-                var tasks = new Task[3];
+                try
+                {
+                    await TxCashPreload();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot finish the preload." + ex.Message);
+                }
+
+                var tasks = new Task[4];
                 tasks[0] = ReloadTokenSupply();
                 tasks[1] = ReloadMintingSupply();
                 FirsLoadingStatus?.Invoke(Address, $"Loading of Sub Account {Name} NFTs started.");
                 tasks[2] = ReLoadNFTs(withoutMessages:true);
+                tasks[3] = Task.Delay(100);
                 await Task.WhenAll(tasks);
 
                 tasks[0] = ReloadCoruzantNFTs();
-                tasks[1] = RefreshAddressReceivedPayments();
-                tasks[2] = RefreshAddressReceivedReceipts();
+                tasks[1] = ReloadHardwarioNFTs();
+                tasks[2] = RefreshAddressReceivedPayments();
+                tasks[3] = RefreshAddressReceivedReceipts();
                 await Task.WhenAll(tasks);
                 FirsLoadingStatus?.Invoke(Address, $"Sub Account {Name} first load done.");
             }
@@ -221,7 +232,7 @@ namespace VEDriversLite.Neblio
             {
                 var firstLoad = true;
                 var minorRefresh = 0;
-                var tasks = new Task[3];
+                var tasks = new Task[4];
                 
                 while (true)
                 {
@@ -233,12 +244,13 @@ namespace VEDriversLite.Neblio
                             tasks[0] = ReloadTokenSupply();
                             tasks[1] = ReloadMintingSupply();
                             tasks[2] = ReLoadNFTs(withoutMessages:true);
-
+                            tasks[3] = Task.Delay(1);
                             await Task.WhenAll(tasks);
 
                             tasks[0] = ReloadCoruzantNFTs();
-                            tasks[1] = RefreshAddressReceivedPayments();
-                            tasks[2] = RefreshAddressReceivedReceipts();
+                            tasks[1] = ReloadHardwarioNFTs();
+                            tasks[2] = RefreshAddressReceivedPayments();
+                            tasks[3] = RefreshAddressReceivedReceipts();
 
                             await Task.WhenAll(tasks);
 
