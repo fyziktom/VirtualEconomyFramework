@@ -1,4 +1,5 @@
 ﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.DevicesNFTs
 @using VEDriversLite.Bookmarks
 @using Microsoft.AspNetCore.WebUtilities
 @page "/address"
@@ -118,7 +119,7 @@
                                     {
                                         <VENFTApp_Banner.Components.CoruzantNFT InputNFT="@nft" />
                                     }
-                                    else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
+                                    else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message && nft.Type != NFTTypes.IoTMessage)
                                     {
                                         if ((displayImages && nft.Type == NFTTypes.Image) ||
                                             (displayPosts && nft.Type == NFTTypes.Post) ||
@@ -126,10 +127,18 @@
                                             (displayEvents && nft.Type == NFTTypes.Event) ||
                                             (displayTickets && nft.Type == NFTTypes.Ticket))
                                         {
-                                            if ((displayVENFT && nft.TokenId == NFTHelpers.TokenId) ||
+                                            if (((displayVENFT && nft.TokenId == NFTHelpers.TokenId) ||
+                                                (displayVENFT && nft.TokenId == HardwarioNFTHelpers.TokenId)) ||
                                                 (!displayVENFT && nft.TokenId != NFTHelpers.TokenId))
                                             {
+                                                @if (nft.Type != NFTTypes.Device && nft.Type != NFTTypes.IoTDevice)
+                                                { 
                                                 <VENFTApp_Banner.Components.NFT InputNFT="@nft" />
+                                                }
+                                                else 
+                                                { 
+                                                    <!--TODO-->
+                                                }
                                             }
                                         }
                                     }

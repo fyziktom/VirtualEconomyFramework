@@ -1,4 +1,4 @@
-using Ipfs.Http;
+﻿using Ipfs.Http;
 using NBitcoin;
 using Newtonsoft.Json;
 using System;
@@ -16,6 +16,7 @@ using VEDriversLite.Bookmarks;
 using VEDriversLite.Builder;
 using VEDriversLite.Events;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
 
@@ -47,7 +48,8 @@ namespace VEDriversLite.NFT
     {
         public static List<string> AllowedTokens = new List<string>() {
                 "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
-                Coruzant.CoruzantNFTHelpers.CoruzantTokenId };
+                Coruzant.CoruzantNFTHelpers.CoruzantTokenId,
+                HardwarioNFTHelpers.TokenId };
 
         public static string InfuraKey = "1urI71lwIaCjNo4b2kyL8LQ5Rlf";
         public static string InfuraSecret = "ce9c8fb81ab177c713841cecc3f9af51";
@@ -1126,8 +1128,6 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="address">sender address</param>
         /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="payment">Payment NFT of received payment</param>
-        /// <param name="NFT">NFT for sale</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <returns></returns>
         public static async Task<string> DestroyNFTs(string address, EncryptionKey ekey, ICollection<INFT> nfts, ICollection<Utxos> nutxos, string receiver = "")
@@ -1186,7 +1186,6 @@ namespace VEDriversLite.NFT
         /// <param name="address">sender address</param>
         /// <param name="ekey">Encryption Key object of the address</param>
         /// <param name="nft">Input NFT object with data to save to metadata. It is NFT what you are buying.</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> SendNFTPayment(string address, EncryptionKey ekey, string receiver, INFT nft, ICollection<Utxos> nutxos)

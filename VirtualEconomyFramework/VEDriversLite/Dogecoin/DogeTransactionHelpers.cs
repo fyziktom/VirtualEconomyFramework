@@ -92,6 +92,7 @@ namespace VEDriversLite
         /// <param name="transaction">NBitcoin Transaction object</param>
         /// <param name="key">NBitcoin Key - must contain Private Key</param>
         /// <param name="address">NBitcoin address - must match with the provided key</param>
+        /// <param name="utxos">List of the input utxos</param>
         /// <returns>New Transaction Hash - TxId</returns>
         private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key, BitcoinAddress address, ICollection<Utxo> utxos)
         {
@@ -166,7 +167,7 @@ namespace VEDriversLite
         /// <returns></returns>
         public static double CalcFee(int numOfInputs, int numOfOutputs, string customMessageInOPReturn, bool isTokenTransaction)
         {
-            var basicFee = 300000; //0.003 per 1 byte
+            var basicFee = 1000; //0.00001 per 1 byte 
 
             // inputs
             var blankInput = 41;
@@ -201,7 +202,7 @@ namespace VEDriversLite
         /// This function will crate empty Transaction object based on Neblio network standard
         /// Then add the Neblio Inputs and sumarize their value
         /// </summary>
-        /// <param name="nutxos">List of Neblio Utxos to use</param>
+        /// <param name="dutxos">List of Dogecoin Utxos to use</param>
         /// <param name="address">Address of the owner</param>
         /// <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
         public static (Transaction, double) GetTransactionWithDogecoinInputs(ICollection<Utxo> dutxos, BitcoinAddress address)
@@ -556,7 +557,7 @@ namespace VEDriversLite
             return (false, string.Empty);
         }
 
-        public static byte[] HexStringToBytes(string hexString)
+        private static byte[] HexStringToBytes(string hexString)
         {
             if (hexString == null)
                 throw new ArgumentNullException("hexString");
@@ -761,7 +762,8 @@ namespace VEDriversLite
         /// <summary>
         /// Return transaction object
         /// </summary>
-        /// <param name="addr"></param>
+        /// <param name="txid"></param>
+        /// <param name="fromMemory"></param>
         /// <returns></returns>
         public static async Task<GetTransactionInfoResponse> TransactionInfoAsync(string txid, bool fromMemory = false)
         {

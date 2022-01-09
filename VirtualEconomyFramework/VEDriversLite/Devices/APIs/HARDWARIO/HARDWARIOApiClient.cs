@@ -12,9 +12,16 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO
 {
     public class HARDWARIOApiClient
     {
+        /// <summary>
+        /// Common connection properties like Url, security, etc.
+        /// </summary>
         public CommonConnectionParams CommonConnParams { get; set; } = new CommonConnectionParams();
         private static object _lock = new object();
 
+        /// <summary>
+        /// Load the connection parameters
+        /// </summary>
+        /// <param name="ccop"></param>
         public void SetCommonConnectionParameters(CommonConnectionParams ccop)
         {
             lock (_lock)
@@ -24,6 +31,11 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO
             }
         }
 
+        /// <summary>
+        /// Create Client for connection with the API token
+        /// </summary>
+        /// <param name="apitoken"></param>
+        /// <returns></returns>
         public HttpClient GetClient(string apitoken = "")
         {
             HttpClient httpClient = new HttpClient();
@@ -40,6 +52,13 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO
 
             return httpClient;
         }
+        /// <summary>
+        /// Get message from the API for specific device
+        /// </summary>
+        /// <param name="deviceid">Device Id</param>
+        /// <param name="group">Group Id</param>
+        /// <param name="apitoken">API token for communication with HARDWARIO Cloud</param>
+        /// <returns></returns>
 
         public async Task<(bool, List<HWDto>)> GetMessages(string deviceid, string group, string apitoken = "")
         {
@@ -64,6 +83,13 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO
             return (false, new List<HWDto>());
         }
 
+        /// <summary>
+        /// Get undread message
+        /// </summary>
+        /// <param name="deviceid"></param>
+        /// <param name="group"></param>
+        /// <param name="apitoken"></param>
+        /// <returns></returns>
         public async Task<(bool, HWDto)> GetUnreadedMessage(string deviceid, string group, string apitoken = "")
         {
             try
@@ -95,6 +121,14 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO
             }
             public string message_id { get; set; } = string.Empty;
         }
+        /// <summary>
+        /// confirm readed message - TODO: some bug, api not respond correctly
+        /// </summary>
+        /// <param name="deviceid"></param>
+        /// <param name="group"></param>
+        /// <param name="messageid"></param>
+        /// <param name="apitoken"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> ConfirmReadOfMessage(string deviceid, string group, string messageid, string apitoken = "")
         {
             try

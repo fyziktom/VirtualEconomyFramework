@@ -13,11 +13,19 @@ namespace VEDriversLite.WooCommerce
 {
     public partial class WooCommerceShop
     {
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string LastCheckedDogePaymentUtxo { get; set; } = string.Empty;
         private static object _lock { get; set; } = new object();
 
         #region DogePaymentsHandling
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public async Task ConnectDogeAccount(string address)
         {
             ConnectedDogeAccountAddress = address;
@@ -29,6 +37,10 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task DisconnectDogeAccount()
         {
             if (VEDLDataContext.DogeAccounts.TryGetValue(ConnectedDogeAccountAddress, out var doge))
@@ -135,6 +147,12 @@ namespace VEDriversLite.WooCommerce
 
         #endregion
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
         public async Task<(bool,string)> SendDogePaymentBack(DogeAPI.Utxo utxo, Order order)
         {
             try
@@ -189,6 +207,12 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> SendDepositPayment(DogeAPI.Utxo utxo, Order order)
         {
             try
@@ -244,6 +268,11 @@ namespace VEDriversLite.WooCommerce
             return (false, string.Empty);
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
         public async Task<Dictionary<string, double>> ParseAuthorsAmountFromOrder(Order order)
         {
             if (order == null)

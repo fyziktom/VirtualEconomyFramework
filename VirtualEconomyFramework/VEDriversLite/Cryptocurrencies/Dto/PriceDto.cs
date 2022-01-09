@@ -6,14 +6,33 @@ namespace VEDriversLite.Cryptocurrencies.Dto
 {
     public class PriceDto
     {
+        /// <summary>
+        /// Main currency
+        /// </summary>
         public CurrencyTypes Currency { get; set; } = CurrencyTypes.NEBL;
+        /// <summary>
+        /// Related currency
+        /// It means Currency / VS_Currency, for example NEBL/USD
+        /// </summary>
         public CurrencyTypes VS_Currency { get; set; } = CurrencyTypes.USD;
+        /// <summary>
+        /// Text name - label of the currency/vs_currency
+        /// </summary>
         public string TextName
         {
             get => GetName(Currency, VS_Currency);
         }
 
+        /// <summary>
+        /// Actual value
+        /// </summary>
         public double Value { get; set; } = 0.0;
+        /// <summary>
+        /// Function ofr get name of currency/vs_currency
+        /// </summary>
+        /// <param name="curr"></param>
+        /// <param name="vscurr"></param>
+        /// <returns></returns>
 
         public static string GetName(CurrencyTypes curr, CurrencyTypes vscurr)
         {

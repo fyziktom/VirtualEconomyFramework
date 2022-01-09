@@ -104,6 +104,10 @@ namespace VEDriversLite.Cryptocurrencies
             IsRefreshing = true;
             return true;
         }
+        /// <summary>
+        /// Stop the refreshing of the data
+        /// </summary>
+        /// <returns></returns>
         public virtual async Task<bool> StopRefreshingData()
         {
             if (priceRefreshTimer != null)

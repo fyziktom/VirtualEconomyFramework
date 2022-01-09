@@ -20,15 +20,30 @@ namespace VEDriversLite.WooCommerce
     {
         public static bool IsInitialized { get; set; } = false;
         private static HttpClient httpClient = new HttpClient();
+        /// <summary>
+        /// TODO
+        /// </summary>
         public static WooCommerceShop Shop { get; set; } = new WooCommerceShop();
+        /// <summary>
+        /// TODO
+        /// </summary>
 
         public static readonly IpfsClient ipfs = new IpfsClient("https://ipfs.infura.io:5001");
+        /// <summary>
+        /// TODO
+        /// </summary>
         public static WordPressClient wpClient { get; set; }
         private static void RequestFilter(HttpWebRequest request)
         {
             request.UserAgent = "VENFT App";
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="imageLink"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static async Task<(bool,string)> UploadIFPSImageToWP(string imageLink, string name)
         {
             try
@@ -57,6 +72,12 @@ namespace VEDriversLite.WooCommerce
             return (false, string.Empty);
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="imageLink"></param>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public static async Task<(bool, string)> UploadIFPSImageToWPByAPI(string imageLink, string filename)
         {
             try
@@ -99,6 +120,13 @@ namespace VEDriversLite.WooCommerce
             return (false, string.Empty);
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="apiurl"></param>
+        /// <param name="wplogin"></param>
+        /// <param name="wppass"></param>
+        /// <returns></returns>
         public static async Task<(bool,string)> GetJWTToken(string apiurl, string wplogin, string wppass)
         {
             try
@@ -120,6 +148,12 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="apiurl"></param>
+        /// <param name="jwt"></param>
+        /// <returns></returns>
         public static async Task<(bool, string)> InitWPAPI(string apiurl, string jwt)
         {
             try
@@ -137,7 +171,15 @@ namespace VEDriversLite.WooCommerce
                 return (false, "Cannot get JWT Token. " + ex.Message);
             }
         }
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="apiurl"></param>
+        /// <param name="apikey"></param>
+        /// <param name="secret"></param>
+        /// <param name="jwt"></param>
+        /// <param name="withRefreshing"></param>
+        /// <returns></returns>
         public static async Task<bool> InitStoreApiConnection(string apiurl, string apikey, string secret, string jwt, bool withRefreshing = false)
         {
             try
@@ -189,7 +231,14 @@ namespace VEDriversLite.WooCommerce
                 return false;
             }
         }
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="apiurl"></param>
+        /// <param name="apikey"></param>
+        /// <param name="secret"></param>
+        /// <returns></returns>
         public static string GetFullAPIUrl(string command, string apiurl = "", string apikey = "", string secret = "")
         {
             if (!string.IsNullOrEmpty(apiurl) && !string.IsNullOrEmpty(apikey) && !string.IsNullOrEmpty(secret))
@@ -197,7 +246,15 @@ namespace VEDriversLite.WooCommerce
             else
                 return VEDLDataContext.WooCommerceStoreUrl + $"{command}?consumer_key={VEDLDataContext.WooCommerceStoreAPIKey}&consumer_secret={VEDLDataContext.WooCommerceStoreSecret}";
         }
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="nft"></param>
+        /// <param name="categories"></param>
+        /// <param name="quantity"></param>
+        /// <param name="apiurl"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static async Task<Product> AddNewProduct(INFT nft, List<Category> categories, int quantity = 1, string apiurl = "", Dictionary<string,string> options = null)
         {
             try
@@ -312,7 +369,12 @@ namespace VEDriversLite.WooCommerce
                 return new Product();
             }
         }
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="apiurl"></param>
+        /// <returns></returns>
         public static async Task<Order> UpdateOrder(Order order, string apiurl = "")
         {
             if (IsInitialized && string.IsNullOrEmpty(apiurl))
@@ -333,7 +395,12 @@ namespace VEDriversLite.WooCommerce
 
             return new Order();
         }
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="apiurl"></param>
+        /// <returns></returns>
         public static async Task<Product> GetProduct(string id, string apiurl = "")
         {
             try
@@ -353,7 +420,12 @@ namespace VEDriversLite.WooCommerce
 
             return new Product();
         }
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="apiurl"></param>
+        /// <returns></returns>
         public static async Task<Order> GetOrder(string id, string apiurl = "")
         {
             try
@@ -371,7 +443,11 @@ namespace VEDriversLite.WooCommerce
 
             return new Order();
         }
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="apiurl"></param>
+        /// <returns></returns>
         public static async Task<List<Product>> GetAllProducts(string apiurl = "")
         {
             try
@@ -412,7 +488,11 @@ namespace VEDriversLite.WooCommerce
 
             return new List<Product>();
         }
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="apiurl"></param>
+        /// <returns></returns>
         public static async Task<List<Order>> GetAllOrders(string apiurl = "")
         {
             try
@@ -452,7 +532,11 @@ namespace VEDriversLite.WooCommerce
 
             return new List<Order>();
         }
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="apiurl"></param>
+        /// <returns></returns>
         public static async Task<List<Category>> GetAllCategoreis(string apiurl = "")
         {
             try

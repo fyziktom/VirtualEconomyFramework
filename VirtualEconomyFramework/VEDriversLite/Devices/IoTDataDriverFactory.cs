@@ -7,6 +7,11 @@ namespace VEDriversLite.Devices
 {
     public static class IoTDataDriverFactory
     {
+        /// <summary>
+        /// Return correct IoT Data Driver based on the selected type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static async Task<IIoTDataDriver> GetIoTDataDriver(IoTDataDriverType type)
         {
             IIoTDataDriver driver = null;

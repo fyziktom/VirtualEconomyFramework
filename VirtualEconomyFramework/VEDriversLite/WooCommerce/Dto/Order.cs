@@ -6,44 +6,137 @@ namespace VEDriversLite.WooCommerce.Dto
 {
     public class Shipping
     {
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string first_name { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string last_name { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string company { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string address_1 { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string address_2 { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string city { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string state { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string postcode { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string country { get; set; } = string.Empty;
         //public string email { get; set; } = string.Empty;
         //public string phone { get; set; } = string.Empty;
     }
     public class Billing
     {
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string first_name { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string last_name { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string company { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string address_1 { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string address_2 { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string city { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string state { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string postcode { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string country { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string email { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string phone { get; set; } = string.Empty;
     }
     public class LineItem
     {
+        /// <summary>
+        /// TODO
+        /// </summary>
         public int id { get; set; } = 0;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string name { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public int product_id { get; set; } = 0;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public int variation_id { get; set; } = 0;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public int quantity { get; set; } = 0;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string subtotal { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string subtotal_tax { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string total { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string total_tax { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public List<ProductMetadata> meta_data { get; set; } = new List<ProductMetadata>();
+        /// <summary>
+        /// TODO
+        /// </summary>
         public double price { get; set; } = 0;
     }
     public enum OrderStatus
@@ -59,11 +152,29 @@ namespace VEDriversLite.WooCommerce.Dto
     }
     public class Order
     {
+        /// <summary>
+        /// TODO
+        /// </summary>
         public int id { get; set; } = 0;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public int parent_id { get; set; } = 0;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string number { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string order_key { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string status { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public OrderStatus statusclass
         {
             get
@@ -84,25 +195,83 @@ namespace VEDriversLite.WooCommerce.Dto
                 status = n;
             }
         }
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string currency { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public DateTime? date_created { get; set; }
+        /// <summary>
+        /// TODO
+        /// </summary>
         public DateTime? date_modified { get; set; }
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string discount_total { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string discount_tax { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string shipping_total { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string shipping_tax { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string total { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string total_tax { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string payment_method { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string payment_method_title { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string transaction_id { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public DateTime? date_paid { get; set; }
+        /// <summary>
+        /// TODO
+        /// </summary>
         public DateTime? date_paid_gmt { get; set; }
+        /// <summary>
+        /// TODO
+        /// </summary>
         public Billing billing { get; set; } = new Billing();
+        /// <summary>
+        /// TODO
+        /// </summary>
         public Shipping shipping { get; set; } = new Shipping();
+        /// <summary>
+        /// TODO
+        /// </summary>
         public List<ProductMetadata> meta_data { get; set; } = new List<ProductMetadata>();
+        /// <summary>
+        /// TODO
+        /// </summary>
         public List<LineItem> line_items { get; set; } = new List<LineItem>();
 
+        /// <summary>
+        /// Fill the Dto
+        /// </summary>
+        /// <param name="order"></param>
         public void Fill(Order order)
         {
             id = order.id;

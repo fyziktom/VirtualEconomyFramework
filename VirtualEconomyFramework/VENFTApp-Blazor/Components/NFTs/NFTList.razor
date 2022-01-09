@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.DevicesNFTs
 @using VEDriversLite.NFT.Coruzant
 @using VEDriversLite.WooCommerce
 @using VEDriversLite.WooCommerce.Dto
@@ -101,7 +102,7 @@
                                                  DisplayCheckField="@allowNFTCheckField"
                                                  NFTCheckedChanged="@NFTCheckChangedHandler" />
                                     }
-                                    else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message)
+                                    else if (nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Message && nft.Type != NFTTypes.IoTMessage)
                                     {
                                         if ((displayImages && nft.Type == NFTTypes.Image) ||
                                             (displayProducts && nft.Type == NFTTypes.Product) ||
@@ -112,16 +113,24 @@
                                             (displayEvents && nft.Type == NFTTypes.Event) ||
                                             (displayTickets && nft.Type == NFTTypes.Ticket))
                                         {
-                                            if ((displayVENFT && nft.TokenId == NFTHelpers.TokenId) ||
+                                            if (((displayVENFT && nft.TokenId == NFTHelpers.TokenId) ||
+                                                (displayVENFT && nft.TokenId == HardwarioNFTHelpers.TokenId)) ||
                                                 (!displayVENFT && nft.TokenId != NFTHelpers.TokenId))
                                             {
-                                            <NFT Address="@_address" InputNFT="@nft"
-                                                 NFTSent="@NFTSentHandler"
-                                                 OwnNFT="@OwnNFT"
-                                                 SubAccount="@SubAccount"
-                                                 DisplayCheckField="@allowNFTCheckField"
-                                                 NFTCheckedChanged="@NFTCheckChangedHandler"
-                                                 IsInWooCom="@isInWoo" />
+                                                if (nft.Type != NFTTypes.Device && nft.Type != NFTTypes.IoTDevice)
+                                                {
+                                                <NFT Address="@_address" InputNFT="@nft"
+                                                     NFTSent="@NFTSentHandler"
+                                                     OwnNFT="@OwnNFT"
+                                                     SubAccount="@SubAccount"
+                                                     DisplayCheckField="@allowNFTCheckField"
+                                                     NFTCheckedChanged="@NFTCheckChangedHandler"
+                                                     IsInWooCom="@isInWoo" />
+                                                }
+                                                else 
+                                                { 
+                                                    <!--TODO-->
+                                                }
                                             }
                                         }
                                     }

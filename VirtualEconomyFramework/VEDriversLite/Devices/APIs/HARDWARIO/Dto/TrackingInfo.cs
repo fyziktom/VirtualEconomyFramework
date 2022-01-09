@@ -6,8 +6,17 @@ namespace VEDriversLite.Devices.APIs.HARDWARIO.Dto
 {
     public class TrackingInfo
     {
+        /// <summary>
+        /// Time of grabbed location
+        /// </summary>
         public long time { get; set; } = 0;
+        /// <summary>
+        /// Latitude location coordinant
+        /// </summary>
         public double latitude { get; set; } = 0.0;
+        /// <summary>
+        /// Longitude location coordinant
+        /// </summary>
         public double longitude { get; set; } = 0.0;
     }
 }

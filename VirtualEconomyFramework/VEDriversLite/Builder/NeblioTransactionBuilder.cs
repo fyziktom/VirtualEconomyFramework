@@ -31,7 +31,7 @@ namespace VEDriversLite.Builder
                 foreach(var rec in receivers)
                 {
                     var r = rec.Address;
-                    throw new Exception(r + ", " + rec.Amount.ToString());
+                    //throw new Exception(r + ", " + rec.Amount.ToString());
                     dto.To.Add(new To()
                     {
                         Address = rec.Address,

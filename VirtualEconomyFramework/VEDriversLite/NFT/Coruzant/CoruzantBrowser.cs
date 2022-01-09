@@ -50,7 +50,6 @@ namespace VEDriversLite.NFT.Coruzant
             {
                 throw new Exception("Cannot deserialize the coruzant tabs.");
             }
-            return string.Empty;
         }
 
         /// <summary>

@@ -16,7 +16,6 @@ namespace VEDriversLite.Admin
             {
                 case AdminActionTypes.ImportVENFTBackup:
                     return new ImportVENFTBackupRequestDto(admin, address);
-                    break;
             }
             return null;
         }

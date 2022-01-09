@@ -438,6 +438,7 @@
     private string author = string.Empty;
     private string imagelink = string.Empty;
     private string link = string.Empty;
+    private string tokenId = string.Empty;
 
     // special properties
     private string version = string.Empty;
@@ -511,6 +512,7 @@
                 author = nft.Author;
                 imagelink = nft.ImageLink;
                 link = nft.Link;
+                tokenId = nft.TokenId;
 
                 if (nft.Type == NFTTypes.Device)
                 {
@@ -620,6 +622,7 @@
             author = newNFT.Author;
             imagelink = newNFT.ImageLink;
             link = newNFT.Link;
+            tokenId = newNFT.TokenId;
 
             if (newNFT.Type == NFTTypes.Device)
             {
@@ -665,6 +668,8 @@
 
             if (!string.IsNullOrEmpty(TokenId))
                 newNFT.TokenId = TokenId;
+            else if (!string.IsNullOrEmpty(tokenId))
+                newNFT.TokenId = tokenId;
 
             if (name != null)
                 newNFT.Name = name;

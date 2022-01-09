@@ -23,11 +23,29 @@ namespace VEDriversLite.WooCommerce
             WooCommerceStoreJWTToken = jwt;
             AllowDispatchNFTOrders = allowDispatchNFTOrders;
         }
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string WooCommerceStoreUrl { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string WooCommerceStoreAPIKey { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string WooCommerceStoreSecret { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public string WooCommerceStoreJWTToken { get; set; } = string.Empty;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public bool IsRefreshingRunning { get; set; } = false;
+        /// <summary>
+        /// TODO
+        /// </summary>
         public bool AllowDispatchNFTOrders { get; set; } = true;
         /// <summary>
         /// If there is some Doge address in same project which should be searched for the payments triggers fill it here
@@ -52,9 +70,21 @@ namespace VEDriversLite.WooCommerce
         /// </summary>
         public string ConnectedNFTWarehouseNeblioAccountAddress { get; set; } = string.Empty;
 
+        /// <summary>
+        /// TODO
+        /// </summary>
         public ConcurrentDictionary<string, Order> Orders { get; set; } = new ConcurrentDictionary<string, Order>();
+        /// <summary>
+        /// TODO
+        /// </summary>
         public ConcurrentDictionary<int, Product> Products { get; set; } = new ConcurrentDictionary<int, Product>();
+        /// <summary>
+        /// TODO
+        /// </summary>
         public ConcurrentDictionary<int, Category> Categories { get; set; } = new ConcurrentDictionary<int, Category>();
+        /// <summary>
+        /// TODO
+        /// </summary>
         public ConcurrentDictionary<string, NFTOrderToDispatch> NFTOrdersToDispatchDict { get; set; } = new ConcurrentDictionary<string, NFTOrderToDispatch>();
 
         /// <summary>
@@ -64,6 +94,11 @@ namespace VEDriversLite.WooCommerce
 
         private System.Timers.Timer refreshTimer = new System.Timers.Timer();
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public async Task StartRefreshingData(double interval = 5000)
         {
             await Reload();
@@ -74,6 +109,10 @@ namespace VEDriversLite.WooCommerce
             refreshTimer.Start();
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task StopRefreshingData()
         {
             refreshTimer.Stop();
@@ -81,6 +120,11 @@ namespace VEDriversLite.WooCommerce
             refreshTimer.Elapsed += RefreshTimer_Elapsed;
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             refreshTimer.Stop();
@@ -90,6 +134,10 @@ namespace VEDriversLite.WooCommerce
             refreshTimer.Start();
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task Reload()
         {
             try
@@ -119,6 +167,10 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task ReLoadOrders()
         {
             var orders = await WooCommerceHelpers.GetAllOrders(
@@ -245,6 +297,11 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
         public async Task<(bool,string)> GetNeblioAddressFromOrderMetadata(Order o)
         {
             var res = (false, string.Empty);
@@ -255,6 +312,10 @@ namespace VEDriversLite.WooCommerce
             });
             return res;
         }
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task ReLoadProducts()
         {
             var products = await WooCommerceHelpers.GetAllProducts(
@@ -282,6 +343,10 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task ReLoadCategories()
         {
             var categories = await WooCommerceHelpers.GetAllCategoreis(
@@ -387,6 +452,12 @@ namespace VEDriversLite.WooCommerce
         }
         */
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="orderkey"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public async Task<Order> UpdateOrderStatus(string orderkey, string status)
         {
             if (Orders.TryGetValue(orderkey, out var ord))
@@ -406,6 +477,13 @@ namespace VEDriversLite.WooCommerce
                 throw new Exception("Cannot find the order.");
             }
         }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="orderkey"></param>
+        /// <param name="txid"></param>
+        /// <returns></returns>
         public async Task<Order> UpdateOrderTxId(string orderkey, string txid)
         {
             if (Orders.TryGetValue(orderkey, out var ord))
@@ -424,6 +502,13 @@ namespace VEDriversLite.WooCommerce
                 throw new Exception("Cannot find the order.");
             }
         }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="withoutListCheck"></param>
+        /// <returns></returns>
         public async Task<Order> UpdateOrder(Order order, bool withoutListCheck = false)
         {
             if (!withoutListCheck)
@@ -453,6 +538,14 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="nft"></param>
+        /// <param name="categories"></param>
+        /// <param name="quantity"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public async Task<Product> AddProduct(INFT nft, List<Category> categories, int quantity = 1, Dictionary<string,string> options = null)
         {
             try
@@ -476,6 +569,11 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="productid"></param>
+        /// <returns></returns>
         public async Task<Product> GetProduct(int productid)
         {
             var prod = await WooCommerceHelpers.GetProduct(productid.ToString(),
@@ -487,7 +585,11 @@ namespace VEDriversLite.WooCommerce
             return prod;
         }
 
-
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="orderid"></param>
+        /// <returns></returns>
         public async Task<Order> GetOrder(int orderid)
         {
             var ord = await WooCommerceHelpers.GetOrder(orderid.ToString(),
@@ -499,6 +601,11 @@ namespace VEDriversLite.WooCommerce
             return ord;
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
         public async Task<bool> CheckIfCategoryExists(string category)
         {
             var exists = false;

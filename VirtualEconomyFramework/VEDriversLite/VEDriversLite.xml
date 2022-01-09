@@ -33,6 +33,61 @@
             Data dto
             </summary>
         </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.Selected">
+            <summary>
+            Info if the Tab is selected - this is set by Start or Stop functions internally
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.Address">
+            <summary>
+            Address loaded in this ActiveTab
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.ShortAddress">
+            <summary>
+            Shorten version of the address - just help for UI
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.IsInBookmark">
+            <summary>
+            Flag if the Address is in the bookmark - then it has Bookmark dto loaded
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.CanLoadMore">
+            <summary>
+            Tab loads just 40 NFTs. if it can load more, this is true
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.IsRefreshingRunning">
+            <summary>
+            Indicate if the autorefresh is running
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.NFTs">
+            <summary>
+            List of the loaded NFTs of the Address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.UtxosList">
+            <summary>
+            List of the loaded Utxos of the Address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.BookmarkFromAccount">
+            <summary>
+            Loaded Bookmark data
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.Bookmarks.ActiveTab.ReceivedPayments">
+            <summary>
+            Loaded list of the received payments NFTs of the address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.Profile">
+            <summary>
+            Profile NFT of the Address
+            </summary>
+        </member>
         <member name="E:VEDriversLite.Bookmarks.ActiveTab.NFTsChanged">
             <summary>
             This event is called whenever the list of NFTs is changed
@@ -54,12 +109,69 @@
             It provides Utxo and UtxoIndex as touple.
             </summary>
         </member>
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.TxCashPreload">
+            <summary>
+            This is same function as in NeblioAcocuntBase - TODO merge them to one common function
+            This will make loading of the tab much faster
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.StartRefreshing(System.Double)">
+            <summary>
+            Start Automated refreshing
+            </summary>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.StopRefreshing">
+            <summary>
+            Stop automated refreshing
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.Reload">
+            <summary>
+            Reload Address Utxos and refresh the NFT list
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.Bookmarks.ActiveTab.RefreshAddressReceivedPayments">
             <summary>
             This function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. 
             This list is cleared at the start of this function
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.LoadBookmark(VEDriversLite.Bookmarks.Bookmark)">
+            <summary>
+            Load Bookmark data into ActiveTab class when some bookmark is found in another storage (for example NeblioAccount class)
+            </summary>
+            <param name="bkm"></param>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.ClearBookmark">
+            <summary>
+            Clear the Bookmark data in ActiveTab
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.Bookmark.Name">
+            <summary>
+            Name of the bookmark
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.Bookmark.Address">
+            <summary>
+            Blockchain address of the Bookmark
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.Bookmark.Note">
+            <summary>
+            Note about bookmark
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.Bookmark.IsSubAccount">
+            <summary>
+            If this is true, the bookmark is on some subaccount
+            </summary>
         </member>
         <member name="M:VEDriversLite.FileHelpers.ClearEmptyDirs(System.String)">
             <summary>
@@ -214,11 +326,53 @@
             <param name="period">You can change the period - default 30000ms</param>
             <returns>true if successful start</returns>
         </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.StopRefreshingData">
+            <summary>
+            Stop the refreshing of the data
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.Dispose">
             <summary>
             Stop the auto refreshing of the data.
             </summary>
             <returns>true if successful stop</returns>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.Dto.PriceDto.Currency">
+            <summary>
+            Main currency
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.Dto.PriceDto.VS_Currency">
+            <summary>
+            Related currency
+            It means Currency / VS_Currency, for example NEBL/USD
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.Dto.PriceDto.TextName">
+            <summary>
+            Text name - label of the currency/vs_currency
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Cryptocurrencies.Dto.PriceDto.Value">
+            <summary>
+            Actual value
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.Dto.PriceDto.GetName(VEDriversLite.Cryptocurrencies.CurrencyTypes,VEDriversLite.Cryptocurrencies.CurrencyTypes)">
+            <summary>
+            Function ofr get name of currency/vs_currency
+            </summary>
+            <param name="curr"></param>
+            <param name="vscurr"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Cryptocurrencies.ExchangeRatesAPIFactory.GetExchangeRatesAPI(VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes)">
+            <summary>
+            Function will return the Exchange Rates API driver based on the type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
         </member>
         <member name="P:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.Type">
             <summary>
@@ -484,12 +638,395 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.Acceleration.axis_x">
+            <summary>
+            X Axis Data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.Acceleration.axis_y">
+            <summary>
+            Y Axis Data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.Acceleration.axis_z">
+            <summary>
+            Z Axis data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWAccelerometer.acceleration">
+            <summary>
+            Data about axceleration
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWAccelerometer.orientation">
+            <summary>
+            Orientation of the accelerometer
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDataDto.tracking">
+            <summary>
+            Tracking data from CHESTER Gateway
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDataDto.sensor">
+            <summary>
+            Sensor data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.id">
+            <summary>
+            ID of the CHESTER device message
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.created_at">
+            <summary>
+            Message created at utc time
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.group_id">
+            <summary>
+            Group Id where device is
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.device_id">
+            <summary>
+            CHESTER Device Id
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.organization_id">
+            <summary>
+            Organization Id where device is
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.label">
+            <summary>
+            Label of the device
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.name">
+            <summary>
+            Name of the device
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.data">
+            <summary>
+            Message data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWSensor.thermometer">
+            <summary>
+            Thermometer sensor data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWSensor.accelerometer">
+            <summary>
+            Accelerometer sensor data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWThermometer.temperature">
+            <summary>
+            Temperature on the sensor
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.TrackingInfo.time">
+            <summary>
+            Time of grabbed location
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.TrackingInfo.latitude">
+            <summary>
+            Latitude location coordinant
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.Dto.TrackingInfo.longitude">
+            <summary>
+            Longitude location coordinant
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.CommonConnParams">
+            <summary>
+            Common connection properties like Url, security, etc.
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters(VEDriversLite.Devices.Dto.CommonConnectionParams)">
+            <summary>
+            Load the connection parameters
+            </summary>
+            <param name="ccop"></param>
+        </member>
+        <member name="M:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.GetClient(System.String)">
+            <summary>
+            Create Client for connection with the API token
+            </summary>
+            <param name="apitoken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.GetMessages(System.String,System.String,System.String)">
+            <summary>
+            Get message from the API for specific device
+            </summary>
+            <param name="deviceid">Device Id</param>
+            <param name="group">Group Id</param>
+            <param name="apitoken">API token for communication with HARDWARIO Cloud</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.GetUnreadedMessage(System.String,System.String,System.String)">
+            <summary>
+            Get undread message
+            </summary>
+            <param name="deviceid"></param>
+            <param name="group"></param>
+            <param name="apitoken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.ConfirmReadOfMessage(System.String,System.String,System.String,System.String)">
+            <summary>
+            confirm readed message - TODO: some bug, api not respond correctly
+            </summary>
+            <param name="deviceid"></param>
+            <param name="group"></param>
+            <param name="messageid"></param>
+            <param name="apitoken"></param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Devices.CommonIoTDataDriver.Name">
+            <summary>
+            Name of the driver
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.CommonIoTDataDriver.Type">
+            <summary>
+            Driver type
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.CommonIoTDataDriver.ComSchemeType">
+            <summary>
+            Communication Schemes (Requests - classic API), (PubSub - like MQTT)
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.CommonIoTDataDriver.IoTComType">
+            <summary>
+            Communication type - REST API, MSSQL Database, MQTT, etc.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.CommonIoTDataDriver.CommonConnParams">
+            <summary>
+            Main connection parameters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.CommonIoTDataDriver.CancelTokenSource">
+            <summary>
+            Cancelation token source for the cancel of automatic loading of the messages
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.CommonIoTDataDriver.CancelToken">
+            <summary>
+            Cancelation token for the cancel of automatic loading of the messages
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.CommonIoTDataDriver.IsRunning">
+            <summary>
+            Is the Driver running - means autorefresh of the messages
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Devices.CommonIoTDataDriver.NewDataReceived">
+            <summary>
+            New message found
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Devices.CommonIoTDataDriver.Init(VEDriversLite.NFT.INFT)">
+            <summary>
+            Init driver communication - means autorefresh of the messages
+            </summary>
+            <param name="nft"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.CommonIoTDataDriver.DeInit">
+            <summary>
+            Deinit driver communiation - means autorefresh of the messages
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)">
+            <summary>
+            Set connection parameters
+            </summary>
+            <param name="ccop"></param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.IP">
+            <summary>
+            IP for connection
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Url">
+            <summary>
+            URL for connection
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Port">
+            <summary>
+            PORT for connection
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Encrypted">
+            <summary>
+            Is communication encrypted
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Secured">
+            <summary>
+            is commection secured
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.SType">
+            <summary>
+            Type of security type like: SSL, Bearer, etc.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Username">
+            <summary>
+            User name for the case of secured connection
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Password">
+            <summary>
+            Password name for the case of secured connection
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Token">
+            <summary>
+            Token for the case of secured connection
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.GroupId">
+            <summary>
+            Group Id of the device
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.DeviceId">
+            <summary>
+            Device Id of the device
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.UserId">
+            <summary>
+            User Id of the owner of the device
+            </summary>
+        </member>
         <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.CommonRefreshInterval">
             <summary>
             Common data refresh interval in miliseconds
             Default value is 10s = 10000ms
             This is usually used for request type of the communication
             </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.IoTDataDriverSettings.ComSchemeType">
+            <summary>
+            Communication Schemes (Requests - classic API), (PubSub - like MQTT)
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.IoTDataDriverSettings.IoTComType">
+            <summary>
+            Communication type - REST API, MSSQL Database, MQTT, etc.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.Dto.IoTDataDriverSettings.ConnectionParams">
+            <summary>
+            Main connection parameters
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Devices.HARDWARIOIoTDataDriver.DeInit">
+            <summary>
+            Deinit driver communiation - means autorefresh of the messages
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.HARDWARIOIoTDataDriver.Init(VEDriversLite.NFT.INFT)">
+            <summary>
+            Init driver communication - means autorefresh of the messages
+            </summary>
+            <param name="nft"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)">
+            <summary>
+            Set connection parameters
+            </summary>
+            <param name="ccop"></param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Devices.IIoTDataDriver.Name">
+            <summary>
+            Name of the driver
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.IIoTDataDriver.Type">
+            <summary>
+            Driver type
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.IIoTDataDriver.ComSchemeType">
+            <summary>
+            Communication Schemes (Requests - classic API), (PubSub - like MQTT)
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.IIoTDataDriver.IoTComType">
+            <summary>
+            Communication type - REST API, MSSQL Database, MQTT, etc.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.IIoTDataDriver.CommonConnParams">
+            <summary>
+            Main connection parameters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.IIoTDataDriver.CancelTokenSource">
+            <summary>
+            Cancelation token source for the cancel of automatic loading of the messages
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.IIoTDataDriver.CancelToken">
+            <summary>
+            Cancelation token for the cancel of automatic loading of the messages
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Devices.IIoTDataDriver.IsRunning">
+            <summary>
+            Is the Driver running - means autorefresh of the messages
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Devices.IIoTDataDriver.NewDataReceived">
+            <summary>
+            New message found
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Devices.IIoTDataDriver.Init(VEDriversLite.NFT.INFT)">
+            <summary>
+            Init driver communication - means autorefresh of the messages
+            </summary>
+            <param name="nft"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.IIoTDataDriver.DeInit">
+            <summary>
+            Deinit driver communiation - means autorefresh of the messages
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.IIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)">
+            <summary>
+            Set connection parameters
+            </summary>
+            <param name="ccop"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Devices.IoTDataDriverFactory.GetIoTDataDriver(VEDriversLite.Devices.IoTDataDriverType)">
+            <summary>
+            Return correct IoT Data Driver based on the selected type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
         </member>
         <member name="P:VEDriversLite.DogeAccount.Address">
             <summary>
@@ -678,16 +1215,19 @@
             <summary>
             Send Doge payment with multiple outputs
             </summary>
-            <param name="receiver">Receiver Doge Address</param>
-            <param name="amount">Ammount in Doge</param>
+            <param name="receiverAmounts"></param>
+            <param name="utxos"></param>
+            <param name="message"></param>
+            <param name="fee"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.DogeAccount.BuyNFT(System.String,System.String,VEDriversLite.NFT.INFT)">
             <summary>
-            Send Doge payment
+            Buy the NFT based on the NFT and Neblio Address
             </summary>
-            <param name="receiver">Receiver Doge Address</param>
-            <param name="amount">Ammount in Doge</param>
+            <param name="neblioAddress"></param>
+            <param name="receiver"></param>
+            <param name="nft"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.DogeAccount.SignMessage(System.String)">
@@ -1081,7 +1621,18 @@
             <returns>Object containing doge balance, if address symbol does not exist on network, empty object is returned.</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.GetAddressBalanceAsync(System.String,System.Threading.CancellationToken)">
+            <summary>Returns the doge balance</summary>
+            <param name="address">Doge address</param>
+            <returns>Object containing doge balance, if address symbol does not exist on network, empty object is returned.</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
         <member name="M:VEDriversLite.DogeAPI.IClient.BroadcastTxAsync(VEDriversLite.DogeAPI.BroadcastTxRequest)">
+            <summary>Broadcasts a signed raw transaction to the network</summary>
+            <returns>An object containing the TXID if the broadcast was successful</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.BroadcastTxAsync(VEDriversLite.DogeAPI.BroadcastTxRequest,System.Threading.CancellationToken)">
             <summary>Broadcasts a signed raw transaction to the network</summary>
             <returns>An object containing the TXID if the broadcast was successful</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
@@ -1091,12 +1642,28 @@
             <returns>An object containing the TXID if the broadcast was successful</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.ChainSoBroadcastTxAsync(VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest,System.Threading.CancellationToken)">
+            <summary>Broadcasts a signed raw transaction to the network</summary>
+            <returns>An object containing the TXID if the broadcast was successful</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
         <member name="M:VEDriversLite.DogeAPI.IClient.VENFTBroadcastTxAsync(VEDriversLite.DogeAPI.VENFTBroadcastTxRequest)">
             <summary>Broadcasts a signed raw transaction to the network</summary>
             <returns>An object containing the TXID if the broadcast was successful</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.VENFTBroadcastTxAsync(VEDriversLite.DogeAPI.VENFTBroadcastTxRequest,System.Threading.CancellationToken)">
+            <summary>Broadcasts a signed raw transaction to the network</summary>
+            <returns>An object containing the TXID if the broadcast was successful</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
         <member name="M:VEDriversLite.DogeAPI.IClient.GetTransactionInfoAsync(System.String)">
+            <summary>Information On an Doge Transaction</summary>
+            <param name="txid">Doge txid to get information on.</param>
+            <returns>An object represending this transaction</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.GetTransactionInfoAsync(System.String,System.Threading.CancellationToken)">
             <summary>Information On an Doge Transaction</summary>
             <param name="txid">Doge txid to get information on.</param>
             <returns>An object represending this transaction</returns>
@@ -1108,13 +1675,31 @@
             <returns>Object containing collection of Utxos</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.GetAddressUtxosAsync(System.String,System.Threading.CancellationToken)">
+            <summary>Doge Address Unspended transactions</summary>
+            <param name="address">Doge Address</param>
+            <returns>Object containing collection of Utxos</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
         <member name="M:VEDriversLite.DogeAPI.IClient.GetAddressSentTxAsync(System.String)">
             <summary>Doge Address spended transactions</summary>
             <param name="address">Doge Address</param>
             <returns>Object containing collection of Utxos</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.GetAddressSentTxAsync(System.String,System.Threading.CancellationToken)">
+            <summary>Doge Address spended transactions</summary>
+            <param name="address">Doge Address</param>
+            <returns>Object containing collection of Utxos</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
         <member name="M:VEDriversLite.DogeAPI.IClient.GetAddressReceivedTxAsync(System.String)">
+            <summary>Doge Address spended transactions</summary>
+            <param name="address">Doge Address</param>
+            <returns>Object containing collection of Utxos</returns>
+            <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
+        </member>
+        <member name="M:VEDriversLite.DogeAPI.IClient.GetAddressReceivedTxAsync(System.String,System.Threading.CancellationToken)">
             <summary>Doge Address spended transactions</summary>
             <param name="address">Doge Address</param>
             <returns>Object containing collection of Utxos</returns>
@@ -1151,6 +1736,7 @@
             <param name="transaction">NBitcoin Transaction object</param>
             <param name="key">NBitcoin Key - must contain Private Key</param>
             <param name="address">NBitcoin address - must match with the provided key</param>
+            <param name="utxos">List of the input utxos</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.CalcFee(System.Int32,System.Int32,System.String,System.Boolean)">
@@ -1170,7 +1756,7 @@
             This function will crate empty Transaction object based on Neblio network standard
             Then add the Neblio Inputs and sumarize their value
             </summary>
-            <param name="nutxos">List of Neblio Utxos to use</param>
+            <param name="dutxos">List of Dogecoin Utxos to use</param>
             <param name="address">Address of the owner</param>
             <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
         </member>
@@ -1310,7 +1896,8 @@
             <summary>
             Return transaction object
             </summary>
-            <param name="addr"></param>
+            <param name="txid"></param>
+            <param name="fromMemory"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.GetAddressSpendableUtxo(System.String,System.Double,System.Double)">
@@ -1321,6 +1908,172 @@
             <param name="minAmount">minimum amount of one utxo</param>
             <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
             <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.Bookmarks">
+            <summary>
+            Serialized Bookmarks list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.BrowserTabs">
+            <summary>
+            Serialized browser tabs list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.MessageTabs">
+            <summary>
+            Serialized message tabs list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.SubAccounts">
+            <summary>
+            Serialized SubAccounts list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.Address">
+            <summary>
+            Main NeblioAddress
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.Key">
+            <summary>
+            Main NeblioAddress Key
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.DogeAddress">
+            <summary>
+            Main Dogecoin Address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.DogeKey">
+            <summary>
+            Main Dogecoin Address Key
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.WoCAPIUrl">
+            <summary>
+            Connection Url for WooCommerce eshop
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.WoCAPIKey">
+            <summary>
+            Connection API Key for the WooCommerce eshop
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.WoCAPISecret">
+            <summary>
+            Connection API Secret for the WooCommerce eshop
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.BackupDataDto.WoCAPIJWT">
+            <summary>
+            Connection API JWT Token for the WordPress
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositAddress.Name">
+            <summary>
+            Name of the Deposit address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositAddress.Address">
+            <summary>
+            Deposit Address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositAddress.TakeAddressFromNFT">
+            <summary>
+            If you dont have it take if from the NFT data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositAddress.Currency">
+            <summary>
+            Name of the currency
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositAddress.Percentage">
+            <summary>
+            Percentage of the amount what should be send to the deposit address from whole received amount
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositScheme.Name">
+            <summary>
+            Name of the deposit scheme
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositScheme.Currency">
+            <summary>
+            Name of the currency
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositScheme.MainDepositAddress">
+            <summary>
+            Main deposit address (if there is no others the payment goes there
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositScheme.IsActive">
+            <summary>
+            Is the deposit scheme active
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.DepositScheme.DepositAddresses">
+            <summary>
+            Dictionary of the addresses for the deposit of the received payment for some NFT
+            If there are more then one the amount is splited based on the percentage in DepositAddress class
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.SplitNeblioDto.receivers">
+            <summary>
+            Addresses of the receivers
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.SplitNeblioDto.lots">
+            <summary>
+            Number of the lots
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.SplitNeblioDto.amount">
+            <summary>
+            Amount of the Neblio in one lot
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.SplitNeblioDto.TotalAmount">
+            <summary>
+            Total amount of all lots together
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.SplitNeblioTokensDto.receivers">
+            <summary>
+            Addresses of the receivers
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.SplitNeblioTokensDto.lots">
+            <summary>
+            Number of the lots
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.SplitNeblioTokensDto.amount">
+            <summary>
+            Amount of the tokens
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.SplitNeblioTokensDto.tokenId">
+            <summary>
+            Token Id
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.SplitNeblioTokensDto.TotalAmount">
+            <summary>
+            Total amount of all lots together
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.KeyDto.Address">
+            <summary>
+            Address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.KeyDto.Key">
+            <summary>
+            Private key - usually exported in encrypted form
+            </summary>
         </member>
         <member name="P:VEDriversLite.MintNFTData.SenderAddress">
             <summary>
@@ -1460,6 +2213,118 @@
         <member name="P:VEDriversLite.SendTxData.CustomMessage">
             <summary>
             Custom message if it is supported by currency, not implemented yet
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.CommonEvent.Type">
+            <summary>
+            Event type
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.CommonEvent.Address">
+            <summary>
+            Address which created this event info
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.CommonEvent.Title">
+            <summary>
+            Title of the event info
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.CommonEvent.Message">
+            <summary>
+            Message content
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.CommonEvent.TxId">
+            <summary>
+            Related transaction
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.CommonEvent.Data">
+            <summary>
+            Related data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.CommonEvent.Progress">
+            <summary>
+            Progress of the task which created the event
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.CommonEvent.TimeStamp">
+            <summary>
+            Time stamp of the situation
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Events.CommonEvent.Fill(VEDriversLite.Events.IEventInfo)">
+            <summary>
+            Fill the dto
+            </summary>
+            <param name="ev"></param>
+        </member>
+        <member name="M:VEDriversLite.Events.CommonEvent.ParseData``1">
+            <summary>
+            Parse the data of the event
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Events.IEventInfo.Type">
+            <summary>
+            Event type
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.IEventInfo.Address">
+            <summary>
+            Address which created this event info
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.IEventInfo.Title">
+            <summary>
+            Title of the event info
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.IEventInfo.Message">
+            <summary>
+            Message content
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.IEventInfo.TxId">
+            <summary>
+            Related transaction
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.IEventInfo.Data">
+            <summary>
+            Related data
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.IEventInfo.Progress">
+            <summary>
+            Progress of the task which created the event
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Events.IEventInfo.TimeStamp">
+            <summary>
+            Time stamp of the situation
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Events.IEventInfo.Fill(VEDriversLite.Events.IEventInfo)">
+            <summary>
+            Fill the dto
+            </summary>
+            <param name="ev"></param>
+        </member>
+        <member name="M:VEDriversLite.Events.IEventInfo.ParseData``1">
+            <summary>
+            Parse the data of the event
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.NeblioAccount.RunningAsVENFTBlazorApp">
+            <summary>
+            This will block the automatic start of the NFT IoT Devices. 
+            It is recommended to use NFT IoT devices in the services instead of the web assembly
             </summary>
         </member>
         <member name="P:VEDriversLite.NeblioAccount.Tabs">
@@ -1971,6 +2836,11 @@
             List of actual address Coruzant NFTs. Based on Utxos list
             </summary>
         </member>
+        <member name="P:VEDriversLite.Neblio.NeblioAccountBase.HardwarioNFTs">
+            <summary>
+            List of actual address HARDWARIO NFTs. Based on Utxos list
+            </summary>
+        </member>
         <member name="F:VEDriversLite.Neblio.NeblioAccountBase.ReceivedPayments">
             <summary>
             Received payments (means Payment NFT) of this address.
@@ -2095,6 +2965,14 @@
             <param name="title">Title of the event message</param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.TxCashPreload">
+            <summary>
+            This function will take all utxos and try to request all their txinfo and metadata info as parallel as possible
+            The responses from the Neblio API are stored in the cashe, so most of them are not need to call anymore and they will be taken from the memory
+            This speed up a loading a lot
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.LoadAccountKey(System.String,System.String)">
             <summary>
             Load account Key. If there is password it is used to decrypt the private key
@@ -2129,6 +3007,12 @@
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.ReloadCoruzantNFTs">
             <summary>
             Reload coruzant NFTs list
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.ReloadHardwarioNFTs">
+            <summary>
+            Reload hardwario NFTs list
             </summary>
             <returns></returns>
         </member>
@@ -2336,13 +3220,6 @@
             <param name="NFT"></param>
             <param name="priceWrite">Set this if you need to just write the price to the NFT</param>
             <param name="price">Price must be bigger than 0.0002 NEBL</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.ChangeProfileNFT(VEDriversLite.NFT.INFT)">
-            <summary>
-            This function will change profile NFT. It need as input previous loaded Profile NFT.
-            </summary>
-            <param name="NFT"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.ChangeNFT(VEDriversLite.NFT.INFT)">
@@ -5031,6 +5908,13 @@
             <param name="receiver">Fill when you want to send NFT to another address</param>
             <returns>New Tx Id Hash</returns>
         </member>
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.HardwarioNFTHelpers.GetHARDWARIONFTs(System.Collections.Generic.List{VEDriversLite.NFT.INFT})">
+            <summary>
+            Filter just Coruzant NFTs from NFT list
+            </summary>
+            <param name="allNFTs"></param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NFT.DevicesNFTs.IoTMessageNFT.Decrypt(NBitcoin.BitcoinSecret,System.Boolean)">
             <summary>
             this function will decrypt the NFT if it is possile
@@ -5562,8 +6446,6 @@
             </summary>
             <param name="address">sender address</param>
             <param name="ekey">Encryption Key object of the address</param>
-            <param name="payment">Payment NFT of received payment</param>
-            <param name="NFT">NFT for sale</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns></returns>
         </member>
@@ -5574,7 +6456,6 @@
             <param name="address">sender address</param>
             <param name="ekey">Encryption Key object of the address</param>
             <param name="nft">Input NFT object with data to save to metadata. It is NFT what you are buying.</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
         </member>
@@ -5993,6 +6874,605 @@
             This is the name of the Neblio Address field in the checkout form in WoC
             </summary>
         </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Category.id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Category.name">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Category.slug">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Category.description">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Category.display">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Category.count">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.Dto.Category.Fill(VEDriversLite.WooCommerce.Dto.Category)">
+            <summary>
+            Fill the Dto
+            </summary>
+            <param name="category"></param>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Shipping.first_name">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Shipping.last_name">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Shipping.company">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Shipping.address_1">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Shipping.address_2">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Shipping.city">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Shipping.state">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Shipping.postcode">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Shipping.country">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.first_name">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.last_name">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.company">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.address_1">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.address_2">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.city">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.state">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.postcode">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.country">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.email">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Billing.phone">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.name">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.product_id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.variation_id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.quantity">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.subtotal">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.subtotal_tax">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.total">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.total_tax">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.meta_data">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.LineItem.price">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.parent_id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.number">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.order_key">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.status">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.statusclass">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.currency">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.date_created">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.date_modified">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.discount_total">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.discount_tax">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.shipping_total">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.shipping_tax">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.total">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.total_tax">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.payment_method">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.payment_method_title">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.transaction_id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.date_paid">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.date_paid_gmt">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.billing">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.shipping">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.meta_data">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Order.line_items">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.Dto.Order.Fill(VEDriversLite.WooCommerce.Dto.Order)">
+            <summary>
+            Fill the Dto
+            </summary>
+            <param name="order"></param>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.CategoryOfDownloads.id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.DownloadsObject.name">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.DownloadsObject.file">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.DownloadsObject.external_url">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.DownloadsObject.categories">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ImageObject.id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ImageObject.src">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ProductMetadata.key">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ProductMetadata.value">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.id">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.name">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.permalink">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.slug">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.description">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.regular_price">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.status">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product._virtual">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.enable_html_description">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.downloadable">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.type">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.stock_quantity">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.manage_stock">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.stock_status">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.stock_status_enum">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.short_description">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.downloads">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.images">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.meta_data">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.Product.categories">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.Dto.Product.Fill(VEDriversLite.WooCommerce.Dto.Product)">
+            <summary>
+            Fill the dto
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ReceivedPaymentForOrder.OrderId">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ReceivedPaymentForOrder.OrderKey">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ReceivedPaymentForOrder.PaymentId">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ReceivedPaymentForOrder.Amount">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ReceivedPaymentForOrder.Currency">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ReceivedPaymentForOrder.CustomerAddress">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.Dto.ReceivedPaymentForOrder.NeblioCustomerAddress">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.LastCheckedDogePaymentUtxo">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.ConnectDogeAccount(System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.DisconnectDogeAccount">
+            <summary>
+            TODO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.SendDogePaymentBack(VEDriversLite.DogeAPI.Utxo,VEDriversLite.WooCommerce.Dto.Order)">
+            <summary>
+            TODO
+            </summary>
+            <param name="utxo"></param>
+            <param name="order"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.SendDepositPayment(VEDriversLite.DogeAPI.Utxo,VEDriversLite.WooCommerce.Dto.Order)">
+            <summary>
+            TODO
+            </summary>
+            <param name="utxo"></param>
+            <param name="order"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.ParseAuthorsAmountFromOrder(VEDriversLite.WooCommerce.Dto.Order)">
+            <summary>
+            TODO
+            </summary>
+            <param name="order"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.ConnectNeblioAccount(System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.DisconnectNeblioAccount">
+            <summary>
+            TODO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.ConnectDepositNeblioAccount(System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.DisconnectDepositNeblioAccount">
+            <summary>
+            TODO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.WooCommerceStoreUrl">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.WooCommerceStoreAPIKey">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.WooCommerceStoreSecret">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.WooCommerceStoreJWTToken">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.IsRefreshingRunning">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.AllowDispatchNFTOrders">
+            <summary>
+            TODO
+            </summary>
+        </member>
         <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.ConnectedDogeAccountAddress">
             <summary>
             If there is some Doge address in same project which should be searched for the payments triggers fill it here
@@ -6020,10 +7500,261 @@
             This address is used as main address for processing NFT orders
             </summary>
         </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.Orders">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.Products">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.Categories">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceShop.NFTOrdersToDispatchDict">
+            <summary>
+            TODO
+            </summary>
+        </member>
         <member name="E:VEDriversLite.WooCommerce.WooCommerceShop.Refreshed">
             <summary>
             This event is called whenever info about the shop is reloaded. It is periodic event.
             </summary>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.StartRefreshingData(System.Double)">
+            <summary>
+            TODO
+            </summary>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.StopRefreshingData">
+            <summary>
+            TODO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.RefreshTimer_Elapsed(System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            TODO
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.Reload">
+            <summary>
+            TODO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.ReLoadOrders">
+            <summary>
+            TODO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.GetNeblioAddressFromOrderMetadata(VEDriversLite.WooCommerce.Dto.Order)">
+            <summary>
+            TODO
+            </summary>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.ReLoadProducts">
+            <summary>
+            TODO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.ReLoadCategories">
+            <summary>
+            TODO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.UpdateOrderStatus(System.String,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="orderkey"></param>
+            <param name="status"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.UpdateOrderTxId(System.String,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="orderkey"></param>
+            <param name="txid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.UpdateOrder(VEDriversLite.WooCommerce.Dto.Order,System.Boolean)">
+            <summary>
+            TODO
+            </summary>
+            <param name="order"></param>
+            <param name="withoutListCheck"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.AddProduct(VEDriversLite.NFT.INFT,System.Collections.Generic.List{VEDriversLite.WooCommerce.Dto.Category},System.Int32,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            TODO
+            </summary>
+            <param name="nft"></param>
+            <param name="categories"></param>
+            <param name="quantity"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.GetProduct(System.Int32)">
+            <summary>
+            TODO
+            </summary>
+            <param name="productid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.GetOrder(System.Int32)">
+            <summary>
+            TODO
+            </summary>
+            <param name="orderid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.CheckIfCategoryExists(System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="category"></param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceHelpers.Shop">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.WooCommerce.WooCommerceHelpers.ipfs">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.WooCommerce.WooCommerceHelpers.wpClient">
+            <summary>
+            TODO
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.UploadIFPSImageToWP(System.String,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="imageLink"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.UploadIFPSImageToWPByAPI(System.String,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="imageLink"></param>
+            <param name="filename"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.GetJWTToken(System.String,System.String,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="apiurl"></param>
+            <param name="wplogin"></param>
+            <param name="wppass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.InitWPAPI(System.String,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="apiurl"></param>
+            <param name="jwt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.InitStoreApiConnection(System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            TODO
+            </summary>
+            <param name="apiurl"></param>
+            <param name="apikey"></param>
+            <param name="secret"></param>
+            <param name="jwt"></param>
+            <param name="withRefreshing"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.GetFullAPIUrl(System.String,System.String,System.String,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="command"></param>
+            <param name="apiurl"></param>
+            <param name="apikey"></param>
+            <param name="secret"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.AddNewProduct(VEDriversLite.NFT.INFT,System.Collections.Generic.List{VEDriversLite.WooCommerce.Dto.Category},System.Int32,System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            TODO
+            </summary>
+            <param name="nft"></param>
+            <param name="categories"></param>
+            <param name="quantity"></param>
+            <param name="apiurl"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.UpdateOrder(VEDriversLite.WooCommerce.Dto.Order,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="order"></param>
+            <param name="apiurl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.GetProduct(System.String,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="id"></param>
+            <param name="apiurl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.GetOrder(System.String,System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="id"></param>
+            <param name="apiurl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.GetAllProducts(System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="apiurl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.GetAllOrders(System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="apiurl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.WooCommerce.WooCommerceHelpers.GetAllCategoreis(System.String)">
+            <summary>
+            TODO
+            </summary>
+            <param name="apiurl"></param>
+            <returns></returns>
         </member>
     </members>
 </doc>

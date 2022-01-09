@@ -8,15 +8,43 @@ namespace VEDriversLite.Events
 {
     public abstract class CommonEvent : IEventInfo
     {
+        /// <summary>
+        /// Event type
+        /// </summary>
         public EventType Type { get; set; } = EventType.Basic;
+        /// <summary>
+        /// Address which created this event info
+        /// </summary>
         public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// Title of the event info
+        /// </summary>
         public string Title { get; set; } = string.Empty;
+        /// <summary>
+        /// Message content
+        /// </summary>
         public string Message { get; set; } = string.Empty;
+        /// <summary>
+        /// Related transaction
+        /// </summary>
         public string TxId { get; set; } = string.Empty;
+        /// <summary>
+        /// Related data
+        /// </summary>
         public string Data { get; set; } = string.Empty;
+        /// <summary>
+        /// Progress of the task which created the event
+        /// </summary>
         public double Progress { get; set; } = 0.0;
+        /// <summary>
+        /// Time stamp of the situation
+        /// </summary>
         public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
 
+        /// <summary>
+        /// Fill the dto
+        /// </summary>
+        /// <param name="ev"></param>
         public virtual void Fill(IEventInfo ev)
         {
             Type = ev.Type;
@@ -26,6 +54,11 @@ namespace VEDriversLite.Events
             Progress = ev.Progress;
             TimeStamp = ev.TimeStamp;
         }
+        /// <summary>
+        /// Parse the data of the event
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public async Task<T> ParseData<T>()
         {
             try

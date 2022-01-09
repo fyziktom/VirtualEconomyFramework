@@ -195,9 +195,16 @@
                                         {
                                             <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
                                         }
-                                        else if (nft.Type != NFTTypes.Message && nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Receipt)
+                                        else if (nft.Type != NFTTypes.Message && nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Receipt && nft.Type != NFTTypes.Message && nft.Type != NFTTypes.IoTMessage)
                                         {
-                                            <VENFTApp_Blazor.Components.NFTs.NFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
+                                            if (nft.Type != NFTTypes.Device && nft.Type != NFTTypes.IoTDevice)
+                                            {
+                                                <VENFTApp_Blazor.Components.NFTs.NFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
+                                            }
+                                            else 
+                                            { 
+                                                <!--TODO-->
+                                            }
                                         }
                                     }
                                 }

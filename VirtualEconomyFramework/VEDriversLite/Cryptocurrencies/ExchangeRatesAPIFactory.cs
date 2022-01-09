@@ -7,6 +7,11 @@ namespace VEDriversLite.Cryptocurrencies
 {
     public static class ExchangeRatesAPIFactory
     {
+        /// <summary>
+        /// Function will return the Exchange Rates API driver based on the type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static async Task<IExchangeRatesAPI> GetExchangeRatesAPI(ExchangeRatesAPITypes type)
         {
             IExchangeRatesAPI api = null;

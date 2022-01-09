@@ -650,8 +650,10 @@ namespace VEDriversLite
         /// <summary>
         /// Send Doge payment with multiple outputs
         /// </summary>
-        /// <param name="receiver">Receiver Doge Address</param>
-        /// <param name="amount">Ammount in Doge</param>
+        /// <param name="receiverAmounts"></param>
+        /// <param name="utxos"></param>
+        /// <param name="message"></param>
+        /// <param name="fee"></param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "", UInt64 fee = 100000000)
         {
@@ -697,10 +699,11 @@ namespace VEDriversLite
 
 
         /// <summary>
-        /// Send Doge payment
+        /// Buy the NFT based on the NFT and Neblio Address
         /// </summary>
-        /// <param name="receiver">Receiver Doge Address</param>
-        /// <param name="amount">Ammount in Doge</param>
+        /// <param name="neblioAddress"></param>
+        /// <param name="receiver"></param>
+        /// <param name="nft"></param>
         /// <returns></returns>
         public async Task<(bool, string)> BuyNFT(string neblioAddress, string receiver, INFT nft)
         {

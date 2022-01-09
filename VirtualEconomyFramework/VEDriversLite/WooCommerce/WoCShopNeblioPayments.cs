@@ -14,6 +14,11 @@ namespace VEDriversLite.WooCommerce
 
         #region NeblioPaymentsHandling
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public async Task ConnectNeblioAccount(string address)
         {
             if (VEDLDataContext.Accounts.TryGetValue(address, out var add))
@@ -22,6 +27,10 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task DisconnectNeblioAccount()
         {
             if (VEDLDataContext.Accounts.TryGetValue(ConnectedNeblioAccountAddress, out var add))
@@ -30,6 +39,11 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public async Task ConnectDepositNeblioAccount(string address)
         {
             if (VEDLDataContext.Accounts.TryGetValue(address, out var add))
@@ -38,6 +52,10 @@ namespace VEDriversLite.WooCommerce
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task DisconnectDepositNeblioAccount()
         {
             if (VEDLDataContext.Accounts.TryGetValue(ConnectedDepositNeblioAccountAddress, out var add))

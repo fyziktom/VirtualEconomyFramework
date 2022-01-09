@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.DevicesNFTs
 @using VEDriversLite.NFT.Coruzant
 @inject AppData AppData
 @inject IJSRuntime jsRuntime
@@ -190,6 +191,14 @@
                     <span class="badge badge-info" style="position: absolute;right: 150px;top: 207px;">Eshop</span>
                 }
             }
+            else if (nft.TokenId == HardwarioNFTHelpers.TokenId)
+            {
+                <span class="badge badge-danger" style="position: absolute;right: 200px;top: 207px;">HIT</span>
+                @if (IsInWooCom)
+                {
+                    <span class="badge badge-info" style="position: absolute;right: 155px;top: 207px;">Eshop</span>
+                }
+            }
 
             <div style="position: absolute;right: 7px;top: 203px; padding:0px; margin:0px;">
                 @if (nft.Type == NFTTypes.Ticket)
@@ -204,7 +213,7 @@
                     <VENFTApp_Blazor.Components.NFTs.Tickets.NFTEventClass EventClass="@enft.EventClass" />
                 }
 
-                <VENFTApp_Blazor.Components.NFTs.NFTTypeBadge NFTType="@nft.Type"/>
+                <VENFTApp_Blazor.Components.NFTs.NFTTypeBadge NFTType="@nft.Type" />
             </div>
 
             <button class="btn btn-light" @onclick="ShowShareNFT"

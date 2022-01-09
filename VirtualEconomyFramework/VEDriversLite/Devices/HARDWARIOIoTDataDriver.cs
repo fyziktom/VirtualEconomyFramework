@@ -23,12 +23,21 @@ namespace VEDriversLite.Devices
 
         private string lastmessageid = string.Empty;
 
+        /// <summary>
+        /// Deinit driver communiation - means autorefresh of the messages
+        /// </summary>
+        /// <returns></returns>
         public override async Task DeInit()
         {
             if (CancelToken != null)
                 CancelTokenSource.Cancel();
         }
 
+        /// <summary>
+        /// Init driver communication - means autorefresh of the messages
+        /// </summary>
+        /// <param name="nft"></param>
+        /// <returns></returns>
         public override async Task Init(INFT nft)
         {
             CancelToken = CancelTokenSource.Token;
@@ -67,6 +76,11 @@ namespace VEDriversLite.Devices
             IsRunning = false;
         }
 
+        /// <summary>
+        /// Set connection parameters
+        /// </summary>
+        /// <param name="ccop"></param>
+        /// <returns></returns>
         public override async Task SetConnParams(CommonConnectionParams ccop)
         {
             if (ccop != null)
