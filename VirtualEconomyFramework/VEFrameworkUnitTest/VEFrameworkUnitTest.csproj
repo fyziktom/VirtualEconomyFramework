@@ -19,4 +19,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
+  </ItemGroup>
+
 </Project>
