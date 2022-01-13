@@ -102,6 +102,10 @@ namespace VEDriversLite.NFT
         /// </summary>
         public string DogeAddress { get; set; } = string.Empty;
         /// <summary>
+        /// Set that this NFT will be sold as just in coppies minted for the buyer
+        /// </summary>
+        public bool SellJustCopy { get; set; }
+        /// <summary>
         /// If the NFT is fully loaded this flag is set
         /// </summary>
         public bool IsLoaded { get; set; } = false;
@@ -214,6 +218,7 @@ namespace VEDriversLite.NFT
             TagsList = nft.TagsList;
             Text = nft.Text;
             DogeAddress = nft.DogeAddress;
+            SellJustCopy = nft.SellJustCopy;
             DogeftInfo = nft.DogeftInfo;
             SoldInfo = nft.SoldInfo;
             TxDetails = nft.TxDetails;
@@ -299,6 +304,14 @@ namespace VEDriversLite.NFT
                 DogePriceActive = true;
             else
                 DogePriceActive = false;
+
+            if (meta.TryGetValue("SellJustCopy", out var sjc))
+            {
+                if (bool.TryParse(sjc, out bool bsjc))
+                    SellJustCopy = bsjc;
+                else
+                    SellJustCopy = false;
+            }
         }
         /// <summary>
         /// Parse info about the sellfrom the metadata of the NFT
@@ -346,6 +359,7 @@ namespace VEDriversLite.NFT
                 Text = text;
             if (meta.TryGetValue("DogeAddress", out var dadd))
                 DogeAddress = dadd;
+            
             if (meta.TryGetValue("DogeftInfo", out var dfti))
             {
                 try
@@ -367,6 +381,10 @@ namespace VEDriversLite.NFT
                 SourceTxId = su;
             if (meta.TryGetValue("NFTOriginTxId", out var nfttxid))
                 NFTOriginTxId = nfttxid;
+
+            if (UtxoIndex == 1 && meta.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
+                if (!string.IsNullOrEmpty(rfp))
+                    TypeText = "NFT Receipt";
         }
         /// <summary>
         /// Parse dogeft info from the metadata
@@ -414,6 +432,9 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.Payment:
                     metadata.Add("Type", "NFT Payment");
+                    break;
+                case NFTTypes.Receipt:
+                    metadata.Add("Type", "NFT Receipt");
                     break;
                 case NFTTypes.Invoice:
                     metadata.Add("Type", "NFT Invoice");
@@ -489,6 +510,8 @@ namespace VEDriversLite.NFT
                 metadata.Add("DogePrice", DogePrice.ToString(CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(DogeAddress))
                 metadata.Add("DogeAddress", DogeAddress);
+            if (SellJustCopy)
+                metadata.Add("SellJustCopy", "true");
             if (!DogeftInfo.IsEmpty)
                 metadata.Add("DogeftInfo", JsonConvert.SerializeObject(DogeftInfo));
             if (!SoldInfo.IsEmpty)

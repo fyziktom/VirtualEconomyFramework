@@ -679,7 +679,10 @@ namespace VEDriversLite.Neblio
                         {
                             ReceivedReceipts.Clear();
                             foreach (var p in pnfts)
-                                ReceivedReceipts.TryAdd(p.NFTOriginTxId, p);
+                            {
+                                if (!string.IsNullOrEmpty(p.NFTOriginTxId))
+                                    ReceivedReceipts.TryAdd(p.Utxo, p);
+                            }
                         }
                     }
                 }
@@ -2068,6 +2071,7 @@ namespace VEDriversLite.Neblio
                 }
                 if (pnfts != null && pnfts.Count > 0)
                 {
+                    pnfts.Reverse();
                     foreach (var p in pnfts)
                     {
                         if (!((PaymentNFT)p).AlreadySoldItem && !((PaymentNFT)p).Returned)
@@ -2094,13 +2098,29 @@ namespace VEDriversLite.Neblio
                                             var res = await CheckSpendableNeblio(0.001);
                                             if (res.Item2 != null)
                                             {
-                                                var rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
-                                                Console.WriteLine($"NFT sent to the buyer {((PaymentNFT)p).Sender} with txid: {rtxid}");
-                                                await Task.Delay(1000);
-                                                await ReloadUtxos();
-                                                await ReLoadNFTs();
-                                                await RefreshAddressReceivedPayments();
-                                                await RefreshAddressReceivedReceipts();
+                                                var rtxid = string.Empty;
+                                                if (!pn.SellJustCopy)
+                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
+                                                else  
+                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
+
+                                                if (!string.IsNullOrEmpty(rtxid))
+                                                {
+                                                    Console.WriteLine($"NFT sent to the buyer {((PaymentNFT)p).Sender} with txid: {rtxid}");
+                                                    lock (_lock)
+                                                    {
+                                                        NFTs.Remove(p); // remove sent payment
+                                                        if (!pn.SellJustCopy)
+                                                            NFTs.Remove(pn);
+                                                    }
+                                                    /*
+                                                    await Task.Delay(500);
+                                                    await ReloadUtxos();
+                                                    await ReLoadNFTs();
+                                                    await RefreshAddressReceivedPayments();
+                                                    await RefreshAddressReceivedReceipts();
+                                                    */
+                                                }
                                             }
                                             else
                                             {
@@ -2123,20 +2143,31 @@ namespace VEDriversLite.Neblio
                                     Console.WriteLine($"Cannot find the NFT for the received Payment. Marking the NFT Payment as already sold item.");
                                     try
                                     {
-                                        PaymentNFT pn2send = p as PaymentNFT;
-                                        pn2send.AlreadySoldItem = true;
-                                        pn2send.OriginalPaymentTxId = p.Utxo;
-                                        var res = await SendNFT(Address, pn2send, priceWrite: true, price: p.Price);
-                                        if (res.Item1)
+                                        //TODO:
+                                        var off = false;
+                                        if (off)
                                         {
-                                            Console.WriteLine($" NFT Payment {p.Name} was marked as already sold. Please inform sender about it and return payment.");
-                                            Console.WriteLine($" NFT Payment processed in txid: {res.Item2}");
-                                            Console.WriteLine(res);
-                                            await Task.Delay(1000);
-                                            await ReloadUtxos();
-                                            await ReLoadNFTs();
-                                            await RefreshAddressReceivedPayments();
-                                            await RefreshAddressReceivedReceipts();
+                                            PaymentNFT pn2send = p as PaymentNFT;
+                                            pn2send.AlreadySoldItem = true;
+                                            pn2send.OriginalPaymentTxId = p.Utxo;
+                                            var res = await SendNFT(Address, pn2send, priceWrite: true, price: p.Price);
+                                            if (res.Item1)
+                                            {
+                                                Console.WriteLine($" NFT Payment {p.Name} was marked as already sold. Please inform sender about it and return payment.");
+                                                Console.WriteLine($" NFT Payment processed in txid: {res.Item2}");
+                                                Console.WriteLine(res);
+                                                lock (_lock)
+                                                {
+                                                    NFTs.Remove(p); // remove sent payment
+                                                }
+                                                /*
+                                                await Task.Delay(1000);
+                                                await ReloadUtxos();
+                                                await ReLoadNFTs();
+                                                await RefreshAddressReceivedPayments();
+                                                await RefreshAddressReceivedReceipts();
+                                                */
+                                            }
                                         }
                                     }
                                     catch (Exception ex)

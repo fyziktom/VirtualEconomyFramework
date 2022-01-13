@@ -60,7 +60,7 @@ namespace TestVEDriversLite
             password = param;
             account.FirsLoadingStatus -= Account_FirsLoadingStatus;
             account.FirsLoadingStatus += Account_FirsLoadingStatus;
-            await account.CreateNewAccount(password, true, awaitFirstLoad:true);
+            await account.CreateNewAccount(password, true);
             Console.WriteLine($"Account created.");
             Console.WriteLine($"Address: {account.Address}");
             Console.WriteLine($"Encrypted Private Key: {await account.AccountKey.GetEncryptedKey("", true)}");
@@ -93,7 +93,7 @@ namespace TestVEDriversLite
             password = param;
             account.FirsLoadingStatus -= Account_FirsLoadingStatus;
             account.FirsLoadingStatus += Account_FirsLoadingStatus;
-            await account.LoadAccount(password, awaitFirstLoad:true);
+            await account.LoadAccount(password);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace TestVEDriversLite
             var file = split[1];
             account.FirsLoadingStatus -= Account_FirsLoadingStatus;
             account.FirsLoadingStatus += Account_FirsLoadingStatus;
-            await account.LoadAccount(pass, file, false, awaitFirstLoad: true);
+            await account.LoadAccount(pass, file, false);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace TestVEDriversLite
 
             account.FirsLoadingStatus -= Account_FirsLoadingStatus;
             account.FirsLoadingStatus += Account_FirsLoadingStatus;
-            await account.LoadAccount(pass, file, false, awaitFirstLoad: true);
+            await account.LoadAccount(pass, file, false);
 
             Console.WriteLine("Loading account NFTs...");
             var attempts = 100;
@@ -234,7 +234,7 @@ namespace TestVEDriversLite
             var file = split[1];
             account.FirsLoadingStatus -= Account_FirsLoadingStatus;
             account.FirsLoadingStatus += Account_FirsLoadingStatus;
-            await account.LoadAccountFromVENFTBackup(pass,filename: file, awaitFirstLoad:true);
+            await account.LoadAccountFromVENFTBackup(pass,filename: file);
 
             //StartRefreshingData(null);
         }
@@ -276,7 +276,7 @@ namespace TestVEDriversLite
             var addr = split[2];
             account.FirsLoadingStatus -= Account_FirsLoadingStatus;
             account.FirsLoadingStatus += Account_FirsLoadingStatus;
-            await account.LoadAccount(pass, ekey, addr, awaitFirstLoad:true);
+            await account.LoadAccount(pass, ekey, addr);
         }
 
         /// <summary>
@@ -2629,7 +2629,7 @@ namespace TestVEDriversLite
             {
                 //create dummy account - just because of the testing the encryption of the messages
                 account = new NeblioAccount();
-                await account.CreateNewAccount("", awaitFirstLoad: true);
+                await account.CreateNewAccount("");
             }
             else
             {
@@ -2693,7 +2693,7 @@ namespace TestVEDriversLite
             nft.IDDSettings.ConnectionParams.DeviceId = "5f7722790305b500185b2847";
             nft.IDDSettings.ConnectionParams.Secured = true;
             nft.IDDSettings.ConnectionParams.SType = VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer;
-            nft.IDDSettings.ConnectionParams.Token = "";
+            nft.IDDSettings.ConnectionParams.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoidXNlciIsImlkIjoiNjFjODk2MzQyOWQzZWYwMDExN2JkYmMxIiwiaWF0IjoxNjQwNTM1NjA0fQ.7pnqPVsMcQZQvXlvtDIUgfdOqBq30qZLtKrkN5cVFeA";
             nft.IDDSettings.ConnectionParams.CommonRefreshInterval = 10000;
             
             nft.LocationCoordinates = "37.7880168,-122.3959002"; // obtain actual from hardwario chester messages? setting flag for this option?

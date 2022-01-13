@@ -283,7 +283,7 @@
 
             try
             {
-                resload = await AppData.Account.LoadAccount(pass, key, address, awaitFirstLoad: true); // put here your password
+                resload = await AppData.Account.LoadAccount(pass, key, address);
             }
             catch(Exception ex)
             {

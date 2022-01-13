@@ -26,20 +26,7 @@ namespace VEDriversLite.NFT
 
         public override async Task Fill(INFT NFT)
         {
-            IconLink = NFT.IconLink;
-            ImageLink = NFT.ImageLink;
-            Name = NFT.Name;
-            Link = NFT.Link;
-            Description = NFT.Description;
-            Author = NFT.Author;
-            SourceTxId = NFT.SourceTxId;
-            NFTOriginTxId = NFT.NFTOriginTxId;
-            Time = NFT.Time;
-            Utxo = NFT.Utxo;
-            TokenId = NFT.TokenId;
-            UtxoIndex = NFT.UtxoIndex;
-            Price = NFT.Price;
-            PriceActive = NFT.PriceActive;
+            await FillCommon(NFT);
 
             var pnft = NFT as ProductNFT;
             ProducerProfileNFT = pnft.ProducerProfileNFT;

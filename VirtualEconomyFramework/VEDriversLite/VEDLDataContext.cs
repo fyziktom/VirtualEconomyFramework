@@ -29,7 +29,7 @@ namespace VEDriversLite
         /// If you will set this in you can control cache in you app. It is not implemented in the main logic of the App, just you can use it as common flag
         /// Example use is in VENFT App in omponent UnlockingAccount.razor
         /// </summary>
-        public static bool AllowCache { get; set; } = true;
+        public static bool AllowCache { get; set; } = false;
         /// <summary>
         /// Maximum items in the Cache dictionary
         /// </summary>
