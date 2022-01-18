@@ -216,7 +216,7 @@ namespace VEDriversLite
                         TxHex = txhex
                     };
 
-                    var txid = await BroadcastNTP1TxAsync(bdto);
+                    var txid = "123"; //await BroadcastNTP1TxAsync(bdto);
 
                     if (!string.IsNullOrEmpty(txid))
                         return txid;
