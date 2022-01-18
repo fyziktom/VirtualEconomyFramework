@@ -2402,17 +2402,16 @@
             <param name="interval">Default interval is 3000 = 3 seconds</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.CreateNewAccount(System.String,System.Boolean,System.String,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.CreateNewAccount(System.String,System.Boolean,System.String)">
             <summary>
             This function will create new account - Neblio address and its Private key.
             </summary>
             <param name="password">Input password, which will encrypt the Private key</param>
             <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
             <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
-            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.Boolean,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.Boolean)">
             <summary>
             Load account from filename (default "key.txt") file placed in the root exe directory. Doesnt work in WABS
             </summary>
@@ -2421,10 +2420,9 @@
             <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
             Great when you want just do simple payment. 
             You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
-            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccountWithDummyKey(System.String,System.String,System.Boolean,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccountWithDummyKey(System.String,System.String,System.Boolean)">
             <summary>
             Load account just for observation
             You cannot sign tx when you load address this way
@@ -2434,10 +2432,9 @@
             <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
             Great when you want just do simple payment. 
             You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
-            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String,System.String,System.Boolean,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccountFromVENFTBackup(System.String,System.String,System.String,System.Boolean)">
             <summary>
             Load account from filename backup from VENFT App (default "backup.json") file placed in the root exe directory. Doesnt work in WABS
             </summary>
@@ -2450,7 +2447,7 @@
             <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String,System.Boolean,System.Boolean)">
+        <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String,System.Boolean)">
             <summary>
             Load account from password, input encrypted private key and address.
             It expect the private key is encrypted by the password.
@@ -5643,6 +5640,11 @@
             Related Doge Address to this NFT. If it is created by VENFT App it is filled automatically during the minting request
             </summary>
         </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.SellJustCopy">
+            <summary>
+            Set that this NFT will be sold as just in coppies minted for the buyer
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.CommonNFT.IsLoaded">
             <summary>
             If the NFT is fully loaded this flag is set
@@ -6081,6 +6083,11 @@
             Related Doge Address to this NFT. If it is created by VENFT App it is filled automatically during the minting request
             </summary>
         </member>
+        <member name="P:VEDriversLite.NFT.INFT.SellJustCopy">
+            <summary>
+            Set that this NFT will be sold as just in coppies minted for the buyer
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.INFT.DogeftInfo">
             <summary>
             Info for publishing NFT to the Dogeft
@@ -6351,13 +6358,6 @@
             <param name="utxo"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.CalculateFee(System.Collections.Generic.IDictionary{System.String,System.String})">
-            <summary>
-            Calculate Neblio Fee based on total metadata length
-            </summary>
-            <param name="metadata">Dictionary with metadata</param>
-            <returns>20000 as default, additional 10000 for each another 900 characters</returns>
-        </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.MintNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
             <summary>
             This function will new NFTs. 
@@ -6431,6 +6431,18 @@
         <member name="M:VEDriversLite.NFT.NFTHelpers.SendOrderedNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             This function will take some NFT which was matched with some payment, coppy data and create complete payment, which will send NFT to new owner.
+            During this the payment NFT token is send back to project address
+            </summary>
+            <param name="address">sender address</param>
+            <param name="ekey">Encryption Key object of the address</param>
+            <param name="payment">Payment NFT of received payment</param>
+            <param name="NFT">NFT for sale</param>
+            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.SendOrderedNFTCopy(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+            <summary>
+            This function will take some NFT which was matched with some payment as copy, coppy data and create complete payment, which will send NFT to new owner.
             During this the payment NFT token is send back to project address
             </summary>
             <param name="address">sender address</param>
@@ -7754,6 +7766,60 @@
             TODO
             </summary>
             <param name="apiurl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDrivers.Common.QTWalletRPC.ProcessRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Find match for command in ApiDictionary and invoke function
+            </summary>
+            <param name="uid">Request UID</param>
+            <param name="command">Command to do</param>
+            <param name="args">set of arguments</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDrivers.Common.QTWalletRPC.CommonMultipleParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Common Api Function - Common call for command with multiple parameter
+            </summary>
+            <param name="uid"></param>
+            <param name="command"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDrivers.Common.QTWalletRPC.CommonOneParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Common Api Function - Common call for command with one parameter
+            </summary>
+            <param name="uid"></param>
+            <param name="command"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDrivers.Common.QTWalletRPC.CommonNoParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Common Api Function - Common request without parameter
+            </summary>
+            <param name="uid"></param>
+            <param name="command"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDrivers.Common.QTWalletRPCClient.RPCLocalCommandAsync(System.String,System.Object)">
+            <summary>
+            Function for call of RPC command. Parameters is string splitted with ','
+            First is command, then goes the parameters. If parameters must cointain ',' please use function RPCLocalCommandSplitedAsync
+            </summary>
+            <param name="param">First is command, then goes the parameters.</param>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDrivers.Common.QTWalletRPCClient.RPCLocalCommandSplitedAsync(System.String,System.String[])">
+            <summary>
+            This function require already splitted command and parameters
+            This is for the case that some of the parameters must contain ',' which is used as separator
+            </summary>
+            <param name="command">RPC command name</param>
+            <param name="parameters">string array of parameters</param>
             <returns></returns>
         </member>
     </members>

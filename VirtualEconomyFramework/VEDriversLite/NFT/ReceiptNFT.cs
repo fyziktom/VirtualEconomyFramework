@@ -25,20 +25,7 @@ namespace VEDriversLite.NFT
 
         public override async Task Fill(INFT NFT)
         {
-            IconLink = NFT.IconLink;
-            ImageLink = NFT.ImageLink;
-            Name = NFT.Name;
-            Link = NFT.Link;
-            Description = NFT.Description;
-            Author = NFT.Author;
-            SourceTxId = NFT.SourceTxId;
-            NFTOriginTxId = NFT.NFTOriginTxId;
-            Time = NFT.Time;
-            Utxo = NFT.Utxo;
-            TokenId = NFT.TokenId;
-            UtxoIndex = NFT.UtxoIndex;
-            Price = NFT.Price;
-            PriceActive = NFT.PriceActive;
+            await FillCommon(NFT);
 
             var pnft = NFT as ReceiptNFT;
             NFTUtxoTxId = pnft.NFTUtxoTxId;
@@ -63,8 +50,13 @@ namespace VEDriversLite.NFT
                 if (!string.IsNullOrEmpty(index))
                     NFTUtxoIndex = Convert.ToInt32(index);
             if (metadata.TryGetValue("SoldPrice", out var soldprice))
+            {
                 if (!string.IsNullOrEmpty(soldprice))
-                    SoldPrice = Convert.ToDouble(soldprice, CultureInfo.InvariantCulture);
+                {
+                    var prc = soldprice.Replace(',', '.');
+                    SoldPrice = Convert.ToDouble(prc, CultureInfo.InvariantCulture);
+                }
+            }
 
             if (metadata.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
                 ReceiptFromPaymentUtxo = rfp;

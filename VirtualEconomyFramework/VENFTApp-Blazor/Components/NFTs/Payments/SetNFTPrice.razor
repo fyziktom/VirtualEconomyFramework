@@ -39,6 +39,17 @@
                     </div>
                 </div>
                 }
+
+                <div class="row" style="margin-top:5px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <small>Here you can setup if buyer will receive this original or you will mint for him just copy.</small>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:5px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                            <input type="checkbox" @onchange="eventArgs => { justCopyChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Sell just coppies</span><br />
+                    </div>
+                </div>
                 <!--
                 if (withDogePrice)
                 {
@@ -66,19 +77,19 @@
 
 @code {
 
-    [Parameter]
-    public EventCallback<string> NFTSent { get; set; }
+        [Parameter]
+        public EventCallback<string> NFTSent { get; set; }
 
-    [Parameter]
-    public bool SubAccount { get; set; } = false;
+        [Parameter]
+        public bool SubAccount { get; set; } = false;
 
-    [Parameter]
-    public string Address { get; set; } = string.Empty;
+        [Parameter]
+        public string Address { get; set; } = string.Empty;
 
-    [Parameter]
-    public bool SetPriceNFTDialogVisible { get; set; } = false;
-    [Parameter]
-    public EventCallback<bool> SetPriceNFTDialogVisibleChanged { get; set; }
+        [Parameter]
+        public bool SetPriceNFTDialogVisible { get; set; } = false;
+        [Parameter]
+        public EventCallback<bool> SetPriceNFTDialogVisibleChanged { get; set; }
 
     private INFT sourceNFT = new ImageNFT("");
     [Parameter]
@@ -98,11 +109,12 @@
     private bool confirmSetPriceVisible = false;
     private bool withDogePrice = false;
     private bool withPrice = false;
+    private bool sellJustCoppies = false;
     private bool sendingTransaction = false;
-    
+
     private double dogePrice = 0.0;
     private double price = 1.0;
-    
+
     private string receiverAddress = string.Empty;
     private string status = string.Empty;
 
@@ -116,6 +128,11 @@
     {
         withPrice = (bool)e;
         if (!withPrice) price = 0.0;
+        StateHasChanged();
+    }
+    private async Task justCopyChanged(object e)
+    {
+        sellJustCoppies = (bool)e;
         StateHasChanged();
     }
 
@@ -165,6 +182,8 @@
                 nft.DogePrice = dogePrice;
             if (dogePrice > 0)
                 nft.DogePriceActive = true;
+            if (sellJustCoppies)
+                nft.SellJustCopy = true;
 
             status = "Sending...";
 

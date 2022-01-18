@@ -36,7 +36,14 @@
                                     </div>
                                 </td>
 
+                                @if (!string.IsNullOrEmpty(pnft.Buyer))
+                                {
                                 <td style="min-width:60px;"><a href="https://explorer.nebl.io/address/@pnft.Buyer" target="_blank">@NeblioTransactionHelpers.ShortenAddress(pnft.Buyer)</a></td>
+                                }
+                                else 
+                                { 
+                                    <td></td>
+                                }
                                 @if (!string.IsNullOrEmpty(pnft.ImageLink))
                                 {
                                     <td @onclick="() => showNFTDetails(pnft.ReceiptFromPaymentUtxo)" style="margin-left:10px;min-width:60px;">

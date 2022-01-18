@@ -132,6 +132,10 @@ namespace VEDriversLite.NFT
         /// </summary>
         string DogeAddress { get; set; }
         /// <summary>
+        /// Set that this NFT will be sold as just in coppies minted for the buyer
+        /// </summary>
+        bool SellJustCopy { get; set; }
+        /// <summary>
         /// Info for publishing NFT to the Dogeft
         /// </summary>
         DogeftInfo DogeftInfo { get; set; }

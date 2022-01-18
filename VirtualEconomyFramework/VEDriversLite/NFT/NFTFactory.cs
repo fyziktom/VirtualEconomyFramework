@@ -33,6 +33,9 @@ namespace VEDriversLite.NFT
                         case "NFT Payment":
                             type = NFTTypes.Payment;
                             break;
+                        case "NFT Receipt":
+                            type = NFTTypes.Receipt;
+                            break;
                         case "NFT Invoice":
                             type = NFTTypes.Invoice;
                             break;
@@ -127,9 +130,7 @@ namespace VEDriversLite.NFT
                 var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0]?.TokenId;
                 tokid = tid;
                 if (string.IsNullOrEmpty(tokid))
-                {
                     tokid = NFTHelpers.TokenId;
-                }
             }
             catch (Exception ex)
             {
@@ -145,9 +146,16 @@ namespace VEDriversLite.NFT
                     {
                         cachedMetadata.LastAccess = DateTime.UtcNow;
                         cachedMetadata.NumberOfReads++;
+                        Console.WriteLine($"Loading {utxo}:{utxoindex} NFT from cache.");
+                        if (cachedMetadata.NFTType == NFTTypes.Receipt)
+                            Console.WriteLine($"NFT Receipt");
                         nft = await GetNFTFromCacheMetadata(cachedMetadata.Metadata, utxo, utxoindex, txinfo, true, cachedMetadata.NFTType);
                         if (nft != null)
+                            Console.WriteLine($"Loading {utxo}:{utxoindex} NFT from cache done.");
+                        if (nft != null)
                             return nft;
+                        else
+                            Console.WriteLine($"Loading {utxo}:{utxoindex} NFT from cache was not possible!");
                     }
                 }
                 catch (Exception ex)
@@ -177,24 +185,15 @@ namespace VEDriversLite.NFT
             catch (Exception ex)
             {
                 Console.WriteLine($"Cannot load Type of NFT {utxo}. " + ex.Message);
-
                 if (meta.TryGetValue("SourceUtxo", out var sourceutxo))
-                {
                     type = NFTTypes.Image;
-                }
                 else
-                {
                     return null;
-                }
             }
 
             if (utxoindex == 1 && meta.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
-            {
                 if (!string.IsNullOrEmpty(rfp))
-                {
                     type = NFTTypes.Receipt;
-                }
-            }
 
             if (loadJustType)
                 if (justType != type)
@@ -205,21 +204,6 @@ namespace VEDriversLite.NFT
 
             var Time = TimeHelpers.UnixTimestampToDateTime(time);
 
-            var Price = 0.0;
-            var PriceActive = false;
-            if (meta.TryGetValue("Price", out var price))
-                if (!string.IsNullOrEmpty(price))
-                {
-                    price = price.Replace(',', '.');
-                    Price = double.Parse(price, CultureInfo.InvariantCulture);
-                    PriceActive = true;
-                }
-
-            if (Price > 0)
-                PriceActive = true;
-            else
-                PriceActive = false;
-
             switch (type)
             {
                 case NFTTypes.Image:
@@ -228,12 +212,11 @@ namespace VEDriversLite.NFT
                     nft.Time = Time;
                     nft.TxDetails = txinfo;
                     nft.UtxoIndex = utxoindex;
-                    if (wait)
+                    //if (wait)
                         await nft.ParseOriginData(meta);
-                    else
-                        nft.ParseOriginData(meta);
-                    nft.Price = Price;
-                    nft.PriceActive = PriceActive;
+                    //else
+                        //nft.ParseOriginData(meta);
+                    nft.ParsePrice(meta);
                     break;
                 case NFTTypes.Profile:
                     nft = new ProfileNFT(utxo);
@@ -262,8 +245,7 @@ namespace VEDriversLite.NFT
                         await nft.ParseOriginData(meta);
                     else
                         nft.ParseOriginData(meta);
-                    nft.Price = Price;
-                    nft.PriceActive = PriceActive;
+                    nft.ParsePrice(meta);
                     break;
                 case NFTTypes.Payment:
                     nft = new PaymentNFT(utxo);
@@ -323,8 +305,7 @@ namespace VEDriversLite.NFT
                         await nft.ParseOriginData(meta);
                     else
                         nft.ParseOriginData(meta);
-                    nft.Price = Price;
-                    nft.PriceActive = PriceActive;
+                    nft.ParsePrice(meta);
                     break;
                 case NFTTypes.Event:
                     nft = new EventNFT(utxo);
@@ -336,9 +317,7 @@ namespace VEDriversLite.NFT
                         await nft.ParseOriginData(meta);
                     else
                         nft.ParseOriginData(meta);
-                    //await (nft as EventNFT).LoadLastData(meta);
-                    nft.Price = Price;
-                    nft.PriceActive = PriceActive;
+                    nft.ParsePrice(meta);
                     break;
                 case NFTTypes.CoruzantArticle:
                     nft = new CoruzantArticleNFT(utxo);
@@ -350,6 +329,7 @@ namespace VEDriversLite.NFT
                         await (nft as CoruzantArticleNFT).LoadLastData(meta);
                     else
                         (nft as CoruzantArticleNFT).LoadLastData(meta);
+                    nft.ParsePrice(meta);
                     break;
                 case NFTTypes.CoruzantProfile:
                     nft = new CoruzantProfileNFT(utxo);
@@ -600,12 +580,8 @@ namespace VEDriversLite.NFT
             if (type == NFTTypes.IoTDevice) return null;
 
             if (utxoindex == 1 && metadata.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
-            {
                 if (!string.IsNullOrEmpty(rfp))
-                {
                     type = NFTTypes.Receipt;
-                }
-            }
 
             if (txinfo == null)
             {
@@ -705,6 +681,7 @@ namespace VEDriversLite.NFT
             if (nft != null)
             {
                 nft.Time = TimeHelpers.UnixTimestampToDateTime((double)txinfo.Blocktime);
+                nft.Utxo = utxo;
                 nft.UtxoIndex = utxoindex;
                 nft.TxDetails = txinfo;
                 nft.TokenId = tokid;

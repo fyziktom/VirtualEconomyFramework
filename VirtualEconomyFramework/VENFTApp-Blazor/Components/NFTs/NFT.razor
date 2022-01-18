@@ -296,7 +296,7 @@
                     </div>
 
                     <div class="row d-flex justify-content-center align-items-center">
-                        @if (!_isInThePayments)
+                        @if ((!_isInThePayments) || (_isInThePayments && nft.SellJustCopy))
                         {
                             @if (OwnNFT && nft.PriceActive)
                             {
@@ -305,7 +305,7 @@
                                 </div>
                             }
                         }
-                        else
+                        else if (_isInThePayments && !nft.SellJustCopy)
                         {
                             <div class="col">
                                 <small class="text-muted">Sold. Waiting for processing.</small>
