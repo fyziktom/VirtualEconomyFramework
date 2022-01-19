@@ -8,6 +8,9 @@ namespace VEFrameworkUnitTest
 {
     public class CheckSpendableNeblioTest : NeblioAccountBase
     {
+        /// <summary>
+        /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
+        /// </summary>
         [Fact]
         public void CheckSpendableNeblio_InCorrect_Test()
         {
@@ -21,6 +24,9 @@ namespace VEFrameworkUnitTest
             Assert.Null(result.Item2);
         }
 
+        /// <summary>
+        /// Unit test method to verify if system is returning Utxos if an address has spendable Neblios.
+        /// </summary>
         [Fact]
         public void CheckSpendableNeblio_Valid_Test()
         {            
