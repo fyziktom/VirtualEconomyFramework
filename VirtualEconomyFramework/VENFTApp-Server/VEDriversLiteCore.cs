@@ -106,7 +106,7 @@ namespace VENFTApp_Server
 
                                     (bool, string) dbackup = (false, string.Empty);
                                     (bool, string) dpass = (false, string.Empty);
-                                    if (await account.LoadAccount(k.Password, k.EKey, k.Address, awaitFirstLoad: true)) // fill your password
+                                    if (await account.LoadAccount(k.Password, k.EKey, k.Address)) // fill your password
                                     {
                                         if (k.ConnectToMainShop && k.IsReceivingAccount)
                                             neblioAddressForShop = k.Address;
@@ -121,7 +121,7 @@ namespace VENFTApp_Server
                                             if (dpass.Item1 && dadd.Item1 && dadd.Item1)
                                             {
                                                 Console.WriteLine($"Loading Neblio address {k.Address} from VENFT Backup...");
-                                                if (await account.LoadAccountFromVENFTBackup(dpass.Item2, dbackup.Item2, awaitFirstLoad: true))
+                                                if (await account.LoadAccountFromVENFTBackup(dpass.Item2, dbackup.Item2))
                                                     Console.WriteLine($"Neblio address {k.Address} initialized.");
                                                 else
                                                     Console.WriteLine($"Cannot load VENFT backup for address {k.Address}.");

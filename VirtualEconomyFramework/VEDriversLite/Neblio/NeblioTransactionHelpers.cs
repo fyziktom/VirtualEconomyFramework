@@ -216,7 +216,7 @@ namespace VEDriversLite
                         TxHex = txhex
                     };
 
-                    var txid = "123"; //await BroadcastNTP1TxAsync(bdto);
+                    var txid = await BroadcastNTP1TxAsync(bdto);
 
                     if (!string.IsNullOrEmpty(txid))
                         return txid;
@@ -1724,7 +1724,7 @@ namespace VEDriversLite
         //////////////////////////////////////
         #region Multi Token Input Tx
 
-        public static async Task<string> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
+        public static async Task<string> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
         {
             var res = "ERROR";
 
@@ -1784,6 +1784,7 @@ namespace VEDriversLite
             // load utxos list if exists, other case leave it to Neblio API
             if (data.sendUtxo.Count > 0)
             {
+                var first = true;
                 foreach (var it in data.sendUtxo)
                 {
                     var itt = it;
@@ -1798,19 +1799,27 @@ namespace VEDriversLite
                         }
                     }
 
-                    (bool, double) voutstate;
+                    (bool, double) voutstate = (false,0.0);
 
                     try
                     {
-                        voutstate = await ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
+                        if (first && isMintingOfCopy)
+                        {
+                            dto.Sendutxo.Add(it);
+                            first = false;
+                            // skip
+                        }
+                        else
+                            voutstate = await ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
                     }
                     catch(Exception ex)
                     {
                         throw new Exception("Cannot validate utxo for multitoken payment.");
                     }
                     
-                    if (voutstate.Item1)
+                    if ((!isMintingOfCopy && voutstate.Item1) || (!first && isMintingOfCopy && voutstate.Item1))
                         dto.Sendutxo.Add(itt + ":" + ((int)voutstate.Item2).ToString()); // copy received utxos and add item number of vout after validation
+
                 }
             }
             else
@@ -1845,10 +1854,18 @@ namespace VEDriversLite
             {
                 throw ex;
             }
-
+            
             // parse raw hex to NBitcoin transaction object
             if (!Transaction.TryParse(hexToSign, Network, out var transaction))
                 throw new Exception("Cannot parse token tx raw hex.");
+
+            if (isMintingOfCopy)
+            {
+                transaction.Inputs.Add(new TxIn()
+                {
+                    PrevOut = new OutPoint(uint256.Parse(data.sendUtxo.Last()), 0),
+                });
+            }
 
             try
             {

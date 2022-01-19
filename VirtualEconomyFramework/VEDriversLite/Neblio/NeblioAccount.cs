@@ -272,9 +272,8 @@ namespace VEDriversLite
         /// <param name="password">Input password, which will encrypt the Private key</param>
         /// <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
         /// <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
-        /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
-        public async Task<bool> CreateNewAccount(string password, bool saveToFile = false, string filename = "key.txt", bool awaitFirstLoad = false)
+        public async Task<bool> CreateNewAccount(string password, bool saveToFile = false, string filename = "key.txt")
         {
             try
             {
@@ -306,10 +305,7 @@ namespace VEDriversLite
                     }
                 });
 
-                if (awaitFirstLoad)
-                    await StartRefreshingData();
-                else   
-                    StartRefreshingData();
+                await StartRefreshingData();
 
                 return true;
             }
@@ -329,9 +325,8 @@ namespace VEDriversLite
         /// <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
         /// Great when you want just do simple payment. 
         /// You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
-        /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
-        public async Task<bool> LoadAccount(string password, string filename = "key.txt", bool withoutNFTs = false, bool awaitFirstLoad = false)
+        public async Task<bool> LoadAccount(string password, string filename = "key.txt", bool withoutNFTs = false)
         {
             if (FileHelpers.IsFileExists(filename))
             {
@@ -348,12 +343,7 @@ namespace VEDriversLite
 
                     WithoutNFTs = withoutNFTs;
                     if (!IsRefreshingRunning)
-                    {
-                        if (awaitFirstLoad)
-                            await StartRefreshingData();
-                        else
-                            StartRefreshingData();
-                    }
+                        await StartRefreshingData();
 
                     return true;
                 }
@@ -379,9 +369,8 @@ namespace VEDriversLite
         /// <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
         /// Great when you want just do simple payment. 
         /// You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
-        /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountWithDummyKey(string password, string address, bool withoutNFTs = false, bool awaitFirstLoad = false)
+        public async Task<bool> LoadAccountWithDummyKey(string password, string address, bool withoutNFTs = false)
         {
             try
             {
@@ -399,12 +388,8 @@ namespace VEDriversLite
 
                 WithoutNFTs = withoutNFTs;
                 if (!IsRefreshingRunning)
-                {
-                    if (awaitFirstLoad)
-                        await StartRefreshingData();
-                    else    
-                        StartRefreshingData();
-                }
+                    await StartRefreshingData();
+
                 return true;
             }
             catch (Exception ex)
@@ -424,7 +409,7 @@ namespace VEDriversLite
         /// You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
         /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountFromVENFTBackup(string password, string fromString = "", string filename = "backup.json", bool withoutNFTs = false, bool awaitFirstLoad = false)
+        public async Task<bool> LoadAccountFromVENFTBackup(string password, string fromString = "", string filename = "backup.json", bool withoutNFTs = false)
         {
             if (FileHelpers.IsFileExists(filename) || !string.IsNullOrEmpty(fromString))
             {
@@ -461,15 +446,10 @@ namespace VEDriversLite
                         await LoadTabs(bdto.BrowserTabs);
 
                     WithoutNFTs = withoutNFTs;
+                    SignMessage("init");
 
                     if (!IsRefreshingRunning)
-                    {
-                        SignMessage("init");
-                        if (awaitFirstLoad)
-                            await StartRefreshingData();
-                        else
-                            StartRefreshingData();
-                    }
+                        await StartRefreshingData();
 
                     return true;
                 }
@@ -499,7 +479,7 @@ namespace VEDriversLite
         /// You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
         /// <param name="awaitFirstLoad"></param>
         /// <returns></returns>
-        public async Task<bool> LoadAccount(string password, string encryptedKey, string address = "", bool withoutNFTs = false, bool awaitFirstLoad = false)
+        public async Task<bool> LoadAccount(string password, string encryptedKey, string address = "", bool withoutNFTs = false)
         {
             try
             {
@@ -520,12 +500,7 @@ namespace VEDriversLite
 
                 WithoutNFTs = withoutNFTs;
                 if (!IsRefreshingRunning)
-                {
-                    if (awaitFirstLoad)
-                        await StartRefreshingData();
-                    else
-                        StartRefreshingData();
-                }
+                    await StartRefreshingData();
 
                 return true;
             }

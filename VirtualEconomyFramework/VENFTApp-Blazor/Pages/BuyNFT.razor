@@ -144,11 +144,22 @@
                                 }
                                 else
                                 {
-                                    <div class="row" style="margin-top:20px; margin-bottom:10px;">
-                                        <div class="col d-flex justify-content-center align-items-center">
-                                            <h5>This NFT is not for sale</h5>
+                                    if (!isPossibleToBuy)
+                                    {
+                                        <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                            <div class="col d-flex justify-content-center align-items-center">
+                                                <h5>Checking possibility to buy this NFT</h5>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="row" style="margin-top:20px; margin-bottom:10px;">
+                                            <div class="col d-flex justify-content-center align-items-center">
+                                                <h5>This NFT is not for sale</h5>
+                                            </div>
+                                        </div>
+                                    }
                                 }
 
                                 @if (sucessfullSend)
@@ -377,7 +388,8 @@
     {
         if (tab != null && tab.ReceivedPayments.TryGetValue(nftUtxo, out var nnft))
             if ((nnft as PaymentNFT).NFTUtxoIndex == NFT.UtxoIndex)
-                return true;
+                if (!NFT.SellJustCopy)
+                    return true;
 
         return false;
     }
@@ -599,7 +611,7 @@
             if (!string.IsNullOrEmpty(key))
             {
                 await Task.Delay(100);
-                if (!await AppData.DogeAccount.LoadAccount(unlockPassword, key))
+                if (!await AppData.DogeAccount.LoadAccount(unlockPassword, key, ""))
                 {
                     await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot unlock the doge account.");
                 }
