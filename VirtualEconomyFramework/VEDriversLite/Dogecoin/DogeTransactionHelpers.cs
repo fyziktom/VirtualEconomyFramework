@@ -195,6 +195,8 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction bigger than 10kB on DOGE network!");
 
             var fee = expectedSize * basicFee;
+            if (fee < basicFee)
+                fee = basicFee * 250;
             return fee;
         }
 

@@ -250,7 +250,7 @@ namespace VEDriversLite.NFT
                 if (reslink != null)
                 {
                     var hash = reslink.ToLink().Id.ToString();
-                    link = "https://gateway.ipfs.io/ipfs/" + hash;
+                    link = "https://ipfs.infura.io/ipfs/" + hash;
 
                     var loaded = false;
                     var attempts = 50;
