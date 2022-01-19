@@ -6,7 +6,10 @@ using Moq;
 namespace VEFrameworkUnitTest
 {
     public class CalculateFeeTest
-    {      
+    {
+        /// <summary>
+        /// Unit test method to verify if Fee is getting calculated correctly with correct input params.
+        /// </summary>
         [Fact]
         public void CalculateFee_Valid_Test()
         {            
@@ -17,6 +20,9 @@ namespace VEFrameworkUnitTest
             Assert.Equal(expectedFee, fee, 15);
         }
 
+        /// <summary>
+        /// Unit test method to verify if system is throwing exception correctly when transaction size is exceeding 4 kb.
+        /// </summary>
         [Fact]
         public void CalculateFee_MoreThan4kb_Test()
         {

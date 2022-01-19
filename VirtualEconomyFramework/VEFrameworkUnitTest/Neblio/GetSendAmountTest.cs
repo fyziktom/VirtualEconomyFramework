@@ -8,6 +8,9 @@ namespace VEFrameworkUnitTest
 {
     public class GetSendAmountTest
     {
+        /// <summary>
+        /// Unit test method to verify if system is returning amount correctly.
+        /// </summary>
         [Fact]
         public void GetSendAmount_Valid_Test()
         {
@@ -23,6 +26,9 @@ namespace VEFrameworkUnitTest
             Assert.True(amount > 0);
         }
 
+        /// <summary>
+        /// Unit test method to verify if system is returning an error result for incorrect address and incorrect transactionId.
+        /// </summary>
         [Fact]
         public void GetSendAmount_Exception_Test()
         {

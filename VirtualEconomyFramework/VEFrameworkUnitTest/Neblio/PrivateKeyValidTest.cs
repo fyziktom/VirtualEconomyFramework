@@ -8,6 +8,9 @@ namespace VEFrameworkUnitTest
 {
     public class PrivateKeyValidTest
     {
+        /// <summary>
+        /// Unit test method to verify if system is returning an error result when PrivateKey is empty.
+        /// </summary>
         [Fact]
         public void Privatekey_Empty_Test()
         {
@@ -16,6 +19,9 @@ namespace VEFrameworkUnitTest
             Assert.Null(key.Item2);            
         }
 
+        /// <summary>
+        /// Unit test method to verify if system is returning an error result when PrivateKey length is less than 52 characters.
+        /// </summary>
         [Fact]
         public void Privatekey_LessThan52_Test()
         {
@@ -24,6 +30,9 @@ namespace VEFrameworkUnitTest
             Assert.Null(key1.Item2);            
         }
 
+        /// <summary>
+        /// Unit test method to verify if system is returning the bitcoin secret object correctly for a valid privateKey.
+        /// </summary>
         [Fact]
         public void Privatekey_Valid_Test()
         {           
