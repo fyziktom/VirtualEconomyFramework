@@ -44,11 +44,17 @@ namespace VENFTApp_Server
 
             MainDataContext.IsAPIWithCredentials = settings.GetValue<bool>("IsAPIWithCredentials", true);
             MainDataContext.LoadAllVENFTOwnersWithAllNFTs = settings.GetValue<bool>("LoadAllVENFTOwnersWithAllNFTs", false);
+            var loadWithInWebAssemblyLimits = settings.GetValue<bool>("LoadWithInWebAssemblyLimits", false);
 
             MainDataContext.IpfsSecret = settings.GetValue<string>("IpfsSecret", string.Empty);
             MainDataContext.IpfsProjectID = settings.GetValue<string>("IpfsProjectID", string.Empty);
             if (!string.IsNullOrEmpty(MainDataContext.IpfsSecret) && !string.IsNullOrEmpty(MainDataContext.IpfsProjectID))
                 NFTHelpers.LoadConnectionInfo(MainDataContext.IpfsProjectID, MainDataContext.IpfsSecret);
+
+            var acc = new List<string>();
+            settings.GetSection("ObservedAccounts").Bind(acc);
+            if (acc != null)
+                MainDataContext.ObservedAccounts = acc;
 
             try
             {
@@ -127,6 +133,10 @@ namespace VENFTApp_Server
                                                     Console.WriteLine($"Cannot load VENFT backup for address {k.Address}.");
                                             }
                                         }
+
+                                        // this is block autostart of the IoT Devices NFTs...add this to appsettings.json   "LoadWithInWebAssemblyLimits": true,
+                                        account.RunningAsVENFTBlazorApp = loadWithInWebAssemblyLimits;
+
                                         VEDLDataContext.Accounts.TryAdd(k.Address, account);
                                         VEDLDataContext.AdminAddresses.Add(k.Address);
 
@@ -283,11 +293,33 @@ namespace VENFTApp_Server
                 var NFTHashsRefreshDefault = 100;
                 var NFTHashsRefresh = 10;
 
+                
                 _ = Task.Run(async () =>
                 {
+                    Console.WriteLine("Loading Observing addresses...");
+                    // load observed addresses
+                    if (MainDataContext.ObservedAccounts.Count > 0)
+                    {
+                        for (var i = 0; i < MainDataContext.ObservedAccounts.Count; i++)
+                        {
+                            try
+                            {
+                                var tab = new VEDriversLite.Bookmarks.ActiveTab(MainDataContext.ObservedAccounts[i]);
+                                tab.MaxLoadedNFTItems = 1500;
+                                await tab.StartRefreshing(10000, false, true);
+                                MainDataContext.ObservedAccountsTabs.TryAdd(tab.Address, tab);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Cannot start observing of account: " + MainDataContext.ObservedAccounts[i]);
+                            }
+                        }
+                    }
+
                     Console.WriteLine("Running...");
                     while (!stopToken.IsCancellationRequested)
                     {
+                        
                         await Task.Delay(1000);
                         /*
                         if (VENFTOwnersRefresh <= 0)

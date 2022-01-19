@@ -89,6 +89,9 @@ namespace VEDriversLite.Bookmarks
         /// </summary>
         public event EventHandler<(string, int)> NFTAddedToPayments;
 
+        private bool withoutMsgs = true;
+        private bool cachePreload = true;
+
 
         private System.Timers.Timer refreshTimer = new System.Timers.Timer();
         public int MaxLoadedNFTItems { get; set; } = 40;
@@ -144,12 +147,22 @@ namespace VEDriversLite.Bookmarks
         /// </summary>
         /// <param name="interval"></param>
         /// <returns></returns>
-        public async Task StartRefreshing(double interval = 5000)
+        public async Task StartRefreshing(double interval = 5000, bool withoutMessages = true, bool withCahePreload = true)
         {
             Selected = true;
             FirsLoadingStatus?.Invoke(this, "Start Loading the data.");
-            
-            await Reload();
+            withoutMsgs = withoutMessages;
+            cachePreload = withCahePreload;
+
+            try
+            {
+                await Reload(withoutMsgs);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot Reload Active Tab after the start.");
+            }
+
             refreshTimer.Interval = interval;
             refreshTimer.AutoReset = true;
             refreshTimer.Elapsed -= RefreshTimer_Elapsed;
@@ -174,19 +187,19 @@ namespace VEDriversLite.Bookmarks
         private void RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             refreshTimer.Stop();
-            Reload();
+            Reload(withoutMsgs);
         }
 
         /// <summary>
         /// Reload Address Utxos and refresh the NFT list
         /// </summary>
         /// <returns></returns>
-        public async Task Reload()
+        public async Task Reload(bool withoutMessages = true)
         {
             try
             {
                 UtxosList = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens);
-                if (NFTs.Count == 0)
+                if (NFTs.Count == 0 && cachePreload)
                 {
                     try
                     {
@@ -205,7 +218,7 @@ namespace VEDriversLite.Bookmarks
                 }
                 NFTHelpers.ProfileNFTFound += NFTHelpers_ProfileNFTFound;
                 NFTHelpers.NFTLoadingStateChanged += NFTHelpers_LoadingStateChangedHandler;
-                var _NFTs = await NFTHelpers.LoadAddressNFTs(Address, UtxosList, ns, false, MaxLoadedNFTItems, true);
+                var _NFTs = await NFTHelpers.LoadAddressNFTs(Address, UtxosList, ns, false, MaxLoadedNFTItems, withoutMessages);
                 NFTHelpers.NFTLoadingStateChanged -= NFTHelpers_LoadingStateChangedHandler;
                 NFTHelpers.ProfileNFTFound -= NFTHelpers_ProfileNFTFound;
                 FirsLoadingStatus?.Invoke(this, "NFTs Loaded.");
