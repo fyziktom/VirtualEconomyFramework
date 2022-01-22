@@ -15,7 +15,7 @@ namespace ASL.Functions.Controllers
 
         public FunctionControllerTypes Type { get; set; } = FunctionControllerTypes.Common;
 
-        public Dictionary<Opcodes, Func<Opcodes, string[], List<OVariable>, Task<List<object>>>> ASLFunctions = new Dictionary<Opcodes, Func<Opcodes, string[], List<OVariable>, Task<List<object>>>>
+        public Dictionary<Opcodes, Func<Opcodes, string[], List<OVariable>, List<object>, Task<List<object>>>> ASLFunctions = new Dictionary<Opcodes, Func<Opcodes, string[], List<OVariable>, List<object>, Task<List<object>>>>
         {
             { Opcodes.sortlist_1to9, CommonMultipleParameterRequest },
             { Opcodes.sortlist_9to1, CommonMultipleParameterRequest },
@@ -26,24 +26,24 @@ namespace ASL.Functions.Controllers
             { Opcodes.trim_all, CommonMultipleParameterRequest },
         };
 
-        /// <summary>
+        /// <summary>List<OVariable> InVariables, List<object> lastResult)
         /// Find match for command in ASLFunctions Dictionary and invoke function
         /// </summary>
         /// <param name="uid">Request UID</param>
         /// <param name="command">Command to do</param>
         /// <param name="args">set of arguments</param>
         /// <returns></returns>
-        public async Task<List<object>> ProcessRequest(Opcodes command, string[] args, List<OVariable> InVariables)
+        public async Task<List<object>> ProcessRequest(Opcodes command, string[] args, List<OVariable> InVariables, List<object> lastResult)
         {
             var res = new List<object>();
 
             if (ASLFunctions.ContainsKey(command))
-                res = await ASLFunctions[command].Invoke(command, args, InVariables);
+                res = await ASLFunctions[command].Invoke(command, args, InVariables, lastResult);
 
             return res;
         }
 
-        private static async Task<List<object>> CommonMultipleParameterRequest(Opcodes command, string[] args, List<OVariable> InVariables)
+        private static async Task<List<object>> CommonMultipleParameterRequest(Opcodes command, string[] args, List<OVariable> InVariables, List<object> lastResult)
         {
             var res = new List<object>();
 
@@ -59,7 +59,7 @@ namespace ASL.Functions.Controllers
             return res;
         }
 
-        private static async Task<List<object>> CommonNoParameterRequest(Opcodes command, string[] args, List<OVariable> InVariables)
+        private static async Task<List<object>> CommonNoParameterRequest(Opcodes command, string[] args, List<OVariable> InVariables, List<object> lastResult)
         {
             var res = new List<object>();
 

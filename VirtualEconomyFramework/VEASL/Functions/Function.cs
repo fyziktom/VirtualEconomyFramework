@@ -10,6 +10,7 @@ namespace ASL.Functions
         public int Location { get; set; } = 0;
         public bool Done { get; set; } = false;
         public bool Success { get; set; } = false;
+        public bool Failed { get; set; } = false;
     }
     public class Function : FunctionBase
     {

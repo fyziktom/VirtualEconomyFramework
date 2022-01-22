@@ -215,6 +215,13 @@ namespace ASL.Parser
                         return (Opcodes.replace_all, parameters);
                     if (split[0].Contains(Keywords.trim_all))
                         return (Opcodes.trim_all, parameters);
+                    if (split[0].Contains(Keywords.print_result))
+                        return (Opcodes.print_result, new string[] { });
+                }
+                else if (split.Length == 1)
+                {
+                    if (split[0].Contains(Keywords.print_result))
+                        return (Opcodes.print_result, new string[] { });
                 }
             }
             return (Opcodes.none, null);
@@ -430,7 +437,7 @@ namespace ASL.Parser
             }
             catch(Exception ex)
             {
-                Console.WriteLine("it is not double.");
+                //Console.WriteLine("it is not double.");
             }
             try
             {
@@ -439,7 +446,7 @@ namespace ASL.Parser
             }
             catch (Exception ex)
             {
-                Console.WriteLine("it is not int.");
+                //Console.WriteLine("it is not int.");
             }
             try
             {
@@ -448,7 +455,7 @@ namespace ASL.Parser
             }
             catch (Exception ex)
             {
-                Console.WriteLine("it is not datetime.");
+                //Console.WriteLine("it is not datetime.");
             }
 
             return (typeof(string),parameter);

@@ -111,33 +111,13 @@ namespace VEDriversLite.Bookmarks
             var utxos = UtxosList.ToArray();
             if (utxos != null && utxos.Length > 1)
             {
-                var ucount = utxos.Length;
-                if (ucount >= MaxLoadedNFTItems)
-                    ucount = MaxLoadedNFTItems;
-
-                var txinfotasks = new Task[ucount * 2];
-                var u = 0;
-                for (var i = 0; (i + 2) < txinfotasks.Length; i += 2)
+                Parallel.ForEach(new ArraySegment<Utxos>(utxos, 0, MaxLoadedNFTItems), new ParallelOptions { MaxDegreeOfParallelism = 10 }, utxo =>
                 {
-                    if (i < txinfotasks.Length)
-                        txinfotasks[i] = NeblioTransactionHelpers.GetTransactionInfo(utxos[u].Txid);
-                    if (i < txinfotasks.Length + 1)
-                    {
-                        var tokid = utxos[u].Tokens?.FirstOrDefault()?.TokenId;
-                        if (!string.IsNullOrEmpty(tokid))
-                        {
-                            if (!VEDLDataContext.NFTCache.ContainsKey(utxos[u].Txid))
-                                txinfotasks[i + 1] = NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxos[u].Txid);
-                        }
-                    }
-                    u++;
-                }
-                for (var t = 0; t < txinfotasks.Length; t++)
-                {
-                    if (txinfotasks[t] == null) txinfotasks[t] = Task.Delay(1);
-                }
-
-                await Task.WhenAll(txinfotasks);
+                    NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid).Wait();
+                    var tokid = utxo.Tokens?.FirstOrDefault()?.TokenId;
+                    if (!string.IsNullOrEmpty(tokid) && !VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
+                        NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid).Wait();
+                });
             }
             Console.WriteLine("Cash of the TxInfo preload end...");
         }

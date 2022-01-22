@@ -1,0 +1,26 @@
+﻿# NFT ASL - API Settings Language
+# version: 0.1
+
+network neblio
+address NWpT6Wiri9ZAsjVSH8m7eX85Nthqa2J8aY
+just_from_receiver NQFkjSdYWWwPGFE8kQD4toCYkmddXiNh8W
+just_tokens La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8
+nft_types NFTIoTMessages 
+
+start_provide 1
+duration 100h
+
+result dict {
+	descriptor:nft.description.created_at
+	item1name:nft.name
+	temperature:nft.description.data.sensor.thermometer.temperature
+	item3name:nft.description.data.tracking.latitude
+	item4name:nft.description.data.tracking.longitude
+}
+
+sortlist_1to9(temperature)
+print_result()
+sortlist_9to1(temperature)
+print_result()
+
+return result

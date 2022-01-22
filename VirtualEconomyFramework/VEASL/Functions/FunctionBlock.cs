@@ -20,12 +20,14 @@ namespace ASL.Functions
         int Location { get; set; }
         bool Done { get; set; }
         bool Success { get; set; }
+        bool Failed { get; set; }
         List<Function> Functions { get; set; }
     }
     public class FunctionBlock : FunctionBase, IFunctionBlock
     {
         public FunctionBlockTypes Type { get; set; } = FunctionBlockTypes.OneLine;
         public bool OneLine { get; set; } = true;
+        public bool Failed { get; set; } = false;
         public int EndLocation { get; set; } = 0;
         public List<Function> Functions { get; set; } = new List<Function>();
 

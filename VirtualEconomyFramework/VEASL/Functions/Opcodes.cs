@@ -14,6 +14,7 @@ namespace ASL.Functions
         sub_all,
         replace_all,
         trim_all,
+        print_result
     }
 
 

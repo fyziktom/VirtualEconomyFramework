@@ -26,6 +26,7 @@ namespace ASL.Common
         public static string blockheight { get; } = "blockheight";
         public static string count { get; } = "count";
         public static string exit { get; } = "exit";
+        public static string print_result { get; } = "print_result";
 
         // Functions names
 
