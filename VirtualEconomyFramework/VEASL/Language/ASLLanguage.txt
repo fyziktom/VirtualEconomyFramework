@@ -37,7 +37,7 @@ result one/dict {
 	item7name:new.isbigger 
 }
 
-# if you set 0 it is maximum limit: from - newest, to - oldest
+# NOT IMPLEMENTED YET - if you set 0 it is maximum limit: from - newest, to - oldest
 from 0/txid/time/blockheight/valuenamecondition to 0/count/txid/time/blockheight/valuenamecondition/exit
 	# this will calculate and store actual value of sum of all previous items in messages
 	new.sum_of_all = sum_of_all(item1name,x) 
@@ -48,7 +48,7 @@ from 0/txid/time/blockheight/valuenamecondition to 0/count/txid/time/blockheight
 	new.prevdiff > new.prevdiv*100 ? exit_loop
 end_loop
 
-# "for "to" loop can be replaced with this also
+# NOT IMPLEMENTED YET - "for "to" loop can be replaced with this also
 last 100 # means last 100 of items
 	# this will calculate and store actual value of sum of all previous items in messages
 	new.sum_of_all = sum_of_all(item1name) 
@@ -60,7 +60,7 @@ last 100 # means last 100 of items
 	actual_iteration > in_max_iterations ? exit_loop 
 end_loop
 
-# or this kind of loop
+# NOT IMPLEMENTED YET - or this kind of loop
 first 100 # means first 100 of items
 	# this will calculate and store actual value of sum of all previous items in messages
 	new.sum_of_all = sum_of_all(item1name,x)
@@ -70,21 +70,26 @@ first 100 # means first 100 of items
     new.prevdiff > 0 ? new.isbigger = true : new.isbigger = false
 end_loop
 
-#order dictionary by item ascending (first/smallest is on top of the dictionary = A to Z, 1 to 9)
+# print result object line per line
+print_result()
+# order dictionary by item ascending (first/smallest is on top of the dictionary = A to Z, 1 to 9)
 sortlist_1to9(item1name)
-#order dictionary by item descending (last/largest is on top of the dictionary = Z to A, 9 to 1)
+# order dictionary by item descending (last/largest is on top of the dictionary = Z to A, 9 to 1)
 sortlist_9to1(item1name)
-# this will take all items in dict and multiply the item1name with x
+
+
+# NOT IMPLEMENTED YET - this will take all items in dict and multiply the item1name with x
 multiply_all(item1name,x)
-# this will take all items in dict and add to the item1name x
+# NOT IMPLEMENTED YET - this will take all items in dict and add to the item1name x
 add_all(item1name,x)
-# this will take all items in dict and substract the x from item1name
+# NOT IMPLEMENTED YET - this will take all items in dict and substract the x from item1name
 sub_all(item1name,x)
-# this will take all items in dict and replace x the item1name with y
+# NOT IMPLEMENTED YET - this will take all items in dict and replace x the item1name with y
 replace_all(item1name,x, y)
-# this will take all items in dict and trim the item1name with x
+# NOT IMPLEMENTED YET - this will take all items in dict and trim the item1name with x
 trim_all(item1name,x)
 
+# NOT IMPLEMENTED YET 
 # interpolate whole dict with specific function and number of steps
 # means: if you have list with N items and do one step it will add one between each.
 # You will get (i+1)*N + i number of items.

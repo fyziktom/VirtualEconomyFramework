@@ -127,8 +127,8 @@ namespace ASL.Functions.Controllers
                     }
 
                     res = lastResult.OrderBy(o => (o as JObject)[args[0]]?.ToString())?.Reverse().ToList();
-
                 }
+
             }
             catch (Exception ex)
             {
@@ -141,10 +141,12 @@ namespace ASL.Functions.Controllers
         private static async Task<List<object>> Multiply_all(Opcodes command, string[] args, List<OVariable> InVariables, List<object> lastResult)
         {
             var res = new List<object>();
+            if (lastResult == null)
+                lastResult = new List<object>();
 
             try
             {
-
+                res = lastResult;
             }
             catch (Exception ex)
             {
@@ -157,10 +159,12 @@ namespace ASL.Functions.Controllers
         private static async Task<List<object>> Add_all(Opcodes command, string[] args, List<OVariable> InVariables, List<object> lastResult)
         {
             var res = new List<object>();
+            if (lastResult == null)
+                lastResult = new List<object>();
 
             try
             {
-
+                res = lastResult;
             }
             catch (Exception ex)
             {
@@ -173,10 +177,12 @@ namespace ASL.Functions.Controllers
         private static async Task<List<object>> Sub_all(Opcodes command, string[] args, List<OVariable> InVariables, List<object> lastResult)
         {
             var res = new List<object>();
+            if (lastResult == null)
+                lastResult = new List<object>();
 
             try
             {
-
+                res = lastResult;
             }
             catch (Exception ex)
             {
@@ -189,10 +195,12 @@ namespace ASL.Functions.Controllers
         private static async Task<List<object>> Replace_all(Opcodes command, string[] args, List<OVariable> InVariables, List<object> lastResult)
         {
             var res = new List<object>();
+            if (lastResult == null)
+                lastResult = new List<object>();
 
             try
             {
-
+                res = lastResult;
             }
             catch (Exception ex)
             {
@@ -205,10 +213,12 @@ namespace ASL.Functions.Controllers
         private static async Task<List<object>> Trim_all(Opcodes command, string[] args, List<OVariable> InVariables, List<object> lastResult)
         {
             var res = new List<object>();
+            if (lastResult == null)
+                lastResult = new List<object>();
 
             try
             {
-
+                res = lastResult;
             }
             catch (Exception ex)
             {
@@ -221,10 +231,12 @@ namespace ASL.Functions.Controllers
         private static async Task<List<object>> CommonNoParameterRequest(Opcodes command, string[] args, List<OVariable> InVariables, List<object> lastResult)
         {
             var res = new List<object>();
+            if (lastResult == null)
+                lastResult = new List<object>();
 
             try
             {
-
+                res = lastResult;
             }
             catch (Exception ex)
             {
@@ -247,7 +259,7 @@ namespace ASL.Functions.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception occured during request without parameters, command {command}: {ex}");
+                Console.WriteLine($"Exception occured during processing print_result command {command}: {ex}");
             }
 
             return lastResult;
