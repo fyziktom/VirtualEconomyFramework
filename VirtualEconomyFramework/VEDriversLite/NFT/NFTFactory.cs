@@ -9,8 +9,62 @@ using VEDriversLite.NFT.DevicesNFTs;
 
 namespace VEDriversLite.NFT
 {
+
     public static class NFTFactory
     {
+
+        public static Type GetTypeOfNFT(INFT nft)
+        {
+            switch (nft.Type)
+            {
+                case NFTTypes.Image:
+                    return typeof(ImageNFT);
+                case NFTTypes.Post:
+                    return typeof(PostNFT);
+                case NFTTypes.Music:
+                    return typeof(MusicNFT);
+                case NFTTypes.Message:
+                    return typeof(MessageNFT);
+                case NFTTypes.Profile:
+                    return typeof(ProfileNFT);
+                case NFTTypes.Payment:
+                    return typeof(PaymentNFT);
+                case NFTTypes.Receipt:
+                    return typeof(ReceiptNFT);
+                case NFTTypes.Invoice:
+                    return typeof(InvoiceNFT);
+                case NFTTypes.Order:
+                    return typeof(OrderNFT);
+                case NFTTypes.Product:
+                    return typeof(ProductNFT);
+                case NFTTypes.Ticket:
+                    return typeof(TicketNFT);
+                case NFTTypes.Event:
+                    return typeof(EventNFT);
+                case NFTTypes.CoruzantProfile:
+                    return typeof(CoruzantProfileNFT);
+                case NFTTypes.CoruzantArticle:
+                    return typeof(CoruzantArticleNFT);
+                case NFTTypes.Device:
+                    return typeof(DeviceNFT);
+                case NFTTypes.IoTDevice:
+                    return typeof(IoTDeviceNFT);
+                case NFTTypes.Protocol:
+                    return typeof(ProtocolNFT);
+                case NFTTypes.HWSrc:
+                    return typeof(HWSrcNFT);
+                case NFTTypes.FWSrc:
+                    return typeof(FWSrcNFT);
+                case NFTTypes.SWSrc:
+                    return typeof(SWSrcNFT);
+                case NFTTypes.MechSrc:
+                    return typeof(MechSrcNFT);
+                case NFTTypes.IoTMessage:
+                    return typeof(IoTMessageNFT);
+            }
+
+            return null;
+        }
         public static NFTTypes ParseNFTType(IDictionary<string,string> metadata)
         {
             NFTTypes type = NFTTypes.Image;
