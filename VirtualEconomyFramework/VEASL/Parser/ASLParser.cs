@@ -307,7 +307,16 @@ namespace ASL.Parser
             var result = new List<OVariable>();
             // TODO: take from topper layer
             var nft = NFTFactory.GetNFT("", "6d20f7f4d14e1082526769263f6f5c0c6878e8de2cfc1647ef819518a48818e9", 0, 0, true).GetAwaiter().GetResult();
-            
+
+            // default item
+
+            var ov = new OVariable("txid")
+            {
+                Represents = "txid",
+                VarType = typeof(string)
+            };
+            result.Add(ov);
+
             foreach (var line in resultlines)
             {
                 var split = line.Value.Split('.');
@@ -318,7 +327,7 @@ namespace ASL.Parser
                         var res = GetVariableTypeValue(line.Value, nft);
                         if (res.Item1 != null)
                         {
-                            var ov = new OVariable(line.Key)
+                            ov = new OVariable(line.Key)
                             {
                                 Represents = line.Value,
                                 VarType = res.Item1
@@ -329,7 +338,7 @@ namespace ASL.Parser
                     }
                     else if (split.Length >= 2 && split[0].ToLower().Trim(' ') == Keywords.new_var)
                     {
-                        var ov = new OVariable(line.Key)
+                        ov = new OVariable(line.Key)
                         {
                             Represents = line.Value,
                             VarType = typeof(object)
@@ -349,7 +358,7 @@ namespace ASL.Parser
                             else if (sp == Keywords.num)
                                 vartype = typeof(int);
 
-                            var ov = new OVariable(line.Key)
+                            ov = new OVariable(line.Key)
                             {
                                 Represents = line.Value,
                                 VarType = vartype

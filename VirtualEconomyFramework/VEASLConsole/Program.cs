@@ -2,6 +2,7 @@
 using ASL.Parser;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using VEASL.Runtime;
@@ -16,41 +17,49 @@ namespace VEASLConsole
         {
             var parser = new ASLParser();
             IASLRuntime runtime = ASLRuntimeFactory.GetASLRuntime(ASLRuntimeType.Main);
-            await runtime.InitRuntime(ASL.Functions.Controllers.FunctionControllerTypes.Main);
-
             var code = FileHelpers.ReadTextFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "aslprogram.txt"));
-            var tab = new ActiveTab("NWpT6Wiri9ZAsjVSH8m7eX85Nthqa2J8aY");
-            tab.MaxLoadedNFTItems = 20;
-
-            Console.WriteLine("Loading the Active Tab with data... ");
-            await tab.StartRefreshing(5000, false, true);
-
-            Console.WriteLine("Tab loaded.");
-            Console.WriteLine("Tab loaded. Initializing runtime...");
+            
+            Console.WriteLine("Initializing runtime...");
             await runtime.InitRuntime(ASL.Functions.Controllers.FunctionControllerTypes.Main);
             Console.WriteLine("Runtime Loaded.");
+
             if (!string.IsNullOrEmpty(code))
             {
                 Console.WriteLine("Parsing the code...");
                 var program = parser.ParseCode(code);
                 if (program.IsLoaded)
                 {
+                    Console.WriteLine($"Loading the Active Tab with data from Address {program.ProgramSettingsConsts.address}... ");
+                    if (string.IsNullOrEmpty(program.ProgramSettingsConsts.address))
+                    {
+                        Console.WriteLine("Program does not have filled blockchain address setting parameter. Exit!");
+                        return;
+                    }
+
+                    var tab = new ActiveTab(program.ProgramSettingsConsts.address);
+                    tab.MaxLoadedNFTItems = 200;
+                    await tab.StartRefreshing(5000, false, true);
+                    Console.WriteLine("Tab with Address Data loaded.");
+
                     // clear values
                     program.RequestedRawVariables.ForEach(v => v.Values.Clear());
+                    Console.WriteLine("Loading data from the NFTs.");
 
                     // load the new data from NFTs
                     tab.NFTs.ForEach(nft =>
                     {
                         Parallel.ForEach(program.RequestedRawVariables, v =>
                         {
+                            if (v.Name == Keywords.txid)
+                                v.AddNewValues(new List<object>() { nft.Utxo });
+
                             var r = parser.GetVariableTypeValue(v.Represents, nft);
                             if (r.Item2 != null)
-                                v.AddNewValues(new System.Collections.Generic.List<object>() { r.Item2 });
+                                v.AddNewValues(new List<object>() { r.Item2 });
                         });
                     });
 
-                    // Execution of the program
-
+                    // Execution of the program this can be called once or in loop or based on event, etc.
                     try { 
                         var result = await runtime.ExecuteProgram(program);
                         Console.WriteLine("Program executed with result: ");

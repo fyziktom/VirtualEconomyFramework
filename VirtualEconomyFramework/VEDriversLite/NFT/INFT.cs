@@ -37,6 +37,8 @@ namespace VEDriversLite.NFT
         SWSrc = 1006,
         MechSrc = 1007,
         IoTMessage = 1008,
+        ASL = 2001,
+        ASLPlan = 2002
 
 
     }

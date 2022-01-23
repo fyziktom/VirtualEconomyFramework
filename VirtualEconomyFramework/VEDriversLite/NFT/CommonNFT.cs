@@ -490,6 +490,12 @@ namespace VEDriversLite.NFT
                 case NFTTypes.IoTMessage:
                     metadata.Add("Type", "NFT IoTMessage");
                     break;
+                case NFTTypes.ASL:
+                    metadata.Add("Type", "NFT ASL");
+                    break;
+                case NFTTypes.ASLPlan:
+                    metadata.Add("Type", "NFT ASLPlan");
+                    break;
             }
             
             metadata.Add("Name", Name);

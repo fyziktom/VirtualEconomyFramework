@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NFT.Coruzant;
+using VEDriversLite.NFT.ASL;
 using VEDriversLite.NFT.DevicesNFTs;
 
 namespace VEDriversLite.NFT
@@ -61,6 +62,10 @@ namespace VEDriversLite.NFT
                     return typeof(MechSrcNFT);
                 case NFTTypes.IoTMessage:
                     return typeof(IoTMessageNFT);
+                case NFTTypes.ASL:
+                    return typeof(ASLNFT);
+                case NFTTypes.ASLPlan:
+                    return typeof(ASLPlanNFT);
             }
 
             return null;
@@ -149,6 +154,12 @@ namespace VEDriversLite.NFT
                             break;
                         case "NFT IoTMessage":
                             type = NFTTypes.IoTMessage;
+                            break;
+                        case "NFT ASL":
+                            type = NFTTypes.ASL;
+                            break;
+                        case "NFT ASLPlan":
+                            type = NFTTypes.ASLPlan;
                             break;
                     }
                     return type;
@@ -481,6 +492,22 @@ namespace VEDriversLite.NFT
                     nft.UtxoIndex = utxoindex;
                     await (nft as IoTMessageNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.ASL:
+                    nft = new ASLNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as ASLNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.ASLPlan:
+                    nft = new ASLPlanNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as ASLPlanNFT).LoadLastData(meta);
+                    break;
             }
 
             if (VEDLDataContext.AllowCache && tokid == NFTHelpers.TokenId && VEDLDataContext.NFTCache.Count < VEDLDataContext.MaxCachedItems)
@@ -611,6 +638,14 @@ namespace VEDriversLite.NFT
                     nft = new IoTMessageNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
+                case NFTTypes.ASL:
+                    nft = new ASLNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.ASLPlan:
+                    nft = new ASLPlanNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
             }
 
             return null;
@@ -729,6 +764,12 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.IoTMessage:
                     nft = new IoTMessageNFT(utxo);
+                    break;
+                case NFTTypes.ASL:
+                    nft = new ASLNFT(utxo);
+                    break;
+                case NFTTypes.ASLPlan:
+                    nft = new ASLPlanNFT(utxo);
                     break;
             }
 
