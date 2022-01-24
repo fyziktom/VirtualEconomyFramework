@@ -2131,6 +2131,15 @@ namespace VEDriversLite
         }
 
         /// <summary>
+        /// This method is written for Unit tests to pass in Mock client object
+        /// </summary>
+        /// <param name="client"></param>
+        public static void GetClient(IClient client)
+        {
+            _client = client;
+        }
+
+        /// <summary>
         /// Send request for creating RAW token transaction
         /// </summary>
         /// <param name="data"></param>
