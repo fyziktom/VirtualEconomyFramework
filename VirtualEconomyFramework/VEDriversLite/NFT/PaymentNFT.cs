@@ -30,6 +30,7 @@ namespace VEDriversLite.NFT
             var pnft = NFT as PaymentNFT;
             NFTUtxoTxId = pnft.NFTUtxoTxId;
             NFTUtxoIndex = pnft.NFTUtxoIndex;
+            Matched = pnft.Matched;
             Sender = pnft.Sender;
             AlreadySoldItem = pnft.AlreadySoldItem;
             Returned = pnft.Returned;

@@ -812,7 +812,7 @@ namespace TestVEDriversLite
             nft.LocationCoordinates = "39.947041,-75.165295";
             nft.Seat = "Section A";
             nft.Price = 10;
-            nft.PriceInDoge = 10;
+            nft.DogePrice = 10;
             nft.TicketClass = ClassOfNFTTicket.VIP;
             nft.VideoLink = "https://youtu.be/ZHwVBirqD2s";
             nft.ImageLink = "https://gateway.ipfs.io/ipfs/QmW91e2zi7ndzgonneee7LNWRASHGPnqAS6FvxgCPThaPv";

@@ -32,6 +32,7 @@ namespace VEDriversLite.NFT
             var nft = NFT as EventNFT;
             PriceInDoge = nft.PriceInDoge;
             PriceInDogeActive = nft.PriceInDogeActive;
+            MintAuthorAddress = nft.MintAuthorAddress;
             Location = nft.Location;
             LocationCoordinates = nft.LocationCoordinates;
             LocationCoordinatesLat = nft.LocationCoordinatesLat;
@@ -42,6 +43,7 @@ namespace VEDriversLite.NFT
             EventClass = nft.EventClass;
             EventId = nft.EventId;
             MusicInLink = nft.MusicInLink;
+            Used = nft.Used;
         }
 
         public double PriceInDoge { get; set; } = 0;

@@ -5308,6 +5308,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetClient(VEDriversLite.NeblioAPI.IClient)">
+            <summary>
+            This method is written for Unit tests to pass in Mock client object
+            </summary>
+            <param name="client"></param>
+        </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.SendRawNTP1TxAsync(VEDriversLite.NeblioAPI.SendTokenRequest)">
             <summary>
             Send request for creating RAW token transaction
@@ -6170,6 +6176,12 @@
             </summary>
             <param name="meta"></param>
         </member>
+        <member name="M:VEDriversLite.NFT.INFT.ParseCommon(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse Common Properties from Metadata
+            </summary>
+            <param name="meta"></param>
+        </member>
         <member name="M:VEDriversLite.NFT.INFT.ParsePrice(System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Parse price from the metadata of the NFT
@@ -6209,6 +6221,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.NFT.INFT.ParseTags">
+            <summary>
+            Parse tags to tag list
+            </summary>
+        </member>
         <member name="M:VEDriversLite.NFT.INFT.StopRefreshingData">
             <summary>
             Stop the auto refreshin of the tx info data
@@ -6231,6 +6248,12 @@
             <param name="address">Address of the sender of the NFT</param>
             <param name="key">Private key of the sender of the NFT</param>
             <param name="receiver">Receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.GetCommonMetadata">
+            <summary>
+            Get Common Metadata of the Actual NFT
+            </summary>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.MessageNFT.Decrypt(NBitcoin.BitcoinSecret,System.Boolean)">

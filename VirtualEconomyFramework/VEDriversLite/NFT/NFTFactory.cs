@@ -60,6 +60,9 @@ namespace VEDriversLite.NFT
                         case "NFT CoruzantArticle":
                             type = NFTTypes.CoruzantArticle;
                             break;
+                        case "NFT CoruzantPost":
+                            type = NFTTypes.CoruzantArticle;
+                            break;
                         case "NFT CoruzantPremiumArticle":
                             type = NFTTypes.CoruzantPremiumArticle;
                             break;
