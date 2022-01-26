@@ -3,7 +3,7 @@ using VEDriversLite;
 using Xunit;
 using Moq;
 
-namespace VEFrameworkUnitTest
+namespace VEFrameworkUnitTest.Neblio
 {
     public class CalculateFeeTest
     {

@@ -4,7 +4,7 @@ using System.Text;
 using VEDriversLite;
 using Xunit;
 
-namespace VEFrameworkUnitTest
+namespace VEFrameworkUnitTest.Neblio
 {
     public class PrivateKeyValidTest
     {

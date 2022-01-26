@@ -6,7 +6,7 @@ using VEDriversLite;
 using VEDriversLite.NeblioAPI;
 using Xunit;
 
-namespace VEFrameworkUnitTest
+namespace VEFrameworkUnitTest.Neblio
 {
     public class GetAddressNeblUtxoTest
     {

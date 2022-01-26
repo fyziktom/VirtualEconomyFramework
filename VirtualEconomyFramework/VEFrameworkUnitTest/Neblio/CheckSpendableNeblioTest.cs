@@ -7,7 +7,7 @@ using VEDriversLite.NeblioAPI;
 using VEDriversLite;
 using Xunit;
 
-namespace VEFrameworkUnitTest
+namespace VEFrameworkUnitTest.Neblio
 {
     public class CheckSpendableNeblioTest : NeblioAccountBase
     {
