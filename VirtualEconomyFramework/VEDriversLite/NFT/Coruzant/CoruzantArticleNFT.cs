@@ -12,7 +12,7 @@ namespace VEDriversLite.NFT.Coruzant
         {
             Utxo = utxo;
             Type = NFTTypes.CoruzantArticle;
-            TypeText = "NFT CoruzantPost";
+            TypeText = "NFT CoruzantArticle";
             TokenId = "La9ADonmDwxsNKJGvnRWy8gmWmeo72AEeg8cK7";
         }
 

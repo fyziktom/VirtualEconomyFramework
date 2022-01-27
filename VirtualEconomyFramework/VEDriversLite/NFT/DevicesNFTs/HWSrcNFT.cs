@@ -25,6 +25,8 @@ namespace VEDriversLite.NFT.DevicesNFTs
             await FillCommon(NFT);
             var nft = NFT as HWSrcNFT;
             Version = nft.Version;
+            Tool = nft.Tool;
+            RepositoryType = nft.RepositoryType;
             RepositoryLink = nft.RepositoryLink;
 
         }
