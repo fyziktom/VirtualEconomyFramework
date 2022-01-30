@@ -30,7 +30,7 @@ namespace VEFrameworkUnitTest
             var getAddressInfoResponse = new GetAddressInfoResponse();
             _client.Setup(x => x.GetAddressInfoAsync(It.IsAny<string>())).ReturnsAsync(getAddressInfoResponse);           
 
-            var result = this.CheckSpendableNeblio(0.23).Result;
+            var result = this.CheckSpendableMainToken(0.23).Result;
 
             string error = "You dont have Neblio on the address. Probably waiting for more than " + count +
                            " confirmations.";
@@ -129,7 +129,7 @@ namespace VEFrameworkUnitTest
             
             _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionObject);            
 
-            var result1 = CheckSpendableNeblio(0.23).Result;
+            var result1 = CheckSpendableMainToken(0.23).Result;
 
             const string ok = "OK";
             Assert.Equal(ok, result1.Item1);

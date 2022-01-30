@@ -697,77 +697,12 @@ namespace VEDriversLite.Neblio
 
         #region TransactionSourcesCheck
 
-
-        /// <summary>
-        /// This function will check if the address has some spendable neblio for transaction.
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <returns></returns>
-        public async Task<(bool, double)> HasSomeSpendableNeblio(double amount = 0.0002)
-        {
-            var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0001, amount);
-            if (nutxos.Count == 0)
-            {
-                return (false, 0.0);
-            }
-            else
-            {
-                var a = 0.0;
-                foreach (var u in nutxos)
-                    a += ((double)u.Value / NeblioTransactionHelpers.FromSatToMainRatio);
-
-                if (a > amount)
-                    return (true, a);
-                else
-                    return (false, a);
-            }
-        }
-
-        /// <summary>
-        /// This function will check if the address has some spendable VENFT tokens for minting. 
-        /// </summary>
-        /// <returns></returns>
-        public async Task<(bool, int)> HasSomeSourceForMinting()
-        {
-            var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, NFTHelpers.TokenId, 1);
-
-            if (tutxos.Count == 0)
-                return (false, 0);
-            else
-            {
-                var a = 0;
-                foreach (var u in tutxos)
-                {
-                    var t = u.Tokens.ToArray()[0];
-                    a += (int)t.Amount;
-                }
-                return (true, a);
-            }
-        }
-
-        /// <summary>
-        /// This function will validate if the NFT of this address is spendable
-        /// </summary>
-        /// <param name="utxo"></param>
-        /// <returns></returns>
-        public async Task<(bool, string)> ValidateNFTUtxo(string utxo, int index)
-        {
-            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo, index);
-            if (!u.Item1)
-            {
-                var msg = $"Provided source tx transaction is not spendable. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmation.";
-                return (false, msg);
-            }
-            else
-                return (true, "OK");
-        }
-
         /// <summary>
         /// This function will check if there is some spendable neblio of specific amount and returns list of the utxos for the transaction
         /// </summary>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public async Task<(string, ICollection<Utxos>)> CheckSpendableNeblio(double amount)
+        public async Task<(string, ICollection<Utxos>)> CheckSpendableMainToken(double amount)
         {
             try
             {
@@ -789,7 +724,7 @@ namespace VEDriversLite.Neblio
         /// <param name="id"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public async Task<(string, ICollection<Utxos>)> CheckSpendableNeblioTokens(string id, int amount)
+        public async Task<(string, ICollection<Utxos>)> CheckSpendableTokens(string id, int amount)
         {
             try
             {
@@ -927,7 +862,7 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(amount + 0.002);
+            var res = await CheckSpendableMainToken(amount + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
@@ -977,7 +912,7 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(amount + 0.002);
+            var res = await CheckSpendableMainToken(amount + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
@@ -1041,7 +976,7 @@ namespace VEDriversLite.Neblio
                 return (false, "Account is locked.");
             }
 
-            var res = await CheckSpendableNeblio(totalAmount + 0.002);
+            var res = await CheckSpendableMainToken(totalAmount + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
@@ -1083,13 +1018,13 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(tokenId, amount);
+            var tres = await CheckSpendableTokens(tokenId, amount);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable token inputs");
@@ -1156,13 +1091,13 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(tokenId, totalAmount);
+            var tres = await CheckSpendableTokens(tokenId, totalAmount);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable token inputs");
@@ -1211,13 +1146,13 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 3);
+            var tres = await CheckSpendableTokens(NFT.TokenId, 3);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs. You need 3 tokens as minimum input.");
@@ -1263,13 +1198,13 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 2 + coppies);
+            var tres = await CheckSpendableTokens(NFT.TokenId, 2 + coppies);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs");
@@ -1302,13 +1237,13 @@ namespace VEDriversLite.Neblio
 
         private async Task<(bool, (ICollection<Utxos>, ICollection<Utxos>))> MultimintSourceCheck(string tokenId, int coppies)
         {
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null || res.Item2.Count == 0)
             {
                 //await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, (null, null));
             }
-            var tres = await CheckSpendableNeblioTokens(tokenId, 3 + coppies);
+            var tres = await CheckSpendableTokens(tokenId, 3 + coppies);
             if (tres.Item2 == null || tres.Item2.Count == 0)
             {
                 //await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs. You need 3 tokens as minimum input.");
@@ -1475,7 +1410,7 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
@@ -1525,7 +1460,7 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent("Cannot snd NFT without provided Utxo TxId.", "Cannot send NFT");
                 return (false, "Cannot send NFT without provided Utxo TxId.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
@@ -1578,7 +1513,7 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent("Cannot change Post NFT without provided Utxo TxId.", "Cannot change the Post NFT");
                 return (false, "Cannot change NFT without provided Utxo TxId.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
@@ -1620,14 +1555,14 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
-            var tres = await CheckSpendableNeblioTokens(nft.TokenId, 3);
+            var tres = await CheckSpendableTokens(nft.TokenId, 3);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs");
@@ -1677,14 +1612,14 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
 
-            var tres = await CheckSpendableNeblioTokens(NFTHelpers.TokenId, 3);
+            var tres = await CheckSpendableTokens(NFTHelpers.TokenId, 3);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs");
@@ -1734,7 +1669,7 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent("Cannot snd NFT without provided Utxo TxId.", "Cannot send NFT");
                 return (false, "Cannot send NFT without provided Utxo TxId.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
@@ -1781,7 +1716,7 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent("Cannot send NFT Payment without provided Utxo TxId of this NFT", "Cannot send Payment for NFT");
                 return (false, "Cannot send NFT without provided Utxo TxId.");
             }
-            var res = await CheckSpendableNeblio(NFT.Price + 0.002);
+            var res = await CheckSpendableMainToken(NFT.Price + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
@@ -1824,7 +1759,7 @@ namespace VEDriversLite.Neblio
                 return (false, "Account is locked.");
             }
 
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
@@ -1868,13 +1803,13 @@ namespace VEDriversLite.Neblio
                 return (false, "Account is locked.");
             }
 
-            var res = await CheckSpendableNeblio(neblioAmount + 0.002);
+            var res = await CheckSpendableMainToken(neblioAmount + 0.002);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(tokenId, (int)tokenAmount);
+            var tres = await CheckSpendableTokens(tokenId, (int)tokenAmount);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable token inputs");
@@ -1936,7 +1871,7 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent("Cannot snd NFT without provided Utxo TxId.", "Cannot send NFT");
                 return (false, "Cannot send NFT without provided Utxo TxId.");
             }
-            var res = await CheckSpendableNeblio(0.001);
+            var res = await CheckSpendableMainToken(0.001);
             if (res.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
@@ -2095,7 +2030,7 @@ namespace VEDriversLite.Neblio
                                     {
                                         try
                                         {
-                                            var res = await CheckSpendableNeblio(0.001);
+                                            var res = await CheckSpendableMainToken(0.001);
                                             if (res.Item2 != null)
                                             {
                                                 var rtxid = string.Empty;

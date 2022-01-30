@@ -151,7 +151,7 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <TextArea Placeholder="Add Text About Person" MaxLength="8000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
+                                <TextArea Placeholder="Add Text About Person" MaxLength="10000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
                             </div>
                             @if (!string.IsNullOrEmpty(text))
                             {
@@ -164,7 +164,7 @@
                         {
                             <div class="row" style="margin-top:2px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <small class="text-info">Remaining @(8000-text.Length) from 8000 characters.</small>
+                                    <small class="text-info">Remaining @(10000-text.Length) from 10000 characters.</small>
                                 </div>
                             </div>
                         }
@@ -314,7 +314,7 @@
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <TextArea Placeholder="Add Text of the NFT Article" MaxLength="8000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
+                                <TextArea Placeholder="Add Text of the NFT Article" MaxLength="11000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
                             </div>
                             @if (!string.IsNullOrEmpty(text))
                             {
@@ -335,7 +335,7 @@
                         {
                             <div class="row" style="margin-top:2px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <small class="text-info">Remaining @(8000-text.Length) from 8000 characters.</small>
+                                    <small class="text-info">Remaining @(11000-text.Length) from 11000 characters.</small>
                                 </div>
                             </div>
                         }

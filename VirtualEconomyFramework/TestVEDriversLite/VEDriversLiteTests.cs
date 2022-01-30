@@ -65,6 +65,7 @@ namespace TestVEDriversLite
             Console.WriteLine($"Address: {account.Address}");
             Console.WriteLine($"Encrypted Private Key: {await account.AccountKey.GetEncryptedKey("", true)}");
         }
+
         /// <summary>
         /// This handler provides the data from the initial loading of the account.
         /// It can be used for loading progressbar label, etc.
@@ -115,6 +116,44 @@ namespace TestVEDriversLite
             account.FirsLoadingStatus -= Account_FirsLoadingStatus;
             account.FirsLoadingStatus += Account_FirsLoadingStatus;
             await account.LoadAccount(pass, file, false);
+        }
+
+        /// <summary>
+        /// Load Neblio Account from specific file
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void NewVEDL_LoadAccountFromFile(string param)
+        {
+            NewVEDL_LoadAccountFromFileAsync(param);
+        }
+        public static async Task NewVEDL_LoadAccountFromFileAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input pass,filename");
+            var pass = split[0];
+            var file = split[1];
+            var accnt = new VEDriversLite.Accounts.NeblioAccount();
+
+            accnt.FirsLoadingStatus += (sender, e) =>
+            {
+                Console.WriteLine($"Loading Account {sender}: {e}.");
+            };
+            accnt.MaximumOfLoadedNFTs = 20;
+            await accnt.LoadAccount(new VEDriversLite.Accounts.Dto.AccountLoadData() { LoadFromFile = true, Filename = file, Password = pass });
+            Console.WriteLine($"Loaded {accnt.NFTs.Count} of NFTs:");
+            accnt.NFTs.ForEach(n => Console.WriteLine($"\tNFT Type {n.TypeText}, NFT {n.Name}, from Author {n.Author}"));
+            accnt.NFTsChanged += Accnt_NFTsChanged;
+            while (true)
+            {
+                await Task.Delay(100);
+            }
+        }
+
+        private static void Accnt_NFTsChanged(object sender, string e)
+        {
+            Console.WriteLine("New NFT: " + e);
         }
 
         /// <summary>

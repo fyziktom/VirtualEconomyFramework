@@ -5683,7 +5683,7 @@ namespace VEDriversLite.NeblioAPI
     
         /// <summary>Object representing the scruptPubKey of the UTXO</summary>
         [Newtonsoft.Json.JsonProperty("scriptPubKey", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public object ScriptPubKey { get; set; }
+        public ScriptPubKey ScriptPubKey { get; set; }
     
         /// <summary>Whether the UTXO has been used</summary>
         [Newtonsoft.Json.JsonProperty("used", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5708,7 +5708,7 @@ namespace VEDriversLite.NeblioAPI
     
     
     }
-    
+
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Vin 
     {
