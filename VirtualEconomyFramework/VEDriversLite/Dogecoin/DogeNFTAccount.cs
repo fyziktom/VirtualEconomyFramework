@@ -13,7 +13,7 @@ using VEDriversLite;
 using VEDriversLite.DogeAPI;
 using VEDriversLite.Security;
 
-namespace DogeNFTs
+namespace VEDriversLite.Dogecoin
 {
     public class ImageNFT
     {

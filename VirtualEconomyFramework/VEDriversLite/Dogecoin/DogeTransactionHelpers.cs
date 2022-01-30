@@ -380,7 +380,7 @@ namespace VEDriversLite
             {
                 fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
-                var amountinSat = Convert.ToUInt64(data.Amount) * Convert.ToUInt64(FromSatToMainRatio);
+                var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
                 var diffinSat = (Convert.ToUInt64(allDogelCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
 
                 // create outputs
@@ -472,7 +472,7 @@ namespace VEDriversLite
                 UInt64 totalamnt = 0;
                 foreach (var r in receiverAmount)
                 {
-                    var amntinSat = Convert.ToUInt64(r.Value) * Convert.ToUInt64(FromSatToMainRatio);
+                    var amntinSat = Convert.ToUInt64(r.Value * FromSatToMainRatio);
                     totalamnt += amntinSat;
                     // create outputs
                     if (recsaddr.TryGetValue(r.Key, out var badd))
