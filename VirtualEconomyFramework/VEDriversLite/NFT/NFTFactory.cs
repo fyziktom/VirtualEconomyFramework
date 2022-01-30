@@ -110,8 +110,10 @@ namespace VEDriversLite.NFT
                                               bool wait = false,
                                               bool loadJustType = false,
                                               NFTTypes justType = NFTTypes.Image,
+                                              List<NFTTypes> loadJustTypes = null,
                                               bool skipTheType = false,
                                               NFTTypes skipType = NFTTypes.Image,
+                                              List<NFTTypes> skipTypes = null,
                                               string address = "",
                                               NeblioAPI.GetTransactionInfoResponse txinfo = null)
         {
@@ -198,8 +200,14 @@ namespace VEDriversLite.NFT
             if (loadJustType)
                 if (justType != type)
                     return null;
+            if (loadJustTypes != null)
+                if (!loadJustTypes.Contains(type))
+                    return null;
             if (skipTheType)
                 if (skipType == type || (skipType == NFTTypes.Message && type == NFTTypes.IoTMessage))
+                    return null;
+            if (skipTypes != null)
+                if (skipTypes.Contains(type) || (skipTypes.Contains(NFTTypes.Message) && type == NFTTypes.IoTMessage))
                     return null;
 
             var Time = TimeHelpers.UnixTimestampToDateTime(time);

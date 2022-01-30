@@ -15,6 +15,7 @@ using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
 using Dasync.Collections;
+using VEDriversLite.Accounts.NFTModules;
 
 namespace VEDriversLite.Accounts
 {
@@ -45,7 +46,11 @@ namespace VEDriversLite.Accounts
         {
             get
             {
-                return NFTsDict.Values.OrderBy(n => n.Time)?.Reverse()?.ToList();
+                var nfts = new List<INFT>();
+                foreach (var module in NFTModules.Values)
+                    foreach (var nft in module.NFTs)
+                        nfts.Add(nft);
+                return nfts.OrderBy(n => n.Time)?.Reverse()?.ToList();
             }
         }
         /// <summary>
@@ -53,16 +58,6 @@ namespace VEDriversLite.Accounts
         /// </summary>
         [JsonIgnore]
         public ConcurrentDictionary<string, INFT> NFTsDict { get; set; } = new ConcurrentDictionary<string, INFT>();
-        /// <summary>
-        /// Received payments (means Payment NFT) of this address.
-        /// </summary>
-        [JsonIgnore]
-        public ConcurrentDictionary<string, INFT> ReceivedPayments { get; set; } = new ConcurrentDictionary<string, INFT>();
-        /// <summary>
-        /// Received receipts (means Receipt NFT) of this address.
-        /// </summary>
-        [JsonIgnore]
-        public ConcurrentDictionary<string, INFT> ReceivedReceipts { get; set; } = new ConcurrentDictionary<string, INFT>();
         /// <summary>
         /// If address has some profile NFT, it is founded in Utxo list and in this object.
         /// </summary>
@@ -79,6 +74,11 @@ namespace VEDriversLite.Accounts
         /// </summary>
         [JsonIgnore]
         public GetAddressResponse AddressInfo { get; set; } = new GetAddressResponse();
+        /// <summary>
+        /// NFT Modules
+        /// </summary>
+        [JsonIgnore]
+        public ConcurrentDictionary<string, INFTModule> NFTModules { get; set; } = new ConcurrentDictionary<string, INFTModule>();
 
         /// <summary>
         /// This event is fired whenever info about the address is reloaded. It is periodic event.
@@ -236,6 +236,63 @@ namespace VEDriversLite.Accounts
             return (false, new List<Utxo>());
         }
 
+        public async Task<bool> LoadNFTModules()
+        {
+            try
+            {
+                var venftmodule = await NFTModuleFactory.GetNFTModule(NFTModuleType.VENFT, Address, "venft-main");
+                if (venftmodule != null)
+                    NFTModules.TryAdd(venftmodule.Id, venftmodule);
+                var shopmodule = await NFTModuleFactory.GetNFTModule(NFTModuleType.Shop, Address, "shop-main");
+                if (shopmodule != null)
+                    NFTModules.TryAdd(shopmodule.Id, shopmodule);
+                var msgmodule = await NFTModuleFactory.GetNFTModule(NFTModuleType.Messages, Address, "messages-main");
+                if (msgmodule != null)
+                    NFTModules.TryAdd(msgmodule.Id, msgmodule);
+                if (NFTModules.Count >= 3)
+                {
+                    foreach(var module in NFTModules.Values)
+                    {
+                        module.NFTsChanged += Module_NFTsChanged;
+                        module.FirstLoadNFTsChanged += Module_FirstLoadNFTsChanged;
+                        if (module.Type == NFTModuleType.VENFT)
+                            (module as VENFTModule).ProfileUpdated += NeblioAccount_ProfileUpdated;
+                    }
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot load the NFT Modules. " + ex.Message);
+            }
+            return false;
+        }
+
+        private void NeblioAccount_ProfileUpdated(object sender, INFT e)
+        {
+            Profile = e as ProfileNFT;
+            ProfileUpdated?.Invoke(this, e);
+        }
+
+        private void Module_FirstLoadNFTsChanged(object sender, INFT e)
+        {
+            var nftutxos = Utxos.Where(u => (u.Value == 10000 && u.Tokens.Count > 0)).Where(u => u.Tokens[0]?.Amount == 1).ToArray();
+            if (nftutxos == null || nftutxos.Count() == 0)
+                return;
+            var loaded = 0;
+            foreach (var module in NFTModules.Values)
+                loaded += module.NFTsDict.Count;
+            var count = MaximumOfLoadedNFTs > 0 ? MaximumOfLoadedNFTs : nftutxos.Count();
+            FirsLoadingStatus?.Invoke(Address, $"Loaded {loaded} NFT of {count}.");
+        }
+
+        private void Module_NFTsChanged(object sender, string e)
+        {
+            NFTsChanged?.Invoke(this, "Changed");
+        }
+
         public override async Task<(bool,string)> StartRefreshingData(int interval = 3000) 
         {
             try
@@ -257,18 +314,35 @@ namespace VEDriversLite.Accounts
                 {
                     FirsLoadingStatus?.Invoke(this, "Loading NFTs started.");
 
-                    await ReLoadNFTs(true, maxItems: MaximumOfLoadedNFTs, firstLoad:true);
-
-                    var tasks = new Task[2];
-                    tasks[0] = RefreshAddressReceivedPayments();
-                    tasks[1] = RefreshAddressReceivedReceipts();
-                    await Task.WhenAll(tasks);
+                    try
+                    {
+                        if (await LoadNFTModules())
+                        {
+                            var tasks = new Task[NFTModules.Count];
+                            var i = 0;
+                            foreach (var module in NFTModules.Values)
+                            {
+                                tasks[i] = module.ReLoadNFTs(new ReloadNFTSetting()
+                                {
+                                    Utxos = Utxos,
+                                    FireProfileEvent = true,
+                                    MaxItems = MaximumOfLoadedNFTs,
+                                    FirstLoad = true
+                                });
+                                i++;
+                            }
+                            await Task.WhenAll(tasks);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Cannot load the NFT Modules NFTs. " + ex.Message);
+                    }
 
                     RegisterPriceServiceEventHandler();
 
                     Refreshed?.Invoke(this, null);
                     FirsLoadingStatus?.Invoke(this, "Main Account NFTs Loaded.");
-
                 }
             }
             catch (Exception ex)
@@ -295,11 +369,19 @@ namespace VEDriversLite.Accounts
 
                             if (!WithoutNFTs)
                             {
-                                await ReLoadNFTs(true, maxItems: MaximumOfLoadedNFTs);
-
-                                tasks[0] = RefreshAddressReceivedPayments();
-                                tasks[1] = RefreshAddressReceivedReceipts();
-                                await Task.WhenAll(tasks);
+                                var tsks = new Task[NFTModules.Count];
+                                var i = 0;
+                                foreach (var module in NFTModules.Values)
+                                {
+                                    tsks[i] = module.ReLoadNFTs(new ReloadNFTSetting()
+                                    {
+                                        Utxos = Utxos,
+                                        FireProfileEvent = true,
+                                        MaxItems = MaximumOfLoadedNFTs
+                                    });
+                                    i++;
+                                }
+                                await Task.WhenAll(tsks);
                             }
 
                             Refreshed?.Invoke(Address, null);
@@ -324,6 +406,9 @@ namespace VEDriversLite.Accounts
 
         }
 
+        /////////////////////////////////////
+        // Price Services
+        #region PriceServices
 
         /// <summary>
         /// Register event of the PriceService PriceRefreshed. Then the event is resend by NeblioAccountBase class
@@ -343,6 +428,10 @@ namespace VEDriversLite.Accounts
         {
             PricesRefreshed?.Invoke(sender, e);
         }
+
+        #endregion
+        /////////////////////////////////////
+
 
         /////////////////////////////////////
         //Create or Load Account section
@@ -571,13 +660,8 @@ namespace VEDriversLite.Accounts
         /// Load or reload the NFTs for this account.
         /// It will add new to the NFTsDict and also remove old ones
         /// </summary>
-        /// <param name="fireProfileEvent">Fire profile event when you will find it between loaded NFTs</param>
-        /// <param name="withoutMessages">Dont load the messages</param>
-        /// <param name="justMessages">Load just the messages</param>
-        /// <param name="maxItems">Limist maximum items to load</param>
-        /// <param name="firstLoad">first load will not fire NFTsChanged event after load of all NFTs, but after whole list</param>
         /// <returns></returns>
-        public async Task ReLoadNFTs(bool fireProfileEvent = false, bool withoutMessages = false, bool justMessages = false, int maxItems = 0, bool firstLoad = false)
+        public async Task ReLoadNFTs(ReloadNFTSetting settings)
         {
             if (string.IsNullOrEmpty(Address))
                 return;
@@ -591,8 +675,8 @@ namespace VEDriversLite.Accounts
                 var fireProfileEventTmp = true;
                 var lastnftsCount = NFTsDict.Count();
                 ArraySegment<Utxo> nftus = null;
-                if (maxItems > 0)
-                    nftus = new ArraySegment<Utxo>(nftutxos, 0, maxItems);
+                if (settings.MaxItems > 0 && nftutxos.Length > settings.MaxItems)
+                    nftus = new ArraySegment<Utxo>(nftutxos, 0, settings.MaxItems);
                 else
                     nftus = nftutxos;
 
@@ -611,18 +695,30 @@ namespace VEDriversLite.Accounts
 
                 await nftus.ParallelForEachAsync(async n =>
                 {
-                    if (maxItems == 0 || (maxItems > 0 && NFTsDict.Count < maxItems))
+                    if (settings.MaxItems == 0 || (settings.MaxItems > 0 && NFTsDict.Count < settings.MaxItems))
                     {
                         var tok = n.Tokens.FirstOrDefault();
                         if (!NFTsDict.TryGetValue($"{n.Txid}:{n.Index}", out var nft))
                         {
-                            if (!withoutMessages)
-                                nft = await NFTFactory.GetNFT(tok.TokenId, n.Txid, n.Index, n.Time, address: Address);
-                            else if (withoutMessages)
-                                nft = await NFTFactory.GetNFT(tok.TokenId, n.Txid, n.Index, n.Time, address: Address, skipTheType: true, skipType: NFTTypes.Message);
+                            if (!settings.LoadJustTypes.Contains(NFTTypes.Message))
+                                nft = await NFTFactory.GetNFT(tok.TokenId, 
+                                                              n.Txid, 
+                                                              n.Index, 
+                                                              n.Time, 
+                                                              address: Address);
+                            else if (settings.LoadJustTypes.Contains(NFTTypes.Message) || settings.LoadJustTypes.Contains(NFTTypes.IoTMessage))
+                                nft = await NFTFactory.GetNFT(tok.TokenId, 
+                                                              n.Txid, 
+                                                              n.Index, 
+                                                              n.Time, 
+                                                              address: Address, 
+                                                              skipTypes: new List<NFTTypes>() { 
+                                                                  NFTTypes.Message, 
+                                                                  NFTTypes.IoTMessage 
+                                                              });
                             if (nft != null)
                             {
-                                if (fireProfileEventTmp && fireProfileEvent && nft.Type == NFTTypes.Profile)
+                                if (fireProfileEventTmp && settings.FireProfileEvent && nft.Type == NFTTypes.Profile)
                                 {
                                     ProfileUpdated?.Invoke(Address, nft);
                                     fireProfileEventTmp = false;
@@ -630,16 +726,16 @@ namespace VEDriversLite.Accounts
 
                                 NFTsDict.TryAdd($"{n.Txid}:{n.Index}", nft);
 
-                                var count = maxItems > 0 ? maxItems : nftutxosCount;
+                                var count = settings.MaxItems > 0 ? settings.MaxItems : nftutxosCount;
                                 FirsLoadingStatus?.Invoke(Address, $"Loaded {NFTsDict.Count} NFT of {count}.");
-                                if (!firstLoad)
+                                if (!settings.FirstLoad)
                                     NFTsChanged?.Invoke(this, "Changed");
                             }
                         }
                     }
                 }, maxDegreeOfParallelism: 10);
 
-                if (firstLoad && NFTsDict.Count != lastnftsCount)
+                if (settings.FirstLoad && NFTsDict.Count != lastnftsCount)
                     NFTsChanged?.Invoke(this, "Changed");
 
                 AddressNFTCount = NFTsDict.Count;
@@ -648,85 +744,6 @@ namespace VEDriversLite.Accounts
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot reload NFTs. " + ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// This function will search NFT Payments in the NFTs list and load them into ReceivedPayments list. 
-        /// This list is cleared at the start of this function
-        /// </summary>
-        /// <returns></returns>
-        public async Task RefreshAddressReceivedPayments()
-        {
-            try
-            {
-                lock (_lock)
-                {
-                    var firstpnft = ReceivedPayments.Values.FirstOrDefault();
-                    var pnfts = NFTs.Where(n => n.Type == NFTTypes.Payment).ToList();
-                    var ffirstpnft = pnfts.FirstOrDefault();
-
-                    if ((firstpnft != null && ffirstpnft != null) || (firstpnft == null && ffirstpnft != null))
-                    {
-                        if ((firstpnft == null && ffirstpnft != null) || (firstpnft != null && (firstpnft.Utxo != ffirstpnft.Utxo)))
-                        {
-                            ReceivedPayments.Clear();
-                            foreach (var p in pnfts)
-                            {
-                                ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
-                                var _nft = NFTs.Where(nft => NFTHelpers.IsBuyableNFT(nft.Type))
-                                               .FirstOrDefault(n => n.Utxo == (p as PaymentNFT).NFTUtxoTxId &&
-                                                                    n.UtxoIndex == (p as PaymentNFT).NFTUtxoIndex);
-                                if (_nft != null)
-                                    NFTAddedToPayments?.Invoke(Address, ((p as PaymentNFT).NFTUtxoTxId, (p as PaymentNFT).NFTUtxoIndex));
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot refresh address received payments. " + ex.Message);
-            }
-        }
-
-        public void FireNFTAddedToPayments(string address, (string, int) e)
-        {
-            NFTAddedToPayments?.Invoke(address, e);
-        }
-
-        /// <summary>
-        /// This function will search NFT Receipts in the NFTs list and load them into ReceivedReceipts list. 
-        /// This list is cleared at the start of this function
-        /// </summary>
-        /// <returns></returns>
-        public async Task RefreshAddressReceivedReceipts()
-        {
-            try
-            {
-                lock (_lock)
-                {
-                    var firstpnft = ReceivedPayments.Values.FirstOrDefault();
-                    var pnfts = NFTs.Where(n => n.Type == NFTTypes.Receipt).ToList();
-                    var ffirstpnft = pnfts.FirstOrDefault();
-
-                    if ((firstpnft != null && ffirstpnft != null) || firstpnft == null && ffirstpnft != null)
-                    {
-                        if ((firstpnft == null && ffirstpnft != null) || (firstpnft != null && (firstpnft.Utxo != ffirstpnft.Utxo)))
-                        {
-                            ReceivedReceipts.Clear();
-                            foreach (var p in pnfts)
-                            {
-                                if (!string.IsNullOrEmpty(p.NFTOriginTxId))
-                                    ReceivedReceipts.TryAdd(p.Utxo, p);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot refresh address received receipts. " + ex.Message);
             }
         }
 

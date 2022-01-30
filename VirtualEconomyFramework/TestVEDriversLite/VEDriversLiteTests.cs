@@ -140,7 +140,7 @@ namespace TestVEDriversLite
             {
                 Console.WriteLine($"Loading Account {sender}: {e}.");
             };
-            accnt.MaximumOfLoadedNFTs = 20;
+            accnt.MaximumOfLoadedNFTs = 100;
             await accnt.LoadAccount(new VEDriversLite.Accounts.Dto.AccountLoadData() { LoadFromFile = true, Filename = file, Password = pass });
             Console.WriteLine($"Loaded {accnt.NFTs.Count} of NFTs:");
             accnt.NFTs.ForEach(n => Console.WriteLine($"\tNFT Type {n.TypeText}, NFT {n.Name}, from Author {n.Author}"));
