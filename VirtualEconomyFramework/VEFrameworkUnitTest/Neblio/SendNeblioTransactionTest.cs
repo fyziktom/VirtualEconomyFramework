@@ -23,7 +23,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         /// <summary>
-        /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
+        /// Unit test method to verify if sendTransaction method is working as expected with correct parameters.
         /// </summary>
         [Fact]
         public void SendNeblioTransaction_Valid_Test()
@@ -149,7 +149,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         /// <summary>
-        /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
+        /// Unit test method to verify if system is returning an error result if Data object is null.
         /// </summary>
         [Fact]
         public void SendNeblioTransaction_Data_Null_Test()
@@ -160,7 +160,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         /// <summary>
-        /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
+        /// Unit test method to verify if system is returning an error result if Key object is null.
         /// </summary>
         [Fact]
         public void SendNeblioTransaction_Key_Null_Test()
@@ -172,7 +172,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         /// <summary>
-        /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
+        /// Unit test method to verify if system is returning an error result if address is not correct.
         /// </summary>
         [Fact]
         public void SendNeblioTransaction_InvalidAddress_Test()
@@ -186,7 +186,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         /// <summary>
-        /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
+        /// Unit test method to verify if system is returning an error result if Utxos are null.
         /// </summary>
         [Fact]
         public void SendNeblioTransaction_TransactionObject_Error_Test()
@@ -219,7 +219,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         /// <summary>
-        /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
+        /// Unit test method to verify if system is returning an error result on Output creation when there is an exception.
         /// </summary>
         [Fact]
         public void SendNeblioTransaction_Outputs_Error_Test()
@@ -338,7 +338,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
         
         /// <summary>
-        /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
+        /// Unit test method to verify if system is returning an error result when password is empty.
         /// </summary>
         [Fact]
         public void SendNeblioTransaction_CannotSendTokenTransaction_Error_Test()
@@ -464,7 +464,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         /// <summary>
-        /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
+        /// Unit test method to verify if system is returning an error result if broadcast failed.
         /// </summary>
         [Fact]
         public void SendNeblioTransaction_CannotBroadcast_Error_Test()
