@@ -220,7 +220,6 @@
                                         <p>Vendor:
                                             <span style="font-style: italic;"><a class="no-link" target="_blank" href="https://www.hardwario.com">hardwario.com</a></span>
                                         </p>
-                                        </p>
 
                                         <div>
                                             <p style="float: left;">Position address:<span style="font-style: italic;"><br>Dr. M. Horákové 413/9,
