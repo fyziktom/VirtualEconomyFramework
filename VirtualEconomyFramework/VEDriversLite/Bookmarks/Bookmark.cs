@@ -22,5 +22,9 @@ namespace VEDriversLite.Bookmarks
         /// If this is true, the bookmark is on some subaccount
         /// </summary>
         public bool IsSubAccount { get; set; } = false;
+        /// <summary>
+        /// Related Address where this Bookmark is saved to, if any
+        /// </summary>
+        public string RelatedAddress { get; set; } = string.Empty;
     }
 }

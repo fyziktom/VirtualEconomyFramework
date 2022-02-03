@@ -17,6 +17,14 @@ namespace VEDriversLite.Accounts
         public AccountType Type { get; set; } = AccountType.Neblio;
         public string Name { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// If this is SubAccount it is under this account
+        /// </summary>
+        public string ParentAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// The account is under another parent address
+        /// </summary>
+        public bool IsSubAccount { get; set; } = false;
         public bool JustForObserve { get; set; } = false;
         public bool LoadJustForSignitures { get; set; } = false;
         /// <summary>
@@ -42,6 +50,7 @@ namespace VEDriversLite.Accounts
         /// </summary>
         [JsonIgnore]
         public PriceService ExchangePriceService { get; set; } = new PriceService();
+        public List<string> SubAccounts { get; set; } = new List<string>();
 
         /// <summary>
         /// This event is fired whenever info about the address is reloaded. It is periodic event.
@@ -120,11 +129,8 @@ namespace VEDriversLite.Accounts
         /// <summary>
         /// This function will create new account - Neblio address and its Private key.
         /// </summary>
-        /// <param name="password">Input password, which will encrypt the Private key</param>
-        /// <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
-        /// <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
         /// <returns></returns>
-        public abstract Task<bool> CreateNewAccount(string password, bool saveToFile = false, string filename = "key.txt");
+        public abstract Task<bool> CreateNewAccount(AccountLoadData data);
         public abstract Task ReloadAccountInfo();
         public abstract Task ReloadUtxos();
         public abstract Task<(bool,string)> StartRefreshingData(int interval = 3000);

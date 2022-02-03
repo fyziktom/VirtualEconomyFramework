@@ -16,6 +16,16 @@
             <param name="data"></param>
             <returns></returns>
         </member>
+        <member name="P:VEDriversLite.Accounts.CommonAccount.ParentAddress">
+            <summary>
+            If this is SubAccount it is under this account
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.CommonAccount.IsSubAccount">
+            <summary>
+            The account is under another parent address
+            </summary>
+        </member>
         <member name="P:VEDriversLite.Accounts.CommonAccount.WithoutNFTs">
             <summary>
             If you want to run account without NFTs set this up. 
@@ -81,13 +91,10 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Accounts.CommonAccount.CreateNewAccount(System.String,System.Boolean,System.String)">
+        <member name="M:VEDriversLite.Accounts.CommonAccount.CreateNewAccount(VEDriversLite.Accounts.Dto.AccountLoadData)">
             <summary>
             This function will create new account - Neblio address and its Private key.
             </summary>
-            <param name="password">Input password, which will encrypt the Private key</param>
-            <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
-            <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Accounts.CommonAccount.VerifyMessage(System.String,System.String,System.String)">
@@ -135,6 +142,11 @@
             <param name="message"></param>
             <returns></returns>
         </member>
+        <member name="P:VEDriversLite.Accounts.Dto.AccountLoadData.SaveToFile">
+            <summary>
+            When creating new account do you want to save it to the file?
+            </summary>
+        </member>
         <member name="P:VEDriversLite.Accounts.IAccount.Type">
             <summary>
             Type of the account
@@ -148,6 +160,21 @@
         <member name="P:VEDriversLite.Accounts.IAccount.Address">
             <summary>
             Neblio Address hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.ParentAddress">
+            <summary>
+            If this is SubAccount it is under this account
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.IsSubAccount">
+            <summary>
+            The account is under another parent address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.SubAccounts">
+            <summary>
+            List of the addresses of all subaccounts under this account
             </summary>
         </member>
         <member name="P:VEDriversLite.Accounts.IAccount.JustForObserve">
@@ -271,13 +298,10 @@
             <param name="loaddata">Object with parameters to load the account</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Accounts.IAccount.CreateNewAccount(System.String,System.Boolean,System.String)">
+        <member name="M:VEDriversLite.Accounts.IAccount.CreateNewAccount(VEDriversLite.Accounts.Dto.AccountLoadData)">
             <summary>
             This function will create new account - Neblio address and its Private key.
             </summary>
-            <param name="password">Input password, which will encrypt the Private key</param>
-            <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
-            <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Accounts.IAccount.ReloadUtxos">
@@ -548,13 +572,10 @@
             Register event of the PriceService PriceRefreshed. Then the event is resend by NeblioAccountBase class
             </summary>
         </member>
-        <member name="M:VEDriversLite.Accounts.NeblioAccount.CreateNewAccount(System.String,System.Boolean,System.String)">
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.CreateNewAccount(VEDriversLite.Accounts.Dto.AccountLoadData)">
             <summary>
             This function will create new account - Neblio address and its Private key.
             </summary>
-            <param name="password">Input password, which will encrypt the Private key</param>
-            <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
-            <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Accounts.NeblioAccount.LoadAccountKey(System.String,System.String)">

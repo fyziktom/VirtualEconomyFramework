@@ -486,6 +486,13 @@ namespace VEDriversLite.Accounts
                     Address = loaddata.Address;
                 }
 
+                if (loaddata.LoadAsSubAccount && !string.IsNullOrEmpty(loaddata.ParentAddress))
+                {
+                    IsSubAccount = true;
+                    ParentAddress = loaddata.ParentAddress;
+                }
+
+
                 SignMessage("init");
                 if (!IsRefreshingRunning)
                     await StartRefreshingData();
@@ -501,11 +508,8 @@ namespace VEDriversLite.Accounts
         /// <summary>
         /// This function will create new account - Neblio address and its Private key.
         /// </summary>
-        /// <param name="password">Input password, which will encrypt the Private key</param>
-        /// <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
-        /// <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
         /// <returns></returns>
-        public override async Task<bool> CreateNewAccount(string password, bool saveToFile = false, string filename = "key.txt")
+        public override async Task<bool> CreateNewAccount(AccountLoadData data)
         {
             try
             {
@@ -516,13 +520,13 @@ namespace VEDriversLite.Accounts
                 Address = address.ToString();
 
                 // todo load already encrypted key
-                AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
+                AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), data.Password);
                 AccountKey.PublicKey = Address;
                 Secret = privateKeyFromNetwork;
-                if (!string.IsNullOrEmpty(password))
-                    AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(password);
+                if (!string.IsNullOrEmpty(data.Password))
+                    AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(data.Password);
                 
-                if (saveToFile)
+                if (data.SaveToFile)
                 {
                     // save to file
                     var kdto = new KeyDto()
@@ -530,7 +534,13 @@ namespace VEDriversLite.Accounts
                         Address = Address,
                         Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
                     };
-                    FileHelpers.WriteTextToFile(filename, JsonConvert.SerializeObject(kdto));
+                    FileHelpers.WriteTextToFile(data.Filename, JsonConvert.SerializeObject(kdto));
+                }
+
+                if (data.LoadAsSubAccount && !string.IsNullOrEmpty(data.ParentAddress))
+                {
+                    IsSubAccount = true;
+                    ParentAddress = data.ParentAddress;
                 }
 
                 SignMessage("init");

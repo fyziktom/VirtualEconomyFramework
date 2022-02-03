@@ -33,6 +33,18 @@ namespace VEDriversLite.Accounts
         /// </summary>
         string Address { get; set; }
         /// <summary>
+        /// If this is SubAccount it is under this account
+        /// </summary>
+        string ParentAddress { get; set; }
+        /// <summary>
+        /// The account is under another parent address
+        /// </summary>
+        bool IsSubAccount { get; set; }
+        /// <summary>
+        /// List of the addresses of all subaccounts under this account
+        /// </summary>
+        List<string> SubAccounts { get; set; }
+        /// <summary>
         /// Indicate if the account was loaded just for observation and it does not have correct private key
         /// </summary>
         bool JustForObserve { get; set; }
@@ -151,11 +163,8 @@ namespace VEDriversLite.Accounts
         /// <summary>
         /// This function will create new account - Neblio address and its Private key.
         /// </summary>
-        /// <param name="password">Input password, which will encrypt the Private key</param>
-        /// <param name="saveToFile">if you want to save it to the file (dont work in the WASM) set this. It will save to root exe path as key.txt</param>
-        /// <param name="filename">default filename is key.txt you can change it, but remember to load same name when loading the account.</param>
         /// <returns></returns>
-        Task<bool> CreateNewAccount(string password, bool saveToFile = false, string filename = "key.txt");
+        Task<bool> CreateNewAccount(AccountLoadData data);
         /// <summary>
         /// Reload address Utxos list. It will sort descending the utxos based on the utxos time stamps.
         /// </summary>
