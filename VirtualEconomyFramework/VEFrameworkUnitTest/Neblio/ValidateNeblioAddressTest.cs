@@ -16,9 +16,8 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public void ValidateNeblioAddress_Empty_Test()
         {
-            var key = NeblioTransactionHelpers.ValidateNeblioAddress("").Result;
-            Assert.False(key.Item1);
-            Assert.Empty(key.Item2);
+            var key = NeblioTransactionHelpers.ValidateNeblioAddress("");
+            Assert.Empty(key);
         }
 
         /// <summary>
@@ -27,9 +26,8 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public void ValidateNeblioAddress_LessThan34_Test()
         {
-            var key1 = NeblioTransactionHelpers.ValidateNeblioAddress("Test").Result;
-            Assert.False(key1.Item1);
-            Assert.Empty(key1.Item2);
+            var key1 = NeblioTransactionHelpers.ValidateNeblioAddress("Test");
+            Assert.Empty(key1);
         }
 
         /// <summary>
@@ -38,9 +36,8 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public void ValidateNeblioAddress_FirstLetterNotN_Test()
         {
-            var key1 = NeblioTransactionHelpers.ValidateNeblioAddress("TestTestTestTestTestTestTestTestTestTest").Result;
-            Assert.False(key1.Item1);
-            Assert.Empty(key1.Item2);
+            var key1 = NeblioTransactionHelpers.ValidateNeblioAddress("TestTestTestTestTestTestTestTestTestTest");
+            Assert.Empty(key1);
         }
 
         /// <summary>
@@ -51,10 +48,8 @@ namespace VEFrameworkUnitTest.Neblio
         {
             string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";
 
-            var result = NeblioTransactionHelpers.ValidateNeblioAddress(address).Result;
-
-            Assert.True(result.Item1);
-            Assert.Equal(address, result.Item2);
+            var result = NeblioTransactionHelpers.ValidateNeblioAddress(address);
+            Assert.Equal(address, result);
         }
     }
 }

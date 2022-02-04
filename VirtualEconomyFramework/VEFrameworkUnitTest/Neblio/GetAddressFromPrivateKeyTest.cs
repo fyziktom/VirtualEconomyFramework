@@ -19,10 +19,9 @@ namespace VEFrameworkUnitTest.Neblio
             string privateKey = "TondMadekiw2kRcyeQsRtm1oQCucN8yU9rstqy2rtrW6y2JDRe29";
             string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";
 
-            var result = NeblioTransactionHelpers.GetAddressFromPrivateKey(privateKey).Result;
+            var result = NeblioTransactionHelpers.GetAddressFromPrivateKey(privateKey);
 
-            Assert.True(result.Item1);
-            Assert.Equal(address, result.Item2);
+            Assert.Equal(address, result);
         }
 
         /// <summary>
@@ -33,10 +32,9 @@ namespace VEFrameworkUnitTest.Neblio
         {
             string privateKey = "TondMadekiw2kRcyeQsRtm1oQCucN8yU9rstqy2rtrW6y2JDRe2222222";
             
-            var result = NeblioTransactionHelpers.GetAddressFromPrivateKey(privateKey).Result;
+            var result = NeblioTransactionHelpers.GetAddressFromPrivateKey(privateKey);
 
-            Assert.False(result.Item1);
-            Assert.Empty(result.Item2);
+            Assert.Empty(result);
         }
     }
 }

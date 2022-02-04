@@ -207,30 +207,23 @@ namespace VEDriversLite
         /// <returns></returns>
         public static async Task<string> BroadcastSignedTransaction(string txhex)
         {
-            try
+            if (!string.IsNullOrEmpty(txhex))
             {
-                if (!string.IsNullOrEmpty(txhex))
+                var bdto = new BroadcastTxRequest()
                 {
-                    var bdto = new BroadcastTxRequest()
-                    {
-                        TxHex = txhex
-                    };
+                    TxHex = txhex
+                };
 
-                    var txid = await BroadcastNTP1TxAsync(bdto);
+                var txid = await BroadcastNTP1TxAsync(bdto);
 
-                    if (!string.IsNullOrEmpty(txid))
-                        return txid;
-                    else
-                        throw new Exception("Cannot broadcast transaction.");
-                }
+                if (!string.IsNullOrEmpty(txid))
+                    return txid;
                 else
-                    throw new Exception("Wrong input transaction for broadcast.");
+                    throw new Exception("Cannot broadcast transaction.");
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot broadcast transaction. " + ex.Message);
-            }
-        }
+            else
+                throw new Exception("Wrong input transaction for broadcast.");
+        }   
 
         /// <summary>
         /// Function prepares SendTokenRequest object. It is important to initialitze correct inside properties
@@ -292,7 +285,6 @@ namespace VEDriversLite
 
             // inputs
             var blankInput = 41;
-            var inputScriptSignatureAddress = 25;
             var inputSignature = 56;
             var signedInput = blankInput + inputSignature;
 
@@ -898,10 +890,10 @@ namespace VEDriversLite
             }
             var tutxo = string.Empty;
             var val = await ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
-            if (!val.Item1)
+            if (val != 0)
                 throw new Exception("Cannot send transaction, nft utxo is not spendable!");
             else
-                tutxo = nftutxo + ":" + ((int)val.Item2).ToString();
+                tutxo = nftutxo + ":" + ((int)val).ToString();
 
             if (nutxos == null || nutxos.Count == 0)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
@@ -1708,17 +1700,10 @@ namespace VEDriversLite
                 throw new Exception("Exception during signing tx! " + ex.Message);
             }
 
-            // broadcast
-            try
-            {
-                var txhex = transaction.ToHex();
-                var res = await BroadcastSignedTransaction(txhex);
-                return res;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            // broadcast            
+            var txhex = transaction.ToHex();
+            var res = await BroadcastSignedTransaction(txhex);
+            return res;            
         }
 
         //////////////////////////////////////
@@ -1799,7 +1784,7 @@ namespace VEDriversLite
                         }
                     }
 
-                    (bool, double) voutstate = (false,0.0);
+                    double voutstate = 0;
 
                     try
                     {
@@ -1817,8 +1802,8 @@ namespace VEDriversLite
                         throw new Exception("Cannot validate utxo for multitoken payment.");
                     }
                     
-                    if ((!isMintingOfCopy && voutstate.Item1) || (!first && isMintingOfCopy && voutstate.Item1))
-                        dto.Sendutxo.Add(itt + ":" + ((int)voutstate.Item2).ToString()); // copy received utxos and add item number of vout after validation
+                    if ((!isMintingOfCopy && voutstate != 0) || (!first && isMintingOfCopy && voutstate != 0))
+                        dto.Sendutxo.Add(itt + ":" + ((int)voutstate).ToString()); // copy received utxos and add item number of vout after validation
 
                 }
             }
@@ -1948,7 +1933,7 @@ namespace VEDriversLite
                         }
                     }
 
-                    (bool, double) voutstate;
+                    double voutstate;
 
                     try
                     {
@@ -1959,8 +1944,8 @@ namespace VEDriversLite
                         throw new Exception("Cannot validate utxo for multitoken payment.");
                     }
 
-                    if (voutstate.Item1)
-                        dto.Sendutxo.Add(itt + ":" + ((int)voutstate.Item2).ToString()); // copy received utxos and add item number of vout after validation
+                    if (voutstate != 0)
+                        dto.Sendutxo.Add(itt + ":" + ((int)voutstate).ToString()); // copy received utxos and add item number of vout after validation
                 }
             }
             else
@@ -2024,67 +2009,59 @@ namespace VEDriversLite
         ///////////////////////////////////////////
         // Tools for addresses
 
-        public static async Task<(bool, BitcoinSecret)> IsPrivateKeyValid(string privatekey)
+        public static BitcoinSecret IsPrivateKeyValid(string privatekey)
         {
             try
             {
-                if (string.IsNullOrEmpty(privatekey))
-                    return (false, null);
-                if (privatekey.Length < 52)
-                    return (false, null);
-                if (privatekey[0] != 'T')
-                    return (false, null);
-
+                if (string.IsNullOrEmpty(privatekey) || privatekey.Length < 52 || privatekey[0] != 'T')
+                    return null;
+                
                 var sec = new BitcoinSecret(privatekey, Network);
 
                 if (sec != null)
-                    return (true, sec);
+                    return sec;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return (false, null);
+                return null;
             }
-            return (false, null);
+            return null;
         }
-        public static async Task<(bool, string)> GetAddressFromPrivateKey(string privatekey)
+        public static string GetAddressFromPrivateKey(string privatekey)
         {
             try
             {
-                var p = await IsPrivateKeyValid(privatekey);
-                if (p.Item1)
+                var p = IsPrivateKeyValid(privatekey);
+                if (p != null)
                 {
-                    var address = p.Item2.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+                    var address = p.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
                     if (address != null)
-                        return (true, address.ToString());
+                        return address.ToString();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return (false, string.Empty);
+                return string.Empty;
             }
-            return (false, string.Empty);
+            return string.Empty;
         }
 
-        public static async Task<(bool, string)> ValidateNeblioAddress(string neblioAddress)
+        public static string ValidateNeblioAddress(string neblioAddress)
         {
             try
             {
-                if (string.IsNullOrEmpty(neblioAddress))
-                    return (false, string.Empty);
-                if (neblioAddress.Length < 34)
-                    return (false, string.Empty);
-                if (neblioAddress[0] != 'N')
-                    return (false, string.Empty);
+                if (string.IsNullOrEmpty(neblioAddress) || neblioAddress.Length < 34 || neblioAddress[0] != 'N')
+                    return string.Empty;
 
-                var add = BitcoinAddress.Create(neblioAddress, Network);
-                if (!string.IsNullOrEmpty(add.ToString()))
-                    return (true, add.ToString());
+                BitcoinAddress address = BitcoinAddress.Create(neblioAddress, Network);
+                if (!string.IsNullOrEmpty(address.ToString()))
+                    return address.ToString();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return (false, string.Empty);
+                return string.Empty;
             }
-            return (false, string.Empty);
+            return string.Empty;
         }
 
         public static async Task<(bool, string)> GetNeblioAddressFromScriptPubKey(string scriptPubKey)
@@ -2102,18 +2079,12 @@ namespace VEDriversLite
             return (false, string.Empty);
         }
 
-        public static (bool, string) IsEnoughConfirmationsForSend(int confirmations)
+        public static string IsEnoughConfirmationsForSend(int confirmations)
         {
-            try
-            {
-                if (confirmations > MinimumConfirmations)
-                    return (true, ">" + MinimumConfirmations.ToString());
-            }
-            catch (Exception ex)
-            {
-                return (false, confirmations.ToString());
-            }
-            return (false, confirmations.ToString());
+            if (confirmations > MinimumConfirmations)
+                return ">" + MinimumConfirmations.ToString();
+           
+            return confirmations.ToString();
         }
 
         ///////////////////////////////////////////
@@ -2342,14 +2313,14 @@ namespace VEDriversLite
         /// <param name="tx"></param>
         /// <param name="address">expected address where was nebl send in this tx</param>
         /// <returns></returns>
-        public static async Task<double> GetSendAmount(GetTransactionInfoResponse tx, string address)
+        public static double GetSendAmount(GetTransactionInfoResponse tx, string address)
         {
-            BitcoinAddress addr = null;
+            BitcoinAddress addr;
             try
             {
                 addr = BitcoinAddress.Create(address, Network);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("Cannot get amount of transaction. cannot create receiver address!");
             }
@@ -2408,7 +2379,7 @@ namespace VEDriversLite
                             ;
                         }
                     }
-                
+
             return new List<Utxos>();
         }
 
@@ -2478,16 +2449,16 @@ namespace VEDriversLite
         /// <param name="tokenId">input token id hash</param>
         /// <param name="txid">input txid hash</param>
         /// <returns>true and index of utxo</returns>
-        public static async Task<(bool, double)> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid, int indx)
+        public static async Task<double> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid, int indx)
         {
             var addinfo = await AddressInfoUtxosAsync(address);
             var utxos = addinfo.Utxos;
             if (utxos == null)
-                return (false, 0);
+                return 0;
             
             var uts = utxos.Where(u => (u.Txid == txid && u.Index == indx)); // you can have multiple utxos with same txid but different amount of tokens
             if (uts == null)
-                return (false, 0);
+                return 0;
             
             foreach (var ut in uts)
                 if (ut.Blockheight > 0 && ut.Tokens != null && ut.Tokens.Count > 0)
@@ -2497,11 +2468,11 @@ namespace VEDriversLite
                     {
                         var tx = await GetTransactionInfo(ut.Txid);
                         if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                            return (true, (double)ut.Index);
+                            return ((double)ut.Index);
                     }
                 }
             
-            return (false, 0);
+            return 0;
         }
 
         /// <summary>

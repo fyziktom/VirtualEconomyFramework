@@ -231,7 +231,7 @@ namespace VEDriversLite
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
                     AccountKey = new EncryptionKey(kdto.Key, fromDb: true);
-                    await AccountKey.LoadPassword(password);
+                    AccountKey.LoadPassword(password);
                     AccountKey.IsEncrypted = true;
                     Address = kdto.Address;
 
@@ -281,7 +281,7 @@ namespace VEDriversLite
                     }
                     if (!string.IsNullOrEmpty(password))
                     {
-                        await AccountKey.LoadPassword(password);
+                        AccountKey.LoadPassword(password);
                         AccountKey.IsEncrypted = true;
                     }
                     Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);

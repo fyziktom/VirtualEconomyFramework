@@ -20,8 +20,7 @@ namespace VEFrameworkUnitTest.Neblio
 
             var result = NeblioTransactionHelpers.IsEnoughConfirmationsForSend(confirmations);
 
-            Assert.True(result.Item1);
-            Assert.Contains(">", result.Item2);
+            Assert.Contains(">", result);
         }
 
         /// <summary>
@@ -34,8 +33,7 @@ namespace VEFrameworkUnitTest.Neblio
 
             var result = NeblioTransactionHelpers.IsEnoughConfirmationsForSend(confirmations);
 
-            Assert.False(result.Item1);
-            Assert.Equal(confirmations.ToString(), result.Item2);
+            Assert.Equal(confirmations.ToString(), result);
         }
     }
 }

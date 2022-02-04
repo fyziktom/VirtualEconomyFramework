@@ -446,7 +446,7 @@
             {
                 txInDetails = txinfo;
                 txInDetailsTime = TimeHelpers.UnixTimestampToDateTime((double)txinfo.Time);
-                txInDetails.Totalsent = await NeblioTransactionHelpers.GetSendAmount(txinfo, AppData.Account.Address);
+                txInDetails.Totalsent = NeblioTransactionHelpers.GetSendAmount(txinfo, AppData.Account.Address);
                 txDetailsLoading = false;
                 StateHasChanged();
 

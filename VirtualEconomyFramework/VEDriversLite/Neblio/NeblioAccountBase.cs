@@ -354,7 +354,7 @@ namespace VEDriversLite.Neblio
                 else
                     AccountKey = new EncryptionKey(key, fromDb: false);
                 if (!string.IsNullOrEmpty(password))
-                    await AccountKey.LoadPassword(password);
+                    AccountKey.LoadPassword(password);
 
                 Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
 
@@ -753,7 +753,7 @@ namespace VEDriversLite.Neblio
         public async Task<(bool, string)> ValidateNFTUtxo(string utxo, int index)
         {
             var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo, index);
-            if (!u.Item1)
+            if (u != 0)
             {
                 var msg = $"Provided source tx transaction is not spendable. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmation.";
                 return (false, msg);

@@ -83,8 +83,8 @@ namespace VENFTApp_Server
                         {
                             if (!k.IsDogeAccount)
                             {
-                                var add = await NeblioTransactionHelpers.ValidateNeblioAddress(k.Address);
-                                if (add.Item1)
+                                var add = NeblioTransactionHelpers.ValidateNeblioAddress(k.Address);
+                                if (!string.IsNullOrEmpty(add))
                                 {
                                     Console.WriteLine("");
                                     Console.WriteLine("=========Neblio Main Account========");

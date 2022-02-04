@@ -255,8 +255,8 @@
         if (!string.IsNullOrEmpty(sender))
         {
             var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
-            var r = NeblioTransactionHelpers.ValidateNeblioAddress(sender).GetAwaiter().GetResult();
-            if (r.Item1)
+            var r = NeblioTransactionHelpers.ValidateNeblioAddress(sender);
+            if (!string.IsNullOrEmpty(r))
             {
                 if (s == null)
                     return NeblioTransactionHelpers.ShortenAddress(sender);
