@@ -32,10 +32,12 @@ namespace VENFTApp_Server
                 {
                     webBuilder.UseStartup<Startup>();
                 })
+            /*
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<MarketplaceNFTsCore>();
                 })
+            */
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<VEDriversLiteCore>();

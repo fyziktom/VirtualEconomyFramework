@@ -1,0 +1,292 @@
+:root {
+    --bs-primary: #4099ff;
+    --bs-primary-rgb: 64, 153, 255;
+}
+
+body {
+    font-size: .9375rem;
+    color: #333;
+    font-family: "Open Sans", sans-serif;
+    background: #f2f7fb;
+}
+
+.table-striped > tbody > tr:nth-of-type(2n+1) > * {
+    --bs-table-accent-bg: none;
+}
+
+.table.dataTable {
+    border-spacing: 2px;
+}
+
+.dataTable.table td, .dataTable.table th {
+    padding: 0.4rem;
+}
+
+.table-striped tbody tr:nth-of-type(2n+1) {
+    background-color: #d9ebff;
+}
+
+.table-striped tbody tr:hover {
+    background-color: #c4e1fc;
+}
+
+.table > thead > tr > th {
+    border-bottom-color: #ccc;
+}
+
+.table thead th {
+    border-bottom: 1px solid #d6dde1;
+    border-bottom-color: rgb(214, 221, 225);
+}
+
+.table-bordered td, .table-bordered th {
+    border: 1px solid #dee2e6;
+}
+
+.shadow {
+    background: #fff;
+}
+
+
+.progress {
+    display: -ms-flexbox;
+    display: flex;
+    height: 10px;
+    overflow: hidden;
+    font-size: .75rem;
+    background-color: #e9ecef;
+    border-radius: .25rem;
+}
+
+
+.proj-progress-card .progress .progress-bar {
+    position: relative;
+}
+
+.progress .progress-bar {
+    height: 100%;
+    color: inherit;
+    overflow: visible !important;
+}
+
+.proj-progress-card .progress .progress-bar::after {
+    content: "";
+    background: #fff;
+    position: absolute;
+    right: -6px;
+    top: -4px;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+}
+
+.proj-progress-card .progress {
+    height: 6px;
+    overflow: visible;
+    /*margin-bottom: 10px;*/
+}
+
+.bg-c-red {
+    background: #FF5370;
+}
+
+.proj-progress-card .progress .progress-bar.bg-c-red::after {
+    border: 3px solid #FF5370;
+}
+
+.red-text {
+    color: #FF5370;
+}
+
+.bg-c-green {
+    background: #2ed8b6;
+}
+
+.proj-progress-card .progress .progress-bar.bg-c-green::after {
+    border: 3px solid #2ed8b6;
+}
+
+.green-text {
+    color: #2ed8b6;
+}
+
+.bg-c-blue {
+    background: #4099ff;
+}
+
+.proj-progress-card .progress .progress-bar.bg-c-blue::after {
+    border: 3px solid #4099ff;
+}
+
+.bg-c-yellow {
+    background: #FFB64D;
+}
+
+.proj-progress-card .progress .progress-bar.bg-c-yellow::after {
+    border: 3px solid #FFB64D;
+}
+
+
+#temperature-chart {
+    width: 100%;
+    height: 500px;
+}
+
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+.blue-text {
+    color: #4099ff;
+}
+
+.yellow-text {
+    color: #FFB64D;
+}
+
+
+.mini-chart {
+    width: calc(100% / 7 - 12px);
+    min-width: 140px;
+    height: 200px;
+    margin-left: 7px;
+    margin-right: 7px;
+    margin-bottom: 15px;
+    float: left;
+}
+
+.highcharts-range-selector-group {
+    display: none !important;
+}
+
+.btn-temperature {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+}
+
+.btn-temperature img {
+    margin: 8px;
+    width: 24px;
+    height: 24px;
+}
+
+.table.dataTable {
+    border-collapse: collapse;
+    border-spacing: 0 !important;
+}
+
+tbody:before {
+    line-height: 1em;
+    content: "\200C";
+    display: block;
+}
+
+
+#temperature-table a {
+    display: inline-block;
+    border-radius: 4px;
+    font-size: 75%;
+    padding: 4px 7px;
+    margin-right: 5px;
+    font-weight: 400;
+    color: #fff;
+    background: #4099ff;
+    text-decoration: none;
+}
+
+.dataTables_wrapper th, .table th {
+    font-weight: 400 !important;
+}
+
+table th, table td {
+    text-align: right;
+}
+
+.footer {
+    background: #c5e0ff;
+}
+
+footer img {
+    width: 20px;
+    width: 20px;
+    position: absolute;
+    left: -35px;
+    top: 13px;
+}
+
+.bg-info {
+    border-radius: 25px;
+    background-color: #FFB64D !important;
+}
+
+.mini-line {
+    position: relative;
+}
+
+.mini-line::after {
+    content: "";
+    background-color: #d2d2d2;
+    width: 60px;
+    height: 1px;
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    z-index: 10000;
+}
+
+.mini-chart:first-child {
+    margin-left: 0;
+}
+
+.mini-chart:last-child {
+    margin-right: 0;
+}
+
+.mini-btn, .mini-btn:hover {
+    border-radius: 4px;
+    font-size: 75%;
+    padding: 4px 7px;
+    margin-right: 5px;
+    font-weight: 400;
+    color: #fff;
+    background: #4099ff;
+    text-decoration: none;
+}
+
+.highcharts-pie-series {
+    filter: drop-shadow(0 .5rem 1rem rgba(0, 0, 0, 0.3));
+}
+
+.highcharts-container {
+    left: 0 !important;
+    right: 0 !important;
+}
+
+.highcharts-container {
+    width: 100% !important;
+}
+
+.highcharts-root {
+    width: 100% !important;
+}
+
+.no-link, .no-link:hover {
+    text-decoration: none;
+    color: #333;
+}
+
+.temperature-row {
+    height: 132px
+}
+
+.temperature-row-in {
+    height: 85px;
+}
+
+.small {
+    margin: 0;
+}
+

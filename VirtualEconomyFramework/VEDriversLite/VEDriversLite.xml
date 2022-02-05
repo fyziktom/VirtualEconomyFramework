@@ -116,7 +116,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Bookmarks.ActiveTab.StartRefreshing(System.Double)">
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.StartRefreshing(System.Double,System.Boolean,System.Boolean)">
             <summary>
             Start Automated refreshing
             </summary>
@@ -129,7 +129,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Bookmarks.ActiveTab.Reload">
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.Reload(System.Boolean)">
             <summary>
             Reload Address Utxos and refresh the NFT list
             </summary>
