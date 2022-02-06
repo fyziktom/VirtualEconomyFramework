@@ -1,7 +1,82 @@
-﻿@page "/"
+﻿@using VEOnePage.Components
+@inject Services.AppData AppData
+@page "/"
 
-<h1>Hello, world!</h1>
+<NavMenu></NavMenu>
 
-Welcome to your new app.
+@*Articles section*@
+<ArticleList></ArticleList>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+<div class="container">
+
+    @*Weeks feature section    *@
+
+       <FeatureProfile></FeatureProfile>
+
+
+    @*Profiles Section, profile component*@
+    <h2 class="heading-title"><span>Profi</span>les</h2>
+    <h4 class="title-card">Top Profiles this Month</h4>
+    <ProfileList></ProfileList>
+    <h4 class="off-link">View Profiles  <i class="fas fa-arrow-circle-right"></i></h4>
+
+
+
+
+    @*magazine banner*@
+    <div class="full-banner">
+        <img src="images/magazine-ban.png" alt="Magazine Banner" />
+    </div>
+
+
+
+    @*Podcast section starts*@
+
+    <div class="row podcasts no-pad">
+        <div class="col-xs-12 col-sm-12 col-md-8 no-pad">
+            <h2 class="heading-title"> <span>Podc</span>asts</h2>
+            <div class="row no-pad">
+                <PodcastList></PodcastList>
+            </div>
+            <h4 class="off-link">More Podcasts<i class="fas fa-arrow-circle-right"></i></h4>
+
+
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-4 no-pad">
+            <div class="news">
+                <h2 class="heading-title"> <span>News</span> Brief</h2>
+                <img src="images/technic-partner.png" />
+            </div>
+        </div>
+
+    </div>
+</div>
+@*footer*@
+
+<Footer>
+</Footer>
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        LoadNFTsToList();
+        return base.OnInitializedAsync();
+    }
+
+    public async Task LoadNFTsToList()
+    {
+        await AppData.LoadNFTs();
+    }
+
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+ 
+
+}
+
+
