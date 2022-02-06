@@ -1,0 +1,41 @@
+﻿@using VEDriversLite.NFT.Coruzant
+@inject AppData AppData 
+  
+  @foreach (var profile in AppData.NFTs.Skip(12).Take(3))
+  {
+      if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
+      {
+        var prof = profile as CoruzantProfileNFT;
+        <div class="col-xs-12 col-sm-4  dark"> 
+            <div class="podcast" style="background:url(@prof.ImageLink);background-size:cover">
+            
+                <div class="dark-overlay">
+                <h4 class="title">@prof.Name&nbsp;@prof.Surname</h4>   
+
+                <p class="position">
+                    @prof.WorkingPosition <br/><br/>
+                   <span class="clamped">@profile.Description</span> <br/>
+                </p>
+
+                <i class="fa fa-podcast" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        if (++displayed == 3) break;
+    }
+  }
+
+
+@code {
+    int displayed = 0;
+    protected override Task OnInitializedAsync()
+    {
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        return base.OnInitializedAsync();
+    }
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}
+

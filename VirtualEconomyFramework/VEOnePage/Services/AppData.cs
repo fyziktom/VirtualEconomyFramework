@@ -11,7 +11,7 @@ using VEDriversLite.NeblioAPI;
 using System.Collections.Concurrent;
 using Dasync.Collections;
 
-namespace Coruzant.Services
+namespace VEOnePage.Services
 {
     public class AppData
     {
