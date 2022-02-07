@@ -1,0 +1,61 @@
+﻿@if (TotalPages > 1)
+{
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            <li class="page-item @(CurrentPage == 0 ? "disabled" : "")">
+                <button class="page-link" @onclick="(() => GoToPage(CurrentPage - 1))">
+                    Previous
+                </button>
+            </li>
+
+            @foreach (int i in GetPaginationRange())
+            {
+                <li class="page-item @(CurrentPage == i ? "active" : "")">
+                    <button class="page-link" @onclick="@(() => GoToPage(i))">
+                        @(i + 1)
+                    </button>
+                </li>
+            }
+
+            <li class="page-item @(CurrentPage == TotalPages - 1 ? "disabled" : "")">
+                <button class="page-link" @onclick="(() => GoToPage(CurrentPage + 1))">
+                    Next
+                </button>
+            </li>
+        </ul>
+    </nav>
+}
+
+@code {
+    [Parameter]
+    public int Total { get; set; } = 0;
+    [Parameter]
+    public int PerPage { get; set; } = 0;
+
+    private int CurrentPage { get; set; } = 0;
+    private int TotalPages => PerPage == 0 ? 0 : (int)Math.Ceiling((double)Total / (double)PerPage);
+
+    [Parameter]
+    public EventCallback<int> OnChange { get; set; }
+
+    private void GoToPage(int index)
+    {
+        if (index >= 0 && index < TotalPages)
+        {
+            CurrentPage = index;
+            OnChange.InvokeAsync(index);
+        }
+    }
+
+    IEnumerable<int> GetPaginationRange()
+    {
+        const int MAX = 10;
+
+        if (TotalPages < MAX)
+            return Enumerable.Range(0, TotalPages);
+
+        int shift = CurrentPage - (MAX / 2);
+        shift = Math.Clamp(shift, 0, TotalPages - MAX);
+        return Enumerable.Range(shift, MAX);
+    }
+}

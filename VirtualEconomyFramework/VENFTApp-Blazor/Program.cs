@@ -27,6 +27,7 @@ namespace VENFTApp_Blazor
 
             builder.Services.AddScoped<ClipboardService>();
             builder.Services.AddSingleton<AppData>();
+            builder.Services.AddSingleton<TransactionsService>();
 
             await builder.Build().RunAsync();
         }
