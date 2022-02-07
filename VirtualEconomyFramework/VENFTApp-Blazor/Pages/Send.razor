@@ -514,11 +514,11 @@
 
                         @if (mainAccountSelected)
                         {
-                            <VENFTApp_Blazor.Components.Account.TransactionsList SubAccount="false" Address="@AppData.Account.Address" @bind-MaxLoadedTx="maxLoadedTransaction" />
+                            <VENFTApp_Blazor.Components.Account.TransactionsList SubAccount="false" Address="@AppData.Account.Address" />
                         }
                         else if (!mainAccountSelected && !string.IsNullOrEmpty(selectedAccountAddress))
                         {
-                            <VENFTApp_Blazor.Components.Account.TransactionsList SubAccount="true" Address="@selectedAccountAddress" @bind-MaxLoadedTx="maxLoadedTransaction" />
+                            <VENFTApp_Blazor.Components.Account.TransactionsList SubAccount="true" Address="@selectedAccountAddress" />
                         }
                     </div>
                 </div>
@@ -615,7 +615,6 @@
     private bool subAccount = false;
 
     private int AmountTokensToSend = 2;
-    private int maxLoadedTransaction = 10;
 
     private double AmountToSend = 0.001;
 
