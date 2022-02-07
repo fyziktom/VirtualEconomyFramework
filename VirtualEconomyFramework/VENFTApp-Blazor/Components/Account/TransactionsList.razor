@@ -1,294 +1,122 @@
-﻿@using VEDriversLite
-@using VEDriversLite.NeblioAPI
-@inject AppData AppData
+﻿@inject AppData AppData
+@inject TransactionsService TransactionsService
+@implements IDisposable
 
-<div class="row w-100 d-flex justify-content-center align-items-center">
-    <div class="col">
-        <div class="row w-100">
-            <div class="col d-flex justify-content-center align-items-center">
-                <small>Number Of Transactions: @Transactions.Count</small>
+<div class="row w-100 m-0 d-flex justify-content-center align-items-center">
+    @if (TransactionsDetails == null)
+    {
+        <p><em><Spin Tip="Loading..." /></em></p>
+    }
+    else
+    {
+        <div class="col">
+            <div class="row w-100 m-0">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small>Number Of Transactions: @Transactions.Count</small>
+                </div>
             </div>
-        </div>
-        <div class="row w-100 d-flex justify-content-center align-items-center" style="margin-top:30px; min-width:300px;">
-            <div class="col d-flex justify-content-center align-items-center">
-                @if (Transactions == null)
+            <div class="row w-100 d-flex justify-content-center align-items-center" style="margin: 30px 0 0 0; min-width:300px;">
+                @if (TransactionsDetails.Count > 0)
                 {
-                    <p><em><Spin Tip="Loading..." /></em></p>
-                }
-                else if (TransactionsDetails.Count == 0)
-                {
-                    <span>0 Transactions or cannot load now.</span>
-                }
-                else
-                {
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Way</th>
-                                <th>Receiver</th>
-                                <th>Date</th>
-                                <th>Details</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (var i = 0; i < TransactionsDetails.Count; i++)
-                            {
-                                @if (i < maxLoadedTxs && TransactionsDetails.Count > i)
-                                {
-                                    var txd = TransactionsDetails[i];
-                                    <tr>
-                                        @if (txd.FromAnotherAccount)
-                                        {
-                                        <td>In</td>
-                                        }
-                                        else if (txd.FromSubAccount)
-                                        {
-                                            <td>Sub</td>
-                                        }
-                                        else 
-                                        { 
-                                            <td>Out</td>
-                                        }
-                                        <td class="text-wrap" style="max-width:80px;">@txd.Receiver</td>
-                                        <td class="text-wrap" style="max-width:60px;">@txd.Time</td>
-                                        <td class="text-center" @onclick="async () => ShowTxDetails(txd.Info.Txid)"><i class="oi oi-info" style="font-size:18px;"></i></td>
-                                    </tr>
-                                }
-                            }
-                            @if (maxLoadedTxs < Transactions.Count)
-                            {
-                                var diff = Transactions.Count - maxLoadedTxs;
-                                @if (diff < 10)
-                                {
-                                    <tr><td colspan="4"> <button class="btn btn-secondary" @onclick="loadNextTx">Show Next @diff transactions</button></td></tr>
-                                }
-                                else
-                                {
-                                    <tr><td colspan="4"> <button class="btn btn-secondary" @onclick="loadNextTx">Show Next 10 transactions</button></td></tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
+                    <VENFTApp_Blazor.Components.Table ItemType="TxDetails" Items="TransactionsDetails">
+                        <VENFTApp_Blazor.Components.Column ItemType="TxDetails" Title="Way">
+                            @context.Way
+                        </VENFTApp_Blazor.Components.Column>
+                        <VENFTApp_Blazor.Components.Column ItemType="TxDetails" Title="Receiver">
+                            @context.Receiver
+                        </VENFTApp_Blazor.Components.Column>
+                        <VENFTApp_Blazor.Components.Column ItemType="TxDetails" Title="Date">
+                            @context.Time
+                        </VENFTApp_Blazor.Components.Column>
+                        <VENFTApp_Blazor.Components.Column ItemType="TxDetails" Title="Details">
+                            <button class="btn btn-primary" @onclick="() => ShowTxDetails(context.Info.Txid)">
+                                Details
+                            </button>
+                        </VENFTApp_Blazor.Components.Column>
+                    </VENFTApp_Blazor.Components.Table>
+                    <VENFTApp_Blazor.Components.Pagination Total="@Transactions.Count" PerPage="@PerPage" OnChange="@HandlePaginationChanged" />
                 }
             </div>
         </div>
-    </div>
+    }
 </div>
 
-<Modal Title="Transaction Details"
-        Visible="@txDetailsVisible"
-        OnOk="@CloseTxDetails"
-        OnCancel="@CloseTxDetails">
-    <VENFTApp_Blazor.Components.Account.TransactionDetails TxId="@txDetailsTxId" SubAccount="@SubAccount" Address="@Address"/>
+<Modal Title="Transaction Details" Visible="@txDetailsVisible" OnOk="@CloseTxDetails" OnCancel="@CloseTxDetails">
+    <VENFTApp_Blazor.Components.Account.TransactionDetails TxId="@txDetailsTxId" SubAccount="@SubAccount" Address="@Address" />
 </Modal>
 
 @code {
-
-    [Parameter]
-    public int MaxLoadedTx
-    {
-        get => maxLoadedTxs;
-        set => maxLoadedTxs = value;
-    }
-    [Parameter]
-    public EventCallback<int> MaxLoadedTxChanged { get; set; }
-
     [Parameter]
     public bool SubAccount { get; set; } = false;
-
-    private string _address = string.Empty;
     [Parameter]
-    public string Address
-    {
-        get => _address;
-        set
-        {
-            if (!string.IsNullOrEmpty(value) && value != _address)
-            {
-                _address = value;
-                Load();
-            }
-        }
-    }
+    public string Address { get; set; } = null;
+
+    private int PerPage { get; set; } = 10;
+    private int Offset { get; set; } = 0;
 
     private bool txDetailsVisible = false;
-
-    private int maxLoadedTxs = 25;
-
     private string txDetailsTxId = string.Empty;
 
     private List<string> Transactions = new List<string>();
+    private List<TxDetails> TransactionsDetails = null;
 
-    private class TxDetails
+    protected override async Task OnInitializedAsync()
     {
-        public GetTransactionInfoResponse Info { get; set; } = new GetTransactionInfoResponse();
-        public string Sender { get; set; } = string.Empty;
-        public string Receiver { get; set; } = string.Empty;
-        public bool FromAnotherAccount { get; set; } = false;
-        public bool FromSubAccount { get; set; } = false;
-        public DateTime Time { get; set; } = DateTime.MinValue;
-    }
-    private List<TxDetails> TransactionsDetails = new List<TxDetails>();
-
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender) Load();
-        return base.OnAfterRenderAsync(firstRender);
+        if (AppData.Account != null)
+            AppData.Account.Refreshed += RefreshedHandler;
+        await Load();
     }
 
-    protected override Task OnInitializedAsync()
+    public void Dispose()
     {
-        return base.OnInitializedAsync();
+        if (AppData.Account != null)
+            AppData.Account.Refreshed -= RefreshedHandler;
     }
 
     void RefreshedHandler(object sender, EventArgs e)
     {
-        if (!SubAccount)
-        {
-            Transactions = AppData.Account.AddressInfo.Transactions.ToList();
-        }
-        else
-        {
-            if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
-                Transactions = acc.AddressInfo.Transactions.ToList();
-        }
-        StateHasChanged();
+        Load().ContinueWith((_) => StateHasChanged());
     }
 
     private async Task Load()
     {
-        if (AppData.Account != null)
-            AppData.Account.Refreshed += RefreshedHandler;
-
-        Transactions.Clear();
-
-        if (!SubAccount)
-        {
-            var inf = await NeblioTransactionHelpers.AddressInfoAsync(AppData.Account.Address);
-            Transactions = inf.Transactions?.Reverse().ToList();
-        }
-        else
-        {
-            if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
-            {
-                var inf = await NeblioTransactionHelpers.AddressInfoAsync(Address);
-                Transactions = inf.Transactions?.Reverse().ToList();
-            }
-        }
-
-        if (Transactions.Count > 0)
-        {
-            TransactionsDetails.Clear();
-            var txtoload = maxLoadedTxs;
-            if (txtoload > Transactions.Count)
-                txtoload = Transactions.Count;
-            for (int i = 0; i < txtoload; i++)
-            {
-                var txd = new TxDetails();
-                var txid = Transactions[i];
-                if (txid != null)
-                {
-                    var tinfo = await NeblioTransactionHelpers.GetTransactionInfo(txid);
-                    txd.Info = tinfo;
-                    txd.Sender = await NeblioTransactionHelpers.GetTransactionSender(txid, tinfo);
-                    txd.FromAnotherAccount = true;
-                    txd.FromSubAccount = true;
-                    if (txd.Sender == AppData.Account.Address)
-                    {
-                        txd.Sender = "Main Account";
-                        txd.FromAnotherAccount = false;
-                        txd.FromSubAccount = false;
-                    }
-                    else if (AppData.Account.SubAccounts.TryGetValue(txd.Sender, out var sacc))
-                    {
-                        if (!string.IsNullOrEmpty(sacc.Name))
-                            txd.Sender = sacc.Name;
-                        else
-                            txd.Sender = sacc.BookmarkFromAccount.Name;
-                        txd.FromAnotherAccount = false;
-                        txd.FromSubAccount = true;
-                    }
-                    var rec = await NeblioTransactionHelpers.GetTransactionReceiver(txid, tinfo);
-                    txd.Receiver = string.Empty;
-                    var recbkm = await AppData.Account.IsInTheBookmarks(rec);
-
-                    if (rec == AppData.Account.Address)
-                        txd.Receiver = "Main Account";
-                    else if (recbkm.Item1)
-                        txd.Receiver = recbkm.Item2.Name;
-                    if (string.IsNullOrEmpty(txd.Receiver))
-                        txd.Receiver = NeblioTransactionHelpers.ShortenAddress(rec);
-                    txd.Time = TimeHelpers.UnixTimestampToDateTime((double)tinfo.Blocktime);
-                    TransactionsDetails.Add(txd);
-                    StateHasChanged();
-                }
-            }
-        }
+        Transactions = await LoadTransactions(SubAccount);
+        TransactionsDetails = await LoadTxDetails();
     }
 
-    private async Task loadNextTx()
+    private Task<List<String>> LoadTransactions(bool subAccount)
     {
-        if (Transactions.Count > 0)
-        {
-            var txtoload = maxLoadedTxs + 10;
-            if (txtoload > Transactions.Count)
-                txtoload = Transactions.Count;
-            for (int i = TransactionsDetails.Count-1; i < txtoload; i++)
-            {
-                var txd = new TxDetails();
-                var txid = Transactions[i];
-                if (txid != null)
-                {
-                    var tinfo = await NeblioTransactionHelpers.GetTransactionInfo(txid);
-                    txd.Info = tinfo;
-                    txd.Sender = await NeblioTransactionHelpers.GetTransactionSender(txid, tinfo);
-                    txd.FromAnotherAccount = true;
-                    txd.FromSubAccount = true;
-                    if (txd.Sender == AppData.Account.Address)
-                    {
-                        txd.Sender = "Main Account";
-                        txd.FromAnotherAccount = false;
-                        txd.FromSubAccount = false;
-                    }
-                    else if (AppData.Account.SubAccounts.TryGetValue(txd.Sender, out var sacc))
-                    {
-                        if (!string.IsNullOrEmpty(sacc.Name))
-                            txd.Sender = sacc.Name;
-                        else
-                            txd.Sender = sacc.BookmarkFromAccount.Name;
-                        txd.FromAnotherAccount = false;
-                        txd.FromSubAccount = true;
-                    }
-                    var rec = await NeblioTransactionHelpers.GetTransactionReceiver(txid, tinfo);
-                    txd.Receiver = string.Empty;
-                    var recbkm = await AppData.Account.IsInTheBookmarks(rec);
-                    if (rec == AppData.Account.Address)
-                        txd.Receiver = "Main Account";
-                    else if (recbkm.Item1)
-                        txd.Receiver = recbkm.Item2.Name;
-                    if (string.IsNullOrEmpty(txd.Receiver))
-                        txd.Receiver = NeblioTransactionHelpers.ShortenAddress(rec);
-                    txd.Time = TimeHelpers.UnixTimestampToDateTime((double)tinfo.Blocktime);
-                    TransactionsDetails.Add(txd);
-                }
-            }
-        }
-        maxLoadedTxs += 10;
-        await MaxLoadedTxChanged.InvokeAsync(maxLoadedTxs);
-        StateHasChanged();
+        return TransactionsService.LoadTransactions(Address, AppData.Account, subAccount);
     }
 
-    private async Task ShowTxDetails(string txId)
+    private async Task<List<TxDetails>> LoadTxDetails()
+    {
+        List<TxDetails> txDetails = new List<TxDetails>();
+        foreach (string txid in Transactions.Skip(Offset * PerPage).Take(PerPage))
+        {
+            if (txid != null)
+            {
+                var details = await TransactionsService.LoadTxDetails(txid, AppData.Account);
+                txDetails.Add(details);
+            }
+        }
+        return txDetails;
+    }
+
+    private async Task HandlePaginationChanged(int offset)
+    {
+        Offset = offset;
+        TransactionsDetails = await LoadTxDetails();
+    }
+
+    private void ShowTxDetails(string txId)
     {
         txDetailsTxId = txId;
-        StateHasChanged();
         txDetailsVisible = true;
-        StateHasChanged();
     }
 
-    private async Task CloseTxDetails(MouseEventArgs e)
+    private void CloseTxDetails(MouseEventArgs e)
     {
         txDetailsVisible = false;
     }
-
 }

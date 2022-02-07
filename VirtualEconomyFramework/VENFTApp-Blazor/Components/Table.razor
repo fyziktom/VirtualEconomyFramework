@@ -1,0 +1,54 @@
+﻿@typeparam ItemType
+
+<table class="table">
+    <thead>
+        <tr>
+            @foreach (var column in columns)
+            {
+                <th style="@buildStyle(column)">
+                    @column.Title
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @if (Items != null)
+        {
+            @foreach (var item in Items)
+            {
+                <tr>
+                    @foreach (var column in columns)
+                    {
+                        <td style=@buildStyle(column)>
+                            @column.Render(item)
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<CascadingValue Value=@this Name="Table" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public IEnumerable<ItemType> Items { get; set; }
+
+    private List<Column<ItemType>> columns = new List<Column<ItemType>>();
+
+    public void AddColumn(Column<ItemType> col)
+    {
+        columns.Add(col);
+        StateHasChanged();
+    }
+
+    private string buildStyle(Column<ItemType> column)
+    {
+        return column.Align == Align.Default ? "" : $"text-align: {column.Align.ToString().ToLower()};";
+    }
+}
