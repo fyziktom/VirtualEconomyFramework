@@ -368,8 +368,8 @@ namespace TestVEDriversLite
             bool isSubAccount = false;
             if (!string.IsNullOrEmpty(param))
             {
-                var va = await NeblioTransactionHelpers.ValidateNeblioAddress(param);
-                if (va.Item1)
+                var va = NeblioTransactionHelpers.ValidateNeblioAddress(param);
+                if (!string.IsNullOrEmpty(va))
                 {
                     if (account.SubAccounts.TryGetValue(param, out var sa))
                     {
@@ -3127,10 +3127,10 @@ namespace TestVEDriversLite
         {
             Console.WriteLine("Validating the Neblio Address...");
 
-            var add = await NeblioTransactionHelpers.ValidateNeblioAddress(param);
+            var add = NeblioTransactionHelpers.ValidateNeblioAddress(param);
 
             Console.WriteLine($"Neblio Address {param} is:");
-            if (add.Item1)
+            if (!string.IsNullOrEmpty(add))
                 Console.WriteLine("Valid.");
             else
                 Console.WriteLine("Not Valid.");

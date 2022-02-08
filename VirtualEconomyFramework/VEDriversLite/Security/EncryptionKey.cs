@@ -110,13 +110,12 @@ namespace VEDriversLite.Security
             passwordLoaded = false;
         }
 
-        public async Task<bool> LoadPassword(string password)
-        {
+        public void LoadPassword(string password)
+        {            
             loadedPassword = password;
             passwordLoaded = true;
             if (!string.IsNullOrEmpty(password))
                 IsEncrypted = true;
-            return true;
         }
     }
 }

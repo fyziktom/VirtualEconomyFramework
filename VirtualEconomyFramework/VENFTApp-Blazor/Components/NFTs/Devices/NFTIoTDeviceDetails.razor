@@ -20,7 +20,7 @@
                     <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
                         <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
                     </a>
-                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
+                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations))</span>
                 </div>
                 @if (OwnNFT)
                 {
@@ -432,8 +432,8 @@
         if (!string.IsNullOrEmpty(sender))
         {
             var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
-            var r = NeblioTransactionHelpers.ValidateNeblioAddress(sender).GetAwaiter().GetResult();
-            if (r.Item1)
+            var r = NeblioTransactionHelpers.ValidateNeblioAddress(sender);
+            if (!string.IsNullOrEmpty(r))
             {
                 if (s == null)
                     return NeblioTransactionHelpers.ShortenAddress(sender);

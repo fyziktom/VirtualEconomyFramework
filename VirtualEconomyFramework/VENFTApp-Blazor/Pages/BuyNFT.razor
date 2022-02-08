@@ -411,7 +411,7 @@
             receiver = await NeblioTransactionHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
 
             var r = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
-            if (!r.Item1)
+            if (r != 0)
             {
                 //await JSRuntime.InvokeVoidAsync("alertMessage", "This is NFT is not spendable tx on the address of receiver of it. Probably it was already spended.");
                 isPossibleToBuy = false;

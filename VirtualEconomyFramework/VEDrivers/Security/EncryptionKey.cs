@@ -207,11 +207,10 @@ namespace VEDrivers.Security
             passwordLoaded = false;
         }
 
-        public bool LoadPassword(string password)
+        public void LoadPassword(string password)
         {
             loadedPassword = password;
             passwordLoaded = true;
-            return true;
         }
     }
 }

@@ -113,8 +113,7 @@ namespace VEFrameworkUnitTest.Neblio
 
             var result = NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(address, tokenId, transactionId, index).Result;
 
-            Assert.True(result.Item1);
-            Assert.Equal(index, result.Item2);
+            Assert.Equal(index, result);
         }
     }
 }

@@ -267,8 +267,8 @@
         }
         else
         {
-            var res = await NeblioTransactionHelpers.IsPrivateKeyValid(importAccountKey);
-            if (!res.Item1)
+            var res = NeblioTransactionHelpers.IsPrivateKeyValid(importAccountKey);
+            if (res != null)
             {
                 try
                 {
@@ -285,12 +285,12 @@
                 key = importAccountKey;
             }
 
-            var add = await NeblioTransactionHelpers.GetAddressFromPrivateKey(key);
-            if (add.Item1)
+            var add = NeblioTransactionHelpers.GetAddressFromPrivateKey(key);
+            if (!string.IsNullOrEmpty(add))
             {
-                address = add.Item2;
+                address = add;
                 var accountLoaded = false;
-                if (!string.IsNullOrEmpty(backupData.Address) && add.Item2 == backupData.Address)
+                if (!string.IsNullOrEmpty(backupData.Address) && add == backupData.Address)
                 {
                     accountLoaded = await AppData.Account.LoadAccountFromVENFTBackup(importAccountPass, backupDataString);
                     if (accountLoaded)
