@@ -1,4 +1,5 @@
 ﻿@using VEDriversLite.NFT.Coruzant
+@using Markdig 
 @inject AppData AppData 
 
 
@@ -73,7 +74,7 @@
                 <div class="spans">
                     <h3>@profile.Name</h3>
                     <hr>
-                    <h4 class="article-title"> @profile.Description</h4><br />
+                    <h4 class="article-title"> @((MarkupString) NFTDescriptionMarkuptext)</h4><br />
                     <span class="comp-link">
                     <a href="#" target= "_blank">More about @((MarkupString)@profile.Author)</a>
                     </span>
@@ -81,8 +82,7 @@
                 </div>
           </div>
             <div class="col-xs-8 col-sm-8 text">                                          
-                <div class="long-desc">
-                    @((MarkupString)profile.Text)
+                <div class="long-desc">@((MarkupString) NFTmarkuptext)
                 </div>
                    <span class="comp-link"> <b>Tags: </b>
                     @if (@profile.Tags !="")
@@ -106,11 +106,18 @@
 }
 
 @code {
+
+ 
     VEDriversLite.NFT.INFT profile { get; set; }
     public void ModalShow( VEDriversLite.NFT.INFT prof){   
         profile = prof;
     }
     void ModalCancel() => profile = null;
+    public string NFTmarkuptext => Markdown.ToHtml(profile.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(profile.Description);
+
+
+
     protected override Task OnInitializedAsync()
     {
         AppData.NFTsLoaded += NFTsLoadedHandler;

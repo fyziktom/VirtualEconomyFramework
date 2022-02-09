@@ -1,4 +1,5 @@
 ﻿ @inject AppData AppData
+ @using Markdig 
  @inject IJSRuntime JsRuntime;
         <ul id="trending-top" class="content-slider cs-hidden">
              @foreach(var profile in AppData.ArticleNFTs.Take(4)){
@@ -25,8 +26,8 @@
                 </div>
                 <div class="spans">
                     <h3>@profile.Name</h3>
-                    <hr>
-                    <h4 class="article-title"> @profile.Description</h4><br />
+                     <hr>
+                    <h4 class="article-title"> @((MarkupString) NFTDescriptionMarkuptext)</h4><br />
                     <span class="comp-link">
                     <a href="#" target= "_blank">More about @((MarkupString)@profile.Author)</a>
                     </span>
@@ -78,6 +79,8 @@
         profile = prof;
     }
     void ModalCancel() => profile = null;
+    public string NFTmarkuptext => Markdown.ToHtml(profile.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(profile.Description);
     protected override Task OnInitializedAsync()
     {
         AppData.NFTsLoaded += NFTsLoadedHandler;
