@@ -26,57 +26,61 @@
                             @((MarkupString)prof.Text)
                         </div>
 
-                        <span class="profile-link">View Profile</span>
+                        <span class="profile-link" @onclick="()=>ModalShow(prof)">View Profile</span>
 
                     </div>
 
                 </div>
-        <div class="profile-modal">
-           <div class="row row-eq-height content-modal">
-            <div class="col-xs-12 col-sm-4 profile-meta ">
-                <span id="week-img">
-                    <img src="@prof.ImageLink" />
-                </span>
-                <span class="name"> @prof.Name @prof.Surname</span><br /><br />
-                <span class="position">@prof.WorkingPosition</span><br /><br />
-                <span class="tags"> <b>Tags: </b>
-                    @if (@prof.Tags !="")
-                    {
-                        string[] subs = @prof.Tags.Split();
-
-                        foreach (string sub in subs)
-                        {
-                            if (sub != "")
-                            {
-                                string r = "<a href='#'> "+sub+" </a>, ";
-                                @((MarkupString)r);
-                            }
-                        }
-                    }
-
-                </span><br />
-            </div>
-
-            <div class="col-xs-12 col-sm-8 text">
-
-                <span class="title-modal"> @prof.Description</span><br />
-                <div class="long-desc">
-                    @((MarkupString)prof.Text)
-                </div>
-                <span class="comp-link"><a target = "_blank" href="@prof.CompanyLink">More about @((MarkupString)@prof.CompanyName)</a></span><br />
-            </div>
-
-          </div>
-          </div>
+      
             </fieldset>
 
           break;
         }
   }
 
+  @if (Prof != null)
+{
+   <div class="profile-modal modal-active" @onclick="@ModalCancel" id="myModal" style="display:block" aria-modal="true" role="dialog">
+     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+        <div class="col-xs-12 col-sm-4 profile-meta ">
+            <span id="week-img">
+                <img src="@Prof.ImageLink" />
+            </span>
+            <span class="name"> @Prof.Name @Prof.Surname</span><br /><br />
+            <span class="position">@Prof.WorkingPosition</span><br /><br />
+            <span class="tags"> <b>Tags: </b>
+                @if (@Prof.Tags !="")
+                {
+                    string[] subs = @Prof.Tags.Split();
+                    foreach (string sub in subs)
+                    {
+                        if (sub != ""){string r = "<a href='#'> "+sub+" </a>, ";@((MarkupString)r);}
+                    }
+                }
+
+            </span><br />
+        </div>
+
+        <div class="col-xs-12 col-sm-8 text">
+
+            <span class="title-modal"> @Prof.Description</span><br />
+            <div class="long-desc">
+                @((MarkupString)Prof.Text)
+            </div>
+            <span class="comp-link"><a target = "_blank" href="@Prof.CompanyLink">More about @((MarkupString)@Prof.CompanyName)</a></span><br />
+        </div>
+
+        </div>
+        </div>
+}
 
 @code {
     int skip = new Random().Next(4, 17);
+    VEDriversLite.NFT.Coruzant.CoruzantProfileNFT Prof { get; set; }
+    public void ModalShow( VEDriversLite.NFT.Coruzant.CoruzantProfileNFT SelProfile){
+        Prof = SelProfile;
+    }
+    void ModalCancel() => Prof = null;
     protected override Task OnInitializedAsync()
     {
         AppData.NFTsLoaded += NFTsLoadedHandler;
@@ -87,7 +91,6 @@
         StateHasChanged();
     }
 }
-
 
 
 

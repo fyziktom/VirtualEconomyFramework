@@ -34,81 +34,30 @@
 </html>
 <script>
     $(document).ready(function () {
-    
-       
+        window.initializeCarousel = () => {
+            $('#trending-top').lightSlider({
+                item: 3,
+                slideMove: 1,
+                speed: 500,
+                auto: true,
+                loop: true,
+                onSliderLoad: function () {
+                    $(window).resize();
+                }, onAfterSlide: function () {
+                    $(window).resize();
+                }
+            });
+
+        }
+
     });
 </script>
-<script>
-    window.initializeCarousel = () => {
-        $('#trending-top').lightSlider({
-            item: 3,
-            slideMove: 1,
-            speed: 500,
-            auto: true,
-            loop: true,
-            onSliderLoad: function () {
-                $(window).resize();
-            }, onAfterSlide: function () {
-                $(window).resize();
-            }
-        });
-
-    }
-
-    $("body").on("click", ".profile-link", function () {
-
-        var cont = $("#weeks-feature .profile-modal");
-        if (!$(cont).hasClass("active-modal")) {
-            $(cont).addClass("active-modal").fadeIn();
-        }
-    });
-
-    $("body").on("click", ".profile-modal", function () {
-        $(this).removeClass("active-modal").fadeOut();
-    });
-
-    $("body").on("click", "#trending-top li", function () {
-        var cl = "." + $(this).attr("id");
-        if (!$(cl).hasClass("active-modal")) {
-            $(cl).addClass("active-modal").fadeIn();
-        }
-    });
-
-    $("body").on("click", ".active-modal", function () {
-        $(this).removeClass("active-modal").fadeOut();
-    });
-
-    $("body").on("click", ".blog .desc", function () {
-
-        var cont = $(this).parent().find(".article-modal");
-        if (!$(cont).hasClass("active-modal")) {
-            $(cont).addClass("active-modal").fadeIn();
-        }
-    });
 
 
-    $("body").on("click", ".articles .dark-overlay", function () {
-
-        var cont = $(this).parent().find(".article-modal");
-        if (!$(cont).hasClass("active-modal")) {
-            $(cont).addClass("active-modal").fadeIn();
-        }
-    });
-
-    $("body").on("click", ".profile", function () {
-
-        var cont = $(this).parent().find(".profile-modal");
-        if (!$(cont).hasClass("active-modal")) {
-            $(cont).addClass("active-modal").fadeIn();
-        }
-    });
 
 
-    $("body").on("click", ".active-modal div", function (e) {
-        e.stopPropagation();
-    });
 
-  
+
 
 
 
