@@ -1214,14 +1214,15 @@ span.title-modal, .article-title {
 .long-desc, .text {
     overflow-x: hidden !important;
 }
-.text {
-    overflow-y: scroll !important;
-}
+
 #weeks-feature .text {
     overflow-y: hidden!important
 }
 
 @media(max-width:768px) {
+    .profile-modal .text {
+        overflow-y: scroll !important;
+    }
     .articles .col-sm-4.article-meta, .articles .col-sm-4.text {
         display: block !important;
         max-width: 100%;
