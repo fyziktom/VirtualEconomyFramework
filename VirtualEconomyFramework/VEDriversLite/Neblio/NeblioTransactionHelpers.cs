@@ -352,12 +352,7 @@ namespace VEDriversLite
 
             return (null, 0);
         }
-
-        public static string MintNFTToken(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
-        {
-            var res = MintNFTTokenAsync(data, ekey, nutxos, tutxos, fee).GetAwaiter().GetResult();
-            return res;
-        }
+        
         /// <summary>
         /// Function will Mint NFT from lot of the tokens
         /// </summary>
@@ -468,12 +463,7 @@ namespace VEDriversLite
                 throw ex;
             }
         }
-
-        public static string MintMultiNFTToken(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
-        {
-            var res = MintMultiNFTTokenAsync(data, coppies, ekey, nutxos, tutxos, fee).GetAwaiter().GetResult();
-            return res;
-        }
+        
         /// <summary>
         /// Function will Mint NFT with the coppies
         /// </summary>
@@ -631,16 +621,7 @@ namespace VEDriversLite
             }
         }
 
-        public static string SplitNTP1Tokens(List<string> receiver, int lots, int amount, string tokenId,
-                                                              IDictionary<string, string> metadata,
-                                                              EncryptionKey ekey,
-                                                              ICollection<Utxos> nutxos,
-                                                              ICollection<Utxos> tutxos,
-                                                              double fee = 20000)
-        {
-            var res = SplitNTP1TokensAsync(receiver, lots, amount, tokenId, metadata, ekey, nutxos, tutxos, fee).GetAwaiter().GetResult();
-            return res;
-        }
+        
         /// <summary>
         /// Function will Split NTP1 tokens to smaller lots
         /// receiver list - If you input 0, split will be done to sender address, if you input 1 receiver split will be done to receiver (all inputs)
@@ -1062,12 +1043,7 @@ namespace VEDriversLite
             }
         }
 
-
-        public static string SendNeblioTransactionAPI(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
-        {
-            var res = SendNeblioTransactionAPIAsync(data, ekey, nutxos, fee).GetAwaiter().GetResult();
-            return res;
-        }
+                
         /// <summary>
         /// Function will send standard Neblio transaction
         /// </summary>
@@ -1151,11 +1127,6 @@ namespace VEDriversLite
             }
         }
 
-        public static string SplitNeblioCoinTransactionAPI(string sender, List<string> receivers, int lots, double amount, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
-        {
-            var res = SplitNeblioCoinTransactionAPIAsync(sender, receivers, lots, amount, ekey, nutxos, fee).GetAwaiter().GetResult();
-            return res;
-        }
         /// <summary>
         /// Function will send standard Neblio transaction
         /// </summary>
@@ -2065,21 +2036,6 @@ namespace VEDriversLite
             return string.Empty;
         }
 
-        public static async Task<(bool, string)> GetNeblioAddressFromScriptPubKey(string scriptPubKey)
-        {
-            try
-            {
-                var add = BitcoinAddress.Create(scriptPubKey, Network);
-                if (!string.IsNullOrEmpty(add.ToString()))
-                    return (true, add.ToString());
-            }
-            catch (Exception ex)
-            {
-                return (false, string.Empty);
-            }
-            return (false, string.Empty);
-        }
-
         public static string IsEnoughConfirmationsForSend(int confirmations)
         {
             if (confirmations > MinimumConfirmations)
@@ -2189,20 +2145,7 @@ namespace VEDriversLite
                 return address;
             }
             return new GetAddressInfoResponse();
-        }
-
-        /// <summary>
-        /// Return list of address utxos.
-        /// </summary>
-        /// <param name="addr"></param>
-        /// <returns></returns>
-        public static async Task<ICollection<Anonymous>> GetAddressUtxos(string addr)
-        {
-            if (string.IsNullOrEmpty(addr))
-                return new List<Anonymous>();
-            var utxos = await GetClient().GetAddressUtxosAsync(addr);
-            return utxos;
-        }
+        }        
 
         /// <summary>
         /// Return list of Utxos object.
@@ -2381,66 +2324,7 @@ namespace VEDriversLite
             var confirmation = latestBlockCount - UtxoBlockHeight;
             return confirmation > MinimumConfirmations;            
         }
-
-        /// <summary>
-        /// Check if the neblio is spendable.
-        /// </summary>
-        /// <param name="address">address which should have this utxo</param>
-        /// <param name="txid">input txid hash</param>
-        /// <returns>true and index of utxo</returns>
-        public static async Task<(bool, double)> ValidateNeblioUtxo(string address, string txid)
-        {
-            var info = await AddressInfoUtxosAsync(address);
-            if (info == null)
-                return (false, 0);
-
-            var uts = info.Utxos.Where(u => u.Txid == txid);
-            if (uts == null)
-                return (false, 0);
-
-            foreach (var ut in uts)
-                if (ut != null && ut.Blockheight > 0)
-                {
-                    var tx = await GetTransactionInfo(ut.Txid);
-                    if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                        return (true, (double)ut.Index);
-                }
-            
-            return (false, 0);
-        }
-
-        /// <summary>
-        /// Check if the token utxo is spendable.
-        /// </summary>
-        /// <param name="address">address which should have this utxo</param>
-        /// <param name="txid">input txid hash</param>
-        /// <param name="tokenId">Token Id hash</param>
-        /// <param name="isMint">If it is mint transaction it counts just utxos which has amount bigger than 1 token</param>
-        /// <returns>true and index of utxo</returns>
-        public static async Task<(bool, double)> ValidateNeblioTokenUtxo(string address, string txid, string tokenId, bool isMint = false)
-        {
-            var addinfo = await AddressInfoUtxosAsync(address);
-            var utxos = addinfo.Utxos;
-            if (utxos == null)
-                return (false, 0);
-            
-            foreach (var ut in utxos)
-                if (ut != null && ut.Blockheight > 0 && ut.Tokens.Count > 0)
-                {
-                    var toks = ut.Tokens.ToArray();
-                    if (toks[0].TokenId == tokenId)
-                        if ((toks[0].Amount > 0 && !isMint) || (toks[0].Amount > 1 && isMint))
-                        {
-                            var tx = await GetTransactionInfo(ut.Txid);
-                            if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                                return (true, (double)ut.Index);
-                        }
-                    
-                }
-            
-            return (false, 0);
-        }
-
+                
         /// <summary>
         /// Check if the NFT token is spendable. Means utxos with token amount = 1
         /// </summary>
@@ -2458,54 +2342,23 @@ namespace VEDriversLite
             var uts = utxos.Where(u => (u.Txid == txid && u.Index == indx)); // you can have multiple utxos with same txid but different amount of tokens
             if (uts == null)
                 return 0;
-            
-            foreach (var ut in uts)
-                if (ut.Blockheight > 0 && ut.Tokens != null && ut.Tokens.Count > 0)
+
+            double latestBlockHeight = NeblioTransactionsCache.LatestBlockHeight(address);
+            foreach (var ut in uts.Where(u => u.Blockheight > 0 && u.Tokens != null && u.Tokens.Count > 0))
+            {
+                var toks = ut.Tokens.ToArray();
+                if (toks[0].TokenId == tokenId && toks[0].Amount == 1)
                 {
-                    var toks = ut.Tokens.ToArray();
-                    if (toks[0].TokenId == tokenId && toks[0].Amount == 1)
+                    double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
+                    if (IsValidUtxo(UtxoBlockHeight, latestBlockHeight))
                     {
-                        var tx = await GetTransactionInfo(ut.Txid);
-                        if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                            return ((double)ut.Index);
+                        return ((double)ut.Index);
                     }
                 }
+            }               
             
             return 0;
-        }
-
-        /// <summary>
-        /// Check if the NFT token is spendable. Means utxos with token amount = 1
-        /// </summary>
-        /// <param name="address">address which should have this utxo</param>
-        /// <param name="tokenId">input token id hash</param>
-        /// <param name="txid">input txid hash</param>
-        /// <returns>true and index of utxo</returns>
-        public static async Task<(bool, Utxos)> ValidateOneTokenNFTUtxoReturnUtxo(string address, string tokenId, string txid, int indx)
-        {
-            var addinfo = await AddressInfoUtxosAsync(address);
-            var utxos = addinfo.Utxos;
-            if (utxos == null)
-                return (false, null);
-
-            var uts = utxos.Where(u => (u.Txid == txid && u.Index == indx)); // you can have multiple utxos with same txid but different amount of tokens
-            if (uts == null)
-                return (false, null);
-
-            foreach (var ut in uts)
-                if (ut.Blockheight > 0 && ut.Tokens != null && ut.Tokens.Count > 0)
-                {
-                    var toks = ut.Tokens.ToArray();
-                    if (toks[0].TokenId == tokenId && toks[0].Amount == 1)
-                    {
-                        var tx = await GetTransactionInfo(ut.Txid);
-                        if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                            return (true, ut);
-                    }
-                }
-
-            return (false, null);
-        }
+        }        
 
         /// <summary>
         /// Find utxo which can be used for minting. It means it has token amount > 1
@@ -2525,24 +2378,25 @@ namespace VEDriversLite
             if (utxos == null)
                 return resp;
 
-            utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
-            foreach (var ut in utxos)
-                if (ut.Blockheight > 0 && ut.Tokens.Count > 0)
+            utxos = utxos.OrderByDescending(u => u.Value).ToList();
+            double latestBlockHeight = NeblioTransactionsCache.LatestBlockHeight(addr);
+
+            foreach (var ut in utxos.Where(u => u.Blockheight > 0 && u.Tokens.Count > 0))
+            {
+                var tok = ut.Tokens.ToArray()?[0];
+                if (tok != null && tok.TokenId == tokenId && tok?.Amount > 3)
                 {
-                    var tok = ut.Tokens.ToArray()?[0];
-                    if (tok != null && tok.TokenId == tokenId && tok?.Amount > 3)
+                    double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
+                    if (IsValidUtxo(UtxoBlockHeight, latestBlockHeight))
                     {
-                        var tx = await GetTransactionInfo(ut.Txid);
-                        if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                        {
-                            founded += (double)tok.Amount;
-                            resp.Add(ut);
-                            if (founded > numberToMint)
-                                break;
-                        }
+                        founded += (double)tok.Amount;
+                        resp.Add(ut);
+                        if (founded > numberToMint)
+                            break;
                     }
                 }
-
+            }
+                
             resp = resp.OrderBy(t => t.Tokens.ToArray()[0].Amount).Reverse().ToList();
             founded = 0.0;
             var res = new List<Utxos>();
@@ -2559,43 +2413,7 @@ namespace VEDriversLite
 
             return res;
         }
-
-        /// <summary>
-        /// Find utxo which can be splited to lots. It is specific function which is used to auto splitter (old version, new version will do in in one tx)
-        /// missing number of lots. this is covered by function which use it.
-        /// </summary>
-        /// <param name="addr">address which has utxos</param>
-        /// <param name="tokenId">token id hash</param>
-        /// <param name="lotAmount">amount of tokens in one lot</param>
-        /// <param name="oneTokenSat">this is usually default. On Neblio all token tx should have value 10000sat</param>
-        /// <returns></returns>
-        public static async Task<Utxos> FindUtxoToSplit(string addr, string tokenId, int lotAmount = 100, double oneTokenSat = 10000)
-        {
-            var addinfo = await AddressInfoUtxosAsync(addr);
-            var utxos = addinfo.Utxos;
-            if (utxos == null)
-                return null;
-            
-            var founded = 0.0;
-            utxos = utxos.OrderBy(u => u.Value).ToList();
-            foreach (var ut in utxos)
-                if (ut.Blockheight > 0 && ut.Tokens.Count > 0 && ut.Value == oneTokenSat)
-                {
-                    var tok = ut.Tokens.ToArray()?[0];
-                    if (tok != null && tok.TokenId == tokenId && tok?.Amount > lotAmount)
-                    {
-                        var tx = await GetTransactionInfo(ut.Txid);
-                        if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                        {
-                            founded += (double)tok.Amount;
-                            return ut;
-                        }
-                    }
-                }
-                        
-            return null;
-        }
-
+        
         public static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0)
         {
             if (TokenTxMetadataCache.TryGetValue(txid, out var tinfo))
