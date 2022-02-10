@@ -320,7 +320,7 @@ article.content.px-4 {
 
 .dark-overlay {
     background: rgba(28, 28, 27, 0.58);
-    text-align-center;
+    text-align:center;
 }
 
     .dark-overlay:hover {
@@ -832,7 +832,7 @@ footer h4 {
 
         .blog .img .overlay {
             background: rgba(28, 28, 27, 0.23);
-            text-align-center;
+            text-align:center;
             width: 100%;
             height: 100%;
         }
@@ -1791,6 +1791,46 @@ span.title-modal, .article-title {
         width: 60%;
         margin: 4rem auto;
     }
+}
+.podcast-player {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    left: 0;
+    z-index: 999;
+    background: #fcfcfc;
+}
+
+    .podcast-player iframe {
+        background: #fcfcfc;
+        width: 98vw;
+        max-height: 96%;
+        transform: scale(.9);
+        margin: auto;
+    }
+
+#close-player {
+    position: relative;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ff6b6b;
+    width: 100%;
+    text-align: center;
+    cursor:pointer;
+}
+.buzzsprout-player {
+    background: #fafafa;
+}
+
+@media(max-width:991px) {
+    .podcast-player {
+        top: 0;
+        bottom: auto;
+    }
+}
+.about .text {
+    height: 100%!important;
 }
 
 

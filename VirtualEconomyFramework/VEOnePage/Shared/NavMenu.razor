@@ -6,10 +6,10 @@
             <button class="btn-primary subscribe"> <a href="https://coruzant.com/#mce-EMAIL">Subcribe </a></button>
 
             <div class="pull-right">
-                <a href="https://coruzant.com/contact/">
+                <a href="https://coruzant.com/contact/" target="_blank">
                     <span><i class="fa fa-envelope" aria-hidden="true"></i>Contact</span>
                 </a>
-                <a href="https://coruzant.com/about">
+                <a href="#" @onclick="ShowAbout">
                     <span><i class="fa fa-address-card" aria-hidden="true"></i>About</span>
                 </a>
 
@@ -108,10 +108,44 @@
     </div>
 
 </div>
+@if(About){
+ 
+   <div class="article-modal modal-active about" @onclick="@ModalCancel" id="myModal" style="display:block" aria-modal="true" role="dialog">
+     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+     
+            <div class="col-xs-12 text" >                                          
+                <div class="long-desc" style="overflow:hidden!important">
+                        <h4>Welcome to Coruzant Technologies, the future of emerging technology. 
+                            We are the premiere and largest crowdsourced, digital, technology publication in the world built on <b>Blockchain</b>. 
+                            Our advisors and contributors come from all over the globe, from Fortune 100 companies, 
+                            Silicon Valley, and tech startups, just to name a few.</h4>
+                       <br/>
+                       <h5 class="tdm-title tdm-title-md">First Blockchain Publication in the World</h5>
+                       <br/>
+                       <p class="tdm-descr td-fix-index">Coruzant is first and largest digital publication built on <b>#Blockchain</b>. 
+                           Every piece of content, article, photo, podcast, video has an associated Coruzant Token or "NFT" uniquely tied to it.<br><br>
+                       We are built on the <a href="https://nebl.io/" target="blank">#NEBLIO</a> platform using the
+                       <a href="https://veframework.com/" target="blank">VE-NFT</a> framework in conjunction with 
+                       <a href="http://technicinsider.com/" target="blank">TechnicInsider</a>.<br><br>
+                       </p>
+       
+                </div>
+            </div>
+
+        </div>
+  </div>
+}
+
+
 
 
 @code {
     private bool collapseNavMenu = true;
+    private bool About = false;
+    private void ShowAbout(){
+        About = true;
+    }
+    void ModalCancel() => About = false;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
