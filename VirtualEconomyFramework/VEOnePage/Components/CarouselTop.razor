@@ -1,0 +1,98 @@
+﻿ @inject AppData AppData
+ @using Markdig 
+ @inject IJSRuntime JsRuntime;
+        <ul id="trending-top" class="content-slider cs-hidden">
+             @foreach(var profile in AppData.ArticleNFTs.Take(4)){
+             <li id="@profile.Utxo" @onclick="()=>ModalShow(profile)">
+                <p class="clamped">@profile.Description</p>
+                
+            </li>
+
+             }
+        </ul>
+
+@if (profile != null)
+{
+   <div class="article-modal modal-active" @onclick="@ModalCancel" id="myModal" style="display:block" aria-modal="true" role="dialog">
+     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true">
+        <div class="row col-xs-4 col-sm-4  article-meta ">
+                <div class="img-wrap">
+                <img src="@profile.ImageLink" />
+                <span class="main-tag">@profile.Tags.Split(' ')[0] </span>
+                <span class="img-author">
+                    <i class="fa fa-user-circle" aria-hidden="true"></i> 
+                    @profile.Author
+                </span>
+                </div>
+                <div class="spans">
+                    <h3>@profile.Name</h3>
+                    <hr>
+                    <h4 class="article-title"> @((MarkupString) NFTDescriptionMarkuptext)</h4><br />
+                    <span class="comp-link">
+                    <a href="#" target= "_blank">More about @((MarkupString)@profile.Author)</a>
+                    </span>
+                    <br />
+                </div>
+          </div>
+            <div class="col-xs-8 col-sm-8 text">                                          
+                <div class="long-desc">@((MarkupString) NFTmarkuptext)
+                </div>
+                   <span class="comp-link"> <b>Tags: </b>
+                    @if (@profile.Tags !="")
+                    {
+                        string[] subs = @profile.Tags.Split();
+
+                        foreach (string sub in subs)
+                        {
+                            if (sub != "")
+                            {
+                                string r = "<a href='#'> "+sub+" </a>, ";
+                                @((MarkupString)r);
+                            }
+                        }
+                    }
+                </span>
+            </div>
+
+        </div>
+  </div>
+}
+
+  
+
+@functions {
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {         
+        if (firstRender)
+        {             
+            await JsRuntime.InvokeAsync<object>("initializeCarousel");         
+            firstRender = false;        
+        }     
+    }
+}   
+@code {
+
+ 
+    VEDriversLite.NFT.INFT profile { get; set; }
+    public void ModalShow( VEDriversLite.NFT.INFT prof){   
+        profile = prof;
+    }
+    void ModalCancel() => profile = null;
+    public string NFTmarkuptext => Markdown.ToHtml(profile.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(profile.Description);
+
+
+
+    protected override Task OnInitializedAsync()
+    {
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        return base.OnInitializedAsync();
+    }
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}
+
+
+
