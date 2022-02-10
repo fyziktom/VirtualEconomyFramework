@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,50 @@ namespace VEDriversLite
         {
             if (string.IsNullOrEmpty(value)) return value;
             return value.Length <= maxLength ? value : value.Substring(0, maxLength);
+        }
+
+        /// <summary>
+        /// https://stackoverflow.com/questions/2118904/zip-and-unzip-string-with-deflate
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static byte[] ZipStr(String str)
+        {
+            using (MemoryStream output = new MemoryStream())
+            {
+                using (DeflateStream gzip =
+                  new DeflateStream(output, CompressionMode.Compress))
+                {
+                    using (StreamWriter writer =
+                      new StreamWriter(gzip, System.Text.Encoding.UTF8))
+                    {
+                        writer.Write(str);
+                    }
+                }
+
+                return output.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// https://stackoverflow.com/questions/2118904/zip-and-unzip-string-with-deflate
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string UnZipStr(byte[] input)
+        {
+            using (MemoryStream inputStream = new MemoryStream(input))
+            {
+                using (DeflateStream gzip =
+                  new DeflateStream(inputStream, CompressionMode.Decompress))
+                {
+                    using (StreamReader reader =
+                      new StreamReader(gzip, System.Text.Encoding.UTF8))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+            }
         }
     }
     public static class FileHelpers
