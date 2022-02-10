@@ -61,7 +61,7 @@
 @if (profile != null)
 {
    <div class="article-modal modal-active" @onclick="@ModalCancel" id="myModal" style="display:block" aria-modal="true" role="dialog">
-     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true">
         <div class="row col-xs-4 col-sm-4  article-meta ">
                 <div class="img-wrap">
                 <img src="@profile.ImageLink" />

@@ -41,7 +41,7 @@
   @if (Prof != null)
 {
    <div class="profile-modal modal-active" @onclick="@ModalCancel" id="myModal" style="display:block" aria-modal="true" role="dialog">
-     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true">
         <div class="col-xs-12 col-sm-4 profile-meta ">
             <span id="week-img">
                 <img src="@Prof.ImageLink" />
