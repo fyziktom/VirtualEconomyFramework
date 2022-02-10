@@ -135,7 +135,7 @@ namespace VEFrameworkUnitTest.Neblio
             _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionObject);
             _client.Setup(x => x.BroadcastTxAsync(It.IsAny<BroadcastTxRequest>())).ReturnsAsync(broadcastTxResponse);
 
-            var result = CheckSpendableNeblio(.1).Result;
+            var result = CheckSpendableNeblio(.0009).Result;
 
             var AccountKey = new EncryptionKey(Key)
             {
@@ -576,7 +576,7 @@ namespace VEFrameworkUnitTest.Neblio
             _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionObject);
             _client.Setup(x => x.BroadcastTxAsync(It.IsAny<BroadcastTxRequest>())).ReturnsAsync(broadcastTxResponse);
 
-            var result = CheckSpendableNeblio(.1).Result;
+            var result = CheckSpendableNeblio(.0009).Result;
 
             var AccountKey = new EncryptionKey(Key)
             {
