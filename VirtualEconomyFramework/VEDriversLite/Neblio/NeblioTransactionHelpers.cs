@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Builder;
 using VEDriversLite.Events;
+using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.Security;
 
@@ -2094,7 +2095,7 @@ namespace VEDriversLite
         /// Returns private client for Neblio API. If it is null, it will create new instance.
         /// </summary>
         /// <returns></returns>
-        private static IClient GetClient()
+        public static IClient GetClient()
         {
             if (_client == null)
                 _client = (IClient)new Client(httpClient) { BaseUrl = BaseURL };
@@ -2267,7 +2268,7 @@ namespace VEDriversLite
         {
             if (txinfo == null) return;
             if (txinfo.Confirmations > MinimumConfirmations + 2)
-                TransactionInfoCache.TryAdd(txinfo.Txid, txinfo);
+                TransactionInfoCache.TryAdd(txinfo.Txid, txinfo);                            
         }
 
         /// <summary>
@@ -2338,7 +2339,7 @@ namespace VEDriversLite
             amount -= vinamount;
 
             return amount;
-        }
+        }     
 
         /// <summary>
         /// Returns list of spendable utxos which together match some input required amount for some transaction
@@ -2356,31 +2357,29 @@ namespace VEDriversLite
             var utxos = addinfo.Utxos;
             if (utxos == null)
                 return resp;
-            utxos = utxos.OrderBy(u => u.Value).Reverse().ToList();
+            utxos = utxos.OrderByDescending(u => u.Value).ToList();
 
             var founded = 0.0;
-            foreach (var ut in utxos)
-                if (ut.Blockheight > 0 && ut.Value > 10000 && ut.Tokens?.Count == 0)
-                    if (((double)ut.Value) > (minAmount * FromSatToMainRatio))
-                    {
-                        try
-                        {
-                            var tx = await GetTransactionInfo(ut.Txid);
-                            if (tx != null && tx.Confirmations > MinimumConfirmations && tx.Blockheight > 0)
-                            {
-                                resp.Add(ut);
-                                founded += ((double)ut.Value / FromSatToMainRatio);
-                                if (founded > requiredAmount)
-                                    return resp;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            ;
-                        }
-                    }
+            double latestBlockHeight = NeblioTransactionsCache.LatestBlockHeight(addr);
+            foreach (var ut in utxos.Where(u => u.Blockheight > 0 && u.Value > 10000 && u.Tokens?.Count == 0 && ((double)u.Value) > (minAmount * FromSatToMainRatio)))
+            {
+                double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
+                if (IsValidUtxo(UtxoBlockHeight, latestBlockHeight))
+                {
+                    resp.Add(ut);
+                    founded += ((double)ut.Value / FromSatToMainRatio);
+                    if (founded > requiredAmount)
+                        return resp;
+                }                
+            }
 
             return new List<Utxos>();
+        }        
+
+        private static bool IsValidUtxo(double UtxoBlockHeight, double latestBlockCount)
+        {            
+            var confirmation = latestBlockCount - UtxoBlockHeight;
+            return confirmation > MinimumConfirmations;            
         }
 
         /// <summary>

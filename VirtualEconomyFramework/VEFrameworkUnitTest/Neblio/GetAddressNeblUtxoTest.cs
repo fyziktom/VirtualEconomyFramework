@@ -101,7 +101,7 @@ namespace VEFrameworkUnitTest.Neblio
 
             //Arrange           
             string address = "123";
-            double amount = 3;            
+            double amount = 0.009;            
 
             GetAddressInfoResponse addressObject = Newtonsoft.Json.JsonConvert.DeserializeObject<GetAddressInfoResponse>(response);                                          
 
