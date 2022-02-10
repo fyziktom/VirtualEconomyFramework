@@ -57,8 +57,7 @@
                 </div>
           </div>
             <div class="col-xs-8 col-sm-8 text">                                          
-                <div class="long-desc">
-                    @((MarkupString)profile.Text)
+                <div class="long-desc">@((MarkupString) NFTmarkuptext)
                 </div>
                    <span class="comp-link"> <b>Tags: </b>
                     @if (@profile.Tags !="")
@@ -89,6 +88,9 @@
     void ModalCancel() => profile = null;
     public string NFTmarkuptext => Markdown.ToHtml(profile.Text);
     public string NFTDescriptionMarkuptext => Markdown.ToHtml(profile.Description);
+
+
+
     protected override Task OnInitializedAsync()
     {
         AppData.NFTsLoaded += NFTsLoadedHandler;
@@ -99,4 +101,3 @@
         StateHasChanged();
     }
 }
-

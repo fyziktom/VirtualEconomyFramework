@@ -10,7 +10,7 @@
          <h2 class="heading-title"><span>Top P</span>rofiles</h2>
     
          <div class="row profiles" >
-            @foreach (var profile in AppData.NFTs.Skip(2))
+            @foreach (var profile in AppData.NFTs.Take(10))
             {
                 if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
                 {
@@ -54,7 +54,7 @@
 
     
        <div class="row profiles" >
-        @foreach (var profile in AppData.NFTs.Skip(15))
+        @foreach (var profile in AppData.NFTs.Skip(10))
         {
             if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
             {
@@ -120,7 +120,6 @@
 }
 
 @code {
-    int skip = new Random().Next(4, 17);
     VEDriversLite.NFT.Coruzant.CoruzantProfileNFT Prof { get; set; }
     public void ModalShow( VEDriversLite.NFT.Coruzant.CoruzantProfileNFT SelProfile){
         Prof = SelProfile;

@@ -34,17 +34,9 @@
 </html>
 <script>
     $(document).ready(function () {
-        $(".text a").on("click", function () {
-            event.preventDefault();
-            window.open($(this).attr('href'), '_blank');
-            alert("yes");
+        $(document).on("click", ".text", function () {
+           $(this).find("a").attr('target', '_blank');
         });
-        $(".modal-active a").on("click", function () {
-            event.preventDefault();
-            window.open($(this).attr('href'), '_blank');
-            alert("yes");
-        });
-
         window.initializeCarousel = () => {
             $('#trending-top').lightSlider({
                 item: 3,

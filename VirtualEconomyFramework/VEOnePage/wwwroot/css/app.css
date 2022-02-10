@@ -574,24 +574,7 @@ article.content.px-4 {
 .lSSlideOuter, .lSSlideWrapper {
     height: 5rem;
 }
-.slide-top lii {
-    display: inline-block !important;
-    float: right;
-    width: 30%;
-    margin-right: 0%;
-    -webkit-backface-visibility: visible;
-    backface-visibility: visible;
-    transition: transform .6s ease-in-out;
-    height: 100%;
-    border-right: 1px solid #ff6b6b;
-    padding-right: 3rem;
-}
-
-.trending-topp {
-    position: relative;
-}
-
-.slide-top p {
+.slide-top p.clamped {
     color: black;
     font-style: normal;
     font-weight: normal;
@@ -601,9 +584,6 @@ article.content.px-4 {
     margin-top: .6rem;
 }
 
-.slide-top pp:hover {
-    color: #383838;
-}
 
 .slide-top {
     position: relative;
