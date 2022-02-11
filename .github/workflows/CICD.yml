@@ -11,11 +11,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      
+      with:
+         repository: https://github.com/fyziktom/VirtualEconomyFramework/VENFTApp-Server
+         path: VENFTApp-Server
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.x'
+        
+    - name: Install dependencies
+      run: dotnet restore
    
     - name: Build
       run: dotnet build --configuration Release --no-restore
