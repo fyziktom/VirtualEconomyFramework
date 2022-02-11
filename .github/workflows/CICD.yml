@@ -11,9 +11,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      with:
-         repository: fyziktom/VirtualEconomyFramework/VENFTApp-Server
-         path: VENFTApp-Server
+      
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
