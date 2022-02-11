@@ -18,7 +18,7 @@ jobs:
         dotnet-version: '3.1.x'
         
     - name: Install dependencies
-      run: dotnet restore ./VENFTApp-Server/VENFTApp-Server.csproj
+      run: dotnet restore 
    
     - name: Build
-      run: dotnet build ./VENFTApp-Server/VENFTApp-Server.csproj --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore
