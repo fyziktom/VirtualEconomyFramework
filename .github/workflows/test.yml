@@ -1,1 +1,15 @@
+name: .NET
 
+on:
+  push:
+    branches: [ Test_CI_CD_MockDev ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test
+      run: dotnet test
