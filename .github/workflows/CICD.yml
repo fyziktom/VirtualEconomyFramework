@@ -23,5 +23,5 @@ jobs:
     - name: Build
       run: dotnet build ./VirtualEconomyFramework/VENFTApp-Server --configuration Release --no-restore
       
-    - name: Test
+    - name: Executing Unit Test
       run: dotnet test ./VirtualEconomyFramework/VENFTApp-Server
