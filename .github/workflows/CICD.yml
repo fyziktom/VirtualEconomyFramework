@@ -22,3 +22,7 @@ jobs:
    
     - name: Build
       run: dotnet build ./VirtualEconomyFramework/VENFTApp-Server --configuration Release --no-restore
+      
+    - name: Test
+      #run: dotnet test --no-restore --verbosity normal
+      run: dotnet test ./VirtualEconomyFramework/VENFTApp-Server
