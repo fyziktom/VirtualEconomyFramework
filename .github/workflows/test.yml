@@ -16,4 +16,4 @@ jobs:
       with:
         dotnet-version: '3.1.x'
     - name: Executing Unit Test
-      run: dotnet test ./VirtualEconomyFramework
+      run: dotnet test ./VirtualEconomyFramework/VEFrameworkUnitTest
