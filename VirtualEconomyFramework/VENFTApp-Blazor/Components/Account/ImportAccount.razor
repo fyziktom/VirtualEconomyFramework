@@ -18,7 +18,7 @@
        OnCancel="@importAccountCancel">
     <div class="row">
         <div class="col">
-            <Spin spinning="@creatingAddressSpinner" tip="Importing Address...">
+            <VENFTApp_Blazor.Components.Spin Spinning="@creatingAddressSpinner" Tip="Importing Address...">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         <h6>Option 1</h6>
@@ -137,7 +137,7 @@
                            Description="Wrong Password or private key"
                            ShowIcon="true" />
                 }
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 </Modal>

@@ -222,7 +222,7 @@
            OnCancel="@orderSourceTokensCancel">
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex justify-content-center align-items-center">
-                <Spin Tip="Processing the Order..." Spinning="@orderingTokens">
+                <VENFTApp_Blazor.Components.Spin Tip="Processing the Order..." Spinning="@orderingTokens">
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             <p>Do you want to buy 100 VENFT tokens? It costs 1 NEBL.</p>
@@ -245,7 +245,7 @@
                             <p>Order TxId: @orderTxId</p>
                         </div>
                     </div>
-                </Spin>
+                </VENFTApp_Blazor.Components.Spin>
             </div>
         </div>
     </Modal>

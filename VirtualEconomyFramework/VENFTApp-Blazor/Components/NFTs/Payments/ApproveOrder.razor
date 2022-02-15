@@ -30,9 +30,9 @@
        Visible="@showApproveOrderVisible"
        OnOk="@ApproveOrderConfirm"
        OnCancel="@ApproveOrderCancel">
-    <Spin Tip="Writing Approve state..." Spinning="@loading">
+    <VENFTApp_Blazor.Components.Spin Tip="Writing Approve state..." Spinning="@loading">
         <span class="text-center">Do you really want to approve this order?</span>
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </Modal>
 
 @code {

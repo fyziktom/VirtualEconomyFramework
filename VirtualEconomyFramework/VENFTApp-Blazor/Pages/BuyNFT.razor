@@ -34,7 +34,7 @@
 
     <div class="row" style="margin-bottom:20px;">
         <div class="col">
-            <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
+            <VENFTApp_Blazor.Components.Spin Spinning="@sendingTransaction" Tip="Sending Transaction...">
                 <div class="card" style="margin-top:10px;">
                     <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                         @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
@@ -202,7 +202,7 @@
                         </div>
                     </div>
                 </div>
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 
@@ -215,7 +215,7 @@
        OnCancel="@UnclockAccountCancel">
     <div class="row">
         <div class="col">
-            <Spin Tip="Unlocking..." Spinning="@unlockingAccount">
+            <VENFTApp_Blazor.Components.Spin Tip="Unlocking..." Spinning="@unlockingAccount">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         <span>Please Input password</span>
@@ -241,7 +241,7 @@
                            Description="Wrong Password."
                            ShowIcon="true" />
                 }
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 </Modal>

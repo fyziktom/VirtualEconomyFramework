@@ -159,13 +159,13 @@
        Visible="@destroyNFTsVisible"
        OnOk="@destroyNFTsConfirm"
        OnCancel="@destroyNFTsCancel">
-    <Spin Spinning="@destroyingNFTs" Tip="Destroying NFTs...">
+    <VENFTApp_Blazor.Components.Spin Spinning="@destroyingNFTs" Tip="Destroying NFTs...">
         <div class="row">
             <div class="col d-flex justify-content-center align-items-center">
                 <span>Do you really want to destroy selected NFTs? All will be returned back to you address as source tokens.</span>
             </div>
         </div>
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </Modal>
 
 @code {

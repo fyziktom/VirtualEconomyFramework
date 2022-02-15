@@ -17,7 +17,7 @@
        OnCancel="@UnclockAccountCancel">
     <div class="row">
         <div class="col">
-            <Spin Tip="@state" Spinning="@unlockingAccount">
+            <VENFTApp_Blazor.Components.Spin Tip="@state" Spinning="@unlockingAccount">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         <span>Please Input password to unlock existing account</span>
@@ -62,7 +62,7 @@
                            Description="Wrong Password"
                            ShowIcon="true" />
                 }
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 </Modal>

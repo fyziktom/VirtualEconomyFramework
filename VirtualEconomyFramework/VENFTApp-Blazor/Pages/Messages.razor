@@ -11,7 +11,7 @@
 @page "/messages"
 
 <div class="container-fluid h-100 w-100 overflow-auto" style="padding:2px;">
-    <Spin Tip="Loading Message Browser..." Spinning="@loadingBrowser">
+    <VENFTApp_Blazor.Components.Spin Tip="Loading Message Browser..." Spinning="@loadingBrowser">
         <div class="row h-100 w-100" style="margin-left:0px; padding:5px;">
             <div class="col h-100 w-100" style="margin-left:0px; padding:0px;">
                 <div class="row">
@@ -67,7 +67,7 @@
 
             </div>
         </div>
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
