@@ -18,10 +18,9 @@
     <!--
     @if (!AppData.Account.EnoughBalanceToBuySourceTokens)
     {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description="Not enough of Neblio to buy the Source tokens. Please transfer at lease 1,0002 NEBL to this address"
-               ShowIcon="true" />
+        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+            <Message>Not enough of Neblio to buy the Source tokens. Please transfer at lease 1,0002 NEBL to this address</Message>
+        </VENFTApp_Blazor.Components.Alert>
     }
     -->
 
@@ -92,11 +91,11 @@
                 </div>
             </div>
             <!--
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
-            <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
-        </div>
-    </div>-->
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                    <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
+                </div>
+            </div>-->
             <div class="row">
                 <div class="col" style="margin-top:10px;">
                     <div class="row" style="margin-top:20px;">
@@ -201,8 +200,8 @@
                                             {
                                                 <VENFTApp_Blazor.Components.NFTs.NFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
                                             }
-                                            else 
-                                            { 
+                                            else
+                                            {
                                                 <!--TODO-->
                                             }
                                         }
@@ -235,10 +234,10 @@
                     </div>
                     @if (orderingTokensDone)
                     {
-                        <Alert Type="@AlertType.Success"
-                               Message="Done."
-                               Description="Tokens ordered correctly. Now it will take some minute to process order and delivery the tokens."
-                               ShowIcon="true" />
+                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+                            <Title>Done.</Title>
+                            <Message>Tokens ordered correctly. Now it will take some minute to process order and delivery the tokens.</Message>
+                        </VENFTApp_Blazor.Components.Alert>
                     }
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center">
@@ -416,7 +415,8 @@
 
     private async Task orderSourceTokensConfirm(MouseEventArgs e)
     {
-        try {
+        try
+        {
             orderingTokens = true;
             StateHasChanged();
             var res = await AppData.Account.OrderSourceTokens(1);
