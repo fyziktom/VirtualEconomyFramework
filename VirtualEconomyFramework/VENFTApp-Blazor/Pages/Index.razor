@@ -67,18 +67,16 @@
 
 @if (accountCreated)
 {
-    <Alert Type="@AlertType.Success"
-           Message="Success"
-           Description="Your Neblio address was created and stored in your browser local memory."
-           ShowIcon="true" />
+    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+        <Message>Your Neblio address was created and stored in your browser local memory.</Message>
+    </VENFTApp_Blazor.Components.Alert>
 }
 
 @if (accountUnlocked)
 {
-    <Alert Type="@AlertType.Success"
-           Message="Success"
-           Description="Your Neblio address was successfully unlocked."
-           ShowIcon="true" />
+    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+        <Message>Your Neblio address was successfully unlocked.</Message>
+    </VENFTApp_Blazor.Components.Alert>
 }
 
 <Modal Title="Export and Save Private Key"
@@ -179,7 +177,7 @@
     private async Task CloseHelpModal(MouseEventArgs e)
     {
         helpModalVisible = false;
-        if(accountCreated)
+        if (accountCreated)
             savePrivateKeyVisible = true;
         StateHasChanged();
     }

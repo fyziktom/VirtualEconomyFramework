@@ -165,10 +165,10 @@
                                 @if (sucessfullSend)
                                 {
                                     <hr />
-                                    <Alert Type="@AlertType.Success"
-                                           Message="Payment Sent."
-                                           Description="Your payment has been sent :)"
-                                           ShowIcon="true" />
+                                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+                                        <Title>Payment Sent.</Title>
+                                        <Message>Your payment has been sent :)</Message>
+                                    </VENFTApp_Blazor.Components.Alert>
                                     <div class="row" style="margin-top:10px;">
                                         <div class="col d-flex justify-content-center align-items-center">
                                             <span>Transaction Id</span>
@@ -229,17 +229,15 @@
 
                 @if (unlockOrClearCashMessage)
                 {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Unlock account."
-                           ShowIcon="true" />
+                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                        <Message>Unlock account.</Message>
+                    </VENFTApp_Blazor.Components.Alert>
                 }
                 @if (accountUnlockingError)
                 {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Wrong Password."
-                           ShowIcon="true" />
+                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                        <Message>Wrong Password.</Message>
+                    </VENFTApp_Blazor.Components.Alert>
                 }
             </Spin>
         </div>

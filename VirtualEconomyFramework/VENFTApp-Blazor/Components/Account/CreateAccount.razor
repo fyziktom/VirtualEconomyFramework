@@ -89,17 +89,15 @@
                                 {
                                     if (passwordConfirm != password)
                                     {
-                                        <Alert Type="@AlertType.Warning"
-                                               Message="Warrning"
-                                               Description="Passwords not match!"
-                                               ShowIcon="true" />
+                                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
+                                            <Message>Passwords not match!</Message>
+                                        </VENFTApp_Blazor.Components.Alert>
                                     }
                                     else
                                     {
-                                        <Alert Type="@AlertType.Success"
-                                               Message="Success"
-                                               Description="Passwords Match. Please confirm to create an account!"
-                                               ShowIcon="true" />
+                                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
+                                            <Message>Passwords Match. Please confirm to create an account!</Message>
+                                        </VENFTApp_Blazor.Components.Alert>
                                     }
                                 }
                             }
@@ -107,10 +105,9 @@
 
                         @if (mustCreateAddressMessage)
                         {
-                            <Alert Type="@AlertType.Error"
-                                   Message="Error"
-                                   Description="You must create new account for continue. There is no account saved in your local browser memory."
-                                   ShowIcon="true" />
+                            <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                                <Message>You must create new account for continue. There is no account saved in your local browser memory.</Message>
+                            </VENFTApp_Blazor.Components.Alert>
                         }
                     </div>
                 </div>
@@ -124,11 +121,9 @@
 
 @if (accountCreatedError)
 {
-    <Alert Type="@AlertType.Error"
-           Message="Error"
-           Style="margin-top:15px;"
-           Description="@errorMessage"
-           ShowIcon="true" />
+    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error" Style="margin-top:15px;">
+        <Message>@errorMessage</Message>
+    </VENFTApp_Blazor.Components.Alert>
 }
 
 @code {
