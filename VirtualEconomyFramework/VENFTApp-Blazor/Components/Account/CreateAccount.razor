@@ -223,13 +223,13 @@
                 await AppData.DogeAccount.CreateNewAccount(password, false);
                 // save neblio address and key
                 address = AppData.Account.Address;
-                key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                key = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
                 await localStorage.SetItemAsync("address", address);
                 await localStorage.SetItemAsync("key", key);
 
                 // save doge address and key
                 address = AppData.DogeAccount.Address;
-                key = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                key = AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
                 await localStorage.SetItemAsync("dogeaddress", address);
                 await localStorage.SetItemAsync("dogekey", key);
 

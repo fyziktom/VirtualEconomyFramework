@@ -299,7 +299,7 @@ namespace VEDriversLite
                        var kdto = new KeyDto()
                         {
                             Address = Address,
-                            Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
+                            Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
                         };
                         FileHelpers.WriteTextToFile(filename, JsonConvert.SerializeObject(kdto));
                     }
@@ -1245,7 +1245,7 @@ namespace VEDriversLite
                 var accskeys = new Dictionary<string, string>();
                 foreach (var sa in SubAccounts.Values)
                 {
-                    var key = await sa.AccountKey.GetEncryptedKey();
+                    var key = sa.AccountKey.GetEncryptedKey();
                     if (!string.IsNullOrEmpty(key))
                         accskeys.Add(sa.Address, key);
                 }

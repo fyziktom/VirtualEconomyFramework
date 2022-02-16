@@ -51,12 +51,12 @@ namespace VEDriversLite
                     if (ekey.IsEncrypted && string.IsNullOrEmpty(password) && !ekey.IsPassLoaded)
                         throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
                     else if (!ekey.IsEncrypted)
-                        key = await ekey.GetEncryptedKey();
+                        key = ekey.GetEncryptedKey();
                     else if (ekey.IsEncrypted && (!string.IsNullOrEmpty(password) || ekey.IsPassLoaded))
                         if (ekey.IsPassLoaded)
-                            key = await ekey.GetEncryptedKey(string.Empty);
+                            key = ekey.GetEncryptedKey(string.Empty);
                         else
-                            key = await ekey.GetEncryptedKey(password);
+                            key = ekey.GetEncryptedKey(password);
 
                     if (string.IsNullOrEmpty(key))
                         throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");

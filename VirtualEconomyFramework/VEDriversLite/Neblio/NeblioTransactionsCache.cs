@@ -30,7 +30,10 @@ namespace VEDriversLite.Neblio
             {
                 var data = await NeblioTransactionHelpers.GetClient().GetTransactionInfoAsync(utxo);
                 time = newtime;
-                latestblock = data.Blockheight.Value + data.Confirmations.Value;
+                if (data != null && data.Blockheight != null && data.Confirmations != null)
+                {
+                    latestblock = data.Blockheight.Value + data.Confirmations.Value;
+                }                
             }
 
             return latestblock;

@@ -197,7 +197,7 @@ namespace VEDriversLite
                         var kdto = new KeyDto()
                         {
                             Address = Address,
-                            Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
+                            Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
                         };
                         FileHelpers.WriteTextToFile("dogekey.txt", JsonConvert.SerializeObject(kdto));
                     }
@@ -235,7 +235,7 @@ namespace VEDriversLite
                     AccountKey.IsEncrypted = true;
                     Address = kdto.Address;
 
-                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
+                    Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
                     //SignMessage("init");
                     await StartRefreshingData();
                     return true;
@@ -284,7 +284,7 @@ namespace VEDriversLite
                         AccountKey.LoadPassword(password);
                         AccountKey.IsEncrypted = true;
                     }
-                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
+                    Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
 
                     if (string.IsNullOrEmpty(address))
                     {
@@ -768,7 +768,7 @@ namespace VEDriversLite
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var key = await AccountKey.GetEncryptedKey();
+            var key = AccountKey.GetEncryptedKey();
             return await ECDSAProvider.SignMessage(message, Secret);
         }
 
