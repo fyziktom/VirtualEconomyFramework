@@ -10,7 +10,7 @@
 @page "/"
 
 <div class="container-fluid overflow-auto">
-    <Spin spinning="@creatingAddressSpinner" tip="Creating Address...">
+    <VENFTApp_Blazor.Components.Spin Spinning="@creatingAddressSpinner" Tip="Creating Address...">
         <div class="row">
             <div class="col">
                 <div class="row">
@@ -61,7 +61,7 @@
 
         <VENFTApp_Blazor.Components.Account.UnlockAccount Visible="@unlockAcocuntModalVisible" AccountUnlocked="AccountUnlocked" />
 
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 

@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="col">
-        <Spin spinning="@processingMinting" tip="Sending...">
+        <VENFTApp_Blazor.Components.Spin Spinning="@processingMinting" Tip="Sending...">
             <div class="row">
                 <div class="col">
 
@@ -347,7 +347,7 @@
                     }
                 </div>
             </div>
-        </Spin>
+        </VENFTApp_Blazor.Components.Spin>
 
         <Modal Title="@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")"
                Visible="@confirmVisible"

@@ -7,7 +7,7 @@
        OnOk="@showQRDialogCancel"
        Style="width:auto; max-width:300px;"
        OnCancel="@showQRDialogCancel">
-    <Spin Tip="@status" Spinning="@doneVisible">
+    <VENFTApp_Blazor.Components.Spin Tip="@status" Spinning="@doneVisible">
         <div class="row" style="margin-top:10px;">
             <div class="col d-flex justify-content-center align-items-center">
                 <div id="CameraStream"></div>
@@ -18,7 +18,7 @@
                 <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@readedText" />
             </div>
         </div>
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </Modal>
 
 @code {

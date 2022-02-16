@@ -24,14 +24,14 @@ else
        Visible="@confirmDestroyVisible"
        OnOk="@HandleOk"
        OnCancel="@HandleCancel">
-    <Spin Tip="Removing the NFT... " Spinning="@removingNFT">
+    <VENFTApp_Blazor.Components.Spin Tip="Removing the NFT... " Spinning="@removingNFT">
         <p class="text-center">Do you really want to destroy this NFT?</p>
         <small class="text-center">When you destroy NFT the token will be connected to source tokens and it can be used for minting again.</small>
         @if (!string.IsNullOrEmpty(customMessage))
         {
             <p class="text-center">@customMessage</p>
         }
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </Modal>
 
 @code {
