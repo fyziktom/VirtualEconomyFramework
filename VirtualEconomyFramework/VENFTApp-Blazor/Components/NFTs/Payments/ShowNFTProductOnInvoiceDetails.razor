@@ -17,7 +17,7 @@
        Visible="@showProductNFTDialogVisible"
        OnCancel="@NFTDetailsClose"
        Footer="null">
-    <Spin Tip="Loading Product Data..." Spinning="@showProductNFTDialogLoading">
+    <VENFTApp_Blazor.Components.Spin Tip="Loading Product Data..." Spinning="@showProductNFTDialogLoading">
         @if (!string.IsNullOrEmpty(NFT.Utxo))
         {
             <div class="row" style="margin-top:20px;">
@@ -30,7 +30,7 @@
         {
             <div style="min-width:100px; min-height:50px;"></div>
         }
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </Modal>
 
 @code {

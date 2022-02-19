@@ -45,9 +45,9 @@
                     }
                     else if (string.IsNullOrEmpty(NFT.ImageLink) && !NFT.IsLoaded)
                     {
-                        <Spin Tip="Loading...">
+                        <VENFTApp_Blazor.Components.Spin Tip="Loading...">
                             <NoImageLoaded />
-                        </Spin>
+                        </VENFTApp_Blazor.Components.Spin>
                     }
                     else
                     {

@@ -2,7 +2,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NeblioAPI
 @using VEDriversLite.Security
-@using Newtonsoft.Json 
+@using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
@@ -17,7 +17,7 @@
        OnCancel="@UnclockAccountCancel">
     <div class="row">
         <div class="col">
-            <Spin Tip="@state" Spinning="@unlockingAccount">
+            <VENFTApp_Blazor.Components.Spin Tip="@state" Spinning="@unlockingAccount">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         <span>Please Input password to unlock existing account</span>
@@ -50,19 +50,17 @@
 
                 @if (unlockOrClearCashMessage)
                 {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Unlock account or clear browser local storage for create new one!"
-                           ShowIcon="true" />
+                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                        <Message>Unlock account or clear browser local storage for create new one!</Message>
+                    </VENFTApp_Blazor.Components.Alert>
                 }
                 @if (accountUnlockingError)
                 {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Wrong Password"
-                           ShowIcon="true" />
+                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                        <Message>Wrong Password</Message>
+                    </VENFTApp_Blazor.Components.Alert>
                 }
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 </Modal>
@@ -89,12 +87,12 @@
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center">
             <p>Delete of existing account will happen in:</p>
-       </div>
+        </div>
     </div>
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center">
-           <h6>@deleteOfAccountCountdown seconds</h6>
-       </div>
+            <h6>@deleteOfAccountCountdown seconds</h6>
+        </div>
     </div>
     <div class="row">
         <div class="col d-flex justify-content-center align-items-center">
@@ -119,7 +117,7 @@
     private string unlockPassword = string.Empty;
     public string UnlockPassword
     {
-        get => (unlockPassword == null)?string.Empty:unlockPassword;
+        get => (unlockPassword == null) ? string.Empty : unlockPassword;
         set => unlockPassword = value;
     }
     private bool unlockOrClearCashMessage = false;
@@ -285,7 +283,7 @@
             {
                 resload = await AppData.Account.LoadAccount(pass, key, address);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Cannot load the Main Account. " + ex.Message);
             }
@@ -389,7 +387,7 @@
                 }
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine("Cannot load Dogeaccount. " + ex.Message);
         }
@@ -414,7 +412,7 @@
                 }
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine("Cannot load SubAccounts. " + ex.Message);
         }
@@ -430,7 +428,7 @@
                 await UnlockAccountConfirm(null);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine("Cannot unlock account. " + ex.Message);
         }

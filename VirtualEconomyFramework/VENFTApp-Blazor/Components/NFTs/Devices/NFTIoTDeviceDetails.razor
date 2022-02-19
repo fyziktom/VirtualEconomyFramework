@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col">
-        <Spin Tip="Loading..." Spinning="@loading">
+        <VENFTApp_Blazor.Components.Spin Tip="Loading..." Spinning="@loading">
             @if (!string.IsNullOrEmpty(NFT.Utxo))
             {
                 <div style="position: absolute;right: 5px;top: -20px;">
@@ -297,9 +297,9 @@
                         }
                         else if (string.IsNullOrEmpty(NFT.ImageLink) && !NFT.IsLoaded)
                         {
-                            <Spin Tip="Loading...">
+                            <VENFTApp_Blazor.Components.Spin Tip="Loading...">
                                 <NoImageLoaded />
-                            </Spin>
+                            </VENFTApp_Blazor.Components.Spin>
                         }
                         else
                         {
@@ -336,7 +336,7 @@
                     }
                 </div>
             </div>
-        </Spin>
+        </VENFTApp_Blazor.Components.Spin>
     </div>
 </div>
 
