@@ -675,7 +675,7 @@
     {
         try
         {
-            await transaction.Sign(await AppData.Account.AccountKey.GetEncryptedKey());
+            await transaction.Sign(AppData.Account.AccountKey.GetEncryptedKey());
         }
         catch (Exception ex)
         {

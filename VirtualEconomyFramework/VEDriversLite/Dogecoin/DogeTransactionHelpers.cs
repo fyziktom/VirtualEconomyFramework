@@ -51,12 +51,12 @@ namespace VEDriversLite
                     if (ekey.IsEncrypted && string.IsNullOrEmpty(password) && !ekey.IsPassLoaded)
                         throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
                     else if (!ekey.IsEncrypted)
-                        key = await ekey.GetEncryptedKey();
+                        key = ekey.GetEncryptedKey();
                     else if (ekey.IsEncrypted && (!string.IsNullOrEmpty(password) || ekey.IsPassLoaded))
                         if (ekey.IsPassLoaded)
-                            key = await ekey.GetEncryptedKey(string.Empty);
+                            key = ekey.GetEncryptedKey(string.Empty);
                         else
-                            key = await ekey.GetEncryptedKey(password);
+                            key = ekey.GetEncryptedKey(password);
 
                     if (string.IsNullOrEmpty(key))
                         throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
@@ -380,7 +380,7 @@ namespace VEDriversLite
             {
                 fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
-                var amountinSat = Convert.ToUInt64(data.Amount) * Convert.ToUInt64(FromSatToMainRatio);
+                var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
                 var diffinSat = (Convert.ToUInt64(allDogelCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
 
                 // create outputs
@@ -472,7 +472,7 @@ namespace VEDriversLite
                 UInt64 totalamnt = 0;
                 foreach (var r in receiverAmount)
                 {
-                    var amntinSat = Convert.ToUInt64(r.Value) * Convert.ToUInt64(FromSatToMainRatio);
+                    var amntinSat = Convert.ToUInt64(r.Value * FromSatToMainRatio);
                     totalamnt += amntinSat;
                     // create outputs
                     if (recsaddr.TryGetValue(r.Key, out var badd))

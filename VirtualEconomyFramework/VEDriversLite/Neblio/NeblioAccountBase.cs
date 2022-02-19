@@ -356,7 +356,7 @@ namespace VEDriversLite.Neblio
                 if (!string.IsNullOrEmpty(password))
                     AccountKey.LoadPassword(password);
 
-                Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+                Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
 
                 return true;
             }
@@ -906,7 +906,7 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var key = await AccountKey.GetEncryptedKey();
+            var key = AccountKey.GetEncryptedKey();
             return await ECDSAProvider.SignMessage(message, key);
         }
 

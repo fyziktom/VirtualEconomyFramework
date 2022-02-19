@@ -790,7 +790,7 @@ namespace VEDriversLite.NFT
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string receiver = "")
         {
-            var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
+            var metadata = await NFT.GetMetadata(address, ekey.GetEncryptedKey(), receiver);
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
@@ -830,7 +830,7 @@ namespace VEDriversLite.NFT
                 throw new Exception("This is not Message NFT.");
 
             // thanks to filled params it will return encrypted metadata with shared secret
-            var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
+            var metadata = await NFT.GetMetadata(address, ekey.GetEncryptedKey(), receiver);
             if (!string.IsNullOrEmpty(rewriteAuthor))
                 if (metadata.ContainsKey("Author"))
                     metadata["Author"] = rewriteAuthor;
@@ -889,7 +889,7 @@ namespace VEDriversLite.NFT
                 throw new Exception("This is not Message NFT.");
 
             // thanks to filled params it will return encrypted metadata with shared secret
-            var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
+            var metadata = await NFT.GetMetadata(address, ekey.GetEncryptedKey(), receiver);
 
             try
             {

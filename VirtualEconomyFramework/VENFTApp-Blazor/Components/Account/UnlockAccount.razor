@@ -374,7 +374,7 @@
                     // create and save doge address and key
                     await AppData.DogeAccount.CreateNewAccount(unlockPassword, false);
                     address = AppData.DogeAccount.Address;
-                    var k = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+                    var k = AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
                     await localStorage.SetItemAsync("dogeaddress", address);
                     await localStorage.SetItemAsync("dogekey", k);
                 }

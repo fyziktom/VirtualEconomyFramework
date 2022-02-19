@@ -256,7 +256,7 @@
             await AppData.Account.CreateNewAccount(importAccountPass, false);
             // save neblio address and key
             address = AppData.Account.Address;
-            key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            key = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
             await localStorage.SetItemAsync("address", address);
             await localStorage.SetItemAsync("key", key);
             return true;
@@ -268,7 +268,7 @@
             {
                 try
                 {
-                    key = await SymetricProvider.DecryptString(importAccountPass, importAccountKey);
+                    key = SymetricProvider.DecryptString(importAccountPass, importAccountKey);
                 }
                 catch (Exception ex)
                 {
@@ -334,7 +334,7 @@
             // create and save doge address and key
             await AppData.DogeAccount.CreateNewAccount(importAccountPass, false);
             var addr = AppData.DogeAccount.Address;
-            var k = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            var k = AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
             await localStorage.SetItemAsync("dogeaddress", addr);
             await localStorage.SetItemAsync("dogekey", k);
         }
@@ -345,7 +345,7 @@
             {
                 try
                 {
-                    dogekey = await SymetricProvider.DecryptString(importAccountPass, importDogeAccountKey);
+                    dogekey = SymetricProvider.DecryptString(importAccountPass, importDogeAccountKey);
                 }
                 catch (Exception ex)
                 {
