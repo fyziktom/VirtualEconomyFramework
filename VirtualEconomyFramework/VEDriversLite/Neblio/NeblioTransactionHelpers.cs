@@ -1605,7 +1605,7 @@ namespace VEDriversLite
                         }
                     }
 
-                    double voutstate = 0;
+                    double voutstate = -1;
 
                     try
                     {
@@ -1623,7 +1623,7 @@ namespace VEDriversLite
                         throw new Exception("Cannot validate utxo for multitoken payment.");
                     }
                     
-                    if ((!isMintingOfCopy && voutstate != 0) || (!first && isMintingOfCopy && voutstate != 0))
+                    if ((!isMintingOfCopy && voutstate != -1) || (!first && isMintingOfCopy && voutstate != -1))
                         dto.Sendutxo.Add(itt + ":" + ((int)voutstate).ToString()); // copy received utxos and add item number of vout after validation
 
                 }
@@ -1729,7 +1729,7 @@ namespace VEDriversLite
                         }
                     }
 
-                    double voutstate;
+                    double voutstate = -1;
 
                     try
                     {
@@ -1740,7 +1740,7 @@ namespace VEDriversLite
                         throw new Exception("Cannot validate utxo for multitoken payment.");
                     }
 
-                    if (voutstate != 0)
+                    if (voutstate != -1)
                         dto.Sendutxo.Add(itt + ":" + ((int)voutstate).ToString()); // copy received utxos and add item number of vout after validation
                 }
             }
