@@ -173,6 +173,20 @@
             If this is true, the bookmark is on some subaccount
             </summary>
         </member>
+        <member name="M:VEDriversLite.StringExt.ZipStr(System.String)">
+            <summary>
+            https://stackoverflow.com/questions/2118904/zip-and-unzip-string-with-deflate
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.StringExt.UnZipStr(System.Byte[])">
+            <summary>
+            https://stackoverflow.com/questions/2118904/zip-and-unzip-string-with-deflate
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.FileHelpers.ClearEmptyDirs(System.String)">
             <summary>
             Remove all the empty folders in the main folder
@@ -3311,6 +3325,19 @@
             <param name="interval">Default interval is 3000 = 3 seconds</param>
             <returns></returns>
         </member>
+        <member name="T:VEDriversLite.Neblio.NeblioTransactionsCache">
+            <summary>
+            This class will query Neblio API with the input address, stores the BlockHeight from address's latest Utxo in Cache.
+            Cache will expiry for every 10 seconds so when accessed system will check cache and return the latest blockheight 
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioTransactionsCache.LatestBlockHeight(System.String)">
+            <summary>
+            Method will check if the data for current address is available in cache and returns the blockheight, IF not avaialble then retrievs from API.
+            </summary>
+            <param name="address">The address for which we need the latest block height</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAPI.IClient.GetTokenIdAsync(System.String)">
             <summary>Returns the tokenId representing a token</summary>
             <param name="tokensymbol">Token symbol</param>
@@ -5155,6 +5182,14 @@
             <param name="password"></param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressAndKey(VEDriversLite.Security.EncryptionKey)">
+            <summary>
+            Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
+            and returns BitcoinAddress and BitcoinSecret classes from NBitcoin
+            </summary>
+            <param name="ekey"></param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.BroadcastSignedTransaction(System.String)">
             <summary>
             Function will take hex of signed transaction and broadcast it via Neblio API
@@ -5342,13 +5377,6 @@
             <param name="addr"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressUtxos(System.String)">
-            <summary>
-            Return list of address utxos.
-            </summary>
-            <param name="addr"></param>
-            <returns></returns>
-        </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressUtxosObjects(System.String)">
             <summary>
             Return list of Utxos object.
@@ -5396,34 +5424,7 @@
             <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateNeblioUtxo(System.String,System.String)">
-            <summary>
-            Check if the neblio is spendable.
-            </summary>
-            <param name="address">address which should have this utxo</param>
-            <param name="txid">input txid hash</param>
-            <returns>true and index of utxo</returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateNeblioTokenUtxo(System.String,System.String,System.String,System.Boolean)">
-            <summary>
-            Check if the token utxo is spendable.
-            </summary>
-            <param name="address">address which should have this utxo</param>
-            <param name="txid">input txid hash</param>
-            <param name="tokenId">Token Id hash</param>
-            <param name="isMint">If it is mint transaction it counts just utxos which has amount bigger than 1 token</param>
-            <returns>true and index of utxo</returns>
-        </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(System.String,System.String,System.String,System.Int32)">
-            <summary>
-            Check if the NFT token is spendable. Means utxos with token amount = 1
-            </summary>
-            <param name="address">address which should have this utxo</param>
-            <param name="tokenId">input token id hash</param>
-            <param name="txid">input txid hash</param>
-            <returns>true and index of utxo</returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateOneTokenNFTUtxoReturnUtxo(System.String,System.String,System.String,System.Int32)">
             <summary>
             Check if the NFT token is spendable. Means utxos with token amount = 1
             </summary>
@@ -5439,17 +5440,6 @@
             <param name="addr">address which has utxos</param>
             <param name="tokenId">token id hash</param>
             <param name="numberToMint">number of tokens which will be minted - because of multimint</param>
-            <param name="oneTokenSat">this is usually default. On Neblio all token tx should have value 10000sat</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.FindUtxoToSplit(System.String,System.String,System.Int32,System.Double)">
-            <summary>
-            Find utxo which can be splited to lots. It is specific function which is used to auto splitter (old version, new version will do in in one tx)
-            missing number of lots. this is covered by function which use it.
-            </summary>
-            <param name="addr">address which has utxos</param>
-            <param name="tokenId">token id hash</param>
-            <param name="lotAmount">amount of tokens in one lot</param>
             <param name="oneTokenSat">this is usually default. On Neblio all token tx should have value 10000sat</param>
             <returns></returns>
         </member>
@@ -7594,7 +7584,7 @@
         </member>
         <member name="M:VEDriversLite.WooCommerce.WooCommerceShop.GetNeblioAddressFromOrderMetadata(VEDriversLite.WooCommerce.Dto.Order)">
             <summary>
-            TODO
+            TODO REFACTOR THIS METHOD AND CHANGE THE REFERENCES
             </summary>
             <param name="o"></param>
             <returns></returns>

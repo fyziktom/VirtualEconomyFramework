@@ -1112,12 +1112,12 @@ namespace VEDriversLite
                 var totalAmount = 0.0;
                 for (int i = 0; i < lots; i++)
                     totalAmount += amount;
-
+                var all = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
                 var amountinSat = Convert.ToUInt64(totalAmount * FromSatToMainRatio);
-                if (amountinSat > allNeblInputCoins)
+                if (amountinSat > all)
                     throw new Exception("Not enought neblio for splitting.");
 
-                var diffinSat = Convert.ToUInt64(allNeblInputCoins) - amountinSat - Convert.ToUInt64(fee);
+                var diffinSat = Convert.ToUInt64(all) - amountinSat - Convert.ToUInt64(fee);
                 var splitinSat = Convert.ToUInt64(amount * FromSatToMainRatio);
                 // create outputs
 
