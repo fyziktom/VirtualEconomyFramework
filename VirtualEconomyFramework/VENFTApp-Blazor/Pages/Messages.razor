@@ -71,53 +71,59 @@
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
-<Modal Title="Open Message Tab"
-       Visible="@addMessageTabVisible"
-       OnOk="@addMessageTabConfirm"
-       OnCancel="@addMessageTabCancel">
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Select from Bookmarks</span>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@addMessageTabVisible">
+    <ModalHeader>
+        <ModalTitle>Open Message Tab</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Select from Bookmarks</span>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
-                        <Overlay>
-                            <Menu>
-                                @foreach (var b in AppData.Account.Bookmarks)
-                                {
-                                    <MenuItem>
-                                        <span @onclick="() => selectNewTabAddressFromBookmark(b.Address, b.Name)">@b.Name</span>
-                                    </MenuItem>
-                                }
-                            </Menu>
-                        </Overlay>
-                        <ChildContent>
-                            <a class="ant-dropdown-link" @onclick:preventDefault>
-                                @selectedNewTabFromBookmarkName <Icon Type="down" />
-                            </a>
-                        </ChildContent>
-                    </Dropdown>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
+                            <Overlay>
+                                <Menu>
+                                    @foreach (var b in AppData.Account.Bookmarks)
+                                    {
+                                        <MenuItem>
+                                            <span @onclick="() => selectNewTabAddressFromBookmark(b.Address, b.Name)">@b.Name</span>
+                                        </MenuItem>
+                                    }
+                                </Menu>
+                            </Overlay>
+                            <ChildContent>
+                                <a class="ant-dropdown-link" @onclick:preventDefault>
+                                    @selectedNewTabFromBookmarkName <Icon Type="down" />
+                                </a>
+                            </ChildContent>
+                        </Dropdown>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Or Input Neblio Address</span>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Or Input Neblio Address</span>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="newTabAddressChangedHandler" />
-                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="newTabAddressChangedHandler" />
+                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@addMessageTabConfirm">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -274,7 +280,7 @@
         StateHasChanged();
     }
 
-    private async Task addMessageTabConfirm(MouseEventArgs e)
+    private async Task addMessageTabConfirm()
     {
         if (string.IsNullOrEmpty(newTabAddress))
         {
@@ -282,10 +288,6 @@
             return;
         }
         await addNewMessageTab();
-    }
-    private async Task addMessageTabCancel(MouseEventArgs e)
-    {
-        addMessageTabVisible = false;
     }
 
     private async Task addNewMessageTab()

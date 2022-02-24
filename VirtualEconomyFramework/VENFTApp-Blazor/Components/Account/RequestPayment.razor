@@ -15,71 +15,73 @@
     </div>
 }
 
-<Modal Title="Request Payment"
-       Visible="@showLinkDialogVisible"
-       Style="width:100%; min-width:250px; max-width:400px;"
-       OnCancel="@showLinkDialogCancel"
-       Footer="null">
-
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
-            <h6 class="text-center">Message in payment</h6>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
-            <Input Placeholder="Type the payment message" MaxLength="200" @bind-Value=@message Style="font-size:12px; width:90%; min-width:250px; max-width:400px;" />
-        </div>
-    </div>
-    @if (string.IsNullOrEmpty(message) || string.IsNullOrWhiteSpace(message))
-    {
-        <div class="row" style="margin-top:2px;">
-            <div class="col d-flex justify-content-center align-items-center">
-                <small class="text-info text-center">You should fill this field. Otherwise, it will add default message "Sent with VENFT App".</small>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@showLinkDialogVisible"
+                                        Style="width:100%; min-width:250px; max-width:400px;"
+                                        OnCancel="@showLinkDialogCancel">
+    <ModalHeader>
+        <ModalTitle>Request Payment</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <h6 class="text-center">Message in payment</h6>
             </div>
         </div>
-    }
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
-            <h6 class="text-center">Set the amount to request in the Payment</h6>
-        </div>
-    </div>
-
-    <VENFTApp_Blazor.Components.Crypto.PriceCalculator AmountsChanged="@AmountsChangedHandler" />
-
-    <div class="row" style="margin-top:15px;">
-        <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
-            <button class="btn btn-primary" @onclick="() => ShowLink(CurrencyTypes.NEBL)">@(string.IsNullOrEmpty(paymentLink)? "Show Payment Link and QR Code for Neblio" : "Refresh Payment link and QR Code for Neblio")</button>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
-            <button class="btn btn-primary" @onclick="() => ShowLink(CurrencyTypes.DOGE)">@(string.IsNullOrEmpty(paymentLink)? "Show Payment Link and QR Code for Doge" : "Refresh Payment link and QR Code for Doge")</button>
-        </div>
-    </div>
-    <hr style="margin-top:10px;" />
-    @if (!string.IsNullOrEmpty(paymentLink))
-    {
         <div class="row">
             <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
-                <a href="@paymentLink" target="_blank" class="text-center" style="width:90%;max-width:350px;">@paymentLink</a>
+                <Input Placeholder="Type the payment message" MaxLength="200" @bind-Value=@message Style="font-size:12px; width:90%; min-width:250px; max-width:400px;" />
             </div>
         </div>
-    }
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
-            <div @ref=qrCodeRef></div>
+        @if (string.IsNullOrEmpty(message) || string.IsNullOrWhiteSpace(message))
+        {
+            <div class="row" style="margin-top:2px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small class="text-info text-center">You should fill this field. Otherwise, it will add default message "Sent with VENFT App".</small>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <h6 class="text-center">Set the amount to request in the Payment</h6>
+            </div>
         </div>
-    </div>
-    @if (!string.IsNullOrEmpty(paymentLink))
-    {
+
+        <VENFTApp_Blazor.Components.Crypto.PriceCalculator AmountsChanged="@AmountsChangedHandler" />
+
+        <div class="row" style="margin-top:15px;">
+            <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <button class="btn btn-primary" @onclick="() => ShowLink(CurrencyTypes.NEBL)">@(string.IsNullOrEmpty(paymentLink)? "Show Payment Link and QR Code for Neblio" : "Refresh Payment link and QR Code for Neblio")</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <button class="btn btn-primary" @onclick="() => ShowLink(CurrencyTypes.DOGE)">@(string.IsNullOrEmpty(paymentLink)? "Show Payment Link and QR Code for Doge" : "Refresh Payment link and QR Code for Doge")</button>
+            </div>
+        </div>
+        <hr style="margin-top:10px;" />
+        @if (!string.IsNullOrEmpty(paymentLink))
+        {
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                    <a href="@paymentLink" target="_blank" class="text-center" style="width:90%;max-width:350px;">@paymentLink</a>
+                </div>
+            </div>
+        }
         <div class="row">
             <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
-                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@paymentLink" />
+                <div @ref=qrCodeRef></div>
             </div>
         </div>
-    }
-</Modal>
+        @if (!string.IsNullOrEmpty(paymentLink))
+        {
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                    <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@paymentLink" />
+                </div>
+            </div>
+        }
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -157,12 +159,12 @@
         StateHasChanged();
     }
 
-    private async Task ShowRequestPaymentDialog()
+    private void ShowRequestPaymentDialog()
     {
         showLinkDialogVisible = true;
         StateHasChanged();
     }
-    private async Task showLinkDialogCancel(MouseEventArgs e)
+    private async Task showLinkDialogCancel()
     {
         await DialogClosed.InvokeAsync(false);
         showLinkDialogVisible = false;

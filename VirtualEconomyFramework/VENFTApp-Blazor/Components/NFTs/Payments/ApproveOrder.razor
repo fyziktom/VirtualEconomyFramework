@@ -26,14 +26,20 @@
     }
 }
 
-<Modal Title="Approve NFT Order"
-       Visible="@showApproveOrderVisible"
-       OnOk="@ApproveOrderConfirm"
-       OnCancel="@ApproveOrderCancel">
-    <VENFTApp_Blazor.Components.Spin Tip="Writing Approve state..." Spinning="@loading">
-        <span class="text-center">Do you really want to approve this order?</span>
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@showApproveOrderVisible">
+    <ModalHeader>
+        <ModalTitle>Approve NFT Order</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Tip="Writing Approve state..." Spinning="@loading">
+            <span class="text-center">Do you really want to approve this order?</span>
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@ApproveOrderConfirm">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
     private OrderNFT NFT { get; set; } = new OrderNFT("");
@@ -95,17 +101,12 @@
     private bool showApproveOrderVisible = false;
     private string note = string.Empty;
 
-    private async Task showApproveOrderDialog(MouseEventArgs e)
+    private void showApproveOrderDialog()
     {
         showApproveOrderVisible = true;
     }
 
-    private async Task ApproveOrderCancel(MouseEventArgs e)
-    {
-        showApproveOrderVisible = false;
-    }
-
-    private async Task ApproveOrderConfirm(MouseEventArgs e)
+    private async Task ApproveOrderConfirm()
     {
         if (string.IsNullOrEmpty(ProfileUtxo))
         {

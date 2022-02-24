@@ -13,25 +13,28 @@
     </div>
 }
 
-<Modal Title="NFT Product Details"
-       Visible="@showProductNFTDialogVisible"
-       OnCancel="@NFTDetailsClose"
-       Footer="null">
-    <VENFTApp_Blazor.Components.Spin Tip="Loading Product Data..." Spinning="@showProductNFTDialogLoading">
-        @if (!string.IsNullOrEmpty(NFT.Utxo))
-        {
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <NFT InputNFT="@NFT" OwnNFT="false" Address="@Address" />
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@showProductNFTDialogVisible"
+                                        OnCancel="@NFTDetailsClose">
+    <ModalHeader>
+        <ModalTitle>NFT Product Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Tip="Loading Product Data..." Spinning="@showProductNFTDialogLoading">
+            @if (!string.IsNullOrEmpty(NFT.Utxo))
+            {
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <NFT InputNFT="@NFT" OwnNFT="false" Address="@Address" />
+                    </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <div style="min-width:100px; min-height:50px;"></div>
-        }
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+            }
+            else
+            {
+                <div style="min-width:100px; min-height:50px;"></div>
+            }
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -88,7 +91,7 @@
 
     private INFT loadedNFTProduct = new ProductNFT("");
 
-    private async Task ShowProduct(MouseEventArgs e)
+    private void ShowProduct()
     {
         if (NFT != null)
         {
@@ -106,7 +109,7 @@
         StateHasChanged();
     }
 
-    private async Task NFTDetailsClose(MouseEventArgs e)
+    private async Task NFTDetailsClose()
     {
         await DialogClosed.InvokeAsync(false);
         showProductNFTDialogVisible = false;

@@ -23,7 +23,7 @@
                         @foreach (var p in Payments)
                         {
                             var pnft = p as PaymentNFT;// new PaymentNFT(p.Utxo);
-                            //pnft.Fill(p).Wait();
+                                                       //pnft.Fill(p).Wait();
                             <tr style="margin-top:10px;">
                                 <td style="min-width:60px;">
                                     <div class="row" style="margin-top:5px;">
@@ -50,7 +50,7 @@
                                                     {
                                                         @if (!pnft.Returned)
                                                         {
-                                                        <span class="badge badge-primary">Processing</span>
+                                                            <span class="badge badge-primary">Processing</span>
                                                         }
                                                     }
                                                 </div>
@@ -82,9 +82,9 @@
                                         <div class="row">
                                             @if (!pnft.Returned)
                                             {
-                                            <div class="col">
-                                                <ReturnNFTPayment NFT="@pnft" OwnNFT="true" Price="@pnft.Price" Utxo="@pnft.Utxo" UtxoIndex="@pnft.UtxoIndex" />
-                                            </div>
+                                                <div class="col">
+                                                    <ReturnNFTPayment NFT="@pnft" OwnNFT="true" Price="@pnft.Price" Utxo="@pnft.Utxo" UtxoIndex="@pnft.UtxoIndex" />
+                                                </div>
                                             }
                                             <div class="col">
                                                 <i class="oi oi-trash" @onclick="() => deletePaymentNFT(pnft)"></i>
@@ -117,7 +117,7 @@
                             @foreach (var p in sa.ReceivedPayments.Values)
                             {
                                 var pnft = p as PaymentNFT;// new PaymentNFT(p.Utxo);
-                                //pnft.Fill(p).Wait();
+                                                           //pnft.Fill(p).Wait();
                                 <tr style="margin-top:10px;">
                                     <td style="min-width:60px;">
                                         <div class="row" style="margin-top:5px;">
@@ -128,7 +128,7 @@
                                                         {
                                                             <span class="badge badge-success">Received</span>
                                                         }
-                                                        @if (pnft.Returned) 
+                                                        @if (pnft.Returned)
                                                         {
                                                             <span class="badge badge-danger">Returned</span>
                                                         }
@@ -163,7 +163,7 @@
                                         </td>
                                     }
                                     <td>@pnft.Price NEBL</td>
-                                    
+
                                     <td class="text-center" style="margin-left:5px;"><a href="https://explorer.nebl.io/tx/@pnft.Utxo" target="_blank"><i class="oi oi-info"></i></a></td>
                                     @if (pnft.AlreadySoldItem)
                                     {
@@ -200,29 +200,39 @@
     </div>
 </div>
 
-<Modal Title="NFT Details"
-       Visible="@showNFTDetailsVisible"
-       OnOk="@showNFTDetailsCancel"
-       OnCancel="@showNFTDetailsCancel">
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex justify-content-center align-items-center">
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@showNFTDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>NFT Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
                 <NFT InputNFT="@loadedNFT"
                      OwnNFT="@false"
                      Address="@Address"
                      SubAccount="@SubAccount" />
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Destroy NFT Payment"
-       Visible="@confirmDestroyVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel"
-       OkButtonProps="new ButtonProps() { Loading = destroyingNFTPayment }"
-       CancelButtonProps="new ButtonProps() { Loading = destroyingNFTPayment }">
-    <p>Do you really want to destroy this NFT Payment?</p>
-    <p>If this is not your payment you should consider return the amount to the sender.</p>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmDestroyVisible">
+    <ModalHeader>
+        <ModalTitle>Destroy NFT Payment</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <p>Do you really want to destroy this NFT Payment?</p>
+        <p>If this is not your payment you should consider return the amount to the sender.</p>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel" Loading="destroyingNFTPayment">Cancel</ModalButton>
+        <ModalButton OnClick="@HandleOk" Loading="destroyingNFTPayment">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -292,7 +302,7 @@
         StateHasChanged();
     }
 
-    void NFTAddedToPaymentsHandler(object sender, (string,int) e)
+    void NFTAddedToPaymentsHandler(object sender, (string, int) e)
     {
         StateHasChanged();
     }
@@ -315,10 +325,6 @@
         await Task.Delay(100);
         StateHasChanged();
     }
-    private async Task showNFTDetailsCancel(MouseEventArgs e)
-    {
-        showNFTDetailsVisible = false;
-    }
 
     private async Task deletePaymentNFT(INFT loadedNFT)
     {
@@ -329,13 +335,9 @@
         confirmDestroyVisible = true;
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         await deletePaymentNFTAction(nftToDestroy);
-    }
-    private async Task HandleCancel(MouseEventArgs e)
-    {
-        confirmDestroyVisible = false;
     }
 
     private async Task deletePaymentNFTAction(INFT loadedNFT)
@@ -365,7 +367,7 @@
                     Console.WriteLine("Cannot destroy the NFT Payment. " + res.Item2);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Cannot delete NFT Payment. " + ex.Message);
             }

@@ -15,12 +15,12 @@
             {
                 <div class="row" style="position: absolute;right: 7px;top: 40px;">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.NFTs.Actions.DestroyNFTButton IsIcon="true" 
-                                                                          FontSize="20" 
-                                                                          InputNFT="@NFT" 
-                                                                          Address="@_address" 
-                                                                          MainAccount="true" 
-                                                                          SubAccount="false" />
+                        <VENFTApp_Blazor.Components.NFTs.Actions.DestroyNFTButton IsIcon="true"
+                                                                                  FontSize="20"
+                                                                                  InputNFT="@NFT"
+                                                                                  Address="@_address"
+                                                                                  MainAccount="true"
+                                                                                  SubAccount="false" />
                     </div>
                 </div>
             }
@@ -135,24 +135,36 @@
         </VENFTApp_Blazor.Components.Spin>
     </div>
 
-    <Modal Title="NFT Image"
-           Style="min-height:200px; height:auto; min-width:200px; width:95%;"
-           Visible="@modalWithImageVisible"
-           OnOk="@modalWithImageClose"
-           OnCancel="@modalWithImageClose">
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <img class="card-img-top" src="data:image;base64,@System.Convert.ToBase64String(imagetData)" style="min-height:100px; height:auto; min-width:200px; max-width:600px; width:90%;" />
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@modalWithImageVisible"
+                                            Style="min-height:200px; height:auto; min-width:200px; max-width:95%;">
+        <ModalHeader>
+            <ModalTitle>NFT Image</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <img class="card-img-top" src="data:image;base64,@System.Convert.ToBase64String(imagetData)" style="min-height:100px; height:auto; min-width:200px; max-width:600px; width:90%;" />
+                </div>
             </div>
-        </div>
-    </Modal>
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
-    <Modal Title="Send Message"
-           Visible="@sendMessageVisible"
-           OnCancel="@sendMessageCancel"
-           Footer="null">
-        <SendMessage NFT="@NFT" Receiver="@NFT.Author" MessageSent="@NFTSentHandler" />
-    </Modal>
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@sendMessageVisible">
+        <ModalHeader>
+            <ModalTitle>Send Message</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <SendMessage NFT="@NFT" Receiver="@NFT.Author" MessageSent="@NFTSentHandler" />
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 </div>
 
 @code {
@@ -280,26 +292,16 @@
             return string.Empty;
     }
 
-    private async Task showSendMessage()
+    private void showSendMessage()
     {
         sendMessageVisible = true;
         StateHasChanged();
     }
 
-    private async Task sendMessageCancel(MouseEventArgs e)
-    {
-        sendMessageVisible = false;
-    }
-
-    public async Task OpenModalWithImage()
+    public void OpenModalWithImage()
     {
         modalWithImageVisible = true;
         StateHasChanged();
-    }
-
-    public async Task modalWithImageClose(MouseEventArgs e)
-    {
-        modalWithImageVisible = false;
     }
 
     private void NFTSentHandler(string e)

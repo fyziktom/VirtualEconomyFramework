@@ -94,19 +94,27 @@
     </div>
 </div>
 
-<Modal Title="Device Details"
-       Visible="@deviceDetailsVisible"
-       OnCancel="@deviceDetailsVisibleCancel"
-       Footer="null">
-    <NFTDeviceDetails InputNFT="@nftToShow" Address="@_address" NFTSent="NFTSentHandler" OwnNFT="OwnNFT" SubAccount="SubAccount" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@deviceDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>Device Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <NFTDeviceDetails InputNFT="@nftToShow" Address="@_address" NFTSent="NFTSentHandler" OwnNFT="OwnNFT" SubAccount="SubAccount" />
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Mint NFT Device"
-       Visible="@mintDeviceVisible"
-       OnOk="@mintDeviceConfirm"
-       OnCancel="@mintDeviceCancel">
-    <MintNFTDevice NFTMinted="NFTSentHandler" Address="@_address" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@mintDeviceVisible">
+    <ModalHeader>
+        <ModalTitle>Mint NFT Device</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <MintNFTDevice NFTMinted="NFTSentHandler" Address="@_address" />
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -226,24 +234,9 @@
         //Console.WriteLine(nft.Utxo);
         deviceDetailsVisible = true;
     }
-
-    private async Task deviceDetailsVisibleCancel()
-    {
-        deviceDetailsVisible = false;
-    }
     
-    private async Task showMintDevice()
+    private void showMintDevice()
     {
         mintDeviceVisible = true;
-    }
-
-    private async Task mintDeviceCancel(MouseEventArgs e)
-    {
-        mintDeviceVisible = false;
-    }
-
-    private async Task mintDeviceConfirm(MouseEventArgs e)
-    {
-        mintDeviceVisible = false;
     }
 }

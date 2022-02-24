@@ -12,131 +12,138 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
 
-<Modal Title="Import Account"
-       Visible="@importAccountVisible"
-       OnOk="@importAccountConfirm"
-       OnCancel="@importAccountCancel">
-    <div class="row">
-        <div class="col">
-            <VENFTApp_Blazor.Components.Spin Spinning="@creatingAddressSpinner" Tip="Importing Address...">
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <h6>Option 1</h6>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@importAccountVisible"
+                                        OnCancel="@importAccountCancel">
+    <ModalHeader>
+        <ModalTitle>Import Account</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <VENFTApp_Blazor.Components.Spin Spinning="@creatingAddressSpinner" Tip="Importing Address...">
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h6>Option 1</h6>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:30px; min-width:200px;">
-                    <div class="col w-100 d-flex justify-content-center align-items-center">
-                        <span>Load the VENFT App backup file.</span>
+                    <div class="row" style="margin-top:30px; min-width:200px;">
+                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                            <span>Load the VENFT App backup file.</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px; min-width:200px;">
-                    <div class="col w-100 d-flex justify-content-center align-items-center">
-                        <input type="file" @ref=inputTypeFileElement @onchange="ReadFile" />
+                    <div class="row" style="margin-top:10px; min-width:200px;">
+                        <div class="col w-100 d-flex justify-content-center align-items-center">
+                            <input type="file" @ref=inputTypeFileElement @onchange="ReadFile" />
+                        </div>
                     </div>
-                </div>
-                <hr />
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <h6>Option 2</h6>
+                    <hr />
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h6>Option 2</h6>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Please Input Neblio Private Key</span>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Please Input Neblio Private Key</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <small>Leave empty if you do not have any Neblio Address, app will create new one automatically.</small>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Leave empty if you do not have any Neblio Address, app will create new one automatically.</small>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <InputPassword Placeholder="Input private key" @bind-Value="@importAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
-                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <InputPassword Placeholder="Input private key" @bind-Value="@importAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
+                            <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Please Input Doge Private Key</span>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Please Input Doge Private Key</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <small>Leave empty if you do not have any Dogecoin Address, app will create new one automatically.</small>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small>Leave empty if you do not have any Dogecoin Address, app will create new one automatically.</small>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <InputPassword Placeholder="Input private key" @bind-Value="@importDogeAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
-                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <InputPassword Placeholder="Input private key" @bind-Value="@importDogeAccountKey" style="font-size:12px; min-width:150px; max-width:250px;" />
+                            <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="@QRTextReaded" />-->
+                        </div>
                     </div>
-                </div>
-                <hr />
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Please Input Password</span>
+                    <hr />
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Please Input Password</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <InputPassword Placeholder="Input password" @bind-Value="@importAccountPass" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <InputPassword Placeholder="Input password" @bind-Value="@importAccountPass" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Confirm Password:</span>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Confirm Password:</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:2px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <small class="text-muted">Please input same pass just to be sure it is typed right.</small>
+                    <div class="row" style="margin-top:2px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small class="text-muted">Please input same pass just to be sure it is typed right.</small>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <InputPassword Placeholder="Input password" @bind-Value="@passwordConfirm" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <InputPassword Placeholder="Input password" @bind-Value="@passwordConfirm" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        </div>
                     </div>
-                </div>
 
-                @if (!string.IsNullOrEmpty(importAccountPass))
-                {
-                    if (importAccountPass.Length > 4)
+                    @if (!string.IsNullOrEmpty(importAccountPass))
                     {
-                        if (!string.IsNullOrEmpty(passwordConfirm))
+                        if (importAccountPass.Length > 4)
                         {
-                            if (passwordConfirm != importAccountPass)
+                            if (!string.IsNullOrEmpty(passwordConfirm))
                             {
-                                <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
-                                    <Message>Passwords not match!</Message>
-                                </VENFTApp_Blazor.Components.Alert>
-                            }
-                            else
-                            {
-                                <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
-                                    <Message>Passwords Match. Please confirm to create address!</Message>
-                                </VENFTApp_Blazor.Components.Alert>
+                                if (passwordConfirm != importAccountPass)
+                                {
+                                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
+                                        <Message>Passwords not match!</Message>
+                                    </VENFTApp_Blazor.Components.Alert>
+                                }
+                                else
+                                {
+                                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+                                        <Message>Passwords Match. Please confirm to create address!</Message>
+                                    </VENFTApp_Blazor.Components.Alert>
+                                }
                             }
                         }
+                        else
+                        {
+                            <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
+                                <Message>Passwords minimal lenght is 8 characters!</Message>
+                            </VENFTApp_Blazor.Components.Alert>
+                        }
                     }
-                    else
+
+                    @if (accountImportError)
                     {
-                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
-                            <Message>Passwords minimal lenght is 8 characters!</Message>
+                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                            <Message>Wrong Password or private key</Message>
                         </VENFTApp_Blazor.Components.Alert>
                     }
-                }
-
-                @if (accountImportError)
-                {
-                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
-                        <Message>Wrong Password or private key</Message>
-                    </VENFTApp_Blazor.Components.Alert>
-                }
-            </VENFTApp_Blazor.Components.Spin>
+                </VENFTApp_Blazor.Components.Spin>
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@importAccountConfirm">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 
 @code {
@@ -199,7 +206,7 @@
         StateHasChanged();
     }
 
-    private async Task importAccountConfirm(MouseEventArgs e)
+    private async Task importAccountConfirm()
     {
         if (passwordConfirm != importAccountPass)
             return;
@@ -297,8 +304,8 @@
                         await localStorage.SetItemAsync<string>("messageTabs", backupData.MessageTabs);
                         await localStorage.SetItemAsync<string>("woocom-apiurl", backupData.WoCAPIUrl);
                         await localStorage.SetItemAsync<string>("woocom-apikey", backupData.WoCAPIKey);
-                        await localStorage.SetItemAsync<string>("woocom-apisecret",backupData.WoCAPISecret);
-                        await localStorage.SetItemAsync<string>("woocom-jwt",backupData.WoCAPIJWT);
+                        await localStorage.SetItemAsync<string>("woocom-apisecret", backupData.WoCAPISecret);
+                        await localStorage.SetItemAsync<string>("woocom-jwt", backupData.WoCAPIJWT);
                         key = await SymetricProvider.EncryptString(importAccountPass, key);
                     }
                     else
@@ -378,7 +385,7 @@
         }
     }
 
-    private async Task importAccountCancel(MouseEventArgs e)
+    private async Task importAccountCancel()
     {
         importAccountVisible = false;
         await AccountImported.InvokeAsync("");

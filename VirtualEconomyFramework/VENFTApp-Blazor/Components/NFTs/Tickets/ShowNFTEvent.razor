@@ -13,25 +13,28 @@
     </div>
 }
 
-<Modal Title="Event Details"
-       Visible="@showEventNFTDialogVisible"
-       OnCancel="@eventNFTDetailsClose"
-       Footer="null">
-    <VENFTApp_Blazor.Components.Spin Tip="Loading Event Data..." Spinning="@showEventNFTDialogLoading">
-        @if (!string.IsNullOrEmpty(NFT.Utxo))
-        {
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <NFT InputNFT="@loadedNFTEvent" OwnNFT="false" Address="@Address" />
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@showEventNFTDialogVisible"
+                                        OnCancel="@eventNFTDetailsClose">
+    <ModalHeader>
+        <ModalTitle>Event Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Tip="Loading Event Data..." Spinning="@showEventNFTDialogLoading">
+            @if (!string.IsNullOrEmpty(NFT.Utxo))
+            {
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <NFT InputNFT="@loadedNFTEvent" OwnNFT="false" Address="@Address" />
+                    </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <div style="min-width:100px; min-height:50px;"></div>
-        }
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+            }
+            else
+            {
+                <div style="min-width:100px; min-height:50px;"></div>
+            }
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -107,7 +110,7 @@
         }
         StateHasChanged();
     }
-    private async Task eventNFTDetailsClose(MouseEventArgs e)
+    private async Task eventNFTDetailsClose()
     {
         await DialogClosed.InvokeAsync(false);
         showEventNFTDialogVisible = false;

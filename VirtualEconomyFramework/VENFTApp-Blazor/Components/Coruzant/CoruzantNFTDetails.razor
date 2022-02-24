@@ -235,7 +235,7 @@
                         <div class="col d-flex justify-content-center align-items-center w-auto">
                             @if (coruzantEditAllowed && NFT.Type == NFTTypes.CoruzantArticle)
                             {
-                                <button class="btn btn-secondary" @onclick="async () => ShowUpdatePostNFTDialog()" style="width:65px; height:65px; margin-right:20px;">
+                                <button class="btn btn-secondary" @onclick="ShowUpdatePostNFTDialog" style="width:65px; height:65px; margin-right:20px;">
                                     <div class="row">
                                         <div class="col">
                                             <div class="row d-flex justify-content-center align-items-center">
@@ -252,7 +252,7 @@
                                     </div>
                                 </button>
                             }
-                            <button class="btn btn-primary" @onclick="async () => ShowSendNFTDialog()" style="width:65px; height:65px;">
+                            <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="width:65px; height:65px;">
                                 <div class="row">
                                     <div class="col">
                                         <div class="row d-flex justify-content-center align-items-center">
@@ -302,29 +302,41 @@
                                              Address="@Address"
                                              SubAccount="@SubAccount" />
 
-    <Modal Title="Create or edit post NFT"
-           Visible="@createNewPostVisible"
-           OnOk="@createNewPostConfirm"
-           OnCancel="@createNewPostCancel">
-        <VENFTApp_Blazor.Components.NFTs.MintNFTForm NFTType="NFTTypes.CoruzantArticle"
-                                                     NFT="@NFT"
-                                                     TokenId="@CoruzantNFTHelpers.CoruzantTokenId"
-                                                     RedirectToNFTsAfterMint="false"
-                                                     NFTMinted="@NFTMinted"
-                                                     Address="@Address"
-                                                     SubAccount="@SubAccount" />
-    </Modal>
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@createNewPostVisible">
+        <ModalHeader>
+            <ModalTitle>Create or edit post NFT</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <VENFTApp_Blazor.Components.NFTs.MintNFTForm NFTType="NFTTypes.CoruzantArticle"
+                                                         NFT="@NFT"
+                                                         TokenId="@CoruzantNFTHelpers.CoruzantTokenId"
+                                                         RedirectToNFTsAfterMint="false"
+                                                         NFTMinted="@NFTMinted"
+                                                         Address="@Address"
+                                                         SubAccount="@SubAccount" />
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
-    <Modal Title="Author Profile NFT"
-           Visible="@authorProfileNFTVisible"
-           OnOk="@authorProfileNFTCancel"
-           OnCancel="@authorProfileNFTCancel">
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@AuthorProfileNFT" OwnNFT="false" HideButtons="false" />
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@authorProfileNFTVisible">
+        <ModalHeader>
+            <ModalTitle>Author Profile NFT</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@AuthorProfileNFT" OwnNFT="false" HideButtons="false" />
+                </div>
             </div>
-        </div>
-    </Modal>
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
     <VENFTApp_Blazor.Components.NFTs.Verification.OwnershipQRCode Address="@Address"
                                                      OwnNFT="@OwnNFT"
@@ -521,52 +533,30 @@
         }
     }
 
-    private void ShowOwnershipQRCode(MouseEventArgs e)
+    private void ShowOwnershipQRCode()
     {
         ownershipQRCodeVisible = true;
     }
-    private async Task ShowOwnerShipQRCodeClosedHandler(bool e)
+    private void ShowOwnerShipQRCodeClosedHandler(bool e)
     {
         ownershipQRCodeVisible = e;
         StateHasChanged();
     }
 
-    private async Task ShowSendNFTDialog()
+    private void ShowSendNFTDialog()
     {
         sendNFTDialogVisible = true;
         StateHasChanged();
     }
 
-    private async Task showAuthorProfileNFT(MouseEventArgs e)
+    private void showAuthorProfileNFT()
     {
         authorProfileNFTVisible = true;
     }
-    private async Task authorProfileNFTCancel(MouseEventArgs e)
-    {
-        authorProfileNFTVisible = false;
-    }
 
-    private async Task ShowSetPriceNFTDialog()
-    {
-        setPriceNFTDialogVisible = true;
-        StateHasChanged();
-    }
-
-    private async Task ShowUpdatePostNFTDialog()
+    private void ShowUpdatePostNFTDialog()
     {
         createNewPostVisible = true;
         StateHasChanged();
     }
-
-    private async Task createNewPostConfirm(MouseEventArgs e)
-    {
-        createNewPostVisible = false;
-        StateHasChanged();
-    }
-
-    private async Task createNewPostCancel(MouseEventArgs e)
-    {
-        createNewPostVisible = false;
-    }
-
 }

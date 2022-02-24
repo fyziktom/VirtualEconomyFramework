@@ -4,11 +4,12 @@
 @using VEDriversLite.Events
 @inject AppData AppData
 
-<Modal Title="Event Info"
-       Visible="@infoEventModalVisible"
-       OnCancel="@CloseInfoEventModal"
-       Footer="null"
-       ZIndex="10">
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@infoEventModalVisible"
+                                        Style="z-index: 10;">
+    <ModalHeader>
+        <ModalTitle>Event Info</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
         <div class="row">
             <div class="col">
                 @if (eventInfo != null)
@@ -73,20 +74,21 @@
                         </div>
                     }
                     <!--
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <h5>Progress</h5>
-                        </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h5>Progress</h5>
                     </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <span>eventInfo.Progress %</span>
-                        </div>
-                    </div>-->
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>eventInfo.Progress %</span>
+                    </div>
+                </div>-->
                 }
             </div>
         </div>
-</Modal>
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -112,12 +114,6 @@
         // todo dequeue from buffer and offer as OK close next message if there is some in the buffer.
         eventInfo = e;
         infoEventModalVisible = true;
-        StateHasChanged();
-    }
-
-    private async Task CloseInfoEventModal(MouseEventArgs e)
-    {
-        infoEventModalVisible = false;
         StateHasChanged();
     }
 }

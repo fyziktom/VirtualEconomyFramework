@@ -48,7 +48,7 @@
                         @foreach (var tab in AppData.Account.Tabs)
                         {
                             <li class="nav-item @GetTabColor(tab.Address)" role="presentation" style="margin-left:2px; margin-right:2px; margin-top:4px;">
-                                <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => selectTab(tab.Address)">
+                                <a class="nav-link" role="tab" data-toggle="tab" @onclick="() => selectTab(tab.Address)">
                                     @if (!string.IsNullOrEmpty(tab.BookmarkFromAccount.Name))
                                     {
                                         if (tab.BookmarkFromAccount.Name.Length < 10)
@@ -64,14 +64,14 @@
                                     {
                                         @tab.ShortAddress
                                     }
-                                    <button class="btn btn-light" @onclick="async () => removeTab(tab.Address)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 2px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
+                                    <button class="btn btn-light" @onclick="() => removeTab(tab.Address)" type="button" style="padding-top: 0px;padding-right: 5px;padding-bottom: 2px;padding-left: 4px;font-size: 12px;margin-left: 15px;margin-bottom: 5px;margin-right: -6px;">
                                             <i class="oi oi-x" style="font-size:7px;"></i>
                                     </button>
                                 </a>
                             </li>
                         }
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link" role="tab" data-toggle="tab" @onclick="async () => addNewTabModal()">
+                            <a class="nav-link" role="tab" data-toggle="tab" @onclick="() => addNewTabModal()">
                                 @if (AppData.Account.Tabs.Count == 0)
                                 {
                                     <i class="oi oi-plus" style="font-size: 20px;"></i>
@@ -174,114 +174,132 @@
 </VENFTApp_Blazor.Components.Spin>
 
 <!--Open New Tab Modal-->
-<Modal Title="Open Tab"
-       Visible="@openTabVisible"
-       OnOk="@addNewTab"
-       OnCancel="@addNewTabCancel">
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Select from Bookmarks</span>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@openTabVisible">
+    <ModalHeader>
+        <ModalTitle>Open Tab</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Select from Bookmarks</span>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
-                        <Overlay>
-                            <Menu>
-                                @foreach (var b in AppData.Account.Bookmarks)
-                                {
-                                    <MenuItem>
-                                        <span @onclick="() => selectNewTabAddressFromBookmark(b.Address, b.Name)">@b.Name</span>
-                                    </MenuItem>
-                                }
-                            </Menu>
-                        </Overlay>
-                        <ChildContent>
-                            <a class="ant-dropdown-link" @onclick:preventDefault>
-                                @selectedNewTabFromBookmarkName <Icon Type="down" />
-                            </a>
-                        </ChildContent>
-                    </Dropdown>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
+                            <Overlay>
+                                <Menu>
+                                    @foreach (var b in AppData.Account.Bookmarks)
+                                    {
+                                        <MenuItem>
+                                            <span @onclick="() => selectNewTabAddressFromBookmark(b.Address, b.Name)">@b.Name</span>
+                                        </MenuItem>
+                                    }
+                                </Menu>
+                            </Overlay>
+                            <ChildContent>
+                                <a class="ant-dropdown-link" @onclick:preventDefault>
+                                    @selectedNewTabFromBookmarkName <Icon Type="down" />
+                                </a>
+                            </ChildContent>
+                        </Dropdown>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <button @onclick="openPublicAddresses" class="btn btn-secondary" type="button">Or Browse Public Addresses</button>
+
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <button @onclick="openPublicAddresses" class="btn btn-secondary" type="button">Or Browse Public Addresses</button>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Or Input Neblio Address</span>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Or Input Neblio Address</span>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Blazor.Components.Account.NeblioAddressInput Receiver="@newTabAddress" AddressCheckedInputed="receiverAddressChangedHandler"/>
-                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.Account.NeblioAddressInput Receiver="@newTabAddress" AddressCheckedInputed="receiverAddressChangedHandler" />
+                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@addNewTab">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 <!--Browse Public Addresses Modal-->
-<Modal Title="Browse Public Addresses"
-       Visible="@browsePublicAddresses"
-       OnOk="@closePublicAddresses"
-       OnCancel="@closePublicAddresses">
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex justify-content-center align-items-center">
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@browsePublicAddresses">
+    <ModalHeader>
+        <ModalTitle>Browse Public Addresses</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
 
-            @if (AppData.VENFTOwners.Count == 0)
-            {
-                <p><VENFTApp_Blazor.Components.Spin Tip="Loading..."></VENFTApp_Blazor.Components.Spin></p>
-            }
-            else
-            {
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Address</th>
-                            <th>Number Of NFTs</th>
-                            <th>Open In Tab</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var owner in AppData.VENFTOwners)
-                        {
-                            <tr style="margin-top:14px;">
-                                <td>
-                                    <a target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
-                                        @PublicNameInBookmarks(owner.Address, owner.ShortenAddress)
-                                    </a>
-                                </td>
-                                <td>
-                                    <span style="margin-left:12px;">@owner.AmountOfNFTs NFTs</span>
-                                </td>
-                                <td>
-                                    <a style="margin-left:20px;" target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
-                                        <i class="oi oi-browser" style="font-size:25px;"></i>
-                                    </a>
-                                </td>
+                @if (AppData.VENFTOwners.Count == 0)
+                {
+                    <p><VENFTApp_Blazor.Components.Spin Tip="Loading..."></VENFTApp_Blazor.Components.Spin></p>
+                }
+                else
+                {
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Address</th>
+                                <th>Number Of NFTs</th>
+                                <th>Open In Tab</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            }
+                        </thead>
+                        <tbody>
+                            @foreach (var owner in AppData.VENFTOwners)
+                            {
+                                <tr style="margin-top:14px;">
+                                    <td>
+                                        <a target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
+                                            @PublicNameInBookmarks(owner.Address, owner.ShortenAddress)
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span style="margin-left:12px;">@owner.AmountOfNFTs NFTs</span>
+                                    </td>
+                                    <td>
+                                        <a style="margin-left:20px;" target="_blank" rel="noopener noreferrer" @onclick="async () => addNewPublicTabModal(owner.Address)">
+                                            <i class="oi oi-browser" style="font-size:25px;"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 
-<Modal Title="Send Message"
-       Visible="@sendMessageVisible"
-       OnOk="@sendMessageConfirm"
-       OnCancel="@sendMessageCancel">
-    <VENFTApp_Blazor.Components.NFTs.Messages.SendMessage Receiver="@addressInOpenTab" MessageSent="@MessageSentHandler" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@sendMessageVisible">
+    <ModalHeader>
+        <ModalTitle>Send Message</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.NFTs.Messages.SendMessage Receiver="@addressInOpenTab" MessageSent="@MessageSentHandler" />
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -444,11 +462,6 @@
         browsePublicAddresses = true;
     }
 
-    private async Task closePublicAddresses(MouseEventArgs e)
-    {
-        browsePublicAddresses = false;
-    }
-
     private async Task LoadBookmarksAndState()
     {
         try
@@ -530,14 +543,14 @@
         }
     }
 
-    private async Task addNewPublicTabModal(string address)
+    private void addNewPublicTabModal(string address)
     {
         browsePublicAddresses = false;
         newTabAddress = address;
         openTabVisible = true;
     }
 
-    private async Task addNewTabModal()
+    private void addNewTabModal()
     {
         selectedNewTabFromBookmarkName = "Select From Bookmark";
         newTabAddress = string.Empty;
@@ -566,11 +579,6 @@
         await Task.Delay(50);
         loadingBrowser = false;
         StateHasChanged();
-    }
-
-    private async Task addNewTabCancel()
-    {
-        openTabVisible = false;
     }
 
     private async Task selectTab(string address)
@@ -633,16 +641,5 @@
     {
         sendMessageVisible = true;
         StateHasChanged();
-    }
-
-    private async Task sendMessageConfirm(MouseEventArgs e)
-    {
-        sendMessageVisible = false;
-        StateHasChanged();
-    }
-
-    private async Task sendMessageCancel(MouseEventArgs e)
-    {
-        sendMessageVisible = false;
     }
 }

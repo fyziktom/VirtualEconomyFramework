@@ -22,86 +22,93 @@
     </div>
 </div>
 
-<Modal Title="Your Private Key"
-       Visible="@privateKeyDialogVisible"
-       OnOk="@privateKeyDialogClose"
-       OnCancel="@privateKeyDialogClose">
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Your Private Key</span>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@privateKeyDialogVisible"
+                                        OnCancel="@privateKeyDialogClose">
+    <ModalHeader>
+        <ModalTitle>Your Private Key</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Your Private Key</span>
+                    </div>
                 </div>
-            </div>
-            <div class="row d-flex justify-content-center align-items-center text-wrap">
-                <div class="col">
-                    <h6 class="text-center text-wrap">@accountKey</h6>
+                <div class="row d-flex justify-content-center align-items-center text-wrap">
+                    <div class="col">
+                        <h6 class="text-center text-wrap">@accountKey</h6>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@accountKey" />
-                    @try
-                    {
-                        <VENFTApp_Blazor.Components.HelperButtons.QRIcon MarginLeft="10" TextToCopy="accountKey" Close="closeQRModal" />
-                    }
-                    catch (Exception ex)
-                    {
-                        //todo
-                    }
-                    <VENFTApp_Blazor.Components.HelperButtons.SaveTextAsFile MarginLeft="10" TextToSave="@keyToSave" FileName="@filename" />
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@accountKey" />
+                        @try
+                        {
+                            <VENFTApp_Blazor.Components.HelperButtons.QRIcon MarginLeft="10" TextToCopy="accountKey" Close="closeQRModal" />
+                        }
+                        catch (Exception ex)
+                        {
+                            //todo
+                        }
+                        <VENFTApp_Blazor.Components.HelperButtons.SaveTextAsFile MarginLeft="10" TextToSave="@keyToSave" FileName="@filename" />
+                    </div>
                 </div>
-            </div>
-            <div class="row d-flex justify-content-center align-items-center text-wrap">
-                <div class="col">
-                    <span class="text-center text-wrap">Sub Accounts</span>
+                <div class="row d-flex justify-content-center align-items-center text-wrap">
+                    <div class="col">
+                        <span class="text-center text-wrap">Sub Accounts</span>
+                    </div>
                 </div>
-            </div>
-            <div class="row d-flex justify-content-center align-items-center text-wrap">
-                <div class="col">
-                    @foreach (var sacc in subaccountkeys)
-                    {
-                        <hr />
-                        <div class="row d-flex justify-content-center align-items-center text-wrap">
-                            <div class="col">
-                                <div class="row">
-                                    <div class="col">
-                                        <small class="text-center text-wrap">Address</small>
+                <div class="row d-flex justify-content-center align-items-center text-wrap">
+                    <div class="col">
+                        @foreach (var sacc in subaccountkeys)
+                        {
+                            <hr />
+                            <div class="row d-flex justify-content-center align-items-center text-wrap">
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col">
+                                            <small class="text-center text-wrap">Address</small>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <small class="text-center text-wrap">@sacc.Key</small>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <small class="text-center text-wrap">@sacc.Key</small>
-                                    </div>
+                                <div class="col">
+                                    <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@sacc.Key" />
                                 </div>
                             </div>
-                            <div class="col">
-                                <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@sacc.Key" />
-                            </div>
-                        </div>
-                        <div class="row d-flex justify-content-center align-items-center text-wrap">
-                            <div class="col">
-                                <div class="row">
-                                    <div class="col">
-                                        <small class="text-center text-wrap">Key</small>
+                            <div class="row d-flex justify-content-center align-items-center text-wrap">
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col">
+                                            <small class="text-center text-wrap">Key</small>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <small class="text-center text-wrap">@sacc.Value</small>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <small class="text-center text-wrap">@sacc.Value</small>
-                                    </div>
+                                <div class="col">
+                                    <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@sacc.Value" />
                                 </div>
                             </div>
-                            <div class="col">
-                                <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@sacc.Value" />
-                            </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@privateKeyDialogClose">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -196,7 +203,7 @@
         }, new System.Threading.AutoResetEvent(false), 10000, 10000);
     }
 
-    private async Task privateKeyDialogClose(MouseEventArgs e)
+    private async Task privateKeyDialogClose()
     {
         accountKey = string.Empty;
         closeQRModal = true;

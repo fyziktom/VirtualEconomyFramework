@@ -215,39 +215,45 @@
         </div>
     </div>
 
-    <Modal Title="Buy Source tokens"
-           Visible="@orderSourceTokensVisible"
-           OnOk="@orderSourceTokensConfirm"
-           OnCancel="@orderSourceTokensCancel">
-        <div class="row" style="margin-top:10px;">
-            <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.Spin Tip="Processing the Order..." Spinning="@orderingTokens">
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <p>Do you want to buy 100 VENFT tokens? It costs 1 NEBL.</p>
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@orderSourceTokensVisible">
+        <ModalHeader>
+            <ModalTitle>Buy Source tokens</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <VENFTApp_Blazor.Components.Spin Tip="Processing the Order..." Spinning="@orderingTokens">
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <p>Do you want to buy 100 VENFT tokens? It costs 1 NEBL.</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <p>Whole order will be processed automatically. It can take few minutes due to speed of confirmations of the transactions.</p>
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <p>Whole order will be processed automatically. It can take few minutes due to speed of confirmations of the transactions.</p>
+                            </div>
                         </div>
-                    </div>
-                    @if (orderingTokensDone)
-                    {
-                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
-                            <Title>Done.</Title>
-                            <Message>Tokens ordered correctly. Now it will take some minute to process order and delivery the tokens.</Message>
-                        </VENFTApp_Blazor.Components.Alert>
-                    }
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <p>Order TxId: @orderTxId</p>
+                        @if (orderingTokensDone)
+                        {
+                            <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+                                <Title>Done.</Title>
+                                <Message>Tokens ordered correctly. Now it will take some minute to process order and delivery the tokens.</Message>
+                            </VENFTApp_Blazor.Components.Alert>
+                        }
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <p>Order TxId: @orderTxId</p>
+                            </div>
                         </div>
-                    </div>
-                </VENFTApp_Blazor.Components.Spin>
+                    </VENFTApp_Blazor.Components.Spin>
+                </div>
             </div>
-        </div>
-    </Modal>
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@orderSourceTokensConfirm">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
@@ -403,17 +409,12 @@
         StateHasChanged();
     }
 
-    private async Task orderSourceTokensCancel(MouseEventArgs e)
-    {
-        orderSourceTokensVisible = false;
-    }
-
     private async Task showOrderTokens()
     {
         orderSourceTokensVisible = true;
     }
 
-    private async Task orderSourceTokensConfirm(MouseEventArgs e)
+    private async Task orderSourceTokensConfirm()
     {
         try
         {

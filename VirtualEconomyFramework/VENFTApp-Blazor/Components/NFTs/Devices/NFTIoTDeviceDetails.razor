@@ -340,12 +340,14 @@
     </div>
 </div>
 
-<Modal Title="Device Details"
-       Visible="@deviceDetailsVisible"
-       OnCancel="@deviceDetailsVisibleCancel"
-       Footer="null">
-    <NFTDeviceDetails InputNFT="@nftToShow" Address="@Address" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@deviceDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>Device Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <NFTDeviceDetails InputNFT="@nftToShow" Address="@Address" />
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -405,11 +407,6 @@
         loading = false;
         StateHasChanged();
         deviceDetailsVisible = true;
-    }
-
-    private async Task deviceDetailsVisibleCancel()
-    {
-        deviceDetailsVisible = false;
     }
 
     private void NFTSentHandler(string e)

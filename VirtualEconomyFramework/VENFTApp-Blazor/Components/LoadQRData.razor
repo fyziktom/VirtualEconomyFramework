@@ -2,24 +2,31 @@
 
 <i class="oi oi-aperture" style="margin-left:@marginleft; padding-top:@paddingtop; padding-left:@padding; font-size:@fontsize;" @onclick="showQRDialogOpen"></i>
 
-<Modal Title="Load Data From QR"
-       Visible="@showQRDialogVisible"
-       OnOk="@showQRDialogCancel"
-       Style="width:auto; max-width:300px;"
-       OnCancel="@showQRDialogCancel">
-    <VENFTApp_Blazor.Components.Spin Tip="@status" Spinning="@doneVisible">
-        <div class="row" style="margin-top:10px;">
-            <div class="col d-flex justify-content-center align-items-center">
-                <div id="CameraStream"></div>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@showQRDialogVisible"
+                                        Style="width:auto; max-width:300px;"
+                                        OnCancel="@showQRDialogCancel">
+    <ModalHeader>
+        <ModalTitle>Load Data From QR</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Tip="@status" Spinning="@doneVisible">
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div id="CameraStream"></div>
+                </div>
             </div>
-        </div>
-        <div class="row" style="margin-top:10px;">
-            <div class="col d-flex justify-content-center align-items-center">
-                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@readedText" />
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@readedText" />
+                </div>
             </div>
-        </div>
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -121,7 +128,7 @@
         }
     }
 
-    private async Task showQRDialogOpen(MouseEventArgs e)
+    private async Task showQRDialogOpen()
     {
         status = "Initializing Camera...";
         doneVisible = true;
@@ -135,7 +142,7 @@
         padding = "0px";
     }
 
-    private async Task showQRDialogCancel(MouseEventArgs e)
+    private async Task showQRDialogCancel()
     {
         status = "Stopping Cammera...";
         doneVisible = true;

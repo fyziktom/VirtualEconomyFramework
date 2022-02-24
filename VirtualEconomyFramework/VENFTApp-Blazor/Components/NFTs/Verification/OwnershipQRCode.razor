@@ -13,35 +13,38 @@
     </div>
 }
 
-<Modal Title="Ownership QR Code"
-       Visible="@showOwnershipDialogVisible"
-       Style="width:auto; max-width:300px;"
-       OnCancel="@showOwnershipDialogCancel"
-       Footer="null">
-    <VENFTApp_Blazor.Components.Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <span class="text-center">Code is valid for: @qrCodeRefreshCounter s</span>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@showOwnershipDialogVisible"
+                                        Style="width:auto; max-width:300px;"
+                                        OnCancel="@showOwnershipDialogCancel">
+    <ModalHeader>
+        <ModalTitle>Ownership QR Code</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span class="text-center">Code is valid for: @qrCodeRefreshCounter s</span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <small>Signature</small>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <small>Signature</small>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <h6 class="text-center">@ownershipDialogCode</h6>
+            <div class="row">
+                <div class="col">
+                    <h6 class="text-center">@ownershipDialogCode</h6>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <div @ref=qrCodeRef></div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div @ref=qrCodeRef></div>
+                </div>
             </div>
-        </div>
-        <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@ownershipCodeSerialized" />
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+            <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@ownershipCodeSerialized" />
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -180,7 +183,7 @@
         }, new System.Threading.AutoResetEvent(false), 1000, 1000);
     }
 
-    private async Task showOwnershipDialogCancel(MouseEventArgs e)
+    private async Task showOwnershipDialogCancel()
     {
         if (qrCodeRefreshTimer != null)
         {

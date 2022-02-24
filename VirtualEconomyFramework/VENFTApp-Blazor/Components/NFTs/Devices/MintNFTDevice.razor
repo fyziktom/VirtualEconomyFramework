@@ -32,7 +32,7 @@
                             <button class="btn btn-primary" @onclick="LoadFromTemplate">Load From Template NFT</button>
                         </div>
                     </div>
-                    
+
                     <hr />
 
                     <div class="row" style="margin-top:10px;">
@@ -349,19 +349,32 @@
             </div>
         </VENFTApp_Blazor.Components.Spin>
 
-        <Modal Title="@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")"
-               Visible="@confirmVisible"
-               OnOk="@HandleOk"
-               OnCancel="@HandleCancel">
-            <p>Do you realy want to @(string.IsNullOrEmpty(NFT.Utxo)?"create":"update") this Device?</p>
-        </Modal>
 
-        <Modal Title="Mint To Another Address"
-               Visible="@mintToAnotherAddressConfirmModalVisible"
-               OnOk="@MintToAnotherAddressOk"
-               OnCancel="@MintToAnotherAddressCancel">
-            <p>"You selected another address as receiver of these NFTs. Is it correct?"</p>
-        </Modal>
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmVisible">
+            <ModalHeader>
+                <ModalTitle>@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <p>Do you realy want to @(string.IsNullOrEmpty(NFT.Utxo)?"create":"update") this Device?</p>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
+
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@mintToAnotherAddressConfirmModalVisible">
+            <ModalHeader>
+                <ModalTitle>Mint To Another Address</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <p>"You selected another address as receiver of these NFTs. Is it correct?"</p>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@MintToAnotherAddressOk">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
 
     </div>
 </div>
@@ -589,26 +602,16 @@
             confirmVisible = true;
     }
 
-    private async Task MintToAnotherAddressOk(MouseEventArgs e)
+    private void MintToAnotherAddressOk()
     {
         mintToAnotherAddressConfirmModalVisible = false;
         confirmVisible = true;
     }
 
-    private void MintToAnotherAddressCancel(MouseEventArgs e)
-    {
-        mintToAnotherAddressConfirmModalVisible = false;
-    }
 
-
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         await MintNewNFT();
-    }
-
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
     }
 
     private async Task LoadData()

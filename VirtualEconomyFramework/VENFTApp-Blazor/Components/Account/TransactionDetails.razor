@@ -152,45 +152,48 @@
     </div>
 </div>
 
-<Modal Title="NFT Details"
-       Visible="@showNFTDetailsVisible"
-       OnCancel="@showNFTDetailsCancel"
-       Footer="null">
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex justify-content-center align-items-center">
-            @if (nftType == NFTTypes.CoruzantArticle || nftType == NFTTypes.CoruzantProfile)
-            {
-                <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
-                             OwnNFT="@false"
-                             Address="@Address"
-                             SubAccount="@SubAccount" />
-            }
-            else if (nftType == NFTTypes.Message)
-            {
-                <VENFTApp_Blazor.Components.NFTs.Messages.NFTMessage Utxo="@loadedNFT.Utxo" 
-                                                                     InputNFT="@loadedNFT" 
-                                                                     OwnNFT="false" 
-                                                                     Address="@Address" 
-                                                                     IsHistory="true" />
-            }
-            else if (nftType == NFTTypes.Payment || nftType == NFTTypes.Receipt)
-            {
-                <div class="row">
-                    <div class="col">
-                        <span>NFT Receipt or Payment</span>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@showNFTDetailsVisible"
+                                        OnCancel="@showNFTDetailsCancel">
+    <ModalHeader>
+        <ModalTitle>NFT Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                @if (nftType == NFTTypes.CoruzantArticle || nftType == NFTTypes.CoruzantProfile)
+                {
+                    <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
+                                                                     OwnNFT="@false"
+                                                                     Address="@Address"
+                                                                     SubAccount="@SubAccount" />
+                }
+                else if (nftType == NFTTypes.Message)
+                {
+                    <VENFTApp_Blazor.Components.NFTs.Messages.NFTMessage Utxo="@loadedNFT.Utxo"
+                                                                         InputNFT="@loadedNFT"
+                                                                         OwnNFT="false"
+                                                                         Address="@Address"
+                                                                         IsHistory="true" />
+                }
+                else if (nftType == NFTTypes.Payment || nftType == NFTTypes.Receipt)
+                {
+                    <div class="row">
+                        <div class="col">
+                            <span>NFT Receipt or Payment</span>
+                        </div>
                     </div>
-                </div>
-            }
-            else
-            {
-                <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
-                     OwnNFT="@false"
-                     Address="@Address"
-                     SubAccount="@SubAccount" />
-            }
+                }
+                else
+                {
+                    <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
+                                                         OwnNFT="@false"
+                                                         Address="@Address"
+                                                         SubAccount="@SubAccount" />
+                }
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -315,7 +318,7 @@
         StateHasChanged();
         showNFTDetailsVisible = true;
     }
-    private async Task showNFTDetailsCancel(MouseEventArgs e)
+    private void showNFTDetailsCancel()
     {
         showNFTDetailsVisible = false;
     }

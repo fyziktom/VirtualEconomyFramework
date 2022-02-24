@@ -461,46 +461,57 @@
             </div>
         </VENFTApp_Blazor.Components.Spin>
 
-        <Modal Title="@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")"
-               Visible="@confirmVisible"
-               OnOk="@HandleOk"
-               OnCancel="@HandleCancel">
-            @if (!string.IsNullOrEmpty(NFT.Utxo))
-            {
-                switch (nftType)
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmVisible">
+            <ModalHeader>
+                <ModalTitle>@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                @if (!string.IsNullOrEmpty(NFT.Utxo))
                 {
-                    case NFTTypes.Event:
-                        <p>Do you realy want to update this Event?</p>
-                        break;
+                    switch (nftType)
+                    {
+                        case NFTTypes.Event:
+                            <p>Do you realy want to update this Event?</p>
+                            break;
+                    }
                 }
-            }
-            else
-            {
-                switch (nftType)
+                else
                 {
-                    case NFTTypes.Event:
-                        <p>Do you realy want to create this Event?</p>
-                        break;
-                    case NFTTypes.Ticket:
-                        <p>Do you realy want to create this Ticket?</p>
-                        break;
+                    switch (nftType)
+                    {
+                        case NFTTypes.Event:
+                            <p>Do you realy want to create this Event?</p>
+                            break;
+                        case NFTTypes.Ticket:
+                            <p>Do you realy want to create this Ticket?</p>
+                            break;
+                    }
                 }
-            }
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
 
-        </Modal>
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@mintToAnotherAddressConfirmModalVisible">
+            <ModalHeader>
+                <ModalTitle>Mint To Another Address</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <p>"You selected another address as receiver of these NFTs. Is it correct?"</p>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@MintToAnotherAddressOk">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
 
-        <Modal Title="Mint To Another Address"
-               Visible="@mintToAnotherAddressConfirmModalVisible"
-               OnOk="@MintToAnotherAddressOk"
-               OnCancel="@MintToAnotherAddressCancel">
-            <p>"You selected another address as receiver of these NFTs. Is it correct?"</p>
-        </Modal>
-
-        <Modal Title="Event Details"
-               Visible="@eventNFTDetailsVisible"
-               OnCancel="@eventNFTDetailsClose"
-               Footer="null">
-            <VENFTApp_Blazor.Components.Spin Tip="Loading Event Data..." Spinning="@loadingEventData">
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@eventNFTDetailsVisible">
+            <ModalHeader>
+                <ModalTitle>Event Details</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
                 @if (!string.IsNullOrEmpty(loadedEventNFT.Utxo))
                 {
                     <div class="row" style="margin-top:20px;">
@@ -518,8 +529,8 @@
                 {
                     <div style="min-width:100px; min-height:50px;"></div>
                 }
-            </VENFTApp_Blazor.Components.Spin>
-        </Modal>
+            </ModalBody>
+        </VENFTApp_Blazor.Components.Modal.Modal>
     </div>
 </div>
 
@@ -726,15 +737,10 @@
             confirmVisible = true;
     }
 
-    private async Task MintToAnotherAddressOk(MouseEventArgs e)
+    private void MintToAnotherAddressOk()
     {
         mintToAnotherAddressConfirmModalVisible = false;
         confirmVisible = true;
-    }
-
-    private void MintToAnotherAddressCancel(MouseEventArgs e)
-    {
-        mintToAnotherAddressConfirmModalVisible = false;
     }
 
     private async Task ShowEvent(MouseEventArgs e)
@@ -779,19 +785,9 @@
         StateHasChanged();
     }
 
-    private async Task eventNFTDetailsClose(MouseEventArgs e)
-    {
-        eventNFTDetailsVisible = false;
-    }
-
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         await MintNewNFT();
-    }
-
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
     }
 
     private async Task LoadData()

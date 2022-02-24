@@ -187,81 +187,87 @@
 </VENFTApp_Blazor.Components.Spin>
 
 <!-- utxos list modal -->
-<Modal Title="Sender Utxos"
-       Width="650"
-       Visible="@senderUtxosVisible"
-       OnOk="@addInputClose"
-       OnCancel="@addInputClose">
-    @if (transaction.Sender != null)
-    {
-        @if (!string.IsNullOrEmpty(transaction.Sender.Address))
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@senderUtxosVisible"
+                                        Style="max-width: 650px;">
+    <ModalHeader>
+        <ModalTitle>Sender Utxos</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        @if (transaction.Sender != null)
         {
-            <div class="row" style="margin-top:25px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Utxo</th>
-                                <th>Index</th>
-                                <th>Amount</th>
-                                <th>Confirmations</th>
-                                <th>Tokens</th>
-                                <th>Used</th>
-                                <th>Add</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var u in transaction.Sender.Utxos.Values)
-                            {
+            @if (!string.IsNullOrEmpty(transaction.Sender.Address))
+            {
+                <div class="row" style="margin-top:25px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <table class="table table-striped">
+                            <thead>
                                 <tr>
-                                    <td>...@u.Utxo.Txid.Remove(0, u.Utxo.Txid.Length - 5)</td>
-                                    <td>@u.Utxo.Index</td>
-                                    <td>@u.Utxo.Value Sat</td>
-                                    <td style="margin-right:10px;">@u.TxInfo.Confirmations</td>
-                                    @if (u.Utxo.Tokens.Count > 0)
-                                    {
-                                        var tok = u.Utxo.Tokens.FirstOrDefault();
-                                        <td>
-                                            <div class="row">
-                                                <div class="col">
-                                                    @tok?.Amount
-                                                </div>
-                                                <div class="col">
-                                                    <img style="width: 25px;margin-right: 10px;" src="@transaction.GetTokenImageUrl(tok?.TokenId)" />
-                                                </div>
-                                            </div>
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        <td>0</td>
-                                    }
-                                    @if (u.Used)
-                                    {
-                                        <td>Yes</td>
-                                    }
-                                    else
-                                    {
-                                        <td>No</td>
-                                    }
-                                    <td><button class="btn btn-primary" @onclick="async () => addNewUtxoFromList(u.Utxo.Txid, (int)u.Utxo.Index, u.TotalTokens)">Add As Input</button></td>
+                                    <th>Utxo</th>
+                                    <th>Index</th>
+                                    <th>Amount</th>
+                                    <th>Confirmations</th>
+                                    <th>Tokens</th>
+                                    <th>Used</th>
+                                    <th>Add</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var u in transaction.Sender.Utxos.Values)
+                                {
+                                    <tr>
+                                        <td>...@u.Utxo.Txid.Remove(0, u.Utxo.Txid.Length - 5)</td>
+                                        <td>@u.Utxo.Index</td>
+                                        <td>@u.Utxo.Value Sat</td>
+                                        <td style="margin-right:10px;">@u.TxInfo.Confirmations</td>
+                                        @if (u.Utxo.Tokens.Count > 0)
+                                        {
+                                            var tok = u.Utxo.Tokens.FirstOrDefault();
+                                            <td>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        @tok?.Amount
+                                                    </div>
+                                                    <div class="col">
+                                                        <img style="width: 25px;margin-right: 10px;" src="@transaction.GetTokenImageUrl(tok?.TokenId)" />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>0</td>
+                                        }
+                                        @if (u.Used)
+                                        {
+                                            <td>Yes</td>
+                                        }
+                                        else
+                                        {
+                                            <td>No</td>
+                                        }
+                                        <td><button class="btn btn-primary" @onclick="async () => addNewUtxoFromList(u.Utxo.Txid, (int)u.Utxo.Index, u.TotalTokens)">Add As Input</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <div class="row" style="margin-top:25px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <h3>No sender loaded</h3>
+            }
+            else
+            {
+                <div class="row" style="margin-top:25px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h3>No sender loaded</h3>
+                    </div>
                 </div>
-            </div>
+            }
         }
-    }
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code { 
 
@@ -315,10 +321,6 @@
     private async Task AddUtxoFromList(MouseEventArgs e)
     {
         senderUtxosVisible = true;
-    }
-    private async Task addInputClose(MouseEventArgs e)
-    {
-        senderUtxosVisible = false;
     }
     private async Task RemoveUtxo(int index)
     {

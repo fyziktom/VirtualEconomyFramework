@@ -98,18 +98,27 @@
             </div>
         </VENFTApp_Blazor.Components.Spin>
 
-        <Modal Title="Mint New NFT"
-               Visible="@confirmVisible"
-               OnOk="@HandleOk"
-               OnCancel="@HandleCancel">
-            <p>"Do you really want to send this message?"</p>
-        </Modal>
-        <Modal Title="Required"
-               Visible="@emptyInfoVisible"
-               OnOk="@HandleEmptyInfoCancel"
-               OnCancel="@HandleEmptyInfoCancel">
-            <p>"You must fill Name, Message and receiver."</p>
-        </Modal>
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmVisible">
+            <ModalHeader>
+                <ModalTitle>Mint New NFT</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <p>"Do you really want to send this message?"</p>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
+
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@emptyInfoVisible">
+            <ModalHeader>
+                <ModalTitle>Required</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <p>"You must fill Name, Message and receiver."</p>
+            </ModalBody>
+        </VENFTApp_Blazor.Components.Modal.Modal>
     </div>
 </div>
 
@@ -211,19 +220,9 @@
         confirmVisible = true;
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         await SendMessageNFT();
-    }
-
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
-    }
-
-    private void HandleEmptyInfoCancel(MouseEventArgs e)
-    {
-        emptyInfoVisible = false;
     }
 
     private async Task SendMessageNFT()
