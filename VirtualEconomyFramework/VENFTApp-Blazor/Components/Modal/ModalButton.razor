@@ -1,0 +1,59 @@
+﻿@inherits StyledComponent
+
+@switch (Kind)
+{
+    case ModalButtonKind.Primary:
+        <button type="button" class="btn btn-primary @Class" style="@Style" disabled="@(Disabled || Modal.Busy)" @onclick="@click">
+            @if (Loading)
+            {
+                <div class="spinner-border spinner-border-sm flex-shrink-0 mr-1" />
+            }
+            @ChildContent
+        </button>
+        break;
+    case ModalButtonKind.Cancel:
+        <button type="button" class="btn btn-secondary @Class" style="@Style" disabled="@(Disabled || Modal.Busy)" @onclick="@click">
+            @if (Loading)
+            {
+                <div class="spinner-border spinner-border-sm flex-shrink-0 mr-1" />
+            }
+            @ChildContent
+        </button>
+        break;
+    case ModalButtonKind.CancelCross:
+        <button type="button" class="close @Class" style="@Style" disabled="@(Disabled || Modal.Busy)" @onclick="@click" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        break;
+}
+
+@code {
+    [CascadingParameter(Name = "Modal")]
+    protected Modal Modal { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+    [Parameter]
+    public bool Loading { get; set; }
+    [Parameter]
+    public ModalButtonKind Kind { get; set; } = ModalButtonKind.Primary;
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private async Task click()
+    {
+        if (!Modal.Busy)
+        {
+            Modal.Busy = true;
+            if (OnClick.HasDelegate)
+            {
+                await OnClick.InvokeAsync(this);
+            }
+            else if (Kind == ModalButtonKind.Cancel || Kind == ModalButtonKind.CancelCross)
+            {
+                await Modal.Cancel();
+            }
+            Modal.Busy = false;
+        }
+    }
+}

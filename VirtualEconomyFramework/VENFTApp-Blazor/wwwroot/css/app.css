@@ -8,6 +8,10 @@ a, .btn-link {
     color: #0366d6;
 }
 
+button.disabled, button:disabled, .btn.disabled, .btn:disabled {
+    cursor: not-allowed;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
@@ -154,6 +158,41 @@ app {
     font-style: italic;
     text-shadow: 0 1px 2px #fff;
 }
+
+.blazor-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s;
+}
+
+    .blazor-modal.open {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+        pointer-events: auto;
+    }
+
+    .blazor-modal .modal-dialog {
+        transition: 0.3s ease-out;
+    }
+
+    .blazor-modal.open .modal-dialog {
+        transform: scale3d(1, 1, 1);
+    }
+
+    .blazor-modal:not(.open) .modal-dialog {
+        transform: scale3d(0, 0, 0);
+    }
+
+    .blazor-modal:not(.open), blazor-modal:not(.open) * {
+        pointer-events: none;
+    }
 
 #blazor-error-ui {
     background: lightyellow;
