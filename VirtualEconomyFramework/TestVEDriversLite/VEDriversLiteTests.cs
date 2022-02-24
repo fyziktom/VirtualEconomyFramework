@@ -1908,7 +1908,7 @@ namespace TestVEDriversLite
             Console.WriteLine("Request Tx Info");
             var txid = param;
             var txinfo = await DogeTransactionHelpers.TransactionInfoAsync(txid);
-            var msg = await DogeTransactionHelpers.ParseDogeMessage(txinfo);
+            var msg = DogeTransactionHelpers.ParseDogeMessage(txinfo);
             Console.WriteLine("TxInfo:");
             Console.WriteLine(JsonConvert.SerializeObject(txinfo, Formatting.Indented));
             Console.WriteLine("-------------------------------------------------------");

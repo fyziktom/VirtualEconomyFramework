@@ -165,7 +165,7 @@ namespace VENFTApp_Server
                             }
                             else
                             {
-                                var dadd = await DogeTransactionHelpers.ValidateDogeAddress(k.Address);
+                                var dadd = DogeTransactionHelpers.ValidateDogeAddress(k.Address);
                                 if (dadd.Item1)
                                 {
                                     Console.WriteLine("");
