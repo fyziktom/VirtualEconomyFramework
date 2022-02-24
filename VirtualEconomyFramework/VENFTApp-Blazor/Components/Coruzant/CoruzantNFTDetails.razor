@@ -10,7 +10,7 @@
 
 <div class="row">
     <div class="col">
-        <Spin Tip="Loading..." Spinning="@loading">
+        <VENFTApp_Blazor.Components.Spin Tip="Loading..." Spinning="@loading">
             @if (!string.IsNullOrEmpty(NFT.NFTOriginTxId) && !string.IsNullOrEmpty(NFT.Utxo))
             {
                 <div style="position: absolute;right: 5px;top: -20px;">
@@ -36,13 +36,13 @@
                 }
                 else
                 {
-                    <Spin Tip="Loading..." Spinning="true">
+                    <VENFTApp_Blazor.Components.Spin Tip="Loading..." Spinning="true">
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
                                 <img src="@NFT.ImageLink" style="min-height:50px; max-height:100px; width:auto; min-width:50px; max-width:200px;" />
                             </div>
                         </div>
-                    </Spin>
+                    </VENFTApp_Blazor.Components.Spin>
                 }
                 @if (!string.IsNullOrEmpty(pnft.Nickname))
                 {
@@ -195,9 +195,9 @@
                                 }
                                 else
                                 {
-                                    <Spin Tip="Loading..." Spinning="true">
+                                    <VENFTApp_Blazor.Components.Spin Tip="Loading..." Spinning="true">
                                         <div style="width:100px; height:50px;"></div>
-                                    </Spin>
+                                    </VENFTApp_Blazor.Components.Spin>
                                 }
                             }
                         }
@@ -219,9 +219,9 @@
                             }
                             else
                             {
-                                <Spin Tip="Loading..." Spinning="true">
+                                <VENFTApp_Blazor.Components.Spin Tip="Loading..." Spinning="true">
                                     <div style="width:100px; height:50px;"></div>
-                                </Spin>
+                                </VENFTApp_Blazor.Components.Spin>
                             }
                         }
                     </a>
@@ -293,7 +293,7 @@
             {
                 <VENFTApp_Blazor.Components.NFTs.NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
             }
-        </Spin>
+        </VENFTApp_Blazor.Components.Spin>
     </div>
 
     <VENFTApp_Blazor.Components.NFTs.Actions.SendNFT NFT="@NFT"

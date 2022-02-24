@@ -9,7 +9,7 @@
        OnCancel="@sendNFTDialogCancel">
     <div class="row">
         <div class="col">
-            <Spin Tip="Sending..." Spinning="@sendingTransaction">
+            <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         Fill Receiver Address:
@@ -20,7 +20,7 @@
                         <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
                     </div>
                 </div>
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 </Modal>

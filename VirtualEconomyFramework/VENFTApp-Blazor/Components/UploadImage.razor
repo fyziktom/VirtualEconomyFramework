@@ -12,7 +12,7 @@
         <!--<div class="row" id="ipfsImageUpload" style="margin-top:20px;">-->
         <div class="row" style="margin-top:20px;">
             <div class="col">
-                <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
+                <VENFTApp_Blazor.Components.Spin Spinning="@uploadingImage" Tip="Uploading to IPFS...">
 
                     <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
@@ -60,7 +60,7 @@
                         </div>
                     </div>
 
-                </Spin>
+                </VENFTApp_Blazor.Components.Spin>
             </div>
         </div>
         <div class="row" style="margin-top:20px;">
@@ -95,7 +95,7 @@
                         <p>No image loaded</p>
                         break;
                     case LoadingImageStages.Loading:
-                        <Spin Tip="Reloading..." />
+                        <VENFTApp_Blazor.Components.Spin Tip="Reloading..." />
                         break;
                     case LoadingImageStages.Loaded:
                         @if (NFTType == NFTTypes.Image || NFTType == NFTTypes.Post || NFTType == NFTTypes.Profile || NFTType == NFTTypes.CoruzantArticle || NFTType == NFTTypes.CoruzantProfile || NFTType == NFTTypes.CoruzantPodcast)

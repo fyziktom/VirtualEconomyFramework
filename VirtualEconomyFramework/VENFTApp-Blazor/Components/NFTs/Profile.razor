@@ -7,7 +7,7 @@
 @inject AppData AppData
 @inject HttpClient _client
 
-<Spin spinning="@loadingProfile" tip="Loading Profile...">
+<VENFTApp_Blazor.Components.Spin Spinning="@loadingProfile" Tip="Loading Profile...">
     <div class="row d-flex justify-content-center" style="min-width:250px;">
         <div class="col">
             <div class="row">
@@ -67,7 +67,7 @@
             }
         </div>
     </div>
-</Spin>
+</VENFTApp_Blazor.Components.Spin>
 
 <Modal Title="Create new profile NFT"
        Visible="@createNewProfileVisible"
