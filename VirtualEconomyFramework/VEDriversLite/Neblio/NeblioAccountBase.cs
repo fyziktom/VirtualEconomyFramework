@@ -2099,11 +2099,12 @@ namespace VEDriversLite.Neblio
                                             if (res.Item2 != null)
                                             {
                                                 var rtxid = string.Empty;
+                                                var pntosend = await NFTFactory.CloneNFT(pn);
                                                 if (!pn.SellJustCopy)
-                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
-                                                else  
-                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
-
+                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
+                                                else
+                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
+                                                
                                                 if (!string.IsNullOrEmpty(rtxid))
                                                 {
                                                     Console.WriteLine($"NFT sent to the buyer {((PaymentNFT)p).Sender} with txid: {rtxid}");

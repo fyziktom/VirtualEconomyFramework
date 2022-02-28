@@ -1888,7 +1888,7 @@ namespace VEDriversLite
                         }
                     }
 
-                    double voutstate = 0;
+                    double voutstate = -1;
 
                     try
                     {
@@ -2031,7 +2031,7 @@ namespace VEDriversLite
                         }
                     }
 
-                    double voutstate;
+                    double voutstate = -1;
 
                     try
                     {
@@ -2043,7 +2043,7 @@ namespace VEDriversLite
                     }
 
                     if (voutstate != 0)
-                    {
+                    {                    
                         dto.Sendutxo.Add(itt + ":" + ((int)voutstate).ToString()); // copy received utxos and add item number of vout after validation
                     }
                 }
