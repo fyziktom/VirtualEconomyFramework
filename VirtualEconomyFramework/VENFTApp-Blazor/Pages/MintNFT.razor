@@ -11,6 +11,8 @@
 @inject AppData AppData
 @inject HttpClient _client
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+
 @page "/mint"
 
 <div class="container-fluid overflow-auto">
@@ -27,83 +29,114 @@
 
     <div class="row">
         <div class="col">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <h3>Mint New NFT</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="mint" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <p>With Address:</p>
-                </div>
-            </div>
 
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <Dropdown>
-                        <Overlay>
-                            <Menu>
-                                <MenuItem>
-                                    <a target="_blank" rel="noopener noreferrer" @onclick="selectMainAccount">
-                                        Main Account
-                                    </a>
-                                </MenuItem>
-                                @foreach (var acc in AppData.Account.SubAccounts.Values)
-                                {
+            <table>
+                <tr>
+                    <td>With Address:</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(selectedAccountAddress))
+                        {
+                            <span>@selectedAccountAddress</span>
+                        }
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <Dropdown>
+                            <Overlay>
+                                <Menu>
                                     <MenuItem>
-                                        <a rel="noopener noreferrer" @onclick="() => selectSubAddress(acc.Address)">
-                                            @if (!string.IsNullOrEmpty(acc.Name))
-                                            {
-                                                @acc.Name
-                                            }
-                                            else
-                                            {
-                                                @acc.Address
-                                            }
+                                        <a target="_blank" rel="noopener noreferrer" @onclick="selectMainAccount">
+                                            Main Account
                                         </a>
                                     </MenuItem>
-                                }
-                            </Menu>
-                        </Overlay>
-                        <ChildContent>
-                            <a class="ant-dropdown-link" @onclick:preventDefault>
-                                Select Account <Icon Type="down" />
-                            </a>
-                        </ChildContent>
-                    </Dropdown>
-                </div>
-            </div>
-            @if (!string.IsNullOrEmpty(selectedAccountAddress))
-            {
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>@selectedAccountAddress</span>
-                    </div>
-                </div>
-            }
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <VENFTApp_Blazor.Components.Account.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
-                </div>
-            </div>
-            <!--
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
-            <button class="btn btn-secondary" @onclick=showOrderTokens>Buy Tokens</button>
+                                    @foreach (var acc in AppData.Account.SubAccounts.Values)
+                                    {
+                                        <MenuItem>
+                                            <a rel="noopener noreferrer" @onclick="() => selectSubAddress(acc.Address)">
+                                                @if (!string.IsNullOrEmpty(acc.Name))
+                                                {
+                                                    @acc.Name
+                                                }
+                                                else
+                                                {
+                                                    @acc.Address
+                                                }
+                                            </a>
+                                        </MenuItem>
+                                    }
+                                </Menu>
+                            </Overlay>
+                            <ChildContent>
+                                <a class="ant-dropdown-link" @onclick:preventDefault>
+                                    Select Account <Icon Type="down" />
+                                </a>
+                            </ChildContent>
+                        </Dropdown>
+                    </td>
+
+                    <td>
+                        <div>
+                            <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="mint" />
+                        </div>
+
+                        <div>
+                            <div @ref=qrCodeRef></div>
+                        </div>
+
+                        <div>
+                            <VENFTApp_Blazor.Components.Account.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
-    </div>-->
+
+        <div class="col">
+            <p>Mint with source token:</p>
+            <ul>
+                <RadioGroup @bind-Value="@NFTType">
+                    <li><Radio Value="NFTTypes.Image">Image - Original</Radio></li>
+                    <li><Radio Value="NFTTypes.Post">Post - Reusable</Radio></li>
+                    <li><Radio Value="NFTTypes.Music">Music/Video - Original</Radio></li>
+                    <li><Radio Value="NFTTypes.Event">Event</Radio></li>
+                    <li><Radio Value="NFTTypes.Ticket">Ticket</Radio></li>
+                    @if (SelectedAccountTotalSourceCORZT > 1 && tokenId == CoruzantNFTHelpers.CoruzantTokenId)
+                    {
+
+                        <li><Radio Value="NFTTypes.CoruzantProfile">CoruzantProfile</Radio></li>
+                        <li><Radio Value="NFTTypes.CoruzantArticle">CoruzantArticle</Radio></li>
+                        <!--<Radio Value="NFTTypes.CoruzantPodcast">CoruzantPodcast - Reusable</Radio>-->
+                    }
+                </RadioGroup>
+            </ul>
+        </div>
+
+        <div class="col">
+
+            @if (NFTType != NFTTypes.Ticket && NFTType != NFTTypes.Event && NFTType != NFTTypes.CoruzantArticle && NFTType != NFTTypes.CoruzantProfile)
+            {
+                <VENFTApp_Blazor.Components.NFTs.MintNFTForm TokenId="@tokenId" Address="@selectedAccountAddress" SubAccount="subAccount" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+            }
+            else if (NFTType == NFTTypes.CoruzantArticle || NFTType == NFTTypes.CoruzantProfile)
+            {
+                <VENFTApp_Blazor.Components.Coruzant.MintCoruzantNFTForm SubAccount="subAccount" Address="@selectedAccountAddress" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+            }
+            else
+            {
+                <VENFTApp_Blazor.Components.NFTs.Tickets.MintEventAndTickets SubAccount="subAccount" Address="@selectedAccountAddress" TokenId="@tokenId" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
+            }
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col">
+
             <div class="row">
                 <div class="col" style="margin-top:10px;">
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <span>Mint it with Source tokens:</span>
-                        </div>
-                    </div>
+
                     <div class="row" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center">
                             @if (SelectedAccountTotalSourceVENFT > 1 || SelectedAccountTotalSourceCORZT > 1)
@@ -142,115 +175,84 @@
                             }
                         </div>
                     </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <RadioGroup @bind-Value="@NFTType">
-                                <Radio Value="NFTTypes.Image">Image - Original</Radio>
-                                <Radio Value="NFTTypes.Post">Post - Reusable</Radio>
-                                <Radio Value="NFTTypes.Music">Music/Video - Original</Radio>
-                                <Radio Value="NFTTypes.Event">Event</Radio>
-                                <Radio Value="NFTTypes.Ticket">Ticket</Radio>
-                                @if (SelectedAccountTotalSourceCORZT > 1 && tokenId == CoruzantNFTHelpers.CoruzantTokenId)
-                                {
-                                    <Radio Value="NFTTypes.CoruzantProfile">CoruzantProfile</Radio>
-                                    <Radio Value="NFTTypes.CoruzantArticle">CoruzantArticle</Radio>
-                                    <!--<Radio Value="NFTTypes.CoruzantPodcast">CoruzantPodcast - Reusable</Radio>-->
-                                }
-                            </RadioGroup>
-                        </div>
-                    </div>
 
-                    <div class="row" style="margin-top:10px; margin-bottom:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            @if (NFTType != NFTTypes.Ticket && NFTType != NFTTypes.Event && NFTType != NFTTypes.CoruzantArticle && NFTType != NFTTypes.CoruzantProfile)
-                            {
-                                <VENFTApp_Blazor.Components.NFTs.MintNFTForm TokenId="@tokenId" Address="@selectedAccountAddress" SubAccount="subAccount" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
-                            }
-                            else if (NFTType == NFTTypes.CoruzantArticle || NFTType == NFTTypes.CoruzantProfile)
-                            {
-                                <VENFTApp_Blazor.Components.Coruzant.MintCoruzantNFTForm SubAccount="subAccount" Address="@selectedAccountAddress" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
-                            }
-                            else
-                            {
-                                <VENFTApp_Blazor.Components.NFTs.Tickets.MintEventAndTickets SubAccount="subAccount" Address="@selectedAccountAddress" TokenId="@tokenId" NFTType="@NFTType" RedirectToNFTsAfterMint="false" />
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col" style="margin-top:10px; margin-right:20px; max-width:250px;">
-                    <div class="row" style="margin-top:10px; margin-bottom:10px;max-width:250px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <span>The 10 Newest NFTs</span>
-                        </div>
-                    </div>
-                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px; margin-bottom:10px; max-width:250px;">
-                        <div class="col d-flex justify-content-center align-items-center" style="max-width:250px;">
-                            <div class="card-group d-flex">
-                                @for (var i = 0; i < 10; i++)
-                                {
-                                    if (i < NFTs.Count)
-                                    {
-                                        var nft = NFTs[i];
-                                        if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast)
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col" style="margin-top:10px; margin-right:20px; max-width:250px;">
+                            <div class="row" style="margin-top:10px; margin-bottom:10px;max-width:250px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <span>The 10 Newest NFTs</span>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px; margin-bottom:10px; max-width:250px;">
+                                <div class="col d-flex justify-content-center align-items-center" style="max-width:250px;">
+                                    <div class="card-group d-flex">
+                                        @for (var i = 0; i < 10; i++)
                                         {
-                                            <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
-                                        }
-                                        else if (nft.Type != NFTTypes.Message && nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Receipt && nft.Type != NFTTypes.Message && nft.Type != NFTTypes.IoTMessage)
-                                        {
-                                            if (nft.Type != NFTTypes.Device && nft.Type != NFTTypes.IoTDevice)
+                                            if (i < NFTs.Count)
                                             {
-                                                <VENFTApp_Blazor.Components.NFTs.NFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
-                                            }
-                                            else 
-                                            { 
-                                                <!--TODO-->
+                                                var nft = NFTs[i];
+                                                if (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast)
+                                                {
+                                                    <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
+                                                }
+                                                else if (nft.Type != NFTTypes.Message && nft.Type != NFTTypes.Profile && nft.Type != NFTTypes.Payment && nft.TypeText != "NFT Settings" && nft.Type != NFTTypes.Receipt && nft.Type != NFTTypes.Message && nft.Type != NFTTypes.IoTMessage)
+                                                {
+                                                    if (nft.Type != NFTTypes.Device && nft.Type != NFTTypes.IoTDevice)
+                                                    {
+                                                        <VENFTApp_Blazor.Components.NFTs.NFT Address="@selectedAccountAddress" SubAccount="@subAccount" InputNFT="@nft" OwnNFT="true" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <!--TODO-->
+                                                    }
+                                                }
                                             }
                                         }
-                                    }
-                                }
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <Modal Title="Buy Source tokens"
-           Visible="@orderSourceTokensVisible"
-           OnOk="@orderSourceTokensConfirm"
-           OnCancel="@orderSourceTokensCancel">
-        <div class="row" style="margin-top:10px;">
-            <div class="col d-flex justify-content-center align-items-center">
-                <Spin Tip="Processing the Order..." Spinning="@orderingTokens">
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <p>Do you want to buy 100 VENFT tokens? It costs 1 NEBL.</p>
+        <Modal Title="Buy Source tokens"
+               Visible="@orderSourceTokensVisible"
+               OnOk="@orderSourceTokensConfirm"
+               OnCancel="@orderSourceTokensCancel">
+            <div class="row" style="margin-top:10px;">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <Spin Tip="Processing the Order..." Spinning="@orderingTokens">
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <p>Do you want to buy 100 VENFT tokens? It costs 1 NEBL.</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <p>Whole order will be processed automatically. It can take few minutes due to speed of confirmations of the transactions.</p>
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <p>Whole order will be processed automatically. It can take few minutes due to speed of confirmations of the transactions.</p>
+                            </div>
                         </div>
-                    </div>
-                    @if (orderingTokensDone)
-                    {
-                        <Alert Type="@AlertType.Success"
+                        @if (orderingTokensDone)
+                        {
+                            <Alert Type="@AlertType.Success"
                                Message="Done."
                                Description="Tokens ordered correctly. Now it will take some minute to process order and delivery the tokens."
                                ShowIcon="true" />
-                    }
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <p>Order TxId: @orderTxId</p>
+                        }
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <p>Order TxId: @orderTxId</p>
+                            </div>
                         </div>
-                    </div>
-                </Spin>
+                    </Spin>
+                </div>
             </div>
-        </div>
-    </Modal>
+        </Modal>
 
-    <VENFTApp_Blazor.Components.InfoEventModal />
+        <VENFTApp_Blazor.Components.InfoEventModal />
+    </div>
 </div>
 
 @code {
@@ -416,7 +418,8 @@
 
     private async Task orderSourceTokensConfirm(MouseEventArgs e)
     {
-        try {
+        try
+        {
             orderingTokens = true;
             StateHasChanged();
             var res = await AppData.Account.OrderSourceTokens(1);
@@ -440,5 +443,24 @@
             Console.WriteLine(ex.Message);
             StateHasChanged();
         }
+    }
+
+
+
+    private bool showQRDialogVisible = false;
+
+    private string padding = "0px";
+
+    private ElementReference qrCodeRef;
+
+    private void showQRDialogOpen()
+    {
+        showQRDialogVisible = true;
+        padding = "3px";
+        StateHasChanged();
+        Task.Delay(50);
+        JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { selectedAccountAddress, qrCodeRef });
+        StateHasChanged();
+        padding = "0px";
     }
 }
