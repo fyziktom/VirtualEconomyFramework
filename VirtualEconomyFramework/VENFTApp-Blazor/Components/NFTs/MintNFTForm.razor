@@ -18,18 +18,18 @@
         }
         else
         {
-            <div class="row" style="margin-top:20px;">
+            <div class="row text-nowrap" style="margin-top:20px;">
                 <div class="col">
-                    <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
+                    <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span class="ml-1">With Price</span>
                 </div>
                 <div class="col">
-                    <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
+                    <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span class="ml-1">With Doge Price</span>
                 </div>
                 <div class="col">
-                    <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Copies</span><br />
+                    <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span class="ml-1">With Copies</span>
                 </div>
                 <div class="col">
-                    <input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Mint To Another Address</span><br />
+                    <input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span class="ml-1">Mint To Another Address</span>
                 </div>
             </div>
 

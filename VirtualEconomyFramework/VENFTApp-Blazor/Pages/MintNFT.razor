@@ -15,7 +15,7 @@
 
 @page "/mint"
 
-<div class="container-fluid overflow-auto">
+<div class="container-fluid">
 
     <!--
     @if (!AppData.Account.EnoughBalanceToBuySourceTokens)
@@ -81,7 +81,7 @@
                             <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="mint" />
                         </div>
 
-                        <div>
+                        <div class="justify-content-center d-flex">
                             <div @ref=qrCodeRef></div>
                         </div>
 
@@ -350,6 +350,9 @@
                 if (AppData.Account.WithoutNFTs)
                     AppData.Account.WithoutNFTs = false;
                 mainAccountSelected = true;
+
+                loadQR();
+
             }
         }
         catch (Exception ex)
@@ -394,6 +397,7 @@
         mainAccountSelected = false;
         subAccount = true;
         StateHasChanged();
+        loadQR();
     }
     private async Task selectMainAccount(MouseEventArgs e)
     {
@@ -404,6 +408,8 @@
         mainAccountSelected = true;
         subAccount = false;
         StateHasChanged();
+
+        loadQR();
     }
 
     private async Task orderSourceTokensCancel(MouseEventArgs e)
@@ -447,20 +453,12 @@
 
 
 
-    private bool showQRDialogVisible = false;
-
-    private string padding = "0px";
-
     private ElementReference qrCodeRef;
 
-    private void showQRDialogOpen()
+    private async Task loadQR()
     {
-        showQRDialogVisible = true;
-        padding = "3px";
+        await Task.Delay(50);
+        await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { selectedAccountAddress, qrCodeRef });
         StateHasChanged();
-        Task.Delay(50);
-        JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { selectedAccountAddress, qrCodeRef });
-        StateHasChanged();
-        padding = "0px";
     }
 }
