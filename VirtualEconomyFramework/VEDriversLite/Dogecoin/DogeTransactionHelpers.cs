@@ -251,31 +251,9 @@ namespace VEDriversLite
             }
 
             return (null, 0);
-        }
+        }        
 
-
-        /// <summary>
-        /// Function will send standard Neblio transaction - sync version
-        /// </summary>
-        /// <param name="data">Send data, please see SendTxData class for the details</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="utxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static string SendDogeTransaction(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
-        {
-            var res = SendDogeTransactionAsync(data, ekey, utxos, fee).GetAwaiter().GetResult();
-            return res;
-        }
-        /// <summary>
-        /// Function will send standard Neblio transaction - Async version
-        /// </summary>
-        /// <param name="data">Send data, please see SendTxData class for the details</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="utxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
+        private static async Task<string> SendTransactions(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, bool withMessage = false)
         {
             if (data == null)
             {
@@ -297,7 +275,6 @@ namespace VEDriversLite
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
             }
-
 
             // load key and address
             BitcoinSecret key;
@@ -325,7 +302,7 @@ namespace VEDriversLite
             var allDogelCoins = tx.Item2;
             try
             {
-                fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
+                var fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
                 if (allDogelCoins < (data.Amount))
                 {
@@ -337,6 +314,17 @@ namespace VEDriversLite
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
+
+                if (withMessage)
+                {
+                    var bytes = Encoding.UTF8.GetBytes(data.CustomMessage);
+                    transaction.Outputs.Add(new TxOut()
+                    {
+                        Value = 0,
+                        ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
+                    });
+                }                               
+
                 if (diffinSat > 0)
                 {
                     transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
@@ -346,7 +334,6 @@ namespace VEDriversLite
             {
                 throw new Exception("Exception during creating outputs. " + ex.Message);
             }
-
             try
             {
                 return await SignAndBroadcast(transaction, key, addressForTx, utxos);
@@ -358,6 +345,19 @@ namespace VEDriversLite
         }
 
         /// <summary>
+        /// Function will send standard Neblio transaction - Async version
+        /// </summary>
+        /// <param name="data">Send data, please see SendTxData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="utxos">Optional input neblio utxo</param>
+        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<string> SendDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
+        {
+            return await SendTransactions(data, ekey, utxos);            
+        }
+
+        /// <summary>
         /// Function will send standard Neblio transaction with included message.
         /// </summary>
         /// <param name="data">Send data, please see SendTxData class for the details - this include field for custom message</param>
@@ -365,89 +365,9 @@ namespace VEDriversLite
         /// <param name="utxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
+        public static async Task<string> SendDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
         {
-            if (data == null)
-            {
-                throw new Exception("Data cannot be null!");
-            }
-
-            if (ekey == null)
-            {
-                throw new Exception("Account cannot be null!");
-            }
-
-            // create receiver address
-            BitcoinAddress recaddr;
-            try
-            {
-                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
-            }
-            catch (Exception)
-            {
-                throw new Exception("Cannot send transaction. cannot create receiver address!");
-            }
-
-
-            // load key and address
-            BitcoinSecret key;
-
-            BitcoinAddress addressForTx;
-            try
-            {
-                var k = GetAddressAndKey(ekey, data.Password);
-                key = k.Item2;
-                addressForTx = k.Item1;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            // create template for new tx from last one
-            var tx = GetTransactionWithDogecoinInputs(utxos, addressForTx);
-            if (tx.Item1 == null)
-            {
-                throw new Exception("Cannot create the transaction object.");
-            }
-
-            var transaction = tx.Item1;
-            var allDogelCoins = tx.Item2;
-
-            try
-            {
-                fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
-
-                var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
-                var diffinSat = (Convert.ToUInt64(allDogelCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
-
-                // create outputs
-                transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
-
-                var bytes = Encoding.UTF8.GetBytes(data.CustomMessage);
-                transaction.Outputs.Add(new TxOut()
-                {
-                    Value = 0,
-                    ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
-                });
-
-                if (diffinSat > 0)
-                {
-                    transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Exception during creating outputs. " + ex.Message);
-            }
-            try
-            {
-                return await SignAndBroadcast(transaction, key, addressForTx, utxos);
-            }
-            catch (Exception)
-            {
-                throw new Exception("Cannot Broadcast the dogecoin transaction. Trouble with Dogecoin API. ");
-            }
+            return await SendTransactions(data, ekey, utxos, withMessage: true);
         }
 
         /// <summary>
@@ -460,7 +380,7 @@ namespace VEDriversLite
         /// <param name="password">Password for encrypted key if it is encrypted and locked</param>
         /// <param name="message">Custom message</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string, double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 200000000, string password = "", string message = "")
+        public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string, double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, string password = "", string message = "")
         {
             if (receiverAmount == null)
             {
@@ -515,7 +435,7 @@ namespace VEDriversLite
 
             try
             {
-                fee = CalcFee(transaction.Inputs.Count, receiverAmount.Count, message, false);
+                var fee = CalcFee(transaction.Inputs.Count, receiverAmount.Count, message, false);
 
                 ulong totalamnt = 0;
                 foreach (var r in receiverAmount)
@@ -749,17 +669,7 @@ namespace VEDriversLite
 
             return _client;
         }
-
-        /// <summary>
-        /// Broadcast of signed transaction.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static async Task<string> BroadcastTxAsync(BroadcastTxRequest data)
-        {
-            var info = await GetClient().BroadcastTxAsync(data);
-            return info.Data.TxId;
-        }
+    
 
         /// <summary>
         /// Broadcast of signed transaction. with chain.so
@@ -783,16 +693,6 @@ namespace VEDriversLite
             return info.Data.TxId;
         }
 
-        /// <summary>
-        /// Return address balance.
-        /// </summary>
-        /// <param name="addr"></param>
-        /// <returns></returns>
-        public static async Task<GetAddressBalanceResponse> AddressBalanceAsync(string addr)
-        {
-            var address = await GetClient().GetAddressBalanceAsync(addr);
-            return address;
-        }
 
         /// <summary>
         /// Return address info object. this object contains list of Utxos.

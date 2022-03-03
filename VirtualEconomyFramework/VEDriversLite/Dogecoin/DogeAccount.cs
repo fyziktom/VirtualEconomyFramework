@@ -531,7 +531,7 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "", UInt64 fee = 100000000, string utxo = "", int N = 0)
+        public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "", string utxo = "", int N = 0)
         {
             if (IsLocked())
             {
@@ -568,9 +568,9 @@ namespace VEDriversLite
                 // send tx
                 var rtxid = string.Empty;
                 if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
                 else 
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
 
                 if (rtxid != null)
                 {
@@ -627,9 +627,9 @@ namespace VEDriversLite
                 // send tx
                 var rtxid = string.Empty;
                 if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
                 else
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
 
                 if (rtxid != null)
                 {
@@ -655,7 +655,7 @@ namespace VEDriversLite
         /// <param name="message"></param>
         /// <param name="fee"></param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "", UInt64 fee = 100000000)
+        public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "")
         {
             if (IsLocked())
             {
@@ -679,7 +679,7 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, fee, message: message);
+                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, message: message);
 
                 if (rtxid != null)
                 {
