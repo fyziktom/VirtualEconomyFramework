@@ -3,10 +3,8 @@
 @inject IJSRuntime JsRuntime
 <div class="row profiles">
     
-    @foreach (var profile in AppData.NFTs.Skip(3).Take(8))
+    @foreach (var profile in AppData.ProfilesNFTs.Take(5))
     {
-        if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
-        {
             var prof = profile as CoruzantProfileNFT;
             <div class="col-xs-6 col-sm-4 col-md-3  profiles-container">
                 <div class="profile">
@@ -21,12 +19,11 @@
                     </div>
                 </div>
           </div>
-
-    }
- 
       }
 
 </div>
+
+
 
 
   @if (Prof != null)

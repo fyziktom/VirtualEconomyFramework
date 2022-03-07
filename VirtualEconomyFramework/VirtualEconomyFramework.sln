@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENodeExecutor", "VENodeExecutor\VENodeExecutor.csproj", "{23F5CDDA-7EBD-4F47-A38D-1ABFDFA28C67}"
 EndProject
@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VENFTApp-Server", "VENFTApp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEFrameworkUnitTest", "VEFrameworkUnitTest\VEFrameworkUnitTest.csproj", "{848A1136-2578-4085-8E71-591AEFEACDE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEOnePage", "VEOnePage\VEOnePage.csproj", "{A0E55AF8-8A2C-4D9D-8A75-2D7AF1143F7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEOnePage", "VEOnePage\VEOnePage.csproj", "{A0E55AF8-8A2C-4D9D-8A75-2D7AF1143F7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
