@@ -15,6 +15,7 @@ namespace VEDriversLite
 {
     public class DogeAccount
     {
+        private static object _lock = new object();
         /// <summary>
         /// Doge Address hash
         /// </summary>
@@ -355,7 +356,7 @@ namespace VEDriversLite
             {
                 // todo
             }
-
+            var first = true;
             // todo cancelation token
             _ = Task.Run(async () =>
             {
@@ -363,7 +364,11 @@ namespace VEDriversLite
                 {
                     try
                     {
-                        await ReloadUtxos();
+                        if (!first)
+                            await ReloadUtxos();
+                        else
+                            first = false;
+
                         await GetListOfReceivedTransactions();
                         await GetListOfSentTransactions();
                         Refreshed?.Invoke(this, null);
@@ -409,18 +414,26 @@ namespace VEDriversLite
 
             if (ouxox.Count > 0)
             {
-                Utxos.Clear();
+                lock (_lock)
+                {
+                    Utxos.Clear();
+                }
                 TotalBalance = 0.0;
                 TotalUnconfirmedBalance = 0.0;
                 TotalSpendableBalance = 0.0;
                 // add new ones
                 foreach (var u in ouxox)
                 {
-                    Utxos.Add(u);
-                    if (u.Confirmations == 0)
+                    if (u.Confirmations <= DogeTransactionHelpers.MinimumConfirmations)
                         TotalUnconfirmedBalance += (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture));
                     else
+                    {
                         TotalSpendableBalance += (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture));
+                        lock (_lock)
+                        {
+                            Utxos.Add(u);
+                        }
+                    }
                 }
 
                 TotalBalance = TotalSpendableBalance + TotalUnconfirmedBalance;
@@ -482,7 +495,6 @@ namespace VEDriversLite
                 {
                     txs = await DogeTransactionHelpers.AddressReceivedTxsAsync(Address); 
                     txs.Reverse();
-
                 }
                 catch (Exception ex)
                 {
