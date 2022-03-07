@@ -3,7 +3,7 @@
 
 <div class="row">
     <div class="col d-flex justify-content-center align-items-center">
-        <Input Placeholder="Add receiver address" @bind-Value=@receiver @onfocusout="receiverAddressChangedHandler" Style="font-size:12px; min-width:300px;max-width:350px;" />
+        <Input Placeholder="Add receiver address" @bind-Value=@receiver @onfocusout="receiverAddressChangedHandler" Style="font-size:12px;" />
         <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
         @if (unstoppableDomainAddressUsed)
         {

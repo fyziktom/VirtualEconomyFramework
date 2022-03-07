@@ -28,92 +28,78 @@
     -->
 
     <div class="row">
-        <div class="col">
+        <div class="col-lg-3">
 
-            <table>
-                <tr>
-                    <td>With Address:</td>
-                    <td>
-                        @if (!string.IsNullOrEmpty(selectedAccountAddress))
-                        {
-                            <span>@selectedAccountAddress</span>
-                        }
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <Dropdown>
-                            <Overlay>
-                                <Menu>
-                                    <MenuItem>
-                                        <a target="_blank" rel="noopener noreferrer" @onclick="selectMainAccount">
-                                            Main Account
-                                        </a>
-                                    </MenuItem>
-                                    @foreach (var acc in AppData.Account.SubAccounts.Values)
-                                    {
-                                        <MenuItem>
-                                            <a rel="noopener noreferrer" @onclick="() => selectSubAddress(acc.Address)">
-                                                @if (!string.IsNullOrEmpty(acc.Name))
-                                                {
-                                                    @acc.Name
-                                                }
-                                                else
-                                                {
-                                                    @acc.Address
-                                                }
-                                            </a>
-                                        </MenuItem>
-                                    }
-                                </Menu>
-                            </Overlay>
-                            <ChildContent>
-                                <a class="ant-dropdown-link" @onclick:preventDefault>
-                                    Select Account <Icon Type="down" />
+            <div class="mb-3">
+                <Dropdown>
+                    <Overlay>
+                        <Menu>
+                            <MenuItem>
+                                <a target="_blank" rel="noopener noreferrer" @onclick="selectMainAccount">
+                                    Main Account
                                 </a>
-                            </ChildContent>
-                        </Dropdown>
-                    </td>
+                            </MenuItem>
+                            @foreach (var acc in AppData.Account.SubAccounts.Values)
+                            {
+                                <MenuItem>
+                                    <a rel="noopener noreferrer" @onclick="() => selectSubAddress(acc.Address)">
+                                        @if (!string.IsNullOrEmpty(acc.Name))
+                                        {
+                                            @acc.Name
+                                        }
+                                        else
+                                        {
+                                            @acc.Address
+                                        }
+                                    </a>
+                                </MenuItem>
+                            }
+                        </Menu>
+                    </Overlay>
+                    <ChildContent>
+                        <a class="ant-dropdown-link" @onclick:preventDefault>
+                            Select Account <Icon Type="down" />
+                        </a>
+                    </ChildContent>
+                </Dropdown>
+            </div>
 
-                    <td>
-                        <div>
-                            <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="mint" />
-                        </div>
+            <div class="mb-3 text-wrap">
+                <VENFTApp_Blazor.Components.Account.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
+            </div>
 
-                        <div class="justify-content-center d-flex">
-                            <div @ref=qrCodeRef></div>
-                        </div>
+            <div class="mb-3">
+                <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="mint" />
+            </div>
 
-                        <div>
-                            <VENFTApp_Blazor.Components.Account.AccountBalances Address="@selectedAccountAddress" SubAccount="@subAccount" />
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            <div class="justify-content-center d-flex qr-wrapper">
+                <div @ref=qrCodeRef></div>
+            </div>
+
+
         </div>
 
-        <div class="col">
-            <p>Mint with source token:</p>
-            <ul>
+        <div class="col-lg-2 text-nowrap">
+            <p>NFT type:</p>
+            <ul class="p-0">
                 <RadioGroup @bind-Value="@NFTType">
-                    <li><Radio Value="NFTTypes.Image">Image - Original</Radio></li>
-                    <li><Radio Value="NFTTypes.Post">Post - Reusable</Radio></li>
-                    <li><Radio Value="NFTTypes.Music">Music/Video - Original</Radio></li>
-                    <li><Radio Value="NFTTypes.Event">Event</Radio></li>
-                    <li><Radio Value="NFTTypes.Ticket">Ticket</Radio></li>
+                    <li class="mb-3"><Radio Value="NFTTypes.Image">Image - Original</Radio></li>
+                    <li class="mb-3"><Radio Value="NFTTypes.Post">Post - Reusable</Radio></li>
+                    <li class="mb-3"><Radio Value="NFTTypes.Music">Music/Video - Original</Radio></li>
+                    <li class="mb-3"><Radio Value="NFTTypes.Event">Event</Radio></li>
+                    <li class="mb-3"><Radio Value="NFTTypes.Ticket">Ticket</Radio></li>
                     @if (SelectedAccountTotalSourceCORZT > 1 && tokenId == CoruzantNFTHelpers.CoruzantTokenId)
                     {
 
-                        <li><Radio Value="NFTTypes.CoruzantProfile">CoruzantProfile</Radio></li>
-                        <li><Radio Value="NFTTypes.CoruzantArticle">CoruzantArticle</Radio></li>
+                        <li class="mb-3"><Radio Value="NFTTypes.CoruzantProfile">CoruzantProfile</Radio></li>
+                        <li class="mb-3"><Radio Value="NFTTypes.CoruzantArticle">CoruzantArticle</Radio></li>
                         <!--<Radio Value="NFTTypes.CoruzantPodcast">CoruzantPodcast - Reusable</Radio>-->
                     }
                 </RadioGroup>
             </ul>
         </div>
 
-        <div class="col">
+        <div class="col-lg-7">
 
             @if (NFTType != NFTTypes.Ticket && NFTType != NFTTypes.Event && NFTType != NFTTypes.CoruzantArticle && NFTType != NFTTypes.CoruzantProfile)
             {

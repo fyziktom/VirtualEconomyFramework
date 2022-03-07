@@ -10,7 +10,7 @@
 
 <div class="row">
 
-    <div class="col-auto">
+    <div class="col-xl-12">
 
         @if (nftType == NFTTypes.Profile || (nftType == NFTTypes.Post && !string.IsNullOrEmpty(NFT.Utxo)))
         {
@@ -18,53 +18,78 @@
         }
         else
         {
-            <div class="row text-nowrap" style="margin-top:20px;">
-                <div class="col">
-                    <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span class="ml-1">With Price</span>
+            <div class="row text-nowrap">
+                <div class="col-3">
+                    <label><input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span class="ml-1">With Price</span></label>
                 </div>
-                <div class="col">
-                    <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span class="ml-1">With Doge Price</span>
+                <div class="col-3">
+                    <label><input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span class="ml-1">With Doge Price</span></label>
                 </div>
-                <div class="col">
-                    <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span class="ml-1">With Copies</span>
+                <div class="col-3">
+                    <label><input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span class="ml-1">With Copies</span></label>
                 </div>
-                <div class="col">
-                    <input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span class="ml-1">Mint To Another Address</span>
+                <div class="col-3">
+                    <label><input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span class="ml-1">Mint To Another Address</span></label>
                 </div>
             </div>
 
-            <div class="row" style="margin-top:20px;">
+            <div class="row mt-3">
 
                 @if (withPrice)
                 {
-                    <div class="col-6">
-                        <small>Price in Neblio</small>
-                        <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@price" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
+                    <div class="col-xl-6 p-0">
+                        <table>
+                            <tr>
+                                <td style="width: 80px;"><small>Price in Neblio</small></td>
+                                <td><input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@price" /></td>
+                                <td><img class="float-end" style="width: 25px;" src="images/neblio-icon.png" /></td>
+                            </tr>
+                        </table>
                     </div>
-
                 }
                 @if (withDogePrice)
                 {
 
-                    <div class="col-6">
-                        <small>Price in Doge</small>
-                        <input type="number" step="1" min="2" max="100000000" @bind="@dogeprice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                    <div class="col-xl-6 p-0">
+                        <table>
+                            <tr>
+                                <td style="width: 80px;"><small>Price in Doge</small></td>
+                                <td><input type="number" step="1" min="2" max="100000000" @bind="@dogeprice" /></td>
+                                <td><img class="float-end" style="width: 25px;" src="images/doge.jpg" /></td>
+                            </tr>
+                        </table>
                     </div>
                 }
 
                 @if (withCoppies)
                 {
-                    <div class="col-6">
-                        <small>Copies</small>
-                        <input type="number" step="1" min="0" max="20" @bind="@NumberOfCoppies" />
+                    <div class="col-xl-6 p-0">
+                        <table>
+                            <tr>
+                                <td style="width: 80px;"><small>Copies</small></td>
+                                <td><input type="number" step="1" min="0" max="20" @bind="@NumberOfCoppies" /></td>
+                                <td></td>
+                            </tr>
+                        </table>
                     </div>
                 }
                 @if (toAnotherAddres)
                 {
-                    <div class="col-12">
-                        <small>Fill Receiver Address</small>
-                        <VENFTApp_Blazor.Components.Account.CreateNeblioSubAccount NewAddressCreated="newSubAccountCreated" />
-                        <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="mintReceiverAddressChecked" Receiver="@mintReceiverAddress" />
+                    <div class="col-xl-6 p-0">
+                        <table>
+                            <tr>
+                                <td colspan="2" style="width: 80px;"><small>Fill Receiver Address</small></td>
+                                <td><VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="mintReceiverAddressChecked" Receiver="@mintReceiverAddress" /></td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="3">
+                                    <VENFTApp_Blazor.Components.Account.CreateNeblioSubAccount NewAddressCreated="newSubAccountCreated" />
+                                </td>
+                            </tr>
+                        </table>
+
+
                     </div>
 
                 }
@@ -73,109 +98,106 @@
     </div>
 
 
-    <div class="col-auto text-center">
+    <div class="col-xl-12 text-center">
         <Spin spinning="@processingMinting" tip="Sending...">
             <div class="row">
-                <div class="col-6">
+                <div class="col-xl-6">
                     @if (nftType == NFTTypes.Profile)
                     {
                         <small>Name</small>
-                        <Input Placeholder="Type your Name" MaxLength="50" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        <Input Placeholder="Type your Name" MaxLength="50" @bind-Value=@name Style="font-size:12px;" />
                     }
                     else
                     {
                         <small>Name</small>
-                        <Input Placeholder="Add Name of the NFT" MaxLength="100" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        <Input Placeholder="Add Name of the NFT" MaxLength="100" @bind-Value=@name Style="font-size:12px;" />
                     }
                 </div>
                 @if (nftType == NFTTypes.Profile)
                 {
-                    <div class="col-6">
+                    <div class="col-xl-6">
                         <small>Surname</small>
-                        <Input Placeholder="Type your surname" MaxLength="50" @bind-Value=@surname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        <Input Placeholder="Type your surname" MaxLength="50" @bind-Value=@surname Style="font-size:12px;" />
                     </div>
-                    <div class="col-6">
+                    <div class="col-xl-6">
                         <small>Nickname</small>
-                        <Input MaxLength="100" Placeholder="Type your nickname" @bind-Value=@nickname Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        <Input MaxLength="100" Placeholder="Type your nickname" @bind-Value=@nickname Style="font-size:12px;" />
                     </div>
-                    <div class="col-6">
+                    <div class="col-xl-6">
                         <small>ID</small>
                     </div>
-                    <div class="col-6">
-                        <Input MaxLength="100" Placeholder="Type your ID" @bind-Value=@profileId Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    <div class="col-xl-6">
+                        <Input MaxLength="100" Placeholder="Type your ID" @bind-Value=@profileId Style="font-size:12px;" />
                     </div>
                 }
                 else
                 {
-                    <div class="col-6">
+                    <div class="col-xl-6">
                         <small>Author</small>
 
-                        <Input Placeholder="Add Author of the NFT" MaxLength="50" @bind-Value=@author Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        <Input Placeholder="Add Author of the NFT" MaxLength="50" @bind-Value=@author Style="font-size:12px;" />
                     </div>
                 }
+
+                <div class="col-xl-6">
+                    <small>Tags</small>
+                    <Input Placeholder="Add Tags - splitted by space" MaxLength="200" @bind-Value=@tags Style="font-size:12px;" />
+                </div>
+
                 @if (nftType != NFTTypes.Profile)
                 {
                     @if (nftType != NFTTypes.Music)
                     {
 
-                        <div class="col-6">
+                        <div class="col-xl-6">
                             <small>Webpage</small>
-                            <Input Placeholder="Add your webpage" MaxLength="200" @bind-Value=@link Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            <Input Placeholder="Add your webpage" MaxLength="200" @bind-Value=@link Style="font-size:12px;" />
+                            @if (!string.IsNullOrEmpty(link))
+                            {
+                                <small><a href="@link" target="_blank" class="text-info">Test the link</a></small>
+                            }
                         </div>
-                        @if (!string.IsNullOrEmpty(link))
-                        {
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <a href="@link" target="_blank" class="text-info">Test the link</a>
-                            </div>
-                        }
                     }
-                    <div class="col-6">
+                    <div class="col-xl-12">
                         <small>Description</small>
-                        <TextArea Placeholder="Add Description of the NFT" MaxLength="160" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
+                        <TextArea Placeholder="Add Description of the NFT" MaxLength="160" @bind-Value=@description Style="font-size:12px; min-height:50px;" />
+                        @if (!string.IsNullOrEmpty(description))
+                        {
+                            <small class="text-info">Remaining @(300-description.Length) from 300 characters.</small>
+                        }
                     </div>
                 }
                 else
                 {
-                    <div class="col-6">
+                    <div class="col-xl-6">
                         <small>Bio</small>
-                        <TextArea Placeholder="Type your Bio" MaxLength="300" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
-                    </div>
-                }
-                @if (!string.IsNullOrEmpty(description))
-                {
-                    <div class="col-6">
-                        <small class="text-info">Remaining @(300-description.Length) from 300 characters.</small>
+                        <TextArea Placeholder="Type your Bio" MaxLength="300" @bind-Value=@description Style="font-size:12px; min-height:50px;" />
                     </div>
                 }
                 @if (nftType == NFTTypes.Post)
                 {
-                    <div class="col-6">
+                    <div class="col-xl-12">
                         <small>Text</small>
-                        <TextArea Placeholder="Add Text" MaxLength="8000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
+                        <TextArea Placeholder="Add Text" MaxLength="8000" @bind-Value=@text Style="font-size:12px;" />
                     </div>
                     @if (!string.IsNullOrEmpty(text))
                     {
-                        <div class="col-6" style="width: 350px; min-height:400px; max-width:350px;">
+                        <div class="col-xl-6" style="width: 350px; min-height:400px; max-width:350px;">
                             <span class="border-light">@((MarkupString)NFTmarkuptext)</span>
                         </div>
                     }
                     @if (!string.IsNullOrEmpty(text))
                     {
-                        <div class="col-6">
+                        <div class="col-xl-6">
                             <small class="text-info">Remaining @(8000-text.Length) from 8000 characters.</small>
                         </div>
                     }
                 }
 
 
-                <div class="col-6">
-                    <small>Tags</small>
-                    <Input Placeholder="Add Tags - splitted by space" MaxLength="200" @bind-Value=@tags Style="font-size:12px; min-width:250px; max-width:350px;" />
-                </div>
 
                 @if (nftType == NFTTypes.Music)
                 {
-                    <small>Uplod Music</small>
                     <VENFTApp_Blazor.Components.UploadImage NFTType="@NFTTypes.Music" ImageLink="@link" ImageLinkChanged="@LinkChanged" />
                 }
                 else
@@ -185,30 +207,30 @@
 
                 @if (string.IsNullOrEmpty(sourceUtxo))
                 {
-                    <div class="col-6">
+                    <div class="col-xl-6">
                         <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
                     </div>
                 }
                 else
                 {
-                    <div class="col-6">
+                    <div class="col-xl-6">
                         <small class="text-center">Edit costs 0.0002 NEBL (fee).</small>
                     </div>
                 }
                 @if ((string.IsNullOrEmpty(imagelink) && (nftType == NFTTypes.Image)) || (string.IsNullOrEmpty(link) && (nftType == NFTTypes.Music)))
                 {
-                    <div class="col-6">
+                    <div class="col-xl-6">
                         <button class="btn btn-primary disabled" @onclick="ShowMintConfirm">Create NFT</button>
                     </div>
                 }
                 else
                 {
-                    <div class="col-6">
+                    <div class="col-xl-6">
                         <button class="btn btn-primary" @onclick="ShowMintConfirm">@(string.IsNullOrEmpty(sourceUtxo)? "Create NFT" : "Apply Changes")</button>
                     </div>
                     @if (!string.IsNullOrEmpty(multimintStatus))
                     {
-                        <div class="col-6">
+                        <div class="col-xl-6">
                             <span>@multimintStatus</span>
                         </div>
                     }
