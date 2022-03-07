@@ -165,7 +165,7 @@
             var txinfo = await DogeTransactionHelpers.TransactionInfoAsync(txId);
             try
             {
-                var am = await DogeTransactionHelpers.ParseTotalSentValue(txinfo);
+                var am = DogeTransactionHelpers.ParseTotalSentValue(txinfo);
                 if (am.Item1)
                     txvalue = am.Item2;
             }
@@ -174,7 +174,7 @@
                 Console.WriteLine("cannot convert value of transaction.");
             }
 
-            var msg = await DogeTransactionHelpers.ParseDogeMessage(txinfo);
+            var msg = DogeTransactionHelpers.ParseDogeMessage(txinfo);
             if (msg.Item1)
             {
                 NFTTransaction = true;

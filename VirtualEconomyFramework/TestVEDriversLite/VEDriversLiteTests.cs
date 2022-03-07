@@ -1908,7 +1908,7 @@ namespace TestVEDriversLite
             Console.WriteLine("Request Tx Info");
             var txid = param;
             var txinfo = await DogeTransactionHelpers.TransactionInfoAsync(txid);
-            var msg = await DogeTransactionHelpers.ParseDogeMessage(txinfo);
+            var msg = DogeTransactionHelpers.ParseDogeMessage(txinfo);
             Console.WriteLine("TxInfo:");
             Console.WriteLine(JsonConvert.SerializeObject(txinfo, Formatting.Indented));
             Console.WriteLine("-------------------------------------------------------");
@@ -1945,12 +1945,10 @@ namespace TestVEDriversLite
             if (split.Length < 4)
                 throw new Exception("Please input receiveraddress,amountofdoge,fee,message");
             var receiver = split[0];
-            var am = split[1];
-            var f = split[2];
+            var am = split[1];            
             var message = split[3];
-            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
-            var fee = Convert.ToUInt64(f, CultureInfo.InvariantCulture);
-            var res = await dogeAccount.SendPayment(receiver, amount, message, fee);
+            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);            
+            var res = await dogeAccount.SendPayment(receiver, amount, message);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }

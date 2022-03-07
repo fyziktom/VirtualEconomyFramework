@@ -1606,7 +1606,7 @@ namespace VEDriversLite
                             var info = await DogeTransactionHelpers.TransactionInfoAsync(u.TxId);
                             if (info != null && info.Transaction != null)
                             {
-                                var msg = await DogeTransactionHelpers.ParseDogeMessage(info);
+                                var msg = DogeTransactionHelpers.ParseDogeMessage(info);
                                 if (msg.Item1)
                                 {
                                     var split = msg.Item2.Split('-');

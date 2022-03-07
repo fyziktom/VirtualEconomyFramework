@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NeblioAPI;
 
-namespace VEDrivers.Common
+namespace VEDriversLite.Common
 {
     public static class QTWalletRPC
     {

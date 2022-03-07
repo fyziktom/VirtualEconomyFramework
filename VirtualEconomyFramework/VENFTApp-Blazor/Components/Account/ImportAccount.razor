@@ -340,7 +340,7 @@
         }
         else
         {
-            var res = await DogeTransactionHelpers.IsPrivateKeyValid(importDogeAccountKey);
+            var res = DogeTransactionHelpers.IsPrivateKeyValid(importDogeAccountKey);
             if (!res.Item1)
             {
                 try
@@ -358,7 +358,7 @@
                 dogekey = importDogeAccountKey;
             }
 
-            var add = await DogeTransactionHelpers.GetAddressFromPrivateKey(dogekey);
+            var add = DogeTransactionHelpers.GetAddressFromPrivateKey(dogekey);
             if (add.Item1)
             {
                 dogeaddress = add.Item2;
