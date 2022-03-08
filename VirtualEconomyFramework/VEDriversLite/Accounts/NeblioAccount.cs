@@ -532,7 +532,7 @@ namespace VEDriversLite.Accounts
                     var kdto = new KeyDto()
                     {
                         Address = Address,
-                        Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
+                        Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
                     };
                     FileHelpers.WriteTextToFile(data.Filename, JsonConvert.SerializeObject(kdto));
                 }
@@ -572,13 +572,13 @@ namespace VEDriversLite.Accounts
                 else
                     AccountKey = new EncryptionKey(key, fromDb: false);
                 if (!string.IsNullOrEmpty(password))
-                    await AccountKey.LoadPassword(password);
+                    AccountKey.LoadPassword(password);
 
-                Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+                Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
                 SignMessage("init");
 
-                var add = await NeblioTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
-                if (add.Item1) Address = add.Item2;
+                var add = NeblioTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
+                if (!string.IsNullOrEmpty(add)) Address = add;
 
                 return true;
             }

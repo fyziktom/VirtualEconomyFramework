@@ -233,7 +233,7 @@ namespace VEDriversLite.Accounts
             {
                 return (false, "Account is locked.");
             }
-            var key = await AccountKey.GetEncryptedKey();
+            var key = AccountKey.GetEncryptedKey();
             return await ECDSAProvider.SignMessage(message, key);
         }
 
