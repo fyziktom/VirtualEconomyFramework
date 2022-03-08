@@ -1,14 +1,17 @@
 ﻿@inherits StyledComponent<Modal>
 
-<CascadingValue Value=@this Name="Modal" IsFixed="true">
-    <div class="blazor-modal overflow-auto @(Visible ? "open" : "")" tabindex="-1" role="dialog" @onclick="@TryCancel">
-        <div class="modal-dialog @Class" style="@Style" role="document" @onclick:stopPropagation="true">
-            <div class="modal-content @ContentClass" style="@ContentStyle">
-                @ChildContent(this)
+@if (Visible) // TODO: Find a way how to bring back open/close animation
+{
+    <CascadingValue Value=@this Name="Modal" IsFixed="true">
+        <div class="blazor-modal overflow-auto @(Visible ? "open" : "")" tabindex="-1" role="dialog" @onclick="@TryCancel">
+            <div class="modal-dialog @Class" style="@Style" role="document" @onclick:stopPropagation="true">
+                <div class="modal-content @ContentClass" style="@ContentStyle">
+                    @ChildContent(this)
+                </div>
             </div>
         </div>
-    </div>
-</CascadingValue>
+    </CascadingValue>
+}
 
 @code {
     [Parameter]
