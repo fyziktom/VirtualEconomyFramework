@@ -1,21 +1,21 @@
 ﻿@inherits StyledComponent<Modal>
 
-@if (Visible) // TODO: Find a way how to bring back open/close animation
-{
-    <CascadingValue Value=@this Name="Modal" IsFixed="true">
-        <div class="blazor-modal overflow-auto @(Visible ? "open" : "")" tabindex="-1" role="dialog" @onclick="@TryCancel">
-            <div class="modal-dialog @Class" style="@Style" role="document" @onclick:stopPropagation="true">
-                <div class="modal-content @ContentClass" style="@ContentStyle">
-                    @ChildContent(this)
+<ModalFragment @ref="@fragment">
+    @if (Visible) // TODO: Find a way how to bring back open/close animation
+    {
+        <CascadingValue Value=@this Name="Modal" IsFixed="true">
+            <div class="blazor-modal overflow-auto @(Visible ? "open" : "")" tabindex="-1" role="dialog" @onclick="@TryCancel">
+                <div class="modal-dialog @Class" style="@Style" role="document" @onclick:stopPropagation="true">
+                    <div class="modal-content @ContentClass" style="@ContentStyle">
+                        @ChildContent(this)
+                    </div>
                 </div>
             </div>
-        </div>
-    </CascadingValue>
-}
+        </CascadingValue>
+    }
+</ModalFragment>
 
 @code {
-    [Parameter]
-    public bool Visible { get; set; } = true;
     [Parameter]
     public EventCallback<bool> VisibleChanged { get; set; }
     [Parameter]
@@ -26,6 +26,20 @@
     [Parameter]
     public String ContentStyle { get; set; }
 
+    private bool visible = true;
+    [Parameter]
+    public bool Visible
+    {
+        get => visible;
+        set
+        {
+            if (value != visible)
+            {
+                visible = value;
+                fragment?.Refresh();
+            }
+        }
+    }
 
     private bool busy = false;
     public bool Busy
@@ -36,10 +50,12 @@
             if (busy != value)
             {
                 busy = value;
-                StateHasChanged();
+                fragment?.Refresh();
             }
         }
     }
+
+    private ModalFragment fragment { get; set; }
 
     public async Task Cancel()
     {
