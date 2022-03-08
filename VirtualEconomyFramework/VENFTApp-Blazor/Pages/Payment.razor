@@ -494,7 +494,7 @@
             if (!string.IsNullOrEmpty(key))
             {
                 await Task.Delay(100);
-                if (!await AppData.DogeAccount.LoadAccount(unlockPassword, key))
+                if (!await AppData.DogeAccount.LoadAccount(unlockPassword, key, ""))
                 {
                     await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot unlock the doge account.");
                 }

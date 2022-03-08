@@ -49,6 +49,7 @@ namespace VEDriversLite.NFT
             LocationCoordinates = nft.LocationCoordinates;
             LocationCoordinatesLat = nft.LocationCoordinatesLat;
             LocationCoordinatesLen = nft.LocationCoordinatesLen;
+            MintAuthorAddress = nft.MintAuthorAddress;
             VideoLink = nft.VideoLink;
             AuthorLink = nft.AuthorLink;
             EventDate = nft.EventDate;
@@ -63,8 +64,6 @@ namespace VEDriversLite.NFT
             Used = nft.Used;
         }
 
-        public double PriceInDoge { get; set; } = 0;
-        public bool PriceInDogeActive { get; set; } = false;
         public string MintAuthorAddress { get; set; } = string.Empty;
         public string EventAddress { get; set; } = string.Empty;
         public string EventId { get; set; } = string.Empty;

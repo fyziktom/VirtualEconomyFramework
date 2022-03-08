@@ -1,0 +1,155 @@
+﻿@using VEOnePage.Components
+<div class=" navbar">
+    <div class="">
+        <div class="aux-pages">
+            <button class="btn-primary subscribe"> <a href="https://coruzant.com/#mce-EMAIL">Subcribe </a></button>
+
+            <div class="pull-right">
+                <a href="https://coruzant.com/contact/" target="_blank">
+                    <span><i class="fa fa-envelope" aria-hidden="true"></i>Contact</span>
+                </a>
+                <a href="#" @onclick="ShowAbout">
+                    <span><i class="fa fa-address-card" aria-hidden="true"></i>About</span>
+                </a>
+
+
+            </div>
+
+        </div>
+
+        <div class="trending row">
+            <div class="col-xs-4 col-sm-4">
+                <a class="navbar-brand" href="">
+                    <img src="images/coruzant-logo.png" class="img-responsive" />
+                </a>
+            </div>
+            <div class="col-xs-8 col-sm-8">
+                <span class="heading">Trending</span>
+                <div class="slide-top">
+                    <CarouselTop></CarouselTop>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="menu-list" >
+        <nav class="page-links">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                Home
+            </NavLink>         
+            <NavLink class="nav-link" href="feature/1">
+                Featured
+            </NavLink>
+            <NavLink class="nav-link" href="opinion/1">
+                Opinion
+            </NavLink>
+              <NavLink class="nav-link" href="podcasts">
+                Podcasts
+            </NavLink>
+        </nav>
+        <div class="search">
+            <input type="text" placeholder="Search " />
+        </div>
+
+
+
+        <Social></Social>
+
+    </div>
+
+</div>
+
+
+<div class=" navbar-mobile">
+    <div class="">
+    
+
+        <div class="trending row">
+                <a class="navbar-brand" href="">
+                    <img src="images/coruzant-logo.png" class="img-responsive" />
+                </a>
+        </div>
+        <div class="container">
+            <span class="mobile-toggler" @onclick="ToggleNavMenu">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+            </span>
+        
+        <div class="search">
+            <input type="text" placeholder="Search " />
+        </div>
+        </div>
+
+
+
+       
+    </div>
+
+
+    <div class="@NavMenuCssClass menu-list" @onclick="ToggleNavMenu">
+        <nav class="page-links">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                Home
+            </NavLink>         
+            <NavLink class="nav-link" href="feature">
+                Featured
+            </NavLink>
+            <NavLink class="nav-link" href="opinion">
+                Opinion
+            </NavLink>
+              <NavLink class="nav-link" href="podcasts">
+                Podcasts
+            </NavLink>
+        </nav>
+
+    </div>
+
+</div>
+@if(About){
+ 
+   <div class="article-modal modal-active about" @onclick="@ModalCancel" id="myModal" style="display:block" aria-modal="true" role="dialog">
+     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+     
+            <div class="col-xs-12 text" >                                          
+                <div class="long-desc" style="overflow:hidden!important">
+                        <h4>Welcome to Coruzant Technologies, the future of emerging technology. 
+                            We are the premiere and largest crowdsourced, digital, technology publication in the world built on <b>Blockchain</b>. 
+                            Our advisors and contributors come from all over the globe, from Fortune 100 companies, 
+                            Silicon Valley, and tech startups, just to name a few.</h4>
+                       <br/>
+                       <h5 class="tdm-title tdm-title-md">First Blockchain Publication in the World</h5>
+                       <br/>
+                       <p class="tdm-descr td-fix-index">Coruzant is first and largest digital publication built on <b>#Blockchain</b>. 
+                           Every piece of content, article, photo, podcast, video has an associated Coruzant Token or "NFT" uniquely tied to it.<br><br>
+                       We are built on the <a href="https://nebl.io/" target="blank">#NEBLIO</a> platform using the
+                       <a href="https://veframework.com/" target="blank">VE-NFT</a> framework in conjunction with 
+                       <a href="http://technicinsider.com/" target="blank">TechnicInsider</a>.<br><br>
+                       </p>
+       
+                </div>
+            </div>
+
+        </div>
+  </div>
+}
+
+
+
+
+@code {
+    private bool collapseNavMenu = true;
+    private bool About = false;
+    private void ShowAbout(){
+        About = true;
+    }
+    void ModalCancel() => About = false;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

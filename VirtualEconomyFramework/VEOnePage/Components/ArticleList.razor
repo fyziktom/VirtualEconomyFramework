@@ -1,0 +1,135 @@
+﻿@using VEDriversLite.NFT.Coruzant
+@using Markdig 
+@inject AppData AppData 
+
+
+<div class="row articles" style="background:url('images/bg_galleries.jpg');background-size:cover">
+   <h2 class="heading-title"> <span>Late</span>st Posts</h2>
+    <h4 class="title-card">Read our recent articles</h4> <br /><br />
+
+    @*main article starts*@
+    <div class="row" style="padding:0!important">
+        <div class="col-xs-12 col-sm-4 col-md-6  dark" >
+           @foreach (var profile in AppData.ArticleNFTs.Take(1))
+           {
+                 <div class="main-article " style="background:url(@profile.ImageLink);background-size:cover">
+            
+                     <div class="dark-overlay" @onclick="()=>ModalShow(profile)">
+                          <h4 class="title">@profile.Name</h4>   
+
+                          <p class="description clamped">
+                              @profile.Description
+                          </p>
+                          <span id="tag">@profile.Tags.Split(' ')[0]
+                          </span>
+                             
+                     </div>
+                 </div>
+
+                 break;
+           }
+        </div>
+       <div class="col-xs-12 col-sm-8 col-md-6 row  dark">
+  
+
+        @foreach (var profile in AppData.ArticleNFTs.Skip(1).Take(4))
+        {
+            if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantArticle)
+            {
+           
+                   <div class="col-xs-6 col-sm-6">
+                     <div class="article" style="background:url(@profile.ImageLink);background-size:cover">
+                         <div class="dark-overlay" @onclick="()=>ModalShow(profile)">
+                           <span class="category">@((profile as CoruzantArticleNFT).Tags.Split(' ')[0])</span> 
+
+                            <p class="title">
+                            @profile.Name
+                            </p>
+                            <span class="open-arrow"><i class="fas fa-arrow-circle-right"></i>
+                            </span>
+                         </div>
+                         
+                      </div>
+
+                   </div>
+                }     
+            }
+
+         </div>
+       </div>
+      </div>
+
+     
+
+@if (profile != null)
+{
+   <div class="article-modal modal-active" @onclick="@ModalCancel" id="myModal" style="display:block" aria-modal="true" role="dialog">
+     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true">
+        <div class="row col-xs-4 col-sm-4  article-meta ">
+                <div class="img-wrap">
+                <img src="@profile.ImageLink" />
+                <span class="main-tag">@profile.Tags.Split(' ')[0] </span>
+                <span class="img-author">
+                    <i class="fa fa-user-circle" aria-hidden="true"></i> 
+                    @profile.Author
+                </span>
+                </div>
+                <div class="spans">
+                    <h3>@profile.Name</h3>
+                    <hr>
+                    <h4 class="article-title"> @((MarkupString) NFTDescriptionMarkuptext)</h4><br />
+                    <span class="comp-link">
+                    <a href="#" target= "_blank">More about @((MarkupString)@profile.Author)</a>
+                    </span>
+                    <br />
+                </div>
+          </div>
+            <div class="col-xs-8 col-sm-8 text">                                          
+                <div class="long-desc">@((MarkupString) NFTmarkuptext)
+                </div>
+                   <span class="comp-link"> <b>Tags: </b>
+                    @if (@profile.Tags !="")
+                    {
+                        string[] subs = @profile.Tags.Split();
+
+                        foreach (string sub in subs)
+                        {
+                            if (sub != "")
+                            {
+                                string r = "<a href='#'> "+sub+" </a>, ";
+                                @((MarkupString)r);
+                            }
+                        }
+                    }
+                </span>
+            </div>
+
+        </div>
+  </div>
+}
+
+@code {
+
+
+    VEDriversLite.NFT.INFT profile { get; set; }
+    public void ModalShow( VEDriversLite.NFT.INFT prof){   
+        profile = prof;
+    }
+    void ModalCancel() => profile = null;
+    public string NFTmarkuptext => Markdown.ToHtml(profile.Text);
+    public string NFTDescriptionMarkuptext => Markdown.ToHtml(profile.Description);
+
+
+
+    protected override Task OnInitializedAsync()
+    {
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        return base.OnInitializedAsync();
+    }
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+  
+
+}

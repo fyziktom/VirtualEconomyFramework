@@ -1,0 +1,103 @@
+﻿@using VEDriversLite.NFT.Coruzant
+@inject AppData AppData 
+@using Newtonsoft.Json
+@inject HttpClient _client
+@inject IJSRuntime JSRuntime
+  
+  @foreach (var profile in AppData.NFTs.Skip(12).Take(3))
+  {
+      if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
+      {
+        var prof = profile as CoruzantProfileNFT;
+        <div class="col-xs-12 col-sm-4  dark"> 
+            <div class="podcast" style="background:url(@prof.ImageLink);background-size:cover">
+            
+              <div class="dark-overlay" @onclick="()=>LoadBuzzproudPodcastLink(prof)">
+                <h4 class="title">@prof.Name&nbsp;@prof.Surname</h4>   
+
+                <p class="position">
+                    @prof.WorkingPosition <br/><br/>
+                   <span class="clamped">@prof.Description</span> <br/>
+                </p>
+
+                <i class="fa fa-podcast" aria-hidden="true" ></i>
+                
+            </div>
+        </div>
+        </div>
+    }
+  }
+
+  @if(CurrentPodcast != null){
+      <div class="podcast-player z-depth-2">
+      <div id="buzzsprout-player-@CurrentPodcast.PodcastId">
+         <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span>Loading Podcast...</span>
+            </div>
+        </div>
+      </div>
+      <div id="close-player" @onclick="ClosePlayer"><i class="fas fa-times"></i></div>
+      </div>
+  }
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        return base.OnInitializedAsync();
+    }
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+    private string buzzsproudLink = string.Empty;
+    public VEDriversLite.NFT.Coruzant.CoruzantProfileNFT CurrentPodcast { get; set; }
+    void ClosePlayer() => CurrentPodcast = null;
+
+
+    private async Task LoadBuzzproudPodcastLink( VEDriversLite.NFT.Coruzant.CoruzantProfileNFT pnft)
+    {
+        CurrentPodcast = pnft;
+        try
+        {
+                var filename = string.Empty;
+                var req = new HttpRequestMessage(HttpMethod.Get, $"https://nftticketverifierapp.azurewebsites.net/api/GetBuzzsproutData/866092/{pnft.PodcastId}");
+                req.Headers.Add("Accept", "application/json");
+                req.Headers.Add("User-Agent", "VENFT-App");
+
+                var resp = await _client.SendAsync(req);
+                var respmsg = await resp.Content.ReadAsStringAsync();
+                if (string.IsNullOrEmpty(respmsg))
+                    return;
+                var podcastData = JsonConvert.DeserializeObject<List<BuzzsproutEpisodeDto>>(respmsg);
+                if (podcastData != null && podcastData.Count > 0)
+                {
+                    var pddto = podcastData.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(pddto.audio_url))
+                    {
+                        filename = pddto.audio_url.Replace("https://www.buzzsprout.com/866092/", string.Empty).Replace(".mp3", string.Empty);
+                        var link = $"https://www.buzzsprout.com/866092/{filename}.js?container_id=buzzsprout-player-{pnft.PodcastId}&player=small";
+                        buzzsproudLink = link;
+                        StateHasChanged();
+                        await Task.Delay(200);
+                        await JSRuntime.InvokeVoidAsync("jsFunctions.buzzsproutPodcast", buzzsproudLink);
+                        await Task.Delay(200);
+                        await JSRuntime.InvokeVoidAsync("setCoruzantPodcastInfo", pnft.Name + " " + pnft.Surname, pddto.artist, pddto.title);
+                        StateHasChanged();
+                    }
+                }
+           
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot load Buzzsprout podcast." + ex.Message);
+        }
+    }
+}
+
+
+
+
+
+

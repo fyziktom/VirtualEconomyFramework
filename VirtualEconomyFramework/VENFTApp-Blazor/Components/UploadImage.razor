@@ -216,11 +216,11 @@
         {
             try
             {
-                if (!string.IsNullOrEmpty(imageLink) && imageLink.Contains("https://gateway.ipfs.io/ipfs/"))
+                if (!string.IsNullOrEmpty(imageLink) && imageLink.Contains("https://ipfs.infura.io/ipfs/"))
                 {
                     if (EncryptedContent)
                     {
-                        var res = await NFTHelpers.IPFSDownloadFromInfuraAsync(imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                        var res = await NFTHelpers.IPFSDownloadFromInfuraAsync(imageLink.Replace("https://ipfs.infura.io/ipfs/", string.Empty));
                         if (res != null && res.Length > 0.5 * uploadedFileLength)
                         {
                             ImageLink = imageLink;

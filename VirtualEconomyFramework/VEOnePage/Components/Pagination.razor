@@ -1,0 +1,82 @@
+﻿@using Coruzant.Models
+
+<div style="margin:5vh auto;">
+    <nav aria-label="Page navigation ">
+        <ul class="pagination justify-content-center">
+            @foreach (var pageItem in pageItems)
+            {
+                <li @onclick="@(() => SelectCurrentPage(pageItem))"
+                    style="cursor:pointer"
+                    class="page-item
+                @(pageItem.Active ? "active" : null)
+                @(pageItem.Enabled ? null : "disabled")">
+                    <span class="page-link" href="#">@pageItem.Text</span>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+@code {
+    private List<PageItem> pageItems;
+
+    [Parameter]
+    public int PageIndex { get; set; }
+    [Parameter]
+    public int TotalPages { get; set; }
+    [Parameter]
+    public int Radius { get; set; }
+    [Parameter]
+    public EventCallback<int> OnSelectedPage { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        CreatePages();
+    }
+
+    private void CreatePages()
+    {
+        pageItems = new List<PageItem>();
+
+        // 1. Create the previous page.
+        var hasPreviosPage = PageIndex > 1;
+        var previousPageIndex = PageIndex - 1;
+        pageItems.Add(new PageItem(previousPageIndex, hasPreviosPage, "Prev"));
+
+        // 2. Create pages and add them to the pageItems list.
+        if (Radius >= TotalPages)
+            Radius = TotalPages - 1;
+
+        for (int i = 1; i <= TotalPages; i++)
+        {
+            if (i >= PageIndex - Radius && i < PageIndex + Radius)
+            {
+                pageItems.Add(new PageItem(i, true, i.ToString())
+                {
+                    Active = PageIndex == i
+                });
+            }
+        }
+
+        // 3. Create next the page.
+        var hasNextPage = PageIndex < TotalPages;
+        var nextPageIndex = PageIndex + 1;
+        pageItems.Add(new PageItem(nextPageIndex, hasNextPage, "Next"));
+    }
+
+    private async Task SelectCurrentPage(PageItem pageItem)
+    {
+        if (PageIndex == pageItem.PageIndex)
+        {
+            return;
+        }
+
+        if (!pageItem.Enabled)
+        {
+            return;
+        }
+
+        PageIndex = pageItem.PageIndex;
+        await OnSelectedPage.InvokeAsync(pageItem.PageIndex);
+    }
+}

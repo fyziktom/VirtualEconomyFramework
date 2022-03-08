@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT.Dto;
@@ -244,7 +243,7 @@ namespace VEDriversLite.NFT
             Price = 0.0;
             PriceActive = false;
         }
-        private void parseTags()
+        public void ParseTags()
         {
             var split = Tags.Split(' ');
             TagsList.Clear();
@@ -312,6 +311,10 @@ namespace VEDriversLite.NFT
                 else
                     SellJustCopy = false;
             }
+            else
+            {
+                SellJustCopy = false;
+            }
         }
         /// <summary>
         /// Parse info about the sellfrom the metadata of the NFT
@@ -374,7 +377,7 @@ namespace VEDriversLite.NFT
                 tags = tags.Replace(",", string.Empty);
                 tags = tags.Replace(";", string.Empty);
                 Tags = tags;
-                parseTags();
+                ParseTags();
             }
 
             if (meta.TryGetValue("SourceUtxo", out var su))
@@ -413,85 +416,9 @@ namespace VEDriversLite.NFT
             var metadata = new Dictionary<string, string>();
 
             metadata.Add("NFT", "true");
-            switch (Type)
-            {
-                case NFTTypes.Image:
-                    metadata.Add("Type", "NFT Image");
-                    break;
-                case NFTTypes.Post:
-                    metadata.Add("Type", "NFT Post");
-                    break;
-                case NFTTypes.Music:
-                    metadata.Add("Type", "NFT Music");
-                    break;
-                case NFTTypes.Message:
-                    metadata.Add("Type", "NFT Message");
-                    break;
-                case NFTTypes.Profile:
-                    metadata.Add("Type", "NFT Profile");
-                    break;
-                case NFTTypes.Payment:
-                    metadata.Add("Type", "NFT Payment");
-                    break;
-                case NFTTypes.Receipt:
-                    metadata.Add("Type", "NFT Receipt");
-                    break;
-                case NFTTypes.Invoice:
-                    metadata.Add("Type", "NFT Invoice");
-                    break;
-                case NFTTypes.Order:
-                    metadata.Add("Type", "NFT Order");
-                    break;
-                case NFTTypes.Product:
-                    metadata.Add("Type", "NFT Product");
-                    break;
-                case NFTTypes.Ticket:
-                    metadata.Add("Type", "NFT Ticket");
-                    break;
-                case NFTTypes.Event:
-                    metadata.Add("Type", "NFT Event");
-                    break;
-                case NFTTypes.CoruzantProfile:
-                    metadata.Add("Type", "NFT CoruzantProfile");
-                    break;
-                case NFTTypes.CoruzantArticle:
-                    metadata.Add("Type", "NFT CoruzantArticle");
-                    break;
-                case NFTTypes.CoruzantPremiumArticle:
-                    metadata.Add("Type", "NFT CoruzantPremiumArticle");
-                    break;
-                case NFTTypes.CoruzantPodcast:
-                    metadata.Add("Type", "NFT CoruzantPodcast");
-                    break;
-                case NFTTypes.CoruzantPremiumPodcast:
-                    metadata.Add("Type", "NFT CoruzantPremiumPodcast");
-                    break;
-                case NFTTypes.Device:
-                    metadata.Add("Type", "NFT Device");
-                    break;
-                case NFTTypes.IoTDevice:
-                    metadata.Add("Type", "NFT IoTDevice");
-                    break;
-                case NFTTypes.Protocol:
-                    metadata.Add("Type", "NFT Protocol");
-                    break;
-                case NFTTypes.HWSrc:
-                    metadata.Add("Type", "NFT HWSrc");
-                    break;
-                case NFTTypes.FWSrc:
-                    metadata.Add("Type", "NFT FWSrc");
-                    break;
-                case NFTTypes.SWSrc:
-                    metadata.Add("Type", "NFT SWSrc");
-                    break;
-                case NFTTypes.MechSrc:
-                    metadata.Add("Type", "NFT MechSrc");
-                    break;
-                case NFTTypes.IoTMessage:
-                    metadata.Add("Type", "NFT IoTMessage");
-                    break;
-            }
-            
+            if (string.IsNullOrEmpty(TypeText))
+                throw new Exception("Cannot get NFT metadata without filled property TypeText!");
+            metadata.Add("Type", TypeText);
             metadata.Add("Name", Name);
             metadata.Add("Author", Author);
             metadata.Add("Description", Description);
@@ -505,7 +432,7 @@ namespace VEDriversLite.NFT
                 metadata.Add("Text", Text);
             metadata.Add("Link", Link);
             if (Price > 0)
-                metadata.Add("Price", Price.ToString(CultureInfo.InvariantCulture));
+                metadata.Add("Price", Price.ToString("F6", CultureInfo.InvariantCulture));
             if (DogePrice > 0)
                 metadata.Add("DogePrice", DogePrice.ToString(CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(DogeAddress))

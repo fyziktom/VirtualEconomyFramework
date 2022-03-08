@@ -20,8 +20,6 @@ namespace VEDriversLite.NFT
             await FillCommon(NFT);
         }
 
-        public string Surname { get; set; } = string.Empty;
-
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
 
