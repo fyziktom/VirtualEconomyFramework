@@ -86,7 +86,7 @@
             unstoppableDomainAddress = string.Empty;
             unstoppableDomainAddressUsed = false;
         }
-        var res = await DogeTransactionHelpers.ValidateDogeAddress(add);
+        var res = DogeTransactionHelpers.ValidateDogeAddress(add);
         if (res.Item1)
         {
             validAddress = true;

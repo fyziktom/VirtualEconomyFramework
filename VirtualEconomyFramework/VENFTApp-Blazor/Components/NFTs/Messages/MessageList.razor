@@ -33,7 +33,7 @@
                 <div class="col h-100 d-flex justify-content-center align-items-center">
                     @if (NFTsList.Count == 0)
                     {
-                        <p><em><Spin Tip="Loading...No Messages found yet" Style="min-width:100px;"></Spin></em></p>
+                        <VENFTApp_Blazor.Components.Spin Tip="Loading...No Messages found yet" />
                     }
                     else
                     {
@@ -255,8 +255,8 @@
         if (!string.IsNullOrEmpty(sender))
         {
             var s = AppData.Account.Bookmarks.Find(b => b.Address == sender);
-            var r = NeblioTransactionHelpers.ValidateNeblioAddress(sender).GetAwaiter().GetResult();
-            if (r.Item1)
+            var r = NeblioTransactionHelpers.ValidateNeblioAddress(sender);
+            if (!string.IsNullOrEmpty(r))
             {
                 if (s == null)
                     return NeblioTransactionHelpers.ShortenAddress(sender);

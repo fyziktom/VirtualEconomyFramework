@@ -12,6 +12,7 @@ namespace VEDriversLite.NFT
         {
             Utxo = utxo;
             Type = NFTTypes.Image;
+            TypeText = "NFT Image";
         }
 
         public override async Task Fill(INFT NFT)

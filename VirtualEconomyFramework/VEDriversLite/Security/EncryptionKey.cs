@@ -46,7 +46,7 @@ namespace VEDriversLite.Security
             }
         }
 
-        public async Task<string> GetEncryptedKey(string password = "", bool returnEncrypted = false)
+        public string GetEncryptedKey(string password = "", bool returnEncrypted = false)
         {
             if (returnEncrypted)
             {
@@ -61,7 +61,7 @@ namespace VEDriversLite.Security
 
             if (!string.IsNullOrEmpty(password))
             {
-                return await SymetricProvider.DecryptString(password, _key);
+                return SymetricProvider.DecryptString(password, _key);
             }
             else
             {
@@ -110,13 +110,12 @@ namespace VEDriversLite.Security
             passwordLoaded = false;
         }
 
-        public async Task<bool> LoadPassword(string password)
-        {
+        public void LoadPassword(string password)
+        {            
             loadedPassword = password;
             passwordLoaded = true;
             if (!string.IsNullOrEmpty(password))
                 IsEncrypted = true;
-            return true;
         }
     }
 }

@@ -30,6 +30,7 @@ namespace VEDriversLite.NFT
             Nickname = pnft.Nickname;
             RelationshipStatus = pnft.RelationshipStatus;
             Age = pnft.Age;
+            ID = pnft.ID;
         }
 
 

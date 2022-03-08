@@ -83,7 +83,7 @@ namespace VEDriversLite.WooCommerce
                         var info = await NeblioTransactionHelpers.GetTransactionInfo(u.Txid);
                         if (info != null && info.Confirmations > 1)
                         {
-                            var msg = await NeblioTransactionHelpers.ParseNeblioMessage(info);
+                            var msg = NeblioTransactionHelpers.ParseNeblioMessage(info);
                             if (msg.Item1)
                             {
                                 //var split = msg.Item2.Split('-');

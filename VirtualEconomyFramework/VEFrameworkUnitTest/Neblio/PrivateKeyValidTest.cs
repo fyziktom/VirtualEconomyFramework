@@ -4,7 +4,7 @@ using System.Text;
 using VEDriversLite;
 using Xunit;
 
-namespace VEFrameworkUnitTest
+namespace VEFrameworkUnitTest.Neblio
 {
     public class PrivateKeyValidTest
     {
@@ -14,9 +14,8 @@ namespace VEFrameworkUnitTest
         [Fact]
         public void Privatekey_Empty_Test()
         {
-            var key = NeblioTransactionHelpers.IsPrivateKeyValid("").Result;
-            Assert.False(key.Item1);  
-            Assert.Null(key.Item2);            
+            var key = NeblioTransactionHelpers.IsPrivateKeyValid("");  
+            Assert.Null(key);            
         }
 
         /// <summary>
@@ -25,9 +24,8 @@ namespace VEFrameworkUnitTest
         [Fact]
         public void Privatekey_LessThan52_Test()
         {
-            var key1 = NeblioTransactionHelpers.IsPrivateKeyValid("Test").Result;
-            Assert.False(key1.Item1);
-            Assert.Null(key1.Item2);            
+            var key1 = NeblioTransactionHelpers.IsPrivateKeyValid("Test");
+            Assert.Null(key1);            
         }
 
         /// <summary>
@@ -37,13 +35,11 @@ namespace VEFrameworkUnitTest
         public void Privatekey_Valid_Test()
         {           
             string privateKey = "TondMadekiw2kRcyeQsRtm1oQCucN8yU9rstqy2rtrW6y2JDRe29";
-            var key2 = NeblioTransactionHelpers.IsPrivateKeyValid(privateKey).Result;
+            var key2 = NeblioTransactionHelpers.IsPrivateKeyValid(privateKey);
             //Assert  
-            Assert.True(key2.Item1);
-            Assert.NotNull(key2.Item2);
+            Assert.NotNull(key2);
 
-            NBitcoin.BitcoinSecret secret = key2.Item2;
-            Assert.Equal(secret.ToWif(), privateKey);
+            Assert.Equal(key2.ToWif(), privateKey);
         }
     }
 }

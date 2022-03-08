@@ -128,7 +128,7 @@
         if (!DogeAccountKey)
         {
             addr = AppData.Account.Address;
-            ekey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            ekey = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
             if (AppData.Account.IsLocked())
             {
                 accountKey = ekey;
@@ -138,7 +138,7 @@
             {
                 try
                 {
-                    accountKey = await AppData.Account.AccountKey.GetEncryptedKey();
+                    accountKey = AppData.Account.AccountKey.GetEncryptedKey();
                     var ack = await AppData.Account.GetSubAccountKeys();
                     subaccountkeys = ack.Item2;
                     privateKeyDialogVisible = true;
@@ -152,7 +152,7 @@
         else
         {
             addr = AppData.DogeAccount.Address;
-            ekey = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            ekey = AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
             if (AppData.DogeAccount.IsLocked())
             {
                 accountKey = ekey;
@@ -162,7 +162,7 @@
             {
                 try
                 {
-                    accountKey = await AppData.DogeAccount.AccountKey.GetEncryptedKey();
+                    accountKey = AppData.DogeAccount.AccountKey.GetEncryptedKey();
                     privateKeyDialogVisible = true;
                 }
                 catch (Exception ex)

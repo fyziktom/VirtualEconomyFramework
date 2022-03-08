@@ -6,7 +6,7 @@ using VEDriversLite;
 using VEDriversLite.NeblioAPI;
 using Xunit;
 
-namespace VEFrameworkUnitTest
+namespace VEFrameworkUnitTest.Neblio
 {
     public class GetSendAmountTest
     {
@@ -62,7 +62,7 @@ namespace VEFrameworkUnitTest
 
             //ACT
             var txinfo = NeblioTransactionHelpers.GetTransactionInfo(transactionId).Result;
-            var amount = NeblioTransactionHelpers.GetSendAmount(txinfo, address).Result;
+            var amount = NeblioTransactionHelpers.GetSendAmount(txinfo, address);
 
             //Assert  
             Assert.True(amount > 0);
@@ -91,7 +91,7 @@ namespace VEFrameworkUnitTest
             var txinfo = NeblioTransactionHelpers.GetTransactionInfo(transactionId).Result;
 
             //Assert
-            var exception = Assert.ThrowsAsync<Exception>(() => NeblioTransactionHelpers.GetSendAmount(txinfo, address)).Result;
+            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetSendAmount(txinfo, address));
             Assert.Equal(message, exception.Message);
         }
 
@@ -115,7 +115,7 @@ namespace VEFrameworkUnitTest
 
             //ACT            
             var txinfo = NeblioTransactionHelpers.GetTransactionInfo(transactionId).Result;
-            double amount = NeblioTransactionHelpers.GetSendAmount(txinfo, address).Result;
+            double amount = NeblioTransactionHelpers.GetSendAmount(txinfo, address);
 
             //Assert
             Assert.Equal(0, amount);

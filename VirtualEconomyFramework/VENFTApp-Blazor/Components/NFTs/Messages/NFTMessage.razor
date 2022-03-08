@@ -8,8 +8,8 @@
 
 <div class="row">
     <div class="col">
-        <Spin Tip="Loading..." Spinning="@loading">
-            <span class="badge badge-primary" style="position: absolute;right: 7px;top: 2px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
+        <VENFTApp_Blazor.Components.Spin Tip="Loading..." Spinning="@loading">
+            <span class="badge badge-primary" style="position: absolute;right: 7px;top: 2px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations))</span>
 
             @if ((NFT as VEDriversLite.NFT.MessageNFT).IsReceivedMessage && !IsHistory)
             {
@@ -103,9 +103,9 @@
                 {
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <Spin Tip="Downloading image..." Spinning="true">
+                            <VENFTApp_Blazor.Components.Spin Tip="Downloading image..." Spinning="true">
                                 <span>Downloading and encrypting Image. Please wait a while...</span>
-                            </Spin>
+                            </VENFTApp_Blazor.Components.Spin>
                         </div>
                     </div>
                 }
@@ -132,7 +132,7 @@
                     </div>
                 </div>
             }
-        </Spin>
+        </VENFTApp_Blazor.Components.Spin>
     </div>
 
     <Modal Title="NFT Image"

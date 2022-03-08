@@ -44,7 +44,7 @@ namespace VEDriversLite.NFT.Tickets
                         nft.LocationCoordinates = ticketTemplate.StartLocationCoordinates;
                         nft.Seat = $"Column: {coulmn}, Row: {i}";
                         nft.Price = section.PriceInNeblio;
-                        nft.PriceInDoge = section.PriceInDoge;
+                        nft.DogePrice = section.PriceInDoge;
                         nft.TicketClass = section.SectionClass;
                         nft.VideoLink = ticketTemplate.SafetyVideoLink;
                         nft.ImageLink = ticketTemplate.AerolinesLogo;

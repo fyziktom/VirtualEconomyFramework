@@ -18,7 +18,7 @@
        OnCancel="@importAccountCancel">
     <div class="row">
         <div class="col">
-            <Spin spinning="@creatingAddressSpinner" tip="Importing Address...">
+            <VENFTApp_Blazor.Components.Spin Spinning="@creatingAddressSpinner" Tip="Importing Address...">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         <h6>Option 1</h6>
@@ -107,37 +107,33 @@
                         {
                             if (passwordConfirm != importAccountPass)
                             {
-                                <Alert Type="@AlertType.Warning"
-                                       Message="Warrning"
-                                       Description="Passwords not match!"
-                                       ShowIcon="true" />
+                                <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
+                                    <Message>Passwords not match!</Message>
+                                </VENFTApp_Blazor.Components.Alert>
                             }
                             else
                             {
-                                <Alert Type="@AlertType.Success"
-                                       Message="Success"
-                                       Description="Passwords Match. Please confirm to create address!"
-                                       ShowIcon="true" />
+                                <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+                                    <Message>Passwords Match. Please confirm to create address!</Message>
+                                </VENFTApp_Blazor.Components.Alert>
                             }
                         }
                     }
                     else
                     {
-                        <Alert Type="@AlertType.Warning"
-                               Message="Warrning"
-                               Description="Passwords minimal lenght is 8 characters!"
-                               ShowIcon="true" />
+                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
+                            <Message>Passwords minimal lenght is 8 characters!</Message>
+                        </VENFTApp_Blazor.Components.Alert>
                     }
                 }
 
                 @if (accountImportError)
                 {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Wrong Password or private key"
-                           ShowIcon="true" />
+                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                        <Message>Wrong Password or private key</Message>
+                    </VENFTApp_Blazor.Components.Alert>
                 }
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 </Modal>
@@ -260,19 +256,19 @@
             await AppData.Account.CreateNewAccount(importAccountPass, false);
             // save neblio address and key
             address = AppData.Account.Address;
-            key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            key = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
             await localStorage.SetItemAsync("address", address);
             await localStorage.SetItemAsync("key", key);
             return true;
         }
         else
         {
-            var res = await NeblioTransactionHelpers.IsPrivateKeyValid(importAccountKey);
-            if (!res.Item1)
+            var res = NeblioTransactionHelpers.IsPrivateKeyValid(importAccountKey);
+            if (res != null)
             {
                 try
                 {
-                    key = await SymetricProvider.DecryptString(importAccountPass, importAccountKey);
+                    key = SymetricProvider.DecryptString(importAccountPass, importAccountKey);
                 }
                 catch (Exception ex)
                 {
@@ -285,12 +281,12 @@
                 key = importAccountKey;
             }
 
-            var add = await NeblioTransactionHelpers.GetAddressFromPrivateKey(key);
-            if (add.Item1)
+            var add = NeblioTransactionHelpers.GetAddressFromPrivateKey(key);
+            if (!string.IsNullOrEmpty(add))
             {
-                address = add.Item2;
+                address = add;
                 var accountLoaded = false;
-                if (!string.IsNullOrEmpty(backupData.Address) && add.Item2 == backupData.Address)
+                if (!string.IsNullOrEmpty(backupData.Address) && add == backupData.Address)
                 {
                     accountLoaded = await AppData.Account.LoadAccountFromVENFTBackup(importAccountPass, backupDataString);
                     if (accountLoaded)
@@ -338,18 +334,18 @@
             // create and save doge address and key
             await AppData.DogeAccount.CreateNewAccount(importAccountPass, false);
             var addr = AppData.DogeAccount.Address;
-            var k = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            var k = AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
             await localStorage.SetItemAsync("dogeaddress", addr);
             await localStorage.SetItemAsync("dogekey", k);
         }
         else
         {
-            var res = await DogeTransactionHelpers.IsPrivateKeyValid(importDogeAccountKey);
+            var res = DogeTransactionHelpers.IsPrivateKeyValid(importDogeAccountKey);
             if (!res.Item1)
             {
                 try
                 {
-                    dogekey = await SymetricProvider.DecryptString(importAccountPass, importDogeAccountKey);
+                    dogekey = SymetricProvider.DecryptString(importAccountPass, importDogeAccountKey);
                 }
                 catch (Exception ex)
                 {
@@ -362,7 +358,7 @@
                 dogekey = importDogeAccountKey;
             }
 
-            var add = await DogeTransactionHelpers.GetAddressFromPrivateKey(dogekey);
+            var add = DogeTransactionHelpers.GetAddressFromPrivateKey(dogekey);
             if (add.Item1)
             {
                 dogeaddress = add.Item2;

@@ -7,7 +7,7 @@ using VEDriversLite.NeblioAPI;
 using VEDriversLite;
 using Xunit;
 
-namespace VEFrameworkUnitTest
+namespace VEFrameworkUnitTest.Neblio
 {
     public class CheckSpendableNeblioTest : NeblioAccountBase
     {
@@ -129,7 +129,7 @@ namespace VEFrameworkUnitTest
             
             _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionObject);            
 
-            var result1 = CheckSpendableMainToken(0.23).Result;
+            var result1 = CheckSpendableNeblio(0.0009).Result;
 
             const string ok = "OK";
             Assert.Equal(ok, result1.Item1);

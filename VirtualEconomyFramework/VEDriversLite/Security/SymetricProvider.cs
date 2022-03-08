@@ -87,7 +87,7 @@ namespace VEDriversLite.Security
         /// <param name="key">Password for the encryption</param>
         /// <param name="cipherText">Text which should be decrypted</param>
         /// <returns></returns>
-        public static async Task<string> DecryptString(string key, string cipherText)
+        public static string DecryptString(string key, string cipherText)
         {
             byte[] iv = new byte[16];
             byte[] buffer = Convert.FromBase64String(cipherText);

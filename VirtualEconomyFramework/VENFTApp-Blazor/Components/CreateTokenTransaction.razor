@@ -4,7 +4,7 @@
 @using NBitcoin 
 @inject AppData AppData
 
-<Spin Tip="Creating..." Spinning="@creatingTransaction">
+<VENFTApp_Blazor.Components.Spin Tip="Creating..." Spinning="@creatingTransaction">
     <div class="row d-flex justify-content-center align-items-center">
         <div class="col" style="text-align: center;">
             <div class="row" style="width: 750px;">
@@ -184,7 +184,7 @@
             </div>
         </div>
     </div>
-</Spin>
+</VENFTApp_Blazor.Components.Spin>
 
 <!-- utxos list modal -->
 <Modal Title="Sender Utxos"

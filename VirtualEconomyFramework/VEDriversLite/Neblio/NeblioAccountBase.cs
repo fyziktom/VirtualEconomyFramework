@@ -354,9 +354,9 @@ namespace VEDriversLite.Neblio
                 else
                     AccountKey = new EncryptionKey(key, fromDb: false);
                 if (!string.IsNullOrEmpty(password))
-                    await AccountKey.LoadPassword(password);
+                    AccountKey.LoadPassword(password);
 
-                Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+                Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
 
                 return true;
             }
@@ -841,7 +841,7 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var key = await AccountKey.GetEncryptedKey();
+            var key = AccountKey.GetEncryptedKey();
             return await ECDSAProvider.SignMessage(message, key);
         }
 
@@ -2034,11 +2034,12 @@ namespace VEDriversLite.Neblio
                                             if (res.Item2 != null)
                                             {
                                                 var rtxid = string.Empty;
+                                                var pntosend = await NFTFactory.CloneNFT(pn);
                                                 if (!pn.SellJustCopy)
-                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
-                                                else  
-                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
-
+                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
+                                                else
+                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
+                                                
                                                 if (!string.IsNullOrEmpty(rtxid))
                                                 {
                                                     Console.WriteLine($"NFT sent to the buyer {((PaymentNFT)p).Sender} with txid: {rtxid}");

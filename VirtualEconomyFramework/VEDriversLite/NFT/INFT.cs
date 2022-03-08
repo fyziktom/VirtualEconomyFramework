@@ -206,6 +206,11 @@ namespace VEDriversLite.NFT
         /// <param name="meta"></param>
         void ParseSoldInfo(IDictionary<string, string> meta);
         /// <summary>
+        /// Parse Common Properties from Metadata
+        /// </summary>
+        /// <param name="meta"></param>
+        void ParseCommon(IDictionary<string, string> meta);
+        /// <summary>
         /// Parse price from the metadata of the NFT
         /// </summary>
         /// <param name="meta"></param>
@@ -239,6 +244,10 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         Task ClearPrices();
         /// <summary>
+        /// Parse tags to tag list
+        /// </summary>
+        void ParseTags();
+        /// <summary>
         /// Stop the auto refreshin of the tx info data
         /// </summary>
         /// <returns></returns>
@@ -259,5 +268,10 @@ namespace VEDriversLite.NFT
         /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
         Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");
+        /// <summary>
+        /// Get Common Metadata of the Actual NFT
+        /// </summary>
+        /// <returns></returns>
+        Task<IDictionary<string, string>> GetCommonMetadata();
     }
 }
