@@ -21,7 +21,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning Utxos for a valid address and required amount is found.
         /// </summary>
         [Fact]
-        public void GetAddressNeblUtxo_Valid_Test()
+        public async void GetAddressNeblUtxo_Valid_Test()
         {
             #region TransactionObject
 
@@ -101,15 +101,15 @@ namespace VEFrameworkUnitTest.Neblio
 
             //Arrange           
             string address = "123";
-            double amount = 0.009;            
+            double amount = 0.009;
 
-            GetAddressInfoResponse addressObject = Newtonsoft.Json.JsonConvert.DeserializeObject<GetAddressInfoResponse>(response);                                          
+            GetAddressInfoResponse addressObject = Newtonsoft.Json.JsonConvert.DeserializeObject<GetAddressInfoResponse>(response);
 
             _client.Setup(x => x.GetAddressInfoAsync(It.IsAny<string>())).ReturnsAsync(addressObject);
-            _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionObject);                                    
+            _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionObject);
 
             //ACT
-            var Utxos = NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, amount).Result;
+            var Utxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, amount);
 
             //Assert  
             Assert.NotEmpty(Utxos);
@@ -119,7 +119,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning an empty Utxos list for incorrect addres. Same validation applies when required amount is higer than available Neblios.
         /// </summary>
         [Fact]
-        public void GetSendAmount_EmptyUtxos_Test()
+        public async void GetSendAmount_EmptyUtxos_Test()
         {                        
             //Arrange
             string address = "123";
@@ -139,7 +139,7 @@ namespace VEFrameworkUnitTest.Neblio
             _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionInfoResponse);
 
             //ACT
-            var Utxos = NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, amount).Result;
+            var Utxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, amount);
 
             //Assert  
             Assert.Empty(Utxos);

@@ -627,8 +627,7 @@ namespace VEDriversLite
                         break;
                     }
                 }
-            }                       
-
+            }
             return await SignAndBroadcast(transaction, key, addressForTx);
         }
 
@@ -2411,7 +2410,7 @@ namespace VEDriversLite
         /// <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
         /// <returns></returns>
         public static async Task<ICollection<Utxos>> GetAddressNeblUtxo(string addr, double minAmount = 0.0001, double requiredAmount = 0.0001)
-        {
+        {       
             GetAddressInfoResponse addinfo = null;
             var resp = new List<Utxos>();
 
@@ -2425,7 +2424,7 @@ namespace VEDriversLite
             utxos = utxos.OrderByDescending(u => u.Value).ToList();
 
             var founded = 0.0;
-            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.FirstOrDefault()?.Txid);
+            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.FirstOrDefault()?.Txid, addr);
             foreach (var ut in utxos.Where(u => u.Blockheight > 0 && u.Value > 10000 && u.Tokens?.Count == 0 && ((double)u.Value) > (minAmount * FromSatToMainRatio)))
             {
                 double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
@@ -2441,6 +2440,7 @@ namespace VEDriversLite
             }
 
             return new List<Utxos>();
+            
         }
 
         private static bool IsValidUtxo(double UtxoBlockHeight, double latestBlockCount)
@@ -2471,7 +2471,7 @@ namespace VEDriversLite
                 return 0;
             }
 
-            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.FirstOrDefault()?.Txid);
+            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.FirstOrDefault()?.Txid, address);
             foreach (var ut in uts.Where(u => u.Blockheight > 0 && u.Tokens != null && u.Tokens.Count > 0))
             {
                 var toks = ut.Tokens.ToArray();
@@ -2509,7 +2509,7 @@ namespace VEDriversLite
             }
 
             utxos = utxos.OrderByDescending(u => u.Value).ToList();
-            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.FirstOrDefault()?.Txid);
+            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.FirstOrDefault()?.Txid, addr);
 
             foreach (var ut in utxos.Where(u => u.Blockheight > 0 && u.Tokens.Count > 0))
             {
