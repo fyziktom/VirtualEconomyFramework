@@ -199,4 +199,9 @@ app {
 .qr-wrapper img {
     width: 100%;
     margin: auto;
+    max-width: 120px;
+}
+
+small {
+    display: block;
 }

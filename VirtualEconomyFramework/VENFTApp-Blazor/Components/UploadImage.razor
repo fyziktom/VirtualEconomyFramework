@@ -7,92 +7,87 @@
 @inject IJSRuntime JSRuntime
 @inject HttpClient _client
 
-<div class="col-xl-12">
+<div class="row">
 
-    <div class="row">
+    <div class="col-xl-6">
+        <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
 
-        <div class="col-xl-6">
-            <Spin spinning="@uploadingImage" tip="Uploading to IPFS...">
+            <div class="mb-1">
+                @if (NFTType == NFTTypes.Music)
+                {
+                    <small>Upload Music</small>
+                    <Input Placeholder="Music Link" @bind-Value=@_imageLink @onfocusout="LinkChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
+                }
+                else
+                {
+                    <small>Upload Image</small>
+                    <Input Placeholder="Image Link" @bind-Value=@_imageLink @onfocusout="LinkChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
+                }
+            </div>
 
-                <div class="mb-1">
-                    @if (NFTType == NFTTypes.Music)
+            <div class="mb-1"><small>or</small></div>
+
+            <div class="mb-3">
+                @if (NFTType == NFTTypes.Music)
+                {
+                    <input type="file" @ref=inputTypeFileElement /> <!--accept="audio/*" />-->
+                    <p><small class="text-info">Upload limit size is 10 MB.</small></p>
+                    <button @onclick=ReadFile>Upload Music</button>
+                }
+                else
+                {
+                    <input type="file" @ref=inputTypeFileElement /> <!--accept="image/*" />-->
+                    <p><small class="text-info">Upload limit size is 10 MB.</small></p>
+                    <button @onclick=ReadFile>Upload Image</button>
+                }
+            </div>
+        </Spin>
+    </div>
+
+    <div class="col-xl-6">
+        @if (NFTType == NFTTypes.Music)
+        {
+            <small>Audio Preview:</small>
+        }
+        else
+        {
+            <small>Image Preview:</small>
+        }
+
+        @switch (loadingImageStage)
+        {
+            case LoadingImageStages.NotStarted:
+                <p>No image loaded</p>
+                break;
+            case LoadingImageStages.Loading:
+                <Spin Tip="Reloading..." />
+                break;
+            case LoadingImageStages.Loaded:
+                @if (NFTType == NFTTypes.Image || NFTType == NFTTypes.Post || NFTType == NFTTypes.Profile || NFTType == NFTTypes.CoruzantArticle || NFTType == NFTTypes.CoruzantProfile || NFTType == NFTTypes.CoruzantPodcast)
+                {
+                    @if (!EncryptedContent)
                     {
-                        <small>Upload Music</small>
-                        <Input Placeholder="Music Link" @bind-Value=@_imageLink @onfocusout="LinkChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        <a href="@_imageLink" target="_blank"><img src="@_imageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
                     }
                     else
                     {
-                        <small>Upload Image</small>
-                        <Input Placeholder="Image Link" @bind-Value=@_imageLink @onfocusout="LinkChanged" Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    }
-                </div>
-
-                <div class="mb-1"><small>or</small></div>
-
-                <div class="mb-3">
-                    @if (NFTType == NFTTypes.Music)
-                    {
-                        <input type="file" @ref=inputTypeFileElement /> <!--accept="audio/*" />-->
-                        <p><small class="text-info">Upload limit size is 10 MB.</small></p>
-                        <button @onclick=ReadFile>Upload Music</button>
-                    }
-                    else
-                    {
-                        <input type="file" @ref=inputTypeFileElement /> <!--accept="image/*" />-->
-                        <p><small class="text-info">Upload limit size is 10 MB.</small></p>
-                        <button @onclick=ReadFile>Upload Image</button>
-                    }
-                </div>
-            </Spin>
-        </div>
-
-        <div class="col-xl-6">
-            @if (NFTType == NFTTypes.Music)
-            {
-                <small>Audio Preview:</small>
-            }
-            else
-            {
-                <small>Image Preview:</small>
-            }
-
-            @switch (loadingImageStage)
-            {
-                case LoadingImageStages.NotStarted:
-                    <p>No image loaded</p>
-                    break;
-                case LoadingImageStages.Loading:
-                    <Spin Tip="Reloading..." />
-                    break;
-                case LoadingImageStages.Loaded:
-                    @if (NFTType == NFTTypes.Image || NFTType == NFTTypes.Post || NFTType == NFTTypes.Profile || NFTType == NFTTypes.CoruzantArticle || NFTType == NFTTypes.CoruzantProfile || NFTType == NFTTypes.CoruzantPodcast)
-                    {
-                        @if (!EncryptedContent)
+                        @if (decryptedFile != null)
                         {
-                            <a href="@_imageLink" target="_blank"><img src="@_imageLink" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
-                        }
-                        else
-                        {
-                            @if (decryptedFile != null)
-                            {
-                                <a href="_imageLink" target="_blank"><img src="data:image;base64,@System.Convert.ToBase64String(decryptedFile)" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
-                            }
+                            <a href="_imageLink" target="_blank"><img src="data:image;base64,@System.Convert.ToBase64String(decryptedFile)" style="max-width:350px; min-width:40px;" alt="Probably still waiting for ipfs confirmation. Wait a minute please..." /></a>
                         }
                     }
-                    else if (NFTType == NFTTypes.Music)
-                    {
-                        <!-- <a href="@_imageLink" target="_blank"><audio src="@_imageLink" style="max-height:200px;  max-width:250px;"></audio></a>-->
-                        <video controls="" autoplay="" style="margin-bottom:50px; max-width:350px;" name="media">
-                            <source src="@_imageLink" type="audio/mpeg">
-                        </video>
-                    }
-                    break;
-            }
-
-        </div>
+                }
+                else if (NFTType == NFTTypes.Music)
+                {
+                    <!-- <a href="@_imageLink" target="_blank"><audio src="@_imageLink" style="max-height:200px;  max-width:250px;"></audio></a>-->
+                    <video controls="" autoplay="" style="margin-bottom:50px; max-width:350px;" name="media">
+                        <source src="@_imageLink" type="audio/mpeg">
+                    </video>
+                }
+                break;
+        }
     </div>
 </div>
-
 @code {
 
     [Parameter]
