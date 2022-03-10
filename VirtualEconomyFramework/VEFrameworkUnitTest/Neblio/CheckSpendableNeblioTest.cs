@@ -22,7 +22,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
         /// </summary>
         [Fact]
-        public void CheckSpendableNeblio_InCorrect_Test()
+        public async void CheckSpendableNeblio_InCorrect_Test()
         {
             var count = 2;
             this.Address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWd";
@@ -30,7 +30,7 @@ namespace VEFrameworkUnitTest.Neblio
             var getAddressInfoResponse = new GetAddressInfoResponse();
             _client.Setup(x => x.GetAddressInfoAsync(It.IsAny<string>())).ReturnsAsync(getAddressInfoResponse);           
 
-            var result = this.CheckSpendableNeblio(0.23).Result;
+            var result = await this.CheckSpendableNeblio(0.23);
 
             string error = "You dont have Neblio on the address. Probably waiting for more than " + count +
                            " confirmations.";
@@ -43,7 +43,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning Utxos if an address has spendable Neblios.
         /// </summary>
         [Fact]
-        public void CheckSpendableNeblio_Valid_Test()
+        public async void CheckSpendableNeblio_Valid_Test()
         {            
             this.Address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";
 
@@ -129,7 +129,7 @@ namespace VEFrameworkUnitTest.Neblio
             
             _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionObject);            
 
-            var result1 = CheckSpendableNeblio(0.0009).Result;
+            var result1 = await CheckSpendableNeblio(0.0009);
 
             const string ok = "OK";
             Assert.Equal(ok, result1.Item1);
