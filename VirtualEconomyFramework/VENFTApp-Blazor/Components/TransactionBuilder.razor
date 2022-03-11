@@ -256,148 +256,178 @@
     </VENFTApp_Blazor.Components.Spin>
 
     <!-- add token tx -->
-    <Modal Title="Add Token Tx"
-           Visible="@addTokensVisible"
-           OnOk="@addTokenTxConfirm"
-           OnCancel="@addTokenTxCancel">
-    </Modal>
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@addTokensVisible">
+        <ModalHeader>
+            <ModalTitle>Add Token Tx</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@addTokenTxConfirm">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
     <!-- add neblio output -->
-    <Modal Title="Add Neblio To Output"
-           Visible="@addNeblioToOutputVisible"
-           OnOk="@addNeblioToOutputConfirm"
-           OnCancel="@addNeblioToOutputCancel">
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <p>Add New Neblio Output</p>
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@addNeblioToOutputVisible">
+        <ModalHeader>
+            <ModalTitle>Add Neblio To Output</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <p>Add New Neblio Output</p>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <input type="number" step="10000" min="10000" @bind="@newNeblioAmount" />
-                    </div>
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <button class="btn btn-primary" @onclick="AddNeblioOutput">Add Neblio</button>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <input type="number" step="10000" min="10000" @bind="@newNeblioAmount" />
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="AddNeblioOutput">Add Neblio</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </Modal>
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@addNeblioToOutputConfirm">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
     <!-- add receiver to output -->
-    <Modal Title="Add Receiver To Output"
-           Visible="@addReceiverToOutputVisible"
-           OnOk="@addReceiverToOutputConfirm"
-           OnCancel="@addReceiverToOutputCancel">
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <p>Add Receiver To Output</p>
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@addReceiverToOutputVisible">
+        <ModalHeader>
+            <ModalTitle>Add Receiver To Output</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <p>Add Receiver To Output</p>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <Input Placeholder="Add receiver address" @bind-Value=@newReceiver Style="font-size:12px; min-width:250px; max-width:350px;" />
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <Input Placeholder="Add receiver address" @bind-Value=@newReceiver Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </Modal>
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@addReceiverToOutputConfirm">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
     <!-- utxos list modal -->
-    <Modal Title="Sender Utxos"
-           Width="650"
-           Visible="@senderUtxosVisible"
-           OnOk="@addInputConfirm"
-           OnCancel="@addInputCancel">
-
-        @if (transaction.Sender != null)
-        {
-            @if (!string.IsNullOrEmpty(transaction.Sender.Address))
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@senderUtxosVisible"
+                                            Style="max-width: 650px;">
+        <ModalHeader>
+            <ModalTitle>Sender Utxos</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            @if (transaction.Sender != null)
             {
-                <div class="row" style="margin-top:25px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Utxo</th>
-                                    <th>Index</th>
-                                    <th>Amount</th>
-                                    <th>Confirmations</th>
-                                    <th>Tokens</th>
-                                    <th>Used</th>
-                                    <th>Add</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var u in transaction.Sender.Utxos.Values)
-                                {
+                @if (!string.IsNullOrEmpty(transaction.Sender.Address))
+                {
+                    <div class="row" style="margin-top:25px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <table class="table table-striped">
+                                <thead>
                                     <tr>
-                                        <td>...@u.Utxo.Txid.Remove(0, u.Utxo.Txid.Length - 5)</td>
-                                        <td>@u.Utxo.Index</td>
-                                        <td>@u.Utxo.Value Sat</td>
-                                        <td style="margin-right:10px;">@u.TxInfo.Confirmations</td>
-                                        @if (u.Utxo.Tokens.Count > 0)
-                                        {
-                                            var tok = u.Utxo.Tokens.FirstOrDefault();
-                                            <td>
-                                                <div class="row">
-                                                    <div class="col">
-                                                        @tok?.Amount
-                                                    </div>
-                                                    <div class="col">
-                                                        <img style="width: 25px;margin-right: 10px;" src="@transaction.GetTokenImageUrl(tok?.TokenId)" />
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>0</td>
-                                        }
-                                        @if (u.Used)
-                                        {
-                                            <td>Yes</td>
-                                        }
-                                        else
-                                        {
-                                            <td>No</td>
-                                        }
-                                        <td><button class="btn btn-primary" @onclick="async () => AddInput(u.Utxo.Txid, (int)u.Utxo.Index)">Add As Input</button></td>
+                                        <th>Utxo</th>
+                                        <th>Index</th>
+                                        <th>Amount</th>
+                                        <th>Confirmations</th>
+                                        <th>Tokens</th>
+                                        <th>Used</th>
+                                        <th>Add</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach (var u in transaction.Sender.Utxos.Values)
+                                    {
+                                        <tr>
+                                            <td>...@u.Utxo.Txid.Remove(0, u.Utxo.Txid.Length - 5)</td>
+                                            <td>@u.Utxo.Index</td>
+                                            <td>@u.Utxo.Value Sat</td>
+                                            <td style="margin-right:10px;">@u.TxInfo.Confirmations</td>
+                                            @if (u.Utxo.Tokens.Count > 0)
+                                            {
+                                                var tok = u.Utxo.Tokens.FirstOrDefault();
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            @tok?.Amount
+                                                        </div>
+                                                        <div class="col">
+                                                            <img style="width: 25px;margin-right: 10px;" src="@transaction.GetTokenImageUrl(tok?.TokenId)" />
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td>0</td>
+                                            }
+                                            @if (u.Used)
+                                            {
+                                                <td>Yes</td>
+                                            }
+                                            else
+                                            {
+                                                <td>No</td>
+                                            }
+                                            <td><button class="btn btn-primary" @onclick="async () => AddInput(u.Utxo.Txid, (int)u.Utxo.Index)">Add As Input</button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            }
-            else
-            {
-                <div class="row" style="margin-top:25px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <h3>No sender loaded</h3>
+                }
+                else
+                {
+                    <div class="row" style="margin-top:25px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h3>No sender loaded</h3>
+                        </div>
                     </div>
-                </div>
+                }
             }
-        }
-    </Modal>
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
 
     <!-- Token Tx base Modal-->
-    <Modal Title="Create Token Transaction"
-            Width="750"
-           Visible="@createTokenBasedTransactionVisible"
-           OnOk="@CloseCreateTokenTranactionModal"
-           OnCancel="@CloseCreateTokenTranactionModal">
-        <VENFTApp_Blazor.Components.CreateTokenTransaction TransactionCreated="(e) => TokenTransactionCreated(e)" />
-    </Modal>
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@createTokenBasedTransactionVisible"
+                                            Style="max-width: 750px;">
+        <ModalHeader>
+            <ModalTitle>Create Token Transaction</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <VENFTApp_Blazor.Components.CreateTokenTransaction TransactionCreated="(e) => TokenTransactionCreated(e)" />
+        </ModalBody>
+        <VENFTApp_Blazor.Components.Modal.ModalFooter>
+            <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+            <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+        </VENFTApp_Blazor.Components.Modal.ModalFooter>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 </div>
 
 
@@ -440,19 +470,11 @@
         StateHasChanged();
     }
 
-    private async Task addInputConfirm(MouseEventArgs e)
-    {
-        senderUtxosVisible = false;
-    }
-    private async Task addInputCancel(MouseEventArgs e)
-    {
-        senderUtxosVisible = false;
-    }
-    private async Task addNewInputDialog(MouseEventArgs e)
+    private void addNewInputDialog()
     {
         senderUtxosVisible = true;
     }
-    private async Task addNeOutputDialog(MouseEventArgs e)
+    private void addNeOutputDialog()
     {
         if (transaction.ActualDifference > 10000)
         {
@@ -462,37 +484,25 @@
         addNeblioToOutputVisible = true;
     }
 
-    private async Task addTokenTxConfirm(MouseEventArgs e)
+    private async Task addTokenTxConfirm()
     {
         addTokensVisible = false;
         await AddNeblioTokensToOutput();
     }
-    private async Task addTokenTxCancel(MouseEventArgs e)
-    {
-        addTokensVisible = false;
-    }
-    private async Task addNeblioToOutputConfirm(MouseEventArgs e)
+    private async Task addNeblioToOutputConfirm()
     {
         addNeblioToOutputVisible = false;
         await AddNeblioOutput();
     }
-    private async Task addNeblioToOutputCancel(MouseEventArgs e)
-    {
-        addNeblioToOutputVisible = false;
-    }
-    private async Task addReceiverVisible(int index)
+    private void addReceiverVisible(int index)
     {
         newReceiverOutputIndex = index;
         addReceiverToOutputVisible = true;
     }
-    private async Task addReceiverToOutputConfirm(MouseEventArgs e)
+    private async Task addReceiverToOutputConfirm()
     {
         addReceiverToOutputVisible = false;
         await AddReceiver();
-    }
-    private async Task addReceiverToOutputCancel(MouseEventArgs e)
-    {
-        addReceiverToOutputVisible = false;
     }
 
     private async Task AddSender()
@@ -709,12 +719,7 @@
         }
     }
 
-    private async Task CloseCreateTokenTranactionModal(MouseEventArgs e)
-    {
-        createTokenBasedTransactionVisible = false;
-    }
-
-    private async Task CreateNewTokenTransaction()
+    private void CreateNewTokenTransaction()
     {
         createTokenBasedTransactionVisible = true;
     }

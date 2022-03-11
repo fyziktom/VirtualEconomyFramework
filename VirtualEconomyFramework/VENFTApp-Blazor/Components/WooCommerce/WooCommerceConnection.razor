@@ -195,53 +195,77 @@
             </div>
         </VENFTApp_Blazor.Components.Spin>
 
-        <Modal Title="Woo Commerce Product"
-               Visible="@showWooComProductVisible"
-               OnOk="@showWooComProductCancel"
-               OnCancel="@showWooComProductCancel">
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@showWooComProductVisible">
+            <ModalHeader>
+                <ModalTitle>Woo Commerce Product</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
                 <WooCommerceProduct NFT="@loadedNFT" InputProduct="@product" />
-        </Modal>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
 
-        <Modal Title="Mint New NFT"
-               Visible="@confirmVisible"
-               OnOk="@HandleOk"
-               OnCancel="@HandleCancel">
-            <p>Do you really want to use this url and credentials?</p>
-        </Modal>
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmVisible">
+            <ModalHeader>
+                <ModalTitle>Mint New NFT</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <p>Do you really want to use this url and credentials?</p>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
 
-        <Modal Title="Required"
-               Visible="@emptyInfoVisible"
-               OnOk="@HandleEmptyInfoCancel"
-               OnCancel="@HandleEmptyInfoCancel">
-            <p>You must fill API URL, Key and Secret.</p>
-        </Modal>
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@emptyInfoVisible">
+            <ModalHeader>
+                <ModalTitle>Required</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <p>You must fill API URL, Key and Secret.</p>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
 
-        <Modal Title="NFT Details"
-               Visible="@showNFTDetailsVisible"
-               OnOk="@showNFTDetailsCancel"
-               OnCancel="@showNFTDetailsCancel">
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    @if (loadedNFT != null)
-                    {
-                        @if (loadedNFT.Type == NFTTypes.CoruzantArticle || loadedNFT.Type == NFTTypes.CoruzantProfile)
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@showNFTDetailsVisible">
+            <ModalHeader>
+                <ModalTitle>NFT Details</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        @if (loadedNFT != null)
                         {
-                            <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
-                                         OwnNFT="@true"
-                                         Address="@AppData.Account.Address"
-                                         SubAccount="@false" />
+                            @if (loadedNFT.Type == NFTTypes.CoruzantArticle || loadedNFT.Type == NFTTypes.CoruzantProfile)
+                            {
+                                <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
+                                                                                 OwnNFT="@true"
+                                                                                 Address="@AppData.Account.Address"
+                                                                                 SubAccount="@false" />
+                            }
+                            else
+                            {
+                                <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
+                                                                     OwnNFT="@true"
+                                                                     Address="@AppData.Account.Address"
+                                                                     SubAccount="@false" />
+                            }
                         }
-                        else
-                        {
-                            <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
-                                 OwnNFT="@true"
-                                 Address="@AppData.Account.Address"
-                                 SubAccount="@false" />
-                        }
-                    }
+                    </div>
                 </div>
-            </div>
-        </Modal>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
     </div>
 </div>
 
@@ -301,7 +325,7 @@
         loadedNFT = await NFTFactory.GetNFT("", txid, 0, 0, true);
         if (loadedNFT != null)
         {
-            await showNFTDetails(null);
+            showNFTDetails();
         }
         StateHasChanged();
     }
@@ -311,31 +335,14 @@
         confirmVisible = true;
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         await InitConnection();
     }
 
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
-    }
-    private async Task showWooComProductCancel(MouseEventArgs e)
-    {
-        showWooComProductVisible = false;
-    }
-
-    private void HandleEmptyInfoCancel(MouseEventArgs e)
-    {
-        emptyInfoVisible = false;
-    }
-    private async Task showNFTDetails(MouseEventArgs e)
+    private void showNFTDetails()
     {
         showNFTDetailsVisible = true;
-    }
-    private async Task showNFTDetailsCancel(MouseEventArgs e)
-    {
-        showNFTDetailsVisible = false;
     }
 
     private async Task GetJWTToken()

@@ -3,34 +3,47 @@
 @inject AppData AppData
 @inject IJSRuntime JSRuntime
 
-<Modal Title="Send NFT"
-       Visible="@SendNFTDialogVisible"
-       OnOk="@sendNFTDialogOK"
-       OnCancel="@sendNFTDialogCancel">
-    <div class="row">
-        <div class="col">
-            <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        Fill Receiver Address:
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@SendNFTDialogVisible"
+                                        OnCancel="@sendNFTDialogCancel">
+    <ModalHeader>
+        <ModalTitle>Send NFT</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            Fill Receiver Address:
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
+                        </div>
                     </div>
-                </div>
-            </VENFTApp_Blazor.Components.Spin>
+                </VENFTApp_Blazor.Components.Spin>
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@sendNFTDialogOK">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Send NFT"
-       Visible="@confirmVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <p>Do you really want to send this NFT?</p>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmVisible">
+    <ModalHeader>
+        <ModalTitle>Send NFT</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <p>Do you really want to send this NFT?</p>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -80,17 +93,13 @@
         StateHasChanged();
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         confirmVisible = false;
         await sendNFT(await NFTFactory.CloneNFT(NFT), false, 0.0002);
     }
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
-    }
 
-    private async Task sendNFTDialogOK(MouseEventArgs e)
+    private async Task sendNFTDialogOK()
     {
         if (string.IsNullOrEmpty(receiverAddress))
         {
@@ -100,7 +109,7 @@
         confirmVisible = true;
     }
 
-    private void sendNFTDialogCancel(MouseEventArgs e)
+    private void sendNFTDialogCancel()
     {
         SendNFTDialogVisible = false;
         StateHasChanged();

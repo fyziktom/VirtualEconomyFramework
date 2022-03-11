@@ -154,19 +154,25 @@
     </div>
 </div>
 
-<Modal Title="Destroy NFTs"
-       Style="min-height:200px; min-width:200px;"
-       Visible="@destroyNFTsVisible"
-       OnOk="@destroyNFTsConfirm"
-       OnCancel="@destroyNFTsCancel">
-    <VENFTApp_Blazor.Components.Spin Spinning="@destroyingNFTs" Tip="Destroying NFTs...">
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <span>Do you really want to destroy selected NFTs? All will be returned back to you address as source tokens.</span>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@destroyNFTsVisible"
+                                        Style="min-height:200px; min-width:200px;">
+    <ModalHeader>
+        <ModalTitle>Destroy NFTs</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Spinning="@destroyingNFTs" Tip="Destroying NFTs...">
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span>Do you really want to destroy selected NFTs? All will be returned back to you address as source tokens.</span>
+                </div>
             </div>
-        </div>
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@destroyNFTsConfirm">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -397,23 +403,19 @@
         }
     }
 
-    private async Task AllowCheckField(MouseEventArgs e)
+    private void AllowCheckField()
     {
         allowNFTCheckField = !allowNFTCheckField;
         NFTsSelectedForAction.Clear();
         StateHasChanged();
     }
 
-    private async Task DestroSelectedNFTs(MouseEventArgs e)
+    private void DestroSelectedNFTs()
     {
         destroyNFTsVisible = true;
     }
-    private async Task destroyNFTsCancel(MouseEventArgs e)
-    {
-        destroyNFTsVisible = false;
-    }
 
-    private async Task destroyNFTsConfirm(MouseEventArgs e)
+    private async Task destroyNFTsConfirm()
     {
         destroyingNFTs = true;
         StateHasChanged();
@@ -515,52 +517,52 @@
         //ReloadNFTs(null);
     }
 
-    private async Task displayImagesChanged(object e)
+    private void displayImagesChanged(object e)
     {
         displayImages = (bool)e;
         StateHasChanged();
     }
-    private async Task displayMusicChanged(object e)
+    private void displayMusicChanged(object e)
     {
         displayMusic = (bool)e;
         StateHasChanged();
     }
-    private async Task displayPostsChanged(object e)
+    private void displayPostsChanged(object e)
     {
         displayPosts = (bool)e;
         StateHasChanged();
     }
-    private async Task displayProductsChanged(object e)
+    private void displayProductsChanged(object e)
     {
         displayProducts = (bool)e;
         StateHasChanged();
     }
-    private async Task displayInvoicesChanged(object e)
+    private void displayInvoicesChanged(object e)
     {
         displayInvoices = (bool)e;
         StateHasChanged();
     }
-    private async Task displayOrdersChanged(object e)
+    private void displayOrdersChanged(object e)
     {
         displayOrders = (bool)e;
         StateHasChanged();
     }
-    private async Task displayTicketsChanged(object e)
+    private void displayTicketsChanged(object e)
     {
         displayTickets = (bool)e;
         StateHasChanged();
     }
-    private async Task displayEventsChanged(object e)
+    private void displayEventsChanged(object e)
     {
         displayEvents = (bool)e;
         StateHasChanged();
     }
-    private async Task displayVENFTChanged(object e)
+    private void displayVENFTChanged(object e)
     {
         displayVENFT = (bool)e;
         StateHasChanged();
     }
-    private async Task displayCoruzantChanged(object e)
+    private void displayCoruzantChanged(object e)
     {
         displayCoruzant = (bool)e;
         StateHasChanged();

@@ -3,54 +3,67 @@
 @inject AppData AppData
 @inject IJSRuntime JSRuntime
 
-<Modal Title="Move NFT To SubAccount"
-       Visible="@SendNFTDialogVisible"
-       OnOk="@sendNFTDialogOK"
-       OnCancel="@sendNFTDialogCancel">
-    <div class="row">
-        <div class="col">
-            <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@SendNFTDialogVisible"
+                                        OnCancel="@sendNFTDialogCancel">
+    <ModalHeader>
+        <ModalTitle>Move NFT To SubAccount</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
 
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Select SubAccount</span>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Select SubAccount</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
-                            <Overlay>
-                                <Menu>
-                                    @foreach (var sa in AppData.Account.SubAccounts.Values)
-                                    {
-                                        <MenuItem @onclick="() => selectNewTabAddressFromBookmark(sa.Address, sa.Name)">
-                                            <span>@sa.Name</span>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Dropdown Trigger="@(new TriggerType[] { TriggerType.Click })">
+                                <Overlay>
+                                    <Menu>
+                                        @foreach (var sa in AppData.Account.SubAccounts.Values)
+                                        {
+                                            <MenuItem @onclick="() => selectNewTabAddressFromBookmark(sa.Address, sa.Name)">
+                                                <span>@sa.Name</span>
+                                            </MenuItem>
+                                        }
+                                        <MenuItem @onclick="() => selectNewTabAddressFromBookmark(AppData.Account.Address, null)">
+                                            <span>Main Account</span>
                                         </MenuItem>
-                                    }
-                                    <MenuItem @onclick="() => selectNewTabAddressFromBookmark(AppData.Account.Address, null)">
-                                        <span>Main Account</span>
-                                    </MenuItem>
-                                </Menu>
-                            </Overlay>
-                            <ChildContent>
-                                <a class="ant-dropdown-link" @onclick:preventDefault>
-                                    @selectedSubAccountName <Icon Type="down" />
-                                </a>
-                            </ChildContent>
-                        </Dropdown>
+                                    </Menu>
+                                </Overlay>
+                                <ChildContent>
+                                    <a class="ant-dropdown-link" @onclick:preventDefault>
+                                        @selectedSubAccountName <Icon Type="down" />
+                                    </a>
+                                </ChildContent>
+                            </Dropdown>
+                        </div>
                     </div>
-                </div>
-            </VENFTApp_Blazor.Components.Spin>
+                </VENFTApp_Blazor.Components.Spin>
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@sendNFTDialogOK">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Move NFT"
-       Visible="@confirmVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <p>Do you really want to move this NFT?</p>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmVisible">
+    <ModalHeader>
+        <ModalTitle>Move NFT</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <p>Do you really want to move this NFT?</p>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -91,15 +104,10 @@
     private string receiverAddress = string.Empty;
     private string status = string.Empty;
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         confirmVisible = false;
         await sendNFT(sourceNFT);
-    }
-
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
     }
 
     private async Task selectNewTabAddressFromBookmark(string address, string name)
@@ -119,7 +127,7 @@
         StateHasChanged();
     }
 
-    private async Task sendNFTDialogOK(MouseEventArgs e)
+    private async Task sendNFTDialogOK()
     {
         if (string.IsNullOrEmpty(receiverAddress))
         {
@@ -129,7 +137,7 @@
         confirmVisible = true;
     }
 
-    private void sendNFTDialogCancel(MouseEventArgs e)
+    private void sendNFTDialogCancel()
     {
         SendNFTDialogVisible = false;
         StateHasChanged();

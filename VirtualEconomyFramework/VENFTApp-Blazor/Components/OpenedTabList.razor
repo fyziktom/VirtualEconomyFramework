@@ -5,67 +5,81 @@
 
 <!--<i class="oi oi-browser" style="font-size:20px;" @onclick="showBrowseTabsOpen"></i>-->
 
-<Modal Title="Opened Tabs"
-       Visible="@showBrowseTabsVisible"
-       OnOk="@showBrowseTabsCancel"
-       Style="width:auto; max-width:600px;"
-       OnCancel="@showBrowseTabsCancel">
-    <VENFTApp_Blazor.Components.Spin Tip="@status" Spinning="@statusVisible">
-        <div class="row d-flex justify-content-center align-items-center">
-            <div class="col">
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <h6>Opened Tabs</h6>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@showBrowseTabsVisible"
+                                        Style="width:auto; max-width:600px;"
+                                        OnCancel="@showBrowseTabsCancel">
+    <ModalHeader>
+        <ModalTitle>Opened Tabs</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Tip="@status" Spinning="@statusVisible">
+            <div class="row d-flex justify-content-center align-items-center">
+                <div class="col">
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h6>Opened Tabs</h6>
+                        </div>
                     </div>
-                </div>
-                <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px; max-width:600px;">
-                    <div class="col d-flex justify-content-center align-items-center" style="max-width:600px;">
-                        <div class="card-group">
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px; max-width:600px;">
+                        <div class="col d-flex justify-content-center align-items-center" style="max-width:600px;">
+                            <div class="card-group">
 
-                            @foreach (var tab in AppData.Account.Tabs)
-                            {
-                                <VENFTApp_Blazor.Components.TabThumbnail Address="@tab.Address" 
-                                                                         Selected="@tab.Selected" 
-                                                                         ImageLink="@tab.Profile.ImageLink" 
-                                                                         Bio="@tab.Profile.Description" 
-                                                                         Nick="@tab.Profile.Nickname" 
-                                                                         TabClosed="@closeTab" 
-                                                                         TabSelected="@selectTab"/>
-                            }
+                                @foreach (var tab in AppData.Account.Tabs)
+                                {
+                                    <VENFTApp_Blazor.Components.TabThumbnail Address="@tab.Address"
+                                                                             Selected="@tab.Selected"
+                                                                             ImageLink="@tab.Profile.ImageLink"
+                                                                             Bio="@tab.Profile.Description"
+                                                                             Nick="@tab.Profile.Nickname"
+                                                                             TabClosed="@closeTab"
+                                                                             TabSelected="@selectTab" />
+                                }
 
-                            <div class="card" style="margin:10px; max-width:160px;width:160px;">
-                                <div class="card-body d-flex justify-content-center align-items-center" style="width:150px;max-width:150px;height:150px;" @onclick="AddNewTab">
-                                    <i class="oi oi-plus" style="font-size:40px;"></i>
+                                <div class="card" style="margin:10px; max-width:160px;width:160px;">
+                                    <div class="card-body d-flex justify-content-center align-items-center" style="width:150px;max-width:150px;height:150px;" @onclick="AddNewTab">
+                                        <i class="oi oi-plus" style="font-size:40px;"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@showBrowseTabsCancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Open Tab"
-       Visible="@openTabVisible"
-       OnOk="@addNewTab"
-       OnCancel="@addNewTabCancel">
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Please Input Neblio Address</span>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@openTabVisible"
+                                        OnCancel="@addNewTabCancel">
+    <ModalHeader>
+        <ModalTitle>Open Tab</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Please Input Neblio Address</span>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
-                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" Name="OpenNewTabCameraStream" />-->
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <Input Placeholder="Input Neblio address" @bind-Value="@newTabAddress" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" Name="OpenNewTabCameraStream" />-->
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@addNewTab">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -149,7 +163,7 @@
         StateHasChanged();
     }
 
-    private async Task showBrowseTabsCancel(MouseEventArgs e)
+    private async Task showBrowseTabsCancel()
     {
         BrowseTabsClosed.InvokeAsync(false);
         showBrowseTabsVisible = false;

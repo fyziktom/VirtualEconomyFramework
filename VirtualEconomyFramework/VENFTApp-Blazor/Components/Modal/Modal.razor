@@ -1,0 +1,81 @@
+﻿@inherits StyledComponent<Modal>
+
+<ModalFragment @ref="@fragment">
+    @if (Visible) // TODO: Find a way how to bring back open/close animation
+    {
+        <CascadingValue Value=@this Name="Modal" IsFixed="true">
+            <div class="blazor-modal overflow-auto @(Visible ? "open" : "")" tabindex="-1" role="dialog" @onclick="@TryCancel">
+                <div class="modal-dialog @Class" style="@Style" role="document" @onclick:stopPropagation="true">
+                    <div class="modal-content @ContentClass" style="@ContentStyle">
+                        @ChildContent(this)
+                    </div>
+                </div>
+            </div>
+        </CascadingValue>
+    }
+</ModalFragment>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> VisibleChanged { get; set; }
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public String ContentClass { get; set; }
+    [Parameter]
+    public String ContentStyle { get; set; }
+
+    private bool visible = true;
+    [Parameter]
+    public bool Visible
+    {
+        get => visible;
+        set
+        {
+            if (value != visible)
+            {
+                visible = value;
+                fragment?.Refresh();
+            }
+        }
+    }
+
+    private bool busy = false;
+    public bool Busy
+    {
+        get => busy;
+        set
+        {
+            if (busy != value)
+            {
+                busy = value;
+                fragment?.Refresh();
+            }
+        }
+    }
+
+    private ModalFragment fragment { get; set; }
+
+    public async Task Cancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync(this);
+        }
+        else
+        {
+            await VisibleChanged.InvokeAsync(false);
+        }
+    }
+
+    private async Task TryCancel()
+    {
+        if (!Busy)
+        {
+            Busy = true;
+            await Cancel();
+            Busy = false;
+        }
+    }
+}

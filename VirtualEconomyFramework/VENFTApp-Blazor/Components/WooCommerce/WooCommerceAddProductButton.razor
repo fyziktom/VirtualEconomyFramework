@@ -28,191 +28,216 @@
     </button>
 }
 
-<Modal Title="Woo Commerce Product"
-        Visible="@showWooComProductVisible"
-        OnOk="@showWooComProductCancel"
-        OnCancel="@showWooComProductCancel">
-    @if (!error)
-    {
-    <WooCommerceProduct NFT="@loadedNFT" InputProduct="@product" />
-    }
-    else 
-    { 
-        @errorMeesage
-    }
-</Modal>
-
-<Modal Title="Product Without price"
-       Visible="@withoutPriceVisible"
-       OnOk="@withoutPriceConfirm"
-       OnCancel="@withoutPriceCancel">
-    <VENFTApp_Blazor.Components.Spin Spinning="@processingSending" Tip="Sending...">
-        <p>This product does not have setted the price. Do you want to continue?</p>
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
-
-<Modal Title="Add product to WooCommerce Shop"
-       Visible="@confirmVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <VENFTApp_Blazor.Components.Spin Spinning="@processingSending" Tip="Sending...">
-        <div class="row d-flex justify-content-center align-items-center">
-            <div class="col">
-                <span style="font-size: 12px;">Do you really want to upload this product to your store?</span>
-            </div>
-        </div>
-        <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-            <div class="col">
-                <span>Selected Store API</span>
-            </div>
-        </div>
-        <div class="row d-flex justify-content-center align-items-center" style="margin-top:5px;">
-            <div class="col">
-                <small>@VEDLDataContext.WooCommerceStoreUrl</small>
-            </div>
-        </div>
-
-        <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-            <div class="col">
-                <span>Do you want to put it to store as original on with multiple supply?</span>
-            </div>
-        </div>
-        <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
-            <div class="col">
-                <RadioGroup @bind-Value="@productUploadNFTType">
-                    <Radio Value="ProductUploadNFTType.Unique">Unique</Radio>
-                    <Radio Value="ProductUploadNFTType.Multiple">Multiple Supply </Radio>
-                </RadioGroup>
-            </div>
-        </div>
-        @if (productUploadNFTType == ProductUploadNFTType.Multiple)
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@showWooComProductVisible">
+    <ModalHeader>
+        <ModalTitle>Woo Commerce Product</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        @if (!error)
         {
-            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-                <div class="col">
-                    <span>Please specify name of the group product name.</span>
-                </div>
-            </div>
-            <div class="row" style="margin-top:5px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <Input MaxLength="50" Placeholder="Type name of the category" @bind-Value=@category @onfocusout="categoryChanged" Style="font-size:12px; min-width:250px; max-width:300px;" />
-                </div>
-            </div>
-            @if (!string.IsNullOrEmpty(category) && validCategoryName)
-            {
-                <div class="row d-flex justify-content-center align-items-center" style="margin-top:3px;">
-                    <div class="col">
-                        <small class="text-success">This is valid name.</small>
-                    </div>
-                </div>
-            }
-            else if (!string.IsNullOrEmpty(category) && !validCategoryName)
-            {
-                <div class="row d-flex justify-content-center align-items-center" style="margin-top:3px;">
-                    <div class="col">
-                        <small class="text-danger">This name is already exists.</small>
-                    </div>
-                </div>
-            }
-
-            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-                <div class="col">
-                    <span>Please specify quantity (max 100).</span>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <input type="number" step="1" min="1" max="100" @bind="@maxsupply" />
-                </div>
-            </div>
-        }
-
-        @if (WooCommerceHelpers.IsInitialized)
-        {
-            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-                <div class="col">
-                    <span>Please select Categories</span>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col">
-                    @foreach (var cat in ShopCategories)
-                    {
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <input type="checkbox" @onchange="eventArgs => { productCategoryChanged(eventArgs.Value,cat.id); }" /><span style="margin-left:10px;">@cat.name</span><br />
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-       }
-
-        <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-            <div class="col">
-                <span>Setted price</span>
-            </div>
-        </div>
-        <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
-            @if (loadedNFT.PriceActive)
-            {
-                <div class="col w-100 d-flex justify-content-center align-items-center">
-                    <small class="text-muted">Setted Price: @loadedNFT.Price NEBL</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
-                </div>
-            }
-            @if (loadedNFT.DogePriceActive)
-            {
-                <div class="col w-100 d-flex justify-content-center align-items-center">
-                    <small class="text-muted">Setted Price: @loadedNFT.DogePrice DOGE</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/doge.jpg" />
-                </div>
-            }
-        </div>
-
-        @if (needNewImage)
-        {
-            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
-                <div class="col">
-                    <span>This NFT does not contains image. Please upload the image.</span>
-                </div>
-            </div>
-            <UploadImage ImageLinkChanged="@NewImageLinkChanged" />
+            <WooCommerceProduct NFT="@loadedNFT" InputProduct="@product" />
         }
         else
         {
-            <div class="row" style="margin-top:20px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <input type="checkbox" @onchange="eventArgs => { overrideImageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Override Image</span><br />
+            @errorMeesage
+        }
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
+
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@withoutPriceVisible"
+                                        OnCancel="@withoutPriceCancel">
+    <ModalHeader>
+        <ModalTitle>Product Without price</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Spinning="@processingSending" Tip="Sending...">
+            <p>This product does not have setted the price. Do you want to continue?</p>
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@withoutPriceConfirm">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
+
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmVisible">
+    <ModalHeader>
+        <ModalTitle>Add product to WooCommerce Shop</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Spinning="@processingSending" Tip="Sending...">
+            <div class="row d-flex justify-content-center align-items-center">
+                <div class="col">
+                    <span style="font-size: 12px;">Do you really want to upload this product to your store?</span>
                 </div>
             </div>
-        }
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <div class="col">
+                    <span>Selected Store API</span>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:5px;">
+                <div class="col">
+                    <small>@VEDLDataContext.WooCommerceStoreUrl</small>
+                </div>
+            </div>
 
-<Modal Title="NFT Details"
-        Visible="@showNFTDetailsVisible"
-        OnOk="@showNFTDetailsCancel"
-        OnCancel="@showNFTDetailsCancel">
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex justify-content-center align-items-center">
-            @if (loadedNFT != null)
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <div class="col">
+                    <span>Do you want to put it to store as original on with multiple supply?</span>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                <div class="col">
+                    <RadioGroup @bind-Value="@productUploadNFTType">
+                        <Radio Value="ProductUploadNFTType.Unique">Unique</Radio>
+                        <Radio Value="ProductUploadNFTType.Multiple">Multiple Supply </Radio>
+                    </RadioGroup>
+                </div>
+            </div>
+            @if (productUploadNFTType == ProductUploadNFTType.Multiple)
             {
-                @if (loadedNFT.Type == NFTTypes.CoruzantArticle || loadedNFT.Type == NFTTypes.CoruzantProfile)
+                <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                    <div class="col">
+                        <span>Please specify name of the group product name.</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:5px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <Input MaxLength="50" Placeholder="Type name of the category" @bind-Value=@category @onfocusout="categoryChanged" Style="font-size:12px; min-width:250px; max-width:300px;" />
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(category) && validCategoryName)
                 {
-                    <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
-                                    OwnNFT="@true"
-                                    Address="@AppData.Account.Address"
-                                    SubAccount="@false" />
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:3px;">
+                        <div class="col">
+                            <small class="text-success">This is valid name.</small>
+                        </div>
+                    </div>
                 }
-                else
+                else if (!string.IsNullOrEmpty(category) && !validCategoryName)
                 {
-                    <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
-                            OwnNFT="@true"
-                            Address="@AppData.Account.Address"
-                            SubAccount="@false" />
+                    <div class="row d-flex justify-content-center align-items-center" style="margin-top:3px;">
+                        <div class="col">
+                            <small class="text-danger">This name is already exists.</small>
+                        </div>
+                    </div>
                 }
+
+                <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                    <div class="col">
+                        <span>Please specify quantity (max 100).</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <input type="number" step="1" min="1" max="100" @bind="@maxsupply" />
+                    </div>
+                </div>
             }
+
+            @if (WooCommerceHelpers.IsInitialized)
+            {
+                <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                    <div class="col">
+                        <span>Please select Categories</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col">
+                        @foreach (var cat in ShopCategories)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="checkbox" @onchange="eventArgs => { productCategoryChanged(eventArgs.Value,cat.id); }" /><span style="margin-left:10px;">@cat.name</span><br />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                <div class="col">
+                    <span>Setted price</span>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                @if (loadedNFT.PriceActive)
+                {
+                    <div class="col w-100 d-flex justify-content-center align-items-center">
+                        <small class="text-muted">Setted Price: @loadedNFT.Price NEBL</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
+                    </div>
+                }
+                @if (loadedNFT.DogePriceActive)
+                {
+                    <div class="col w-100 d-flex justify-content-center align-items-center">
+                        <small class="text-muted">Setted Price: @loadedNFT.DogePrice DOGE</small> <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/doge.jpg" />
+                    </div>
+                }
+            </div>
+
+            @if (needNewImage)
+            {
+                <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
+                    <div class="col">
+                        <span>This NFT does not contains image. Please upload the image.</span>
+                    </div>
+                </div>
+                <UploadImage ImageLinkChanged="@NewImageLinkChanged" />
+            }
+            else
+            {
+                <div class="row" style="margin-top:20px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <input type="checkbox" @onchange="eventArgs => { overrideImageChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Override Image</span><br />
+                    </div>
+                </div>
+            }
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
+
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@showNFTDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>NFT Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                @if (loadedNFT != null)
+                {
+                    @if (loadedNFT.Type == NFTTypes.CoruzantArticle || loadedNFT.Type == NFTTypes.CoruzantProfile)
+                    {
+                        <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
+                                                                         OwnNFT="@true"
+                                                                         Address="@AppData.Account.Address"
+                                                                         SubAccount="@false" />
+                    }
+                    else
+                    {
+                        <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
+                                                             OwnNFT="@true"
+                                                             Address="@AppData.Account.Address"
+                                                             SubAccount="@false" />
+                    }
+                }
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -356,11 +381,6 @@
         confirmVisible = true;
     }
 
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
-    }
-
     private async Task CheckCategory()
     {
         if (await WooCommerceHelpers.Shop.CheckIfCategoryExists(category))
@@ -373,22 +393,17 @@
         StateHasChanged();
     }
 
-    private async Task showWooComProductCancel(MouseEventArgs e)
-    {
-        showWooComProductVisible = false;
-    }
-
-    private async Task withoutPriceConfirm(MouseEventArgs e)
+    private async Task withoutPriceConfirm()
     {
         await AddProduct();
     }
-    private async Task withoutPriceCancel(MouseEventArgs e)
+    private async Task withoutPriceCancel()
     {
         withoutPriceVisible = false;
         confirmVisible = false;
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         if (!loadedNFT.PriceActive && !loadedNFT.DogePriceActive)
             withoutPriceVisible = true;
@@ -396,13 +411,9 @@
             await AddProduct();
     }
 
-    private async Task showNFTDetails(MouseEventArgs e)
+    private void showNFTDetails()
     {
         showNFTDetailsVisible = true;
-    }
-    private async Task showNFTDetailsCancel(MouseEventArgs e)
-    {
-        showNFTDetailsVisible = false;
     }
 
     private async Task AddProduct()

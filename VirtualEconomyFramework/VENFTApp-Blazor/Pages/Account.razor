@@ -194,26 +194,32 @@
             </div>
         </div>
 
-        <Modal Title="Your Private Key"
-               Visible="@downloadBackupDataVisible"
-               OnOk="@DownloadBackupDataCancel"
-               OnCancel="@DownloadBackupDataCancel">
-            <div class="row">
-                <div class="col">
-                    <div class="row">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <span>Download Backup File</span>
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@downloadBackupDataVisible">
+            <ModalHeader>
+                <ModalTitle>Your Private Key</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <div class="row">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Download Backup File</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@backupData" />
-                            <VENFTApp_Blazor.Components.HelperButtons.SaveTextAsFile MarginLeft="10" TextToSave="@backupData" FileName="@filename" />
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <VENFTApp_Blazor.Components.HelperButtons.CopyIcon TextToCopy="@backupData" />
+                                <VENFTApp_Blazor.Components.HelperButtons.SaveTextAsFile MarginLeft="10" TextToSave="@backupData" FileName="@filename" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </Modal>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
 
         <VENFTApp_Blazor.Components.InfoEventModal />
     </div>
@@ -315,11 +321,6 @@
         AppData.Account = new NeblioAccount();
         await Task.Delay(500);
         NavManager.NavigateTo("/");
-    }
-
-    private async Task DownloadBackupDataCancel(MouseEventArgs e)
-    {
-        downloadBackupDataVisible = false;
     }
 
     private async Task downloadBackupData(MouseEventArgs e)

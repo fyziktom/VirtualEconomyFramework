@@ -150,29 +150,39 @@
     </div>
 </div>
 
-<Modal Title="NFT Details"
-       Visible="@showNFTDetailsVisible"
-       OnOk="@showNFTDetailsCancel"
-       OnCancel="@showNFTDetailsCancel">
-    <div class="row" style="margin-top:10px;">
-        <div class="col d-flex justify-content-center align-items-center">
-            <NFT InputNFT="@loadedNFT"
-                 OwnNFT="@false"
-                 Address="@Address"
-                 SubAccount="@SubAccount" />
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@showNFTDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>NFT Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row" style="margin-top:10px;">
+            <div class="col d-flex justify-content-center align-items-center">
+                <NFT InputNFT="@loadedNFT"
+                     OwnNFT="@false"
+                     Address="@Address"
+                     SubAccount="@SubAccount" />
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Destroy NFT Payment"
-       Visible="@confirmDestroyVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel"
-       OkButtonProps="new ButtonProps() { Loading = destroyingNFTPayment }"
-       CancelButtonProps="new ButtonProps() { Loading = destroyingNFTPayment }">
-    <p>Do you really want to destroy this NFT Receipt?</p>
-    <p>After destroy the token is connected to Source Tokens and you can use it for the minting.</p>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmDestroyVisible">
+    <ModalHeader>
+        <ModalTitle>Destroy NFT Payment</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <p>Do you really want to destroy this NFT Receipt?</p>
+        <p>After destroy the token is connected to Source Tokens and you can use it for the minting.</p>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel" Loading="@destroyingNFTPayment">Cancel</ModalButton>
+        <ModalButton OnClick="@HandleOk" Loading="@destroyingNFTPayment">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -247,10 +257,6 @@
         await Task.Delay(100);
         StateHasChanged();
     }
-    private async Task showNFTDetailsCancel(MouseEventArgs e)
-    {
-        showNFTDetailsVisible = false;
-    }
 
     INFT nftToDestroy = null;
     private async Task deletePaymentNFT(INFT loadedNFT)
@@ -262,13 +268,9 @@
         confirmDestroyVisible = true;
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         await deletePaymentNFTAction(nftToDestroy);
-    }
-    private async Task HandleCancel(MouseEventArgs e)
-    {
-        confirmDestroyVisible = false;
     }
 
     private async Task deletePaymentNFTAction(INFT loadedNFT)

@@ -255,12 +255,18 @@
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
-<Modal Title="Transaction Details"
-       Visible="@txDetailsVisible"
-       OnOk="@CloseTxDetails"
-       OnCancel="@CloseTxDetails">
-    <VENFTApp_Blazor.Components.Doge.DogeTransactionDetails TxId="@txDetailsTxId" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@txDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>Transaction Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Doge.DogeTransactionDetails TxId="@txDetailsTxId" />
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -396,12 +402,6 @@
         txDetailsVisible = true;
         StateHasChanged();
     }
-
-    private async Task CloseTxDetails(MouseEventArgs e)
-    {
-        txDetailsVisible = false;
-    }
-
 
     private void receiverAddressChangedHandler(string address)
     {

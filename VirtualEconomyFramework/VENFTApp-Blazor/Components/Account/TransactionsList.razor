@@ -41,9 +41,18 @@
     }
 </div>
 
-<Modal Title="Transaction Details" Visible="@txDetailsVisible" OnOk="@CloseTxDetails" OnCancel="@CloseTxDetails">
-    <VENFTApp_Blazor.Components.Account.TransactionDetails TxId="@txDetailsTxId" SubAccount="@SubAccount" Address="@Address" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@txDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>Transaction Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Account.TransactionDetails TxId="@txDetailsTxId" SubAccount="@SubAccount" Address="@Address" />
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
     [Parameter]
@@ -113,10 +122,5 @@
     {
         txDetailsTxId = txId;
         txDetailsVisible = true;
-    }
-
-    private void CloseTxDetails(MouseEventArgs e)
-    {
-        txDetailsVisible = false;
     }
 }

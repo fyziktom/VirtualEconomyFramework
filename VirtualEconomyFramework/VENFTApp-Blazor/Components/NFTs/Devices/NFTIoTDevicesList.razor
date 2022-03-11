@@ -94,19 +94,27 @@
     </div>
 </div>
 
-<Modal Title="IoT Device Details"
-       Visible="@deviceDetailsVisible"
-       OnCancel="@deviceDetailsVisibleCancel"
-       Footer="null">
-    <NFTIoTDeviceDetails InputNFT="@nftToShow" Address="@_address" NFTSent="NFTSentHandler" OwnNFT="OwnNFT"  SubAccount="SubAccount" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@deviceDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>IoT Device Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <NFTIoTDeviceDetails InputNFT="@nftToShow" Address="@_address" NFTSent="NFTSentHandler" OwnNFT="OwnNFT"  SubAccount="SubAccount" />
+    </ModalBody>>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Mint NFT Device"
-       Visible="@mintDeviceVisible"
-       OnOk="@mintDeviceConfirm"
-       OnCancel="@mintDeviceCancel">
-    <MintNFTIoTDevice NFTMinted="NFTSentHandler" Address="@_address" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@mintDeviceVisible">
+    <ModalHeader>
+        <ModalTitle>Mint NFT Device</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <MintNFTIoTDevice NFTMinted="NFTSentHandler" Address="@_address" />
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -227,23 +235,8 @@
         deviceDetailsVisible = true;
     }
 
-    private async Task deviceDetailsVisibleCancel()
-    {
-        deviceDetailsVisible = false;
-    }
-
-    private async Task showMintDevice()
+    private void showMintDevice()
     {
         mintDeviceVisible = true;
-    }
-
-    private async Task mintDeviceCancel(MouseEventArgs e)
-    {
-        mintDeviceVisible = false;
-    }
-
-    private async Task mintDeviceConfirm(MouseEventArgs e)
-    {
-        mintDeviceVisible = false;
     }
 }

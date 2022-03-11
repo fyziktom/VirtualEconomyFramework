@@ -3,125 +3,92 @@
 @inject AppData AppData
 @inject IJSRuntime JSRuntime
 
-<Modal Title="Send NFT To Dogeft.com"
-       Visible="@SendNFTDialogVisible"
-       OnOk="@sendNFTDialogOK"
-       OnCancel="@sendNFTDialogCancel">
-    <div class="row">
-        <div class="col">
-            <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <img src="images/dogeft-logo.png" style="max-height:100px; max-width: 100px;" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>This form will send NFT to the dogeft.com Marketplace</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        Dogeft.com Address:
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <a href="https://explorer.nebl.io/address/NSP39y2tncqJDwFDcH3xRMUYFwwp9Skcyh" target="_blank">
-                            NSP39y2tncqJDwFDcH3xRMUYFwwp9Skcyh
-                        </a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Your Deposit Doge Address:</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <Input Placeholder="Type your Doge Address" MaxLength="50" @bind-Value=@dogeDepositAddress Style="font-size:12px; min-width:250px; max-width:350px;" />
-                    </div>
-                </div>
-                <div class="row" style="margin-top:2px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <small class="text-info">Your VENFT Doge address is prefilled automatically.</small>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Select Dogeft Reward Plan:</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <Dropdown>
-                            <Overlay>
-                                <Menu>
-                                    <MenuItem>
-                                        <a rel="noopener noreferrer" @onclick="() => SelectPlan(RewardPlan.DogeftMain)">
-                                            DogeftMain
-                                        </a>
-                                    </MenuItem>
-                                    <MenuItem>
-                                        <a rel="noopener noreferrer" @onclick="() => SelectPlan(RewardPlan.Dogepalooza)">
-                                            Dogepalooza
-                                        </a>
-                                    </MenuItem>
-                                </Menu>
-                            </Overlay>
-                            <ChildContent>
-                                <a class="ant-dropdown-link" @onclick:preventDefault>
-                                    @rewardPlan <Icon Type="down" />
-                                </a>
-                            </ChildContent>
-                        </Dropdown>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:2px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <small class="text-info">Please visit <a href="https://dogeft.com/" target="_blank">Dogeft.com</a> for more details.</small>
-                    </div>
-                </div>
-                @if (dogepriceIsNotSet)
-                {
-                    <div class="row" style="margin-top:10px;">
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@SendNFTDialogVisible"
+                                        OnCancel="@sendNFTDialogCancel">
+    <ModalHeader>
+        <ModalTitle>Send NFT To Dogeft.com</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
+                    <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <span>Please setup the Dogecoin price of this NFT</span>
+                            <img src="images/dogeft-logo.png" style="max-height:100px; max-width: 100px;" />
                         </div>
                     </div>
-                    <div class="row" style="margin-top:5px;">
+                    <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <input type="number" step="1" min="2" max="1000000" @bind="@dogeprice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                            <span>This form will send NFT to the dogeft.com Marketplace</span>
                         </div>
                     </div>
-                }
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Optional fields</span>
-                    </div>
-                </div>
-                @if (!dogepriceIsNotSet)
-                {
-                    <div class="row" style="margin-top:10px;">
+                    <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <span>Do you want to set different price?</span>
+                            Dogeft.com Address:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <a href="https://explorer.nebl.io/address/NSP39y2tncqJDwFDcH3xRMUYFwwp9Skcyh" target="_blank">
+                                NSP39y2tncqJDwFDcH3xRMUYFwwp9Skcyh
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Your Deposit Doge Address:</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <Input Placeholder="Type your Doge Address" MaxLength="50" @bind-Value=@dogeDepositAddress Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:2px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small class="text-info">Your VENFT Doge address is prefilled automatically.</small>
                         </div>
                     </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <span>Actual price is setted to @dogeprice DOGE</span> <img style="width: 14px;margin-left: 10px;" src="images/doge.jpg" />
+                            <span>Select Dogeft Reward Plan:</span>
                         </div>
                     </div>
-                    <div class="row" style="margin-top:5px;">
+                    <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Change the price</span><br />
+                            <Dropdown>
+                                <Overlay>
+                                    <Menu>
+                                        <MenuItem>
+                                            <a rel="noopener noreferrer" @onclick="() => SelectPlan(RewardPlan.DogeftMain)">
+                                                DogeftMain
+                                            </a>
+                                        </MenuItem>
+                                        <MenuItem>
+                                            <a rel="noopener noreferrer" @onclick="() => SelectPlan(RewardPlan.Dogepalooza)">
+                                                Dogepalooza
+                                            </a>
+                                        </MenuItem>
+                                    </Menu>
+                                </Overlay>
+                                <ChildContent>
+                                    <a class="ant-dropdown-link" @onclick:preventDefault>
+                                        @rewardPlan <Icon Type="down" />
+                                    </a>
+                                </ChildContent>
+                            </Dropdown>
                         </div>
                     </div>
-                    @if (withDogePrice)
+                    <div class="row" style="margin-top:2px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <small class="text-info">Please visit <a href="https://dogeft.com/" target="_blank">Dogeft.com</a> for more details.</small>
+                        </div>
+                    </div>
+                    @if (dogepriceIsNotSet)
                     {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <span>Please setup the new Dogecoin price of this NFT</span>
+                                <span>Please setup the Dogecoin price of this NFT</span>
                             </div>
                         </div>
                         <div class="row" style="margin-top:5px;">
@@ -130,82 +97,128 @@
                             </div>
                         </div>
                     }
-                }
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Do you want to offer this NFT with copies?</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:5px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <input type="checkbox" @onchange="eventArgs => { withCopiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Allow Copies</span><br />
-                    </div>
-                </div>
-                @if (withCopies)
-                {
-                    <div class="row" style="margin-top:5px;">
+                    <div class="row" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <span>Please define number of the copies</span>
+                            <span>Optional fields</span>
+                        </div>
+                    </div>
+                    @if (!dogepriceIsNotSet)
+                    {
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Do you want to set different price?</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Actual price is setted to @dogeprice DOGE</span> <img style="width: 14px;margin-left: 10px;" src="images/doge.jpg" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Change the price</span><br />
+                            </div>
+                        </div>
+                        @if (withDogePrice)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <span>Please setup the new Dogecoin price of this NFT</span>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="number" step="1" min="2" max="1000000" @bind="@dogeprice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                                </div>
+                            </div>
+                        }
+                    }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Do you want to offer this NFT with copies?</span>
                         </div>
                     </div>
                     <div class="row" style="margin-top:5px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <input type="number" step="1" min="1" max="20" @bind="@numberOfCopies" />
+                            <input type="checkbox" @onchange="eventArgs => { withCopiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Allow Copies</span><br />
                         </div>
                     </div>
-                }
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Do you want to add Your Website?</span>
+                    @if (withCopies)
+                    {
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Please define number of the copies</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="number" step="1" min="1" max="20" @bind="@numberOfCopies" />
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Do you want to add Your Website?</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:5px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <input type="checkbox" @onchange="eventArgs => { withWebsiteChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Add website</span><br />
-                    </div>
-                </div>
-                @if (withWebsite)
-                {
                     <div class="row" style="margin-top:5px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Type your Website" MaxLength="200" @bind-Value=@authorWebsite Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            <input type="checkbox" @onchange="eventArgs => { withWebsiteChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Add website</span><br />
                         </div>
                     </div>
-                }
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Do you want to specify License conditions?</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:5px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <input type="checkbox" @onchange="eventArgs => { withLicenseChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Specify license</span><br />
-                    </div>
-                </div>
-                @if (withLicense)
-                {
-                    <div class="row">
+                    @if (withWebsite)
+                    {
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Type your Website" MaxLength="200" @bind-Value=@authorWebsite Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                    }
+                    <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Type your license type" MaxLength="300" @bind-Value=@license Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            <span>Do you want to specify License conditions?</span>
                         </div>
                     </div>
-                    <div class="row" style="margin-top:2px;">
+                    <div class="row" style="margin-top:5px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <small class="text-info">If you want to specify lincese with longer text, please provide just link to the file with license.</small>
+                            <input type="checkbox" @onchange="eventArgs => { withLicenseChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Specify license</span><br />
                         </div>
                     </div>
-                }
-            </VENFTApp_Blazor.Components.Spin>
+                    @if (withLicense)
+                    {
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Type your license type" MaxLength="300" @bind-Value=@license Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-info">If you want to specify lincese with longer text, please provide just link to the file with license.</small>
+                            </div>
+                        </div>
+                    }
+                </VENFTApp_Blazor.Components.Spin>
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@sendNFTDialogOK">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Send NFT"
-       Visible="@confirmVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <p>Do you really want to send this NFT?</p>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmVisible">
+    <ModalHeader>
+        <ModalTitle>Send NFT</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <p>Do you really want to send this NFT?</p>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -311,15 +324,10 @@
         StateHasChanged();
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         confirmVisible = false;
         await sendNFT(await NFTFactory.CloneNFT(NFT), false, 0.0002);
-    }
-
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
     }
 
     private async Task SelectPlan(RewardPlan plan)
@@ -327,7 +335,7 @@
         rewardPlan = plan;
     }
 
-    private async Task sendNFTDialogOK(MouseEventArgs e)
+    private async Task sendNFTDialogOK()
     {
         if (string.IsNullOrEmpty(receiverAddress))
         {
@@ -347,7 +355,7 @@
         confirmVisible = true;
     }
 
-    private void sendNFTDialogCancel(MouseEventArgs e)
+    private void sendNFTDialogCancel()
     {
         SendNFTDialogVisible = false;
         StateHasChanged();

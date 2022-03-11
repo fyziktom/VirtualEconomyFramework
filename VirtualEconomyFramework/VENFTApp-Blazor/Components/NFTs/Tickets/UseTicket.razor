@@ -25,14 +25,20 @@
     }
 }
 
-<Modal Title="Use NFT Ticket"
-       Visible="@showUseTicketVisible"
-       OnOk="@UseTicketConfirm"
-       OnCancel="@UseTicketCancel">
-    <VENFTApp_Blazor.Components.Spin Tip="Writing Use state..." Spinning="@loading">
-        <span class="text-center">Do you really want to use this ticket?</span>
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@showUseTicketVisible">
+    <ModalHeader>
+        <ModalTitle>Use NFT Ticket</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Tip="Writing Use state..." Spinning="@loading">
+            <span class="text-center">Do you really want to use this ticket?</span>
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@UseTicketConfirm">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
     private TicketNFT NFT { get; set; } = new TicketNFT("");
@@ -90,17 +96,12 @@
     private bool loading = false;
     private bool showUseTicketVisible = false;
 
-    private async Task showUseTicketDialog(MouseEventArgs e)
+    private void showUseTicketDialog()
     {
         showUseTicketVisible = true;
     }
 
-    private async Task UseTicketCancel(MouseEventArgs e)
-    {
-        showUseTicketVisible = false;
-    }
-
-    private async Task UseTicketConfirm(MouseEventArgs e)
+    private async Task UseTicketConfirm()
     {
         try
         {

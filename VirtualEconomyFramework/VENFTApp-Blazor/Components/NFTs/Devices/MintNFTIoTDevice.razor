@@ -11,483 +11,482 @@
 <div class="row">
     <div class="col">
         <VENFTApp_Blazor.Components.Spin Spinning="@loading" Tip="Loading...">
-        <VENFTApp_Blazor.Components.Spin Spinning="@processingMinting" Tip="Minting...">
-            <div class="row">
-                <div class="col">
+            <VENFTApp_Blazor.Components.Spin Spinning="@processingMinting" Tip="Minting...">
+                <div class="row">
+                    <div class="col">
 
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Mint from template</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Input NFT IoT Device Hash</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="NFT IoT Device Hash" MaxLength="100" @bind-Value=@templateNFTDeviceHash Style="font-size:12px; min-width:250px; max-width:350px;" />
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <button class="btn btn-primary" @onclick="LoadFromTemplate">Load From Template NFT</button>
-                        </div>
-                    </div>
-                    @if (templateNFTHasEncryptedSetting && !templateNFT.DecryptedSetting)
-                    {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small>Input NFT IoT Device has encrypted settings. If it is your NFT you can decrypt it.</small>
+                                <small>Mint from template</small>
                             </div>
                         </div>
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <button class="btn btn-primary" @onclick="TryToDecryptTemplate">Decrypt Settings</button>
+                                <small>Input NFT IoT Device Hash</small>
                             </div>
                         </div>
-                    }
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="NFT IoT Device Hash" MaxLength="100" @bind-Value=@templateNFTDeviceHash Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary" @onclick="LoadFromTemplate">Load From Template NFT</button>
+                            </div>
+                        </div>
+                        @if (templateNFTHasEncryptedSetting && !templateNFT.DecryptedSetting)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Input NFT IoT Device has encrypted settings. If it is your NFT you can decrypt it.</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary" @onclick="TryToDecryptTemplate">Decrypt Settings</button>
+                                </div>
+                            </div>
+                        }
 
-                    <hr />
+                        <hr />
 
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Name</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Type Name" MaxLength="100" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
-                        </div>
-                    </div>
-                    @if (string.IsNullOrEmpty(name))
-                    {
-                        <div class="row" style="margin-top:2px;">
+                        <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small class="text-danger">You must fill this field.</small>
+                                <small>Name</small>
                             </div>
                         </div>
-                    }
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Author</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add Author of the NFT" MaxLength="100" @bind-Value=@author Style="font-size:12px; min-width:250px; max-width:350px;" />
-                        </div>
-                    </div>
-                    @if (string.IsNullOrEmpty(author))
-                    {
-                        <div class="row" style="margin-top:2px;">
+                        <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small class="text-danger">You must fill this field.</small>
+                                <Input Placeholder="Type Name" MaxLength="100" @bind-Value=@name Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
-                    }
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Description</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <TextArea Placeholder="Add Description of the NFT" MaxLength="300" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
-                        </div>
-                    </div>
-                    @if (string.IsNullOrEmpty(description))
-                    {
-                        <div class="row" style="margin-top:2px;">
+                        @if (string.IsNullOrEmpty(name))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small class="text-danger">You must fill this field</small>
+                                <small>Author</small>
                             </div>
                         </div>
-                    }
-                    @if (!string.IsNullOrEmpty(description))
-                    {
-                        <div class="row" style="margin-top:2px;">
+                        <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small class="text-info">Remaining @(300-description.Length) from 300 characters.</small>
+                                <Input Placeholder="Add Author of the NFT" MaxLength="100" @bind-Value=@author Style="font-size:12px; min-width:250px; max-width:350px;" />
                             </div>
                         </div>
-                    }
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Device NFT Hash</small>
+                        @if (string.IsNullOrEmpty(author))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Description</small>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add Device NFT Hash" MaxLength="100" @bind-Value=@deviceNFTHash Style="font-size:12px; min-width:250px; max-width:350px;" />
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <TextArea Placeholder="Add Description of the NFT" MaxLength="300" @bind-Value=@description Style="font-size:12px; min-width:250px; max-width:350px; min-height:50px;" />
+                            </div>
                         </div>
-                    </div>
+                        @if (string.IsNullOrEmpty(description))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-danger">You must fill this field</small>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(description))
+                        {
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-info">Remaining @(300-description.Length) from 300 characters.</small>
+                                </div>
+                            </div>
+                        }
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Device NFT Hash</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Device NFT Hash" MaxLength="100" @bind-Value=@deviceNFTHash Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
 
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Text</small>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Text</small>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <TextArea Placeholder="Add Text" MaxLength="5000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <TextArea Placeholder="Add Text" MaxLength="5000" @bind-Value=@text Style="font-size:12px; min-width:250px; width:350px; max-width:350px; min-height:400px;" />
+                            </div>
+                            @if (!string.IsNullOrEmpty(text))
+                            {
+                                <div class="col d-flexjustify-content-center align-items-center" style="width: 350px; min-height:400px; max-width:350px;">
+                                    <span class="border-light">@((MarkupString)NFTmarkuptext)</span>
+                                </div>
+                            }
                         </div>
                         @if (!string.IsNullOrEmpty(text))
                         {
-                            <div class="col d-flexjustify-content-center align-items-center" style="width: 350px; min-height:400px; max-width:350px;">
-                                <span class="border-light">@((MarkupString)NFTmarkuptext)</span>
+                            <div class="row" style="margin-top:2px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small class="text-info">Remaining @(5000-text.Length) from 5000 characters.</small>
+                                </div>
                             </div>
                         }
-                    </div>
-                    @if (!string.IsNullOrEmpty(text))
-                    {
-                        <div class="row" style="margin-top:2px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small class="text-info">Remaining @(5000-text.Length) from 5000 characters.</small>
-                            </div>
-                        </div>
-                    }
 
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Tags</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add Tags - splitted by space" MaxLength="200" @bind-Value=@tags Style="font-size:12px; min-width:250px; max-width:350px;" />
-                        </div>
-                    </div>
-
-                    <hr />
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Receiving Message Address</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <h5>IoT Driver Settings</h5>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Driver Type</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <RadioGroup @bind-Value="@iotddtype">
-                                <Radio Value="IoTDataDriverType.Common">Common</Radio>
-                                <Radio Value="IoTDataDriverType.HARDWARIO">HARDWARIO</Radio>
-                                <Radio Value="IoTDataDriverType.PLFramework">PLFramework</Radio>
-                                <Radio Value="IoTDataDriverType.M5Stack">M5Stack</Radio>
-                            </RadioGroup>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Connection Url</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add Connection Url" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Url Style="font-size:12px; min-width:250px; max-width:350px;" />
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Group Id</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add Group Id" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.GroupId Style="font-size:12px; min-width:250px; max-width:350px;" />
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Device Id</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <Input Placeholder="Add Device Id" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.DeviceId Style="font-size:12px; min-width:250px; max-width:350px;" />
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Secured API</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <RadioGroup @bind-Value="@iddSettings.ConnectionParams.Secured">
-                                <Radio Value="true">API is secured</Radio>
-                                <Radio Value="false">API is open</Radio>
-                            </RadioGroup>
-                        </div>
-                    </div>
-                    @if (iddSettings.ConnectionParams.Secured)
-                    {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small>Security Type</small>
+                                <small>Tags</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Tags - splitted by space" MaxLength="200" @bind-Value=@tags Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Receiving Message Address</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="receiverAddressChangedHandler" />
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <h5>IoT Driver Settings</h5>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Driver Type</small>
                             </div>
                         </div>
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <RadioGroup @bind-Value="@iddSettings.ConnectionParams.SType">
-                                    <Radio Value="CommunitacionSecurityType.Bearer">Bearer</Radio>
-                                    <Radio Value="CommunitacionSecurityType.SSL">SSL</Radio>
-                                    <!--<Radio Value="CommunitacionSecurityType.JWT">JWT</Radio>-->
+                                <RadioGroup @bind-Value="@iotddtype">
+                                    <Radio Value="IoTDataDriverType.Common">Common</Radio>
+                                    <Radio Value="IoTDataDriverType.HARDWARIO">HARDWARIO</Radio>
+                                    <Radio Value="IoTDataDriverType.PLFramework">PLFramework</Radio>
+                                    <Radio Value="IoTDataDriverType.M5Stack">M5Stack</Radio>
                                 </RadioGroup>
                             </div>
                         </div>
 
-                        @if (iddSettings.ConnectionParams.SType == CommunitacionSecurityType.Bearer)
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Connection Url</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Connection Url" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Url Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Group Id</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Group Id" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.GroupId Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Device Id</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <Input Placeholder="Add Device Id" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.DeviceId Style="font-size:12px; min-width:250px; max-width:350px;" />
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Secured API</small>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <RadioGroup @bind-Value="@iddSettings.ConnectionParams.Secured">
+                                    <Radio Value="true">API is secured</Radio>
+                                    <Radio Value="false">API is open</Radio>
+                                </RadioGroup>
+                            </div>
+                        </div>
+                        @if (iddSettings.ConnectionParams.Secured)
                         {
                             <div class="row" style="margin-top:10px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <small>API Token</small>
+                                    <small>Security Type</small>
                                 </div>
                             </div>
-                            <div class="row" style="margin-top:5px;">
+                            <div class="row" style="margin-top:20px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <Input Placeholder="Add Connection Url" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Token Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                    <RadioGroup @bind-Value="@iddSettings.ConnectionParams.SType">
+                                        <Radio Value="CommunitacionSecurityType.Bearer">Bearer</Radio>
+                                        <Radio Value="CommunitacionSecurityType.SSL">SSL</Radio>
+                                        <!--<Radio Value="CommunitacionSecurityType.JWT">JWT</Radio>-->
+                                    </RadioGroup>
                                 </div>
                             </div>
+
+                            @if (iddSettings.ConnectionParams.SType == CommunitacionSecurityType.Bearer)
+                            {
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <small>API Token</small>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:5px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <Input Placeholder="Add Connection Url" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Token Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                    </div>
+                                </div>
+                            }
+                            else if (iddSettings.ConnectionParams.SType == CommunitacionSecurityType.SSL)
+                            {
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <small>User</small>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:5px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <Input Placeholder="Add User" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Username Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <small>Password</small>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:5px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <InputPassword Placeholder="Add Password" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Password Style="font-size:12px; min-width:250px; max-width:350px;" />
+                                    </div>
+                                </div>
+                            }
                         }
-                        else if (iddSettings.ConnectionParams.SType == CommunitacionSecurityType.SSL)
-                        {
-                            <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex justify-content-center align-items-center">
-                                    <small>User</small>
-                                </div>
-                            </div>
-                            <div class="row" style="margin-top:5px;">
-                                <div class="col d-flex justify-content-center align-items-center">
-                                    <Input Placeholder="Add User" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Username Style="font-size:12px; min-width:250px; max-width:350px;" />
-                                </div>
-                            </div>
-                            <div class="row" style="margin-top:10px;">
-                                <div class="col d-flex justify-content-center align-items-center">
-                                    <small>Password</small>
-                                </div>
-                            </div>
-                            <div class="row" style="margin-top:5px;">
-                                <div class="col d-flex justify-content-center align-items-center">
-                                    <InputPassword Placeholder="Add Password" MaxLength="100" @bind-Value=@iddSettings.ConnectionParams.Password Style="font-size:12px; min-width:250px; max-width:350px;" />
-                                </div>
-                            </div>
-                        }
-                    }
 
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Common Refresh Interval</small>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top:5px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <input type="number" step="10" min="100" max="10000000" @bind="@iddSettings.ConnectionParams.CommonRefreshInterval" /> ms
-                        </div>
-                    </div>
-                    <hr />
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Auto Activate</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <RadioGroup @bind-Value="@autoActivate">
-                                <Radio Value="true">Auto Activated Enable</Radio>
-                                <Radio Value="false">Auto Activated Disable</Radio>
-                            </RadioGroup>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Encrypt Settings</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <RadioGroup @bind-Value="@encryptSettings">
-                                <Radio Value="true">Encrypt Settings</Radio>
-                                <Radio Value="false">Settings not encrypted</Radio>
-                            </RadioGroup>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Encrypt Messages</small>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <RadioGroup @bind-Value="@encryptMessages">
-                                <Radio Value="true">Encrypt Messages</Radio>
-                                <Radio Value="false">Messages not encrypted</Radio>
-                            </RadioGroup>
-                        </div>
-                    </div>
-
-                    <hr />
-
-                    <!--Todo: add upload datasheet or another pdf-->
-
-                    <div class="row" style="margin-top:2px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small>Uplod Image</small>
-                        </div>
-                    </div>
-                    <VENFTApp_Blazor.Components.UploadImage NFTType="@NFTTypes.Image" ImageLink="@imagelink" ImageLinkChanged="@ImageLinkChanged" />
-
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
-                        </div>
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
-                        </div>
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
-                        </div>
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Mint To Another Address</span><br />
-                        </div>
-                    </div>
-
-                    @if (withPrice)
-                    {
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small>Price in Neblio</small>
+                                <small>Common Refresh Interval</small>
                             </div>
                         </div>
 
                         <div class="row" style="margin-top:5px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@price" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
+                                <input type="number" step="10" min="100" max="10000000" @bind="@iddSettings.ConnectionParams.CommonRefreshInterval" /> ms
                             </div>
                         </div>
-                    }
-                    @if (withDogePrice)
-                    {
+                        <hr />
+
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Auto Activate</small>
+                            </div>
+                        </div>
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small>Price in Doge</small>
+                                <RadioGroup @bind-Value="@autoActivate">
+                                    <Radio Value="true">Auto Activated Enable</Radio>
+                                    <Radio Value="false">Auto Activated Disable</Radio>
+                                </RadioGroup>
                             </div>
                         </div>
 
-                        <div class="row" style="margin-top:5px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="1" min="2" max="1000000000" @bind="@dogeprice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
-                            </div>
-                        </div>
-                    }
-                    @if (withCoppies)
-                    {
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small>Coppies</small>
+                                <small>Encrypt Settings</small>
                             </div>
                         </div>
-                        <div class="row" style="margin-top:5px;">
+                        <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <input type="number" step="1" min="0" max="@AppData.Account.SourceTokensBalance" @bind="@NumberOfCoppies" />
-                            </div>
-                        </div>
-                    }
-                    @if (toAnotherAddres)
-                    {
-                        <div class="row" style="margin-top:10px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <small>Fill Receiver Address</small>
+                                <RadioGroup @bind-Value="@encryptSettings">
+                                    <Radio Value="true">Encrypt Settings</Radio>
+                                    <Radio Value="false">Settings not encrypted</Radio>
+                                </RadioGroup>
                             </div>
                         </div>
                         <div class="row" style="margin-top:10px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <VENFTApp_Blazor.Components.Account.CreateNeblioSubAccount NewAddressCreated="newSubAccountCreated" />
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:15px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="mintReceiverAddressChecked" Receiver="@mintReceiverAddress" />
-                            </div>
-                        </div>
-                    }
-
-
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
-                        </div>
-                    </div>
-                    @if (string.IsNullOrEmpty(deviceNFTHash))
-                    {
-                        <div class="row" style="margin-top:20px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <button class="btn btn-primary disabled" @onclick="ShowMintConfirm">Create NFT</button>
+                                <small>Encrypt Messages</small>
                             </div>
                         </div>
                         <div class="row" style="margin-top:20px;">
                             <div class="col d-flex justify-content-center align-items-center">
-                                <small>Please fill at Device NFT Hash</small>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="row" style="margin-top:20px;">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <button class="btn btn-primary" @onclick="ShowMintConfirm">@(string.IsNullOrEmpty(sourceNFT.Utxo) ? "Create NFT" : "Apply Changes")</button>
+                                <RadioGroup @bind-Value="@encryptMessages">
+                                    <Radio Value="true">Encrypt Messages</Radio>
+                                    <Radio Value="false">Messages not encrypted</Radio>
+                                </RadioGroup>
                             </div>
                         </div>
 
-                        @if (!string.IsNullOrEmpty(multimintStatus))
+                        <hr />
+
+                        <!--Todo: add upload datasheet or another pdf-->
+
+                        <div class="row" style="margin-top:2px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Uplod Image</small>
+                            </div>
+                        </div>
+                        <VENFTApp_Blazor.Components.UploadImage NFTType="@NFTTypes.Image" ImageLink="@imagelink" ImageLinkChanged="@ImageLinkChanged" />
+
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="checkbox" @onchange="eventArgs => { withPriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Price</span><br />
+                            </div>
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="checkbox" @onchange="eventArgs => { withDogePriceChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Doge Price</span><br />
+                            </div>
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="checkbox" @onchange="eventArgs => { withCoppiesChanged(eventArgs.Value); }" /><span style="margin-left:10px;">With Coppies</span><br />
+                            </div>
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <input type="checkbox" @onchange="eventArgs => { toAnotherAddressChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Mint To Another Address</span><br />
+                            </div>
+                        </div>
+
+                        @if (withPrice)
                         {
                             <div class="row" style="margin-top:20px;">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <span>@multimintStatus</span>
+                                    <small>Price in Neblio</small>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="number" step="0.0001" min="0.0005" max="1000000" @bind="@price" /> <img style="width: 25px;margin-left: 10px;" src="images/neblio-icon.png" />
                                 </div>
                             </div>
                         }
-                    }
+                        @if (withDogePrice)
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Price in Doge</small>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="number" step="1" min="2" max="1000000000" @bind="@dogeprice" /> <img style="width: 25px;margin-left: 10px;" src="images/doge.jpg" />
+                                </div>
+                            </div>
+                        }
+                        @if (withCoppies)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Coppies</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:5px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <input type="number" step="1" min="0" max="@AppData.Account.SourceTokensBalance" @bind="@NumberOfCoppies" />
+                                </div>
+                            </div>
+                        }
+                        @if (toAnotherAddres)
+                        {
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Fill Receiver Address</small>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <VENFTApp_Blazor.Components.Account.CreateNeblioSubAccount NewAddressCreated="newSubAccountCreated" />
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:15px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <VENFTApp_Blazor.Components.Account.NeblioAddressInput AddressCheckedInputed="mintReceiverAddressChecked" Receiver="@mintReceiverAddress" />
+                                </div>
+                            </div>
+                        }
+
+
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small class="text-center">Minting costs 0.0002 NEBL (fee) and @(NumberOfCoppies + 1) VENFT (carrier). The VENFT token will stay on your address as NFT. </small>
+                            </div>
+                        </div>
+                        @if (string.IsNullOrEmpty(deviceNFTHash))
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary disabled" @onclick="ShowMintConfirm">Create NFT</button>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <small>Please fill at Device NFT Hash</small>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <button class="btn btn-primary" @onclick="ShowMintConfirm">@(string.IsNullOrEmpty(sourceNFT.Utxo) ? "Create NFT" : "Apply Changes")</button>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(multimintStatus))
+                            {
+                                <div class="row" style="margin-top:20px;">
+                                    <div class="col d-flex justify-content-center align-items-center">
+                                        <span>@multimintStatus</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
                 </div>
-            </div>
-        </VENFTApp_Blazor.Components.Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </VENFTApp_Blazor.Components.Spin>
 
-        <Modal Title="@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")"
-               Visible="@confirmVisible"
-               OnOk="@HandleOk"
-               OnCancel="@HandleCancel">
-            <p>Do you realy want to @(string.IsNullOrEmpty(NFT.Utxo)?"create":"update") this Device?</p>
-        </Modal>
-
-        <Modal Title="Mint To Another Address"
-               Visible="@mintToAnotherAddressConfirmModalVisible"
-               OnOk="@MintToAnotherAddressOk"
-               OnCancel="@MintToAnotherAddressCancel">
-            <p>"You selected another address as receiver of these NFTs. Is it correct?"</p>
-        </Modal>
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@mintToAnotherAddressConfirmModalVisible">
+            <ModalHeader>
+                <ModalTitle>@(string.IsNullOrEmpty(NFT.Utxo)?"Mint New NFT":"Update NFT")</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <p>"You selected another address as receiver of these NFTs. Is it correct?"</p>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@MintToAnotherAddressOk">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
 
     </div>
 </div>
@@ -683,15 +682,10 @@
             confirmVisible = true;
     }
 
-    private async Task MintToAnotherAddressOk(MouseEventArgs e)
+    private void MintToAnotherAddressOk()
     {
         mintToAnotherAddressConfirmModalVisible = false;
         confirmVisible = true;
-    }
-
-    private void MintToAnotherAddressCancel(MouseEventArgs e)
-    {
-        mintToAnotherAddressConfirmModalVisible = false;
     }
 
     private void receiverAddressChangedHandler(string address)
@@ -705,14 +699,9 @@
         StateHasChanged();
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         await MintNewNFT();
-    }
-
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
     }
 
     private async Task LoadData()

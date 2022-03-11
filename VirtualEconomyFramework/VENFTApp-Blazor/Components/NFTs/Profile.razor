@@ -69,12 +69,14 @@
     </div>
 </VENFTApp_Blazor.Components.Spin>
 
-<Modal Title="Create new profile NFT"
-       Visible="@createNewProfileVisible"
-       OnCancel="@createNewProfileCancel"
-       Footer="null">
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@createNewProfileVisible">
+    <ModalHeader>
+        <ModalTitle>Create new profile NFT</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
         <MintNFTForm NFTType="NFTTypes.Profile" NFT="@profileNFT" RedirectToNFTsAfterMint="false" NFTMinted="ProfileChanged" TokenId="@tokenIdForProfile" />
-</Modal>
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>   
 
 @code {
 
@@ -211,11 +213,6 @@
             }
         }
         createNewProfileVisible = true;
-    }
-
-    private async Task createNewProfileCancel(MouseEventArgs e)
-    {
-        createNewProfileVisible = false;
     }
 
     private async Task ReloadProfile()

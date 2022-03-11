@@ -145,19 +145,27 @@
     </div>
 </div>
 
-<Modal Title="Message Details"
-       Visible="@messageDetailsVisible"
-       OnCancel="@messageDetailsVisibleCancel"
-       Footer="null">
-    <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" NFTSent="NFTSentHandler" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@messageDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>Message Details</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <NFTMessage Utxo="@selectedNFTUtxo" InputNFT="@nftToShow" NFTSent="NFTSentHandler" />
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Send Message"
-       Visible="@sendMessageVisible"
-       OnOk="@sendMessageConfirm"
-       OnCancel="@sendMessageCancel">
-    <SendMessage Receiver="@messageTab.Address" MessageSent="NFTSentHandler" />
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@sendMessageVisible">
+    <ModalHeader>
+        <ModalTitle>Send Message</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <SendMessage Receiver="@messageTab.Address" MessageSent="NFTSentHandler" />
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -238,25 +246,9 @@
         messageDetailsVisible = true;
     }
 
-    private async Task messageDetailsVisibleCancel()
-    {
-        messageDetailsVisible = false;
-    }
-
     private async Task showSendMessage()
     {
         sendMessageVisible = true;
-        StateHasChanged();
-    }
-
-    private async Task sendMessageCancel(MouseEventArgs e)
-    {
-        sendMessageVisible = false;
-    }
-
-    private async Task sendMessageConfirm(MouseEventArgs e)
-    {
-        sendMessageVisible = false;
         StateHasChanged();
     }
 

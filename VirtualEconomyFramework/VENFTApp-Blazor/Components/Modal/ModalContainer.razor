@@ -1,0 +1,31 @@
+﻿<div id="modal-container">
+    @foreach (var item in list)
+    {
+        @item
+    }
+</div>
+
+@code {
+    public static ModalContainer Instance { get; private set; }
+    private List<RenderFragment> list = new List<RenderFragment>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Instance = this;
+    }
+
+    public void Add(RenderFragment item)
+    {
+        list.Add(item);
+        StateHasChanged();
+    }
+
+    public void Remove(RenderFragment item)
+    {
+        list.Remove(item);
+        StateHasChanged();
+    }
+
+    public void Refresh() => StateHasChanged();
+}

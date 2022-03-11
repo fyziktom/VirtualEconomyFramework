@@ -9,39 +9,52 @@
         <i class="oi oi-dollar" style="font-size:12px;"></i>
     </button>
 </VENFTApp_Blazor.Components.Spin>
-<Modal Title="Buy this NFT"
-       Visible="@sendNFTDialogVisible"
-       OnOk="@sendNFTDialogOK"
-       OnCancel="@sendNFTDialogCancel">
-    <div class="row">
-        <div class="col">
-            <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        This dialog will process the order and payment of this NFT
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        Receiver Address: @receiverAddress
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        Price @Price NEBL <img style="width: 12px; height:12px; margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
-                    </div>
-                </div>
-            </VENFTApp_Blazor.Components.Spin>
-        </div>
-    </div>
-</Modal>
 
-<Modal Title="@confirmTitle"
-       Visible="@confirmVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <p>@confirmContent</p>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@sendNFTDialogVisible">
+    <ModalHeader>
+        <ModalTitle>Buy this NFT</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            This dialog will process the order and payment of this NFT
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            Receiver Address: @receiverAddress
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            Price @Price NEBL <img style="width: 12px; height:12px; margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
+                        </div>
+                    </div>
+                </VENFTApp_Blazor.Components.Spin>
+            </div>
+        </div>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@sendNFTDialogOK">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
+
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmVisible">
+    <ModalHeader>
+        <ModalTitle>confirmTitle</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <p>@confirmContent</p>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -96,29 +109,21 @@
     private string confirmTitle = "Buy NFT?";
     private string confirmContent = "Do you realy want to buy this NFT?";
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         if (!string.IsNullOrEmpty(Utxo))
             await sendNFT(Utxo);
     }
 
-    private async Task sendNFTDialogOK(MouseEventArgs e)
+    private async Task sendNFTDialogOK()
     {
         confirmVisible = true;
-    }
-    private void HandleCancel(MouseEventArgs e)
-    {
-        confirmVisible = false;
     }
 
 
     private async Task ShowSendNFTDialog(MouseEventArgs e)
     {
         sendNFTDialogVisible = true;
-    }
-    private void sendNFTDialogCancel(MouseEventArgs e)
-    {
-        sendNFTDialogVisible = false;
     }
 
     private async Task sendNFT(string utxo)

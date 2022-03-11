@@ -20,19 +20,25 @@ else
     </div>
 }
 
-<Modal Title="Destroy NFT"
-       Visible="@confirmDestroyVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <VENFTApp_Blazor.Components.Spin Tip="Removing the NFT... " Spinning="@removingNFT">
-        <p class="text-center">Do you really want to destroy this NFT?</p>
-        <small class="text-center">When you destroy NFT the token will be connected to source tokens and it can be used for minting again.</small>
-        @if (!string.IsNullOrEmpty(customMessage))
-        {
-            <p class="text-center">@customMessage</p>
-        }
-    </VENFTApp_Blazor.Components.Spin>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@confirmDestroyVisible">
+    <ModalHeader>
+        <ModalTitle>Destroy NFT</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <VENFTApp_Blazor.Components.Spin Tip="Removing the NFT... " Spinning="@removingNFT">
+            <p class="text-center">Do you really want to destroy this NFT?</p>
+            <small class="text-center">When you destroy NFT the token will be connected to source tokens and it can be used for minting again.</small>
+            @if (!string.IsNullOrEmpty(customMessage))
+            {
+                <p class="text-center">@customMessage</p>
+            }
+        </VENFTApp_Blazor.Components.Spin>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -128,7 +134,7 @@ else
         StateHasChanged();
     }
 
-    private async Task deleteNFT()
+    private void deleteNFT()
     {
         if (NFT == null)
             return;
@@ -136,13 +142,9 @@ else
         confirmDestroyVisible = true;
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         await deletePaymentNFTAction(NFT);
-    }
-    private async Task HandleCancel(MouseEventArgs e)
-    {
-        confirmDestroyVisible = false;
     }
 
     private async Task deletePaymentNFTAction(INFT loadedNFT)

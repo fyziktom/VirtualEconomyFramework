@@ -152,23 +152,25 @@
     </div>
 </div>
 
-<Modal Title="NFT History Detail"
-       Visible="@nftHistoryDetailsVisible"
-       OnCancel="@nftHistoryDetailsClose"
-       Footer="null">
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center" style="260px;">
-            @if (!IsMessageHistory)
-            {
-                <NFT InputNFT="@selectedHistoryNFT" Address="" OwnNFT="false" HideButtons="true" />
-            }
-            else
-            {
-                <VENFTApp_Blazor.Components.NFTs.Messages.NFTMessage Utxo="@selectedHistoryNFT.Utxo" InputNFT="@selectedHistoryNFT" IsHistory="true" />
-            }
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@nftHistoryDetailsVisible">
+    <ModalHeader>
+        <ModalTitle>NFT History Detail</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center" style="260px;">
+                @if (!IsMessageHistory)
+                {
+                    <NFT InputNFT="@selectedHistoryNFT" Address="" OwnNFT="false" HideButtons="true" />
+                }
+                else
+                {
+                    <VENFTApp_Blazor.Components.NFTs.Messages.NFTMessage Utxo="@selectedHistoryNFT.Utxo" InputNFT="@selectedHistoryNFT" IsHistory="true" />
+                }
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -231,12 +233,6 @@
     {
         selectedHistoryNFT = await NFTFactory.CloneNFT(nft);
         nftHistoryDetailsVisible = true;
-        StateHasChanged();
-    }
-
-    private async Task nftHistoryDetailsClose(MouseEventArgs e)
-    {
-        nftHistoryDetailsVisible = false;
         StateHasChanged();
     }
 

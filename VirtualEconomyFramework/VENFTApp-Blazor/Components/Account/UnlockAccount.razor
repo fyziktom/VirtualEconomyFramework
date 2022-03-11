@@ -9,97 +9,124 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
 
-<Modal Title="Unlock Account"
-       Visible="@unlockAcocuntModalVisible"
-       OnOk="@UnlockAccountConfirm"
-       CancelButtonProps="new ButtonProps() {  Disabled = unlockingAccount }"
-       OkButtonProps="new ButtonProps() { Disabled = unlockingAccount }"
-       OnCancel="@UnclockAccountCancel">
-    <div class="row">
-        <div class="col">
-            <VENFTApp_Blazor.Components.Spin Tip="@state" Spinning="@unlockingAccount">
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Please Input password to unlock existing account</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Shorten Address of the Account is: @NeblioTransactionHelpers.ShortenAddress(address)</span>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@UnlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
-                    </div>
-                </div>
-
-                @if (removeAccountCounter > 60)
-                {
-                    <div class="row" style="margin-top:20px;">
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@unlockAcocuntModalVisible"
+                                        OnCancel="@UnclockAccountCancel">
+    <ModalHeader>
+        <ModalTitle>Unlock Account</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <VENFTApp_Blazor.Components.Spin Tip="@state" Spinning="@unlockingAccount">
+                    <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <span class="text-danger">Want to delete account?</span>
+                            <span>Please Input password to unlock existing account</span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <small>Click @(100-removeAccountCounter) more and you can delete existing account!</small>
+                            <span>Shorten Address of the Account is: @NeblioTransactionHelpers.ShortenAddress(address)</span>
                         </div>
                     </div>
-                }
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@UnlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        </div>
+                    </div>
 
-                @if (unlockOrClearCashMessage)
-                {
-                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
-                        <Message>Unlock account or clear browser local storage for create new one!</Message>
-                    </VENFTApp_Blazor.Components.Alert>
-                }
-                @if (accountUnlockingError)
-                {
-                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
-                        <Message>Wrong Password</Message>
-                    </VENFTApp_Blazor.Components.Alert>
-                }
-            </VENFTApp_Blazor.Components.Spin>
-        </div>
-    </div>
-</Modal>
+                    @if (removeAccountCounter > 60)
+                    {
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span class="text-danger">Want to delete account?</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <small>Click @(100-removeAccountCounter) more and you can delete existing account!</small>
+                            </div>
+                        </div>
+                    }
 
-<Modal Title="Remove Saved Account?"
-       Visible="@removeExistingAccountVisible"
-       OnOk="@RemoveExistingAccountOk"
-       OnCancel="@RemoveExistingAccountCancel">
-    <p>Do you really want to remove existing saved account?</p>
-    <p>If you do not have backup you will not be able to restore it.</p>
-</Modal>
+                    @if (unlockOrClearCashMessage)
+                    {
+                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                            <Message>Unlock account or clear browser local storage for create new one!</Message>
+                        </VENFTApp_Blazor.Components.Alert>
+                    }
+                    @if (accountUnlockingError)
+                    {
+                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                            <Message>Wrong Password</Message>
+                        </VENFTApp_Blazor.Components.Alert>
+                    }
+                </VENFTApp_Blazor.Components.Spin>
+            </div>
+        </div>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel" Disabled="@unlockingAccount">Cancel</ModalButton>
+        <ModalButton OnClick="@UnlockAccountConfirm" Disabled="@unlockingAccount">Ok</ModalButton>
+        @*TODO: implement better modal disabling feature*@
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Remove Saved Account???"
-       Visible="@removeExistingAccountSecondVisible"
-       OnOk="@RemoveExistingAccountSecondOk"
-       OnCancel="@RemoveExistingAccountSecondCancel">
-    <p>Are you really sure to remove existing account?</p>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@removeExistingAccountVisible"
+                                        OnCancel="@RemoveExistingAccountCancel">
+    <ModalHeader>
+        <ModalTitle>Remove Saved Account?</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <p>Do you really want to remove existing saved account?</p>
+        <p>If you do not have backup you will not be able to restore it.</p>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@RemoveExistingAccountOk">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="Remove Saved Account Last Chance"
-       Visible="@removeExistingAccountCountdownVisible"
-       OnOk="@removeExistingAccountCountdownCancel"
-       OnCancel="@removeExistingAccountCountdownCancel">
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <p>Delete of existing account will happen in:</p>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@removeExistingAccountSecondVisible"
+                                        OnCancel="@RemoveExistingAccountSecondCancel">
+    <ModalHeader>
+        <ModalTitle>Remove Saved Account???</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <p>Are you really sure to remove existing account?</p>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@RemoveExistingAccountSecondOk">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
+
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@removeExistingAccountCountdownVisible"
+                                        OnCancel="@removeExistingAccountCountdownCancel">
+    <ModalHeader>
+        <ModalTitle>Remove Saved Account Last Chance</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <p>Delete of existing account will happen in:</p>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <h6>@deleteOfAccountCountdown seconds</h6>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <h6>@deleteOfAccountCountdown seconds</h6>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <button class="btn btn-danger" style="width:200px;height:100px;margin-top:30px;" @onclick="removeExistingAccountCountdownCancel">STOP IT</button>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <button class="btn btn-danger" style="width:200px;height:100px;margin-top:30px;" @onclick="removeExistingAccountCountdownCancel">STOP IT</button>
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@removeExistingAccountCountdownCancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -162,19 +189,19 @@
         }
     }
 
-    private void RemoveExistingAccountOk(MouseEventArgs e)
+    private void RemoveExistingAccountOk()
     {
         removeExistingAccountVisible = false;
         removeExistingAccountSecondVisible = true;
     }
 
-    private void RemoveExistingAccountCancel(MouseEventArgs e)
+    private void RemoveExistingAccountCancel()
     {
         removeExistingAccountVisible = false;
         removeAccountCounter = 0;
     }
 
-    private void removeExistingAccountCountdownCancel(MouseEventArgs e)
+    private void removeExistingAccountCountdownCancel()
     {
         cancelDeleteOfAccount = true;
         txDeleteAccount.Dispose();
@@ -182,7 +209,7 @@
         removeExistingAccountCountdownVisible = false;
     }
 
-    private void RemoveExistingAccountSecondOk(MouseEventArgs e)
+    private void RemoveExistingAccountSecondOk()
     {
         deleteOfAccountCountdown = 60;
         cancelDeleteOfAccount = false;
@@ -233,13 +260,13 @@
         removeAccountCounter = 0;
     }
 
-    private void RemoveExistingAccountSecondCancel(MouseEventArgs e)
+    private void RemoveExistingAccountSecondCancel()
     {
         removeExistingAccountSecondVisible = false;
         removeAccountCounter = 0;
     }
 
-    private async Task UnlockAccountConfirm(MouseEventArgs e)
+    private async Task UnlockAccountConfirm()
     {
         try
         {
@@ -425,7 +452,7 @@
         {
             if (e.Code == "Enter" || e.Code == "NumpadEnter")
             {
-                await UnlockAccountConfirm(null);
+                await UnlockAccountConfirm();
             }
         }
         catch (Exception ex)
@@ -434,7 +461,7 @@
         }
     }
 
-    private void UnclockAccountCancel(MouseEventArgs e)
+    private void UnclockAccountCancel()
     {
         if (unlockingAccount) return;
 

@@ -21,7 +21,7 @@
                         case NFTTypes.Image:
                             @if (!string.IsNullOrEmpty(nft.ImageLink))
                             {
-                                <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                <img src="@nft.ImageLink" @onclick="() => OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                             }
                             else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
                             {
@@ -37,7 +37,7 @@
                         case NFTTypes.Invoice:
                             @if (!string.IsNullOrEmpty(nft.ImageLink))
                             {
-                                <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                <img src="@nft.ImageLink" @onclick="() => OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                             }
                             else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
                             {
@@ -53,7 +53,7 @@
                         case NFTTypes.Order:
                             @if (!string.IsNullOrEmpty(nft.ImageLink))
                             {
-                                <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                <img src="@nft.ImageLink" @onclick="() => OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                             }
                             else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
                             {
@@ -69,7 +69,7 @@
                         case NFTTypes.Product:
                             @if (!string.IsNullOrEmpty(nft.ImageLink))
                             {
-                                <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                <img src="@nft.ImageLink" @onclick="() => OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                             }
                             else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
                             {
@@ -85,7 +85,7 @@
                         case NFTTypes.Profile:
                             @if (!string.IsNullOrEmpty(nft.ImageLink))
                             {
-                                <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                <img src="@nft.ImageLink" @onclick="() => OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                             }
                             else
                             {
@@ -106,7 +106,7 @@
                                 {
                                     @if (!string.IsNullOrEmpty(nft.ImageLink))
                                     {
-                                        <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                        <img src="@nft.ImageLink" @onclick="() => OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                                     }
                                 }
                             }
@@ -129,7 +129,7 @@
                                 {
                                     @if (!string.IsNullOrEmpty(nft.ImageLink))
                                     {
-                                        <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                        <img src="@nft.ImageLink" @onclick="() => OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                                     }
                                 }
                             }
@@ -141,7 +141,7 @@
                         case NFTTypes.Post:
                             @if (!string.IsNullOrEmpty(nft.ImageLink))
                             {
-                                <img src="@nft.ImageLink" @onclick="async () => await OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
+                                <img src="@nft.ImageLink" @onclick="() => OpenModalWithImage(nft.ImageLink)" style="max-height:200px; max-width:250px;" />
                             }
                             else if (string.IsNullOrEmpty(nft.ImageLink) && !nft.IsLoaded)
                             {
@@ -319,31 +319,36 @@
     </div>
 
     <!--NFT Details Modal-->
-    <Modal Title="NFT Details"
-           Visible="@nftDetailsVisible"
-           OnCancel="@CloseNFTDetails"
-           Footer="null">
-        <VENFTApp_Blazor.Components.NFTs.NFTDetails UtxoIndex="@nft.UtxoIndex" 
-                                               Utxo="@nft.Utxo"
-                                               InputNFT="@nft"
-                                               NFTSent="@NFTSentHandler" 
-                                               OwnNFT="@OwnNFT"
-                                               Address="@_address"
-                                               SubAccount="@SubAccount"/>
-    </Modal>
+    <VENFTApp_Blazor.Components.Modal.Modal Visible="@nftDetailsVisible"
+                                            OnCancel="@CloseNFTDetails">
+        <ModalHeader>
+            <ModalTitle>NFT Details</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <VENFTApp_Blazor.Components.NFTs.NFTDetails UtxoIndex="@nft.UtxoIndex"
+                                                        Utxo="@nft.Utxo"
+                                                        InputNFT="@nft"
+                                                        NFTSent="@NFTSentHandler"
+                                                        OwnNFT="@OwnNFT"
+                                                        Address="@_address"
+                                                        SubAccount="@SubAccount" />
+        </ModalBody>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
     <!--Modal With Image-->
-    <Modal Title="NFT Image"
-           Style="min-height:200px; min-width:200px;"
-           Visible="@modalWithImageVisible"
-           OnCancel="@modalWithImageClose"
-           Footer="null">
-        <div class="row">
-            <div class="col d-flex justify-content-center align-items-center">
-                <img class="card-img-top" src="@modalWithImageLink" style="min-height:100px; height:auto; min-width:200px; width:auto;" />
+    <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@modalWithImageVisible"
+                                            Style="min-height:200px; min-width:200px;">
+        <ModalHeader>
+            <ModalTitle>NFT Image</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <img class="card-img-top" src="@modalWithImageLink" style="min-height:100px; height:auto; min-width:200px; width:auto;" />
+                </div>
             </div>
-        </div>
-    </Modal>
+        </ModalBody>
+    </VENFTApp_Blazor.Components.Modal.Modal>
 
     <VENFTApp_Blazor.Components.NFTs.ShareNFT NFTUtxo="@nft.Utxo" 
                                               NFTUtxoIndex="@nft.UtxoIndex" 
@@ -517,30 +522,25 @@
         shareNFTVisible = true;
     }
 
-    private async Task CloseShareNFT(MouseEventArgs e)
+    private void CloseShareNFT()
     {
         shareNFTVisible = false;
     }
 
-    private async Task ShowNFTDetails(string utxo)
+    private void ShowNFTDetails(string utxo)
     {
         nftDetailsVisible = true;
     }
 
-    private async Task CloseNFTDetails(MouseEventArgs e)
+    private async Task CloseNFTDetails()
     {
         await nft.StopRefreshingData();
         nftDetailsVisible = false;
     }
 
-    public async Task OpenModalWithImage(string url)
+    public void OpenModalWithImage(string url)
     {
         modalWithImageVisible = true;
         modalWithImageLink = url;
-    }
-
-    public async Task modalWithImageClose(MouseEventArgs e)
-    {
-        modalWithImageVisible = false;
     }
 }

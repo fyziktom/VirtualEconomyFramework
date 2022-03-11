@@ -10,12 +10,19 @@
     </div>
 </div>
 
-<Modal Title="VENFT Hep"
-       Visible="@helpModalVisible"
-       OnOk="@CloseHelpModal"
-       OnCancel="@CloseHelpModal" ZIndex="11" Style="width:90%; height: max-content;">
-       <iframe src=@infopageLink style="width: 100%; height: max-content; min-height:600px; min-width: 300px;" frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@helpModalVisible"
+                                        Style="max-width:90%; height: max-content; z-index: 11;">
+    <ModalHeader>
+        <ModalTitle>VENFT Help</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <iframe src=@infopageLink style="width: 100%; height: max-content; min-height:600px; min-width: 300px;" frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -37,16 +44,9 @@
         return base.OnInitializedAsync();
     }
 
-    public async Task OpenHelp(string _pageSection)
+    public void OpenHelp(string _pageSection)
     {
         infopageLink = defaultInfopageLink + "#" + _pageSection;
         helpModalVisible = true;
-        StateHasChanged();
-    }
-
-    private async Task CloseHelpModal(MouseEventArgs e)
-    {
-        helpModalVisible = false;
-        StateHasChanged();
     }
 }

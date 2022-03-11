@@ -175,69 +175,79 @@
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
-<Modal Title="Unlock Account"
-       Visible="@unlockAcocuntModalVisible"
-       OnOk="@UnlockAccountConfirm"
-       OnCancel="@UnclockAccountCancel">
-    <div class="row">
-        <div class="col">
-            <VENFTApp_Blazor.Components.Spin Tip="Unlocking..." Spinning="@unlockingAccount">
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@unlockAcocuntModalVisible"
+                                        OnCancel="@UnclockAccountCancel">
+    <ModalHeader>
+        <ModalTitle>Unlock Account</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <VENFTApp_Blazor.Components.Spin Tip="Unlocking..." Spinning="@unlockingAccount">
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Please Input password</span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@unlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        </div>
+                    </div>
+
+                    @if (unlockOrClearCashMessage)
+                    {
+                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                            <Message>Unlock account.</Message>
+                        </VENFTApp_Blazor.Components.Alert>
+                    }
+                    @if (accountUnlockingError)
+                    {
+                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                            <Message>Wrong Password.</Message>
+                        </VENFTApp_Blazor.Components.Alert>
+                    }
+                </VENFTApp_Blazor.Components.Spin>
+            </div>
+        </div>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@UnlockAccountConfirm">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
+
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@redirectingBackToShopVisible">
+    <ModalHeader>
+        <ModalTitle>Redirecting back to the shop</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <span>Please Input password</span>
+                        <span>You will be redirected back to the Shop in </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <h6>@redirectingBackToShopCountDown @((redirectingBackToShopCountDown > 1)? "seconds" : "second")</h6>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <InputPassword AutoFocus="true" Placeholder="Input password" @bind-Value="@unlockPassword" @onkeydown="@UnlockAccountEnter" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <span>Redirect address:</span>
                     </div>
                 </div>
-
-                @if (unlockOrClearCashMessage)
-                {
-                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
-                        <Message>Unlock account.</Message>
-                    </VENFTApp_Blazor.Components.Alert>
-                }
-                @if (accountUnlockingError)
-                {
-                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
-                        <Message>Wrong Password.</Message>
-                    </VENFTApp_Blazor.Components.Alert>
-                }
-            </VENFTApp_Blazor.Components.Spin>
-        </div>
-    </div>
-</Modal>
-
-<Modal Title="Redirecting back to the shop"
-       Visible="@redirectingBackToShopVisible"
-       Footer="null">
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>You will be redirected back to the Shop in </span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <h6>@redirectingBackToShopCountDown @((redirectingBackToShopCountDown > 1)? "seconds" : "second")</h6>
-                </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Redirect address:</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>@redirect</span>
+                <div class="row">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>@redirect</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -413,7 +423,7 @@
         }
     }
 
-    private async Task UnlockAccountConfirm(MouseEventArgs e)
+    private async Task UnlockAccountConfirm()
     {
         try
         {
@@ -472,11 +482,11 @@
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
             StateHasChanged();
-            UnlockAccountConfirm(null);
+            UnlockAccountConfirm();
         }
     }
 
-    private void UnclockAccountCancel(MouseEventArgs e)
+    private void UnclockAccountCancel()
     {
         accountUnlockingError = false;
         unlockOrClearCashMessage = false;

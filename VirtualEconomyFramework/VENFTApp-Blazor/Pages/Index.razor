@@ -79,25 +79,40 @@
     </VENFTApp_Blazor.Components.Alert>
 }
 
-<Modal Title="Export and Save Private Key"
-       Style="min-height:200px; min-width:200px;"
-       Visible="@savePrivateKeyVisible"
-       OnOk="@savePrivateKeyCancel"
-       OnCancel="@savePrivateKeyCancel">
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <span>Please Save your new private key to safe place. This will allow you to recovery the address.</span>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@savePrivateKeyVisible"
+                                        Style="min-height:200px; min-width:200px;"
+                                        OnCancel="@savePrivateKeyCancel">
+    <ModalHeader>
+        <ModalTitle>Export and Save Private Key</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span>Please Save your new private key to safe place. This will allow you to recovery the address.</span>
+            </div>
         </div>
-    </div>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@savePrivateKeyCancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
     <VENFTApp_Blazor.Components.Account.DisplayAccountKey />
-</Modal>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
-<Modal Title="VENFT Help"
-       Visible="@helpModalVisible"
-       OnOk="@CloseHelpModal"
-       OnCancel="@CloseHelpModal" ZIndex="10" Style="width:90%; height: max-content;">
-    <iframe src=@infopageLink style="width: 100%; height: max-content; min-height:600px; min-width: 300px;" frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>
-</Modal>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@helpModalVisible"
+                                        OnCancel="@CloseHelpModal"
+                                        Style="max-width:90%; height: max-content; z-index: 10;">
+    <ModalHeader>
+        <ModalTitle>VENFT Help</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <iframe src=@infopageLink style="width: 100%; height: max-content; min-height:600px; min-width: 300px;" frameborder='0' allow='autoplay; encrypted-media; picture-in-picture' allowfullscreen></iframe>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@CloseHelpModal">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -174,7 +189,7 @@
         StateHasChanged();
     }
 
-    private async Task CloseHelpModal(MouseEventArgs e)
+    private async Task CloseHelpModal()
     {
         helpModalVisible = false;
         if (accountCreated)
@@ -182,7 +197,7 @@
         StateHasChanged();
     }
 
-    private async Task savePrivateKeyCancel(MouseEventArgs e)
+    private async Task savePrivateKeyCancel()
     {
         savePrivateKeyVisible = false;
         StateHasChanged();

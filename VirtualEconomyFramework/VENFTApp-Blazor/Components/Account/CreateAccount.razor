@@ -6,115 +6,122 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
 
-<Modal Title="Please Create Account"
-       Visible="@createNewAddressModalVisible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <div class="row">
-        <div class="col">
-            <VENFTApp_Blazor.Components.Spin Spinning="@creatingAddressSpinner" Tip="Creating Address...">
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <h6>Welcome in VENFT App</h6>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@createNewAddressModalVisible"
+                                        OnCancel="@HandleCancel">
+    <ModalHeader>
+        <ModalTitle>Please Create Account</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <VENFTApp_Blazor.Components.Spin Spinning="@creatingAddressSpinner" Tip="Creating Address...">
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h6>Welcome in VENFT App</h6>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
-                        <span class="text-center" style="width:90%;max-width:200px;">If you do not know this project please read <a href="https://about.ve-nft.com/" target="_blank">about it here</a></span>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center" style="margin-top:10px;">
+                            <span class="text-center" style="width:90%;max-width:200px;">If you do not know this project please read <a href="https://about.ve-nft.com/" target="_blank">about it here</a></span>
+                        </div>
                     </div>
-                </div>
 
-                <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="newaddress" />
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <h4>Start With One Simple Step</h4>
+                    <VENFTApp_Blazor.Components.HelperButtons.HelpButton PageSection="newaddress" />
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <h4>Start With One Simple Step</h4>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Create an account with type your new password (8 chars minimum)</span>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Create an account with type your new password (8 chars minimum)</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Input Password:</span>
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Input Password:</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <InputPassword Placeholder="Input password" @bind-Value="@password" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <InputPassword Placeholder="Input password" @bind-Value="@password" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Confirm Password:</span>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Confirm Password:</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <InputPassword Placeholder="Input password" @bind-Value="@passwordConfirm" style="font-size:12px; min-width:150px; max-width:250px;" />
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <InputPassword Placeholder="Input password" @bind-Value="@passwordConfirm" style="font-size:12px; min-width:150px; max-width:250px;" />
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Please Fill Password longer than 8 characters</span>
+                    <div class="row">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Please Fill Password longer than 8 characters</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <button class="btn btn-primary" @onclick="HandleOk">Create Account</button>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-primary" @onclick="HandleOk">Create Account</button>
+                        </div>
                     </div>
-                </div>
-                <hr />
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <span>Optional - If you have Neblio or Dogecoin private key you can import it</span>
+                    <hr />
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <span>Optional - If you have Neblio or Dogecoin private key you can import it</span>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="margin-top:10px;">
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <button class="btn btn-secondary" @onclick="showImportAccount">Import Existing Account</button>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <button class="btn btn-secondary" @onclick="showImportAccount">Import Existing Account</button>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row" style="margin-top:15px;">
-                    <div class="col d-flex justify-content-center align-items-center">
+                    <div class="row" style="margin-top:15px;">
+                        <div class="col d-flex justify-content-center align-items-center">
 
-                        @if (!string.IsNullOrEmpty(password))
-                        {
-                            if (password.Length > 4)
+                            @if (!string.IsNullOrEmpty(password))
                             {
-                                if (!string.IsNullOrEmpty(passwordConfirm))
+                                if (password.Length > 4)
                                 {
-                                    if (passwordConfirm != password)
+                                    if (!string.IsNullOrEmpty(passwordConfirm))
                                     {
-                                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
-                                            <Message>Passwords not match!</Message>
-                                        </VENFTApp_Blazor.Components.Alert>
-                                    }
-                                    else
-                                    {
-                                        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
-                                            <Message>Passwords Match. Please confirm to create an account!</Message>
-                                        </VENFTApp_Blazor.Components.Alert>
+                                        if (passwordConfirm != password)
+                                        {
+                                            <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Warning">
+                                                <Message>Passwords not match!</Message>
+                                            </VENFTApp_Blazor.Components.Alert>
+                                        }
+                                        else
+                                        {
+                                            <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+                                                <Message>Passwords Match. Please confirm to create an account!</Message>
+                                            </VENFTApp_Blazor.Components.Alert>
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        @if (mustCreateAddressMessage)
-                        {
-                            <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
-                                <Message>You must create new account for continue. There is no account saved in your local browser memory.</Message>
-                            </VENFTApp_Blazor.Components.Alert>
-                        }
+                            @if (mustCreateAddressMessage)
+                            {
+                                <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                                    <Message>You must create new account for continue. There is no account saved in your local browser memory.</Message>
+                                </VENFTApp_Blazor.Components.Alert>
+                            }
+                        </div>
                     </div>
-                </div>
-            </VENFTApp_Blazor.Components.Spin>
+                </VENFTApp_Blazor.Components.Spin>
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@HandleOk">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 <VENFTApp_Blazor.Components.Account.ImportAccount Visible="@importAccountVisible" AccountImported="AccountImported" />
 
@@ -200,7 +207,7 @@
         }
     }
 
-    private async Task HandleOk(MouseEventArgs e)
+    private async Task HandleOk()
     {
         await CheckPassState();
 
@@ -249,7 +256,7 @@
 
     }
 
-    private void HandleCancel(MouseEventArgs e)
+    private void HandleCancel()
     {
         createNewAddressModalVisible = true;
         mustCreateAddressMessage = true;

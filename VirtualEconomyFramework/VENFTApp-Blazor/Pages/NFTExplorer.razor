@@ -122,29 +122,35 @@
     <VENFTApp_Blazor.Components.InfoEventModal />
 </div>
 
-<Modal Title="Add New SubAccount"
-       Visible="@addSubAccountVisible"
-       OnOk="@addSubAccountConfirm"
-       OnCancel="@addSubAccountCancel">
-    <div class="row">
-        <div class="col">
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <span>Input New Sub Account Name</span>
+<VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@addSubAccountVisible">
+    <ModalHeader>
+        <ModalTitle>Add New SubAccount</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col">
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Input New Sub Account Name</span>
+                    </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    <Input Placeholder="Input New Sub Account Name" @bind-Value="@newSubAccountName" Style="font-size:12px; min-width:150px; max-width:250px;" />
-                    <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <Input Placeholder="Input New Sub Account Name" @bind-Value="@newSubAccountName" Style="font-size:12px; min-width:150px; max-width:250px;" />
+                        <!--<VENFTApp_Blazor.Components.LoadQRData MarginLeft="10" ReadedTextChanged="QRTextReaded" />-->
+                    </div>
                 </div>
-            </div>
-            <div class="col d-flex justify-content-center align-items-center w-auto">
-                <input type="checkbox" checked="checked" @onchange="eventArgs => { sendInitNeblioChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Send init 0.05 NEBL to this address</span><br />
+                <div class="col d-flex justify-content-center align-items-center w-auto">
+                    <input type="checkbox" checked="checked" @onchange="eventArgs => { sendInitNeblioChanged(eventArgs.Value); }" /><span style="margin-left:10px;">Send init 0.05 NEBL to this address</span><br />
+                </div>
             </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@addSubAccountConfirm">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -327,13 +333,9 @@
         StateHasChanged();
     }
 
-    private async Task addSubAccountConfirm(MouseEventArgs e)
+    private async Task addSubAccountConfirm()
     {
         await addSubAccount();
-    }
-    private async Task addSubAccountCancel(MouseEventArgs e)
-    {
-        addSubAccountVisible = false;
     }
 
     private async Task addSubAccount()

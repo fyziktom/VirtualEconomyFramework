@@ -18,58 +18,65 @@
     }
 }
 
-<Modal Title="Share NFT"
-       Visible="@shareNFTDialogVisible"
-       OnOk="@CloseShareNFT"
-       OnCancel="@CloseShareNFT">
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <a href="@shareNFTUtxo" target="_blank">Share NFT Link</a>
+<VENFTApp_Blazor.Components.Modal.Modal Visible="@shareNFTDialogVisible"
+                                        OnCancel="@CloseShareNFT">
+    <ModalHeader>
+        <ModalTitle>Share NFT</ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <a href="@shareNFTUtxo" target="_blank">Share NFT Link</a>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareNFTUtxo" />
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareNFTUtxo" />
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <VENFTApp_Blazor.Components.HelperButtons.QRIcon TextToCopy="@shareNFTUtxo" FontSize="25" />
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <VENFTApp_Blazor.Components.HelperButtons.QRIcon TextToCopy="@shareNFTUtxo" FontSize="25" />
+            </div>
         </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <a href="@shareBuyNFTUtxo" target="_blank">Buy NFT Link</a>
+        <hr />
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <a href="@shareBuyNFTUtxo" target="_blank">Buy NFT Link</a>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareBuyNFTUtxo" />
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareBuyNFTUtxo" />
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <VENFTApp_Blazor.Components.HelperButtons.QRIcon TextToCopy="@shareBuyNFTUtxo" FontSize="25" />
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <VENFTApp_Blazor.Components.HelperButtons.QRIcon TextToCopy="@shareBuyNFTUtxo" FontSize="25" />
+            </div>
         </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <span>Transaction Id and index</span>
+        <hr />
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span>Transaction Id and index</span>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <a href="https://explorer.nebl.io/tx/@nftUtxo" target="_blank" class="text-center" style="width:90%;">@shareNFTUtxoAndIndex</a>
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <a href="https://explorer.nebl.io/tx/@nftUtxo" target="_blank" class="text-center" style="width:90%;">@shareNFTUtxoAndIndex</a>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col d-flex justify-content-center align-items-center">
-            <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareNFTUtxoAndIndex" />
+        <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@shareNFTUtxoAndIndex" />
+            </div>
         </div>
-    </div>
-</Modal>
+    </ModalBody>
+    <VENFTApp_Blazor.Components.Modal.ModalFooter>
+        <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+        <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+    </VENFTApp_Blazor.Components.Modal.ModalFooter>
+</VENFTApp_Blazor.Components.Modal.Modal>
 
 @code {
 
@@ -155,7 +162,7 @@
         shareNFTDialogVisible = true;
     }
 
-    private void CloseShareNFT(MouseEventArgs e)
+    private void CloseShareNFT()
     {
         DialogClosed.InvokeAsync(false);
         shareNFTDialogVisible = false;

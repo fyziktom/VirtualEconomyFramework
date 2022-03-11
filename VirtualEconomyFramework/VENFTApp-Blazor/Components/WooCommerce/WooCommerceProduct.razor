@@ -132,32 +132,38 @@
             </div>
         </VENFTApp_Blazor.Components.Spin>
 
-        <Modal Title="NFT Details"
-               Visible="@showNFTDetailsVisible"
-               OnOk="@showNFTDetailsCancel"
-               OnCancel="@showNFTDetailsCancel">
-            <div class="row" style="margin-top:10px;">
-                <div class="col d-flex justify-content-center align-items-center">
-                    @if (loadedNFT != null)
-                    {
-                        @if (loadedNFT.Type == NFTTypes.CoruzantArticle || loadedNFT.Type == NFTTypes.CoruzantProfile)
+        <VENFTApp_Blazor.Components.Modal.Modal @bind-Visible="@showNFTDetailsVisible">
+            <ModalHeader>
+                <ModalTitle>NFT Details</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        @if (loadedNFT != null)
                         {
-                            <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
-                                         OwnNFT="@true"
-                                         Address="@AppData.Account.Address"
-                                         SubAccount="@false" />
+                            @if (loadedNFT.Type == NFTTypes.CoruzantArticle || loadedNFT.Type == NFTTypes.CoruzantProfile)
+                            {
+                                <VENFTApp_Blazor.Components.Coruzant.CoruzantNFT InputNFT="@loadedNFT"
+                                                                                 OwnNFT="@true"
+                                                                                 Address="@AppData.Account.Address"
+                                                                                 SubAccount="@false" />
+                            }
+                            else
+                            {
+                                <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
+                                                                     OwnNFT="@true"
+                                                                     Address="@AppData.Account.Address"
+                                                                     SubAccount="@false" />
+                            }
                         }
-                        else
-                        {
-                            <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@loadedNFT"
-                                 OwnNFT="@true"
-                                 Address="@AppData.Account.Address"
-                                 SubAccount="@false" />
-                        }
-                    }
+                    </div>
                 </div>
-            </div>
-        </Modal>
+            </ModalBody>
+            <VENFTApp_Blazor.Components.Modal.ModalFooter>
+                <ModalButton Kind="ModalButtonKind.Cancel">Cancel</ModalButton>
+                <ModalButton OnClick="@context.Cancel">Ok</ModalButton>
+            </VENFTApp_Blazor.Components.Modal.ModalFooter>
+        </VENFTApp_Blazor.Components.Modal.Modal>
     </div>
 </div>
 
@@ -221,13 +227,9 @@
         StateHasChanged();
     }
 
-    private async Task showNFTDetails(MouseEventArgs e)
+    private void showNFTDetails()
     {
         showNFTDetailsVisible = true;
-    }
-    private async Task showNFTDetailsCancel(MouseEventArgs e)
-    {
-        showNFTDetailsVisible = false;
     }
 
     private async Task LoadNFT()
