@@ -25,11 +25,11 @@
                 </div>
             }
 
-            @if (!string.IsNullOrEmpty(IsSenderInTheBookmarks(NFT.Author)))
+            @if (!string.IsNullOrEmpty(IsSenderInTheBookmarks(sender)))
             {
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <small>Sender Bookmark Name: @IsSenderInTheBookmarks(NFT.Author)</small>
+                        <small>Sender Bookmark Name: @IsSenderInTheBookmarks(sender)</small>
                     </div>
                 </div>
             }
@@ -47,7 +47,7 @@
                 {
                     <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <small>Sender Address: @NFT.Author</small>
+                            <small>Sender Address: @sender</small>
                         </div>
                     </div>
                 }
@@ -151,7 +151,7 @@
            Visible="@sendMessageVisible"
            OnCancel="@sendMessageCancel"
            Footer="null">
-        <SendMessage NFT="@NFT" Receiver="@NFT.Author" MessageSent="@NFTSentHandler" />
+        <SendMessage NFT="@NFT" Receiver="@sender" MessageSent="@NFTSentHandler" />
     </Modal>
 </div>
 
@@ -212,6 +212,8 @@
 
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
+
+    public string sender { get => !string.IsNullOrEmpty(NFT.Author) ? NFT.Author : (NFT as MessageNFT).Partner;  }
 
     private bool modalWithImageVisible = false;
     private bool downloadingImage = false;
