@@ -107,37 +107,49 @@ namespace VEDriversLite.Bookmarks
             //var nftutxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens, new GetAddressInfoResponse() { Utxos = Utxos });
 
             Console.WriteLine("Cash of the TxInfo preload started...");
-            
+
             var utxos = UtxosList.ToArray();
-            if (utxos != null && utxos.Length > 1)
+            var utxos_segment = new ArraySegment<Utxos>(utxos, 0, utxos.Length > MaxLoadedNFTItems ? MaxLoadedNFTItems : utxos.Length);
+
+            if (utxos_segment != null && utxos_segment.Count > 1)
             {
-                var ucount = utxos.Length;
-                if (ucount >= MaxLoadedNFTItems)
-                    ucount = MaxLoadedNFTItems;
-
-                var txinfotasks = new Task[ucount * 2];
-                var u = 0;
-                for (var i = 0; (i + 2) < txinfotasks.Length; i += 2)
+                var txinfotasks = new ConcurrentQueue<Task>();
+                foreach (var utxo in utxos_segment)
                 {
-                    if (i < txinfotasks.Length)
-                        txinfotasks[i] = NeblioTransactionHelpers.GetTransactionInfo(utxos[u].Txid);
-                    if (i < txinfotasks.Length + 1)
+                    txinfotasks.Enqueue(NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid));
+                    var tokid = utxo.Tokens?.FirstOrDefault()?.TokenId;
+                    if (!string.IsNullOrEmpty(tokid))
                     {
-                        var tokid = utxos[u].Tokens?.FirstOrDefault()?.TokenId;
-                        if (!string.IsNullOrEmpty(tokid))
-                        {
-                            if (!VEDLDataContext.NFTCache.ContainsKey(utxos[u].Txid))
-                                txinfotasks[i + 1] = NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxos[u].Txid);
-                        }
+                        if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
+                            txinfotasks.Enqueue(NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
                     }
-                    u++;
-                }
-                for (var t = 0; t < txinfotasks.Length; t++)
-                {
-                    if (txinfotasks[t] == null) txinfotasks[t] = Task.Delay(1);
                 }
 
-                await Task.WhenAll(txinfotasks);
+                var tasks = new ConcurrentQueue<Task>();
+                var added = 0;
+                var paralelism = 10;
+                while (txinfotasks.Count > 0)
+                {
+                    if (txinfotasks.TryDequeue(out var tsk))
+                    {
+                        tasks.Enqueue(tsk);
+                        added++;
+                    }
+                    if (added >= paralelism || txinfotasks.Count == 0)
+                    {
+                        await Task.WhenAll(tasks);
+                        added = 0;
+                    }
+                }
+                /*
+                Parallel.ForEach(new ArraySegment<Utxos>(utxos, 0, utxos.Length > MaxLoadedNFTItems ? MaxLoadedNFTItems : utxos.Length), new ParallelOptions { MaxDegreeOfParallelism = 10 }, utxo =>
+                {
+                    NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid).Wait();//this cause the trouble
+                    var tokid = utxo.Tokens?.FirstOrDefault()?.TokenId;
+                    if (!string.IsNullOrEmpty(tokid) && !VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
+                        NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid).Wait(); //this cause the trouble
+                    System.Threading.Thread.Sleep(20);
+                });*/
             }
             Console.WriteLine("Cash of the TxInfo preload end...");
         }
@@ -158,7 +170,7 @@ namespace VEDriversLite.Bookmarks
             {
                 await Reload(withoutMsgs);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Cannot Reload Active Tab after the start.");
             }
@@ -299,7 +311,7 @@ namespace VEDriversLite.Bookmarks
                             {
                                 ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
                                 if (NFTs.Where(nft => NFTHelpers.IsBuyableNFT(nft.Type))
-                                        .FirstOrDefault(n => n.Utxo == (p as PaymentNFT).NFTUtxoTxId && 
+                                        .FirstOrDefault(n => n.Utxo == (p as PaymentNFT).NFTUtxoTxId &&
                                                              n.UtxoIndex == (p as PaymentNFT).NFTUtxoIndex) != null)
                                 {
                                     NFTAddedToPayments?.Invoke(Address, ((p as PaymentNFT).NFTUtxoTxId, (p as PaymentNFT).NFTUtxoIndex));
