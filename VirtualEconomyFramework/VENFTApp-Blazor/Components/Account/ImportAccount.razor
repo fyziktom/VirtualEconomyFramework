@@ -264,15 +264,18 @@
         else
         {
             var res = NeblioTransactionHelpers.IsPrivateKeyValid(importAccountKey);
-            if (res != null)
+            if (res == null)
             {
                 try
                 {
                     key = SymetricProvider.DecryptString(importAccountPass, importAccountKey);
+                    res = NeblioTransactionHelpers.IsPrivateKeyValid(key);
+                    if (res == null)
+                        throw new Exception();
                 }
                 catch (Exception ex)
                 {
-                    await JSRuntime.InvokeVoidAsync("alertMessage", "Private Key is not valid.");
+                    await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot Decrypt Imported key. Probably wrong password for this backup file.");
                     return false;
                 }
             }
