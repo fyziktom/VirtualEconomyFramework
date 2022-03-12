@@ -21,7 +21,15 @@
                         This dialog will process the order and payment of this NFT
                     </div>
                 </div>
-                <div class="row">
+                @if (NFT.SellJustCopy)
+                {
+                <div class="row" style="margin-top:10px;">
+                    <div class="col d-flex justify-content-center align-items-center">
+                        <span>Author of the NFT offered just copies. You can buy just copy.</span>
+                    </div>
+                </div>
+                }
+                <div class="row" style="margin-top:15px;">
                     <div class="col d-flex justify-content-center align-items-center">
                         Receiver Address: @receiverAddress
                     </div>
