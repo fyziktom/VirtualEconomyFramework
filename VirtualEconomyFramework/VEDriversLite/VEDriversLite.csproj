@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>VEFramework.VEDriversLite</PackageId>
-    <Version>0.1.9</Version>
+    <Version>0.1.91</Version>
     <Authors>fyziktom</Authors>
     <Company>VEFramework</Company>
     <Description>.NET Standard version of VEDrivers. Contains just minimum dependencies and now just support of Neblio and Doge blockchain.</Description>
@@ -13,14 +13,13 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
     <Copyright>fyziktom</Copyright>
-    <PackageReleaseNotes>- Added calculation of the fee based on the size of tx (beta, still need testing)
-- Added NFT Order and Invoice
-- Added NFT Device and IoT Device
-- Added NFT IoT Messages
-- Added HARDWARIO IoT Data Driver for API requests
-- Added HARDWARIO HIT Tokens Support (please for more info check https://hardwario.com/)
-- Refactoring of the loading of the NeblioAccount. huge speed improvements
-- Added Cryptocurrency price readers (now Coingecko API) and Exchange driver example</PackageReleaseNotes>
+    <PackageReleaseNotes>- Added UnitTests for most of the functions in the NeblioTransactionHelpers
+- Refactoring in NeblioTransactionHelpers
+- Refactoring in DogeTransactionHelpers
+- Added NeblioTransactionCache which speed up the sending of the transaction
+- Improvement of the calculation of the fee
+- Cache preload in account and ActiveTab loading
+- Changed IPFS file download command to POST method (Infura.io now support just this)</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -38,6 +37,7 @@
     <PackageReference Include="NBitcoin" Version="5.0.81" />
     <PackageReference Include="NBitcoin.Altcoins" Version="2.0.33" />
     <PackageReference Include="WordPressPCL" Version="1.9.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <!--<PackageReference Include="QRCoder" Version="1.4.1" />-->
     <!--<PackageReference Include="ZXing.Net" Version="0.16.6" />-->
   </ItemGroup>

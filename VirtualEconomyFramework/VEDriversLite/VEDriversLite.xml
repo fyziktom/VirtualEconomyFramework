@@ -241,6 +241,60 @@
             <param name="path">Path of the file</param>
             <returns>true if the file exists</returns>
         </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPC.ProcessRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Find match for command in ApiDictionary and invoke function
+            </summary>
+            <param name="uid">Request UID</param>
+            <param name="command">Command to do</param>
+            <param name="args">set of arguments</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPC.CommonMultipleParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Common Api Function - Common call for command with multiple parameter
+            </summary>
+            <param name="uid"></param>
+            <param name="command"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPC.CommonOneParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Common Api Function - Common call for command with one parameter
+            </summary>
+            <param name="uid"></param>
+            <param name="command"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPC.CommonNoParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Common Api Function - Common request without parameter
+            </summary>
+            <param name="uid"></param>
+            <param name="command"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandAsync(System.String,System.Object)">
+            <summary>
+            Function for call of RPC command. Parameters is string splitted with ','
+            First is command, then goes the parameters. If parameters must cointain ',' please use function RPCLocalCommandSplitedAsync
+            </summary>
+            <param name="param">First is command, then goes the parameters.</param>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandSplitedAsync(System.String,System.String[])">
+            <summary>
+            This function require already splitted command and parameters
+            This is for the case that some of the parameters must contain ',' which is used as separator
+            </summary>
+            <param name="command">RPC command name</param>
+            <param name="parameters">string array of parameters</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)">
             <summary>
             Convert Unix Time stamp in miliseconds to DateTime
@@ -1209,7 +1263,7 @@
             <param name="amount"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.DogeAccount.SendPayment(System.String,System.Double,System.String,System.UInt64,System.String,System.Int32)">
+        <member name="M:VEDriversLite.DogeAccount.SendPayment(System.String,System.Double,System.String,System.String,System.Int32)">
             <summary>
             Send Doge payment
             </summary>
@@ -1225,7 +1279,7 @@
             <param name="amount">Ammount in Doge</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.DogeAccount.SendMultipleOutputPayment(System.Collections.Generic.Dictionary{System.String,System.Double},System.Collections.Generic.List{VEDriversLite.DogeAPI.Utxo},System.String,System.UInt64)">
+        <member name="M:VEDriversLite.DogeAccount.SendMultipleOutputPayment(System.Collections.Generic.Dictionary{System.String,System.Double},System.Collections.Generic.List{VEDriversLite.DogeAPI.Utxo},System.String)">
             <summary>
             Send Doge payment with multiple outputs
             </summary>
@@ -1719,6 +1773,11 @@
             <returns>Object containing collection of Utxos</returns>
             <exception cref="T:VEDriversLite.DogeAPI.ApiException">A server side error occurred.</exception>
         </member>
+        <member name="T:VEDriversLite.DogeTransactionHelpers">
+            <summary>
+            Doge Transaction Helpers
+            </summary>
+        </member>
         <member name="F:VEDriversLite.DogeTransactionHelpers.FromSatToMainRatio">
             <summary>
             Conversion ration for Doge to convert from sat to 1 DOGE
@@ -1774,17 +1833,7 @@
             <param name="address">Address of the owner</param>
             <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransaction(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double)">
-            <summary>
-            Function will send standard Neblio transaction - sync version
-            </summary>
-            <param name="data">Send data, please see SendTxData class for the details</param>
-            <param name="ekey">Input EncryptionKey of the account</param>
-            <param name="utxos">Optional input neblio utxo</param>
-            <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
-            <returns>New Transaction Hash - TxId</returns>
-        </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double)">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
             <summary>
             Function will send standard Neblio transaction - Async version
             </summary>
@@ -1794,7 +1843,7 @@
             <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double)">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
             <summary>
             Function will send standard Neblio transaction with included message.
             </summary>
@@ -1804,7 +1853,7 @@
             <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(System.Collections.Generic.Dictionary{System.String,System.Double},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.Double,System.String,System.String)">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(System.Collections.Generic.Dictionary{System.String,System.Double},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.String,System.String)">
             <summary>
             Function will send standard Neblio transaction with message and outputs which goes to different addresses
             </summary>
@@ -1857,13 +1906,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.BroadcastTxAsync(VEDriversLite.DogeAPI.BroadcastTxRequest)">
-            <summary>
-            Broadcast of signed transaction.
-            </summary>
-            <param name="data"></param>
-            <returns></returns>
-        </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.ChainSoBroadcastTxAsync(VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest)">
             <summary>
             Broadcast of signed transaction. with chain.so
@@ -1876,13 +1918,6 @@
             Broadcast of signed transaction. with VENFT API
             </summary>
             <param name="data">tx hex</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.AddressBalanceAsync(System.String)">
-            <summary>
-            Return address balance.
-            </summary>
-            <param name="addr"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.AddressUtxosAsync(System.String)">
@@ -3331,7 +3366,7 @@
             Cache will expiry for every 10 seconds so when accessed system will check cache and return the latest blockheight 
             </summary>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioTransactionsCache.LatestBlockHeight(System.String)">
+        <member name="M:VEDriversLite.Neblio.NeblioTransactionsCache.LatestBlockHeight(System.String,System.String)">
             <summary>
             Method will check if the data for current address is available in cache and returns the blockheight, IF not avaialble then retrievs from API.
             </summary>
@@ -5228,7 +5263,7 @@
             <param name="address">Address of the owner</param>
             <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.MintNFTTokenAsync(VEDriversLite.MintNFTData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.MintNFTTokenAsync(VEDriversLite.MintNFTData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             Function will Mint NFT from lot of the tokens
             </summary>
@@ -5239,7 +5274,19 @@
             <param name="fee">Fee - 20000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.MintMultiNFTTokenAsync(VEDriversLite.MintNFTData,System.Int32,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.MintMultiNFTTokenAsync(VEDriversLite.MintNFTData,System.Int32,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+            <summary>
+            Function will Mint NFT with the coppies
+            </summary>
+            <param name="data">Mint data, please see MintNFTData class for the details</param>
+            <param name="coppies">0 or more coppies - with 0 input it is same as MintNFTTokenAsync</param>
+            <param name="ekey">Input EncryptionKey of the account</param>
+            <param name="nutxos">Optional input neblio utxo</param>
+            <param name="tutxos">Optional input token utxo</param>
+            <param name="fee">Fee - 20000 minimum</param>
+            <returns>New Transaction Hash - TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.MintMultiNFTTokenAsyncInternal(VEDriversLite.MintNFTData,System.Int32,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Boolean)">
             <summary>
             Function will Mint NFT with the coppies
             </summary>
@@ -5306,7 +5353,7 @@
             <param name="fee">Fee - 10000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Double,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String,System.Int32,System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Double,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String,System.Int32)">
             <summary>
             This function will send Neblio payment together with the token whichc carry some metadata
             </summary>
@@ -5317,7 +5364,7 @@
             <param name="fee">Fee - 20000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Double,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Double,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             This function will send Neblio payment together with the token whichc carry some metadata
             </summary>
@@ -7779,60 +7826,6 @@
             TODO
             </summary>
             <param name="apiurl"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDrivers.Common.QTWalletRPC.ProcessRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
-            <summary>
-            Find match for command in ApiDictionary and invoke function
-            </summary>
-            <param name="uid">Request UID</param>
-            <param name="command">Command to do</param>
-            <param name="args">set of arguments</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDrivers.Common.QTWalletRPC.CommonMultipleParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
-            <summary>
-            Common Api Function - Common call for command with multiple parameter
-            </summary>
-            <param name="uid"></param>
-            <param name="command"></param>
-            <param name="args"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDrivers.Common.QTWalletRPC.CommonOneParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
-            <summary>
-            Common Api Function - Common call for command with one parameter
-            </summary>
-            <param name="uid"></param>
-            <param name="command"></param>
-            <param name="args"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDrivers.Common.QTWalletRPC.CommonNoParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
-            <summary>
-            Common Api Function - Common request without parameter
-            </summary>
-            <param name="uid"></param>
-            <param name="command"></param>
-            <param name="args"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDrivers.Common.QTWalletRPCClient.RPCLocalCommandAsync(System.String,System.Object)">
-            <summary>
-            Function for call of RPC command. Parameters is string splitted with ','
-            First is command, then goes the parameters. If parameters must cointain ',' please use function RPCLocalCommandSplitedAsync
-            </summary>
-            <param name="param">First is command, then goes the parameters.</param>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDrivers.Common.QTWalletRPCClient.RPCLocalCommandSplitedAsync(System.String,System.String[])">
-            <summary>
-            This function require already splitted command and parameters
-            This is for the case that some of the parameters must contain ',' which is used as separator
-            </summary>
-            <param name="command">RPC command name</param>
-            <param name="parameters">string array of parameters</param>
             <returns></returns>
         </member>
     </members>

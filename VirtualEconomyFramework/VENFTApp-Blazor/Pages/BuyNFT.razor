@@ -54,6 +54,19 @@
                                         <h5>NFT</h5>
                                     </div>
                                 </div>
+                                @if (NFT.SellJustCopy)
+                                {
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>You are buying just copy of the NFT.</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:5px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>Author of the NFT offered just copies.</span>
+                                        </div>
+                                    </div>
+                                }
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
                                         <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@NFT" OwnNFT="false" AllowBuy="false" />
