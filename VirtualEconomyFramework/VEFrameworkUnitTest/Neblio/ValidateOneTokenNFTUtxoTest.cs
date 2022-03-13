@@ -21,7 +21,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
         /// </summary>
         [Fact]
-        public void ValidateOneTokenNFTUtxo_Valid_Test()
+        public async void ValidateOneTokenNFTUtxo_Valid_Test()
         {            
             #region AddressObject
 
@@ -111,10 +111,9 @@ namespace VEFrameworkUnitTest.Neblio
             string transactionId = "cb2cec4a0c3c6df5bf033e7da61a58eedb9a28ff2407c11b247b35f05baff6fb";
             int index = 1;
 
-            var result = NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(address, tokenId, transactionId, index).Result;
+            var result = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(address, tokenId, transactionId, index);
 
-            Assert.True(result.Item1);
-            Assert.Equal(index, result.Item2);
+            Assert.Equal(index, result);
         }
     }
 }

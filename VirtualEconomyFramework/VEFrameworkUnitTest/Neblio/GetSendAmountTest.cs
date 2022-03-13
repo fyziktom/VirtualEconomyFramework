@@ -24,7 +24,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning amount correctly.
         /// </summary>
         [Fact]
-        public void GetSendAmount_Valid_Test()
+        public async void GetSendAmount_Valid_Test()
         {
             //Arrange
             var transactionId = "123";
@@ -61,8 +61,8 @@ namespace VEFrameworkUnitTest.Neblio
             _client.Setup(x => x.GetTransactionInfoAsync(transactionId)).ReturnsAsync(transactionObject);
 
             //ACT
-            var txinfo = NeblioTransactionHelpers.GetTransactionInfo(transactionId).Result;
-            var amount = NeblioTransactionHelpers.GetSendAmount(txinfo, address).Result;
+            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(transactionId);
+            var amount = NeblioTransactionHelpers.GetSendAmount(txinfo, address);
 
             //Assert  
             Assert.True(amount > 0);
@@ -72,7 +72,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning an error result for incorrect address and incorrect transactionId.
         /// </summary>
         [Fact]
-        public void GetSendAmount_Exception_Test()
+        public async void GetSendAmount_Exception_Test()
         {
             //Arrange
             var transactionId = "cb2cec4a0c3c6df5bf033e7da61a58eedb9a28ff2407c11b247b35f05baff6"; //Incorrect transactionId
@@ -88,10 +88,10 @@ namespace VEFrameworkUnitTest.Neblio
             _client.Setup(x => x.GetTransactionInfoAsync(transactionId)).ReturnsAsync(transactionObject);
 
             //ACT            
-            var txinfo = NeblioTransactionHelpers.GetTransactionInfo(transactionId).Result;
+            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(transactionId);
 
             //Assert
-            var exception = Assert.ThrowsAsync<Exception>(() => NeblioTransactionHelpers.GetSendAmount(txinfo, address)).Result;
+            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetSendAmount(txinfo, address));
             Assert.Equal(message, exception.Message);
         }
 
@@ -99,11 +99,11 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning an error result for incorrect address and incorrect transactionId.
         /// </summary>
         [Fact]
-        public void GetSendAmount_EmptyInAndOutVectors_Test()
+        public async void GetSendAmount_EmptyInAndOutVectors_Test()
         {
             //Arrange
             var transactionId = "cb2cec4a0c3c6df5bf033e7da61a58eedb9a28ff2407c11b247b35f05baff6"; //Incorrect transactionId
-            string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh"; 
+            string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";
 
             var emptyTransactionObject = new GetTransactionInfoResponse()
             {
@@ -114,8 +114,8 @@ namespace VEFrameworkUnitTest.Neblio
             _client.Setup(x => x.GetTransactionInfoAsync(transactionId)).ReturnsAsync(emptyTransactionObject);
 
             //ACT            
-            var txinfo = NeblioTransactionHelpers.GetTransactionInfo(transactionId).Result;
-            double amount = NeblioTransactionHelpers.GetSendAmount(txinfo, address).Result;
+            var txinfo = await NeblioTransactionHelpers .GetTransactionInfo(transactionId);
+            double amount = NeblioTransactionHelpers.GetSendAmount(txinfo, address);
 
             //Assert
             Assert.Equal(0, amount);

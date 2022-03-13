@@ -299,7 +299,7 @@ namespace VEDriversLite
                        var kdto = new KeyDto()
                         {
                             Address = Address,
-                            Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
+                            Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
                         };
                         FileHelpers.WriteTextToFile(filename, JsonConvert.SerializeObject(kdto));
                     }
@@ -489,8 +489,8 @@ namespace VEDriversLite
                     //SignMessage("init");
                     if (string.IsNullOrEmpty(address))
                     {
-                        var add = await NeblioTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
-                        if (add.Item1) Address = add.Item2;
+                        var add = NeblioTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
+                        if (!string.IsNullOrEmpty(add)) Address = add;
                     }
                     else
                     {
@@ -1245,7 +1245,7 @@ namespace VEDriversLite
                 var accskeys = new Dictionary<string, string>();
                 foreach (var sa in SubAccounts.Values)
                 {
-                    var key = await sa.AccountKey.GetEncryptedKey();
+                    var key = sa.AccountKey.GetEncryptedKey();
                     if (!string.IsNullOrEmpty(key))
                         accskeys.Add(sa.Address, key);
                 }
@@ -1606,7 +1606,7 @@ namespace VEDriversLite
                             var info = await DogeTransactionHelpers.TransactionInfoAsync(u.TxId);
                             if (info != null && info.Transaction != null)
                             {
-                                var msg = await DogeTransactionHelpers.ParseDogeMessage(info);
+                                var msg = DogeTransactionHelpers.ParseDogeMessage(info);
                                 if (msg.Item1)
                                 {
                                     var split = msg.Item2.Split('-');
@@ -1627,8 +1627,8 @@ namespace VEDriversLite
                                         {
                                             if (nft.DogePriceActive && nft.DogePrice == Convert.ToDouble(u.Value, CultureInfo.InvariantCulture))
                                             {
-                                                var addver = await NeblioTransactionHelpers.ValidateNeblioAddress(split[0]);
-                                                if (addver.Item1)
+                                                var addver = NeblioTransactionHelpers.ValidateNeblioAddress(split[0]);
+                                                if (!string.IsNullOrEmpty(addver))
                                                 {
                                                     var done = false;
                                                     (bool, string) res = (false, string.Empty);
@@ -1638,7 +1638,7 @@ namespace VEDriversLite
                                                     {
                                                         try
                                                         {
-                                                            res = await SendNFT(addver.Item2, nft, false, 0.0002);
+                                                            res = await SendNFT(addver, nft, false, 0.0002);
                                                             done = res.Item1;
                                                             if (!res.Item1) await Task.Delay(5000);
                                                         }

@@ -1,0 +1,28 @@
+﻿<div class="position-relative w-100 h-100" style="@Style">
+    <div class="@(Spinning ? "opacity-25 pe-none" : "")">
+        @ChildContent
+    </div>
+    @if (Spinning)
+    {
+        <div class="spin-overlay text-primary">
+            <div class="spinner-border flex-shrink-0" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            @if (!String.IsNullOrEmpty(Tip))
+            {
+                <div class="spin-tip">@Tip</div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public bool Spinning { get; set; } = true;
+    [Parameter]
+    public string Tip { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public String Style { get; set; }
+}

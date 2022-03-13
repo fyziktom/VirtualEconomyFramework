@@ -29,9 +29,9 @@
        Visible="@showUseTicketVisible"
        OnOk="@UseTicketConfirm"
        OnCancel="@UseTicketCancel">
-    <Spin Tip="Writing Use state..." Spinning="@loading">
+    <VENFTApp_Blazor.Components.Spin Tip="Writing Use state..." Spinning="@loading">
         <span class="text-center">Do you really want to use this ticket?</span>
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </Modal>
 
 @code {

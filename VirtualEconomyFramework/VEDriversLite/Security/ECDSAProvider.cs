@@ -402,7 +402,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var mesage = await SymetricProvider.DecryptString(key.Item2, emessage);
+                var mesage = SymetricProvider.DecryptString(key.Item2, emessage);
                 return (true, mesage);
             }
             catch (Exception ex)
@@ -460,7 +460,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var mesage = await SymetricProvider.DecryptString(key, emessage);
+                var mesage = SymetricProvider.DecryptString(key, emessage);
                 return (true, mesage);
             }
             catch (Exception ex)

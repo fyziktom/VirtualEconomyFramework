@@ -21,5 +21,7 @@ namespace VENFTApp_Server
         public static Dictionary<string, TokenOwnerDto> VENFTTokenOwners = new Dictionary<string, TokenOwnerDto>();
         public static ConcurrentDictionary<string, string> UsedAddressesWithTickets = new ConcurrentDictionary<string, string>();
         public static bool IsAPIWithCredentials { get; set; } = true;
+        public static List<string> ObservedAccounts { get; set; } = new List<string>();
+        public static ConcurrentDictionary<string,ActiveTab> ObservedAccountsTabs { get; set; } = new ConcurrentDictionary<string, ActiveTab>();
     }
 }

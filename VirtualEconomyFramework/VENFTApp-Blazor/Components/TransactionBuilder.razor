@@ -10,21 +10,19 @@
 <div class="container-fluid">
     @if (errorDuringSend)
     {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description=@errorMessage
-               ShowIcon="true" />
+        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+            <Message>@errorMessage</Message>
+        </VENFTApp_Blazor.Components.Alert>
     }
 
     @if (AppData.Account.IsLocked())
     {
-        <Alert Type="@AlertType.Error"
-               Message="Error"
-               Description="Account Is Locked. Please unlock account first."
-               ShowIcon="true" />
+        <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+            <Message>Account Is Locked. Please unlock account first.</Message>
+        </VENFTApp_Blazor.Components.Alert>
     }
 
-    <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
+    <VENFTApp_Blazor.Components.Spin Spinning="@sendingTransaction" Tip="Sending Transaction...">
 
         <div class="row">
             <div class="col">
@@ -255,7 +253,7 @@
                 </div>
             </div>
         </div>
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 
     <!-- add token tx -->
     <Modal Title="Add Token Tx"
@@ -677,7 +675,7 @@
     {
         try
         {
-            await transaction.Sign(await AppData.Account.AccountKey.GetEncryptedKey());
+            await transaction.Sign(AppData.Account.AccountKey.GetEncryptedKey());
         }
         catch (Exception ex)
         {

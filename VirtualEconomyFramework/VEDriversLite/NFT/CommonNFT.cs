@@ -458,10 +458,10 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner)
         {
-            if (!string.IsNullOrEmpty(imageLink) && imageLink.Contains("https://gateway.ipfs.io/ipfs/"))
+            if (!string.IsNullOrEmpty(imageLink) && (imageLink.Contains("https://gateway.ipfs.io/ipfs/") || imageLink.Contains("https://ipfs.infura.io/ipfs/")))
             {
                 byte[] ImageData;
-                var hash = imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty);
+                var hash = imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty);
                 try
                 {
                     var bytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
