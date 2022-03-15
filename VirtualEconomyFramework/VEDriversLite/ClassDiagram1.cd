@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="VEDriversLite.NeblioAccount">
+    <Position X="9.25" Y="0.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>EgRCAKCBJQDcADFgCGABPBAgoKoJC8KIFqABDMCUBCA=</HashCode>
+      <FileName>Neblio\NeblioAccount.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VEDriversLite.Neblio.NeblioAccountBase">
+    <Position X="2" Y="0.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>JgARKivgOSKASIwwhCwAAgmgICoELXRChHcUuojSBUU=</HashCode>
+      <FileName>Neblio\NeblioAccountBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VEDriversLite.TokenSupplyDto">
+    <Position X="22.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>MAAAQAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Neblio\NeblioTransactionHelpers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VEDriversLite.TokenOwnerDto">
+    <Position X="22.75" Y="2.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAAAAAIACQAAAAAAAAAA=</HashCode>
+      <FileName>Neblio\NeblioTransactionHelpers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VEDriversLite.NeblioTransactionHelpers">
+    <Position X="14.25" Y="0.5" Width="7.25" />
+    <NestedTypes>
+      <Class Name="VEDriversLite.NeblioTransactionHelpers.tokenUrlCarrier" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Neblio\NeblioTransactionHelpers.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>QACIEAAAGABAAEgEj0tBhAWsyW5QglooRgTIAIVBCMA=</HashCode>
+      <FileName>Neblio\NeblioTransactionHelpers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

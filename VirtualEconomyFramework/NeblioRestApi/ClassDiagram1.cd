@@ -1,0 +1,595 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical" MembersFormat="FullSignature">
+  <Class Name="Neblio.RestApi.Client" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Struct Name="Neblio.RestApi.Client.ObjectResponseResult&lt;T&gt;" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>NeblioRestApi.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ABACAEoAAAAABAGAhBSIgAIQAMCgCQAgACAIAwAFEAE=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Neblio.RestApi.TestnetClient" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14" Y="6.5" Width="1.5" />
+    <NestedTypes>
+      <Struct Name="Neblio.RestApi.TestnetClient.ObjectResponseResult&lt;T&gt;" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>NeblioRestApi.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ABACAEoAAAAABAGAhBSIgAIQAMCgGQAgACAIAwAFEAE=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Neblio.RestApi.JsonClient" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10.5" Y="4.5" Width="1.5" />
+    <NestedTypes>
+      <Struct Name="Neblio.RestApi.JsonClient.ObjectResponseResult&lt;T&gt;" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>NeblioRestApi.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAEgAAAAAAAAAhBAAgAAAAAAggAAgAAAIAwAEAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Neblio.RestApi.GetTokenIdResponse" Collapsed="true">
+    <Position X="5.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.BroadcastTxRequest" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.BroadcastTxResponse" Collapsed="true">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetAddressInfoResponse" Collapsed="true">
+    <Position X="3.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAAAAAAACAAAAAAACAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetTransactionInfoResponse" Collapsed="true">
+    <Position X="8.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQAABAAAAAEBAghAIAAAQgAAABAAAAAAAAAAkAAAQA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetTokenMetadataResponse" Collapsed="true">
+    <Position X="7" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>FCQAACAEAAAEAAABABACAAAAAAAGAAAAAAAIABAA0AA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetTokenHoldersResponse" Collapsed="true">
+    <Position X="3.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAACAAAAAkAAAAAAACAAAAAAAAAAAAAQAAABAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.IssueTokenRequest" Collapsed="true">
+    <Position X="3.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQABAAAAAAEAAAgAAAAAQCAAAAAAAAAAAAIAAAMEAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.IssueTokenResponse" Collapsed="true">
+    <Position X="5.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.SendTokenRequest" Collapsed="true">
+    <Position X="8.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQABAAAAAAEEAAgAAAAAAAAAAAIAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.SendTokenResponse" Collapsed="true">
+    <Position X="10.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAQAEAAAAACAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.BurnTokenRequest" Collapsed="true">
+    <Position X="10.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAAAAAACEAAAgAAAAAQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.BurnTokenResponse" Collapsed="true">
+    <Position X="12.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAQAEAAAAACAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetFaucetResponse" Collapsed="true">
+    <Position X="12.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAEAAAEAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.SendTxRequest" Collapsed="true">
+    <Position X="12.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetBlockResponse" Collapsed="true">
+    <Position X="10.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQAAAQABQIEgQAAAAAAAQAAAAAAAAAAABAAAAAACQA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetBlockIndexResponse" Collapsed="true">
+    <Position X="8.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetTxResponse" Collapsed="true">
+    <Position X="10.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQBABAAAAAEhAAhAIAIARgAAABAAAAAAAAAAkAAAQA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetRawTxResponse" Collapsed="true">
+    <Position X="14" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetAddressResponse" Collapsed="true">
+    <Position X="5.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAaAAAAAAAAEAAAAARgAAAgAEAEAAAAAAAIAQAAgAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetAddressUtxosResponse" Collapsed="true">
+    <Position X="7" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetTxsResponse" Collapsed="true">
+    <Position X="12.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetSyncResponse" Collapsed="true">
+    <Position X="17.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAEBAAEAQAAAAAAABAAAAAAAAAAAQAAACAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.GetStatusResponse" Collapsed="true">
+    <Position X="15.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.RpcRequest" Collapsed="true">
+    <Position X="10.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQCAAIAAAAEAAAAAAAgAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.RpcResponse" Collapsed="true">
+    <Position X="12.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQCAAAAAAAEAQAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Error" Collapsed="true">
+    <Position X="7" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAgAAAAAAAAAAAAAAAAIAAAgAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Anonymous">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAQCAAABCAAACAAAAQgAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Utxos" Collapsed="true">
+    <Position X="5.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAABAAAAAEAAABAAAAAAAAAABAAAAAAAEgQAABAEA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Vin" Collapsed="true">
+    <Position X="7" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAgEAAAAAAIAAAAAAQBAAAAAAAAgAgEBAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Vout" Collapsed="true">
+    <Position X="10.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAABAAAAAEAAAAAABAAAAAAAAAAAAIAAAgQBABAEA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.MetadataOfIssuance" Collapsed="true">
+    <Position X="5.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.MetadataOfUtxo" Collapsed="true">
+    <Position X="7" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Holders" Collapsed="true">
+    <Position X="14" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAACAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Flags" Collapsed="true">
+    <Position X="15.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Transfer" Collapsed="true">
+    <Position X="7" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAACAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Metadata" Collapsed="true">
+    <Position X="17.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgUAAAAAAQAkAEAAAAAAAAAAAAAEAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.To" Collapsed="true">
+    <Position X="15.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAAAAAAACAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Flags2" Collapsed="true">
+    <Position X="17.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Metadata2" Collapsed="true">
+    <Position X="3.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgUAAAAAAQAkAEAAAAAAAAAAAAAEAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Transfer2" Collapsed="true">
+    <Position X="8.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAAAAAAACAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Burn" Collapsed="true">
+    <Position X="8.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAAAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Data" Collapsed="true">
+    <Position X="15.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Vin2" Collapsed="true">
+    <Position X="8.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAEAAAAAAAAAAAAAQBAAAAAAAAgAhEAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Vout2" Collapsed="true">
+    <Position X="12.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAABAAAAAEAAAAAABAAAAAAAAAAAAIAAAgQBAAAEA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Tokens" Collapsed="true">
+    <Position X="17.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAAAACAACAAAAAAAAAAAAIIBAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.ScriptSig" Collapsed="true">
+    <Position X="5.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAgAAAAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.PreviousOutput" Collapsed="true">
+    <Position X="8.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARAAAAAAAAEAAgAAAAAAAAAAAAAQAAAAQAAEAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Tokens2" Collapsed="true">
+    <Position X="3.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAAAACAACAAAAAAAAAAAAIIBAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.ScriptPubKey" Collapsed="true">
+    <Position X="17.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARAAAAAAAAEAAgAAAAAAAAAAAAAQAAAAQAAEAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Tokens3" Collapsed="true">
+    <Position X="5.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAAAACAACAAAAAAAAAAAAIIBAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Data2" Collapsed="true">
+    <Position X="17.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAUAAAAAAAAkAEAAAAAAAAAAAAAEAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.UserData" Collapsed="true">
+    <Position X="14" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Urls" Collapsed="true">
+    <Position X="10.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQAAAAAAAAEAAQAAAAAAAQAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.UserData2" Collapsed="true">
+    <Position X="15.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Encryptions" Collapsed="true">
+    <Position X="3.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAQAAAAAAAAAAAoAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Rules" Collapsed="true">
+    <Position X="14" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQBAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Urls2" Collapsed="true">
+    <Position X="12.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQAAAAAAAAEAAQAAAAAAAQAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.UserData3" Collapsed="true">
+    <Position X="17.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Encryptions2" Collapsed="true">
+    <Position X="5.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAQAAAAAAAAAAAoAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Rules2" Collapsed="true">
+    <Position X="15.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQBAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.ScriptSig2" Collapsed="true">
+    <Position X="7" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAgAAAAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.ScriptPubKey2" Collapsed="true">
+    <Position X="3.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARAAAAAAAAEAAgAAAAAAAAAAAAAQAAAAQAAEAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.UserData4" Collapsed="true">
+    <Position X="3.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Meta" Collapsed="true">
+    <Position X="12.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAQAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Fees" Collapsed="true">
+    <Position X="12.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAgAAAECAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Holders2" Collapsed="true">
+    <Position X="15.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAgAAAEAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Expiration" Collapsed="true">
+    <Position X="8.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAgAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Meta2" Collapsed="true">
+    <Position X="14" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAQAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Fees2" Collapsed="true">
+    <Position X="14" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAgAAAECAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Holders3" Collapsed="true">
+    <Position X="17.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAgAAAEAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Expiration2" Collapsed="true">
+    <Position X="10.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAgAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Meta3" Collapsed="true">
+    <Position X="15.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAQAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Items" Collapsed="true">
+    <Position X="7" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAAAAAAAAAAAAAAAACAAAgAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.Items2" Collapsed="true">
+    <Position X="8.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAEAAAAAAAAAAAAAAAAAAACAAAgAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.ApiException">
+    <Position X="0.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAEAAAAAAAACAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Neblio.RestApi.ApiException&lt;TResult&gt;">
+    <Position X="0.5" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Neblio.RestApi.IJsonClient" Collapsed="true">
+    <Position X="3.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NeblioRestApi.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

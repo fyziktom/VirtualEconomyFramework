@@ -6982,7 +6982,7 @@ namespace Neblio.RestApi
         {
             StatusCode = statusCode;
             Response = response; 
-            Headers = headers;
+            Headers = headers; 
         }
 
         public override string ToString()

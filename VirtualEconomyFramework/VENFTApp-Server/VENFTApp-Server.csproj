@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>VENFTApp_Server</RootNamespace>
     <UserSecretsId>b8f75dcb-207c-4c80-bbd4-b4e8ce90c276</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -13,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="AntDesign" Version="0.8.4" />
     <PackageReference Include="Markdig" Version="0.25.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.2.3" />
   </ItemGroup>
@@ -49,6 +51,14 @@
     <Content Update="wwwroot\qrcode.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
   </ItemGroup>
 
 </Project>
