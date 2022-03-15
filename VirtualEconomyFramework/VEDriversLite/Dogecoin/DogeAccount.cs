@@ -15,6 +15,7 @@ namespace VEDriversLite
 {
     public class DogeAccount
     {
+        private static object _lock = new object();
         /// <summary>
         /// Doge Address hash
         /// </summary>
@@ -197,7 +198,7 @@ namespace VEDriversLite
                         var kdto = new KeyDto()
                         {
                             Address = Address,
-                            Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
+                            Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
                         };
                         FileHelpers.WriteTextToFile("dogekey.txt", JsonConvert.SerializeObject(kdto));
                     }
@@ -235,7 +236,7 @@ namespace VEDriversLite
                     AccountKey.IsEncrypted = true;
                     Address = kdto.Address;
 
-                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
+                    Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
                     //SignMessage("init");
                     await StartRefreshingData();
                     return true;
@@ -284,11 +285,11 @@ namespace VEDriversLite
                         AccountKey.LoadPassword(password);
                         AccountKey.IsEncrypted = true;
                     }
-                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
+                    Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
 
                     if (string.IsNullOrEmpty(address))
                     {
-                        var add = await DogeTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
+                        var add = DogeTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
                         if (add.Item1) Address = add.Item2;
                     }
                     else
@@ -355,7 +356,7 @@ namespace VEDriversLite
             {
                 // todo
             }
-
+            var first = true;
             // todo cancelation token
             _ = Task.Run(async () =>
             {
@@ -363,7 +364,11 @@ namespace VEDriversLite
                 {
                     try
                     {
-                        await ReloadUtxos();
+                        if (!first)
+                            await ReloadUtxos();
+                        else
+                            first = false;
+
                         await GetListOfReceivedTransactions();
                         await GetListOfSentTransactions();
                         Refreshed?.Invoke(this, null);
@@ -409,18 +414,26 @@ namespace VEDriversLite
 
             if (ouxox.Count > 0)
             {
-                Utxos.Clear();
+                lock (_lock)
+                {
+                    Utxos.Clear();
+                }
                 TotalBalance = 0.0;
                 TotalUnconfirmedBalance = 0.0;
                 TotalSpendableBalance = 0.0;
                 // add new ones
                 foreach (var u in ouxox)
                 {
-                    Utxos.Add(u);
-                    if (u.Confirmations == 0)
+                    if (u.Confirmations <= DogeTransactionHelpers.MinimumConfirmations)
                         TotalUnconfirmedBalance += (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture));
                     else
+                    {
                         TotalSpendableBalance += (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture));
+                        lock (_lock)
+                        {
+                            Utxos.Add(u);
+                        }
+                    }
                 }
 
                 TotalBalance = TotalSpendableBalance + TotalUnconfirmedBalance;
@@ -482,7 +495,6 @@ namespace VEDriversLite
                 {
                     txs = await DogeTransactionHelpers.AddressReceivedTxsAsync(Address); 
                     txs.Reverse();
-
                 }
                 catch (Exception ex)
                 {
@@ -531,7 +543,7 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "", UInt64 fee = 100000000, string utxo = "", int N = 0)
+        public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "", string utxo = "", int N = 0)
         {
             if (IsLocked())
             {
@@ -568,9 +580,9 @@ namespace VEDriversLite
                 // send tx
                 var rtxid = string.Empty;
                 if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
                 else 
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
 
                 if (rtxid != null)
                 {
@@ -627,9 +639,9 @@ namespace VEDriversLite
                 // send tx
                 var rtxid = string.Empty;
                 if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
                 else
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
 
                 if (rtxid != null)
                 {
@@ -655,7 +667,7 @@ namespace VEDriversLite
         /// <param name="message"></param>
         /// <param name="fee"></param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "", UInt64 fee = 100000000)
+        public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "")
         {
             if (IsLocked())
             {
@@ -679,7 +691,7 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, fee, message: message);
+                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, message: message);
 
                 if (rtxid != null)
                 {
@@ -768,7 +780,7 @@ namespace VEDriversLite
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var key = await AccountKey.GetEncryptedKey();
+            var key = AccountKey.GetEncryptedKey();
             return await ECDSAProvider.SignMessage(message, Secret);
         }
 

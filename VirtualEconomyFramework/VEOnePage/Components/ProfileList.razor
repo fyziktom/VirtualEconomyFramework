@@ -1,0 +1,83 @@
+﻿@using VEDriversLite.NFT.Coruzant 
+@inject AppData AppData 
+@inject IJSRuntime JsRuntime
+<div class="row profiles">
+    
+    @foreach (var profile in AppData.NFTs.Skip(3).Take(8))
+    {
+        if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
+        {
+            var prof = profile as CoruzantProfileNFT;
+            <div class="col-xs-6 col-sm-4 col-md-3  profiles-container">
+                <div class="profile">
+                   <div class="profile-img">
+                    <img class="media-img" src="@prof.ImageLink" alt="@profile.Description">
+                    </div>        
+                    <div class="profile-details" @onclick="()=>ModalShow(prof)">
+                        <span class="profile-name">@prof.Name @prof.Surname</span> <br>
+                        <span class="position">@prof.WorkingPosition</span> <br>
+                        <span class="desc">@prof.Description</span>
+
+                    </div>
+                </div>
+          </div>
+
+    }
+ 
+      }
+
+</div>
+
+
+  @if (Prof != null)
+{
+   <div class="profile-modal modal-active" @onclick="@ModalCancel" id="myModal" style="display:block" aria-modal="true" role="dialog">
+     <div class="row content-modal row-eq-height" @onclick:stopPropagation="true">
+        <div class="col-xs-12 col-sm-4 profile-meta ">
+            <span id="week-img">
+                <img src="@Prof.ImageLink" />
+            </span>
+            <span class="name"> @Prof.Name @Prof.Surname</span><br /><br />
+            <span class="position">@Prof.WorkingPosition</span><br /><br />
+            <span class="tags"> <b>Tags: </b>
+                @if (@Prof.Tags !="")
+                {
+                    string[] subs = @Prof.Tags.Split();
+                    foreach (string sub in subs)
+                    {
+                        if (sub != ""){string r = "<a href='#'> "+sub+" </a>, ";@((MarkupString)r);}
+                    }
+                }
+
+            </span><br />
+        </div>
+
+        <div class="col-xs-12 col-sm-8 text">
+
+            <span class="title-modal"> @Prof.Description</span><br />
+            <div class="long-desc">
+                @((MarkupString)Prof.Text)
+            </div>
+            <span class="comp-link"><a target = "_blank" href="@Prof.CompanyLink">More about @((MarkupString)@Prof.CompanyName)</a></span><br />
+        </div>
+
+        </div>
+        </div>
+}
+@code {
+    int skip = new Random().Next(4, 17);
+    VEDriversLite.NFT.Coruzant.CoruzantProfileNFT Prof { get; set; }
+    public void ModalShow( VEDriversLite.NFT.Coruzant.CoruzantProfileNFT SelProfile){
+        Prof = SelProfile;
+    }
+    void ModalCancel() => Prof = null;
+    protected override Task OnInitializedAsync()
+    {
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        return base.OnInitializedAsync();
+    }
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Caching;
-using System.Timers;
-using VEDriversLite.NeblioAPI;
+using Microsoft.Extensions.Caching.Memory;
+using System.Threading.Tasks;
 
 namespace VEDriversLite.Neblio
 {
@@ -13,59 +10,56 @@ namespace VEDriversLite.Neblio
     /// </summary>
     public static class NeblioTransactionsCache
     {
-        private static readonly object _lockObject = new object();
-
+        static readonly MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
         /// <summary>
         /// Method will check if the data for current address is available in cache and returns the blockheight, IF not avaialble then retrievs from API.
         /// </summary>
         /// <param name="address">The address for which we need the latest block height</param>
         /// <returns></returns>
-        public static double LatestBlockHeight(string address)
+        public async static Task<double> LatestBlockHeight(string utxo, string address)
         {
-            lock (_lockObject)
+            double blockHeightValue = 0;
+
+            object value = GetCacheValue(address);
+
+            if (value != default)
             {
-                ObjectCache cache = MemoryCache.Default;
-                double blockHeightValue;
-                if (cache.Contains(address))
+                blockHeightValue = (double)value;
+            }
+            else
+            {
+                var data = await NeblioTransactionHelpers.GetClient().GetTransactionInfoAsync(utxo);
+
+                if (data != null && data.Blockheight != null && data.Confirmations != null)
                 {
-                    blockHeightValue = (double)cache.Get(address);
+                    blockHeightValue = data.Blockheight.Value + data.Confirmations.Value;
                 }
-                else
-                {
-                    blockHeightValue = GetLatestTransaction(address);
-                }
-                return blockHeightValue;
+                SetChacheValue(address, blockHeightValue);
+            }
+            return blockHeightValue;
+        }
+
+        private static object GetCacheValue(string key)
+        {
+            if (key != null && cache.TryGetValue(key, out object val))
+            {
+                return val;
+            }
+            else
+            {
+                return default;
             }
         }
 
-        /// <summary>
-        /// Method will get the Utxos list for the address and return the latest block height. The data will be added to cache with 10 seconds as expiration time.
-        /// </summary>
-        /// <param name="address">The address for which we need the latest block height</param>
-        /// <returns></returns>
-        private static double GetLatestTransaction(string address)
+        public static void SetChacheValue(string key, object value)
         {
-            ObjectCache cache = MemoryCache.Default;
-
-            CacheItemPolicy cacheItemPolicy = new CacheItemPolicy
+            if (key != null)
             {
-                AbsoluteExpiration = DateTime.Now.AddMilliseconds(10000)
-            };
-
-            GetAddressInfoResponse data = NeblioTransactionHelpers.GetClient().GetAddressInfoAsync(address).Result;
-            if (data.Utxos.Count == 0)
-            {
-                return 0;
+                cache.Set(key, value, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromSeconds(10)
+                });
             }
-            List<Utxos> utxos = (List<Utxos>)data.Utxos;
-            double blockHeightValue = utxos[0].Blockheight.Value;
-
-            if (cache.Contains(address))
-            {
-                cache.Remove(address);
-            }
-            cache.Add(address, blockHeightValue, cacheItemPolicy);
-            return blockHeightValue;
         }
     }
 }

@@ -10,7 +10,7 @@
 
 <div class="row">
     <div class="col">
-        <Spin spinning="@processingSending" tip="Sending...">
+        <VENFTApp_Blazor.Components.Spin Spinning="@processingSending" Tip="Sending...">
             <div class="row">
                 <div class="col">
                     @if (WooCommerceHelpers.IsInitialized)
@@ -130,7 +130,7 @@
                     }
                 </div>
             </div>
-        </Spin>
+        </VENFTApp_Blazor.Components.Spin>
 
         <Modal Title="NFT Details"
                Visible="@showNFTDetailsVisible"

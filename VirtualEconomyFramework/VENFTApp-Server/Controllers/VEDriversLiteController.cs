@@ -133,7 +133,7 @@ namespace VENFTApp_Server.Controllers
 
         public class BroadcastTransactionRequestDto
         {
-            public string network { get; set; } = "Neblio";
+            public string network { get; set; } = "neblio";
             public string tx_hex { get; set; } = string.Empty;
         }
         public class BroadcastTransactionResponseDto
@@ -142,7 +142,7 @@ namespace VENFTApp_Server.Controllers
         }
         public class BroadcastDataResponseDto
         {
-            public string network { get; set; } = "Neblio";
+            public string network { get; set; } = "neblio";
             public string txid { get; set; } = string.Empty;
         }
         /// <summary>

@@ -63,7 +63,7 @@ namespace TestVEDriversLite
             await account.CreateNewAccount(password, true);
             Console.WriteLine($"Account created.");
             Console.WriteLine($"Address: {account.Address}");
-            Console.WriteLine($"Encrypted Private Key: {await account.AccountKey.GetEncryptedKey("", true)}");
+            Console.WriteLine($"Encrypted Private Key: {account.AccountKey.GetEncryptedKey("", true)}");
         }
         /// <summary>
         /// This handler provides the data from the initial loading of the account.
@@ -294,7 +294,7 @@ namespace TestVEDriversLite
                 throw new Exception("Account is not initialized.");
             if (account.IsLocked())
                 throw new Exception("Account is locked.");
-            var res = await account.AccountKey.GetEncryptedKey();
+            var res = account.AccountKey.GetEncryptedKey();
             Console.WriteLine($"Private key for address {account.Address} is: ");
             Console.WriteLine(res);
         }
@@ -1626,7 +1626,7 @@ namespace TestVEDriversLite
             if (account.IsLocked())
                 throw new Exception("Account is locked.");
 
-            var res = await ECDSAProvider.DecryptMessage(param, await account.AccountKey.GetEncryptedKey());
+            var res = await ECDSAProvider.DecryptMessage(param, account.AccountKey.GetEncryptedKey());
             Console.WriteLine("Decrypted message is: ");
             Console.WriteLine(res);
         }
@@ -1709,13 +1709,13 @@ namespace TestVEDriversLite
         {
             AESDecryptMessageAsync(param);
         }
-        public static async Task AESDecryptMessageAsync(string param)
+        public static void AESDecryptMessageAsync(string param)
         {
             var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length < 2)
                 throw new Exception("Please input message,password.");
 
-            var res = await SymetricProvider.DecryptString(split[1], split[0]);
+            var res = SymetricProvider.DecryptString(split[1], split[0]);
             Console.WriteLine("Decrypted message is: ");
             Console.WriteLine(res);
         }
@@ -1787,8 +1787,8 @@ namespace TestVEDriversLite
             await dogeAccount.CreateNewAccount(password, true);
             Console.WriteLine($"Account created.");
             Console.WriteLine($"Address: {dogeAccount.Address}");
-            Console.WriteLine($"Encrypted Private Key: {await dogeAccount.AccountKey.GetEncryptedKey("", true)}");
-            Console.WriteLine($"Decrypted Private Key: {await dogeAccount.AccountKey.GetEncryptedKey("", false)}");
+            Console.WriteLine($"Encrypted Private Key: {dogeAccount.AccountKey.GetEncryptedKey("", true)}");
+            Console.WriteLine($"Decrypted Private Key: {dogeAccount.AccountKey.GetEncryptedKey("", false)}");
             //StartRefreshingData(null);
         }
 
@@ -1878,7 +1878,7 @@ namespace TestVEDriversLite
                 throw new Exception("Account is not initialized.");
             if (dogeAccount.IsLocked())
                 throw new Exception("Account is locked.");
-            var res = await dogeAccount.AccountKey.GetEncryptedKey();
+            var res = dogeAccount.AccountKey.GetEncryptedKey();
             Console.WriteLine($"Private key for address {dogeAccount.Address} is: ");
             Console.WriteLine(res);
         }
@@ -1908,7 +1908,7 @@ namespace TestVEDriversLite
             Console.WriteLine("Request Tx Info");
             var txid = param;
             var txinfo = await DogeTransactionHelpers.TransactionInfoAsync(txid);
-            var msg = await DogeTransactionHelpers.ParseDogeMessage(txinfo);
+            var msg = DogeTransactionHelpers.ParseDogeMessage(txinfo);
             Console.WriteLine("TxInfo:");
             Console.WriteLine(JsonConvert.SerializeObject(txinfo, Formatting.Indented));
             Console.WriteLine("-------------------------------------------------------");
@@ -1945,12 +1945,10 @@ namespace TestVEDriversLite
             if (split.Length < 4)
                 throw new Exception("Please input receiveraddress,amountofdoge,fee,message");
             var receiver = split[0];
-            var am = split[1];
-            var f = split[2];
+            var am = split[1];            
             var message = split[3];
-            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);
-            var fee = Convert.ToUInt64(f, CultureInfo.InvariantCulture);
-            var res = await dogeAccount.SendPayment(receiver, amount, message, fee);
+            var amount = Convert.ToDouble(am, CultureInfo.InvariantCulture);            
+            var res = await dogeAccount.SendPayment(receiver, amount, message);
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }

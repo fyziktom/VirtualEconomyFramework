@@ -68,6 +68,8 @@ namespace VEDriversLite.DogeAPI
             if (address == null)
                 throw new System.ArgumentNullException("Address must be filled");
 
+            _baseUrl = "https://chain.so/api/v2/";
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("get_address_balance/DOGE/{address}/5");
             urlBuilder_.Replace("{address}", System.Uri.EscapeDataString(ConvertToString(address, System.Globalization.CultureInfo.InvariantCulture)));
@@ -150,6 +152,7 @@ namespace VEDriversLite.DogeAPI
             if (txid == null)
                 throw new System.ArgumentNullException("txid");
 
+            _baseUrl = "https://chain.so/api/v2/";
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/get_tx/DOGE/{txid}");
             urlBuilder_.Replace("{txid}", System.Uri.EscapeDataString(ConvertToString(txid, System.Globalization.CultureInfo.InvariantCulture)));
@@ -236,6 +239,7 @@ namespace VEDriversLite.DogeAPI
             if (address == null)
                 throw new System.ArgumentNullException("Address");
 
+            _baseUrl = "https://chain.so/api/v2/";
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/get_tx_unspent/DOGE/{address}");
             urlBuilder_.Replace("{address}", System.Uri.EscapeDataString(ConvertToString(address, System.Globalization.CultureInfo.InvariantCulture)));
@@ -322,6 +326,7 @@ namespace VEDriversLite.DogeAPI
             if (address == null)
                 throw new System.ArgumentNullException("Address");
 
+            _baseUrl = "https://chain.so/api/v2/";
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/get_tx_spent/DOGE/{address}");
             urlBuilder_.Replace("{address}", System.Uri.EscapeDataString(ConvertToString(address, System.Globalization.CultureInfo.InvariantCulture)));
@@ -408,6 +413,7 @@ namespace VEDriversLite.DogeAPI
             if (address == null)
                 throw new System.ArgumentNullException("Address");
 
+            _baseUrl = "https://chain.so/api/v2/";
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/get_tx_received/DOGE/{address}");
             urlBuilder_.Replace("{address}", System.Uri.EscapeDataString(ConvertToString(address, System.Globalization.CultureInfo.InvariantCulture)));
@@ -679,8 +685,8 @@ namespace VEDriversLite.DogeAPI
                 throw new System.ArgumentNullException("Add TxHex into body");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            BaseUrl = "https://venftappserver.azurewebsites.net/vedlapi/";
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/BroadcastTransaction");
+            var bUrl = "https://venftappserver.azurewebsites.net/vedlapi/";
+            urlBuilder_.Append(bUrl != null ? bUrl.TrimEnd('/') : "").Append("/BroadcastTransaction");
 
             var client_ = _httpClient;
             var disposeClient_ = false;

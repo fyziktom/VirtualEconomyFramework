@@ -4,18 +4,18 @@
 @inject AppData AppData
 @inject IJSRuntime JSRuntime
 
-<Spin Tip="Sending..." Spinning="@sendingTransaction">
+<VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
     <button class="btn btn-primary" @onclick="ShowSendNFTDialog" style="width: 40px;height: 25px;padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;font-size: 12px;">
         <i class="oi oi-location" style="font-size:12px;"></i>
     </button>
-</Spin>
+</VENFTApp_Blazor.Components.Spin>
 <Modal Title="Return NFT Payment"
        Visible="@sendNFTDialogVisible"
        OnOk="@sendNFTDialogOK"
        OnCancel="@sendNFTDialogCancel">
     <div class="row">
         <div class="col">
-            <Spin Tip="Sending..." Spinning="@sendingTransaction">
+            <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         Returning payment was send from @receiverAddress
@@ -31,7 +31,7 @@
                         Amount to return: @Price NEBL <img style="width: 12px;margin-left: 4px; margin-bottom:2px;" src="images/neblio-icon.png" />
                     </div>
                 </div>
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 </Modal>

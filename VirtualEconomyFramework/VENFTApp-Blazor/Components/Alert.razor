@@ -1,0 +1,54 @@
+﻿<div class="alert @AlertTypeCss d-flex" role="alert" style="@Style">
+    <img src="@IconPath" aria-label="@Type:" class="mr-2" width="24" height="24" />
+    <div>
+        @if (!HideTitle)
+        {
+            <h5 class="alert-heading">
+                @if (Title != null)
+                {
+                    @Title
+                }
+                else
+                {
+                    @Type
+                }
+            </h5>
+        }
+
+        @Message
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public AlertType Type { get; set; } = AlertType.Info;
+    [Parameter]
+    public RenderFragment Title { get; set; }
+    [Parameter]
+    public RenderFragment Message { get; set; }
+    private String IconPath => $"/images/alert/{Type.ToString().ToLower()}.svg";
+    [Parameter]
+    public bool HideTitle { get; set; } = false;
+    [Parameter]
+    public string Style { get; set; }
+
+    private string AlertTypeCss
+    {
+        get
+        {
+            switch (Type)
+            {
+                case AlertType.Success:
+                    return "alert-success";
+                case AlertType.Info:
+                    return "alert-info";
+                case AlertType.Warning:
+                    return "alert-warning";
+                case AlertType.Error:
+                    return "alert-danger";
+                default:
+                    return "";
+            }
+        }
+    }
+}

@@ -46,16 +46,16 @@
        Visible="@withoutPriceVisible"
        OnOk="@withoutPriceConfirm"
        OnCancel="@withoutPriceCancel">
-    <Spin spinning="@processingSending" tip="Sending...">
+    <VENFTApp_Blazor.Components.Spin Spinning="@processingSending" Tip="Sending...">
         <p>This product does not have setted the price. Do you want to continue?</p>
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </Modal>
 
 <Modal Title="Add product to WooCommerce Shop"
        Visible="@confirmVisible"
        OnOk="@HandleOk"
        OnCancel="@HandleCancel">
-    <Spin spinning="@processingSending" tip="Sending...">
+    <VENFTApp_Blazor.Components.Spin Spinning="@processingSending" Tip="Sending...">
         <div class="row d-flex justify-content-center align-items-center">
             <div class="col">
                 <span style="font-size: 12px;">Do you really want to upload this product to your store?</span>
@@ -184,7 +184,7 @@
                 </div>
             </div>
         }
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </Modal>
 
 <Modal Title="NFT Details"

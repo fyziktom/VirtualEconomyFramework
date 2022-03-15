@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col">
-        <Spin Tip="Loading..." Spinning="@loading">
+        <VENFTApp_Blazor.Components.Spin Tip="Loading..." Spinning="@loading">
             @if (!string.IsNullOrEmpty(NFT.Utxo))
             {
                 <div style="position: absolute;right: 5px;top: -20px;">
@@ -145,7 +145,7 @@
                                                                 NFTSent="@NFTSentHandler" />
 
             <NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
-        </Spin>
+        </VENFTApp_Blazor.Components.Spin>
     </div>
 
 </div>

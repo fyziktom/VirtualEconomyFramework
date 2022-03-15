@@ -299,7 +299,7 @@ namespace VEDriversLite
                        var kdto = new KeyDto()
                         {
                             Address = Address,
-                            Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
+                            Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
                         };
                         FileHelpers.WriteTextToFile(filename, JsonConvert.SerializeObject(kdto));
                     }
@@ -1245,7 +1245,7 @@ namespace VEDriversLite
                 var accskeys = new Dictionary<string, string>();
                 foreach (var sa in SubAccounts.Values)
                 {
-                    var key = await sa.AccountKey.GetEncryptedKey();
+                    var key = sa.AccountKey.GetEncryptedKey();
                     if (!string.IsNullOrEmpty(key))
                         accskeys.Add(sa.Address, key);
                 }
@@ -1606,7 +1606,7 @@ namespace VEDriversLite
                             var info = await DogeTransactionHelpers.TransactionInfoAsync(u.TxId);
                             if (info != null && info.Transaction != null)
                             {
-                                var msg = await DogeTransactionHelpers.ParseDogeMessage(info);
+                                var msg = DogeTransactionHelpers.ParseDogeMessage(info);
                                 if (msg.Item1)
                                 {
                                     var split = msg.Item2.Split('-');

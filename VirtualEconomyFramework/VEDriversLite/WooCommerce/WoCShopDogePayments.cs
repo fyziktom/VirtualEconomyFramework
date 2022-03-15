@@ -72,7 +72,7 @@ namespace VEDriversLite.WooCommerce
                             var info = await DogeTransactionHelpers.TransactionInfoAsync(u.TxId, true);
                         if (info != null && info.Transaction != null)
                         {
-                            var msg = await DogeTransactionHelpers.ParseDogeMessage(info);
+                            var msg = DogeTransactionHelpers.ParseDogeMessage(info);
                             if (msg.Item1)
                             {
                                 var ordkey = msg.Item2;

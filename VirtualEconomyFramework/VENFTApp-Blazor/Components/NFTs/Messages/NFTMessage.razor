@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="col">
-        <Spin Tip="Loading..." Spinning="@loading">
+        <VENFTApp_Blazor.Components.Spin Tip="Loading..." Spinning="@loading">
             <span class="badge badge-primary" style="position: absolute;right: 7px;top: 2px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations))</span>
 
             @if ((NFT as VEDriversLite.NFT.MessageNFT).IsReceivedMessage && !IsHistory)
@@ -25,11 +25,11 @@
                 </div>
             }
 
-            @if (!string.IsNullOrEmpty(IsSenderInTheBookmarks(NFT.Author)))
+            @if (!string.IsNullOrEmpty(IsSenderInTheBookmarks(sender)))
             {
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
-                        <small>Sender Bookmark Name: @IsSenderInTheBookmarks(NFT.Author)</small>
+                        <small>Sender Bookmark Name: @IsSenderInTheBookmarks(sender)</small>
                     </div>
                 </div>
             }
@@ -47,7 +47,7 @@
                 {
                     <div class="row">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <small>Sender Address: @NFT.Author</small>
+                            <small>Sender Address: @sender</small>
                         </div>
                     </div>
                 }
@@ -103,9 +103,9 @@
                 {
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <Spin Tip="Downloading image..." Spinning="true">
+                            <VENFTApp_Blazor.Components.Spin Tip="Downloading image..." Spinning="true">
                                 <span>Downloading and encrypting Image. Please wait a while...</span>
-                            </Spin>
+                            </VENFTApp_Blazor.Components.Spin>
                         </div>
                     </div>
                 }
@@ -132,7 +132,7 @@
                     </div>
                 </div>
             }
-        </Spin>
+        </VENFTApp_Blazor.Components.Spin>
     </div>
 
     <Modal Title="NFT Image"
@@ -151,7 +151,7 @@
            Visible="@sendMessageVisible"
            OnCancel="@sendMessageCancel"
            Footer="null">
-        <SendMessage NFT="@NFT" Receiver="@NFT.Author" MessageSent="@NFTSentHandler" />
+        <SendMessage NFT="@NFT" Receiver="@sender" MessageSent="@NFTSentHandler" />
     </Modal>
 </div>
 
@@ -167,6 +167,7 @@
             if (!string.IsNullOrEmpty(value) && _utxo != value)
             {
                 _utxo = value;
+                imagetData = null;
                 //Load();
             }
         }
@@ -212,6 +213,8 @@
 
     [Parameter]
     public EventCallback<string> NFTSent { get; set; }
+
+    public string sender { get => !string.IsNullOrEmpty(NFT.Author) ? NFT.Author : (NFT as MessageNFT).Partner;  }
 
     private bool modalWithImageVisible = false;
     private bool downloadingImage = false;

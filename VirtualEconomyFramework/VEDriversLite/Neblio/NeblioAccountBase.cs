@@ -310,31 +310,39 @@ namespace VEDriversLite.Neblio
             //var nftutxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens, new GetAddressInfoResponse() { Utxos = Utxos });
 
             Console.WriteLine("Cash of the TxInfo preload started...");
+            
             if (Utxos != null && Utxos.Count > 1)
             {
-                var txinfotasks = new Task[Utxos.Count * 2];
-                var u = 0;
-                for (var i = 0; (i + 2) < txinfotasks.Length; i += 2)
+                var txinfotasks = new ConcurrentQueue<Task>();
+                foreach(var utxo in Utxos)
                 {
-                    if (i < txinfotasks.Length)
-                        txinfotasks[i] = NeblioTransactionHelpers.GetTransactionInfo(Utxos[u].Txid);
-                    if (i < txinfotasks.Length + 1)
+                    txinfotasks.Enqueue(NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid));
+                    var tokid = utxo.Tokens?.FirstOrDefault()?.TokenId;
+                    if (!string.IsNullOrEmpty(tokid))
                     {
-                        var tokid = Utxos[u].Tokens?.FirstOrDefault()?.TokenId;
-                        if (!string.IsNullOrEmpty(tokid))
-                        {
-                            if (!VEDLDataContext.NFTCache.ContainsKey(Utxos[u].Txid))
-                                txinfotasks[i + 1] = NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, Utxos[u].Txid);
-                        }
+                        if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
+                            txinfotasks.Enqueue(NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
                     }
-                    u++;
-                }
-                for (var t = 0; t < txinfotasks.Length; t++)
-                {
-                    if (txinfotasks[t] == null) txinfotasks[t] = Task.Delay(1);
                 }
 
-                await Task.WhenAll(txinfotasks);
+                var tasks = new ConcurrentQueue<Task>();
+                var added = 0;
+                var paralelism = 10;
+                while (txinfotasks.Count > 0)
+                {
+                    if (txinfotasks.TryDequeue(out var tsk))
+                    {
+                        tasks.Enqueue(tsk);
+                        added++;
+                    }
+                    if (added >= paralelism || txinfotasks.Count == 0)
+                    {
+                        await Task.WhenAll(tasks);
+                        tasks.Clear();
+                        added = 0;
+                    }
+                }
+
             }
             Console.WriteLine("Cash of the TxInfo preload end...");
         }
@@ -356,7 +364,7 @@ namespace VEDriversLite.Neblio
                 if (!string.IsNullOrEmpty(password))
                     AccountKey.LoadPassword(password);
 
-                Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+                Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
 
                 return true;
             }
@@ -753,7 +761,7 @@ namespace VEDriversLite.Neblio
         public async Task<(bool, string)> ValidateNFTUtxo(string utxo, int index)
         {
             var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo, index);
-            if (u != 0)
+            if (u >= 0)
             {
                 var msg = $"Provided source tx transaction is not spendable. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmation.";
                 return (false, msg);
@@ -906,7 +914,7 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var key = await AccountKey.GetEncryptedKey();
+            var key = AccountKey.GetEncryptedKey();
             return await ECDSAProvider.SignMessage(message, key);
         }
 
@@ -2099,11 +2107,12 @@ namespace VEDriversLite.Neblio
                                             if (res.Item2 != null)
                                             {
                                                 var rtxid = string.Empty;
+                                                var pntosend = await NFTFactory.CloneNFT(pn);
                                                 if (!pn.SellJustCopy)
-                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
-                                                else  
-                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pn, res.Item2);
-
+                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
+                                                else
+                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
+                                                
                                                 if (!string.IsNullOrEmpty(rtxid))
                                                 {
                                                     Console.WriteLine($"NFT sent to the buyer {((PaymentNFT)p).Sender} with txid: {rtxid}");
