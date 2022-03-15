@@ -146,7 +146,7 @@ namespace VEDriversLite.NFT
                     {
                         try
                         {
-                            var respb = await IPFSDownloadFromInfuraAsync(link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty));
+                            var respb = await IPFSDownloadFromInfuraAsync(link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/",string.Empty));
                             if (respb != null)
                             {
                                 var resp = new MemoryStream(respb);
@@ -227,7 +227,7 @@ namespace VEDriversLite.NFT
                 httpClient.DefaultRequestHeaders.Add("mode", "no-cors");
                 httpClient.DefaultRequestHeaders.Add("Origin", "https://ve-nft.com");
             }
-
+            
             return c;
         }
 
@@ -292,12 +292,15 @@ namespace VEDriversLite.NFT
             ipfsClient.UserAgent = "VEFramework";
             try
             {
-                using (var stream = await ipfsClient.FileSystem.ReadFileAsync(hash))
-                    using (var ms = new MemoryStream())
-                    {
-                        stream.CopyTo(ms);
-                        return ms.ToArray();
-                    }
+                var cancelSource = new System.Threading.CancellationTokenSource();
+                var token = cancelSource.Token;
+                //using (var stream = await ipfsClient.FileSystem.ReadFileAsync(hash))
+                using (var stream = await ipfsClient.PostDownloadAsync("cat", token, arg: hash))
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
             }
             catch(Exception ex)
             {

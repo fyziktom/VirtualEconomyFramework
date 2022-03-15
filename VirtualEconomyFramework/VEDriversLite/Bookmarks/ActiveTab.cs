@@ -138,6 +138,7 @@ namespace VEDriversLite.Bookmarks
                     if (added >= paralelism || txinfotasks.Count == 0)
                     {
                         await Task.WhenAll(tasks);
+                        tasks.Clear();
                         added = 0;
                     }
                 }

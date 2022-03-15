@@ -298,7 +298,9 @@
                 }
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("amnt", out var amnt))
                 {
-                    AmountToSend = Convert.ToDouble(amnt, CultureInfo.InvariantCulture);
+                    string am = amnt;
+                    am = am.Replace(',', '.');
+                    AmountToSend = Convert.ToDouble(am, CultureInfo.InvariantCulture);
                 }
 
                 if (string.IsNullOrEmpty(AppData.DogeAccount.Address))

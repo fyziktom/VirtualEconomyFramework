@@ -2431,7 +2431,7 @@ namespace VEDriversLite
             utxos = utxos.OrderByDescending(u => u.Value).ToList();
 
             var founded = 0.0;
-            double  latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.FirstOrDefault()?.Txid, addr);
+            double  latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, addr);
             foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Value > 10000 && u.Tokens?.Count == 0 && ((double)u.Value) > (minAmount * FromSatToMainRatio)))
             {
                 double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
@@ -2478,7 +2478,7 @@ namespace VEDriversLite
                 return -1;
             }
 
-            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.FirstOrDefault()?.Txid, address);
+            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, address);
             foreach (var ut in uts.Where(u => u.Blockheight.Value > 0 && u.Tokens != null && u.Tokens.Count > 0))
             {
                 var toks = ut.Tokens.ToArray();
@@ -2516,7 +2516,7 @@ namespace VEDriversLite
             }
 
             utxos = utxos.OrderByDescending(u => u.Value).ToList();
-            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.FirstOrDefault()?.Txid, addr);
+            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, addr);
 
             foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Tokens.Count > 0))
             {
@@ -2993,6 +2993,7 @@ namespace VEDriversLite
             List<string> addressList = new List<string>() {"NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA",
                                                            "NeNE6a2YQCq4yBLoVbVpcCzx44jVEBLaUE",
                                                            "NikErRpjtRXpryFRc3RkP5nxRzm1ApxFH8",
+                                                           "NWpT6Wiri9ZAsjVSH8m7eX85Nthqa2J8aY",
                                                            "NWHozNL3B85PcTXhipmFoBMbfonyrS9WiR",
                                                            "NQhy34DCWjG969PSVWV6S8QSe1MEbprWh7",
                                                            "NST3h9Z2CMuHHgea5ewy1berTNMhUdXJya",
