@@ -65,6 +65,13 @@ namespace VEDriversLite
         private static readonly HttpClient httpClient = new HttpClient();
         private static IClient _client;
         private static readonly string BaseURL = "https://ntp1node.nebl.io/";
+
+        /// <summary>
+        /// Turn on and off of the cache for address info, transaction info and metadata of the transaction
+        /// If it is true the cache is on. It is default state.
+        /// Usually it is important to turn it off just for unit tests which uses simulated address and tx data
+        /// </summary>
+        public static bool TurnOnCache = true;
         /// <summary>
         /// Conversion ration for Neblio to convert from sat to 1 NEBL
         /// </summary>
@@ -2187,7 +2194,7 @@ namespace VEDriversLite
                 return new GetAddressInfoResponse();
             }
 
-            if (AddressInfoCache.TryGetValue(addr, out var info))
+            if (TurnOnCache && AddressInfoCache.TryGetValue(addr, out var info))
             {
                 if ((DateTime.UtcNow - info.Item1) < new TimeSpan(0, 0, 1))
                 {
@@ -2211,10 +2218,8 @@ namespace VEDriversLite
             else
             {
                 var address = await GetClient().GetAddressInfoAsync(addr);
-                if (address != null)
-                {
+                if (address != null && TurnOnCache)
                     AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
-                }
 
                 return address;
             }
@@ -2559,17 +2564,15 @@ namespace VEDriversLite
 
         public static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0)
         {
-            if (TokenTxMetadataCache.TryGetValue(txid, out var tinfo))
+            if (TurnOnCache && TokenTxMetadataCache.TryGetValue(txid, out var tinfo))
             {
                 return tinfo;
             }
             else
             {
                 var info = await GetClient().GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
-                if (info != null)
-                {
+                if (info != null && TurnOnCache)
                     TokenTxMetadataCache.TryAdd(txid, info);
-                }
 
                 return info;
             }
@@ -2668,14 +2671,15 @@ namespace VEDriversLite
             try
             {
                 GetTransactionInfoResponse tx = null;
-                if (TransactionInfoCache.TryGetValue(txid, out var txinfo))
+                if (TurnOnCache && TransactionInfoCache.TryGetValue(txid, out var txinfo))
                 {
                     tx = txinfo;
                 }
                 else
                 {
                     tx = await GetClient().GetTransactionInfoAsync(txid);
-                    AddToTransactionInfoCache(tx);
+                    if (TurnOnCache)
+                        AddToTransactionInfoCache(tx);
                 }
                 if (tx != null)
                 {
