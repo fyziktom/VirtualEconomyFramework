@@ -11,13 +11,6 @@ namespace VEFrameworkUnitTest.Neblio
 {
     public class CheckSpendableNeblioTest : NeblioAccountBase
     {
-        private Mock<IClient> _client = new Mock<IClient>();
-
-        public CheckSpendableNeblioTest()
-        {
-            NeblioTransactionHelpers.GetClient(_client.Object);
-            NeblioTransactionHelpers.TurnOnCache = false;
-        }
 
         /// <summary>
         /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
@@ -25,6 +18,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void CheckSpendableNeblio_InCorrect_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             var count = 2;
             this.Address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWd";
 
@@ -45,7 +43,12 @@ namespace VEFrameworkUnitTest.Neblio
         /// </summary>
         [Fact]
         public async void CheckSpendableNeblio_Valid_Test()
-        {            
+        {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             this.Address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";
 
             #region TransactionObject

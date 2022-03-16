@@ -10,13 +10,6 @@ namespace VEFrameworkUnitTest.Neblio
 {
     public class GetAddressNeblUtxoTest
     {
-        private Mock<IClient> _client = new Mock<IClient>();
-
-        public GetAddressNeblUtxoTest()
-        {
-            NeblioTransactionHelpers.GetClient(_client.Object);
-            NeblioTransactionHelpers.TurnOnCache = false;
-        }
 
         /// <summary>
         /// Unit test method to verify if system is returning Utxos for a valid address and required amount is found.
@@ -24,6 +17,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void GetAddressNeblUtxo_Valid_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             #region TransactionObject
 
             string sampleTransactionObject = "{\"hex\":\"\",\"txid\":\"cb2cec4a0c3c6df5bf033e7da61a58eedb9a28ff2407c11b247b35f05baff6fb\",\"version\":1.0,\"locktime\":0.0,\"vin\"" +
@@ -124,6 +122,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void GetSendAmount_EmptyUtxos_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             //Arrange
             string address = "123";
             double amount = 3;

@@ -11,19 +11,17 @@ namespace VEFrameworkUnitTest.Neblio
 {
     public class ValidateOneTokenNFTUtxoTest
     {
-        private Mock<IClient> _client = new Mock<IClient>();
-
-        public ValidateOneTokenNFTUtxoTest()
-        {
-            NeblioTransactionHelpers.GetClient(_client.Object);
-            NeblioTransactionHelpers.TurnOnCache = false;
-        }
         /// <summary>
         /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.
         /// </summary>
         [Fact]
         public async void ValidateOneTokenNFTUtxo_Valid_Test()
-        {            
+        {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             #region AddressObject
 
             //AddressInfoResponse
