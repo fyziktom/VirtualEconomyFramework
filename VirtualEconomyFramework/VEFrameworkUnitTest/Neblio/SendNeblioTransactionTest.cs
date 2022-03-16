@@ -12,16 +12,6 @@ namespace VEFrameworkUnitTest.Neblio
 {
     public class SendNeblioTransactionTest : NeblioAccountBase
     {
-        /// <summary>
-        /// Mock client object
-        /// </summary>
-        private Mock<IClient> _client = new Mock<IClient>();
-
-        public SendNeblioTransactionTest()
-        {
-            NeblioTransactionHelpers.GetClient(_client.Object);
-            NeblioTransactionHelpers.TurnOnCache = false;
-        }
 
         /// <summary>
         /// Unit test method to verify if sendTransaction method is working as expected with correct parameters.
@@ -29,6 +19,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void SendNeblioTransaction_Valid_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             //Arrange           
 
             #region TransactionObject
@@ -155,6 +150,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void SendNeblioTransaction_Data_Null_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             string message = "Data cannot be null!";
             var exception = Assert.ThrowsAsync<Exception>(async () => await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(null, null, new List<Utxos>()));
             Assert.Equal(message, exception.Result.Message);
@@ -166,6 +166,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public void SendNeblioTransaction_Key_Null_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             SendTxData txData = new SendTxData();
             string message = "Account cannot be null!";
             var exception = Assert.ThrowsAsync<Exception>(async () => await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(txData, null, new List<Utxos>()));
@@ -178,6 +183,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public void SendNeblioTransaction_InvalidAddress_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             SendTxData txData = new SendTxData();
             EncryptionKey encryptionKey = new EncryptionKey("Test");
 
@@ -192,6 +202,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public void SendNeblioTransaction_TransactionObject_Error_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";
             Address = address;
 
@@ -225,6 +240,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public void SendNeblioTransaction_Outputs_Error_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             #region TransactionObject
 
             string sampleTransactionObject = "{\"hex\":\"\",\"txid\":\"cb2cec4a0c3c6df5bf033e7da61a58eedb9a28ff2407c11b247b35f05baff6fb\",\"version\":1.0,\"locktime\":0.0,\"vin\"" +
@@ -344,6 +364,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public void SendNeblioTransaction_CannotSendTokenTransaction_Error_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             //Arrange           
 
             #region TransactionObject
@@ -470,6 +495,11 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public void SendNeblioTransaction_CannotBroadcast_Error_Test()
         {
+            Mock<IClient> _client = new Mock<IClient>();
+
+            NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
+
             //Arrange           
 
             #region TransactionObject
