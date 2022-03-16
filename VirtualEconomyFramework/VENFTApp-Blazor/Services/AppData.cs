@@ -6,7 +6,6 @@ using VEDriversLite.Bookmarks;
 
 public class AppData
 {
-    public static bool Development { get; } = true;
     public NeblioAccount Account { get; set; } = new NeblioAccount();
     public DogeAccount DogeAccount { get; set; } = new DogeAccount();
     public List<TokenOwnerDto> VENFTOwners = new List<TokenOwnerDto>();
