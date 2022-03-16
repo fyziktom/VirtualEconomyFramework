@@ -16,6 +16,7 @@ namespace VEFrameworkUnitTest.Neblio
         public CheckSpendableNeblioTest()
         {
             NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
         }
 
         /// <summary>

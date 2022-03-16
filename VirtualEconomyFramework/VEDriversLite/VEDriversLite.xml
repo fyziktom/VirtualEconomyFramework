@@ -5161,6 +5161,13 @@
             Amount of the NFTs on the Owner Address
             </summary>
         </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.TurnOnCache">
+            <summary>
+            Turn on and off of the cache for address info, transaction info and metadata of the transaction
+            If it is true the cache is on. It is default state.
+            Usually it is important to turn it off just for unit tests which uses simulated address and tx data
+            </summary>
+        </member>
         <member name="F:VEDriversLite.NeblioTransactionHelpers.FromSatToMainRatio">
             <summary>
             Conversion ration for Neblio to convert from sat to 1 NEBL

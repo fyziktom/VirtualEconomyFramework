@@ -16,6 +16,7 @@ namespace VEFrameworkUnitTest.Neblio
         public ValidateOneTokenNFTUtxoTest()
         {
             NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
         }
         /// <summary>
         /// Unit test method to verify if system is returning an error result if an address is not having enough Neblio.

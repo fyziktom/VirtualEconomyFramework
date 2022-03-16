@@ -15,6 +15,7 @@ namespace VEFrameworkUnitTest.Neblio
         public GetAddressNeblUtxoTest()
         {
             NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
         }
 
         /// <summary>
@@ -108,11 +109,13 @@ namespace VEFrameworkUnitTest.Neblio
             _client.Setup(x => x.GetAddressInfoAsync(It.IsAny<string>())).ReturnsAsync(addressObject);
             _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionObject);
 
+            NeblioTransactionHelpers.TurnOnCache = false;
             //ACT
             var Utxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, amount);
 
             //Assert  
             Assert.NotEmpty(Utxos);
+
         }
 
         /// <summary>
@@ -120,7 +123,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// </summary>
         [Fact]
         public async void GetSendAmount_EmptyUtxos_Test()
-        {                        
+        {
             //Arrange
             string address = "123";
             double amount = 3;
@@ -138,6 +141,7 @@ namespace VEFrameworkUnitTest.Neblio
             _client.Setup(x => x.GetAddressInfoAsync(It.IsAny<string>())).ReturnsAsync(addressResponse);
             _client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionInfoResponse);
 
+            NeblioTransactionHelpers.TurnOnCache = false;
             //ACT
             var Utxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, amount);
 
