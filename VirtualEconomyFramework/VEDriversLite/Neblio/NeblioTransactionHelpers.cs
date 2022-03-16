@@ -2404,7 +2404,7 @@ namespace VEDriversLite
 
             amount -= vinamount;
 
-            return amount;
+            return Math.Abs(amount);
         }
 
         /// <summary>
@@ -2427,7 +2427,7 @@ namespace VEDriversLite
             {
                 Console.WriteLine("Cannot Obtain the Address info. " + ex.Message);
             }
-            var utxos = addinfo.Utxos;
+            var utxos = addinfo?.Utxos;
             if (utxos == null)
             {
                 return resp;

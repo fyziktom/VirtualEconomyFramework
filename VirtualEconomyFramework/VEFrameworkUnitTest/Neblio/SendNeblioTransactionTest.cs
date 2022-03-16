@@ -20,6 +20,7 @@ namespace VEFrameworkUnitTest.Neblio
         public SendNeblioTransactionTest()
         {
             NeblioTransactionHelpers.GetClient(_client.Object);
+            NeblioTransactionHelpers.TurnOnCache = false;
         }
 
         /// <summary>
