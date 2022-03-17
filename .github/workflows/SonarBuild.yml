@@ -1,0 +1,25 @@
+name: Build with the sonarqubes
+on:
+  push:
+    branches: [ latest_branch ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # Disabling shallow clone is recommended for improving relevancy of reporting for sonarcloud
+        fetch-depth: 0
+    - name: Setup .Net SDK 
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.23'
+    - name: Install dependencies
+      run: dotnet restore  ./VirtualEconomyFramework/VENFTApp-Server
+        
+    - name: Build
+      run: dotnet build ./VirtualEconomyFramework/VENFTApp-Server --configuration Release --no-restore
+    - name: Test
+      run: dotnet test ./VirtualEconomyFramework/VEFrameworkUnitTest  /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=opencover.xml
