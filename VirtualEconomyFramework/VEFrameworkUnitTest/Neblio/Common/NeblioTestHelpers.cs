@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Moq;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +10,8 @@ namespace VEFrameworkUnitTest.Neblio.Common
 {
     public static class NeblioTestHelpers
     {
+        public static Mock<IClient> Client = new Mock<IClient>();
+
         public static void CleanNeblioTransactionHelpersCache()
         {
             NeblioTransactionHelpers.AddressInfoCache = new ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)>();

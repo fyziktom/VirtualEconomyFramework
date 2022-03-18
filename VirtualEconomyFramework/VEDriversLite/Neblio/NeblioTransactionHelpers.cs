@@ -2414,19 +2414,23 @@ namespace VEDriversLite
         /// <param name="minAmount">minimum amount of one utxo</param>
         /// <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
         /// <returns></returns>
-        public static async Task<ICollection<Utxos>> GetAddressNeblUtxo(string addr, double minAmount = 0.0001, double requiredAmount = 0.0001)
-        {       
-            GetAddressInfoResponse addinfo = null;
+        public static async Task<ICollection<Utxos>> GetAddressNeblUtxo(string address, double minAmount = 0.0001, double requiredAmount = 0.0001, GetAddressInfoResponse addinfo = null, double latestBlockHeight = 0)
+        {
+            var founded = 0.0;
             var resp = new List<Utxos>();
 
-            try
+            if (addinfo == null)
             {
-                addinfo = await AddressInfoUtxosAsync(addr);
+                try
+                {
+                    addinfo = await AddressInfoUtxosAsync(address);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot Obtain the Address info. " + ex.Message);
+                }
             }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Cannot Obtain the Address info. " + ex.Message);
-            }
+
             var utxos = addinfo?.Utxos;
             if (utxos == null)
             {
@@ -2435,8 +2439,9 @@ namespace VEDriversLite
 
             utxos = utxos.OrderByDescending(u => u.Value).ToList();
 
-            var founded = 0.0;
-            double  latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, addr);
+            if (latestBlockHeight == 0)
+                latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, address);
+            
             foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Value > 10000 && u.Tokens?.Count == 0 && ((double)u.Value) > (minAmount * FromSatToMainRatio)))
             {
                 double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
@@ -2468,10 +2473,21 @@ namespace VEDriversLite
         /// <param name="tokenId">input token id hash</param>
         /// <param name="txid">input txid hash</param>
         /// <returns>true and index of utxo</returns>
-        public static async Task<double> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid, int indx)
+        public static async Task<double> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid, int indx, GetAddressInfoResponse addinfo = null, double latestBlockHeight = 0)
         {
-            var addinfo = await AddressInfoUtxosAsync(address);
-            var utxos = addinfo.Utxos;
+            if (addinfo == null)
+            {
+                try
+                {
+                    addinfo = await AddressInfoUtxosAsync(address);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot Obtain the Address info. " + ex.Message);
+                }
+            }
+
+            var utxos = addinfo?.Utxos;
             if (utxos == null)
             {
                 return -1;
@@ -2483,7 +2499,9 @@ namespace VEDriversLite
                 return -1;
             }
 
-            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, address);
+            if (latestBlockHeight == 0)
+                latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, address);
+            
             foreach (var ut in uts.Where(u => u.Blockheight.Value > 0 && u.Tokens != null && u.Tokens.Count > 0))
             {
                 var toks = ut.Tokens.ToArray();
@@ -2508,10 +2526,21 @@ namespace VEDriversLite
         /// <param name="numberToMint">number of tokens which will be minted - because of multimint</param>
         /// <param name="oneTokenSat">this is usually default. On Neblio all token tx should have value 10000sat</param>
         /// <returns></returns>
-        public static async Task<List<Utxos>> FindUtxoForMintNFT(string addr, string tokenId, int numberToMint = 1, double oneTokenSat = 10000)
+        public static async Task<List<Utxos>> FindUtxoForMintNFT(string addr, string tokenId, int numberToMint = 1, double oneTokenSat = 10000, GetAddressInfoResponse addinfo = null, double latestBlockHeight = 0)
         {
-            var addinfo = await AddressInfoUtxosAsync(addr);
-            var utxos = addinfo.Utxos;
+            if (addinfo == null)
+            {
+                try
+                {
+                    addinfo = await AddressInfoUtxosAsync(addr);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot Obtain the Address info. " + ex.Message);
+                }
+            }
+
+            var utxos = addinfo?.Utxos;
             var resp = new List<Utxos>();
             var founded = 0.0;
 
@@ -2521,7 +2550,9 @@ namespace VEDriversLite
             }
 
             utxos = utxos.OrderByDescending(u => u.Value).ToList();
-            double latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, addr);
+
+            if (latestBlockHeight == 0)
+                latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, addr);
 
             foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Tokens.Count > 0))
             {

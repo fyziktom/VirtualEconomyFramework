@@ -760,7 +760,7 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, string)> ValidateNFTUtxo(string utxo, int index)
         {
-            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo, index);
+            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo, index, addinfo: AddressInfoUtxos);
             if (u >= 0)
             {
                 var msg = $"Provided source tx transaction is not spendable. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmation.";
@@ -779,7 +779,7 @@ namespace VEDriversLite.Neblio
         {
             try
             {
-                var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0002, amount);
+                var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0002, amount, addinfo: AddressInfoUtxos);
                 if (nutxos == null || nutxos.Count == 0)
                     return ($"You dont have Neblio on the address. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
@@ -801,7 +801,7 @@ namespace VEDriversLite.Neblio
         {
             try
             {
-                var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, id, amount);
+                var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, id, amount, addinfo: AddressInfoUtxos);
                 if (tutxos == null || tutxos.Count == 0)
                     return ($"You dont have Tokens on the address. You need at least 5 for minting. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
