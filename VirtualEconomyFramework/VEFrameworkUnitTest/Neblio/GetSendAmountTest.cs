@@ -17,11 +17,6 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void GetSendAmount_Valid_Test()
         {
-            Mock<IClient> _client = new Mock<IClient>();
-
-            NeblioTransactionHelpers.GetClient(_client.Object);
-            NeblioTransactionHelpers.TurnOnCache = false;
-
             //Arrange
             string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";
             var addr = NBitcoin.BitcoinAddress.Create(address, NeblioTransactionHelpers.Network);
@@ -61,11 +56,6 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void GetSendAmount_Exception_Test()
         {
-            Mock<IClient> _client = new Mock<IClient>();
-
-            NeblioTransactionHelpers.GetClient(_client.Object);
-            NeblioTransactionHelpers.TurnOnCache = false;
-
             //Arrange
             var transactionId = "cb2cec4a0c3c6df5bf033e7da61a58eedb9a28ff2407c11b247b35f05baff6"; //Incorrect transactionId
             string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThW"; //Incorrect address
@@ -90,11 +80,6 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void GetSendAmount_EmptyInAndOutVectors_Test()
         {
-            Mock<IClient> _client = new Mock<IClient>();
-
-            NeblioTransactionHelpers.GetClient(_client.Object);
-            NeblioTransactionHelpers.TurnOnCache = false;
-
             //Arrange
             //var transactionId = "cb2cec4a0c3c6df5bf033e7da61a58eedb9a28ff2407c11b247b35f05baff6"; //Incorrect transactionId
             string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";

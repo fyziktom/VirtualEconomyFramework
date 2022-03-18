@@ -5469,7 +5469,7 @@
             <param name="address">expected address where was nebl send in this tx</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressNeblUtxo(System.String,System.Double,System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressNeblUtxo(System.String,System.Double,System.Double,VEDriversLite.NeblioAPI.GetAddressInfoResponse,System.Double)">
             <summary>
             Returns list of spendable utxos which together match some input required amount for some transaction
             </summary>
@@ -5478,7 +5478,7 @@
             <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(System.String,System.String,System.String,System.Int32)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(System.String,System.String,System.String,System.Int32,VEDriversLite.NeblioAPI.GetAddressInfoResponse,System.Double)">
             <summary>
             Check if the NFT token is spendable. Means utxos with token amount = 1
             </summary>
@@ -5487,7 +5487,7 @@
             <param name="txid">input txid hash</param>
             <returns>true and index of utxo</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.FindUtxoForMintNFT(System.String,System.String,System.Int32,System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.FindUtxoForMintNFT(System.String,System.String,System.Int32,System.Double,VEDriversLite.NeblioAPI.GetAddressInfoResponse,System.Double)">
             <summary>
             Find utxo which can be used for minting. It means it has token amount > 1
             </summary>
