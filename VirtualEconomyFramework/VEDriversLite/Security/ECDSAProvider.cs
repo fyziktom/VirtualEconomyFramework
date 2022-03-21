@@ -26,17 +26,27 @@ namespace VEDriversLite.Security
             try
             {
                 var add = BitcoinAddress.Create(address, DogeTransactionHelpers.Network);
-                var vadd = (add as IPubkeyHashUsable);
+                //var vadd = (add as IPubkeyHashUsable);
 
-                if (vadd.VerifyMessage(message, signature))
-                    return (true, "Verified.");
-                else
-                    return (false, "Not verified.");
+                var split = signature.Split('@');
+                if (split.Length > 1)
+                {
+                    var sg = Convert.FromBase64String(split[1]);
+                    var recoveryId = Convert.ToInt32(split[0]);
+
+                    var sgs = new CompactSignature(recoveryId, sg);
+                    Console.WriteLine("Signature loaded.");
+                    var recoveredPubKey = PubKey.RecoverCompact(uint256.Parse(message), sgs);
+                    var pk = recoveredPubKey.GetAddress(ScriptPubKeyType.Legacy, DogeTransactionHelpers.Network);
+                    if (pk.ToString() == add.ToString())
+                        return (true, "Verified.");
+                }
             }
             catch (Exception ex)
             {
                 return (false, "Wrong input. Cannot verify the message signature.");
             }
+            return (false, "Not verified.");
         }
         /// <summary>
         /// Verify the Neblio message signed by some Neblio private key
@@ -53,17 +63,26 @@ namespace VEDriversLite.Security
             try
             {
                 var add = BitcoinAddress.Create(address, NeblioTransactionHelpers.Network);
-                var vadd = (add as IPubkeyHashUsable);
+                //var vadd = (add as IPubkeyHashUsable);
+                var split = signature.Split('@');
+                if (split.Length > 1)
+                {
+                    var sg = Convert.FromBase64String(split[1]);
+                    var recoveryId = Convert.ToInt32(split[0]);
 
-                if (vadd.VerifyMessage(message, signature))
-                    return (true, "Verified.");
-                else
-                    return (false, "Not verified.");
+                    var sgs = new CompactSignature(recoveryId, sg);
+                    Console.WriteLine("Signature loaded.");
+                    var recoveredPubKey = PubKey.RecoverCompact(uint256.Parse(message), sgs);
+                    var pk = recoveredPubKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
+                    if (pk.ToString() == add.ToString())
+                        return (true, "Verified.");
+                }                    
             }
             catch (Exception ex)
             {
                 return (false, "Wrong input. Cannot verify the message signature.");
             }
+            return (false, "Not verified.");
         }
         /// <summary>
         /// Verify the Neblio message signed by some Neblio Private Key.
@@ -83,16 +102,26 @@ namespace VEDriversLite.Security
             {
                 //var add = BitcoinAddress.Create(address, NeblioTransactionHelpers.Network);
                 //var vadd = (add as IPubkeyHashUsable);
+                var split = signature.Split('@');
+                if (split.Length > 1)
+                {
+                    var sg = Convert.FromBase64String(split[1]);
+                    var recoveryId = Convert.ToInt32(split[0]);
 
-                if (pubkey.VerifyMessage(message, signature))
-                    return (true, "Verified.");
-                else
-                    return (false, "Not verified.");
+                    var sgs = new CompactSignature(recoveryId, sg);
+                    Console.WriteLine("Signature loaded.");
+                    var recoveredPubKey = PubKey.RecoverCompact(uint256.Parse(message), sgs);
+                    
+                    if (recoveredPubKey.ToHex() == pubkey.ToHex())
+                        return (true, "Verified.");
+                }
             }
             catch (Exception ex)
             {
-                return (false, "Wrong input. Cannot verify the message signature.");
+                Console.WriteLine("Exception in verification. " + ex.Message);
+                return (false, "Wrong input. Cannot verify the message signature." + ex.Message);
             }
+            return (false, "Not verified.");
         }
         /// <summary>
         /// Sign the Message with Neblio Private Key
@@ -108,8 +137,10 @@ namespace VEDriversLite.Security
             try
             {
                 var secret = new BitcoinSecret(privateKey, NeblioTransactionHelpers.Network);
-                var smsg = secret.PrivateKey.SignMessage(message);
-                return (true, smsg);
+                uint256 hash = NBitcoin.Crypto.Hashes.DoubleSHA256(Encoding.UTF8.GetBytes(message));
+                var smsg = secret.PrivateKey.SignCompact(hash);
+                string signature = smsg.RecoveryId.ToString() + "@" + Convert.ToBase64String(smsg.Signature);
+                return (true, signature);
             }
             catch (Exception ex)
             {
@@ -129,8 +160,10 @@ namespace VEDriversLite.Security
 
             try
             {
-                var smsg = secret.PrivateKey.SignMessage(message);
-                return (true, smsg);
+                uint256 hash = NBitcoin.Crypto.Hashes.DoubleSHA256(Encoding.UTF8.GetBytes(message));
+                var smsg = secret.PrivateKey.SignCompact(hash);
+                string signature = smsg.RecoveryId.ToString() + "@" + Convert.ToBase64String(smsg.Signature);
+                return (true, signature);
             }
             catch (Exception ex)
             {

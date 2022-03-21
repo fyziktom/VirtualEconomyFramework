@@ -261,7 +261,7 @@
     {
         downloadingImage = true;
         StateHasChanged();
-        var res = await CommonNFT.DecryptImageData(AppData.Account.Secret, NFT.ImageLink, (NFT as MessageNFT).Partner);
+        var res = await NFT.DecryptImageData(AppData.Account.Secret, NFT.ImageLink, (NFT as MessageNFT).Partner);
         if (res.Item1)
         {
             imagetData = res.Item2;

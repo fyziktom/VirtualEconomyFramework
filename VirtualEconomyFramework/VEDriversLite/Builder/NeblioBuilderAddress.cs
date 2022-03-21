@@ -74,14 +74,5 @@ namespace VEDriversLite.Builder
             });
         }
 
-        public async Task<bool> SignMessage(string message)
-        {
-            var msgSigned = Secret.PrivateKey.SignMessage(message);
-            if (Secret.PubKey.VerifyMessage(message, msgSigned))
-            {
-                return true;
-            }
-            return false;
-        }
     }
 }

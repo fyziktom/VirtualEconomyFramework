@@ -6068,6 +6068,21 @@
             Link to the image in the NFT
             </summary>
         </member>
+        <member name="P:VEDriversLite.NFT.INFT.ImageData">
+            <summary>
+            Loaded Image data as byte array
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Preview">
+            <summary>
+            Preview data of image or music
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.PreviewData">
+            <summary>
+            Data of the preview file
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.INFT.Tags">
             <summary>
             List of the tags separated by space

@@ -22,8 +22,11 @@ namespace VEDriversLite
             if (VEDLDataContext.AdminAddresses.Contains(admin))
                 if (VEDLDataContext.Accounts.TryGetValue(admin, out var acc))
                     if (VEDLDataContext.AdminActionsRequests.TryRemove(message, out var areq))
-                        if (acc.Secret.PubKey.VerifyMessage(message, signature))
+                    {
+                        var res = await ECDSAProvider.VerifyMessage(message, signature, acc.Secret.PubKey);
+                        if (res.Item1)
                             return areq;
+                    }
             return null;
         }
 
