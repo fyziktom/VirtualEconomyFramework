@@ -1695,7 +1695,7 @@ namespace TestVEDriversLite
             if (split.Length < 2)
                 throw new Exception("Please input message,password.");
 
-            var res = await SymetricProvider.EncryptString(split[1], split[0]);
+            var res = SymetricProvider.EncryptString(split[1], split[0]);
             Console.WriteLine("Encrypted message is: ");
             Console.WriteLine(res);
         }

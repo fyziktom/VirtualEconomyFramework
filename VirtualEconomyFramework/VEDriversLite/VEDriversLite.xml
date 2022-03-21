@@ -6068,21 +6068,6 @@
             Link to the image in the NFT
             </summary>
         </member>
-        <member name="P:VEDriversLite.NFT.INFT.ImageData">
-            <summary>
-            Loaded Image data as byte array
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.NFT.INFT.Preview">
-            <summary>
-            Preview data of image or music
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.NFT.INFT.PreviewData">
-            <summary>
-            Data of the preview file
-            </summary>
-        </member>
         <member name="P:VEDriversLite.NFT.INFT.Tags">
             <summary>
             List of the tags separated by space
@@ -6313,6 +6298,14 @@
             <summary>
             Get Common Metadata of the Actual NFT
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.DecryptImageData(NBitcoin.BitcoinSecret,System.String,System.String)">
+            <summary>
+            This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
+            Then the image is saved in ImageData as bytes.
+            </summary>
+            <param name="secret">NFT Owner Private Key</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.MessageNFT.Decrypt(NBitcoin.BitcoinSecret,System.Boolean)">
@@ -6621,7 +6614,7 @@
             Price in USD per one Unit
             </summary>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyDogeMessage(System.String,System.String,System.String)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyDogeMessage(System.String,System.String,System.String,System.Boolean)">
             <summary>
             Verify the Dogecoin message signed by some dogecoin private key
             </summary>
@@ -6630,7 +6623,7 @@
             <param name="address">Dogecoin address</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,System.String)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,System.String,System.Boolean)">
             <summary>
             Verify the Neblio message signed by some Neblio private key
             </summary>
@@ -6639,7 +6632,7 @@
             <param name="address">Neblio address</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,NBitcoin.PubKey)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.VerifyMessage(System.String,System.String,NBitcoin.PubKey,System.Boolean)">
             <summary>
             Verify the Neblio message signed by some Neblio Private Key.
             This function uses the Public Key instead of the Address for the verification
@@ -6807,14 +6800,6 @@
             <param name="plainText">Text which should be encrypted</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.SymetricProvider.EncryptBytes(System.String,System.Byte[])">
-            <summary>
-            Symmetrical encryption of the bytes
-            </summary>
-            <param name="key">Password for the encryption</param>
-            <param name="bytes">Bytes array which should be encrypted</param>
-            <returns></returns>
-        </member>
         <member name="M:VEDriversLite.Security.SymetricProvider.DecryptString(System.String,System.String)">
             <summary>
             Symmetrical decryption of the text
@@ -6823,7 +6808,15 @@
             <param name="cipherText">Text which should be decrypted</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.SymetricProvider.DecryptBytes(System.String,System.Byte[])">
+        <member name="M:VEDriversLite.Security.SymetricProvider.EncryptBytes(System.Byte[],System.Byte[])">
+            <summary>
+            Symmetrical encryption of the bytes
+            </summary>
+            <param name="key">Password for the encryption</param>
+            <param name="bytes">Bytes array which should be encrypted</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.SymetricProvider.DecryptBytes(System.Byte[],System.Byte[])">
             <summary>
             Symmetrical decryption of the bytes
             </summary>

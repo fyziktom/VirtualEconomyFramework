@@ -273,5 +273,14 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <returns></returns>
         Task<IDictionary<string, string>> GetCommonMetadata();
+        /// <summary>
+        /// This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
+        /// Then the image is saved in ImageData as bytes.
+        /// </summary>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
+        Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner);
+
+
     }
 }

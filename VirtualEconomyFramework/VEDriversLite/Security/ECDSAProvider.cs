@@ -18,7 +18,7 @@ namespace VEDriversLite.Security
         /// <param name="signature">signature made by some dogecoin address</param>
         /// <param name="address">Dogecoin address</param>
         /// <returns></returns>
-        public static async Task<(bool, string)> VerifyDogeMessage(string message, string signature, string address)
+        public static async Task<(bool, string)> VerifyDogeMessage(string message, string signature, string address, bool messageIsAlreadyHash = false)
         {
             if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))
                 return (false, "Input parameters cannot be empty or null.");
@@ -36,7 +36,15 @@ namespace VEDriversLite.Security
 
                     var sgs = new CompactSignature(recoveryId, sg);
                     Console.WriteLine("Signature loaded.");
-                    var recoveredPubKey = PubKey.RecoverCompact(uint256.Parse(message), sgs);
+                    PubKey recoveredPubKey = null;
+                    if (!messageIsAlreadyHash)
+                    {
+                        uint256 hash = NBitcoin.Crypto.Hashes.DoubleSHA256(Encoding.UTF8.GetBytes(message));
+                        recoveredPubKey = PubKey.RecoverCompact(hash, sgs);
+                    }
+                    else
+                        recoveredPubKey = PubKey.RecoverCompact(uint256.Parse(message), sgs);
+
                     var pk = recoveredPubKey.GetAddress(ScriptPubKeyType.Legacy, DogeTransactionHelpers.Network);
                     if (pk.ToString() == add.ToString())
                         return (true, "Verified.");
@@ -55,7 +63,7 @@ namespace VEDriversLite.Security
         /// <param name="signature">signature made by some Neblio address</param>
         /// <param name="address">Neblio address</param>
         /// <returns></returns>
-        public static async Task<(bool, string)> VerifyMessage(string message, string signature, string address)
+        public static async Task<(bool, string)> VerifyMessage(string message, string signature, string address, bool messageIsAlreadyHash = false)
         {
             if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))
                 return (false, "Input parameters cannot be empty or null.");
@@ -72,7 +80,15 @@ namespace VEDriversLite.Security
 
                     var sgs = new CompactSignature(recoveryId, sg);
                     Console.WriteLine("Signature loaded.");
-                    var recoveredPubKey = PubKey.RecoverCompact(uint256.Parse(message), sgs);
+                    PubKey recoveredPubKey = null;
+                    if (!messageIsAlreadyHash)
+                    {
+                        uint256 hash = NBitcoin.Crypto.Hashes.DoubleSHA256(Encoding.UTF8.GetBytes(message));
+                        recoveredPubKey = PubKey.RecoverCompact(hash, sgs);
+                    }
+                    else
+                        recoveredPubKey = PubKey.RecoverCompact(uint256.Parse(message), sgs);
+                    
                     var pk = recoveredPubKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
                     if (pk.ToString() == add.ToString())
                         return (true, "Verified.");
@@ -92,7 +108,7 @@ namespace VEDriversLite.Security
         /// <param name="signature">signature made by some Neblio address</param>
         /// <param name="address">Neblio address</param>
         /// <returns></returns>
-        public static async Task<(bool, string)> VerifyMessage(string message, string signature, PubKey pubkey)
+        public static async Task<(bool, string)> VerifyMessage(string message, string signature, PubKey pubkey, bool messageIsAlreadyHash = false)
         {
             //if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))
             if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || pubkey == null)
@@ -110,8 +126,15 @@ namespace VEDriversLite.Security
 
                     var sgs = new CompactSignature(recoveryId, sg);
                     Console.WriteLine("Signature loaded.");
-                    var recoveredPubKey = PubKey.RecoverCompact(uint256.Parse(message), sgs);
-                    
+                    PubKey recoveredPubKey = null;
+                    if (!messageIsAlreadyHash)
+                    {
+                        uint256 hash = NBitcoin.Crypto.Hashes.DoubleSHA256(Encoding.UTF8.GetBytes(message));
+                        recoveredPubKey = PubKey.RecoverCompact(hash, sgs);
+                    }
+                    else
+                        recoveredPubKey = PubKey.RecoverCompact(uint256.Parse(message), sgs);
+
                     if (recoveredPubKey.ToHex() == pubkey.ToHex())
                         return (true, "Verified.");
                 }
@@ -324,7 +347,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var emesage = await SymetricProvider.EncryptString(key.Item2, message);
+                var emesage = SymetricProvider.EncryptString(key.Item2, message);
                 return (true, emesage);
             }
             catch (Exception ex)
@@ -355,7 +378,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var ebytes = await SymetricProvider.EncryptBytes(key.Item2, inputBytes);
+                var ebytes = SymetricProvider.EncryptBytes(key.Item2, inputBytes);
                 return (true, ebytes);
             }
             catch (Exception ex)
@@ -383,7 +406,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var emesage = await SymetricProvider.EncryptString(key, message);
+                var emesage = SymetricProvider.EncryptString(key, message);
                 return (true, emesage);
             }
             catch (Exception ex)
@@ -466,7 +489,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var bytes = await SymetricProvider.DecryptBytes(key.Item2, ebytes);
+                var bytes = SymetricProvider.DecryptBytes(key.Item2, ebytes);
                 return (true, bytes);
             }
             catch (Exception ex)

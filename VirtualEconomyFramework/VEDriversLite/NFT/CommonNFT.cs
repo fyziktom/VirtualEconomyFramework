@@ -456,7 +456,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="secret">NFT Owner Private Key</param>
         /// <returns></returns>
-        public static async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner)
+        public virtual async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner)
         {
             if (!string.IsNullOrEmpty(imageLink) && (imageLink.Contains("https://gateway.ipfs.io/ipfs/") || imageLink.Contains("https://ipfs.infura.io/ipfs/")))
             {

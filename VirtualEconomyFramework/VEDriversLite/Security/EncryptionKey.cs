@@ -87,7 +87,7 @@ namespace VEDriversLite.Security
             {
                 loadedPassword = password;
                 passwordLoaded = true;
-                _key = await SymetricProvider.EncryptString(password, key);
+                _key = SymetricProvider.EncryptString(password, key);
                 IsEncrypted = true;
                 return true;
             }

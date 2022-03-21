@@ -302,7 +302,7 @@
                         await localStorage.SetItemAsync<string>("woocom-apikey", backupData.WoCAPIKey);
                         await localStorage.SetItemAsync<string>("woocom-apisecret",backupData.WoCAPISecret);
                         await localStorage.SetItemAsync<string>("woocom-jwt",backupData.WoCAPIJWT);
-                        key = await SymetricProvider.EncryptString(importAccountPass, key);
+                        key = SymetricProvider.EncryptString(importAccountPass, key);
                     }
                     else
                     {
@@ -312,7 +312,7 @@
                 }
                 else
                 {
-                    key = await SymetricProvider.EncryptString(importAccountPass, key);
+                    key = SymetricProvider.EncryptString(importAccountPass, key);
                     accountLoaded = await AppData.Account.LoadAccount(importAccountPass, key, address); // put here your password
                 }
                 if (accountLoaded && !string.IsNullOrEmpty(key))
@@ -365,7 +365,7 @@
             if (add.Item1)
             {
                 dogeaddress = add.Item2;
-                dogekey = await SymetricProvider.EncryptString(importAccountPass, dogekey);
+                dogekey = SymetricProvider.EncryptString(importAccountPass, dogekey);
                 var accountLoaded = await AppData.DogeAccount.LoadAccount(importAccountPass, dogekey, dogeaddress); // put here your password
 
                 if (accountLoaded && !string.IsNullOrEmpty(dogekey))
