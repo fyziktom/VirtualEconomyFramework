@@ -37,6 +37,8 @@ namespace VEDriversLite.NFT
         SWSrc = 1006,
         MechSrc = 1007,
         IoTMessage = 1008,
+        Xray = 1895,
+        XrayImage = 1896,
 
 
     }
@@ -79,6 +81,19 @@ namespace VEDriversLite.NFT
         /// Link to the image in the NFT
         /// </summary>
         string ImageLink { get; set; }
+        /// <summary>
+        /// Loaded Image data as byte array
+        /// </summary>
+        [JsonIgnore]
+        byte[] ImageData { get; set; }
+        /// <summary>
+        /// Preview data of image or music
+        /// </summary>
+        string Preview { get; set; }
+        /// <summary>
+        /// Data of the preview file
+        /// </summary>
+        byte[] PreviewData { get; set; }
         /// <summary>
         /// List of the tags separated by space
         /// </summary>
@@ -273,5 +288,29 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <returns></returns>
         Task<IDictionary<string, string>> GetCommonMetadata();
+        /// <summary>
+        /// Download preview data if there are some
+        /// </summary>
+        /// <returns>true if success</returns>
+        Task<bool> DownloadPreviewData();
+        /// <summary>
+        /// Download Image data if there are some
+        /// </summary>
+        /// <returns>true if success</returns>
+        Task<bool> DownloadImageData();
+        /// <summary>
+        /// This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
+        /// Then the image is saved in ImageData as bytes.
+        /// </summary>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
+        Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner);
+        /// <summary>
+        /// Decrypt the specific property with use of shared secret
+        /// </summary>
+        /// <param name="prop">Property content</param>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
+        Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "");
     }
 }

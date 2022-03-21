@@ -14,6 +14,7 @@ using VEDriversLite.Neblio;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
+using VEDriversLite.NFT.Imaging.Xray;
 using VEDriversLite.Security;
 using VEDriversLite.UnstoppableDomains;
 using VEDriversLite.WooCommerce;
@@ -2880,6 +2881,223 @@ namespace TestVEDriversLite
             Console.WriteLine("---------------------------------------------");
         }
 
+
+        #endregion
+        //////////////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////
+        #region XrayImages
+
+        private static string XrayNFTHash { get; set; } = string.Empty;
+        private static string XrayImageNFTHash { get; set; } = string.Empty;
+
+        [TestEntry]
+        public static void XrayCreateEmptyXrayNFTFile(string param)
+        {
+            XrayCreateEmptyXrayNFTFileAsync(param);
+        }
+        public static async Task XrayCreateEmptyXrayNFTFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for Xray NFT.");
+            // create NFT object
+            var nft = new XrayNFT("");
+            // Example data
+            nft.Name = "EasyTom S - Laboratory";
+            nft.Description = "Version with 150kV X-ray source";
+            nft.DeviceName = "RXSolutions EasyTom S";
+            nft.SourceName = "HAMAMATSU 150kV L12161-07";
+            nft.DetectorParameters = new VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto()
+            {
+                Bits = 16,
+                W = 1920,
+                H = 1536,
+                Pw = 125,
+                Ph = 125
+            };
+            nft.Tags = "Xray technologies industry40 inspection NDT";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void XrayCreateXrayNFTFormFile(string param)
+        {
+            XrayCreateXrayNFTFormFileAsync(param);
+        }
+        public static async Task XrayCreateXrayNFTFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent); // just to get type
+                if (inft.Type == NFTTypes.Xray)
+                {
+                    var nft = JsonConvert.DeserializeObject<XrayNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            XrayNFTHash = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for Xray NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        [TestEntry]
+        public static void XrayCreateEmptyXrayImageNFTFile(string param)
+        {
+            XrayCreateEmptyXrayImageNFTFileAsync(param);
+        }
+        public static async Task XrayCreateEmptyXrayImageNFTFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for Xray Image NFT.");
+            // create NFT object
+            var nft = new XrayImageNFT("");
+            // Example data
+            nft.Name = "Part123";
+            nft.Description = "";
+            if (!string.IsNullOrEmpty(XrayNFTHash))
+                nft.XrayDeviceNFTHash = XrayNFTHash;
+
+            nft.ObjectPosition = new VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto()
+            {
+                X = 150,
+                Y = 50,
+                Z = 120,
+                Dod = 150,
+                Dsd = 590
+            };
+
+            nft.DetectorParameters = new VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto()
+            {
+                Bits = 16,
+                W = 1920,
+                H = 1536,
+                Pw = 125,
+                Ph = 125
+            };
+            nft.Tags = "Xray technologies industry40 inspection NDT";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void XrayCreateXrayImageNFTFormFile(string param)
+        {
+            XrayCreateXrayImageNFTFormFileAsync(param);
+        }
+        public static async Task XrayCreateXrayImageNFTFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent); // just to get type
+                if (inft.Type == NFTTypes.XrayImage)
+                {
+                    var nft = JsonConvert.DeserializeObject<XrayImageNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            XrayImageNFTHash = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for Xray Image NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        [TestEntry]
+        public static void XrayLoadXrayImageNFT(string param)
+        {
+            XrayLoadXrayImageNFTAsync(param);
+        }
+        public static async Task XrayLoadXrayImageNFTAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill the Xray Image hash.");
+                return;
+            }
+            Console.WriteLine("Loading the NFT.");
+            // Load NFT Object
+            try
+            {
+                
+                var nft = await NFTFactory.GetNFT("", param);
+
+                if (nft != null && nft.Type == NFTTypes.XrayImage)
+                {
+                    if (!string.IsNullOrEmpty((nft as XrayImageNFT).XrayDeviceNFTHash))
+                    {
+                        await (nft as XrayImageNFT).LoadXrayNFT();
+                        var res = await nft.DownloadPreviewData();
+                        var resi = await nft.DownloadImageData();
+                    }
+                }
+                Console.WriteLine("NFTs Loaded.");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot load the NFTs."); 
+            }
+        }
 
         #endregion
         //////////////////////////////////////////////////////////////////

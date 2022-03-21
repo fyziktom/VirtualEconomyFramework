@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
+using VEDriversLite.NFT.Imaging.Xray;
 
 namespace VEDriversLite.NFT
 {
@@ -98,6 +99,12 @@ namespace VEDriversLite.NFT
                             break;
                         case "NFT IoTMessage":
                             type = NFTTypes.IoTMessage;
+                            break;
+                        case "NFT Xray":
+                            type = NFTTypes.Xray;
+                            break;
+                        case "NFT XrayImage":
+                            type = NFTTypes.XrayImage;
                             break;
                     }
                     return type;
@@ -430,6 +437,22 @@ namespace VEDriversLite.NFT
                     nft.UtxoIndex = utxoindex;
                     await (nft as IoTMessageNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.Xray:
+                    nft = new XrayNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as XrayNFT).LoadLastData(meta);
+                    break;
+                case NFTTypes.XrayImage:
+                    nft = new XrayImageNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as XrayImageNFT).LoadLastData(meta);
+                    break;
             }
 
             if (VEDLDataContext.AllowCache && tokid == NFTHelpers.TokenId && VEDLDataContext.NFTCache.Count < VEDLDataContext.MaxCachedItems)
@@ -560,6 +583,14 @@ namespace VEDriversLite.NFT
                     nft = new IoTMessageNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
+                case NFTTypes.Xray:
+                    nft = new XrayNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
+                case NFTTypes.XrayImage:
+                    nft = new XrayImageNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
             }
 
             return null;
@@ -678,6 +709,12 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.IoTMessage:
                     nft = new IoTMessageNFT(utxo);
+                    break;
+                case NFTTypes.Xray:
+                    nft = new XrayNFT(utxo);
+                    break;
+                case NFTTypes.XrayImage:
+                    nft = new XrayImageNFT(utxo);
                     break;
             }
 

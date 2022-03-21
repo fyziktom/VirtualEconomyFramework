@@ -5625,6 +5625,21 @@
             Link to the image in the NFT
             </summary>
         </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.ImageData">
+            <summary>
+            Loaded Image data as byte array
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.Preview">
+            <summary>
+            Preview data of image or music
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.PreviewData">
+            <summary>
+            Loaded Image Preview data as byte array
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.CommonNFT.Tags">
             <summary>
             List of the tags separated by space
@@ -5839,6 +5854,18 @@
             </summary>
             <returns>Dicrionary with preapred common metadata for the NFT transaction</returns>
         </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.DownloadPreviewData">
+            <summary>
+            Download preview data if there are some
+            </summary>
+            <returns>true if success</returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.CommonNFT.DownloadImageData">
+            <summary>
+            Download Image data if there are some
+            </summary>
+            <returns>true if success</returns>
+        </member>
         <member name="M:VEDriversLite.NFT.CommonNFT.DecryptImageData(NBitcoin.BitcoinSecret,System.String,System.String)">
             <summary>
             This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
@@ -6022,6 +6049,323 @@
             Dto for shorten informations for the NFT
             </summary>
         </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.W">
+            <summary>
+            Number of columnts - width
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.H">
+            <summary>
+            Number of rows - height
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.Bits">
+            <summary>
+            Bit depth of image data in one pixel
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.Sc">
+            <summary>
+            Type of the scintilator
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.Pw">
+            <summary>
+            Detection element width in micro meters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.Ph">
+            <summary>
+            Detection element height in micro meters
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.IsDefault">
+            <summary>
+            Returns true if the all values inside class are in default values
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.AT">
+            <summary>
+            X-ray tube anode type.
+            Most of the Xray tubes uses Reflexive or Transmision
+            R - Reflexive
+            T - Transmision
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.TM">
+            <summary>
+            Material of the anode target. Usually it is made from Wolfram
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.FW">
+            <summary>
+            Focal spot width in micro meters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.FH">
+            <summary>
+            Focal spot height in micro meters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.FA">
+            <summary>
+            Focal spot angle if Reflexive
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.MinV">
+            <summary>
+            Minimum voltage on anode
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.MaxV">
+            <summary>
+            Maximum voltage on anode
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.IsDefault">
+            <summary>
+            Returns true if the all values inside class are in default values
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto.Ax">
+            <summary>
+            Axis name: X, Y, Z, R
+            R is rotation stand for the object
+            Robotics Joints - R1, R2, R3, R4, R5, R6
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto.Ac">
+            <summary>
+            Accuracy of step
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto.L">
+            <summary>
+            Length of whole axis
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto.Stp">
+            <summary>
+            Number of steps per whole axis
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto.Start">
+            <summary>
+            Start of the used part of the axis - virtual zero point
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto.End">
+            <summary>
+            End of the used part of the axis - virtual end point
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.PositionerParametersDto.Axes">
+            <summary>
+            Information about the all axes in the positioner
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.Dto.PositionerParametersDto.IsDefault">
+            <summary>
+            Returns true if the all values inside class are in default values
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.X">
+            <summary>
+            Object Position X
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.Y">
+            <summary>
+            Object Position Y
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.Z">
+            <summary>
+            Object Position Z
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.R1">
+            <summary>
+            Object Rotation R1
+            It is rotation in XY plane
+            Rotation is in degrees
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.R2">
+            <summary>
+            Object Rotation R2
+            It is rotation in XZ plane
+            Rotation is in degrees
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.R3">
+            <summary>
+            Object Rotation R3
+            It is rotation in ZY plane
+            Rotation is in degrees
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.Dsd">
+            <summary>
+            Distance between Source Focal spot and Detector
+            Distance is in milimeters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.Dod">
+            <summary>
+            Distance between Object rotation Axis XY center and Detector
+            Distance is in milimeters
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.IsDefault">
+            <summary>
+            Returns true if the all values inside class are in default values
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.XrayExposureParameters.Voltage">
+            <summary>
+            Anode voltage on the X-ray tube in the kilo Volts - kV
+            Usuall range is between 20 - 150 kV. 
+            For casting or welding it can be even 225kV, 450kV or more.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.XrayExposureParameters.Current">
+            <summary>
+            Current through the X-ray tube in the micro Ampers - uA
+            Usuall range starts from 50uA and can go up to 1-10 mili Ampers (mA) or more for casting/welding
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.XrayExposureParameters.Filters">
+            <summary>
+            List of the primary filters. These filters are real materials placed directly on the outpu window of the Xray tube
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.XrayExposureParameters.ExposureTime">
+            <summary>
+            Exposure time in ms - how long X-ray goes to the detector per one captured image/frame
+            Usuall range starts from 10ms and can goes up to 10 seconds. More in special cases or casting/welding.
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.Dto.XrayExposureParameters.IsDefault">
+            <summary>
+            Returns true if the all values inside class are in default values
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.XrayTubeAnodeType">
+            <summary>
+            Type of the Xray tube anode.
+            Most of the Xray tubes uses Reflexive or Transmision
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFiltrationMaterials">
+            <summary>
+            Materials list for primary filtration
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFilter.Material">
+            <summary>
+            Material of the primary filter
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFilter.Thickness">
+            <summary>
+            Thickness of the primary filter
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.XrayParams">
+            <summary>
+            Xray exposure parameters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.IsOriginal">
+            <summary>
+            This flag Indicates if the image stored in link are original or are already processed with some filters, etc.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.IsRaw">
+            <summary>
+            This flag Indicates if the image data stored on IPFS are raw. 
+            In that case it needs the width, height and bitdepts/format to be able use/display them
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.IsAveraged">
+            <summary>
+            If this is on, the result image is averaged from multiple images
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.CountOfFrames">
+            <summary>
+            If the image is averaged from multiple frames this number tells how many frames was used
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.DetectorParameters">
+            <summary>
+            Data about the detector. 
+            It is necessary to fill if the image data are raw
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.ObjectPosition">
+            <summary>
+            Object Position parameters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.XrayDeviceNFTHash">
+            <summary>
+            Xray device NFT Hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.XrayDeviceNFT">
+            <summary>
+            Loaded Xray Device NFT 
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayNFT.DeviceName">
+            <summary>
+            Commercial Xray Device Product Type
+            Leave empty if unknown or custom
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayNFT.DetectorName">
+            <summary>
+            Commercial Detector Produt Type
+            Leave empty if unknown or custom.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayNFT.SourceName">
+            <summary>
+            Commercial X Ray source Product Type
+            Leave empty if unknown or custom.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayNFT.PositionerName">
+            <summary>
+            Commercial Positioner Product Type
+            This can be also robot type if the robot is used for manipulation
+            Leave empty if unknown or custom.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayNFT.DetectorParameters">
+            <summary>
+            Data about the detector. 
+            It is necessary to fill if the standart type of the detector is not provided.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayNFT.SourceParameters">
+            <summary>
+            Xray source parameters.
+            It is recommended to fill them
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayNFT.PositionerParameters">
+            <summary>
+            Positioner parameters. Informations about the axes
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.INFT.TypeText">
             <summary>
             Text form of the NFT type like "NFT Image" or "NFT Post"
@@ -6066,6 +6410,16 @@
         <member name="P:VEDriversLite.NFT.INFT.ImageLink">
             <summary>
             Link to the image in the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.Preview">
+            <summary>
+            Preview data of image or music
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.INFT.PreviewData">
+            <summary>
+            Data of the preview file
             </summary>
         </member>
         <member name="P:VEDriversLite.NFT.INFT.Tags">
@@ -6300,6 +6654,34 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.NFT.INFT.DownloadPreviewData">
+            <summary>
+            Download preview data if there are some
+            </summary>
+            <returns>true if success</returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.DownloadImageData">
+            <summary>
+            Download Image data if there are some
+            </summary>
+            <returns>true if success</returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.DecryptImageData(NBitcoin.BitcoinSecret,System.String,System.String)">
+            <summary>
+            This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
+            Then the image is saved in ImageData as bytes.
+            </summary>
+            <param name="secret">NFT Owner Private Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.DecryptProperty(System.String,NBitcoin.BitcoinSecret,System.String,System.String)">
+            <summary>
+            Decrypt the specific property with use of shared secret
+            </summary>
+            <param name="prop">Property content</param>
+            <param name="secret">NFT Owner Private Key</param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NFT.MessageNFT.Decrypt(NBitcoin.BitcoinSecret,System.Boolean)">
             <summary>
             this function will decrypt the NFT if it is possile
@@ -6343,6 +6725,13 @@
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetHashFromIPFSLink(System.String)">
+            <summary>
+            Remove the server address from link and return just IPFS Hash
+            </summary>
+            <param name="link"></param>
+            <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.UploadImage(System.IO.Stream,System.String,System.String)">
             <summary>

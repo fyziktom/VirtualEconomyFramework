@@ -111,6 +111,17 @@ namespace VEDriversLite.NFT
         {
             NewEventInfo?.Invoke(null, e);
         }
+
+        /// <summary>
+        /// Remove the server address from link and return just IPFS Hash
+        /// </summary>
+        /// <param name="link"></param>
+        /// <returns></returns>
+        public static string GetHashFromIPFSLink(string link)
+        {
+            var hash = link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty);
+            return hash;
+        }
         /// <summary>
         /// Obsolete function - just example how to redirect upload through different server
         /// </summary>
