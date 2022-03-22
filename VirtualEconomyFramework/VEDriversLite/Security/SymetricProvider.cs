@@ -49,7 +49,7 @@ namespace VEDriversLite.Security
             var keybytes = GetKeyBytes(key);
             var secret = Convert.FromBase64String(cipherText);
             var result = DecryptBytes(keybytes, secret);
-            return Encoding.UTF8.GetString(result);
+            return Encoding.UTF8.GetString(result).Trim('\0');
         }
 
         public static byte[] EncryptBytes(string key, byte[] secret)
@@ -120,7 +120,7 @@ namespace VEDriversLite.Security
             byte[] comparisonBytes = new byte[cipher.GetOutputSize(outputBytes.Length)];
             int length = cipher.ProcessBytes(outputBytes, comparisonBytes, 0);
             cipher.DoFinal(comparisonBytes, length); //Do the final block
-            byte[] output = comparisonBytes.Take(comparisonBytes.Length - 12).ToArray();
+            byte[] output = comparisonBytes.Take(comparisonBytes.Length).ToArray();
             return output;
         }
         #endregion

@@ -3337,9 +3337,34 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:VEDriversLite.Neblio.NeblioSubAccount.EKey">
+            <summary>
+            Encrypted Private Key with use of the NBitcoin alg. with main public key enc and private key dec
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Neblio.NeblioSubAccount.ESKey">
+            <summary>
+            Encrypted Private Key with use of SHA256 hash of main private key and AES256
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Neblio.NeblioSubAccount.Name">
+            <summary>
+            Name of the Sub Account
+            </summary>
+        </member>
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.IsAutoRefreshActive">
             <summary>
             When this flag is set, account reload the Utxos state - inside autorefresh
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Neblio.NeblioSubAccount.BookmarkFromAccount">
+            <summary>
+            Bookmark related to this Sub Account loaded from the Main account if exist
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Neblio.NeblioSubAccount.IsInBookmark">
+            <summary>
+            Indicate if this Sub Account is in the Bookmark
             </summary>
         </member>
         <member name="E:VEDriversLite.Neblio.NeblioSubAccount.NewMintingProcessInfo">
@@ -3350,6 +3375,48 @@
         <member name="E:VEDriversLite.Neblio.NeblioSubAccount.FirsLoadingStatus">
             <summary>
             This event is called during first loading of the account to keep updated the user
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.CreateAddress(NBitcoin.BitcoinSecret,System.String)">
+            <summary>
+            Create Sub Account Address and Private Key
+            The Account Private key is encrypted with use of main account private key
+            </summary>
+            <param name="mainSecret">Main Account Private Key</param>
+            <param name="name">Name of the Sub Account</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.LoadFromBackupString(NBitcoin.BitcoinSecret,System.String)">
+            <summary>
+            Load Sub Account from the string with AcountExportDto data
+            </summary>
+            <param name="mainSecret"></param>
+            <param name="inputData">serialized AcountExportDto</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.LoadFromBackupDto(NBitcoin.BitcoinSecret,VEDriversLite.Dto.AccountExportDto)">
+            <summary>
+            Load Sub Account from AcountExportDto
+            </summary>
+            <param name="mainSecret"></param>
+            <param name="dto">account export data</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.BackupAddressToString">
+            <summary>
+            Backup Sub Account data as serialized AcountExportDto
+            </summary>
+            <returns>true and serialized AcountExportDto</returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.BackupAddressToDto">
+            <summary>
+            Backup Sub Account to AcountExportDto
+            </summary>
+            <returns>true and AcountExportDto</returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.ClearBookmark">
+            <summary>
+            Clear bookmark object
             </summary>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioSubAccount.StartRefreshingData(System.Int32)">
@@ -6682,7 +6749,7 @@
             <param name="publicKey">Public Key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,System.String)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,System.String,NBitcoin.PubKey)">
             <summary>
             Obtain the Shared secret based on the Neblio Address and Neblio Private Key
             </summary>
@@ -6690,7 +6757,7 @@
             <param name="key">Private Key of the sender</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,NBitcoin.BitcoinSecret)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.GetSharedSecret(System.String,NBitcoin.BitcoinSecret,NBitcoin.PubKey)">
             <summary>
             Obtain the Shared secret based on the Neblio Address and Neblio Private Key
             </summary>

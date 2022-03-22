@@ -265,12 +265,12 @@ namespace VEDriversLite.Security
         /// <param name="bobAddress">Neblio Address of the receiver</param>
         /// <param name="key">Private Key of the sender</param>
         /// <returns></returns>
-        public static async Task<(bool, string)> GetSharedSecret(string bobAddress, string key)
+        public static async Task<(bool, string)> GetSharedSecret(string bobAddress, string key, PubKey bobPublicKey = null)
         {
             try
             {
                var secret =  new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
-                return await GetSharedSecret(bobAddress, secret);
+                return await GetSharedSecret(bobAddress, secret, bobPublicKey);
             }
             catch(Exception ex)
             {
@@ -284,18 +284,25 @@ namespace VEDriversLite.Security
         /// <param name="bobAddress">Neblio Address of the receiver</param>
         /// <param name="secret">Private Key of the sender in the form of the BitcoinSecret</param>
         /// <returns></returns>
-        public static async Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret)
+        public static async Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret, PubKey bobPublicKey = null)
         {
             var aliceadd = secret.PubKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
             var bpkey = secret.PubKey;
             if (aliceadd.ToString() != bobAddress.ToString())
             {
-                var bobPubKey = await NFTHelpers.GetPubKeyFromLastFoundTx(bobAddress);
+                if (bobPublicKey == null)
+                {
+                    var bobPubKey = await NFTHelpers.GetPubKeyFromLastFoundTx(bobAddress);
 
-                if (!bobPubKey.Item1)
-                    return (false, "Cannot find public key, input address did not have any spent transations for key extraction.");
+                    if (!bobPubKey.Item1)
+                        return (false, "Cannot find public key, input address did not have any spent transations for key extraction.");
+                    else
+                        bpkey = bobPubKey.Item2;
+                }
                 else
-                    bpkey = bobPubKey.Item2;
+                {
+                    bpkey = bobPublicKey;
+                }
             }
 
             var sharedKey = bpkey.GetSharedPubkey(secret.PrivateKey);

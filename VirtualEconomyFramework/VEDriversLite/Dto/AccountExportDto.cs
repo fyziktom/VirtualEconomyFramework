@@ -8,6 +8,7 @@ namespace VEDriversLite.Dto
     {
         public string Address { get; set; } = string.Empty;
         public string EKey { get; set; } = string.Empty;
+        public string ESKey { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public bool IsDogeAccount { get; set; } = false;

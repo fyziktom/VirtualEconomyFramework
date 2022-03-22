@@ -19,8 +19,17 @@ namespace VEDriversLite.Neblio
     public class NeblioSubAccount : NeblioAccountBase
     {
         private static object _lock { get; set; } = new object();
-
+        /// <summary>
+        /// Encrypted Private Key with use of the NBitcoin alg. with main public key enc and private key dec
+        /// </summary>
         public string EKey { get; set; } = string.Empty;
+        /// <summary>
+        /// Encrypted Private Key with use of SHA256 hash of main private key and AES256
+        /// </summary>
+        public string ESKey { get; set; } = string.Empty;
+        /// <summary>
+        /// Name of the Sub Account
+        /// </summary>
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
@@ -29,8 +38,14 @@ namespace VEDriversLite.Neblio
         [JsonIgnore]
         public bool IsAutoRefreshActive { get; set; } = false;
 
+        /// <summary>
+        /// Bookmark related to this Sub Account loaded from the Main account if exist
+        /// </summary>
         [JsonIgnore]
         public Bookmark BookmarkFromAccount { get; set; } = new Bookmark();
+        /// <summary>
+        /// Indicate if this Sub Account is in the Bookmark
+        /// </summary>
         [JsonIgnore]
         public bool IsInBookmark { get; set; } = false;
 
@@ -44,6 +59,13 @@ namespace VEDriversLite.Neblio
         /// </summary>
         public event EventHandler<string> FirsLoadingStatus;
 
+        /// <summary>
+        /// Create Sub Account Address and Private Key
+        /// The Account Private key is encrypted with use of main account private key
+        /// </summary>
+        /// <param name="mainSecret">Main Account Private Key</param>
+        /// <param name="name">Name of the Sub Account</param>
+        /// <returns></returns>
         public async Task<(bool,string)> CreateAddress(BitcoinSecret mainSecret, string name)
         {
             if (!string.IsNullOrEmpty(Address))
@@ -60,7 +82,9 @@ namespace VEDriversLite.Neblio
                 // todo load already encrypted key
                 AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString());
                 AccountKey.PublicKey = Address;
-                EKey = mainSecret.PubKey.Encrypt(privateKeyFromNetwork.ToString());
+
+                ESKey = SymetricProvider.EncryptString(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), privateKeyFromNetwork.ToString());
+                //EKey = mainSecret.PubKey.Encrypt(privateKeyFromNetwork.ToString());// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
                 Name = name;
                 return (true, Address);
             }
@@ -71,6 +95,22 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        private string DecryptEncryptedKey(BitcoinSecret mainSecret)
+        {
+            string key = string.Empty;
+            if (!string.IsNullOrEmpty(ESKey))
+                key = SymetricProvider.DecryptString(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), ESKey);
+            else if (!string.IsNullOrEmpty(EKey))
+                key = mainSecret.PrivateKey.Decrypt(EKey); // TODO: some preprocessor directive for run just in old version under .NETStandard2.1
+            return key;
+        }
+
+        /// <summary>
+        /// Load Sub Account from the string with AcountExportDto data
+        /// </summary>
+        /// <param name="mainSecret"></param>
+        /// <param name="inputData">serialized AcountExportDto</param>
+        /// <returns></returns>
         public async Task<(bool,string)> LoadFromBackupString(BitcoinSecret mainSecret, string inputData)
         {
             try
@@ -81,8 +121,11 @@ namespace VEDriversLite.Neblio
 
                 Address = dto.Address;
                 EKey = dto.EKey;
+                ESKey = dto.ESKey;
                 Name = dto.Name;
-                var key = mainSecret.PrivateKey.Decrypt(dto.EKey);
+
+                var key = DecryptEncryptedKey(mainSecret);
+
                 AccountKey = new EncryptionKey(key);
                 AccountKey.PublicKey = Address;
                 Secret = new BitcoinSecret(key, NeblioTransactionHelpers.Network);
@@ -95,6 +138,12 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Load Sub Account from AcountExportDto
+        /// </summary>
+        /// <param name="mainSecret"></param>
+        /// <param name="dto">account export data</param>
+        /// <returns></returns>
         public async Task<(bool, string)> LoadFromBackupDto(BitcoinSecret mainSecret, AccountExportDto dto)
         {
             try
@@ -104,8 +153,9 @@ namespace VEDriversLite.Neblio
 
                 Address = dto.Address;
                 EKey = dto.EKey;
+                ESKey = dto.ESKey;
                 Name = dto.Name;
-                var key = mainSecret.PrivateKey.Decrypt(dto.EKey);
+                var key = DecryptEncryptedKey(mainSecret);
                 AccountKey = new EncryptionKey(key);
                 AccountKey.PublicKey = Address;
                 Secret = new BitcoinSecret(key, NeblioTransactionHelpers.Network);
@@ -118,9 +168,13 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Backup Sub Account data as serialized AcountExportDto
+        /// </summary>
+        /// <returns>true and serialized AcountExportDto</returns>
         public async Task<(bool,string)> BackupAddressToString()
         {
-            if (string.IsNullOrEmpty(Address) || string.IsNullOrEmpty(EKey))
+            if (string.IsNullOrEmpty(Address) || (string.IsNullOrEmpty(EKey) && string.IsNullOrEmpty(ESKey)))
                 return (false, "Account is not loaded.");
 
             try
@@ -129,6 +183,7 @@ namespace VEDriversLite.Neblio
                 {
                     Address = Address,
                     EKey = EKey,
+                    ESKey = ESKey,
                     Name = Name
                 };
                 var res = JsonConvert.SerializeObject(dto);
@@ -140,9 +195,13 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Backup Sub Account to AcountExportDto
+        /// </summary>
+        /// <returns>true and AcountExportDto</returns>
         public async Task<(bool, AccountExportDto)> BackupAddressToDto()
         {
-            if (string.IsNullOrEmpty(Address) || string.IsNullOrEmpty(EKey))
+            if (string.IsNullOrEmpty(Address) || (string.IsNullOrEmpty(EKey) && string.IsNullOrEmpty(ESKey)))
                 return (false, null);
 
             try
@@ -151,6 +210,7 @@ namespace VEDriversLite.Neblio
                 {
                     Address = Address,
                     EKey = EKey,
+                    ESKey = ESKey,
                     Name = Name
                 };
                 return (true, dto);
@@ -171,6 +231,10 @@ namespace VEDriversLite.Neblio
             else
                 ClearBookmark();
         }
+
+        /// <summary>
+        /// Clear bookmark object
+        /// </summary>
         public void ClearBookmark()
         {
             IsInBookmark = false;
