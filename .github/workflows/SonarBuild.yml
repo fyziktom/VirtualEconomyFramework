@@ -1,4 +1,4 @@
-name: Build with sonarqubes windows
+name: Build with sonarqube windows
 on:
   push:
     branches: [ latest_branch ]
