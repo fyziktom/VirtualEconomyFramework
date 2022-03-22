@@ -6770,21 +6770,6 @@
             <param name="key">Shared secret key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.SecurityUtils.HashPassword(System.String)">
-            <summary>
-            Create hash of the password to store
-            </summary>
-            <param name="password"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.Security.SecurityUtils.VerifyPassword(System.String,System.Byte[])">
-            <summary>
-            Verify the password against the hash of the password
-            </summary>
-            <param name="password"></param>
-            <param name="hash"></param>
-            <returns></returns>
-        </member>
         <member name="M:VEDriversLite.Security.SecurityUtils.ComputeSha256Hash(System.String)">
             <summary>
             Compute SHA256 Hash

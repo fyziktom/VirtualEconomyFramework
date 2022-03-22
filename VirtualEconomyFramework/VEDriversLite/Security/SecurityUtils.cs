@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+//using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,6 +8,7 @@ namespace VEDriversLite.Security
 {
     public static class SecurityUtils
     {
+        /*
         const int iterations = 10000;
         const int saltSize = 128 / 8;
         const int keySize = 256 / 8;
@@ -46,7 +47,7 @@ namespace VEDriversLite.Security
                 return true;
             }
         }
-
+        */
         /// <summary>
         /// Compute SHA256 Hash
         /// </summary>
@@ -54,6 +55,7 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static string ComputeSha256Hash(string rawData)
         {
+            /*
             // Create a SHA256   
             using (SHA256 sha256Hash = SHA256.Create())
             {
@@ -68,6 +70,8 @@ namespace VEDriversLite.Security
                 }
                 return builder.ToString();
             }
+            */
+            return Encoding.UTF8.GetString(NBitcoin.Crypto.Hashes.SHA256(Encoding.UTF8.GetBytes(rawData)));
         }
     }
 }

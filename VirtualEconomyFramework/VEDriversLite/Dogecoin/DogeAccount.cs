@@ -189,8 +189,7 @@ namespace VEDriversLite
                     AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
                     AccountKey.PublicKey = Address;
                     Secret = privateKeyFromNetwork;
-                    if (!string.IsNullOrEmpty(password))
-                        AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(password);
+
                     SignMessage("init");
                     if (saveToFile)
                     {
