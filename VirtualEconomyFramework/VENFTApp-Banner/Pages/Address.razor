@@ -113,7 +113,7 @@
                         <div class="card-group">
                             @foreach (var nft in tab.NFTs)
                             {
-                                if (nft.Author.ToLower().Contains(searchNFTsString) || nft.Name.ToLower().Contains(searchNFTsString))
+                                if (nft.Author.ToLower().Contains(searchNFTsString) || nft.Name.ToLower().Contains(searchNFTsString) || nft.Tags.ToLower().Contains(searchNFTsString))
                                 {
                                     if (displayCoruzant && (nft.Type == NFTTypes.CoruzantProfile || nft.Type == NFTTypes.CoruzantArticle || nft.Type == NFTTypes.CoruzantPodcast))
                                     {
