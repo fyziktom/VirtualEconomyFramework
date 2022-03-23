@@ -28,4 +28,7 @@ ENTRYPOINT ["dotnet", "VENFTApp-Server.dll"]
 
 #docker build -t venftappserver -f venftapp-server\Dockerfile .
 #docker run -d -p 8080:80 --name DockerizedVENFTAppServer venftappserver
+# to change the key, GrcOption.ServerAddress in appsettings.json
+#docker run -e "GrpcOption:ServerAddress=newurl"  [imagename]
+#docker run -d --name=DockerizedVENFTAppServerAppSettings -p 8080:80 -v /d/RSqr/CORUZANT/Temp/appsettings.json:/app/appsettings.json venftappserver
 #https://docs.docker.com/samples/dotnetcore/
