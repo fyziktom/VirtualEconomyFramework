@@ -10,14 +10,12 @@
          <h2 class="heading-title"><span>Top P</span>rofiles</h2>
     
          <div class="row profiles" >
-            @foreach (var profile in AppData.NFTs.Take(10))
+            @foreach (var profile in AppData.ProfilesNFTs.Take(10))
             {
-                if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
-                {
-                    var prof = profile as CoruzantProfileNFT;
-                    <div class="col-xs-6 col-sm-4 col-md-3  profiles-container">
+                var prof = profile as CoruzantProfileNFT;
+                <div class="col-xs-6 col-sm-4 col-md-3  profiles-container">
                     <div class="profile">
-                       <div class="profile-img">
+                        <div class="profile-img">
                         <img class="media-img" src="@prof.ImageLink" alt="@profile.Description">
                         </div>        
                         <div class="profile-details" @onclick="()=>ModalShow(prof)">
@@ -27,8 +25,7 @@
 
                         </div>
                     </div>
-                  </div>
-                }
+                </div>
             }
          </div>
     </div>
