@@ -953,8 +953,12 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, res.Item2);
+                // send tx                                                 
+
+                var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, res.Item2);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Payment Sent");
@@ -1003,8 +1007,11 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, utxos, 20000);
+                // send tx                
+                var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, utxos);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Payment Sent");
@@ -1057,9 +1064,12 @@ namespace VEDriversLite.Neblio
             }
 
             try
-            {
+            {                
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(Address, receivers, lots, amount, AccountKey, res.Item2, 20000);
+                var transaction = await NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(receivers, lots, amount, AccountKey, res.Item2);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Split Sent");
@@ -1115,9 +1125,13 @@ namespace VEDriversLite.Neblio
             };
 
             try
-            {
+            {                
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AccountKey, res.Item2, tres.Item2);
+                var transaction = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AccountKey, res.Item2, tres.Item2);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
+
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Token Payment Sent");
@@ -1179,9 +1193,13 @@ namespace VEDriversLite.Neblio
 
             metadata.Add("VENFT App", "https://about.ve-nft.com/");
             try
-            {
+            {              
+
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SplitNTP1TokensAsync(receivers, lots, amount, tokenId, metadata, AccountKey, res.Item2, tres.Item2);
+                var transaction = await NeblioTransactionHelpers.SplitNTP1TokensAsync(receivers, lots, amount, tokenId, metadata, AccountKey, res.Item2, tres.Item2);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Split Token Payment Sent");
@@ -1234,7 +1252,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.MintNFT(Address, AccountKey, nft, res.Item2, tres.Item2, receiver);
+                var rtxid = await NFTHelpers.MintNFT(Address, AccountKey, nft, res.Item2, tres.Item2, Secret, receiver);
 
                 if (rtxid != null)
                 {
@@ -1286,7 +1304,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.MintMultiNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2, receiver);
+                var rtxid = await NFTHelpers.MintMultiNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2, Secret, receiver);
 
                 if (rtxid != null)
                 {
@@ -1373,7 +1391,7 @@ namespace VEDriversLite.Neblio
                                 {
                                     try
                                     {
-                                        txres = await NFTHelpers.MintMultiNFT(Address, NeblioTransactionHelpers.MaximumTokensOutpus - 1, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                                        txres = await NFTHelpers.MintMultiNFT(Address, NeblioTransactionHelpers.MaximumTokensOutpus - 1, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, Secret, receiver);
                                         if (string.IsNullOrEmpty(txres))
                                         {
                                             Console.WriteLine("Waiting for spendable utxo...");
@@ -1411,7 +1429,7 @@ namespace VEDriversLite.Neblio
                                 var sres = await MultimintSourceCheck(NFT.TokenId, rest);
                                 if (sres.Item1)
                                 {
-                                    txres = await NFTHelpers.MintMultiNFT(Address, rest, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                                    txres = await NFTHelpers.MintMultiNFT(Address, rest, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, Secret, receiver);
                                     if (string.IsNullOrEmpty(txres))
                                     {
                                         Console.WriteLine("Waiting for spendable utxo...");
@@ -1437,7 +1455,7 @@ namespace VEDriversLite.Neblio
                 {
                     var sres = await MultimintSourceCheck(NFT.TokenId, NeblioTransactionHelpers.MaximumTokensOutpus);
                     if (sres.Item1)
-                        txres = await NFTHelpers.MintMultiNFT(Address, cps, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                        txres = await NFTHelpers.MintMultiNFT(Address, cps, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, Secret, receiver);
                     else
                     {
                         await InvokeErrorDuringSendEvent("Cannot Mint NFTs", "Not enough spendable source.");
@@ -1493,7 +1511,7 @@ namespace VEDriversLite.Neblio
             try
             {
                 // send tx
-                var rtxid = await NFTHelpers.DestroyNFTs(Address, AccountKey, nfts, res.Item2, receiver);
+                var rtxid = await NFTHelpers.DestroyNFTs(Address, AccountKey, nfts, res.Item2, Secret, receiver);
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "NFTs Destroyed.");
@@ -1545,7 +1563,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, nft, priceWrite, res.Item2, price, withDogePrice, dogeprice);
+                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, nft, priceWrite, res.Item2, Secret, price, withDogePrice, dogeprice);
 
                 if (rtxid != null)
                 {
@@ -1595,7 +1613,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.ChangeNFT(Address, AccountKey, nft, res.Item2);
+                var rtxid = await NFTHelpers.ChangeNFT(Address, AccountKey, nft, res.Item2, Secret);
 
                 if (rtxid != null)
                 {
@@ -1701,7 +1719,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendMessageNFT(Address, receiver, AccountKey, nft, res.Item2, tres.Item2, rewriteAuthor:rewriteAuthor);
+                var rtxid = await NFTHelpers.SendMessageNFT(Address, receiver, AccountKey, nft, res.Item2, tres.Item2, Secret, rewriteAuthor:rewriteAuthor);
 
                 if (rtxid != null)
                 {
@@ -1751,7 +1769,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.UseNFTTicket(Address, AccountKey, nft, res.Item2);
+                var rtxid = await NFTHelpers.UseNFTTicket(Address, AccountKey, nft, res.Item2, Secret);
 
                 if (rtxid != null)
                 {
@@ -1798,7 +1816,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendNFTPayment(Address, AccountKey, receiver, nft, res.Item2);
+                var rtxid = await NFTHelpers.SendNFTPayment(Address, AccountKey, receiver, nft, res.Item2, Secret);
 
                 if (rtxid != null)
                 {
@@ -1842,7 +1860,7 @@ namespace VEDriversLite.Neblio
             try
             {
                 NFT.Returned = true;
-                var rtxid = await NFTHelpers.ReturnNFTPayment(Address, AccountKey, NFT, res.Item2);
+                var rtxid = await NFTHelpers.ReturnNFTPayment(Address, AccountKey, NFT, res.Item2, Secret);
 
                 if (rtxid != null)
                 {
@@ -1903,8 +1921,11 @@ namespace VEDriversLite.Neblio
             };
 
             try
-            {
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(dto, AccountKey, neblioAmount, res.Item2, tres.Item2);
+            {           
+                // send tx
+                var transaction = await NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(dto, AccountKey, neblioAmount, res.Item2, tres.Item2);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
 
                 if (rtxid != null)
                 {
@@ -1956,7 +1977,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await CoruzantNFTHelpers.ChangeCoruzantPostNFT(Address, AccountKey, nft, res.Item2, receiver);
+                var rtxid = await CoruzantNFTHelpers.ChangeCoruzantPostNFT(Address, AccountKey, nft, res.Item2, Secret, receiver);
 
                 if (rtxid != null)
                 {
@@ -2109,9 +2130,9 @@ namespace VEDriversLite.Neblio
                                                 var rtxid = string.Empty;
                                                 var pntosend = await NFTFactory.CloneNFT(pn);
                                                 if (!pn.SellJustCopy)
-                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
+                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2, Secret);
                                                 else
-                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
+                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2, Secret);
                                                 
                                                 if (!string.IsNullOrEmpty(rtxid))
                                                 {

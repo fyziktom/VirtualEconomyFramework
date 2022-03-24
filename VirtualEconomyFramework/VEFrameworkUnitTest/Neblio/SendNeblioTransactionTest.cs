@@ -84,8 +84,13 @@ namespace VEFrameworkUnitTest.Neblio
             Common.NeblioTestHelpers.Client.Setup(x => x.BroadcastTxAsync(It.IsAny<BroadcastTxRequest>())).ReturnsAsync(broadcastTxResponse);
 
             var AccountKey = new EncryptionKey(key);
-            
-            var neblioTransactionResult = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos);
+
+            var k = NeblioTransactionHelpers.GetAddressAndKey(AccountKey);
+            var key1 = k.Item2;
+
+            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos);
+
+            var neblioTransactionResult = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, key1);
 
             Assert.Equal(transactionId, neblioTransactionResult);
         }
@@ -222,7 +227,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning an error result if broadcast failed.
         /// </summary>
         [Fact]
-        public void SendNeblioTransaction_CannotSignTransaction_Error_Test()
+        public async void SendNeblioTransaction_CannotSignTransaction_Error_Test()
         {
             //Arrange           
             
@@ -245,9 +250,15 @@ namespace VEFrameworkUnitTest.Neblio
                 CustomMessage = "test",
                 Password = ""
             };
+            
+            var k = NeblioTransactionHelpers.GetAddressAndKey(AccountKey);
+            var key1 = k.Item2;
 
             string message = "Exception during signing tx";
-            var exception = Assert.ThrowsAsync<Exception>(async () => await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject1.Utxos));
+            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject1.Utxos);
+
+            var exception = Assert.ThrowsAsync<Exception>(async ()=> await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, key1));
+            
             Assert.Contains(message, exception.Result.Message);
         }
         

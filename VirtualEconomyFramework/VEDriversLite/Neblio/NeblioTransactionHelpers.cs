@@ -437,7 +437,7 @@ namespace VEDriversLite
         /// <param name="tutxos">Optional input token utxo</param>
         /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> MintNFTTokenAsync(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<Transaction> MintNFTTokenAsync(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             return await MintMultiNFTTokenAsyncInternal(data, 0, ekey, nutxos, tutxos, false);
         }
@@ -452,7 +452,7 @@ namespace VEDriversLite
         /// <param name="tutxos">Optional input token utxo</param>
         /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> MintMultiNFTTokenAsync(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<Transaction> MintMultiNFTTokenAsync(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             return await MintMultiNFTTokenAsyncInternal(data, coppies, ekey, nutxos, tutxos, true);
         }
@@ -467,7 +467,7 @@ namespace VEDriversLite
         /// <param name="tutxos">Optional input token utxo</param>
         /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> MintMultiNFTTokenAsyncInternal(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos,bool multiTokens)
+        public static async Task<Transaction> MintMultiNFTTokenAsyncInternal(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos,bool multiTokens)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
             {
@@ -480,8 +480,7 @@ namespace VEDriversLite
             BitcoinSecret key;
             BitcoinAddress addressForTx;
 
-            var k = GetAddressAndKey(ekey);
-            key = k.Item2;
+            var k = GetAddressAndKey(ekey);            
             addressForTx = k.Item1;
             if (!string.IsNullOrEmpty(data.ReceiverAddress))
             {
@@ -635,7 +634,12 @@ namespace VEDriversLite
                     }
                 }
             }
-            return await SignAndBroadcast(transaction, key, addressForTx);
+            return transaction;
+        }
+
+        public static async Task<string> SignAndBroadcastTransaction(Transaction transaction, BitcoinSecret key)
+        {
+            return await SignAndBroadcast(transaction, key);
         }
 
 
@@ -650,12 +654,11 @@ namespace VEDriversLite
         /// <param name="tutxos">Optional input token utxo</param>
         /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SplitNTP1TokensAsync(List<string> receiver, int lots, int amount, string tokenId,
+        public static async Task<Transaction> SplitNTP1TokensAsync(List<string> receiver, int lots, int amount, string tokenId,
                                                               IDictionary<string, string> metadata,
                                                               EncryptionKey ekey,
                                                               ICollection<Utxos> nutxos,
-                                                              ICollection<Utxos> tutxos,
-                                                              double fee = 20000)
+                                                              ICollection<Utxos> tutxos)
         {
             if (metadata == null || metadata.Count == 0)
             {
@@ -673,7 +676,6 @@ namespace VEDriversLite
             List<BitcoinAddress> receiversAddresses = new List<BitcoinAddress>();
 
             var k = GetAddressAndKey(ekey);
-            key = k.Item2;
             addressForTx = k.Item1;
             if (receiver.Count > 0)
             {
@@ -720,7 +722,7 @@ namespace VEDriversLite
 
             metadata.Add("TransactionType", "Token Split");
 
-            fee = CalcFee(2, lots, JsonConvert.SerializeObject(metadata), true);
+            var fee = CalcFee(2, lots, JsonConvert.SerializeObject(metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
@@ -858,7 +860,7 @@ namespace VEDriversLite
                 }
             }
 
-            return await SignAndBroadcast(transaction, key, addressForTx);
+            return transaction;
         }
 
         /// <summary>
@@ -870,20 +872,12 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendNFTTokenAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
+        public static async Task<Transaction> SendNFTTokenAsync(SendTokenTxData data, ICollection<Utxos> nutxos)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
             {
                 throw new Exception("Cannot send without metadata!");
             }
-
-            // load key and address
-            BitcoinSecret keyfromFile;
-            BitcoinAddress addressForTx;
-
-            var k = GetAddressAndKey(ekey);
-            keyfromFile = k.Item2;
-            addressForTx = k.Item1;
 
             var nftutxo = data.sendUtxo.FirstOrDefault();
             var itt = nftutxo;
@@ -920,7 +914,7 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
             }
 
-            fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            var fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
@@ -973,7 +967,7 @@ namespace VEDriversLite
                 throw new Exception("Cannot parse token tx raw hex.");
             }
 
-            return await SignAndBroadcast(transaction, keyfromFile, addressForTx);
+            return transaction;
 
         }
 
@@ -986,7 +980,7 @@ namespace VEDriversLite
         /// <param name="tutxos">Optional input token utxo</param>
         /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendTokenLotAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
+        public static async Task<Transaction> SendTokenLotAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
             {
@@ -1076,7 +1070,7 @@ namespace VEDriversLite
                 throw new Exception("Cannot parse token tx raw hex.");
             }
 
-            return await SignAndBroadcast(transaction, key, addressForTx);
+            return transaction;
         }
 
 
@@ -1088,7 +1082,7 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 10000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendNeblioTransactionAPIAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 10000)
+        public static async Task<Transaction> SendNeblioTransactionAPIAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos)
         {
             if (data == null)
             {
@@ -1131,7 +1125,7 @@ namespace VEDriversLite
             try
             {
 
-                fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
+                var fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
                 var diff = (allNeblInputCoins - data.Amount) - (fee / FromSatToMainRatio);
 
@@ -1155,9 +1149,7 @@ namespace VEDriversLite
                 throw new Exception("Exception during creating outputs. " + ex.Message);
             }
 
-
-            return await SignAndBroadcast(transaction, key, addressForTx);
-
+            return transaction;
         }
 
         /// <summary>
@@ -1168,7 +1160,7 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 10000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SplitNeblioCoinTransactionAPIAsync(string sender, List<string> receivers, int lots, double amount, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
+        public static async Task<Transaction> SplitNeblioCoinTransactionAPIAsync(List<string> receivers, int lots, double amount, EncryptionKey ekey, ICollection<Utxos> nutxos)
         {
             if (ekey == null)
             {
@@ -1230,7 +1222,7 @@ namespace VEDriversLite
 
             try
             {
-                fee = CalcFee(transaction.Inputs.Count, 1, "", false);
+                var fee = CalcFee(transaction.Inputs.Count, 1, "", false);
 
                 var totalAmount = 0.0;
                 for (int i = 0; i < lots; i++)
@@ -1278,7 +1270,7 @@ namespace VEDriversLite
                 throw new Exception("Exception during creating outputs. " + ex.Message);
             }
 
-            return await SignAndBroadcast(transaction, key, addressForTx);
+            return transaction;
 
         }
 
@@ -1291,7 +1283,7 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
+        public static async Task<Transaction> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
             {
@@ -1304,11 +1296,9 @@ namespace VEDriversLite
             }
 
             // load key and address
-            BitcoinSecret key;
             BitcoinAddress addressForTx;
 
             var k = GetAddressAndKey(ekey);
-            key = k.Item2;
             addressForTx = k.Item1;
 
 
@@ -1466,7 +1456,7 @@ namespace VEDriversLite
                 throw new Exception("Exception during adding outputs with payment in neblio." + ex.Message);
             }
 
-            return await SignAndBroadcast(transaction, key, addressForTx);
+            return transaction;
 
         }
       
@@ -1479,7 +1469,7 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendNTP1TokenLotWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<Transaction> SendNTP1TokenLotWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
             {
@@ -1492,11 +1482,9 @@ namespace VEDriversLite
             }
 
             // load key and address
-            BitcoinSecret key;
             BitcoinAddress addressForTx;
 
             var k = GetAddressAndKey(ekey);
-            key = k.Item2;
             addressForTx = k.Item1;
 
             // create receiver address
@@ -1676,7 +1664,7 @@ namespace VEDriversLite
                 throw new Exception("Exception during adding outputs with payment in neblio." + ex.Message);
             }
 
-            return await SignAndBroadcast(transaction, key, addressForTx);
+            return transaction;
         }
 
         /// <summary>
@@ -1686,8 +1674,10 @@ namespace VEDriversLite
         /// <param name="key">NBitcoin Key - must contain Private Key</param>
         /// <param name="address">NBitcoin address - must match with the provided key</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key, BitcoinAddress address)
+        private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key)
         {
+            BitcoinAddress address = key.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+
             // add coins
             List<ICoin> coins = new List<ICoin>();
             try
@@ -1749,7 +1739,7 @@ namespace VEDriversLite
         //////////////////////////////////////
         #region Multi Token Input Tx
 
-        public static async Task<string> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
+        public static async Task<Transaction> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
         {
             // load key and address
             BitcoinSecret keyfromFile;
@@ -1891,21 +1881,19 @@ namespace VEDriversLite
                 });
             }
 
-            return await SignAndBroadcast(transaction, keyfromFile, addressForTx);
+            return transaction;
 
         }
 
         //////////////////////////////////////
 
-        public static async Task<string> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
+        public static async Task<Transaction> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
         {
 
             // load key and address
-            BitcoinSecret keyfromFile;
             BitcoinAddress addressForTx;
 
             var k = GetAddressAndKey(ekey);
-            keyfromFile = k.Item2;
             addressForTx = k.Item1;
 
             // create receiver address
@@ -2027,7 +2015,7 @@ namespace VEDriversLite
 
             transaction.Outputs[0].ScriptPubKey = addressForTx.ScriptPubKey;
 
-            return await SignAndBroadcast(transaction, keyfromFile, addressForTx);
+            return transaction;
         }
 
         #endregion
