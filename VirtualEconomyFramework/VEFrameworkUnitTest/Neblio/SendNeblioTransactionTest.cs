@@ -1,6 +1,7 @@
 ﻿using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using VEDriversLite;
 using VEDriversLite.Neblio;
@@ -261,6 +262,135 @@ namespace VEFrameworkUnitTest.Neblio
             
             Assert.Contains(message, exception.Result.Message);
         }
-        
+
+        /// <summary>
+        /// Unit test method to verify inputs in transactions
+        /// </summary>
+        [Fact]
+        public async void SendNeblioTransaction_CorrectInputsInTx_Test()
+        {
+            //Arrange           
+
+            var res = Common.FakeDataGenerator.GetKeyAndAddress();
+
+            string address = res.Item1.ToString();
+            string key = res.Item2.ToString();
+            var AccountKey = new EncryptionKey(key);
+
+            GetAddressInfoResponse addressObject = Common.FakeDataGenerator.GetAddressWithNeblUtxos(address, 10, Convert.ToInt32(1*NeblioTransactionHelpers.FromSatToMainRatio));
+
+            SendTxData sendTxData = new SendTxData()
+            {
+                ReceiverAddress = address,
+                SenderAddress = address,
+                Amount = 1, 
+                CustomMessage = "test",
+                Password = ""
+            };
+
+            foreach(var u in addressObject.Utxos)
+                 u.Index = 2;
+
+            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos);
+
+            Assert.Equal(10, transaction.Inputs.Count);
+            Assert.Equal(2, (int)transaction.Inputs[0].PrevOut.N);
+            Assert.Equal(NBitcoin.uint256.Parse(addressObject.Utxos.FirstOrDefault().Txid), 
+                                                transaction.Inputs[0].PrevOut.Hash);
+        }
+
+        /// <summary>
+        /// Unit test method to verify if outputs are correct
+        /// </summary>
+        [Fact]
+        public async void SendNeblioTransaction_CorrectNumberOfOutputsInTx_Test()
+        {
+            //Arrange           
+
+            var res = Common.FakeDataGenerator.GetKeyAndAddress();
+
+            string address = res.Item1.ToString();
+            string key = res.Item2.ToString();
+            var AccountKey = new EncryptionKey(key);
+
+            GetAddressInfoResponse addressObject = Common.FakeDataGenerator.GetAddressWithNeblUtxos(address, 10, 100000000);
+
+            SendTxData sendTxData = new SendTxData()
+            {
+                ReceiverAddress = address,
+                SenderAddress = address,
+                Amount = 1,
+                CustomMessage = "",
+                Password = ""
+            };
+
+            var expectedFee = 0.0002;
+            var totInputs = 0.0;
+            foreach (var utxo in addressObject.Utxos)
+                totInputs += utxo.Value.Value;
+
+            totInputs /= NeblioTransactionHelpers.FromSatToMainRatio;
+
+            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos);
+
+            // we can expect use of two outputs for this tx. One to cover amount. second for rest of money back to source
+            Assert.Equal(2, transaction.Outputs.Count);
+            // Amount in the 0 output must be same as requested amount to send
+            Assert.Equal(sendTxData.Amount, Convert.ToDouble(transaction.Outputs[0].Value.ToUnit(NBitcoin.MoneyUnit.BTC)));
+            // 8.9998 is the rest after send 1 and fee 0.0002 in this tx - lots of inputs
+            Assert.Equal(totInputs - sendTxData.Amount - expectedFee, 
+                         Convert.ToDouble(transaction.Outputs[1].Value.ToUnit(NBitcoin.MoneyUnit.BTC)));
+        }
+
+
+        /// <summary>
+        /// Unit test method to verify if system is adding message to tx correctly
+        /// </summary>
+        [Fact]
+        public async void SendNeblioTransaction_MessageInNeblioTx_Test()
+        {
+            //Arrange           
+
+            var res = Common.FakeDataGenerator.GetKeyAndAddress();
+
+            string address = res.Item1.ToString();
+            string key = res.Item2.ToString();
+            var AccountKey = new EncryptionKey(key);
+
+            GetAddressInfoResponse addressObject = Common.FakeDataGenerator.GetAddressWithNeblUtxos(address, 10, 100000000);
+
+            SendTxData sendTxData = new SendTxData()
+            {
+                ReceiverAddress = address,
+                SenderAddress = address,
+                Amount = 1,
+                CustomMessage = "VEFramework",
+                Password = ""
+            };
+
+            var expectedFee = 0.0002;
+            var opreturnValue = 0.0001;
+            var totInputs = 0.0;
+            foreach (var utxo in addressObject.Utxos)
+                totInputs += utxo.Value.Value;
+
+            totInputs /= NeblioTransactionHelpers.FromSatToMainRatio;
+
+            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos);
+
+            // we can expect use of three outputs for this tx.
+            // One to cover amount. 
+            // Second is for message (OP_RETURN)
+            // Third for rest of money back to source
+            Assert.Equal(3, transaction.Outputs.Count);
+
+            // Match encoded message
+            var msgoutput = "OP_RETURN 56454672616d65776f726b";
+            Assert.Equal(msgoutput, transaction.Outputs[1].ScriptPubKey.ToString());
+            // 8.9998 is the rest after send 1, fee 0.0002 and 0.0001 for save data in this tx - lots of inputs
+            Assert.Equal(totInputs - sendTxData.Amount - expectedFee - opreturnValue,
+                         Convert.ToDouble(transaction.Outputs[2].Value.ToUnit(NBitcoin.MoneyUnit.BTC)));
+        }
+
     }
 }
