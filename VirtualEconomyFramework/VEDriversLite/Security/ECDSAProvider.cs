@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
+using NBitcoin.DataEncoders;
 using VEDriversLite.Builder;
 using VEDriversLite.NFT;
 
@@ -532,5 +533,148 @@ namespace VEDriversLite.Security
                 return (false, "Cannot decrypt message. " + ex.Message);
             }
         }
+
+
+
+        //////////////////////////////////////////////////////////
+        // taken from here https://github.com/MetacoSA/NBitcoin/blob/cb6d64664b9f38d0442a4a4ad5edaed9e310bf40/NBitcoin/Key.cs#L264
+        // we need it now even with BouncyCastle. Build of the NBitcoin use msft security for aes which does not work in blazor wasm
+        public static string DecryptStringWithPrivateKey(string encryptedText, Key privateKey)
+        {
+            if (encryptedText is null)
+                throw new ArgumentNullException(nameof(encryptedText));
+            
+            var bytes = Encoders.Base64.DecodeData(encryptedText);
+            var decrypted = DecryptBytesWithPrivateKey(bytes, privateKey);
+            return Encoding.UTF8.GetString(decrypted, 0, decrypted.Length).Trim('\0');
+        }
+
+        public static byte[] DecryptBytesWithPrivateKey(byte[] encrypted, Key privateKey)
+        {
+            if (encrypted is null)
+                throw new ArgumentNullException(nameof(encrypted));
+            if (encrypted.Length < 85)
+                throw new ArgumentException("Encrypted text is invalid, it should be length >= 85.");
+            
+            var magic = encrypted.SafeSubarray(0, 4);
+            var ephemeralPubkeyBytes = encrypted.SafeSubarray(4, 33);
+            var cipherText = encrypted.SafeSubarray(37, encrypted.Length - 32 - 37);
+            var mac = encrypted.SafeSubarray(encrypted.Length - 32);
+            if (!Utils.ArrayEqual(magic, Encoders.ASCII.DecodeData("BIE1")))
+                throw new ArgumentException("Encrypted text is invalid, Invalid magic number.");
+
+            var ephemeralPubkey = new PubKey(ephemeralPubkeyBytes);
+
+            var sharedKey = NBitcoin.Crypto.Hashes.SHA512(ephemeralPubkey.GetSharedPubkey(privateKey).ToBytes());
+            var iv = sharedKey.SafeSubarray(0, 16);
+            var encryptionKey = sharedKey.SafeSubarray(16, 16);
+            var hashingKey = sharedKey.SafeSubarray(32);
+
+            var hashMAC = HMACSHA256(hashingKey, encrypted.SafeSubarray(0, encrypted.Length - 32));
+            if (!Utils.ArrayEqual(mac, hashMAC))
+                throw new ArgumentException("Encrypted text is invalid, Invalid mac.");
+
+            var message = SymetricProvider.DecryptBytes(encryptionKey, cipherText, iv);
+            return message;
+        }
+        public static string EncryptStringWithPublicKey(string message, PubKey key)
+        {
+            if (message is null)
+                throw new ArgumentNullException(nameof(message));
+
+            var bytes = Encoding.UTF8.GetBytes(message);
+            return Encoders.Base64.EncodeData(EncryptBytesWithPublicKey(bytes, key));
+        }
+
+        public static byte[] EncryptBytesWithPublicKey(byte[] message, PubKey key)
+        {
+            if (message is null)
+                throw new ArgumentNullException(nameof(message));
+            var ephemeral = new Key();
+            var sharedKey = NBitcoin.Crypto.Hashes.SHA512(key.GetSharedPubkey(ephemeral).ToBytes());
+            var iv = sharedKey.SafeSubarray(0, 16);
+            var encryptionKey = sharedKey.SafeSubarray(16, 16);
+            var hashingKey = sharedKey.SafeSubarray(32);
+
+            //var aes = new AesBuilder().SetKey(encryptionKey).SetIv(iv).IsUsedForEncryption(true).Build();
+            //var cipherText = aes.Process(message, 0, message.Length);
+            var cipherText = SymetricProvider.EncryptBytes(encryptionKey, message, iv);
+            var ephemeralPubkeyBytes = ephemeral.PubKey.ToBytes();
+            var encrypted = Encoders.ASCII.DecodeData("BIE1").Concat(ephemeralPubkeyBytes, cipherText);
+            var hashMAC = HMACSHA256(hashingKey, encrypted);
+            return encrypted.Concat(hashMAC);
+        }
+        public static byte[] HMACSHA256(byte[] key, byte[] data)
+        {
+            var mac = new Org.BouncyCastle.Crypto.Macs.HMac(new Org.BouncyCastle.Crypto.Digests.Sha256Digest());
+            mac.Init(new Org.BouncyCastle.Crypto.Parameters.KeyParameter(key));
+            mac.BlockUpdate(data, 0, data.Length);
+            byte[] result = new byte[mac.GetMacSize()];
+            mac.DoFinal(result, 0);
+            return result;
+        }
+    }
+
+    // taken from https://github.com/MetacoSA/NBitcoin/blob/cb6d64664b9f38d0442a4a4ad5edaed9e310bf40/NBitcoin/Utils.cs#L473
+    internal static class ByteArrayExtensions
+    {
+        internal static bool StartWith(this byte[] data, byte[] versionBytes)
+        {
+            if (data.Length < versionBytes.Length)
+                return false;
+            for (int i = 0; i < versionBytes.Length; i++)
+            {
+                if (data[i] != versionBytes[i])
+                    return false;
+            }
+            return true;
+        }
+        internal static byte[] SafeSubarray(this byte[] array, int offset, int count)
+        {
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+            if (offset < 0 || offset > array.Length)
+                throw new ArgumentOutOfRangeException("offset");
+            if (count < 0 || offset + count > array.Length)
+                throw new ArgumentOutOfRangeException("count");
+            if (offset == 0 && array.Length == count)
+                return array;
+            var data = new byte[count];
+            Buffer.BlockCopy(array, offset, data, 0, count);
+            return data;
+        }
+
+        internal static byte[] SafeSubarray(this byte[] array, int offset)
+        {
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+            if (offset < 0 || offset > array.Length)
+                throw new ArgumentOutOfRangeException("offset");
+
+            var count = array.Length - offset;
+            var data = new byte[count];
+            Buffer.BlockCopy(array, offset, data, 0, count);
+            return data;
+        }
+
+        // https://stackoverflow.com/questions/415291/best-way-to-combine-two-or-more-byte-arrays-in-c-sharp
+        internal static byte[] Concat(this byte[] first, byte[] second)
+        {
+            byte[] ret = new byte[first.Length + second.Length];
+            Buffer.BlockCopy(first, 0, ret, 0, first.Length);
+            Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
+            return ret;
+        }
+        internal static byte[] Concat(this byte[] first, byte[] second, byte[] third)
+        {
+            byte[] ret = new byte[first.Length + second.Length + third.Length];
+            Buffer.BlockCopy(first, 0, ret, 0, first.Length);
+            Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
+            Buffer.BlockCopy(third, 0, ret, first.Length + second.Length,
+                             third.Length);
+            return ret;
+        }
+
+
     }
 }

@@ -6860,7 +6860,7 @@
             <param name="cipherText">Text which should be decrypted</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.SymetricProvider.EncryptBytes(System.Byte[],System.Byte[])">
+        <member name="M:VEDriversLite.Security.SymetricProvider.EncryptBytes(System.Byte[],System.Byte[],System.Byte[])">
             <summary>
             Symmetrical encryption of the bytes
             </summary>
@@ -6868,7 +6868,7 @@
             <param name="bytes">Bytes array which should be encrypted</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.SymetricProvider.DecryptBytes(System.Byte[],System.Byte[])">
+        <member name="M:VEDriversLite.Security.SymetricProvider.DecryptBytes(System.Byte[],System.Byte[],System.Byte[])">
             <summary>
             Symmetrical decryption of the bytes
             </summary>

@@ -52,10 +52,10 @@ namespace VEDriversLite.Security
             return Encoding.UTF8.GetString(result).Trim('\0');
         }
 
-        public static byte[] EncryptBytes(string key, byte[] secret)
+        public static byte[] EncryptBytes(string key, byte[] secret, byte[] iv = null)
         {
             var keybytes = GetKeyBytes(key);
-            var result = EncryptBytes(keybytes, secret);
+            var result = EncryptBytes(keybytes, secret, iv);
             return result;
         }
 
@@ -65,12 +65,13 @@ namespace VEDriversLite.Security
         /// <param name="key">Password for the encryption</param>
         /// <param name="bytes">Bytes array which should be encrypted</param>
         /// <returns></returns>
-        public static byte[] EncryptBytes(byte[] key, byte[] secret)
+        public static byte[] EncryptBytes(byte[] key, byte[] secret, byte[] iv = null)
         {
             var iv_base64 = string.Empty;
             byte[] inputBytes = secret;
             //SecureRandom random = new SecureRandom();
-            byte[] iv = new byte[16];
+            if (iv == null)
+                iv = new byte[16];
             //random.NextBytes(iv);
             iv_base64 = Convert.ToBase64String(iv);
             string keyStringBase64 = Convert.ToBase64String(key);
@@ -90,11 +91,10 @@ namespace VEDriversLite.Security
             return outputBytes;
         }
 
-
-        public static byte[] DecryptBytes(string key, byte[] secret)
+        public static byte[] DecryptBytes(string key, byte[] secret, byte[] iv = null)
         {
             var keybytes = GetKeyBytes(key);
-            var result = DecryptBytes(keybytes, secret);
+            var result = DecryptBytes(keybytes, secret, iv);
             return result;
         }
         /// <summary>
@@ -103,11 +103,12 @@ namespace VEDriversLite.Security
         /// <param name="key">Password for the encryption</param>
         /// <param name="bytes">Bytes array which should be decrypted</param>
         /// <returns></returns>
-        public static byte[] DecryptBytes(byte[] key, byte[] secret)
+        public static byte[] DecryptBytes(byte[] key, byte[] secret, byte[] iv = null)
         {
             var Keysize = 256 / 8;
             int iterationCount = 1;
-            byte[] iv = new byte[16];
+            if (iv == null)
+                iv = new byte[16];
 
             AesEngine engine = new AesEngine();
             CbcBlockCipher blockCipher = new CbcBlockCipher(engine); //CBC

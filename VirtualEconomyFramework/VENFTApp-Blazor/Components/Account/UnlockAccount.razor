@@ -313,6 +313,7 @@
                 state = "Loading SubAccounts...";
                 await Task.Delay(50);
                 StateHasChanged();
+                await Task.Delay(250);
 
                 await LoadSubAccounts();
                 await Task.Delay(50);

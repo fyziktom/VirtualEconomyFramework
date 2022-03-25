@@ -83,7 +83,8 @@ namespace VEDriversLite.Neblio
                 AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString());
                 AccountKey.PublicKey = Address;
 
-                ESKey = SymetricProvider.EncryptString(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), privateKeyFromNetwork.ToString());
+                //ESKey = SymetricProvider.EncryptString(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), privateKeyFromNetwork.ToString());
+                EKey = ECDSAProvider.EncryptStringWithPublicKey(privateKeyFromNetwork.ToString(), mainSecret.PubKey);// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
                 //EKey = mainSecret.PubKey.Encrypt(privateKeyFromNetwork.ToString());// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
                 Name = name;
                 return (true, Address);
@@ -101,7 +102,7 @@ namespace VEDriversLite.Neblio
             if (!string.IsNullOrEmpty(ESKey))
                 key = SymetricProvider.DecryptString(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), ESKey);
             else if (!string.IsNullOrEmpty(EKey))
-                key = mainSecret.PrivateKey.Decrypt(EKey); // TODO: some preprocessor directive for run just in old version under .NETStandard2.1
+                key = ECDSAProvider.DecryptStringWithPrivateKey(EKey, mainSecret.PrivateKey); // TODO: some preprocessor directive for run just in old version under .NETStandard2.1
             return key;
         }
 
