@@ -1897,7 +1897,7 @@ namespace VEDriversLite
 
         //////////////////////////////////////
 
-        public static async Task<string> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
+        public static async Task<string> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
         {
 
             // load key and address
@@ -1980,15 +1980,26 @@ namespace VEDriversLite
                 throw new Exception("This kind of transaction requires Token input utxo list.");
             }
 
-            // if not utxo provided, check the un NFT tokens sources. These with more than 1 token
-            var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
-            var ut = utxs?.FirstOrDefault();
-            if (ut != null)
+            if (mintingUtxo == null)
+            { 
+                // if not utxo provided, check the un NFT tokens sources. These with more than 1 token
+                var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
+                var ut = utxs?.FirstOrDefault();
+                if (ut != null)
+                {
+                    dto.Sendutxo.Add(ut.Txid + ":" + ((int)ut.Index).ToString());
+                    dto.To.FirstOrDefault().Amount += (double)ut?.Tokens?.ToList().FirstOrDefault()?.Amount; // add minting Utxo amount
+                }
+                else
+                    throw new Exception("Cannot find utxo for minting NFT token. Wait for enough confirmation after previous transaction.");
+
+            }
+            else
             {
-                dto.Sendutxo.Add(ut.Txid + ":" + ((int)ut.Index).ToString());
+                dto.Sendutxo.Add(mintingUtxo.Txid + ":" + ((int)mintingUtxo.Index).ToString());
+                dto.To.FirstOrDefault().Amount += (double)mintingUtxo?.Tokens?.ToList().FirstOrDefault()?.Amount; // add minting Utxo amount
             }
 
-            dto.To.FirstOrDefault().Amount += (double)ut?.Tokens?.ToList().FirstOrDefault()?.Amount; // add minting Utxo amount
 
             if (dto.Sendutxo.Count < 2)
             {

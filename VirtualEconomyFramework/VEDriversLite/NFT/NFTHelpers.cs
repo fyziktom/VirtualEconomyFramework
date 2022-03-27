@@ -1163,7 +1163,7 @@ namespace VEDriversLite.NFT
         /// <param name="ekey">Encryption Key object of the address</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <returns></returns>
-        public static async Task<string> DestroyNFTs(string address, EncryptionKey ekey, ICollection<INFT> nfts, ICollection<Utxos> nutxos, string receiver = "")
+        public static async Task<string> DestroyNFTs(string address, EncryptionKey ekey, ICollection<INFT> nfts, ICollection<Utxos> nutxos, string receiver = "", Utxos mintingUtxo = null)
         {
             if (nfts == null || nfts.Count == 0)
                 throw new Exception("You have to add NFT Utxos list");
@@ -1197,11 +1197,11 @@ namespace VEDriversLite.NFT
                 SenderAddress = address,
                 ReceiverAddress = receiver
             };
-
+            
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.DestroyNFTAsync(dto, ekey, nutxos);
+                var rtxid = await NeblioTransactionHelpers.DestroyNFTAsync(dto, ekey, nutxos, mintingUtxo:mintingUtxo);
                 if (!string.IsNullOrEmpty(rtxid))
                     return rtxid;
                 else

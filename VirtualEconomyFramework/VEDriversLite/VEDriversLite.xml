@@ -5906,7 +5906,7 @@
             </summary>
             <returns>Dicrionary with preapred common metadata for the NFT transaction</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.CommonNFT.DecryptImageData(NBitcoin.BitcoinSecret,System.String,System.String)">
+        <member name="M:VEDriversLite.NFT.CommonNFT.DecryptImageData(NBitcoin.BitcoinSecret,System.String,System.String,System.String)">
             <summary>
             This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
             Then the image is saved in ImageData as bytes.
@@ -5914,7 +5914,7 @@
             <param name="secret">NFT Owner Private Key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.CommonNFT.DecryptProperty(System.String,NBitcoin.BitcoinSecret,System.String,System.String)">
+        <member name="M:VEDriversLite.NFT.CommonNFT.DecryptProperty(System.String,NBitcoin.BitcoinSecret,System.String,System.String,System.String)">
             <summary>
             Decrypt the specific property with use of shared secret
             </summary>
@@ -6367,11 +6367,19 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.INFT.DecryptImageData(NBitcoin.BitcoinSecret,System.String,System.String)">
+        <member name="M:VEDriversLite.NFT.INFT.DecryptImageData(NBitcoin.BitcoinSecret,System.String,System.String,System.String)">
             <summary>
             This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
             Then the image is saved in ImageData as bytes.
             </summary>
+            <param name="secret">NFT Owner Private Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.INFT.DecryptProperty(System.String,NBitcoin.BitcoinSecret,System.String,System.String,System.String)">
+            <summary>
+            Decrypt the specific property with use of shared secret
+            </summary>
+            <param name="prop">Property content</param>
             <param name="secret">NFT Owner Private Key</param>
             <returns></returns>
         </member>
@@ -6594,7 +6602,7 @@
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.DestroyNFTs(System.String,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.DestroyNFTs(System.String,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String,VEDriversLite.NeblioAPI.Utxos)">
             <summary>
             This function will destroy selected NFTs
             </summary>
@@ -6765,7 +6773,7 @@
             <param name="secret">Private Key of the sender in the form of the BitcoinSecret</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,System.String)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,System.String,System.String)">
             <summary>
             Encrypt the string with Shared secret
             </summary>
@@ -6774,7 +6782,7 @@
             <param name="key">Neblio Private Key of the Sender</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret,System.String)">
             <summary>
             Encrypt the string with Shared secret
             </summary>
@@ -6783,7 +6791,7 @@
             <param name="key">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptBytesWithSharedSecret(System.Byte[],System.String,NBitcoin.BitcoinSecret)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptBytesWithSharedSecret(System.Byte[],System.String,NBitcoin.BitcoinSecret,System.String)">
             <summary>
             Encrypt the bytes with Shared secret
             </summary>
@@ -6810,22 +6818,24 @@
             <param name="key">Shared secret key</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecret(System.String,System.String,NBitcoin.BitcoinSecret,System.String)">
             <summary>
             Decrypt the string with Shared secret
             </summary>
             <param name="emessage">Message to decrypt</param>
             <param name="bobAddress">Receiver Neblio Address</param>
             <param name="secret">Neblio Private Key in form of the BitcoinSecret</param>
+            <param name="sharedkey">Shared key from some previous call</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptBytesWithSharedSecret(System.Byte[],System.String,NBitcoin.BitcoinSecret)">
+        <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptBytesWithSharedSecret(System.Byte[],System.String,NBitcoin.BitcoinSecret,System.String)">
             <summary>
             Decrypt the bytes with Shared secret
             </summary>
             <param name="ebytes">Array of the bytes to decrypt</param>
             <param name="bobAddress">Receiver Neblio Address</param>
             <param name="secret">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
+            <param name="sharedkey">Shared key from some previous call</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Security.ECDSAProvider.DecryptStringWithSharedSecretWithKey(System.String,System.String,System.String)">

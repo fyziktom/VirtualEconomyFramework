@@ -456,7 +456,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="secret">NFT Owner Private Key</param>
         /// <returns></returns>
-        public virtual async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner)
+        public virtual async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner, string sharedkey = "")
         {
             if (!string.IsNullOrEmpty(imageLink) && (imageLink.Contains("https://gateway.ipfs.io/ipfs/") || imageLink.Contains("https://ipfs.infura.io/ipfs/")))
             {
@@ -465,7 +465,7 @@ namespace VEDriversLite.NFT
                 try
                 {
                     var bytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
-                    var dbytesres = await ECDSAProvider.DecryptBytesWithSharedSecret(bytes, partner, secret);
+                    var dbytesres = await ECDSAProvider.DecryptBytesWithSharedSecret(bytes, partner, secret, sharedkey);
                     if (dbytesres.Item1)
                     {
                         ImageData = dbytesres.Item2;
@@ -489,7 +489,7 @@ namespace VEDriversLite.NFT
         /// <param name="prop">Property content</param>
         /// <param name="secret">NFT Owner Private Key</param>
         /// <returns></returns>
-        public static async Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "")
+        public virtual async Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "" , string sharedkey = "")
         {
             if (!string.IsNullOrEmpty(prop))
             {
@@ -500,7 +500,7 @@ namespace VEDriversLite.NFT
 
                     try
                     {
-                        var d = await ECDSAProvider.DecryptStringWithSharedSecret(prop, partner, secret);
+                        var d = await ECDSAProvider.DecryptStringWithSharedSecret(prop, partner, secret, sharedkey);
                         if (d.Item1)
                             return d.Item2;
                         else

@@ -1478,6 +1478,18 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, string)> DestroyNFTs(ICollection<INFT> nfts, string receiver = "")
         {
+            if (nfts == null || nfts.Count == 0)
+            {
+                await InvokeErrorDuringSendEvent("Cannot Destroy NFTs", "No NFTs provided.");
+                return (false, "No NFTs provided.");
+            }
+            var nft = nfts.First();
+            if (nfts.Count != nfts.Where(n => nft.TokenId == n.TokenId).Count())
+            {
+                await InvokeErrorDuringSendEvent("Cannot Destroy NFTs", "Different NFTs provided. You can destroy just same kind of NFTs in one request.");
+                return (false, "Different NFTs provided.");
+            }
+            
             if (IsLocked())
             {
                 await InvokeAccountLockedEvent();
@@ -1489,11 +1501,17 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
+            var tres = await CheckSpendableNeblioTokens(nft.TokenId, 3);
+            if (tres.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs for minting. You need one input from minting supply. That one will be merged with destroyed free tokens.");
+                return (false, tres.Item1);
+            }
 
             try
             {
                 // send tx
-                var rtxid = await NFTHelpers.DestroyNFTs(Address, AccountKey, nfts, res.Item2, receiver);
+                var rtxid = await NFTHelpers.DestroyNFTs(Address, AccountKey, nfts, res.Item2, receiver, tres.Item2.FirstOrDefault());
                 if (rtxid != null)
                 {
                     await InvokeSendPaymentSuccessEvent(rtxid, "NFTs Destroyed.");
@@ -1502,7 +1520,7 @@ namespace VEDriversLite.Neblio
             }
             catch (Exception ex)
             {
-                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                await InvokeErrorDuringSendEvent(ex.Message, "Cannot Destroy NFT");
                 return (false, ex.Message);
             }
 

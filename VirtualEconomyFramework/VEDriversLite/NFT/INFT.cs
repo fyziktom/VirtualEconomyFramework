@@ -279,8 +279,13 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="secret">NFT Owner Private Key</param>
         /// <returns></returns>
-        Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner);
-
-
+        Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner, string sharedkey = "");
+        /// <summary>
+        /// Decrypt the specific property with use of shared secret
+        /// </summary>
+        /// <param name="prop">Property content</param>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
+        Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "", string sharedkey = "");
     }
 }

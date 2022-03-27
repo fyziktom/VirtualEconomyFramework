@@ -319,12 +319,12 @@ namespace VEDriversLite.Security
         /// <param name="bobAddress">Receiver Neblio Address</param>
         /// <param name="key">Neblio Private Key of the Sender</param>
         /// <returns></returns>
-        public static async Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, string key)
+        public static async Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, string key, string sharedkey = "")
         {
             try
             {
                 var secret = new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
-                return await EncryptStringWithSharedSecret(message, bobAddress, secret);
+                return await EncryptStringWithSharedSecret(message, bobAddress, secret, sharedkey);
             }
             catch (Exception ex)
             {
@@ -339,7 +339,7 @@ namespace VEDriversLite.Security
         /// <param name="bobAddress">Receiver Neblio Address</param>
         /// <param name="key">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
         /// <returns></returns>
-        public static async Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, BitcoinSecret secret)
+        public static async Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, BitcoinSecret secret, string sharedkey = "")
         {
             if (string.IsNullOrEmpty(message))
                 return (false, "Message cannot be empty or null.");
@@ -348,10 +348,15 @@ namespace VEDriversLite.Security
             if (secret == null)
                 return (false, "Input secret cannot null.");
 
-            var key = await GetSharedSecret(bobAddress, secret);
-
-            if (!key.Item1)
-                return key;
+            (bool, string) key = (false, "");
+            if (string.IsNullOrEmpty(sharedkey))
+            {
+                key = await GetSharedSecret(bobAddress, secret);
+                if (!key.Item1)
+                    return key;
+            }
+            else
+                key.Item2 = sharedkey;
 
             try
             {
@@ -371,7 +376,7 @@ namespace VEDriversLite.Security
         /// <param name="bobAddress">Receiver Neblio Address</param>
         /// <param name="secret">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
         /// <returns></returns>
-        public static async Task<(bool, byte[])> EncryptBytesWithSharedSecret(byte[] inputBytes, string bobAddress, BitcoinSecret secret)
+        public static async Task<(bool, byte[])> EncryptBytesWithSharedSecret(byte[] inputBytes, string bobAddress, BitcoinSecret secret, string sharedkey = "")
         {
             if (inputBytes == null || inputBytes.Length == 0)
                 throw new Exception("Input cannot be empty or null.");
@@ -380,9 +385,15 @@ namespace VEDriversLite.Security
             if (secret == null)
                 throw new Exception("Input secret cannot null.");
 
-            var key = await GetSharedSecret(bobAddress, secret);
-            if (!key.Item1)
-                return (false,null);
+            (bool, string) key = (false, "");
+            if (string.IsNullOrEmpty(sharedkey))
+            {
+                key = await GetSharedSecret(bobAddress, secret);
+                if (!key.Item1)
+                    return (false, null);
+            }
+            else
+                key.Item2 = sharedkey;
 
             try
             {
@@ -450,8 +461,9 @@ namespace VEDriversLite.Security
         /// <param name="emessage">Message to decrypt</param>
         /// <param name="bobAddress">Receiver Neblio Address</param>
         /// <param name="secret">Neblio Private Key in form of the BitcoinSecret</param>
+        /// <param name="sharedkey">Shared key from some previous call</param>
         /// <returns></returns>
-        public static async Task<(bool, string)> DecryptStringWithSharedSecret(string emessage, string bobAddress, BitcoinSecret secret)
+        public static async Task<(bool, string)> DecryptStringWithSharedSecret(string emessage, string bobAddress, BitcoinSecret secret, string sharedkey = "")
         {
             if (string.IsNullOrEmpty(emessage))
                 return (false, "Message cannot be empty or null.");
@@ -460,10 +472,16 @@ namespace VEDriversLite.Security
             if (secret == null)
                 return (false, "Input secret cannot null.");
 
-            var key = await GetSharedSecret(bobAddress, secret);
-            if (!key.Item1)
-                return key;
-
+            (bool, string) key = (false, "");
+            if (string.IsNullOrEmpty(sharedkey))
+            {
+                key = await GetSharedSecret(bobAddress, secret);
+                if (!key.Item1)
+                    return key;
+            }
+            else
+                key = (true, sharedkey);
+            
             try
             {
                 var mesage = SymetricProvider.DecryptString(key.Item2, emessage);
@@ -475,25 +493,33 @@ namespace VEDriversLite.Security
                 return (false, "Cannot decrypt message. " + ex.Message);
             }
         }
+        
         /// <summary>
         /// Decrypt the bytes with Shared secret
         /// </summary>
         /// <param name="ebytes">Array of the bytes to decrypt</param>
         /// <param name="bobAddress">Receiver Neblio Address</param>
         /// <param name="secret">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
+        /// <param name="sharedkey">Shared key from some previous call</param>
         /// <returns></returns>
-        public static async Task<(bool, byte[])> DecryptBytesWithSharedSecret(byte[] ebytes, string bobAddress, BitcoinSecret secret)
+        public static async Task<(bool, byte[])> DecryptBytesWithSharedSecret(byte[] ebytes, string bobAddress, BitcoinSecret secret, string sharedkey = "")
         {
             if (ebytes == null || ebytes.Length == 0)
-                throw new Exception("Message cannot be empty or null.");
+                throw new Exception("Input cannot be empty or null.");
             if (string.IsNullOrEmpty(bobAddress))
                 throw new Exception("Partner Address cannot be empty or null.");
             if (secret == null)
                 throw new Exception("Input secret cannot null.");
 
-            var key = await GetSharedSecret(bobAddress, secret);
-            if (!key.Item1)
-                return (false, null);
+            (bool, string) key = (false, "");
+            if (string.IsNullOrEmpty(sharedkey))
+            {
+                key = await GetSharedSecret(bobAddress, secret);
+                if (!key.Item1)
+                    return (false, null);
+            }
+            else
+                key = (true, sharedkey);
 
             try
             {
@@ -502,10 +528,11 @@ namespace VEDriversLite.Security
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Cannot decrypt message. " + ex.Message);
-                throw new Exception("Cannot decrypt message. " + ex.Message);
+                Console.WriteLine("Cannot decrypt bytes. " + ex.Message);
+                return (false, null);
             }
         }
+
         /// <summary>
         /// Dencrypt the string with Shared secret
         /// </summary>
