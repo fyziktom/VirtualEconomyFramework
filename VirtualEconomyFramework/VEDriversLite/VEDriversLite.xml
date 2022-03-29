@@ -33,6 +33,22 @@
             Data dto
             </summary>
         </member>
+        <member name="T:VEDriversLite.Bookmarks.ActiveTab">
+            <summary>
+            Active tab is able to load the Address and its NFTs
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.#ctor">
+            <summary>
+            Basic constructor
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.ActiveTab.#ctor(System.String)">
+            <summary>
+            Basic constructor witch will load address and shortaddress
+            </summary>
+            <param name="address"></param>
+        </member>
         <member name="P:VEDriversLite.Bookmarks.ActiveTab.Selected">
             <summary>
             Info if the Tab is selected - this is set by Start or Stop functions internally
@@ -109,6 +125,11 @@
             It provides Utxo and UtxoIndex as touple.
             </summary>
         </member>
+        <member name="P:VEDriversLite.Bookmarks.ActiveTab.MaxLoadedNFTItems">
+            <summary>
+            Limit of the maximum loaded items in the Active Tab
+            </summary>
+        </member>
         <member name="M:VEDriversLite.Bookmarks.ActiveTab.TxCashPreload">
             <summary>
             This is same function as in NeblioAcocuntBase - TODO merge them to one common function
@@ -120,7 +141,9 @@
             <summary>
             Start Automated refreshing
             </summary>
-            <param name="interval"></param>
+            <param name="interval">basic refresh interval</param>
+            <param name="withoutMessages">dont load the NFT Messages</param>
+            <param name="withCahePreload">Activate preload</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Bookmarks.ActiveTab.StopRefreshing">
@@ -2370,6 +2393,21 @@
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
+        <member name="T:VEDriversLite.NeblioAccount">
+            <summary>
+            Main Neblio Account Class
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.#ctor">
+            <summary>
+            Main constructor
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NeblioAccount.LastCheckedDogePaymentUtxo">
+            <summary>
+            Check of the DogeAccount for NFT payments - obsolete. will be redesign in the issue 33
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NeblioAccount.RunningAsVENFTBlazorApp">
             <summary>
             This will block the automatic start of the NFT IoT Devices. 
@@ -2493,7 +2531,6 @@
             <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
             Great when you want just do simple payment. 
             You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
-            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadAccount(System.String,System.String,System.String,System.Boolean)">
@@ -2508,14 +2545,13 @@
             <param name="withoutNFTs">choose if you want to skip NFTs during loading the account. 
             Great when you want just do simple payment. 
             You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
-            <param name="awaitFirstLoad"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.CacheNFTs">
             <summary>
             Serialize the NFTCache dictionary
             </summary>
-            <returns></returns>
+            <returns>Serialized VEDLDataContext.NFTCache</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadCacheNFTsFromString(System.String)">
             <summary>
@@ -2530,7 +2566,7 @@
             Load the NFTCache data from the input dictionary to the Dictionary of the NFTs cache
             The input must be dictionary which contains NFTCacheDto as value with cache data
             </summary>
-            <param name="cacheString">Input NFTCache dictionary</param>
+            <param name="nfts">Input NFTCache dictionary</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadBookmarks(System.String)">
@@ -2676,8 +2712,22 @@
             <summary>
             Get sub account name by address
             </summary>
-            <param name="name">Neblio Sub Account Name</param>
+            <param name="address">Neblio Sub Account Name</param>
             <returns>true and string with serialized subaccount account export dto list as json string</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.GetSubAccounTotaltSpendableActualBalance(System.String)">
+            <summary>
+            Get Total spendable balance
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.GetSubAccounUnconfirmedActualBalance(System.String)">
+            <summary>
+            Get Total unconfirmed balance
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.ChangeSubAccountName(System.String,System.String)">
             <summary>
@@ -2702,6 +2752,10 @@
             <param name="receiver">Receiver of the NFT</param>
             <param name="NFT">NFT on the SubAccount which should be send</param>
             <param name="sendToMainAccount">If this is set, function will rewrite receiver to main Account Address</param>
+            <param name="withPrice"></param>
+            <param name="price"></param>
+            <param name="withDogePrice"></param>
+            <param name="dogeprice"></param>
             <returns>true and string with new TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.ChangeNFTOnSubAccount(System.String,VEDriversLite.NFT.INFT)">
@@ -2718,6 +2772,7 @@
             </summary>
             <param name="address">Neblio Address of SubAccount</param>
             <param name="NFT">NFT on the SubAccount which should be minted</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns>true and string with new TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.MultimintNFTLargeOnSubAccount(System.String,VEDriversLite.NFT.INFT,System.Int32,System.String)">
@@ -2726,6 +2781,8 @@
             </summary>
             <param name="address">Neblio Address of SubAccount</param>
             <param name="NFT">NFT on the SubAccount which should be minted</param>
+            <param name="receiver">Receiver of the NFT</param>
+            <param name="coppies"></param>
             <returns>true and string with new TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.SplitNeblioOnSubAccount(System.String,System.Collections.Generic.List{System.String},System.Int32,System.Double)">
@@ -2733,7 +2790,9 @@
             Split Neblio Coin on SubAccount
             </summary>
             <param name="address">Neblio Address of SubAccount</param>
-            <param name="NFT">NFT on the SubAccount which should be minted</param>
+            <param name="receivers"></param>
+            <param name="lots"></param>
+            <param name="amount"></param>
             <returns>true and string with new TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.SplitNeblioTokensOnSubAccount(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.List{System.String},System.Int32,System.Int32)">
@@ -2770,6 +2829,9 @@
             </summary>
             <param name="address">Neblio Address of SubAccount</param>
             <param name="NFT">NFT on the SubAccount which should be changed</param>
+            <param name="comment"></param>
+            <param name="commentWrite"></param>
+            <param name="receiver"></param>
             <returns>true and string with new TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.DestroyNFTOnSubAccount(System.String,System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Boolean)">
@@ -2788,9 +2850,36 @@
             <param name="address">Neblio Address of SubAccount</param>
             <returns>true and string with new TxId</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.AllowSubAccountAutorefreshing(System.String)">
+            <summary>
+            Allow autorefresh for specific SubAccount
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.StopSubAccountAutorefreshing(System.String)">
+            <summary>
+            Stop autorefresh for specific SubAccount
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.SerializeSubAccounts">
             <summary>
             Returns serialized subaccount account export dto list as json string
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.ConnectDogeAccount(System.String)">
+            <summary>
+            connect Doge Account related to this account
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.DisconnectDogeAccount">
+            <summary>
+            Remove the connection of some Doge Account
             </summary>
             <returns></returns>
         </member>
@@ -2800,6 +2889,11 @@
             </summary>
             <param name="amount"></param>
             <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.Neblio.NeblioAccountBase">
+            <summary>
+            Basic function class for Neblio Account 
+            </summary>
         </member>
         <member name="P:VEDriversLite.Neblio.NeblioAccountBase.Address">
             <summary>
@@ -2980,6 +3074,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.FireInfoEvent(System.Object,VEDriversLite.Events.IEventInfo)">
+            <summary>
+            Redirect Info Event from lower layer
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.InvokeSendPaymentSuccessEvent(System.String,System.String)">
             <summary>
             Invoke Success message info event
@@ -3025,6 +3126,7 @@
             This function will load Secret property with Key
             </summary>
             <param name="password">Passwotd to decrypt the loaded private key</param>
+            <param name="key">Private Key</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.RegisterPriceServiceEventHandler">
@@ -3087,6 +3189,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.FireNFTAddedToPayments(System.String,System.ValueTuple{System.String,System.Int32})">
+            <summary>
+            Redirect of the Event about added NFT to the payments
+            It can inform asap UI to block buy of the NFT if it is just original
+            </summary>
+            <param name="address">Address of the SubAccount</param>
+            <param name="e">Utxo hash and Utxo Index</param>
+        </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.RefreshAddressReceivedReceipts">
             <summary>
             This function will search NFT Receipts in the NFTs list and load them into ReceivedReceipts list. 
@@ -3111,7 +3221,8 @@
             <summary>
             This function will validate if the NFT of this address is spendable
             </summary>
-            <param name="utxo"></param>
+            <param name="utxo">Utxo hash</param>
+            <param name="index">index of the Utxo</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.CheckSpendableNeblio(System.Double)">
@@ -3149,7 +3260,7 @@
             <summary>
             Decrypt message with use of ECDSA
             </summary>
-            <param name="message">Input message</param>
+            <param name="emessage">Input message</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.GetNFTVerifyCode(System.String)">
@@ -3180,6 +3291,7 @@
             </summary>
             <param name="receiver">Receiver Neblio Address</param>
             <param name="amount">Ammount in Neblio</param>
+            <param name="message">Message in transaction data</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendMultipleInputNeblioPayment(System.String,System.Double,System.Collections.Generic.List{VEDriversLite.NeblioAPI.Utxos},System.String)">
@@ -3189,15 +3301,16 @@
             <param name="receiver">Receiver Neblio Address</param>
             <param name="amount">Ammount in Neblio</param>
             <param name="utxos">Input utxos</param>
+            <param name="message">Message in transaction data</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SplitNeblioCoin(System.Collections.Generic.List{System.String},System.Int32,System.Double)">
             <summary>
             Split neblio coin to smaller coins
             </summary>
-            <param name="receiver">Receiver Neblio Address</param>
-            <param name="splittedAmount">Ammount of new splitted coin in Neblio</param>
-            <param name="count">Count of new splited couns</param>
+            <param name="receivers">Receivers list of Neblio Address</param>
+            <param name="lots">Number of the lots</param>
+            <param name="amount">Amount of new splited couns</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendNeblioTokenPayment(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)">
@@ -3226,26 +3339,26 @@
             <summary>
             Mint new NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input
             </summary>
-            <param name="tokenId"></param>
             <param name="NFT">Input carrier of NFT data. It must specify the type</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.MintMultiNFT(VEDriversLite.NFT.INFT,System.Int32,System.String)">
             <summary>
             Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
             </summary>
-            <param name="tokenId"></param>
             <param name="NFT">Input carrier of NFT data. It must specify the type</param>
             <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.MintMultiNFTLargeAmount(VEDriversLite.NFT.INFT,System.Int32,System.String)">
             <summary>
             Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
             </summary>
-            <param name="tokenId"></param>
             <param name="NFT">Input carrier of NFT data. It must specify the type</param>
             <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.DestroyNFTs(System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.String)">
@@ -3254,8 +3367,8 @@
             Now it is possible to destroy just same kind of tokens. The first provided NFT will define TokenId. Different tokensIds will be skipped.
             Maximum to destroy in one transaction is 10 of NFTs
             </summary>
-            <param name="tokenId">Token Id hash</param>
             <param name="nfts">List of NFTs</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double,System.Boolean,System.Double)">
@@ -3266,6 +3379,8 @@
             <param name="NFT"></param>
             <param name="priceWrite">Set this if you need to just write the price to the NFT</param>
             <param name="price">Price must be bigger than 0.0002 NEBL</param>
+            <param name="withDogePrice">Set this if you need to just write the Doge price to the NFT</param>
+            <param name="dogeprice">Price must be bigger than 0.1 Doge</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.ChangeNFT(VEDriversLite.NFT.INFT)">
@@ -3279,14 +3394,24 @@
             <summary>
             Send NFT.
             </summary>
-            <param name="NFT"></param>
+            <param name="NFT">NFT to sent</param>
+            <param name="sender">Sender of the NFT</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendMessageNFT(System.String,System.String,System.String,System.String,System.Boolean,System.String,System.String,System.String,System.String)">
             <summary>
-            Send NFT.
+            Send NFT Message.
             </summary>
-            <param name="NFT"></param>
+            <param name="name">Name of the Message</param>
+            <param name="message">Content of the Message</param>
+            <param name="receiver">Receiver of the Message</param>
+            <param name="utxo">original NFT Utxo - reply for the existing message</param>
+            <param name="text">Longer text in the message</param>
+            <param name="imagelink">Image link in the message</param>
+            <param name="link">Link in the message</param>
+            <param name="rewriteAuthor">Rewrite author of the message. Common is the sender (you can use txid of some NFT Profil, etc.)</param>
+            <param name="encrypt">Encrypt the message with the shared secret</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.UseNFTTicket(VEDriversLite.NFT.INFT)">
@@ -3310,6 +3435,7 @@
             The receiver is taken from the Minting transaction of the PaymentNFT
             </summary>
             <param name="NFT">NFT Payment to return</param>
+            <param name="receiver">Receiver of the returned NFT Payment</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendAirdrop(System.String,System.String,System.Double,System.Double)">
@@ -3317,7 +3443,9 @@
             This function will send airdrop.
             </summary>
             <param name="receiver">Receiver - owner of the NFT</param>
-            <param name="NFT">NFT what you want to buy</param>
+            <param name="tokenId">TokenId of the NTP1 token on Neblio network</param>
+            <param name="tokenAmount">Number of the tokens in the airdrop</param>
+            <param name="neblioAmount">Neblio amount in the airdrop</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendCoruzantNFT(System.String,VEDriversLite.NFT.INFT,System.Boolean,System.String)">
@@ -3330,12 +3458,39 @@
             <param name="comment">Add your comment</param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.InitAllAutoIoTDeviceNFT">
+            <summary>
+            Init NFT IoT Devices automatically if they have allowed this function
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.InitIoTDeviceNFT(System.String,System.Int32)">
+            <summary>
+            Init IoT Device manually
+            </summary>
+            <param name="utxo"></param>
+            <param name="utxoindex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.DeInitIoTDeviceNFT(System.String,System.Int32)">
+            <summary>
+            Deactivate the IoT Device
+            </summary>
+            <param name="utxo"></param>
+            <param name="utxoindex"></param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.CheckPayments">
             <summary>
             This function will check payments and try to find them complementary NFT which was sold. 
             If there is price mathc and enough of confirmations it will try to send NFT to new owner.
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.Neblio.NeblioSubAccount">
+            <summary>
+            Neblio Sub Account. It has some limited functions. It is usually loaded under NeblioAccount
+            </summary>
         </member>
         <member name="P:VEDriversLite.Neblio.NeblioSubAccount.EKey">
             <summary>
@@ -3413,6 +3568,12 @@
             Backup Sub Account to AcountExportDto
             </summary>
             <returns>true and AcountExportDto</returns>
+        </member>
+        <member name="M:VEDriversLite.Neblio.NeblioSubAccount.LoadBookmark(VEDriversLite.Bookmarks.Bookmark)">
+            <summary>
+            Load bookmark
+            </summary>
+            <param name="bkm"></param>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioSubAccount.ClearBookmark">
             <summary>
@@ -5228,6 +5389,11 @@
             Amount of the NFTs on the Owner Address
             </summary>
         </member>
+        <member name="T:VEDriversLite.NeblioTransactionHelpers">
+            <summary>
+            Main Helper class for the Neblio Blockchain Transactions
+            </summary>
+        </member>
         <member name="F:VEDriversLite.NeblioTransactionHelpers.TurnOnCache">
             <summary>
             Turn on and off of the cache for address info, transaction info and metadata of the transaction
@@ -5260,6 +5426,36 @@
             Minimum number of confirmation to send the transaction
             </summary>
         </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.MinimumAmount">
+            <summary>
+            Minimum amount in Satoshi on Neblio Blockchain
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.TokensInfo">
+            <summary>
+            Tokens Info for all already loaded tokens
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.TransactionInfoCache">
+            <summary>
+            Transaction info cache. If the tx was already loaded it will remember it if it has more than MinimumConfirmations
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.TokenTxMetadataCache">
+            <summary>
+            Token metadata cache. It is same all the time for the specific hash of the tx
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.AddressInfoCache">
+            <summary>
+            Address info cache. It will save for at least one second address info. If it is older, it will reqeuest new info.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.NeblioTransactionHelpers.NewEventInfo">
+            <summary>
+            Main event info handler
+            </summary>
+        </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.ShortenAddress(System.String)">
             <summary>
             Create short version of address, 3 chars on start...3 chars on end
@@ -5273,6 +5469,7 @@
             </summary>
             <param name="txid"></param>
             <param name="withDots">default true. add .... between start and end of the tx hash</param>
+            <param name="len">Length of the result shortened tx hash</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.LoadAllowedTokensInfo(System.Collections.Generic.List{System.String})">
@@ -5345,7 +5542,6 @@
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="nutxos">Optional input neblio utxo</param>
             <param name="tutxos">Optional input token utxo</param>
-            <param name="fee">Fee - 20000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.MintMultiNFTTokenAsync(VEDriversLite.MintNFTData,System.Int32,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
@@ -5357,7 +5553,6 @@
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="nutxos">Optional input neblio utxo</param>
             <param name="tutxos">Optional input token utxo</param>
-            <param name="fee">Fee - 20000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.MintMultiNFTTokenAsyncInternal(VEDriversLite.MintNFTData,System.Int32,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Boolean)">
@@ -5369,7 +5564,7 @@
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="nutxos">Optional input neblio utxo</param>
             <param name="tutxos">Optional input token utxo</param>
-            <param name="fee">Fee - 20000 minimum</param>
+            <param name="multiTokens">If there is the multi token it needs to check if there is no conflict</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNTP1TokensAsync(System.Collections.Generic.List{System.String},System.Int32,System.Int32,System.String,System.Collections.Generic.IDictionary{System.String,System.String},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
@@ -5379,6 +5574,10 @@
             if you will provide multiple receivers, the number of lots and receivers must match.
             </summary>
             <param name="receiver">List of receivers. </param>
+            <param name="lots"></param>
+            <param name="amount"></param>
+            <param name="tokenId"></param>
+            <param name="metadata"></param>
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="nutxos">Optional input neblio utxo</param>
             <param name="tutxos">Optional input token utxo</param>
@@ -5421,7 +5620,10 @@
             <summary>
             Function will send standard Neblio transaction
             </summary>
-            <param name="data">Send data, please see SendTxData class for the details</param>
+            <param name="sender"></param>
+            <param name="receivers"></param>
+            <param name="lots"></param>
+            <param name="amount"></param>
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="nutxos">Optional input neblio utxo</param>
             <param name="fee">Fee - 10000 minimum</param>
@@ -5435,7 +5637,8 @@
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="neblAmount">Amount of Neblio to send</param>
             <param name="nutxos">Optional input neblio utxo</param>
-            <param name="fee">Fee - 20000 minimum</param>
+            <param name="paymentUtxoToReturn">If you returning some payment fill this</param>
+            <param name="paymentUtxoIndexToReturn">If you returning some payment fill this</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Double,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
@@ -5446,7 +5649,7 @@
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="neblAmount">Amount of Neblio to send</param>
             <param name="nutxos">Optional input neblio utxo</param>
-            <param name="fee">Fee - 20000 minimum</param>
+            <param name="tutxos">Optional list of the token utxos </param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.SignAndBroadcast(NBitcoin.Transaction,NBitcoin.BitcoinSecret,NBitcoin.BitcoinAddress)">
@@ -5457,6 +5660,60 @@
             <param name="key">NBitcoin Key - must contain Private Key</param>
             <param name="address">NBitcoin address - must match with the provided key</param>
             <returns>New Transaction Hash - TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendMultiTokenAPIAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double,System.Boolean)">
+            <summary>
+            Transaction which sends multiple tokens from input to different outputs. For example process of the send Ordered NFT and NFT Receipt in one tx.
+            </summary>
+            <param name="data"></param>
+            <param name="ekey"></param>
+            <param name="nutxos"></param>
+            <param name="fee"></param>
+            <param name="isMintingOfCopy"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.DestroyNFTAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double,VEDriversLite.NeblioAPI.Utxos)">
+            <summary>
+            Destroy of the NFT. It merge the NFT with the minting lot
+            1VENFT + 10VENFT => 11 VENFT
+            </summary>
+            <param name="data"></param>
+            <param name="ekey"></param>
+            <param name="nutxos"></param>
+            <param name="fee"></param>
+            <param name="mintingUtxo"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.IsPrivateKeyValid(System.String)">
+            <summary>
+            Check if the private key is valid for the Neblio Network
+            </summary>
+            <param name="privatekey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressFromPrivateKey(System.String)">
+            <summary>
+            Parse the Neblio address from the private key
+            </summary>
+            <param name="privatekey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateNeblioAddress(System.String)">
+            <summary>
+            Validate if the Neblio address is the correct
+            </summary>
+            <param name="neblioAddress"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.IsEnoughConfirmationsForSend(System.Int32)">
+            <summary>
+            Check if the number of the confirmation is enough for doing transactions.
+            It mainly usefull for UI stuff or console.
+            </summary>
+            <param name="confirmations"></param>
+            <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetClient">
             <summary>
@@ -5525,6 +5782,7 @@
             Returns list of all Utxos which contains just one token, means amount = 1
             </summary>
             <param name="addr"></param>
+            <param name="allowedTokens">Load just the allowed tokens</param>
             <param name="addressinfo"></param>
             <returns></returns>
         </member>
@@ -5540,7 +5798,9 @@
             <summary>
             Returns list of spendable utxos which together match some input required amount for some transaction
             </summary>
-            <param name="addr">address which has utxos for spend - sender in tx</param>
+            <param name="address">address which has utxos for spend - sender in tx</param>
+            <param name="addinfo">If you already have loaded addinfo pass it</param>
+            <param name="latestBlockHeight"></param>
             <param name="minAmount">minimum amount of one utxo</param>
             <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
             <returns></returns>
@@ -5550,8 +5810,11 @@
             Check if the NFT token is spendable. Means utxos with token amount = 1
             </summary>
             <param name="address">address which should have this utxo</param>
+            <param name="addinfo">if you already have addinfo pass it</param>
+            <param name="latestBlockHeight"></param>
             <param name="tokenId">input token id hash</param>
             <param name="txid">input txid hash</param>
+            <param name="indx"></param>
             <returns>true and index of utxo</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.FindUtxoForMintNFT(System.String,System.String,System.Int32,System.Double,VEDriversLite.NeblioAPI.GetAddressInfoResponse,System.Double)">
@@ -5562,6 +5825,17 @@
             <param name="tokenId">token id hash</param>
             <param name="numberToMint">number of tokens which will be minted - because of multimint</param>
             <param name="oneTokenSat">this is usually default. On Neblio all token tx should have value 10000sat</param>
+            <param name="addinfo"></param>
+            <param name="latestBlockHeight"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(System.String,System.String,System.Double)">
+            <summary>
+            Get token metadata from the specific transaction cache logic
+            </summary>
+            <param name="tokenid"></param>
+            <param name="txid"></param>
+            <param name="verbosity"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionMetadata(System.String,System.String)">
@@ -5587,11 +5861,21 @@
             <param name="txid">tx id hash</param>
             <returns>Neblio API GetTransactionInfo object</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionInternal(System.String,System.String,VEDriversLite.NeblioAPI.GetTransactionInfoResponse)">
+            <summary>
+            
+            </summary>
+            <param name="txid"></param>
+            <param name="mode"></param>
+            <param name="txinfo"></param>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionSender(System.String,VEDriversLite.NeblioAPI.GetTransactionInfoResponse)">
             <summary>
             Get transaction sender.
             </summary>
             <param name="txid">tx id hash</param>
+            <param name="txinfo">if you already have txinfo object</param>
             <returns>Sender address</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionReceiver(System.String,VEDriversLite.NeblioAPI.GetTransactionInfoResponse)">
@@ -5599,7 +5883,29 @@
             Get transaction sender.
             </summary>
             <param name="txid">tx id hash</param>
+            <param name="txinfo">if you already have txinfo object</param>
             <returns>Sender address</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.ParseNeblioMessage(VEDriversLite.NeblioAPI.GetTransactionInfoResponse)">
+            <summary>
+            Parse message from the OP_RETURN data in the tx
+            </summary>
+            <param name="txinfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.HexStringToBytes(System.String)">
+            <summary>
+            Convert the hex string to bytes
+            </summary>
+            <param name="hexString"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.TokenMetadataCache">
+            <summary>
+            Token Metadata cache list
+            </summary>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenMetadata(System.String)">
             <summary>
@@ -5621,6 +5927,7 @@
             Function will also load token metadta if it has not loaded yet.
             </summary>
             <param name="address">address which has utxos</param>
+            <param name="tokenId">Specify the tokenId</param>
             <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
             <returns></returns>
         </member>
@@ -6392,6 +6699,132 @@
             <param name="decryptEvenOnSameAddress">Set true when you have preset the partner address manually - for example encryption on same address. </param>
             <returns>true if success</returns>
         </member>
+        <member name="T:VEDriversLite.NFT.LoadingImageStages">
+            <summary>
+            Enum for loading of image/music/data stage
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.LoadingImageStages.NotStarted">
+            <summary>
+            Loading image stage - not started
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.LoadingImageStages.Loading">
+            <summary>
+            Loading image stage - loading in progress
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.LoadingImageStages.Loaded">
+            <summary>
+            Loading image stage - Loaded successfully
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.LoadingImageStages.Failed">
+            <summary>
+            Loading image stage - load failed
+            </summary>        
+        </member>
+        <member name="T:VEDriversLite.NFT.LoadNFTOriginDataDto">
+            <summary>
+            Dto for search of the Origin of the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.LoadNFTOriginDataDto.Utxo">
+            <summary>
+            Actual Utxo
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.LoadNFTOriginDataDto.SourceTxId">
+            <summary>
+            Source Utxo
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.LoadNFTOriginDataDto.NFTOriginTxId">
+            <summary>
+            Origin of the NFT Utxo if known
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.LoadNFTOriginDataDto.Used">
+            <summary>
+            Tag which is used to identify the NFT is "used" stage - for example ticket
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.LoadNFTOriginDataDto.NFTMetadata">
+            <summary>
+            Metadata from the NFT history moment
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.IPFSResponse">
+            <summary>
+            Dto for the parse response of the IPFS server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.IPFSResponse.Name">
+            <summary>
+            Name of the File
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.IPFSResponse.Hash">
+            <summary>
+            Hash of the file
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.IPFSResponse.Size">
+            <summary>
+            Size of the file
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.NFTHelpers">
+            <summary>
+            Helper static class for the NFT Operations and especially preparation of the NFT data
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.AllowedTokens">
+            <summary>
+            List of the allowed tokens. If you want to use your own tokens you can add them here
+            The hash is the Token hash of the NTP1 token created on the Neblio network
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.InfuraKey">
+            <summary>
+            Infura Key for the access to the IPFS API
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.InfuraSecret">
+            <summary>
+            Infura Secret for the access to the IPFS API
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.InfuraAPIURL">
+            <summary>
+            Infura Url for the access to the IPFS API
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.TokenId">
+            <summary>
+            Main default tokens in VEFramework - VENFT
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.TokenSymbol">
+            <summary>
+            Main default tokens symbol in VEFramework - VENFT
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.ipfs">
+            <summary>
+            IPFS Client
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.ipfsInfura">
+            <summary>
+            IPFS Client - special for Infura
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.NFT.NFTHelpers.NewEventInfo">
+            <summary>
+            New event happened - IEventInfo type of the message
+            </summary>
+        </member>
         <member name="E:VEDriversLite.NFT.NFTHelpers.ProfileNFTFound">
             <summary>
             This event is called profile nft is found in the list of nfts
@@ -6436,6 +6869,52 @@
             <param name="fileContentType"></param>
             <returns></returns>
         </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadConnectionInfo(System.String,System.String,System.String)">
+            <summary>
+            Load connection info to the internal variables of this class
+            </summary>
+            <param name="ipfsKey"></param>
+            <param name="ipfsSecret"></param>
+            <param name="apiurl"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.CreateIpfsClient(System.String,System.String,System.String)">
+            <summary>
+            Create IPFS client with authentication
+            </summary>
+            <param name="IpfsHostUrl"></param>
+            <param name="IpfsHostUserName"></param>
+            <param name="IpfsHostPassword"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.UploadInfura(System.IO.Stream,System.String,System.String)">
+            <summary>
+            Upload file to the Infura IPFS
+            </summary>
+            <param name="stream"></param>
+            <param name="fileName"></param>
+            <param name="fileContentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromInfuraAsync(System.String)">
+            <summary>
+            Download file from IPFS Infura with use of credentials
+            </summary>
+            <param name="hash"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromPublicAsync(System.String)">
+            <summary>
+            Download file from IPFS public
+            </summary>
+            <param name="hash"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.InitNFTHelpers">
+            <summary>
+            Add allowed tokens during the initialization
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.LoadNFTOriginData(System.String,System.Boolean)">
             <summary>
             This function will iterate through inputs of tx from the point of the utxo to find tx where this 1 token was splited from some lot.
@@ -6443,6 +6922,7 @@
             This method is now used for "original" NFTs. It is for example Image and Music. 
             </summary>
             <param name="utxo"></param>
+            <param name="checkIfUsed">if you are checking the NFT ticket you should set this flag</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.LoadLastData(System.String)">
@@ -6481,6 +6961,7 @@
             this function will search the utxos, get all nfts utxos (if utxos list is not loaded) and return last profile nft which is founded on the address.
             </summary>
             <param name="address"></param>
+            <param name="nftOriginTxId"></param>
             <param name="utxos">leave null if you need to obtain new utxos nft list</param>
             <returns></returns>
         </member>
@@ -6496,9 +6977,14 @@
             This function will find all NFTs and load them to the carriers. 
             If you already have list of utxos and NFTs you can provide it and it will load just the changes.
             </summary>
-            <param name="address"></param>
-            <param name="inutxos"></param>
-            <param name="innfts"></param>
+            <param name="address">Address with this NFTs</param>
+            <param name="inutxos">Input Utxos collection</param>
+            <param name="innfts">Input NFTs collection</param>
+            <param name="fireProfileEvent">If you find profile, fire the event</param>
+            <param name="maxLoadedItems">Limit number of loaded items</param>
+            <param name="withoutMessages">Do not load messages</param>
+            <param name="justMessages">Load just messages</param>
+            <param name="justPayments">Load just Payments</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.LoadNFTsHistory(System.String)">
@@ -6507,6 +6993,16 @@
             </summary>
             <param name="utxo"></param>
             <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.LoadAddressNFTMessages(System.String,System.String,System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})">
+            <summary>
+            Load just the Messages on the address - between the addresses
+            </summary>
+            <param name="aliceAddress"></param>
+            <param name="bobAddress"></param>
+            <param name="innfts"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.MintNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
             <summary>
@@ -6517,6 +7013,7 @@
             <param name="NFT">Input NFT object with data to save to metadata</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.SendMessageNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
@@ -6528,6 +7025,8 @@
             <param name="NFT">Input NFT object with data to save to metadata</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+            <param name="rewriteAuthor">You can rewrite author and use the Profile NFT hash,etc.</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.SendIoTMessageNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
@@ -6539,6 +7038,7 @@
             <param name="NFT">Input NFT object with data to save to metadata</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.MintMultiNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
@@ -6552,6 +7052,7 @@
             <param name="NFT">Input NFT object with data to save to metadata</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.MintNFTTickets(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
@@ -6609,6 +7110,9 @@
             <param name="address">sender address</param>
             <param name="ekey">Encryption Key object of the address</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+            <param name="nfts">Input NFTs to destroy</param>
+            <param name="mintingUtxo">Minting input Utxo if known</param>
+            <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.SendNFTPayment(System.String,VEDriversLite.Security.EncryptionKey,System.String,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
@@ -6617,6 +7121,7 @@
             </summary>
             <param name="address">sender address</param>
             <param name="ekey">Encryption Key object of the address</param>
+            <param name="receiver">Receiver of the NFT</param>
             <param name="nft">Input NFT object with data to save to metadata. It is NFT what you are buying.</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
@@ -6642,6 +7147,8 @@
             <param name="priceWrite">Set this if you just want to set price of the NFT. means resend to yourself</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <param name="price">Price must be higher than 0.0002 Neblio</param>
+            <param name="withDogePrice">Set if Doge Price should be written</param>
+            <param name="dogeprice">Set doge price, min 0.1</param>
             <returns>New Tx Id hash</returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.UseNFTTicket(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">

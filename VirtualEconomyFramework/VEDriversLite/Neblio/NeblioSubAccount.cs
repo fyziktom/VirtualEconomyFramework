@@ -16,6 +16,9 @@ using System.Collections.Concurrent;
 
 namespace VEDriversLite.Neblio
 {
+    /// <summary>
+    /// Neblio Sub Account. It has some limited functions. It is usually loaded under NeblioAccount
+    /// </summary>
     public class NeblioSubAccount : NeblioAccountBase
     {
         private static object _lock { get; set; } = new object();
@@ -200,7 +203,7 @@ namespace VEDriversLite.Neblio
         /// Backup Sub Account to AcountExportDto
         /// </summary>
         /// <returns>true and AcountExportDto</returns>
-        public async Task<(bool, AccountExportDto)> BackupAddressToDto()
+        public (bool, AccountExportDto) BackupAddressToDto()
         {
             if (string.IsNullOrEmpty(Address) || (string.IsNullOrEmpty(EKey) && string.IsNullOrEmpty(ESKey)))
                 return (false, null);
@@ -218,10 +221,15 @@ namespace VEDriversLite.Neblio
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Canont backup address data dto. " + ex.Message);
                 return (false, null);
             }
         }
 
+        /// <summary>
+        /// Load bookmark
+        /// </summary>
+        /// <param name="bkm"></param>
         public void LoadBookmark(Bookmark bkm)
         {
             if (!string.IsNullOrEmpty(bkm.Address) && !string.IsNullOrEmpty(bkm.Name))
@@ -332,6 +340,7 @@ namespace VEDriversLite.Neblio
                     }
                     catch (Exception ex)
                     {
+                        Console.WriteLine("Cannot refresh data. " + ex.Message);
                         //await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
                     }
 
