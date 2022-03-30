@@ -493,7 +493,7 @@ namespace VEDriversLite.NFT
         {
             if (!string.IsNullOrEmpty(prop))
             {
-                if (IsBase64String(prop))
+                if (Security.SecurityUtils.IsBase64String(prop))
                 {
                     if (string.IsNullOrEmpty(partner) && !string.IsNullOrEmpty(address))
                         partner = address;
@@ -516,12 +516,6 @@ namespace VEDriversLite.NFT
                     return prop;
             }
             return string.Empty;
-        }
-
-        public static bool IsBase64String(string base64)
-        {
-            Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
-            return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
         }
 
         /// <summary>

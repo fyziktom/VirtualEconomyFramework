@@ -214,7 +214,7 @@ namespace VEDriversLite.Security
             }
             catch (Exception ex)
             {
-                return (false, "Wrong input. Cannot sign the message.");
+                return (false, "Wrong input. Cannot decrypt the message.");
             }
         }
         /// <summary>
@@ -235,7 +235,7 @@ namespace VEDriversLite.Security
             }
             catch (Exception ex)
             {
-                return (false, "Wrong input. Cannot sign the message.");
+                return (false, "Wrong input. Cannot decrypt the message.");
             }
         }
         /// <summary>
@@ -257,9 +257,32 @@ namespace VEDriversLite.Security
             }
             catch (Exception ex)
             {
-                return (false, "Wrong input. Cannot sign the message.");
+                return (false, "Wrong input. Cannot encrypt the message.");
             }
         }
+
+        /// <summary>
+        /// Encrypt the message with use of Public Key
+        /// </summary>
+        /// <param name="message">Message to encrypt</param>
+        /// <param name="publicKey">Public Key</param>
+        /// <returns></returns>
+        public static async Task<(bool, string)> EncryptMessage(string message, PubKey publicKey)
+        {
+            if (string.IsNullOrEmpty(message) || publicKey == null)
+                return (false, "Input parameters cannot be empty or null.");
+
+            try
+            {
+                var cmsg = publicKey.Encrypt(message);
+                return (true, cmsg);
+            }
+            catch (Exception ex)
+            {
+                return (false, "Wrong input. Cannot encrypt the message.");
+            }
+        }
+        
         /// <summary>
         /// Obtain the Shared secret based on the Neblio Address and Neblio Private Key
         /// </summary>
@@ -268,6 +291,8 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, string key, PubKey bobPublicKey = null)
         {
+            if (string.IsNullOrEmpty(key) || (!string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
+                return (false, "Input parameters cannot be empty or null.");
             try
             {
                var secret =  new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
@@ -287,6 +312,9 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret, PubKey bobPublicKey = null)
         {
+            if (secret == null || (!string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
+                return (false, "Input parameters cannot be empty or null.");
+            
             var aliceadd = secret.PubKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
             var bpkey = secret.PubKey;
             if (aliceadd.ToString() != bobAddress.ToString())

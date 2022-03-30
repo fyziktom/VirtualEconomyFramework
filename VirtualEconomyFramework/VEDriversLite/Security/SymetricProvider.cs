@@ -46,7 +46,11 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static string DecryptString(string key, string cipherText)
         {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("key can not be null or empty.");
             var keybytes = GetKeyBytes(key);
+            if (!SecurityUtils.IsBase64String(cipherText))
+                throw new ArgumentException("cipherText is not valid. It must be Base64 string");
             var secret = Convert.FromBase64String(cipherText);
             var result = DecryptBytes(keybytes, secret);
             return Encoding.UTF8.GetString(result).Trim('\0');

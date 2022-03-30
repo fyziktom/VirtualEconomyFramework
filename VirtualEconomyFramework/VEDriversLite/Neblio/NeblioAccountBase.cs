@@ -838,16 +838,20 @@ namespace VEDriversLite.Neblio
         /// <param name="message">Input message</param>
         /// <param name="signature">Signature of this message created by owner of some address.</param>
         /// <param name="address">Neblio address which should sign the message and should be verified.</param>
+        /// <param name="bobPubKey">You must fill address or PubKey. If you will fill the PubKey function is much faster</param>
         /// <returns></returns>
-        public async Task<(bool, string)> VerifyMessage(string message, string signature, string address)
+        public async Task<(bool, string)> VerifyMessage(string message, string signature, string address, PubKey bobPubKey = null)
         {
-            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))
-                return (false, "You must fill all inputs.");
-            var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(address);
-            if (!ownerpubkey.Item1)
-                return (false, "Owner did not activate the function. He must have filled the profile.");
-            else
-                return await ECDSAProvider.VerifyMessage(message, signature, ownerpubkey.Item2);
+            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || (string.IsNullOrEmpty(address) && bobPubKey == null))
+                return (false, "You must fill all inputs. You can fill just one of these Address or PubKey.");
+            if (bobPubKey == null)
+            {
+                var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(address);
+                if (!ownerpubkey.Item1)
+                    return (false, "Owner did not activate the function. He must have filled the profile.");
+                bobPubKey = ownerpubkey.Item2;
+            }
+            return await ECDSAProvider.VerifyMessage(message, signature, bobPubKey);
         }
 
         /// <summary>

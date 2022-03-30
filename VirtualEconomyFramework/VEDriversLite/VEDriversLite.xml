@@ -3240,13 +3240,14 @@
             <param name="amount"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.VerifyMessage(System.String,System.String,System.String)">
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.VerifyMessage(System.String,System.String,System.String,NBitcoin.PubKey)">
             <summary>
             Verify message which was signed by some address.
             </summary>
             <param name="message">Input message</param>
             <param name="signature">Signature of this message created by owner of some address.</param>
             <param name="address">Neblio address which should sign the message and should be verified.</param>
+            <param name="bobPubKey">You must fill address or PubKey. If you will fill the PubKey function is much faster</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Neblio.NeblioAccountBase.EncryptMessage(System.String)">
@@ -7257,6 +7258,14 @@
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptMessage(System.String,System.String)">
+            <summary>
+            Encrypt the message with use of Public Key
+            </summary>
+            <param name="message">Message to encrypt</param>
+            <param name="publicKey">Public Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Security.ECDSAProvider.EncryptMessage(System.String,NBitcoin.PubKey)">
             <summary>
             Encrypt the message with use of Public Key
             </summary>
