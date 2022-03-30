@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.UnstoppableDomains
 {
+    /// <summary>
+    /// Helper class for obtain and parse data from UnstoppableDomains.com API
+    /// </summary>
     public static class UnstoppableDomainsHelpers
     {
         private static HttpClient httpClient = new HttpClient();

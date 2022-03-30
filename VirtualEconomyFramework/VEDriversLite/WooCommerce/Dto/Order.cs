@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.WooCommerce.Dto
 {
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class Shipping
     {
         /// <summary>
@@ -45,6 +48,9 @@ namespace VEDriversLite.WooCommerce.Dto
         //public string email { get; set; } = string.Empty;
         //public string phone { get; set; } = string.Empty;
     }
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class Billing
     {
         /// <summary>
@@ -92,6 +98,9 @@ namespace VEDriversLite.WooCommerce.Dto
         /// </summary>
         public string phone { get; set; } = string.Empty;
     }
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class LineItem
     {
         /// <summary>
@@ -139,17 +148,47 @@ namespace VEDriversLite.WooCommerce.Dto
         /// </summary>
         public double price { get; set; } = 0;
     }
+    /// <summary>
+    /// TODO
+    /// </summary>
     public enum OrderStatus
     {
+        /// <summary>
+        /// TODO
+        /// </summary>
         pending,
+        /// <summary>
+        /// TODO
+        /// </summary>        
         processing,
+        /// <summary>
+        /// TODO
+        /// </summary>        
         onhold,
+        /// <summary>
+        /// TODO
+        /// </summary>
         completed,
+        /// <summary>
+        /// TODO
+        /// </summary>        
         cancelled,
+        /// <summary>
+        /// TODO
+        /// </summary>
         refunded,
+        /// <summary>
+        /// TODO
+        /// </summary>
         failed,
+        /// <summary>
+        /// TODO
+        /// </summary>        
         trash
     }
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class Order
     {
         /// <summary>

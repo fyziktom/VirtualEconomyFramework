@@ -10,6 +10,9 @@ using VEDriversLite.NFT;
 
 namespace VEDriversLite.Security
 {
+    /// <summary>
+    /// Provider of the ECDSA encryption, signatures, verifications, etc.
+    /// </summary>
     public static class ECDSAProvider
     {
         /// <summary>
@@ -51,7 +54,7 @@ namespace VEDriversLite.Security
                         return (true, "Verified.");
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return (false, "Wrong input. Cannot verify the message signature.");
             }
@@ -95,7 +98,7 @@ namespace VEDriversLite.Security
                         return (true, "Verified.");
                 }                    
             }
-            catch (Exception ex)
+            catch
             {
                 return (false, "Wrong input. Cannot verify the message signature.");
             }
@@ -166,7 +169,7 @@ namespace VEDriversLite.Security
                 string signature = smsg.RecoveryId.ToString() + "@" + Convert.ToBase64String(smsg.Signature);
                 return (true, signature);
             }
-            catch (Exception ex)
+            catch
             {
                 return (false, "Wrong input. Cannot sign the message.");
             }
@@ -189,7 +192,7 @@ namespace VEDriversLite.Security
                 string signature = smsg.RecoveryId.ToString() + "@" + Convert.ToBase64String(smsg.Signature);
                 return (true, signature);
             }
-            catch (Exception ex)
+            catch
             {
                 return (false, "Wrong input. Cannot sign the message.");
             }
@@ -277,7 +280,7 @@ namespace VEDriversLite.Security
                 var cmsg = publicKey.Encrypt(message);
                 return (true, cmsg);
             }
-            catch (Exception ex)
+            catch
             {
                 return (false, "Wrong input. Cannot encrypt the message.");
             }
@@ -288,6 +291,7 @@ namespace VEDriversLite.Security
         /// </summary>
         /// <param name="bobAddress">Neblio Address of the receiver</param>
         /// <param name="key">Private Key of the sender</param>
+        /// <param name="bobPublicKey">Bob public key</param>
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, string key, PubKey bobPublicKey = null)
         {
@@ -309,6 +313,7 @@ namespace VEDriversLite.Security
         /// </summary>
         /// <param name="bobAddress">Neblio Address of the receiver</param>
         /// <param name="secret">Private Key of the sender in the form of the BitcoinSecret</param>
+        /// <param name="bobPublicKey">Bob public key</param>
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret, PubKey bobPublicKey = null)
         {
@@ -346,6 +351,7 @@ namespace VEDriversLite.Security
         /// <param name="message">Message to encrypt</param>
         /// <param name="bobAddress">Receiver Neblio Address</param>
         /// <param name="key">Neblio Private Key of the Sender</param>
+        /// <param name="sharedkey">Shared key</param>
         /// <returns></returns>
         public static async Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, string key, string sharedkey = "")
         {
@@ -365,7 +371,8 @@ namespace VEDriversLite.Security
         /// </summary>
         /// <param name="message">Message to encrypt</param>
         /// <param name="bobAddress">Receiver Neblio Address</param>
-        /// <param name="key">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
+        /// <param name="secret">Alice secret</param>
+        /// <param name="sharedkey">shared key</param>
         /// <returns></returns>
         public static async Task<(bool, string)> EncryptStringWithSharedSecret(string message, string bobAddress, BitcoinSecret secret, string sharedkey = "")
         {
@@ -403,6 +410,7 @@ namespace VEDriversLite.Security
         /// <param name="inputBytes">Array of the bytes to encrypt</param>
         /// <param name="bobAddress">Receiver Neblio Address</param>
         /// <param name="secret">Neblio Private Key of the Sender in the form of BitcoinSecret</param>
+        /// <param name="sharedkey">shared key</param>
         /// <returns></returns>
         public static async Task<(bool, byte[])> EncryptBytesWithSharedSecret(byte[] inputBytes, string bobAddress, BitcoinSecret secret, string sharedkey = "")
         {
@@ -594,6 +602,13 @@ namespace VEDriversLite.Security
         //////////////////////////////////////////////////////////
         // taken from here https://github.com/MetacoSA/NBitcoin/blob/cb6d64664b9f38d0442a4a4ad5edaed9e310bf40/NBitcoin/Key.cs#L264
         // we need it now even with BouncyCastle. Build of the NBitcoin use msft security for aes which does not work in blazor wasm
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="encryptedText"></param>
+        /// <param name="privateKey"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static string DecryptStringWithPrivateKey(string encryptedText, Key privateKey)
         {
             if (encryptedText is null)
@@ -604,6 +619,14 @@ namespace VEDriversLite.Security
             return Encoding.UTF8.GetString(decrypted, 0, decrypted.Length).Trim('\0');
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="encrypted"></param>
+        /// <param name="privateKey"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public static byte[] DecryptBytesWithPrivateKey(byte[] encrypted, Key privateKey)
         {
             if (encrypted is null)
@@ -632,6 +655,13 @@ namespace VEDriversLite.Security
             var message = SymetricProvider.DecryptBytes(encryptionKey, cipherText, iv);
             return message;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static string EncryptStringWithPublicKey(string message, PubKey key)
         {
             if (message is null)
@@ -640,7 +670,13 @@ namespace VEDriversLite.Security
             var bytes = Encoding.UTF8.GetBytes(message);
             return Encoders.Base64.EncodeData(EncryptBytesWithPublicKey(bytes, key));
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static byte[] EncryptBytesWithPublicKey(byte[] message, PubKey key)
         {
             if (message is null)
@@ -659,6 +695,12 @@ namespace VEDriversLite.Security
             var hashMAC = HMACSHA256(hashingKey, encrypted);
             return encrypted.Concat(hashMAC);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static byte[] HMACSHA256(byte[] key, byte[] data)
         {
             var mac = new Org.BouncyCastle.Crypto.Macs.HMac(new Org.BouncyCastle.Crypto.Digests.Sha256Digest());

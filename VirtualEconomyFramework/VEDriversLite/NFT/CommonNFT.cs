@@ -9,6 +9,10 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Common NFT class. It implements lots of functions for the parsing the basic parameter of the NFT.
+    /// It contains also functions to decrypt or encrypt the property
+    /// </summary>
     public abstract class CommonNFT : INFT
     {
         /// <summary>
@@ -243,6 +247,9 @@ namespace VEDriversLite.NFT
             Price = 0.0;
             PriceActive = false;
         }
+        /// <summary>
+        /// Function will parse tags to the list of the tags
+        /// </summary>
         public void ParseTags()
         {
             var split = Tags.Split(' ');
@@ -328,7 +335,7 @@ namespace VEDriversLite.NFT
                 {
                     SoldInfo = JsonConvert.DeserializeObject<NFTSoldInfo>(sinf);
                 }
-                catch (Exception ex) { Console.WriteLine("Cannot parse sold info in the NFT"); }
+                catch { Console.WriteLine("Cannot parse sold info in the NFT"); }
             }
         }
         /// <summary>
@@ -369,7 +376,7 @@ namespace VEDriversLite.NFT
                 {
                     DogeftInfo = JsonConvert.DeserializeObject<DogeftInfo>(dfti);
                 }
-                catch (Exception ex) { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
+                catch { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
             }
             if (meta.TryGetValue("Tags", out var tags))
             {
@@ -404,7 +411,7 @@ namespace VEDriversLite.NFT
                 {
                     DogeftInfo = JsonConvert.DeserializeObject<DogeftInfo>(dfti);
                 }
-                catch (Exception ex) { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
+                catch { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
             }
         }
         /// <summary>
@@ -455,6 +462,9 @@ namespace VEDriversLite.NFT
         /// Then the image is saved in ImageData as bytes.
         /// </summary>
         /// <param name="secret">NFT Owner Private Key</param>
+        /// <param name="imageLink"></param>
+        /// <param name="partner"></param>
+        /// <param name="sharedkey"></param>
         /// <returns></returns>
         public virtual async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner, string sharedkey = "")
         {
@@ -488,6 +498,9 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="prop">Property content</param>
         /// <param name="secret">NFT Owner Private Key</param>
+        /// <param name="address"></param>
+        /// <param name="partner"></param>
+        /// <param name="sharedkey"></param>
         /// <returns></returns>
         public virtual async Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "" , string sharedkey = "")
         {

@@ -1182,7 +1182,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="address">Neblio Sub Account Name</param>
         /// <returns>true and string with serialized subaccount account export dto list as json string</returns>
-        public async Task<(bool, string)> GetSubAccountNameByAddress(string address)
+        public (bool, string) GetSubAccountNameByAddress(string address)
         {
             var acc = SubAccounts.Values.FirstOrDefault(a => a.Address == address);
             if (acc != null)

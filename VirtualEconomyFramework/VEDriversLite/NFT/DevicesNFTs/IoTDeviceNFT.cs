@@ -11,8 +11,15 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT.DevicesNFTs
 {
+    /// <summary>
+    /// IoT Device NFT - can load the data from the API and resend them as NFT IoTMessages
+    /// </summary>
     public class IoTDeviceNFT : CommonNFT
     {
+        /// <summary>
+        /// Constructor of the empty NFT IoTDevice
+        /// </summary>
+        /// <param name="utxo"></param>
         public IoTDeviceNFT(string utxo)
         {
             Utxo = utxo;
@@ -21,44 +28,121 @@ namespace VEDriversLite.NFT.DevicesNFTs
         }
 
         private static object _lock = new object();
+        /// <summary>
+        /// Related NFT Device hash
+        /// </summary>
         public string DeviceNFTHash { get; set; } = string.Empty;
+        /// <summary>
+        /// Address of the owner of the NFT
+        /// </summary>
         public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// Address where should NFT IoTDevice send the NFT IoTMessages when some new is available
+        /// </summary>
         public string ReceivingMessageAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// Type of the driver as text
+        /// </summary>
         public string IoTDataDriverTypeText { get; set; } = string.Empty;
+        /// <summary>
+        /// Type of the driver
+        /// </summary>
         [JsonIgnore]
         public IoTDataDriverType IoTDDType { get; set; } = IoTDataDriverType.HARDWARIO;
+        /// <summary>
+        /// Loaded IoT Data Driver Settings with parameters for the connection to the API
+        /// </summary>
         public IoTDataDriverSettings IDDSettings { get; set; } = new IoTDataDriverSettings();
+        /// <summary>
+        /// Activate automatically the NFT when it is loaded on some address
+        /// </summary>
         public bool AutoActivation { get; set; } = false;
+        /// <summary>
+        /// Encrypted settings. It will encrypt the settings with use of the BitcoinSecret
+        /// </summary>
         public bool EncryptSetting { get; set; } = false;
+        /// <summary>
+        /// Set if you want to encrypt all sent messages
+        /// </summary>
         public bool EncryptMessages { get; set; } = false;
 
+        /// <summary>
+        /// Location name
+        /// </summary>
         public string Location { get; set; } = string.Empty;
+        /// <summary>
+        /// Location coordinates string
+        /// </summary>
         public string LocationCoordinates { get; set; } = string.Empty;
+        /// <summary>
+        /// Location coordinate Latitude
+        /// </summary>
         public double LocationCoordinatesLat { get; set; } = 0.0;
+        /// <summary>
+        /// Location coordinate Longitude
+        /// </summary>
         public double LocationCoordinatesLen { get; set; } = 0.0;
 
+        /// <summary>
+        /// Run just NFT which was minted on this address or resent to itself on same address
+        /// </summary>
         [JsonIgnore]
         public bool RunJustOwn { get; set; } = false;
+        /// <summary>
+        /// Allow output to the console when new message will arrive
+        /// </summary>
         [JsonIgnore]
         public bool AllowConsoleOutputWhenNewMessage { get; set; } = false;
+        /// <summary>
+        /// NFT IoTDevice is active and communicate with API
+        /// </summary>
         [JsonIgnore]
         public bool Active { get; set; } = false;
+        /// <summary>
+        /// The settings is already decrypted if this is true
+        /// </summary>
         [JsonIgnore]
         public bool DecryptedSetting { get; set; } = false;
+        /// <summary>
+        /// List of all processed messages or messages which should be processed
+        /// </summary>
         [JsonIgnore]
         public Dictionary<string, INFT> MessageNFTs { get; set; } = new Dictionary<string, INFT>();
+        /// <summary>
+        /// Related Device NFT
+        /// </summary>
         [JsonIgnore]
         public INFT SourceDeviceNFT { get; set; } = new DeviceNFT("");
+        /// <summary>
+        /// Encrypted form of settings as serialized string
+        /// </summary>
         [JsonIgnore]
         public string EncryptedSettingString { get; set; } = string.Empty;
+        /// <summary>
+        /// Encrypted form of the location
+        /// </summary>
         public string EncryptedLocationString { get; set; } = string.Empty;
+        /// <summary>
+        /// Encrypted form of location coordinates
+        /// </summary>
         public string EncryptedLocationCoordinatesString { get; set; } = string.Empty;
 
+        /// <summary>
+        /// New message arrived event
+        /// </summary>
         public event EventHandler<(string,INFT)> NewMessage;
 
+        /// <summary>
+        /// IoT Data Driver
+        /// </summary>
         [JsonIgnore]
         public IIoTDataDriver IoTDataDriver { get; set; }
 
+        /// <summary>
+        /// Fill the data of the NFT
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT)
         {
             await FillCommon(NFT);
@@ -88,6 +172,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
             EncryptedLocationCoordinatesString = nft.EncryptedLocationCoordinatesString;
 
         }
+
+        /// <summary>
+        /// Parse specific data for the NFT
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             if (metadata.TryGetValue("EncryptSetting", out var encs))
@@ -131,7 +220,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
                             LocationCoordinatesLat = Convert.ToDouble(split[0], CultureInfo.InvariantCulture);
                             LocationCoordinatesLen = Convert.ToDouble(split[1], CultureInfo.InvariantCulture);
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             Console.WriteLine($"Cannot parse location coordinates in IoTDeviceNFT {Utxo}.");
                         }
@@ -209,7 +298,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 EncryptMessages = false;
             }
         }
-
+        /// <summary>
+        /// Parse origin data of the NFT
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
@@ -226,7 +319,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Get last data for this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             var nftData = await NFTHelpers.LoadLastData(Utxo);
@@ -241,7 +337,13 @@ namespace VEDriversLite.NFT.DevicesNFTs
             }
             IsLoaded = true;
         }
-
+        /// <summary>
+        /// Get NFT metadata.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="key"></param>
+        /// <param name="receiver"></param>
+        /// <returns></returns>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
@@ -284,7 +386,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
                                 metadata.Add("IDDSettings", EncryptedSettingString);
                         }
                     }
-                    catch(Exception ex)
+                    catch
                     {
                         if (!string.IsNullOrEmpty(EncryptedSettingString))
                             metadata.Add("IDDSettings", EncryptedSettingString);
@@ -306,7 +408,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
                                     metadata.Add("Location", EncryptedLocationString);
                             }
                         }
-                        catch(Exception ex)
+                        catch
                         {
                             if (!string.IsNullOrEmpty(EncryptedLocationString))
                                 metadata.Add("Location", EncryptedLocationString);
@@ -328,7 +430,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
                                     metadata.Add("LocationC", EncryptedLocationCoordinatesString);
                             }
                         }
-                        catch(Exception ex)
+                        catch
                         {
                             if (!string.IsNullOrEmpty(EncryptedLocationCoordinatesString))
                                 metadata.Add("LocationC", EncryptedLocationCoordinatesString);
@@ -364,7 +466,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 }
             }
         }
-
+        /// <summary>
+        /// Decrypt the IoT connection settings. You must provide the BitcoinSecret
+        /// </summary>
+        /// <param name="secret"></param>
+        /// <returns></returns>
         public async Task DecryptSetting(BitcoinSecret secret = null)
         {
             if (EncryptSetting && !DecryptedSetting)
@@ -405,7 +511,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
                                     LocationCoordinatesLat = Convert.ToDouble(split[0], CultureInfo.InvariantCulture);
                                     LocationCoordinatesLen = Convert.ToDouble(split[1], CultureInfo.InvariantCulture);
                                 }
-                                catch (Exception ex)
+                                catch
                                 {
                                     Console.WriteLine($"Cannot parse location coordinates in IoTDeviceNFT {Utxo}.");
                                 }
@@ -422,7 +528,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
 
             }
         }
-
+        /// <summary>
+        /// Start the communication. If the settings is encrypted you must provide the bitcoin secret
+        /// </summary>
+        /// <param name="secret"></param>
+        /// <returns></returns>
         public async Task InitCommunication(BitcoinSecret secret = null)
         {
             try
@@ -449,7 +559,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
             catch (Exception ex)
             {
                 Active = false;
-                Console.WriteLine("Cannot deserialize the IoT Driver Setting, when initializing the new IoTDataDrvier.");
+                Console.WriteLine("Cannot deserialize the IoT Driver Setting, when initializing the new IoTDataDrvier. " + ex.Message);
             }
         }
 
@@ -467,6 +577,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
             NewMessage?.Invoke(this, (mn,msg));
         }
 
+        /// <summary>
+        /// Mark the message as processed. It will add it to the dictionary with new flag Processed instead of ToProcess
+        /// </summary>
+        /// <param name="messageName"></param>
+        /// <returns></returns>
         public bool MarkMessageAsProcessed(string messageName)
         {
             if (MessageNFTs.TryGetValue(messageName, out var nft))
@@ -480,7 +595,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
             }
             return false;
         }
-
+        /// <summary>
+        /// Deinitalization of the communication with the IoT API
+        /// </summary>
+        /// <returns></returns>
         public async Task DeInitCommunication()
         {
             if (IoTDataDriver != null)

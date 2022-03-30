@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.WooCommerce.Dto
 {
+    /// <summary>
+    /// Received payment for order in woocommerce
+    /// </summary>
     public class ReceivedPaymentForOrder
     {
         /// <summary>

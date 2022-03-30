@@ -5,16 +5,43 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Events
 {
+    /// <summary>
+    /// Type of the event
+    /// </summary>
     public enum EventType
     {
+        /// <summary>
+        /// Basic
+        /// </summary>
         Basic,
+        /// <summary>
+        /// Info
+        /// </summary>
         Info,
+        /// <summary>
+        /// Warning
+        /// </summary>
         Warning,
+        /// <summary>
+        /// Error
+        /// </summary>
         Error,
+        /// <summary>
+        /// Sending transaction
+        /// </summary>
         TxSending,
+        /// <summary>
+        /// Receiving transaction
+        /// </summary>
         TxReceived,
+        /// <summary>
+        /// NFT Received        
+        /// </summary>
         NFTReceived
     }
+    /// <summary>
+    /// Main interface for the Event infos
+    /// </summary>
     public interface IEventInfo
     {
         /// <summary>

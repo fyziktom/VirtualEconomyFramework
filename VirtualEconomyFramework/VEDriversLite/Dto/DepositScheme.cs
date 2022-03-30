@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Dto
 {
+    /// <summary>
+    /// Deposit scheme can split the amount to multiple accounts.
+    /// </summary>
     public class DepositScheme
     {
         /// <summary>

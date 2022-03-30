@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Events
 {
+    /// <summary>
+    /// Basic implementation of the Event interface.
+    /// </summary>
     public abstract class CommonEvent : IEventInfo
     {
         /// <summary>

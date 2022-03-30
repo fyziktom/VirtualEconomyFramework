@@ -458,7 +458,7 @@ namespace TestVEDriversLite
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Cannot send the NFT {nft.Name} with txid: {nft.Utxo} with index: {nft.UtxoIndex}");
+                            Console.WriteLine($"Cannot send the NFT {nft.Name} with txid: {nft.Utxo} with index: {nft.UtxoIndex}. " + ex.Message);
                         }
                     }
                     else
@@ -659,6 +659,7 @@ namespace TestVEDriversLite
                         catch (Exception ex)
                         {
                             // probably just waiting for enought confirmation
+                            Console.WriteLine("Waiting for confirmation. " + ex.Message);
                             await Task.Delay(5000);
                         }
                     }
@@ -3094,7 +3095,7 @@ namespace TestVEDriversLite
             }
             catch (System.Exception ex)
             {
-                Console.WriteLine("Cannot pin " + param);
+                Console.WriteLine("Cannot pin " + param + ". " + ex.Message);
             }
             #endregion
         ///////////////////////////////////////////////////////////////////

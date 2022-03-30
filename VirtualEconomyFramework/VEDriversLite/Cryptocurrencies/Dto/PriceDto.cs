@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Cryptocurrencies.Dto
 {
+    /// <summary>
+    /// Common Price Dto
+    /// </summary>
     public class PriceDto
     {
         /// <summary>
@@ -33,7 +36,6 @@ namespace VEDriversLite.Cryptocurrencies.Dto
         /// <param name="curr"></param>
         /// <param name="vscurr"></param>
         /// <returns></returns>
-
         public static string GetName(CurrencyTypes curr, CurrencyTypes vscurr)
         {
             var first = "neblio";

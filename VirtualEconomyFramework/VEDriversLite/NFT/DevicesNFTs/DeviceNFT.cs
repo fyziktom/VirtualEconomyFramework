@@ -7,8 +7,15 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT.DevicesNFTs
 {
+    /// <summary>
+    /// NFT for description of common device which can be for example some electronic device
+    /// </summary>
     public class DeviceNFT : CommonNFT
     {
+        /// <summary>
+        /// Create empty device
+        /// </summary>
+        /// <param name="utxo"></param>
         public DeviceNFT(string utxo)
         {
             Utxo = utxo;
@@ -16,27 +23,71 @@ namespace VEDriversLite.NFT.DevicesNFTs
             TypeText = "NFT Device";
         }
 
+        /// <summary>
+        /// Version of the Device
+        /// </summary>
         public string Version { get; set; } = string.Empty;
+        /// <summary>
+        /// Protocol NFT hash related to this device
+        /// It should describe the communication with the device on public APIs
+        /// </summary>
         public string ProtocolNFTHash { get; set; } = string.Empty;
+        /// <summary>
+        /// HW source NFT. Should lead to source of the hardware design
+        /// </summary>
         public string HWSrcNFTHash { get; set; } = string.Empty;
+        /// <summary>
+        /// FW source NFT. Should lead to source of the firmware
+        /// </summary>
         public string FWSrcNFTHash { get; set; } = string.Empty;
+        /// <summary>
+        /// SW source NFT. Should lead to source of the software
+        /// </summary>
         public string SWSrcNFTHash { get; set; } = string.Empty;
+        /// <summary>
+        /// Mechanical source NFT. Should lead to source of the mechanical design
+        /// </summary>
         public string MechSrcNFTHash { get; set; } = string.Empty;
+        /// <summary>
+        /// MAC address - will be moved to IoT device
+        /// </summary>
         public string MAC { get; set; } = string.Empty;
+        /// <summary>
+        /// Unique Id of the producet/device
+        /// </summary>
         public string UniqueId { get; set; } = string.Empty;
 
-
+        /// <summary>
+        /// Loaded protocol NFT
+        /// </summary>
         [JsonIgnore]
         public INFT LoadedProtocolNFT { get; set; } = new ProtocolNFT("");
+        /// <summary>
+        /// Loaded HW Source NFT
+        /// </summary>
         [JsonIgnore]
         public INFT HwSourceNFT { get; set; } = new HWSrcNFT("");
+        /// <summary>
+        /// Loaded FW Source NFT
+        /// </summary>
         [JsonIgnore]
         public INFT FwSourceNFT { get; set; } = new FWSrcNFT("");
+        /// <summary>
+        /// Loaded SW Source NFT
+        /// </summary>
         [JsonIgnore]
         public INFT SwSourceNFT { get; set; } = new SWSrcNFT("");
+        /// <summary>
+        /// Loaded Mechanical Source NFT
+        /// </summary>
         [JsonIgnore]
         public INFT MechSourceNFT { get; set; } = new MechSrcNFT("");
 
+        /// <summary>
+        /// Fill NFT with data from template
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT)
         {
             await FillCommon(NFT);
@@ -50,6 +101,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
             MAC = nft.MAC;
             UniqueId = nft.UniqueId;
         }
+        /// <summary>
+        /// Parse specific properties
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             if (metadata.TryGetValue("Version", out var version))
@@ -70,6 +125,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 UniqueId = uid;
         }
 
+        /// <summary>
+        /// Parse origin properties
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
@@ -87,6 +147,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
             }
         }
 
+        /// <summary>
+        /// Get last data for this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             var nftData = await NFTHelpers.LoadLastData(Utxo);
@@ -102,7 +166,13 @@ namespace VEDriversLite.NFT.DevicesNFTs
             IsLoaded = true;
         }
 
-
+        /// <summary>
+        /// Get metadata of this NFT
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="key"></param>
+        /// <param name="receiver"></param>
+        /// <returns></returns>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
@@ -128,6 +198,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
             return metadata;
         }
 
+        /// <summary>
+        /// Load all source NFTs
+        /// </summary>
+        /// <returns></returns>
         public async Task LoadSourceNFTs()
         {
             if (!string.IsNullOrEmpty(ProtocolNFTHash))

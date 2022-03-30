@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Security
 {
+    /// <summary>
+    /// Helper class for security
+    /// </summary>
     public static class SecurityUtils
     {
+        /// <summary>
+        /// Returns true if the string is the base64 string
+        /// </summary>
+        /// <param name="base64"></param>
+        /// <returns></returns>
         public static bool IsBase64String(string base64)
         {
             Span<byte> buffer = new Span<byte>(new byte[base64.Length]);

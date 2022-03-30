@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite
 {
-    //https://stackoverflow.com/questions/249760/how-can-i-convert-a-unix-timestamp-to-datetime-and-vice-versa
+    /// <summary>
+    /// Time helpers to convert time between UnixTimeStamp and classic time
+    /// https://stackoverflow.com/questions/249760/how-can-i-convert-a-unix-timestamp-to-datetime-and-vice-versa
+    /// </summary>
     public static class TimeHelpers
     {
         /// <summary>
