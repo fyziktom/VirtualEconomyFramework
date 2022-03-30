@@ -184,7 +184,7 @@
         keyToSave = "{ \"Address\":\"" + addr + "\", \"EncryptedKey\":\"" + ekey + "\" }";
         if (!DogeAccountKey && AppData.Account.SubAccounts.Count > 0)
         {
-            var saccnts = await AppData.Account.SerializeSubAccounts();
+            var saccnts = AppData.Account.SerializeSubAccounts();
             keyToSave = "{ \"Address\":\"" + addr + "\", \"EncryptedKey\":\"" + ekey + "\", \"SubAccounts\": " + saccnts + " }";
         }
         if (!DogeAccountKey)
