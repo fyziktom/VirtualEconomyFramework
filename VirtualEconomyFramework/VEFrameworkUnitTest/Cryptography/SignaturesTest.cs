@@ -75,7 +75,8 @@ namespace VEFrameworkUnitTest.Cryptography
 
             Assert.False(sign.Item1);
         }
-
+        
+        /*
         /// <summary>
         /// Test to check correct signature of the message from NeblioAccount object
         /// </summary>
@@ -124,5 +125,6 @@ namespace VEFrameworkUnitTest.Cryptography
 
             Assert.False(sign.Item1);
         }
+        */
     }
 }
