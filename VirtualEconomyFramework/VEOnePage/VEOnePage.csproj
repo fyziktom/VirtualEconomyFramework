@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
+    <PackageReference Include="BlazorPagination" Version="0.2.16" />
     <PackageReference Include="Markdig" Version="0.27.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0" PrivateAssets="all" />

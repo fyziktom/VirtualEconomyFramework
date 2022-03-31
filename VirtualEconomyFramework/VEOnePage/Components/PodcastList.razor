@@ -28,6 +28,11 @@
   @if(CurrentPodcast != null){
       <div class="podcast-player z-depth-2">
       <div id="buzzsprout-player-@CurrentPodcast.PodcastId">
+         <div class="row">
+            <div class="col d-flex justify-content-center align-items-center">
+                <span>Loading Podcast...</span>
+            </div>
+        </div>
       </div>
       <div id="close-player" @onclick="ClosePlayer"><i class="fas fa-times"></i></div>
       </div>
