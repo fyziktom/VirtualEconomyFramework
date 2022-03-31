@@ -22,43 +22,118 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Enum for loading of image/music/data stage
+    /// </summary>
     public enum LoadingImageStages
     {
+        /// <summary>
+        /// Loading image stage - not started
+        /// </summary>
         NotStarted,
+        /// <summary>
+        /// Loading image stage - loading in progress
+        /// </summary>
         Loading,
-        Loaded
+        /// <summary>
+        /// Loading image stage - Loaded successfully
+        /// </summary>
+        Loaded,
+        /// <summary>
+        /// Loading image stage - load failed
+        /// </summary>        
+        Failed
     }
+    /// <summary>
+    /// Dto for search of the Origin of the NFT
+    /// </summary>
     public class LoadNFTOriginDataDto
     {
+        /// <summary>
+        /// Actual Utxo
+        /// </summary>
         public string Utxo { get; set; } = string.Empty;
+        /// <summary>
+        /// Source Utxo
+        /// </summary>
         public string SourceTxId { get; set; } = string.Empty;
+        /// <summary>
+        /// Origin of the NFT Utxo if known
+        /// </summary>
         public string NFTOriginTxId { get; set; } = string.Empty;
+        /// <summary>
+        /// Tag which is used to identify the NFT is "used" stage - for example ticket
+        /// </summary>
         public bool Used { get; set; } = false;
+        /// <summary>
+        /// Metadata from the NFT history moment
+        /// </summary>
         public Dictionary<string, string> NFTMetadata { get; set; } = new Dictionary<string, string>();
     }
 
+    /// <summary>
+    /// Dto for the parse response of the IPFS server
+    /// </summary>
     public class IPFSResponse
     {
+        /// <summary>
+        /// Name of the File
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Hash of the file
+        /// </summary>
         public string Hash { get; set; }
+        /// <summary>
+        /// Size of the file
+        /// </summary>
         public string Size { get; set; }
     }
-
+    /// <summary>
+    /// Helper static class for the NFT Operations and especially preparation of the NFT data
+    /// </summary>
     public static class NFTHelpers
     {
+        /// <summary>
+        /// List of the allowed tokens. If you want to use your own tokens you can add them here
+        /// The hash is the Token hash of the NTP1 token created on the Neblio network
+        /// </summary>
         public static List<string> AllowedTokens = new List<string>() {
                 "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
                 Coruzant.CoruzantNFTHelpers.CoruzantTokenId,
                 HardwarioNFTHelpers.TokenId };
-
+        /// <summary>
+        /// Infura Key for the access to the IPFS API
+        /// </summary>
         public static string InfuraKey = "1urI71lwIaCjNo4b2kyL8LQ5Rlf";
+        /// <summary>
+        /// Infura Secret for the access to the IPFS API
+        /// </summary>
         public static string InfuraSecret = "ce9c8fb81ab177c713841cecc3f9af51";
+        /// <summary>
+        /// Infura Url for the access to the IPFS API
+        /// </summary>
         public static string InfuraAPIURL = "https://ipfs.infura.io:5001";
+        /// <summary>
+        /// Main default tokens in VEFramework - VENFT
+        /// </summary>
         public static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+        /// <summary>
+        /// Main default tokens symbol in VEFramework - VENFT
+        /// </summary>
         private static string TokenSymbol = "VENFT";
+        /// <summary>
+        /// IPFS Client
+        /// </summary>
         public static readonly IpfsClient ipfs = new IpfsClient(InfuraAPIURL);
+        /// <summary>
+        /// IPFS Client - special for Infura
+        /// </summary>
         public static IpfsClient ipfsInfura = null;
 
+        /// <summary>
+        /// New event happened - IEventInfo type of the message
+        /// </summary>
         public static event EventHandler<IEventInfo> NewEventInfo;
 
         /// <summary>
@@ -165,6 +240,7 @@ namespace VEDriversLite.NFT
                         }
                         catch (Exception ex)
                         {
+                            Console.WriteLine("File still not available: " + ex.Message);
                             await Task.Delay(1000);
                         }
                         attempts--;
@@ -179,6 +255,12 @@ namespace VEDriversLite.NFT
             return link;
         }
 
+        /// <summary>
+        /// Load connection info to the internal variables of this class
+        /// </summary>
+        /// <param name="ipfsKey"></param>
+        /// <param name="ipfsSecret"></param>
+        /// <param name="apiurl"></param>
         public static void LoadConnectionInfo(string ipfsKey = "", string ipfsSecret = "", string apiurl = "")
         {
             var refresh = false;
@@ -209,6 +291,13 @@ namespace VEDriversLite.NFT
             }
 
         }
+        /// <summary>
+        /// Create IPFS client with authentication
+        /// </summary>
+        /// <param name="IpfsHostUrl"></param>
+        /// <param name="IpfsHostUserName"></param>
+        /// <param name="IpfsHostPassword"></param>
+        /// <returns></returns>
         public static IpfsClient CreateIpfsClient(string IpfsHostUrl, string IpfsHostUserName, string IpfsHostPassword)
         {
             var c = new IpfsClient(IpfsHostUrl);
@@ -231,6 +320,13 @@ namespace VEDriversLite.NFT
             return c;
         }
 
+        /// <summary>
+        /// Upload file to the Infura IPFS
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileContentType"></param>
+        /// <returns></returns>
         public static async Task<string> UploadInfura(Stream stream, string fileName, string fileContentType = "multipart/form-data")
         {
             if (stream == null)
@@ -272,6 +368,7 @@ namespace VEDriversLite.NFT
                         }
                         catch (Exception ex)
                         {
+                            Console.WriteLine("File still not available: " + ex.Message);                            
                             await Task.Delay(1000);
                         }
                         attempts--;
@@ -286,6 +383,11 @@ namespace VEDriversLite.NFT
             return string.Empty;
         }
 
+        /// <summary>
+        /// Download file from IPFS Infura with use of credentials
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <returns></returns>
         public static async Task<byte[]> IPFSDownloadFromInfuraAsync(string hash)
         {
             var ipfsClient = CreateIpfsClient(InfuraAPIURL, InfuraKey, InfuraSecret);
@@ -309,6 +411,11 @@ namespace VEDriversLite.NFT
             return null;
         }
 
+        /// <summary>
+        /// Download file from IPFS public
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <returns></returns>
         public static async Task<byte[]> IPFSDownloadFromPublicAsync(string hash)
         {
             ipfs.UserAgent = "VEFramework";
@@ -328,6 +435,10 @@ namespace VEDriversLite.NFT
             return null;
         }
 
+        /// <summary>
+        /// Add allowed tokens during the initialization
+        /// </summary>
+        /// <returns></returns>
         public static async Task InitNFTHelpers()
         {
             await NeblioTransactionHelpers.LoadAllowedTokensInfo(AllowedTokens);
@@ -339,6 +450,7 @@ namespace VEDriversLite.NFT
         /// This method is now used for "original" NFTs. It is for example Image and Music. 
         /// </summary>
         /// <param name="utxo"></param>
+        /// <param name="checkIfUsed">if you are checking the NFT ticket you should set this flag</param>
         /// <returns></returns>
         public static async Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo, bool checkIfUsed = false)
         {
@@ -385,7 +497,7 @@ namespace VEDriversLite.NFT
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Problem in loading of NFT origin!");
+                    Console.WriteLine("Problem in loading of NFT origin! " + ex.Message);
                 }
             }
         }
@@ -415,7 +527,7 @@ namespace VEDriversLite.NFT
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Problem in loading of NFT origin!");
+                Console.WriteLine("Problem in loading of NFT origin!" + ex.Message);
             }
 
             return null;
@@ -496,6 +608,7 @@ namespace VEDriversLite.NFT
         /// this function will search the utxos, get all nfts utxos (if utxos list is not loaded) and return last profile nft which is founded on the address.
         /// </summary>
         /// <param name="address"></param>
+        /// <param name="nftOriginTxId"></param>
         /// <param name="utxos">leave null if you need to obtain new utxos nft list</param>
         /// <returns></returns>
         public static async Task<INFT> FindEventOnTheAddress(string address, string nftOriginTxId, ICollection<Utxos> utxos = null)
@@ -558,9 +671,14 @@ namespace VEDriversLite.NFT
         /// This function will find all NFTs and load them to the carriers. 
         /// If you already have list of utxos and NFTs you can provide it and it will load just the changes.
         /// </summary>
-        /// <param name="address"></param>
-        /// <param name="inutxos"></param>
-        /// <param name="innfts"></param>
+        /// <param name="address">Address with this NFTs</param>
+        /// <param name="inutxos">Input Utxos collection</param>
+        /// <param name="innfts">Input NFTs collection</param>
+        /// <param name="fireProfileEvent">If you find profile, fire the event</param>
+        /// <param name="maxLoadedItems">Limit number of loaded items</param>
+        /// <param name="withoutMessages">Do not load messages</param>
+        /// <param name="justMessages">Load just messages</param>
+        /// <param name="justPayments">Load just Payments</param>
         /// <returns></returns>
         public static async Task<List<INFT>> LoadAddressNFTs(string address,
                                                              ICollection<Utxos> inutxos = null,
@@ -737,7 +855,14 @@ namespace VEDriversLite.NFT
                 return new List<INFT>();
             }
         }
-
+        /// <summary>
+        /// Load just the Messages on the address - between the addresses
+        /// </summary>
+        /// <param name="aliceAddress"></param>
+        /// <param name="bobAddress"></param>
+        /// <param name="innfts"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task<List<INFT>> LoadAddressNFTMessages(string aliceAddress, string bobAddress, ICollection<INFT> innfts = null)
         {
             if (innfts == null)
@@ -790,6 +915,7 @@ namespace VEDriversLite.NFT
         /// <param name="NFT">Input NFT object with data to save to metadata</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string receiver = "")
         {
@@ -826,6 +952,8 @@ namespace VEDriversLite.NFT
         /// <param name="NFT">Input NFT object with data to save to metadata</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <param name="rewriteAuthor">You can rewrite author and use the Profile NFT hash,etc.</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> SendMessageNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string rewriteAuthor = "")
         {
@@ -885,6 +1013,7 @@ namespace VEDriversLite.NFT
         /// <param name="NFT">Input NFT object with data to save to metadata</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> SendIoTMessageNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
@@ -943,6 +1072,7 @@ namespace VEDriversLite.NFT
         /// <param name="NFT">Input NFT object with data to save to metadata</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> MintMultiNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string receiver = "")
         {
@@ -982,13 +1112,13 @@ namespace VEDriversLite.NFT
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintNFTTickets(string address, int coppies, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<string> MintNFTTickets(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
-            var metadata = await nft.GetMetadata();
+            var metadata = await NFT.GetMetadata();
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
-                Id = nft.TokenId, // id of token
+                Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address
             };
@@ -1162,8 +1292,11 @@ namespace VEDriversLite.NFT
         /// <param name="address">sender address</param>
         /// <param name="ekey">Encryption Key object of the address</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        /// <param name="nfts">Input NFTs to destroy</param>
+        /// <param name="mintingUtxo">Minting input Utxo if known</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
-        public static async Task<string> DestroyNFTs(string address, EncryptionKey ekey, ICollection<INFT> nfts, ICollection<Utxos> nutxos, string receiver = "")
+        public static async Task<string> DestroyNFTs(string address, EncryptionKey ekey, ICollection<INFT> nfts, ICollection<Utxos> nutxos, string receiver = "", Utxos mintingUtxo = null)
         {
             if (nfts == null || nfts.Count == 0)
                 throw new Exception("You have to add NFT Utxos list");
@@ -1197,11 +1330,11 @@ namespace VEDriversLite.NFT
                 SenderAddress = address,
                 ReceiverAddress = receiver
             };
-
+            
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.DestroyNFTAsync(dto, ekey, nutxos);
+                var rtxid = await NeblioTransactionHelpers.DestroyNFTAsync(dto, ekey, nutxos, mintingUtxo:mintingUtxo);
                 if (!string.IsNullOrEmpty(rtxid))
                     return rtxid;
                 else
@@ -1218,6 +1351,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="address">sender address</param>
         /// <param name="ekey">Encryption Key object of the address</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <param name="nft">Input NFT object with data to save to metadata. It is NFT what you are buying.</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
@@ -1318,6 +1452,8 @@ namespace VEDriversLite.NFT
         /// <param name="priceWrite">Set this if you just want to set price of the NFT. means resend to yourself</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="price">Price must be higher than 0.0002 Neblio</param>
+        /// <param name="withDogePrice">Set if Doge Price should be written</param>
+        /// <param name="dogeprice">Set doge price, min 0.1</param>
         /// <returns>New Tx Id hash</returns>
         public static async Task<string> SendNFT(string address, string receiver, EncryptionKey ekey, INFT NFT, bool priceWrite, ICollection<Utxos> nutxos, double price = 0.0002, bool withDogePrice = false, double dogeprice = 1)
         {
@@ -1426,7 +1562,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="nfts"></param>
         /// <returns></returns>
-        public static async Task<ProfileNFT> FindProfileNFT(ICollection<INFT> nfts)
+        public static ProfileNFT FindProfileNFT(ICollection<INFT> nfts)
         {
             if (nfts != null)
                 foreach (var n in nfts)

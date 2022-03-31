@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Key export import Dto
+    /// </summary>
     public class KeyDto
     {
         /// <summary>

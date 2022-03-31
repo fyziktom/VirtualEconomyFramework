@@ -13,12 +13,10 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Diagnostics;
-using Neblio.RestApi;
-using VEDrivers.Economy.Transactions;
-using VEDrivers.Economy;
-using VEDrivers.Economy.Tokens;
-using VEDrivers.Common;
 using System.Runtime.InteropServices;
+using VEDriversLite;
+using Neblio.RestApi;
+using VEDriversLite.Common;
 
 namespace TestNeblio
 {
@@ -120,23 +118,6 @@ namespace TestNeblio
             }
             Console.WriteLine();
         }
-
-
-        [TestEntry]
-        public static void TransactionInfo(DbConnection conn, string param, object obj)
-        {
-            var client = (IClient)new Client(httpClient) { BaseUrl = "https://ntp1node.nebl.io" };
-            NeblioTransactionHelpers.TransactionInfo(TransactionTypes.Neblio, string.Empty, param, null);
-        }
-
-        //todo connect to testnet
-        [TestEntry]
-        public static void TransactionInfoTest(DbConnection conn, string param, object obj)
-        {
-            var client = (IClient)new TestnetClient(httpClient) { BaseUrl = "https://ntp1node.nebl.io" }; ;
-            NeblioTransactionHelpers.TransactionInfo(TransactionTypes.Neblio, string.Empty, param, null);
-        }
-
 
         [TestEntry]
         public static void NeblioInfo(DbConnection conn, string param, object obj)

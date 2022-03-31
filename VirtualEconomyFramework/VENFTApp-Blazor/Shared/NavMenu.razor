@@ -1,10 +1,14 @@
-﻿@inject AppData AppData
+﻿@using Microsoft.Extensions.Configuration
+@inject AppData AppData
+@inject IConfiguration Configuration
 
 <div class="top-row pl-4 navbar navbar-dark">
+    <div class="container-fluid">
     <a class="navbar-brand" href=""><img src="images/VENFT_logo.png" style="max-height:80px; min-width:100px; max-width:150px;" /></a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
+    </div>
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
@@ -49,24 +53,24 @@
                 <span class="oi oi-credit-card" aria-hidden="true"></span> Doge Wallet
             </NavLink>
         </li>
-        @if (AppData.Development)
+        @if (Convert.ToBoolean(Configuration["development"]))
         {
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="devices">
-                <span class="oi oi-dashboard" aria-hidden="true"></span> Devices
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link " href="advanced">
-                <span class="oi oi-wrench" aria-hidden="true"></span> Advanced
-            </NavLink>
-        </li>
-        <!--
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="tools">
-                <span class="oi oi-browser" aria-hidden="true"></span> Tools
-            </NavLink>
-        </li>-->
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="devices">
+                    <span class="oi oi-dashboard" aria-hidden="true"></span> Devices
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link " href="advanced">
+                    <span class="oi oi-wrench" aria-hidden="true"></span> Advanced
+                </NavLink>
+            </li>
+            <!--
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="tools">
+                    <span class="oi oi-browser" aria-hidden="true"></span> Tools
+                </NavLink>
+            </li>-->
         }
     </ul>
 </div>
@@ -84,7 +88,7 @@
         }
     }
 
-    
+
 
     private bool collapseNavMenu = true;
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;

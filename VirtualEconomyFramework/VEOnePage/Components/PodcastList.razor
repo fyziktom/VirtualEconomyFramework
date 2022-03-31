@@ -4,10 +4,8 @@
 @inject HttpClient _client
 @inject IJSRuntime JSRuntime
   
-  @foreach (var profile in AppData.NFTs.Skip(12).Take(3))
+  @foreach (var profile in AppData.ProfilesNFTs.Take(3))
   {
-      if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
-      {
         var prof = profile as CoruzantProfileNFT;
         <div class="col-xs-12 col-sm-4  dark"> 
             <div class="podcast" style="background:url(@prof.ImageLink);background-size:cover">
@@ -22,10 +20,9 @@
 
                 <i class="fa fa-podcast" aria-hidden="true" ></i>
                 
+              </div>
             </div>
         </div>
-        </div>
-    }
   }
 
   @if(CurrentPodcast != null){

@@ -5,6 +5,9 @@ using VEDriversLite.NFT;
 
 namespace VEDriversLite.Dto
 {
+    /// <summary>
+    /// Split Neblio tokens Dto.
+    /// </summary>
     public class SplitNeblioTokensDto
     {
         /// <summary>

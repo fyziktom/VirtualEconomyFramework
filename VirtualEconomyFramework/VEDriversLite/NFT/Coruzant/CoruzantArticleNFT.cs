@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT.Coruzant
 {
+    /// <summary>
+    /// Coruzant specific NFT for the article
+    /// </summary>
     public class CoruzantArticleNFT : CommonCoruzantNFT
     {
+        /// <summary>
+        /// Construct the NFT Article
+        /// </summary>
+        /// <param name="utxo"></param>
         public CoruzantArticleNFT(string utxo)
         {
             Utxo = utxo;
@@ -16,6 +23,11 @@ namespace VEDriversLite.NFT.Coruzant
             TokenId = "La9ADonmDwxsNKJGvnRWy8gmWmeo72AEeg8cK7";
         }
 
+        /// <summary>
+        /// Fill the NFT with data
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT)
         {
             await FillCommon(NFT);
@@ -31,12 +43,28 @@ namespace VEDriversLite.NFT.Coruzant
             }
         }
 
+        /// <summary>
+        /// Reference to the Coruzant NFT Profile
+        /// </summary>
         public string AuthorProfileUtxo { get; set; } = string.Empty;
+        /// <summary>
+        /// Full link to previous post
+        /// </summary>
         public string FullPostLink { get; set; } = string.Empty;
+        /// <summary>
+        /// Last added comment to the article
+        /// </summary>
         public string LastComment { get; set; } = string.Empty;
+        /// <summary>
+        /// Last comment was added by address or NFT Profile hash
+        /// </summary>
         public string LastCommentBy { get; set; } = string.Empty;
 
 
+        /// <summary>
+        /// Parse specific properties
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             if (metadata.TryGetValue("AuthorProfileUtxo", out var pu))
@@ -51,6 +79,11 @@ namespace VEDriversLite.NFT.Coruzant
                 PodcastLink = pdl;
         }
 
+        /// <summary>
+        /// Parse origin data
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
@@ -66,6 +99,10 @@ namespace VEDriversLite.NFT.Coruzant
             ParseSpecific(lastmetadata);
         }
 
+        /// <summary>
+        /// Load last data for this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             var nftData = await NFTHelpers.LoadLastData(Utxo);
@@ -81,6 +118,14 @@ namespace VEDriversLite.NFT.Coruzant
             ParseSpecific(nftData.NFTMetadata);
         }
 
+        /// <summary>
+        /// Get Metadata of this NFT
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="key"></param>
+        /// <param name="receiver"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             if (string.IsNullOrEmpty(ImageLink))

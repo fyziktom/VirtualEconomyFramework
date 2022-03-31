@@ -73,7 +73,7 @@ window.jsFunctions = {
         document.body.appendChild(anchor);
         anchor.click();
         document.body.removeChild(anchor);
-    }
+    },
     copyToClipboard: function (text) {
         navigator.clipboard.writeText(text);
     },

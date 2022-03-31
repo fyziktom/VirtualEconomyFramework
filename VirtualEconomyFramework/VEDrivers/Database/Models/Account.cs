@@ -92,7 +92,7 @@ namespace VEDrivers.Database.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Account Guid Key stored in db is not valid or empty, create empty!");
+                Console.WriteLine("Account Guid Key stored in db is not valid or empty, create empty!" + ex.Message);
                 acc.AccountKeyId = Guid.Empty;
             }
 

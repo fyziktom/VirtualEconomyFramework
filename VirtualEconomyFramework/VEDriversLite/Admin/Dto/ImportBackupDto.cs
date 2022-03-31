@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Admin.Dto
 {
+    /// <summary>
+    /// Import basic account Backup Dto
+    /// </summary>
     public class ImportBackupDto
     {
         /// <summary>

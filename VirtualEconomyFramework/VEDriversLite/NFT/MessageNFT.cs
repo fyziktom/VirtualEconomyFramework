@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -29,6 +30,9 @@ namespace VEDriversLite.NFT
         public bool Encrypt { get; set; } = true;
         public bool Decrypted { get; set; } = false;
         public string Partner { get; set; } = string.Empty;
+        [JsonIgnore]
+        public string SharedKey { get; set; } = string.Empty;
+        [JsonIgnore]
         public byte[] ImageData { get; set; }
 
         public bool IsReceivedMessage { get; set; } = false;
@@ -105,7 +109,7 @@ namespace VEDriversLite.NFT
             if (string.IsNullOrEmpty(Partner))
                 return false;//throw new Exception("Cannot decrypt without loaded Partner address.");
 
-            var add = secret.PubKey.GetAddress(NeblioTransactionHelpers.Network);
+            var add = secret.PubKey.GetAddress(NBitcoin.ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
 
             if (Partner == add.ToString() && !decryptEvenOnSameAddress)
             {
@@ -118,19 +122,41 @@ namespace VEDriversLite.NFT
             {
                 IsReceivedMessage = true;
             }
-
+            
             runningDecryption = true;
-
-            Description = await DecryptProperty(Description, secret, "", Partner);
-            Name = await DecryptProperty(Name, secret, "", Partner);
-            Text = await DecryptProperty(Text, secret, "", Partner);
-            ImageLink = await DecryptProperty(ImageLink, secret, "", Partner);
-            Link = await DecryptProperty(Link, secret, "", Partner);
-
+            if (await LoadSharedKeyForEncrypt(secret))
+            {
+                Description = await DecryptProperty(Description, secret, "", Partner, sharedkey: SharedKey);
+                Name = await DecryptProperty(Name, secret, "", Partner, sharedkey: SharedKey);
+                Text = await DecryptProperty(Text, secret, "", Partner, sharedkey: SharedKey);
+                ImageLink = await DecryptProperty(ImageLink, secret, "", Partner, sharedkey: SharedKey);
+                Link = await DecryptProperty(Link, secret, "", Partner, sharedkey: SharedKey);
+            }
+            else
+            {
+                Console.WriteLine("Cannot decrypt NFT. Shared key not found.");
+            }
             Decrypted = true;
             runningDecryption = false;
 
             return true;
+        }
+
+        private async Task<bool> LoadSharedKeyForEncrypt(NBitcoin.BitcoinSecret secret)
+        {
+            if (string.IsNullOrEmpty(SharedKey))
+            {
+                var sharedkey = await ECDSAProvider.GetSharedSecret(Partner, secret);
+                if (sharedkey.Item1)
+                {
+                    SharedKey = sharedkey.Item2;
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else
+                return true;
         }
         
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
@@ -168,6 +194,7 @@ namespace VEDriversLite.NFT
                     res = await ECDSAProvider.EncryptStringWithSharedSecret(Link, receiver, key);
                     if (res.Item1)
                         elink = res.Item2;
+
                 }
                 else
                 {

@@ -9,12 +9,30 @@ using VEDriversLite.NFT.Dto;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Main shared data context
+    /// </summary>
     public static class VEDLDataContext
     {
+        /// <summary>
+        /// List of all Neblio Accounts
+        /// </summary>
         public static ConcurrentDictionary<string, NeblioAccount> Accounts = new ConcurrentDictionary<string, NeblioAccount>();
+        /// <summary>
+        /// List of all Dogecoin accounts
+        /// </summary>
         public static ConcurrentDictionary<string, DogeAccount> DogeAccounts = new ConcurrentDictionary<string, DogeAccount>();
+        /// <summary>
+        /// Allowed addresses which can do some admin actions with AccountHandler
+        /// </summary>
         public static List<string> AdminAddresses = new List<string>();
+        /// <summary>
+        /// Public addresses list.
+        /// </summary>
         public static List<string> PublicAddresses = new List<string>();
+        /// <summary>
+        /// List of requested admin actions
+        /// </summary>
         public static ConcurrentDictionary<string, IAdminAction> AdminActionsRequests = new ConcurrentDictionary<string, IAdminAction>();
         /// <summary>
         /// NFT Hashes list. Usually it should contains list of all available NFTs in your app
@@ -61,9 +79,17 @@ namespace VEDriversLite
         /// This is the name of the Neblio Address field in the checkout form in WoC
         /// </summary>
         public static string WooCommerceStoreCheckoutFieldCustomerNeblioAddress { get; set; } = "_billing_neblio_address";
+        /// <summary>
+        /// If this is set, shop will send automatically the dogecoin to author based on selected deposit scheme
+        /// </summary>
         public static bool WooCommerceStoreSendDogeToAuthor { get; set; } = false;
-
+        /// <summary>
+        /// Allow to dispatch orders of NFTs automatically
+        /// </summary>
         public static bool AllowDispatchNFTOrders { get; set; } = false;
+        /// <summary>
+        /// List of the deposit schemes for processing the payments for NFTs
+        /// </summary>
         public static Dictionary<string, DepositScheme> DepositSchemes { get; set; } = new Dictionary<string, DepositScheme>();
     }
 }

@@ -643,7 +643,7 @@
                 else
                     res = await AppData.Account.ChangeNFTOnSubAccount(Address, newNFT);
             }
-            else if (string.IsNullOrEmpty(newNFT.Utxo) && NumberOfCoppies > 0 && nftType != NFTTypes.Profile)
+            else if (string.IsNullOrEmpty(newNFT.Utxo) && withCoppies && nftType != NFTTypes.Profile)
             {
                 if (!SubAccount)
                     res = await AppData.Account.MintMultiNFT(newNFT, NumberOfCoppies);

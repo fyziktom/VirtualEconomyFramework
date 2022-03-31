@@ -10,8 +10,14 @@ using VEDriversLite.Cryptocurrencies.Dto;
 
 namespace VEDriversLite.Cryptocurrencies.CoingeckoAPI
 {
+    /// <summary>
+    /// Dto for Usd price
+    /// </summary>
     public class CoingeckoUsdPriceDto
     {
+        /// <summary>
+        /// USD price
+        /// </summary>
         public double usd { get; set; }
     }
     /// <summary>
@@ -29,8 +35,14 @@ namespace VEDriversLite.Cryptocurrencies.CoingeckoAPI
         /// </summary>
         public CoingeckoUsdPriceDto dogecoin { get; set; } = new CoingeckoUsdPriceDto();
     }
+    /// <summary>
+    /// Coingecko Excange Rates API
+    /// </summary>
     public class CoingeckoExchangeRatesAPI : CommonExchangeRatesAPI, IDisposable
     {
+        /// <summary>
+        /// Main constructor, fill Name to "Coingecko", basic APIUrl and type of class to Coingecko
+        /// </summary>
         public CoingeckoExchangeRatesAPI()
         {
             Name = "Coingecko";

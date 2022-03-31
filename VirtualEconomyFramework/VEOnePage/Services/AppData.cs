@@ -19,7 +19,7 @@ namespace VEOnePage.Services
         public static ConcurrentDictionary<string,INFT> NFTsDict { get; set; } = new ConcurrentDictionary<string, INFT>();
         public static List<INFT> NFTs { get; set; } = new List<INFT>();
         public static string Address { get; } = "NfzBf8eeqJ71zHf29npwYwEPkiWYZZtabJ"; // main coruzat publishing address
-        public static int MaxLoaded { get; } = 20;
+        public static int MaxLoaded { get; } = 30;
 
         public List<INFT> ArticleNFTs {
             get => NFTs.Where(n => n.Type == NFTTypes.CoruzantArticle).ToList();
