@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Cryptocurrencies
 {
+    /// <summary>
+    /// Factory for creating the cryptocurrency API client.
+    /// </summary>
     public static class ExchangeRatesAPIFactory
     {
         /// <summary>

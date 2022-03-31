@@ -70,7 +70,7 @@ namespace VEDriversLite.NFT
                 {
                     ExposeDate = DateTime.Parse(date);
                 }
-                catch (Exception ex)
+                catch
                 {
                     Console.WriteLine("Cannot parse NFT Ticket Event Date");
                 }
@@ -85,7 +85,7 @@ namespace VEDriversLite.NFT
                         if (itms != null)
                             InvoiceItems = itms;
                     }
-                    catch(Exception ex)
+                    catch
                     {
                         Console.WriteLine($"Cannot deserialize the Invoice Items of InvoiceNFT: {Utxo}:{UtxoIndex}");
                         InvoiceItems = new List<InvoiceItem>();

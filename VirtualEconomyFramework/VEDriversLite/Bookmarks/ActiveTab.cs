@@ -10,10 +10,20 @@ using VEDriversLite.NFT;
 
 namespace VEDriversLite.Bookmarks
 {
+    /// <summary>
+    /// Active tab is able to load the Address and its NFTs
+    /// </summary>
     public class ActiveTab
     {
         private static object _lock = new object();
+        /// <summary>
+        /// Basic constructor
+        /// </summary>
         public ActiveTab() { }
+        /// <summary>
+        /// Basic constructor witch will load address and shortaddress
+        /// </summary>
+        /// <param name="address"></param>
         public ActiveTab(string address)
         {
             Address = address;
@@ -94,6 +104,9 @@ namespace VEDriversLite.Bookmarks
 
 
         private System.Timers.Timer refreshTimer = new System.Timers.Timer();
+        /// <summary>
+        /// Limit of the maximum loaded items in the Active Tab
+        /// </summary>
         public int MaxLoadedNFTItems { get; set; } = 40;
 
         /// <summary>
@@ -158,7 +171,9 @@ namespace VEDriversLite.Bookmarks
         /// <summary>
         /// Start Automated refreshing
         /// </summary>
-        /// <param name="interval"></param>
+        /// <param name="interval">basic refresh interval</param>
+        /// <param name="withoutMessages">dont load the NFT Messages</param>
+        /// <param name="withCahePreload">Activate preload</param>
         /// <returns></returns>
         public async Task StartRefreshing(double interval = 5000, bool withoutMessages = true, bool withCahePreload = true)
         {
@@ -173,7 +188,7 @@ namespace VEDriversLite.Bookmarks
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Cannot Reload Active Tab after the start.");
+                Console.WriteLine("Cannot Reload Active Tab after the start. " + ex.Message);
             }
 
             refreshTimer.Interval = interval;
@@ -188,7 +203,7 @@ namespace VEDriversLite.Bookmarks
         /// Stop automated refreshing
         /// </summary>
         /// <returns></returns>
-        public async Task StopRefreshing()
+        public void StopRefreshing()
         {
             IsRefreshingRunning = false;
             Selected = false;
@@ -254,7 +269,7 @@ namespace VEDriversLite.Bookmarks
                 }
 
                 if (_NFTs.Count > 0)
-                    Profile = await NFTHelpers.FindProfileNFT(_NFTs);
+                    Profile = NFTHelpers.FindProfileNFT(_NFTs);
 
                 FirsLoadingStatus?.Invoke(this, "Searching for NFT Payments.");
                 await RefreshAddressReceivedPayments();

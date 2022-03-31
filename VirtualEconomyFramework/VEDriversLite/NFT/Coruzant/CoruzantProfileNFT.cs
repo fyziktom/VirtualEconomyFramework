@@ -6,20 +6,57 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT.Coruzant
 {
+    /// <summary>
+    /// Dto to serialize information from buzzsprout api
+    /// </summary>
     public class BuzzsproutEpisodeDto
     {
+        /// <summary>
+        /// ID of the episode
+        /// </summary>
         public int id { get; set; } = 0;
+        /// <summary>
+        /// Title of the episode
+        /// </summary>
         public string title { get; set; } = string.Empty;
+        /// <summary>
+        /// Audio url of the episode
+        /// </summary>
         public string audio_url { get; set; } = string.Empty;
+        /// <summary>
+        /// Image url of the episode
+        /// </summary>
         public string artwork_url { get; set; } = string.Empty;
+        /// <summary>
+        /// Description of the episode
+        /// </summary>
         public string description { get; set; } = string.Empty;
+        /// <summary>
+        /// Short summary of the episode
+        /// </summary>
         public string summary { get; set; } = string.Empty;
+        /// <summary>
+        /// Artists
+        /// </summary>
         public string artist { get; set; } = string.Empty;
+        /// <summary>
+        /// GUID of the episode
+        /// </summary>
         public string guid { get; set; } = string.Empty;
+        /// <summary>
+        /// Total played
+        /// </summary>
         public int total_plays { get; set; } = 0;
     }
+    /// <summary>
+    /// Coruzant profile NFT
+    /// </summary>
     public class CoruzantProfileNFT : CommonCoruzantNFT
     {
+        /// <summary>
+        /// Construct empty Coruzant profile
+        /// </summary>
+        /// <param name="utxo"></param>
         public CoruzantProfileNFT(string utxo)
         {
             Utxo = utxo;
@@ -28,18 +65,52 @@ namespace VEDriversLite.NFT.Coruzant
             TokenId = "La9ADonmDwxsNKJGvnRWy8gmWmeo72AEeg8cK7";
         }
 
+        /// <summary>
+        /// Age of the person
+        /// </summary>
         public int Age { get; set; } = 0;
+        /// <summary>
+        /// Person Surname
+        /// </summary>
         public string Surname { get; set; } = string.Empty;
+        /// <summary>
+        /// Person Nickname
+        /// </summary>
         public string Nickname { get; set; } = string.Empty;
+        /// <summary>
+        /// Personal page url link
+        /// </summary>
         public string PersonalPageLink { get; set; } = string.Empty;
+        /// <summary>
+        /// Name of the company where person is working
+        /// </summary>
         public string CompanyName { get; set; } = string.Empty;
+        /// <summary>
+        /// Link to the company website
+        /// </summary>
         public string CompanyLink { get; set; } = string.Empty;
+        /// <summary>
+        /// Working position of the person
+        /// </summary>
         public string WorkingPosition { get; set; } = string.Empty;
+        /// <summary>
+        /// Podcast Id with this person
+        /// </summary>
         public string PodcastId { get; set; } = string.Empty;
+        /// <summary>
+        /// LinkedIn link of the person
+        /// </summary>
         public string Linkedin { get; set; } = string.Empty;
+        /// <summary>
+        /// Twitter link of the person
+        /// </summary>
         public string Twitter { get; set; } = string.Empty;
         
-
+        /// <summary>
+        /// Fill the data from template
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT)
         {
             await FillCommon(NFT);
@@ -61,6 +132,10 @@ namespace VEDriversLite.NFT.Coruzant
             }
         }
 
+        /// <summary>
+        /// Parse specific parameters
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             if (metadata.TryGetValue("Surname", out var surname))
@@ -87,6 +162,11 @@ namespace VEDriversLite.NFT.Coruzant
                 Twitter = twit;
         }
 
+        /// <summary>
+        /// Parse origin data of the NFT
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
@@ -102,6 +182,10 @@ namespace VEDriversLite.NFT.Coruzant
             }
         }
 
+        /// <summary>
+        /// Get last data for this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             var nftData = await NFTHelpers.LoadLastData(Utxo);
@@ -116,6 +200,14 @@ namespace VEDriversLite.NFT.Coruzant
             }
         }
 
+        /// <summary>
+        /// Get Metadata for this NFT
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="key"></param>
+        /// <param name="receiver"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             if (string.IsNullOrEmpty(ImageLink))

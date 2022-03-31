@@ -10,6 +10,9 @@ using VEDriversLite.Devices.Dto;
 
 namespace VEDriversLite.Devices.APIs.HARDWARIO
 {
+    /// <summary>
+    /// API Client for the HARDWARIO Cloud API
+    /// </summary>
     public class HARDWARIOApiClient
     {
         /// <summary>

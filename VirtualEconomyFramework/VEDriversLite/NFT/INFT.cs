@@ -8,38 +8,124 @@ using VEDriversLite.NFT.Dto;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Definition of the NFT types. 
+    /// If you want to add your own NFT you should start here
+    /// </summary>
     public enum NFTTypes
     {
+        /// <summary>
+        /// Basic Image NFT
+        /// </summary>
         Image,
+        /// <summary>
+        /// Basic Post NFT
+        /// </summary>
         Post,
+        /// <summary>
+        /// Profile NFT
+        /// </summary>
         Profile,
+        /// <summary>
+        /// Music NFT - can hold also video
+        /// </summary>
         Music,
+        /// <summary>
+        /// Youtube specific NFT
+        /// </summary>
         YouTube,
+        /// <summary>
+        /// Spotify specific NFT
+        /// </summary>
         Spotify,
+        /// <summary>
+        /// Payment NFT. It is used for buy another NFT
+        /// </summary>
         Payment,
+        /// <summary>
+        /// NFT message
+        /// </summary>
         Message,
+        /// <summary>
+        /// Ticket for some NFT Event
+        /// </summary>
         Ticket,
+        /// <summary>
+        /// NFT Event, base for the creating NFT Tickets
+        /// </summary>
         Event,
+        /// <summary>
+        /// Receipt after sold NFT
+        /// </summary>
         Receipt,
+        /// <summary>
+        /// NFT Order, base for NFT Invoice
+        /// </summary>
         Order,
+        /// <summary>
+        /// NFT Invoice, based on the previous NFT Order
+        /// </summary>
         Invoice,
+        /// <summary>
+        /// NFT Product is base for the Order and Invoice. 
+        /// </summary>
         Product,
+        /// <summary>
+        /// Coruzant specific article
+        /// </summary>
         CoruzantArticle = 101,
+        /// <summary>
+        /// Coruzant specific premium article
+        /// </summary>
         CoruzantPremiumArticle = 102,
+        /// <summary>
+        /// Coruzant specific podcast
+        /// </summary>
         CoruzantPodcast = 103,
+        /// <summary>
+        /// Coruzant specific premium podcast
+        /// </summary>
         CoruzantPremiumPodcast = 104,
+        /// <summary>
+        /// Coruzant profile
+        /// </summary>
         CoruzantProfile = 105,
+        /// <summary>
+        /// NFT Device, base for NFT IoT Device
+        /// </summary>
         Device = 1001,
+        /// <summary>
+        /// NFT IoT Device, based on the NFT Device. It can acquire the data from the IoTDataDrivers
+        /// </summary>
         IoTDevice = 1002,
+        /// <summary>
+        /// NFT Protocol. Description of the communication for Device and IoTDevice
+        /// </summary>
         Protocol = 1003,
+        /// <summary>
+        /// HW source of the NFT Device
+        /// </summary>
         HWSrc = 1004,
+        /// <summary>
+        /// FW source of the NFT Device
+        /// </summary>
         FWSrc = 1005,
+        /// <summary>
+        /// SW source of the NFT Device
+        /// </summary>
         SWSrc = 1006,
+        /// <summary>
+        /// Mechanical source of the NFT Device
+        /// </summary>
         MechSrc = 1007,
+        /// <summary>
+        /// IoT specific message. usually carry JSON object in Description or Text properties
+        /// </summary>
         IoTMessage = 1008,
-
-
     }
+    /// <summary>
+    /// Main NFT interface
+    /// </summary>
     public interface INFT
     {
         /// <summary>
@@ -273,5 +359,19 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <returns></returns>
         Task<IDictionary<string, string>> GetCommonMetadata();
+        /// <summary>
+        /// This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
+        /// Then the image is saved in ImageData as bytes.
+        /// </summary>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
+        Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner, string sharedkey = "");
+        /// <summary>
+        /// Decrypt the specific property with use of shared secret
+        /// </summary>
+        /// <param name="prop">Property content</param>
+        /// <param name="secret">NFT Owner Private Key</param>
+        /// <returns></returns>
+        Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "", string sharedkey = "");
     }
 }

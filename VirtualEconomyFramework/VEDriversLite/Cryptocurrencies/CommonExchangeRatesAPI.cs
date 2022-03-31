@@ -8,6 +8,9 @@ using VEDriversLite.Cryptocurrencies.Dto;
 
 namespace VEDriversLite.Cryptocurrencies
 {
+    /// <summary>
+    /// Common class structure for ExchangeRatesAPI
+    /// </summary>
     public abstract class CommonExchangeRatesAPI : IExchangeRatesAPI
     {
         /// <summary>
@@ -61,7 +64,7 @@ namespace VEDriversLite.Cryptocurrencies
         /// <returns>Dictionary of the prices of inputed currencies</returns>
         public virtual async Task<IDictionary<CurrencyTypes, double>> GetPrice(CurrencyTypes[] currencies, CurrencyTypes vs_currency = CurrencyTypes.USD)
         {
-            if (currencies == null || vs_currency == null) return null;
+            if (currencies == null) return null;
 
             var res = new Dictionary<CurrencyTypes, double>();
             if (!IsRefreshing)

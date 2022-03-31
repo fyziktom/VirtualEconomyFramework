@@ -92,7 +92,7 @@ namespace VEDriversLite.NFT
                         LocationCoordinatesLat = Convert.ToDouble(split[0], CultureInfo.InvariantCulture);
                         LocationCoordinatesLen = Convert.ToDouble(split[1], CultureInfo.InvariantCulture);
                     }
-                    catch(Exception ex)
+                    catch
                     {
                         Console.WriteLine("Cannot parse location coordinates in NFT Ticket.");
                     }
@@ -110,7 +110,7 @@ namespace VEDriversLite.NFT
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine("Cannot parse NFT Ticket Event Date");
+                    Console.WriteLine("Cannot parse NFT Ticket Event Date. " + ex.Message);
                 }
             }
             if (metadata.TryGetValue("EventClass", out var tc))
@@ -119,7 +119,7 @@ namespace VEDriversLite.NFT
                 {
                     EventClass = (ClassOfNFTEvent)Convert.ToInt32(tc);
                 }
-                catch(Exception ex)
+                catch
                 {
                     EventClass = ClassOfNFTEvent.PersonalEvent;
                 }

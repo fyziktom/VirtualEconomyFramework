@@ -16,8 +16,14 @@ using WordPressPCL;
 
 namespace VEDriversLite.WooCommerce
 {
+    /// <summary>
+    /// Woo Commerce API integration helper class
+    /// </summary>
     public static class WooCommerceHelpers
     {
+        /// <summary>
+        /// Is helper class initialized
+        /// </summary>
         public static bool IsInitialized { get; set; } = false;
         private static HttpClient httpClient = new HttpClient();
         /// <summary>
@@ -82,7 +88,7 @@ namespace VEDriversLite.WooCommerce
         {
             try
             {
-                var fileContentType = "multipart/form-data";
+                //var fileContentType = "multipart/form-data";
                 var url = VEDLDataContext.WooCommerceStoreUrl.Replace("wc/v3","wp/v2") + "media";
                 HttpClient client = new HttpClient();
                 var msg = await client.GetAsync(imageLink);
@@ -363,7 +369,7 @@ namespace VEDriversLite.WooCommerce
 
                 return new Product();
             }
-            catch(Exception ex)
+            catch
             {
                 ////log.Error("Cannot add new WooCommerce Product. " + ex.Message);
                 return new Product();
@@ -477,7 +483,7 @@ namespace VEDriversLite.WooCommerce
                         attempts--;
                         if (attempts < 0) loaded = true;
                     }
-                    catch(Exception ex)
+                    catch
                     {
                         loaded = true;
                     }
@@ -521,7 +527,7 @@ namespace VEDriversLite.WooCommerce
                         attempts--;
                         if (attempts < 0) loaded = true;
                     }
-                    catch(Exception ex)
+                    catch
                     {
                         loaded = true;
                     }
@@ -565,7 +571,7 @@ namespace VEDriversLite.WooCommerce
                         attempts--;
                         if (attempts < 0) loaded = true;
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         loaded = true;
                     }

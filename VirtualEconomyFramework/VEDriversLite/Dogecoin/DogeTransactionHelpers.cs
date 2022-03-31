@@ -320,7 +320,7 @@ namespace VEDriversLite
                     var bytes = Encoding.UTF8.GetBytes(data.CustomMessage);
                     transaction.Outputs.Add(new TxOut()
                     {
-                        Value = 0,
+                        Value = (long)0,
                         ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
                     });
                 }                               
@@ -350,7 +350,6 @@ namespace VEDriversLite
         /// <param name="data">Send data, please see SendTxData class for the details</param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
         {
@@ -363,7 +362,6 @@ namespace VEDriversLite
         /// <param name="data">Send data, please see SendTxData class for the details - this include field for custom message</param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
         {
@@ -376,7 +374,6 @@ namespace VEDriversLite
         /// <param name="receiverAmount">Dictionary of all receivers and amounts to send them</param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
         /// <param name="password">Password for encrypted key if it is encrypted and locked</param>
         /// <param name="message">Custom message</param>
         /// <returns>New Transaction Hash - TxId</returns>
@@ -452,7 +449,7 @@ namespace VEDriversLite
                 var bytes = Encoding.UTF8.GetBytes(message);
                 transaction.Outputs.Add(new TxOut()
                 {
-                    Value = 0,
+                    Value = (long)0,
                     ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
                 });
 

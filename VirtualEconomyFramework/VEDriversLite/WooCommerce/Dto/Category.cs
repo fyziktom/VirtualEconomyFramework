@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.WooCommerce.Dto
 {
+    /// <summary>
+    /// Woo commerce shop category dto
+    /// </summary>
     public class Category
     {
         /// <summary>
