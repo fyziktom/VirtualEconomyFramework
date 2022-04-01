@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Bookmarks
 {
+    /// <summary>
+    /// Bookmark with saved blockchain Address, name and description
+    /// </summary>
     public class Bookmark
     {
         /// <summary>

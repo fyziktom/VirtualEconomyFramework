@@ -8,6 +8,9 @@ using VEDriversLite.NFT;
 
 namespace VEDriversLite.Devices
 {
+    /// <summary>
+    /// Common base for the IoTDataDrivers
+    /// </summary>
     public abstract class CommonIoTDataDriver : IIoTDataDriver
     {
         /// <summary>

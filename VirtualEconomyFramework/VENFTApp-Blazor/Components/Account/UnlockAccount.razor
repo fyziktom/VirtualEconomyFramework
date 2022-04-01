@@ -270,7 +270,7 @@
                 try
                 {
                     var cch = await localStorage.GetItemAsync<IDictionary<string, VEDriversLite.NFT.Dto.NFTCacheDto>>("nftcache");
-                    resload = await AppData.Account.LoadCacheNFTsFromString(cch);
+                    resload = AppData.Account.LoadCacheNFTsFromString(cch);
                     if (!resload) Console.WriteLine("Cannot load data from cache.");
                 }
                 catch (Exception ex)
@@ -313,6 +313,7 @@
                 state = "Loading SubAccounts...";
                 await Task.Delay(50);
                 StateHasChanged();
+                await Task.Delay(250);
 
                 await LoadSubAccounts();
                 await Task.Delay(50);
@@ -322,7 +323,7 @@
                     // save cached NFTs
                     try
                     {
-                        var nftcache = await AppData.Account.CacheNFTs();
+                        var nftcache = AppData.Account.CacheNFTs();
                         if (!string.IsNullOrEmpty(nftcache))
                             await localStorage.SetItemAsync("nftcache", nftcache);
                     }

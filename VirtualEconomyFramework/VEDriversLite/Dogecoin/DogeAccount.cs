@@ -13,6 +13,9 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Main Dogecoin Account class
+    /// </summary>
     public class DogeAccount
     {
         private static object _lock = new object();
@@ -189,8 +192,7 @@ namespace VEDriversLite
                     AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
                     AccountKey.PublicKey = Address;
                     Secret = privateKeyFromNetwork;
-                    if (!string.IsNullOrEmpty(password))
-                        AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(password);
+
                     SignMessage("init");
                     if (saveToFile)
                     {
@@ -221,6 +223,7 @@ namespace VEDriversLite
         /// Load account from "key.txt" file placed in the root exe directory. Doesnt work in WABS
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="filename">Filename with the key. Default name is dogekey.txt</param>
         /// <returns></returns>
         public async Task<bool> LoadAccount(string password, string filename = "dogekey.txt")
         {
@@ -241,7 +244,7 @@ namespace VEDriversLite
                     await StartRefreshingData();
                     return true;
                 }
-                catch (Exception ex)
+                catch
                 {
                     throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
                 }
@@ -354,7 +357,7 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                // todo
+                Console.WriteLine("Canont load dogecoin utxos. " + ex.Message);
             }
             var first = true;
             // todo cancelation token
@@ -373,7 +376,7 @@ namespace VEDriversLite
                         await GetListOfSentTransactions();
                         Refreshed?.Invoke(this, null);
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         //await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
                     }
@@ -448,7 +451,6 @@ namespace VEDriversLite
         /// <summary>
         /// This function will get list of spended transaction
         /// </summary>
-        /// <param name="amount"></param>
         /// <returns></returns>
         public async Task<ICollection<SpentTx>> GetListOfSentTransactions()
         {
@@ -474,7 +476,7 @@ namespace VEDriversLite
                 SentTransactions = txs;
                 return txs;
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Cannot load txs history");
             }
@@ -484,7 +486,6 @@ namespace VEDriversLite
         /// <summary>
         /// This function will get list of received transaction
         /// </summary>
-        /// <param name="amount"></param>
         /// <returns></returns>
         public async Task<ICollection<ReceivedTx>> GetListOfReceivedTransactions()
         {
@@ -509,7 +510,7 @@ namespace VEDriversLite
                 ReceivedTransactions = txs;
                 return txs;
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Cannot load txs history");
             }
@@ -542,6 +543,9 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
+        /// <param name="message">add message to OP_RETURN data. max 83 bytes</param>
+        /// <param name="utxo">from specific utxo</param>
+        /// <param name="N">with specific utxo index</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "", string utxo = "", int N = 0)
         {
@@ -605,6 +609,9 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
+        /// <param name="utxos"></param>
+        /// <param name="message"></param>
+        /// <param name="fee"></param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMultipleInputPayment(string receiver, double amount, List<Utxo> utxos, string message = "", UInt64 fee = 100000000)
         {
@@ -665,7 +672,6 @@ namespace VEDriversLite
         /// <param name="receiverAmounts"></param>
         /// <param name="utxos"></param>
         /// <param name="message"></param>
-        /// <param name="fee"></param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "")
         {

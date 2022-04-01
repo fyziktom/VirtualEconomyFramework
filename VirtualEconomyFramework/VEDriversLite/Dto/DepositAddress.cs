@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Dto
 {
+    /// <summary>
+    /// Deposit Address - it is address where shop will resend the payment for store/deposit after the NFT was send
+    /// </summary>
     public class DepositAddress
     {
         /// <summary>

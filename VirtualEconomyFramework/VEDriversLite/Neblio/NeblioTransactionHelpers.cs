@@ -59,7 +59,9 @@ namespace VEDriversLite
         /// </summary>
         public int AmountOfNFTs { get; set; } = 0;
     }
-
+    /// <summary>
+    /// Main Helper class for the Neblio Blockchain Transactions
+    /// </summary>
     public static class NeblioTransactionHelpers
     {
         private static readonly HttpClient httpClient = new HttpClient();
@@ -92,11 +94,30 @@ namespace VEDriversLite
         /// Minimum number of confirmation to send the transaction
         /// </summary>
         public static int MinimumConfirmations = 2;
+        /// <summary>
+        /// Minimum amount in Satoshi on Neblio Blockchain
+        /// </summary>
+        public static long MinimumAmount = 10000;
+        /// <summary>
+        /// Tokens Info for all already loaded tokens
+        /// </summary>
         public static Dictionary<string, GetTokenMetadataResponse> TokensInfo = new Dictionary<string, GetTokenMetadataResponse>();
+        /// <summary>
+        /// Transaction info cache. If the tx was already loaded it will remember it if it has more than MinimumConfirmations
+        /// </summary>
         public static ConcurrentDictionary<string, GetTransactionInfoResponse> TransactionInfoCache = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
+        /// <summary>
+        /// Token metadata cache. It is same all the time for the specific hash of the tx
+        /// </summary>
         public static ConcurrentDictionary<string, GetTokenMetadataResponse> TokenTxMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>();
+        /// <summary>
+        /// Address info cache. It will save for at least one second address info. If it is older, it will reqeuest new info.
+        /// </summary>
         public static ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)> AddressInfoCache = new ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)>();
 
+        /// <summary>
+        /// Main event info handler
+        /// </summary>
         public static event EventHandler<IEventInfo> NewEventInfo;
 
         /// <summary>
@@ -119,6 +140,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="txid"></param>
         /// <param name="withDots">default true. add .... between start and end of the tx hash</param>
+        /// <param name="len">Length of the result shortened tx hash</param>
         /// <returns></returns>
         public static string ShortenTxId(string txid, bool withDots = true, int len = 10)
         {
@@ -301,7 +323,7 @@ namespace VEDriversLite
                 throw new Exception("Token Id not provided.");
             }
 
-            if (fee < 10000)
+            if (fee < MinimumAmount)
             {
                 throw new Exception("Fee cannot be smaller than 10000 Sat.");
             }
@@ -347,7 +369,7 @@ namespace VEDriversLite
         public static double CalcFee(int numOfInputs, int numOfOutputs, string customMessageInOPReturn, bool isTokenTransaction)
         {
             const string exceptionMessage = "Cannot send transaction bigger than 4kB on Neblio network!";
-            var basicFee = 10000;
+            var basicFee = MinimumAmount;
 
             // inputs
             var blankInput = 41;
@@ -435,7 +457,6 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="tutxos">Optional input token utxo</param>
-        /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> MintNFTTokenAsync(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
@@ -450,7 +471,6 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="tutxos">Optional input token utxo</param>
-        /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> MintMultiNFTTokenAsync(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
@@ -465,7 +485,7 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="tutxos">Optional input token utxo</param>
-        /// <param name="fee">Fee - 20000 minimum</param>
+        /// <param name="multiTokens">If there is the multi token it needs to check if there is no conflict</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> MintMultiNFTTokenAsyncInternal(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos,bool multiTokens)
         {
@@ -645,6 +665,10 @@ namespace VEDriversLite
         /// if you will provide multiple receivers, the number of lots and receivers must match.
         /// </summary>
         /// <param name="receiver">List of receivers. </param>
+        /// <param name="lots"></param>
+        /// <param name="amount"></param>
+        /// <param name="tokenId"></param>
+        /// <param name="metadata"></param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="tutxos">Optional input token utxo</param>
@@ -1140,11 +1164,11 @@ namespace VEDriversLite
 
                 if (!string.IsNullOrEmpty(data.CustomMessage))
                 {
-                    diff -= (10000 / FromSatToMainRatio); // 10000 sat is need as value for minimal output even if it holds the OP_RETURN
+                    diff -= (MinimumAmount / FromSatToMainRatio); // 10000 sat is need as value for minimal output even if it holds the OP_RETURN
                     var bytes = Encoding.UTF8.GetBytes(data.CustomMessage);
                     transaction.Outputs.Add(new TxOut()
                     {
-                        Value = 10000,
+                        Value = MinimumAmount,
                         ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
                     });
                 }
@@ -1163,7 +1187,10 @@ namespace VEDriversLite
         /// <summary>
         /// Function will send standard Neblio transaction
         /// </summary>
-        /// <param name="data">Send data, please see SendTxData class for the details</param>
+        /// <param name="sender"></param>
+        /// <param name="receivers"></param>
+        /// <param name="lots"></param>
+        /// <param name="amount"></param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 10000 minimum</param>
@@ -1289,7 +1316,8 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="neblAmount">Amount of Neblio to send</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 20000 minimum</param>
+        /// <param name="paymentUtxoToReturn">If you returning some payment fill this</param>
+        /// <param name="paymentUtxoIndexToReturn">If you returning some payment fill this</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
         {
@@ -1447,7 +1475,7 @@ namespace VEDriversLite
                     throw new Exception("Not enought spendable Neblio on the address.");
                 }
 
-                var diffinSat = balanceinSat - amountinSat - Convert.ToUInt64(fee) - 10000; // fee is already included in previous output, last is token carrier
+                var diffinSat = balanceinSat - amountinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount); // fee is already included in previous output, last is token carrier
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
@@ -1458,7 +1486,7 @@ namespace VEDriversLite
 
                 if (string.IsNullOrEmpty(paymentUtxoToReturn)) // just for minting new payment nft
                 {
-                    transaction.Outputs.Add(new Money(10000), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
+                    transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
                 }
             }
             catch (Exception ex)
@@ -1477,7 +1505,7 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="neblAmount">Amount of Neblio to send</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 20000 minimum</param>
+        /// <param name="tutxos">Optional list of the token utxos </param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SendNTP1TokenLotWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
@@ -1657,7 +1685,7 @@ namespace VEDriversLite
                     throw new Exception("Not enought spendable Neblio on the address.");
                 }
 
-                var diffinSat = balanceinSat - amountinSat - Convert.ToUInt64(fee) - 10000; // fee is already included in previous output, last is token carrier
+                var diffinSat = balanceinSat - amountinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount); // fee is already included in previous output, last is token carrier
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
@@ -1668,7 +1696,7 @@ namespace VEDriversLite
 
                 if (outputForTokensBack)
                 {
-                    transaction.Outputs.Add(new Money(10000), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
+                    transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
                 }
             }
             catch (Exception ex)
@@ -1699,7 +1727,7 @@ namespace VEDriversLite
                 {
                     if (transaction.Inputs.FirstOrDefault(i => (i.PrevOut.Hash == uint256.Parse(inp.Txid)) && i.PrevOut.N == (uint)inp.Index) != null)
                     {
-                        coins.Add(new Coin(uint256.Parse(inp.Txid), (uint)inp.Index, new Money((int)inp.Value), address.ScriptPubKey));
+                        coins.Add(new Coin(uint256.Parse(inp.Txid), (uint)inp.Index, new Money((long)inp.Value), address.ScriptPubKey));
                     }
                 }
 
@@ -1748,7 +1776,16 @@ namespace VEDriversLite
 
         //////////////////////////////////////
         #region Multi Token Input Tx
-
+        /// <summary>
+        /// Transaction which sends multiple tokens from input to different outputs. For example process of the send Ordered NFT and NFT Receipt in one tx.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="ekey"></param>
+        /// <param name="nutxos"></param>
+        /// <param name="fee"></param>
+        /// <param name="isMintingOfCopy"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task<string> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
         {
             // load key and address
@@ -1896,8 +1933,18 @@ namespace VEDriversLite
         }
 
         //////////////////////////////////////
-
-        public static async Task<string> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
+        /// <summary>
+        /// Destroy of the NFT. It merge the NFT with the minting lot
+        /// 1VENFT + 10VENFT => 11 VENFT
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="ekey"></param>
+        /// <param name="nutxos"></param>
+        /// <param name="fee"></param>
+        /// <param name="mintingUtxo"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<string> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
         {
 
             // load key and address
@@ -1980,15 +2027,26 @@ namespace VEDriversLite
                 throw new Exception("This kind of transaction requires Token input utxo list.");
             }
 
-            // if not utxo provided, check the un NFT tokens sources. These with more than 1 token
-            var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
-            var ut = utxs?.FirstOrDefault();
-            if (ut != null)
+            if (mintingUtxo == null)
+            { 
+                // if not utxo provided, check the un NFT tokens sources. These with more than 1 token
+                var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
+                var ut = utxs?.FirstOrDefault();
+                if (ut != null)
+                {
+                    dto.Sendutxo.Add(ut.Txid + ":" + ((int)ut.Index).ToString());
+                    dto.To.FirstOrDefault().Amount += (double)ut?.Tokens?.ToList().FirstOrDefault()?.Amount; // add minting Utxo amount
+                }
+                else
+                    throw new Exception("Cannot find utxo for minting NFT token. Wait for enough confirmation after previous transaction.");
+
+            }
+            else
             {
-                dto.Sendutxo.Add(ut.Txid + ":" + ((int)ut.Index).ToString());
+                dto.Sendutxo.Add(mintingUtxo.Txid + ":" + ((int)mintingUtxo.Index).ToString());
+                dto.To.FirstOrDefault().Amount += (double)mintingUtxo?.Tokens?.ToList().FirstOrDefault()?.Amount; // add minting Utxo amount
             }
 
-            dto.To.FirstOrDefault().Amount += (double)ut?.Tokens?.ToList().FirstOrDefault()?.Amount; // add minting Utxo amount
 
             if (dto.Sendutxo.Count < 2)
             {
@@ -2035,7 +2093,11 @@ namespace VEDriversLite
 
         ///////////////////////////////////////////
         // Tools for addresses
-
+        /// <summary>
+        /// Check if the private key is valid for the Neblio Network
+        /// </summary>
+        /// <param name="privatekey"></param>
+        /// <returns></returns>
         public static BitcoinSecret IsPrivateKeyValid(string privatekey)
         {
             try
@@ -2058,6 +2120,11 @@ namespace VEDriversLite
             }
             return null;
         }
+        /// <summary>
+        /// Parse the Neblio address from the private key
+        /// </summary>
+        /// <param name="privatekey"></param>
+        /// <returns></returns>
         public static string GetAddressFromPrivateKey(string privatekey)
         {
             try
@@ -2079,6 +2146,11 @@ namespace VEDriversLite
             return string.Empty;
         }
 
+        /// <summary>
+        /// Validate if the Neblio address is the correct
+        /// </summary>
+        /// <param name="neblioAddress"></param>
+        /// <returns></returns>
         public static string ValidateNeblioAddress(string neblioAddress)
         {
             try
@@ -2101,6 +2173,12 @@ namespace VEDriversLite
             return string.Empty;
         }
 
+        /// <summary>
+        /// Check if the number of the confirmation is enough for doing transactions.
+        /// It mainly usefull for UI stuff or console.
+        /// </summary>
+        /// <param name="confirmations"></param>
+        /// <returns></returns>
         public static string IsEnoughConfirmationsForSend(int confirmations)
         {
             if (confirmations > MinimumConfirmations)
@@ -2323,6 +2401,7 @@ namespace VEDriversLite
         /// Returns list of all Utxos which contains just one token, means amount = 1
         /// </summary>
         /// <param name="addr"></param>
+        /// <param name="allowedTokens">Load just the allowed tokens</param>
         /// <param name="addressinfo"></param>
         /// <returns></returns>
         public static async Task<ICollection<Utxos>> GetAddressNFTsUtxos(string addr, List<string> allowedTokens, GetAddressInfoResponse addressinfo = null)
@@ -2410,7 +2489,9 @@ namespace VEDriversLite
         /// <summary>
         /// Returns list of spendable utxos which together match some input required amount for some transaction
         /// </summary>
-        /// <param name="addr">address which has utxos for spend - sender in tx</param>
+        /// <param name="address">address which has utxos for spend - sender in tx</param>
+        /// <param name="addinfo">If you already have loaded addinfo pass it</param>
+        /// <param name="latestBlockHeight"></param>
         /// <param name="minAmount">minimum amount of one utxo</param>
         /// <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
         /// <returns></returns>
@@ -2442,7 +2523,7 @@ namespace VEDriversLite
             if (latestBlockHeight == 0)
                 latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, address);
             
-            foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Value > 10000 && u.Tokens?.Count == 0 && ((double)u.Value) > (minAmount * FromSatToMainRatio)))
+            foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Value > MinimumAmount && u.Tokens?.Count == 0 && ((double)u.Value) > (minAmount * FromSatToMainRatio)))
             {
                 double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
                 if (IsValidUtxo(UtxoBlockHeight, latestBlockHeight))
@@ -2470,8 +2551,11 @@ namespace VEDriversLite
         /// Check if the NFT token is spendable. Means utxos with token amount = 1
         /// </summary>
         /// <param name="address">address which should have this utxo</param>
+        /// <param name="addinfo">if you already have addinfo pass it</param>
+        /// <param name="latestBlockHeight"></param>
         /// <param name="tokenId">input token id hash</param>
         /// <param name="txid">input txid hash</param>
+        /// <param name="indx"></param>
         /// <returns>true and index of utxo</returns>
         public static async Task<double> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid, int indx, GetAddressInfoResponse addinfo = null, double latestBlockHeight = 0)
         {
@@ -2525,6 +2609,8 @@ namespace VEDriversLite
         /// <param name="tokenId">token id hash</param>
         /// <param name="numberToMint">number of tokens which will be minted - because of multimint</param>
         /// <param name="oneTokenSat">this is usually default. On Neblio all token tx should have value 10000sat</param>
+        /// <param name="addinfo"></param>
+        /// <param name="latestBlockHeight"></param>
         /// <returns></returns>
         public static async Task<List<Utxos>> FindUtxoForMintNFT(string addr, string tokenId, int numberToMint = 1, double oneTokenSat = 10000, GetAddressInfoResponse addinfo = null, double latestBlockHeight = 0)
         {
@@ -2592,7 +2678,13 @@ namespace VEDriversLite
 
             return res;
         }
-
+        /// <summary>
+        /// Get token metadata from the specific transaction cache logic
+        /// </summary>
+        /// <param name="tokenid"></param>
+        /// <param name="txid"></param>
+        /// <param name="verbosity"></param>
+        /// <returns></returns>
         public static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0)
         {
             if (TurnOnCache && TokenTxMetadataCache.TryGetValue(txid, out var tinfo))
@@ -2724,6 +2816,13 @@ namespace VEDriversLite
             return new GetTransactionInfoResponse();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <param name="mode"></param>
+        /// <param name="txinfo"></param>
+        /// <returns></returns>
         public static async Task<string> GetTransactionInternal(string txid, string mode, GetTransactionInfoResponse txinfo = null)
         {
             if (string.IsNullOrEmpty(txid))
@@ -2765,6 +2864,7 @@ namespace VEDriversLite
         /// Get transaction sender.
         /// </summary>
         /// <param name="txid">tx id hash</param>
+        /// <param name="txinfo">if you already have txinfo object</param>
         /// <returns>Sender address</returns>
         public static async Task<string> GetTransactionSender(string txid, GetTransactionInfoResponse txinfo = null)
         {
@@ -2775,12 +2875,18 @@ namespace VEDriversLite
         /// Get transaction sender.
         /// </summary>
         /// <param name="txid">tx id hash</param>
+        /// <param name="txinfo">if you already have txinfo object</param>
         /// <returns>Sender address</returns>
         public static async Task<string> GetTransactionReceiver(string txid, GetTransactionInfoResponse txinfo = null)
         {
             return await GetTransactionInternal(txid, "receiver", txinfo);
         }
 
+        /// <summary>
+        /// Parse message from the OP_RETURN data in the tx
+        /// </summary>
+        /// <param name="txinfo"></param>
+        /// <returns></returns>
         public static (bool, string) ParseNeblioMessage(GetTransactionInfoResponse txinfo)
         {
             if (txinfo == null)
@@ -2806,6 +2912,14 @@ namespace VEDriversLite
 
             return (false, string.Empty);
         }
+
+        /// <summary>
+        /// Convert the hex string to bytes
+        /// </summary>
+        /// <param name="hexString"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public static byte[] HexStringToBytes(string hexString)
         {
             if (hexString == null)
@@ -2827,7 +2941,9 @@ namespace VEDriversLite
             return bytes;
         }
 
-
+        /// <summary>
+        /// Token Metadata cache list
+        /// </summary>
         public static ConcurrentDictionary<string, GetTokenMetadataResponse> TokenMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>();
         /// <summary>
         /// Get token issue metadata. Contains image url, issuer, and other info
@@ -2910,6 +3026,7 @@ namespace VEDriversLite
         /// Function will also load token metadta if it has not loaded yet.
         /// </summary>
         /// <param name="address">address which has utxos</param>
+        /// <param name="tokenId">Specify the tokenId</param>
         /// <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
         /// <returns></returns>
         public static async Task<(double, GetTokenMetadataResponse)> GetActualMintingSupply(string address, string tokenId, GetAddressInfoResponse addressinfo)

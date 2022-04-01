@@ -1,29 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>VEFramework.VEDriversLite</PackageId>
-    <Version>0.1.91</Version>
+    <Version>0.2.0</Version>
     <Authors>fyziktom</Authors>
     <Company>VEFramework</Company>
-    <Description>.NET Standard version of VEDrivers. Contains just minimum dependencies and now just support of Neblio and Doge blockchain.</Description>
+    <Description>.NET drivers for Web3 and Industry40. Simple way how to start with blockchain in C#. Now supports Neblio and Doge blockchains.</Description>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
     <Copyright>fyziktom</Copyright>
-    <PackageReleaseNotes>- Added UnitTests for most of the functions in the NeblioTransactionHelpers
-- Refactoring in NeblioTransactionHelpers
-- Refactoring in DogeTransactionHelpers
-- Added NeblioTransactionCache which speed up the sending of the transaction
-- Improvement of the calculation of the fee
-- Cache preload in account and ActiveTab loading
-- Changed IPFS file download command to POST method (Infura.io now support just this)</PackageReleaseNotes>
+    <PackageReleaseNotes>
+		- Update to .NET Core 3.1
+		- Update NBitcoin package and related functions
+		- Possible to run in .NET 6.0 Blazor WebAssembly
+		- Added tests for encryption and sign/verify messages
+		- Refactoring of UnitTests in the NeblioTransactionHelpers
+		- Refactoring in NeblioTransactionHelpers
+		- Refactoring in DogeTransactionHelpers
+		- Change of sign/verify messages based on update of NBitcoin
+		- Added lots of XML comments to parameters and functions
+	</PackageReleaseNotes>
   </PropertyGroup>
 
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+  
   <PropertyGroup>
     <DocumentationFile>C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\VEDriversLite.xml</DocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,8 +43,8 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.23" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
-    <PackageReference Include="NBitcoin" Version="5.0.81" />
-    <PackageReference Include="NBitcoin.Altcoins" Version="2.0.33" />
+    <PackageReference Include="NBitcoin" Version="7.0.6" />
+    <PackageReference Include="NBitcoin.Altcoins" Version="3.0.8" />
     <PackageReference Include="WordPressPCL" Version="1.9.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <!--<PackageReference Include="QRCoder" Version="1.4.1" />-->
@@ -46,6 +55,10 @@
     <None Include="..\..\License\license.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 

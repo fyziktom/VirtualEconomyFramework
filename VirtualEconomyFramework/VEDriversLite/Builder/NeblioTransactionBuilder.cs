@@ -10,12 +10,32 @@ using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.Builder
 {
+    /// <summary>
+    /// Main class of the transaction builder.
+    /// </summary>
     public static class NeblioTransactionBuilder
     {
+        /// <summary>
+        /// Neblio Network instance
+        /// </summary>
         public static Network NeblioNetwork { get; set; } = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
+        /// <summary>
+        /// Minimum amount in the transaction
+        /// </summary>
         public static double MinimumAmount { get; } = 10000;
+        /// <summary>
+        /// Minimum fee
+        /// </summary>
         public static double Fee { get; } = 10000;
 
+        /// <summary>
+        /// Create raw transaction
+        /// </summary>
+        /// <param name="utxos"></param>
+        /// <param name="receivers"></param>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task<Transaction> CreateRawTransaction(List<NewTokenTxUtxo> utxos,
                                                               List<NewTokenTxReceiver> receivers,
                                                               List<NewTokenTxMetaField> metadata)

@@ -1,13 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+//using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace VEDriversLite.Security
 {
+    /// <summary>
+    /// Helper class for security
+    /// </summary>
     public static class SecurityUtils
     {
+        /// <summary>
+        /// Returns true if the string is the base64 string
+        /// </summary>
+        /// <param name="base64"></param>
+        /// <returns></returns>
+        public static bool IsBase64String(string base64)
+        {
+            Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
+            return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
+        }
+        
+        /*
         const int iterations = 10000;
         const int saltSize = 128 / 8;
         const int keySize = 256 / 8;
@@ -46,7 +61,7 @@ namespace VEDriversLite.Security
                 return true;
             }
         }
-
+        */
         /// <summary>
         /// Compute SHA256 Hash
         /// </summary>
@@ -54,20 +69,20 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static string ComputeSha256Hash(string rawData)
         {
-            // Create a SHA256   
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                // ComputeHash - returns byte array  
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
 
-                // Convert byte array to a string   
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
+            // Create a SHA256   
+
+            // ComputeHash - returns byte array  
+            
+            byte[] bytes = NBitcoin.Crypto.Hashes.SHA256(Encoding.UTF8.GetBytes(rawData));
+
+            // Convert byte array to a string   
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
             }
+            return builder.ToString();
         }
     }
 }

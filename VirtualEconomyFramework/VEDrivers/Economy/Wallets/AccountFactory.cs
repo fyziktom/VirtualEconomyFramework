@@ -15,7 +15,6 @@ namespace VEDrivers.Economy.Wallets
             {
                 case AccountTypes.Bitcoin:
                     return null;
-                    break;
                 case AccountTypes.Neblio:
                     if (id == Guid.Empty)
                     {

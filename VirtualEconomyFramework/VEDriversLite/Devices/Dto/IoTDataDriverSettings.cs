@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Devices.Dto
 {
+    /// <summary>
+    /// Settings of the IoT data driver. Most of the settings are for connection to the API or source of the data
+    /// </summary>
     public class IoTDataDriverSettings
     {
         /// <summary>

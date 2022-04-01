@@ -105,7 +105,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
             if (string.IsNullOrEmpty(Partner))
                 return false;//throw new Exception("Cannot decrypt without loaded Partner address.");
 
-            var add = secret.PubKey.GetAddress(NeblioTransactionHelpers.Network);
+            var add = secret.PubKey.GetAddress(NBitcoin.ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
 
             if (Partner == add.ToString() && !decryptEvenOnSameAddress)
             {

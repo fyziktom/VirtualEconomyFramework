@@ -2,10 +2,8 @@
  @using VEDriversLite.NFT.Coruzant
 @inject AppData AppData 
   
-  @foreach (var profile in AppData.NFTs.Skip(skip))
+  @foreach (var profile in AppData.ProfilesNFTs)
   {
-      if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
-      {
         var prof = profile as CoruzantProfileNFT;              
         <fieldset id="weeks-feature">
                 <h2>WEEK'S FEATURE</h2>
@@ -35,7 +33,7 @@
             </fieldset>
 
           break;
-        }
+        
   }
 
   @if (Prof != null)
