@@ -1,0 +1,33 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+
+<CardGroup>
+    @foreach (var NFT in AppData.Account.NFTs)
+    {
+        @if (NFT.Type == NFTTypes.XrayImage)
+        {
+            <XrayImageCard NFT=@NFT 
+                           Address="@Address" 
+                           IsSubAccount="@IsSubAccount"
+                           IsOwnNFT="@IsOwnNFT" 
+                            Utxo="@NFT.Utxo"
+                            UtxoIndex="@NFT.UtxoIndex" />
+        }
+    }
+</CardGroup>
+
+@code {
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> AddressChanged { get; set; }
+    [Parameter]
+    public bool IsSubAccount { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsSubAccountChanged { get; set; }
+    [Parameter]
+    public bool IsOwnNFT { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsOwnNFTChanged { get; set; }
+}

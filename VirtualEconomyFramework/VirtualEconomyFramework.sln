@@ -37,6 +37,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEFrameworkUnitTest", "VEFr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEOnePage", "VEOnePage\VEOnePage.csproj", "{A0E55AF8-8A2C-4D9D-8A75-2D7AF1143F7B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDP-WASM", "BDP-WASM\BDP-WASM.csproj", "{1675020C-37D1-4920-A8B4-65D2996BA4DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -251,6 +253,18 @@ Global
 		{A0E55AF8-8A2C-4D9D-8A75-2D7AF1143F7B}.Release|x64.Build.0 = Release|Any CPU
 		{A0E55AF8-8A2C-4D9D-8A75-2D7AF1143F7B}.Release|x86.ActiveCfg = Release|Any CPU
 		{A0E55AF8-8A2C-4D9D-8A75-2D7AF1143F7B}.Release|x86.Build.0 = Release|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Debug|x64.Build.0 = Debug|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Debug|x86.Build.0 = Debug|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Release|x64.ActiveCfg = Release|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Release|x64.Build.0 = Release|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Release|x86.ActiveCfg = Release|Any CPU
+		{1675020C-37D1-4920-A8B4-65D2996BA4DA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

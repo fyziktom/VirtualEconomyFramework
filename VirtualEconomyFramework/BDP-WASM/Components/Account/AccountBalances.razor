@@ -1,0 +1,33 @@
+﻿
+<Card Style="max-width:250px;">
+    <CardBody>
+        <CardTitle Size="5">Balances</CardTitle>
+        <CardText>
+           <Row>
+               <Column>
+                   Neblio: @(Math.Round(NeblioBalance, 8)) NEBL <img style="width: 10px;margin-left: 5px; margin-bottom:2px;" src="images/neblio-icon.png" />
+               </Column>
+           </Row>
+           <Row>
+               <Column>
+                   Tokens: @TokensBalance VENFT <img style="width: 10px;margin-left: 5px; margin-bottom:2px;" src="images/VENFT_icon.png" />
+               </Column>
+           </Row>
+           <Row>
+               <Column>
+                   NFTs: @NFTsCount
+               </Column>
+           </Row>           
+        </CardText>
+    </CardBody>
+</Card>
+
+
+@code {
+    [Parameter]
+    public double NeblioBalance { get; set; } = 0.0;
+    [Parameter]
+    public int TokensBalance { get; set; } = 0;
+    [Parameter]
+    public int NFTsCount { get; set; } = 0;    
+}

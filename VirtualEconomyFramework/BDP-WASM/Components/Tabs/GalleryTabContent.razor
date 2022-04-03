@@ -1,0 +1,35 @@
+﻿@using VEDriversLite
+@inject AppData AppData
+
+<Layout>
+    <LayoutHeader>
+        Xray Images Galler
+    </LayoutHeader>
+    <LayoutContent>
+        <Row Margin="Margin.Is2.FromBottom">
+            <Column>            
+                <h5>For Address: @AppData.Account.Address</h5>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <BDP_WASM.Components.Display.NFTCardList Address="@Address" IsSubAccount="@IsSubAccount" IsOwnNFT="@IsOwnNFT" />
+            </Column>
+        </Row>
+    </LayoutContent>
+</Layout>
+
+@code {
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> AddressChanged { get; set; }
+    [Parameter]
+    public bool IsSubAccount { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsSubAccountChanged { get; set; }
+    [Parameter]
+    public bool IsOwnNFT { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsOwnNFTChanged { get; set; }
+}

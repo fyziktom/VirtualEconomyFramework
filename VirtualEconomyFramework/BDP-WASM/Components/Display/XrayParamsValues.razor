@@ -1,0 +1,19 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray.Dto
+
+<Row>
+     <Column>
+         <LabeledProgressBar ParameterName="Voltage" ParameterUnit="kV" Value="@XrayParams.Voltage" Color="Color.Info" />
+     </Column>
+     <Column>
+         <LabeledProgressBar ParameterName="Current" ParameterUnit="mA" Value="@XrayParams.Current" Color="Color.Primary" />
+     </Column>     
+     <Column>
+         <LabeledProgressBar ParameterName="Time" ParameterUnit="ms" Value="@XrayParams.ExposureTime" Color="Color.Warning" />
+     </Column>
+ </Row>
+               
+@code {
+    [Parameter]
+    public XrayExposureParameters XrayParams { get; set; } = new XrayExposureParameters();
+}

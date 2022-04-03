@@ -1,0 +1,128 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Neblio
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+
+<Row>
+    <Column>
+        <Span>You have account created. Please unlock it to continue.</Span>
+    </Column>
+</Row>
+
+<Row>
+    <Column>
+        <Field>
+            <FieldLabel>Please input your password.</FieldLabel>
+            <TextEdit Placeholder="Enter password" Role="TextRole.Password" @bind-Text="password" />
+        </Field>
+    </Column>
+</Row>    
+
+@if (!string.IsNullOrEmpty(password))
+{
+    <Row>
+        <Column>
+            <Button Color="Color.Primary" Clicked=@UnlockAccountHandler>Unlock Account</Button>
+        </Column>
+    </Row>
+}
+else
+{
+    <Row>
+        <Column>
+            <Span>Please Fill the password to continue.</Span>
+        </Column>
+    </Row>
+}
+
+<Modal @ref="UnlockAccountModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Unlock Account</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (LoadingAccount)
+            {
+                <Row>
+                    <Column>
+                        <h3>Loading Account...</h3>
+                    </Column>
+                </Row>
+            }
+            else 
+            {
+                @if (IsAccountLoaded)
+                {                
+                <Row>
+                    <Column>
+                        <h3>Your Address Unlocked</h3>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        <Span>@Address</Span>
+                    </Column>
+                </Row>
+                }
+                else
+                {
+                    <Row>
+                        <Column>
+                            <h3>Cannot unlock Account</h3>
+                        </Column>
+                    </Row>
+                }
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback<string> AccountUnlocked { get; set; }
+
+    [Inject] IPageProgressService PageProgressService { get; set; }
+
+    private Modal UnlockAccountModal;
+
+    private bool IsAccountLoaded { get; set; } = false;
+    private bool LoadingAccount { get; set; } = false;
+
+    private string encryptedKey { get; set; } = string.Empty;
+    private string password { get; set; } = string.Empty;
+    private string Address { get; set; } = string.Empty;
+
+    private async Task UnlockAccountHandler()
+    {
+        if (string.IsNullOrEmpty(password))
+            return;
+        var ekey = await localStorage.GetItemAsync<string>("key");
+        if (string.IsNullOrEmpty(ekey))
+            return;
+
+        LoadingAccount = true;
+        await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+        await UnlockAccountModal.Show();
+        StateHasChanged();
+        await Task.Delay(500);
+
+        if (await AppData.Account.LoadAccount(password, ekey, "", false))
+        {
+            Address = AppData.Account.Address;
+            AppData.IsAccountLoaded = true;
+            IsAccountLoaded = true;
+            await AccountUnlocked.InvokeAsync(Address);
+        }
+        else
+        {
+            IsAccountLoaded = false;            
+            AppData.IsAccountLoaded = false;            
+            Console.WriteLine("Cannot unlock the account.");
+        }
+
+        await PageProgressService.Go(-1);
+        LoadingAccount = false;
+        StateHasChanged();
+    }  
+}

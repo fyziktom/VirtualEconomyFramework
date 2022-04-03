@@ -1,0 +1,136 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Neblio
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+
+<Row>
+    <Column>
+        <Span>You do not have the account. This steps will help you to create new account.</Span>
+    </Column>
+</Row>
+
+<Row>
+    <Column>
+        <Field>
+            <FieldLabel>Please create your password.</FieldLabel>
+            <TextEdit Placeholder="Enter password" Role="TextRole.Password" @bind-Text="password" />
+        </Field>
+    </Column>
+</Row>    
+
+@if (!string.IsNullOrEmpty(password))
+{
+    <Row>
+        <Column>
+            <Button Color="Color.Primary" Clicked=@CreateAccountHandler>Create Account</Button>
+        </Column>
+    </Row>
+}
+else
+{
+    <Row>
+        <Column>
+            <Span>Please Fill the password to continue.</Span>
+        </Column>
+    </Row>
+}
+
+<Modal @ref="CreateAccountModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>New Account</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (IsAccountLoaded)
+            {
+                <Row>
+                    <Column>
+                    <h3>Your new Address</h3>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Span>@Address</Span>
+                </Column>
+                </Row>
+            }
+            else
+            {
+                @if (CreatingAccount)
+                {
+                <Row>
+                    <Column>
+                        <Span>Creating Account...</Span>
+                    </Column>
+                </Row>
+                }
+                else 
+                {
+                    <Row>
+                        <Column>
+                            <Span>Cannot create Account.</Span>
+                        </Column>
+                    </Row>
+                }
+
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    [Parameter]
+    public EventCallback<string> AccountCreated { get; set; }
+
+    [Inject] IPageProgressService PageProgressService { get; set; }
+
+    private Modal CreateAccountModal;
+
+    private bool IsAccountLoaded { get; set; } = false;
+    private bool CreatingAccount { get; set; } = false;
+
+    private string encryptedKey { get; set; } = string.Empty;
+    private string password { get; set; } = string.Empty;
+    private string Address { get; set; } = string.Empty;
+
+    private async Task CreateAccountHandler()
+    {
+        if (string.IsNullOrEmpty(password))
+            return;
+        var ekey = await localStorage.GetItemAsync<string>("key");
+        if (!string.IsNullOrEmpty(ekey)) // exist if there is already some key in storage
+            return;
+
+        await PageProgressService.Go( null, options => { options.Color = Color.Warning; } );
+        CreatingAccount = true;
+        await CreateAccountModal.Show();
+        StateHasChanged();
+        await Task.Delay(500);
+
+        if (await AppData.Account.CreateNewAccount(password))
+        {
+            Address = AppData.Account.Address;
+            var keytostore = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted:true);
+            if (!string.IsNullOrEmpty(keytostore))
+                await localStorage.SetItemAsync("key", keytostore);
+
+            IsAccountLoaded = true;
+            AppData.IsAccountLoaded = true;
+            await AccountCreated.InvokeAsync(Address);
+        } 
+        else
+        {
+            Console.WriteLine("Cannot create new account.");
+            IsAccountLoaded = false;
+            CreatingAccount = false;
+            AppData.IsAccountLoaded = false;
+        }
+
+        await PageProgressService.Go( -1 );
+        CreatingAccount = false;
+        StateHasChanged();
+    }
+
+}

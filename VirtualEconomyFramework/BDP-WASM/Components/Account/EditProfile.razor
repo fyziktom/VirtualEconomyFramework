@@ -1,0 +1,173 @@
+﻿@using VEDriversLite.NFT
+@inject AppData AppData
+
+<Row>
+    <Column>
+        <Field>
+            <FieldLabel>First Name</FieldLabel>
+            <TextEdit Placeholder="Enter your First Name" @bind-Text="Name" @onchange="nameChanged"/>
+        </Field>
+        <Field>
+            <FieldLabel>Surname</FieldLabel>
+            <TextEdit Placeholder="Enter your Surame" @bind-Text="Surname" @onchange="surnameChanged"/>
+        </Field>
+        <Field>
+            <FieldLabel>Nickname</FieldLabel>
+            <TextEdit Placeholder="Enter your Nickname" @bind-Text="Nickname" @onchange="nicknameChanged"/>
+        </Field>         
+        <Field>
+            <FieldLabel>Bio</FieldLabel>
+            <TextEdit Placeholder="Enter your Bio" @bind-Text="Description" @onchange="descriptionChanged"/>
+        </Field> 
+        
+    </Column>
+</Row>
+
+@if (!string.IsNullOrEmpty(@NFT.ImageLink))
+{
+    <Row>
+        <Column>
+            <Figure Size="FigureSize.Is128x128">
+                <FigureImage Source="@NFT.ImageLink" AlternateText="empty-128x128" />
+                <FigureCaption>Original Image</FigureCaption>
+            </Figure>         
+        </Column>
+    </Row>
+}
+
+<Row Margin="Margin.Is3.FromTop">
+    <Column>
+        <BDP_WASM.Components.Minting.UploadData MainIPFSLink="@NFT.ImageLink" MainIPFSLinkChanged="ImageChangedHandler" />
+    </Column>
+</Row>
+
+
+<Row Margin="Margin.Is3.FromTop">
+    <Column>
+        <Button Color="Color.Light" Clicked="@MintProfile"><Icon Name="IconName.Edit" />&nbsp;Save</Button>
+    </Column>
+</Row>
+
+<Row Margin="Margin.Is3.FromTop">
+    <Column>
+        @if (mintingChanges)
+        {
+            <Span>Saving the changes...</Span>
+        }
+        else
+        {
+            @if (minted)
+            {
+                <Alert Color="Color.Success">
+                    <Icon Name="IconName.Check" />
+                    <Span>Profile successfully saved! TxId: @result</Span>
+                </Alert>
+            }
+            else if (!minted && !string.IsNullOrEmpty(result))
+            {        
+                <Alert Color="Color.Danger">
+                    <Icon Name="IconName.Ban" />
+                    <Span>Cannot save! Error: @result</Span>
+                </Alert>
+            }
+        }            
+    </Column>
+</Row>
+
+@code {
+    [Inject] IPageProgressService PageProgressService { get; set; }
+
+    [Parameter]
+    public INFT NFT { get; set; }
+    [Parameter]
+    public EventCallback<INFT> NFTChanged { get; set; }
+
+    string _name = string.Empty;
+    [Parameter]
+    public string Name { get => _name; set => _name = value; }
+    [Parameter]
+    public EventCallback<string> NameChanged { get; set; }
+
+    string _surname = string.Empty;
+    [Parameter]
+    public string Surname { get => _surname; set => _surname = value; }
+    [Parameter]
+    public EventCallback<string> SurnameChanged { get; set; }
+
+    string _nickname = string.Empty;
+    [Parameter]
+    public string Nickname { get => _nickname; set => _nickname = value; }
+    [Parameter]
+    public EventCallback<string> NicknameChanged { get; set; }
+
+
+    string _description = string.Empty;
+    [Parameter]
+    public string Description { get => _description; set => _description = value; }
+    [Parameter]
+    public EventCallback<string> DescriptionChanged { get; set; }
+
+    bool mintingChanges = false;
+    bool minted = false;
+    string result = string.Empty;
+
+    async Task nameChanged(ChangeEventArgs e)
+    {
+        AppData.Account.Profile.Name = (string)e.Value;
+        NFT.Name = (string)e.Value;
+        await NameChanged.InvokeAsync((string)e.Value);
+    }
+    async Task surnameChanged(ChangeEventArgs e)
+    {
+        AppData.Account.Profile.Surname = (string)e.Value;
+        (NFT as ProfileNFT).Surname = (string)e.Value;
+        await SurnameChanged.InvokeAsync((string)e.Value);
+    }    
+    async Task nicknameChanged(ChangeEventArgs e)
+    {
+        AppData.Account.Profile.Nickname = (string)e.Value;
+        (NFT as ProfileNFT).Nickname = (string)e.Value;
+        await NicknameChanged.InvokeAsync((string)e.Value);
+    }     
+    async Task descriptionChanged(ChangeEventArgs e)
+    {
+        AppData.Account.Profile.Description = (string)e.Value;
+        NFT.Description = (string)e.Value;
+        await DescriptionChanged.InvokeAsync((string)e.Value);
+    }
+    void ImageChangedHandler(string e)
+    {
+        if (string.IsNullOrEmpty(e)) return;
+
+        NFT.ImageLink = e;
+        AppData.Account.Profile.ImageLink = e;
+    }
+    async Task MintProfile()
+    {
+        mintingChanges = true;
+        await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+        StateHasChanged();
+
+        var res = (false, string.Empty);
+        if (string.IsNullOrEmpty(NFT.Utxo))
+            res = await AppData.Account.MintNFT(NFT);
+        else
+            res = await AppData.Account.ChangeNFT(NFT);
+
+        minted = res.Item1;
+        result = res.Item2;
+        if (res.Item1)
+        {
+            Console.WriteLine("Profile saved. Txid: " + result);
+            NFT.Utxo = result;
+            await NFTChanged.InvokeAsync(NFT);
+            AppData.Account.Profile.Utxo = result;
+        }        
+        else
+            Console.WriteLine("Cannot mint the profile: " + result);
+
+        await PageProgressService.Go( -1 );
+        mintingChanges = false;
+        StateHasChanged();
+    }
+}

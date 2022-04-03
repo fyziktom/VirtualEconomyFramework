@@ -1,0 +1,71 @@
+﻿<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>Information about the data</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Field>
+            <FieldLabel>Please enter the name.</FieldLabel>
+            <TextEdit Placeholder="Enter name" @bind-Text="Name" @onchange="nameChanged"/>
+        </Field>
+        <Field>
+            <FieldLabel>Please enter the short description.</FieldLabel>
+            <TextEdit Placeholder="Enter short description" @bind-Text="Description" @onchange="descChanged"/>
+            <FieldHelp>If you need to write longer description please use the text field.</FieldHelp>            
+        </Field>
+        <Field>
+            <FieldLabel>Here you can enter the longer description.</FieldLabel>            
+            <Markdown Value="@_text" ValueChanged="textChanged"/>
+            <FieldHelp>You can use Markdown formating in this editor.</FieldHelp>         
+        </Field>
+        <Field>
+            <FieldLabel>Please enter the tags.</FieldLabel>
+            <TextEdit Placeholder="Enter the tags" @bind-Text="Tags" @onchange="tagsChanged"/>
+            <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>            
+        </Field>
+    </CardBody>
+</Card>
+
+@code {
+    string _name = string.Empty;
+    [Parameter]
+    public string Name { get => _name; set => _name = value; }
+    [Parameter]
+    public EventCallback<string> NameChanged { get; set; }
+
+    string _description = string.Empty;
+    [Parameter]
+    public string Description { get => _description; set => _description = value; }
+    [Parameter]
+    public EventCallback<string> DescriptionChanged { get; set; }
+
+    string _text = string.Empty;
+    [Parameter]
+    public string Text { get => _text; set => _text = value; }
+    [Parameter]
+    public EventCallback<string> TextChanged { get; set; }    
+
+    string _tags = string.Empty;
+    [Parameter]
+    public string Tags { get => _tags; set => _tags = value; }
+    [Parameter]
+    public EventCallback<string> TagsChanged { get; set; }    
+
+    async Task nameChanged(ChangeEventArgs e)
+    {
+        await NameChanged.InvokeAsync((string)e.Value);
+    }
+    async Task descChanged(ChangeEventArgs e)
+    {
+        await DescriptionChanged.InvokeAsync((string)e.Value);
+    }
+    async Task textChanged(string e)
+    {
+        _text = e;
+        await TextChanged.InvokeAsync(_text);
+    }
+    async Task tagsChanged(ChangeEventArgs e)
+    {
+        await TagsChanged.InvokeAsync((string)e.Value);
+    }
+
+}

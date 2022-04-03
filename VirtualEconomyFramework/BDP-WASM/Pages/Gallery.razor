@@ -1,0 +1,39 @@
+﻿@page "/gallery"
+
+<PageTitle>BDP - Gallery</PageTitle>
+
+<h1>Data Gallery</h1>
+
+<Tabs RenderMode="TabsRenderMode.LazyReload" SelectedTab="@_selectedTabName">
+    <Items>
+        <Tab Name="gallery">Gallery</Tab>
+        <Tab Name="newWorkTab"><Icon Name="IconName.CartPlus" />New Work Tab</Tab>
+    </Items>
+    <Content>
+        <TabPanel Name="gallery">
+            <BDP_WASM.Components.Tabs.GalleryTabContent Address="@Address" IsSubAccount="@IsSubAccount" IsOwnNFT="@IsOwnNFT" />
+        </TabPanel>
+        <TabPanel Name="newWorkTab">
+            <span>todo add new tab</span>
+        </TabPanel>
+    </Content>
+</Tabs>
+
+@code {
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> AddressChanged { get; set; }
+    [Parameter]
+    public bool IsSubAccount { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsSubAccountChanged { get; set; }
+    [Parameter]
+    public bool IsOwnNFT { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsOwnNFTChanged { get; set; }
+
+    private string _selectedTabName = "gallery";
+    [Parameter]
+    public string SelectedTabName { get => _selectedTabName; set => _selectedTabName = value; }
+}

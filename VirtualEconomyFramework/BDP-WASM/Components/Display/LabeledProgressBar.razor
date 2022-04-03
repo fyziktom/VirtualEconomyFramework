@@ -1,0 +1,20 @@
+﻿
+<Field>
+    <FieldLabel>@ParameterName</FieldLabel>
+    <Progress Color="@Color" Value="@(Convert.ToInt32(Value))" Margin="Margin.Is3.FromBottom" />
+    <FieldHelp>@(Value)&nbsp;@ParameterUnit</FieldHelp>    
+</Field>
+
+@code {
+    [Parameter]
+    public string ParameterName { get; set; } = "Value";
+    [Parameter]
+    public string ParameterUnit { get; set; } = "Units";
+    [Parameter]
+    public int RoundDecimals { get; set; } = 2;
+    private double _value = 0.0;
+    [Parameter]
+    public double Value { get => Math.Round(_value, RoundDecimals); set => _value = value; }
+    [Parameter]
+    public Color Color { get; set; } = Color.Info;
+}

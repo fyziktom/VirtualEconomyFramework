@@ -1,0 +1,88 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+
+@if (NFT != null && NFT.Type == NFTTypes.XrayImage)
+{
+    var nft = NFT as XrayImageNFT;
+    <Card Margin="Margin.Is4.FromBottom" Style="max-width:250px;">
+        <CardImage Source="@GetImageUrl()" Alt="No image found" Style="max-height:200px;" />
+        <CardBody>
+            <CardTitle Size="5">@NFT.Name</CardTitle>
+            <CardText>
+                @NFT.Description
+            </CardText>
+            <CardText>
+                <XrayParamsValues XrayParams="nft.XrayParams" />
+           </CardText>
+            <CardText>
+                <Row>
+                    @foreach (var tag in NFT.TagsList)
+                    {
+                        <Column Margin="Margin.Is2.FromEnd" >
+                            <small class="text-muted">#@tag</small>
+                        </Column>
+                    }    
+                </Row>
+            </CardText>
+        </CardBody>
+    </Card>
+}
+
+@code {
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> AddressChanged { get; set; }
+    [Parameter]
+    public bool IsSubAccount { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsSubAccountChanged { get; set; }
+    [Parameter]
+    public bool IsOwnNFT { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsOwnNFTChanged { get; set; }    
+    [Parameter]
+    public INFT NFT { get; set; } = new ImageNFT("");
+    [Parameter]
+    public EventCallback<INFT> NFTChanged { get; set; }
+    [Parameter]
+    public string Utxo { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> UtxoChanged { get; set; }
+    [Parameter]
+    public int UtxoIndex { get; set; } = 0;
+    [Parameter]
+    public EventCallback<int> UtxoIndexChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<NFTSentResultDto> NFTSent { get; set; }
+
+    public string GetImageUrl(bool returnPreviewIfExists = false)
+    {
+        if (NFT == null)
+            return string.Empty;
+
+        if (returnPreviewIfExists)
+        {
+            var preview = GetPreviewUrl();
+            if (!string.IsNullOrEmpty(preview))
+                return preview;
+        }
+        
+        if (!string.IsNullOrEmpty(NFT.ImageLink))
+            return NFT.ImageLink;
+        else
+            return string.Empty;
+    }
+    public string GetPreviewUrl()
+    {
+        if (NFT == null)
+            return string.Empty;
+
+        if (!string.IsNullOrEmpty(NFT.Preview))
+            return NFT.Preview;
+        else
+            return string.Empty;
+    }
+}

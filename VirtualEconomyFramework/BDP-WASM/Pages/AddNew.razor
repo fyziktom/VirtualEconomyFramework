@@ -1,0 +1,264 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@inject AppData AppData
+
+@page "/addnew"
+
+<PageTitle>BDP - Add New Data</PageTitle>
+<Row>
+    <Column Class="text-center">
+        <h1>Add New Data</h1>
+    </Column>
+</Row>
+
+<Steps SelectedStep="@selectedStep" SelectedStepChanged="@OnSelectedStepChanged">
+    <Items>
+        <Step Name="stepUpload">Upload</Step>
+        <Step Name="stepData">Data Info</Step>
+        <Step Name="stepDevice">Device Info</Step>
+        @*<Step Name="stepOther">Other</Step>*@
+        <Step Name="stepFinish">
+            <Marker>
+                <Icon Name="IconName.Flag" />
+            </Marker>
+            <Caption>
+                Finish
+            </Caption>
+        </Step>
+    </Items>
+    <Content>
+        <StepPanel Name="stepUpload">
+            <Layout>
+                <LayoutHeader>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsNextButtonVisible="true" ToolActionHandler="@OnToolActionHandler" />
+                </LayoutHeader>
+                <LayoutContent>
+                    <Row>
+                        <Column>            
+                            <BDP_WASM.Components.Minting.UploadData @bind-MainIPFSLink="@NFT.ImageLink" @bind-PreviewIPFSLink="@NFT.Preview" />
+                        </Column>
+                    </Row>
+                </LayoutContent>
+                <LayoutFooter>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsNextButtonVisible="true" ToolActionHandler="@OnToolActionHandler" />
+                </LayoutFooter>
+            </Layout>
+                        
+        </StepPanel>
+        <StepPanel Name="stepData">
+            <Layout>
+                <LayoutHeader>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsNextButtonVisible="true" 
+                                                                IsPreviousButtonVisible="true" 
+                                                                ToolActionHandler="@OnToolActionHandler" />
+                </LayoutHeader>
+                <LayoutContent>
+                    <Row>
+                        <Column>              
+                            <BDP_WASM.Components.Minting.DataInfoForm @bind-Name="@NFT.Name" 
+                                                                      @bind-Description="@NFT.Description" 
+                                                                      @bind-Text="@NFT.Text" 
+                                                                      @bind-Tags="@NFT.Tags" />
+                        </Column>
+                    </Row>
+                </LayoutContent>
+                <LayoutFooter>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsNextButtonVisible="true" 
+                                                                IsPreviousButtonVisible="true" 
+                                                                ToolActionHandler="@OnToolActionHandler" />
+                </LayoutFooter>
+            </Layout>
+        </StepPanel>
+        <StepPanel Name="stepDevice">
+            <Layout>
+                <LayoutHeader>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsNextButtonVisible="true" 
+                                                                IsPreviousButtonVisible="true" 
+                                                                ToolActionHandler="@OnToolActionHandler" /> 
+                </LayoutHeader>
+                <LayoutContent>
+                    <Row>
+                        <Column>  
+                            <BDP_WASM.Components.Minting.XrayExposureParamsForm @bind-Voltage="@NFT.XrayParams.Voltage"
+                                                                                @bind-Current="@NFT.XrayParams.Current"
+                                                                                @bind-Time="@NFT.XrayParams.ExposureTime"/>
+                        </Column>>
+                    </Row>
+                    <Row>
+                        <Column>  
+                            <BDP_WASM.Components.Minting.DeviceInfoForm />
+                        </Column>
+                    </Row>
+                </LayoutContent>
+                <LayoutFooter>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsNextButtonVisible="true" 
+                                                                IsPreviousButtonVisible="true" 
+                                                                ToolActionHandler="@OnToolActionHandler" />
+                </LayoutFooter>
+            </Layout>
+         
+        </StepPanel>
+@*        <StepPanel Name="stepOther">
+            <Layout>
+                <LayoutHeader>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsNextButtonVisible="true" 
+                                                                IsPreviousButtonVisible="true" 
+                                                                ToolActionHandler="@OnToolActionHandler" />   
+                </LayoutHeader>
+                <LayoutContent>
+                    <Row>
+                        <Column>  
+                            <BDP_WASM.Components.Minting.OtherInfo />
+                        </Column>
+                    </Row>
+                </LayoutContent>
+                <LayoutFooter>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsNextButtonVisible="true" 
+                                                                IsPreviousButtonVisible="true" 
+                                                                ToolActionHandler="@OnToolActionHandler" />
+                </LayoutFooter>
+            </Layout>        
+        </StepPanel>  *@      
+        <StepPanel Name="stepFinish">
+            <Layout>
+                <LayoutHeader>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsPreviousButtonVisible="true" 
+                                                                IsFinishButtonVisible="@(!minting)" 
+                                                                ToolActionHandler="@OnToolActionHandler" />
+                </LayoutHeader>
+                <LayoutContent>
+                    <Row>
+                        <Column>
+                            <Span>Now you can confirm the storage of the data.</Span>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column>
+                            <Span>Here you can check the expected result:</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is3.FromTop">
+                        <Column>
+                            <BDP_WASM.Components.Display.XrayImageCard NFT=@NFT />                            
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is3.FromTop">
+                        <Column>
+                        @if (IsMinted)
+                        {
+                            if (mintingResult.Item1)
+                            {
+                                 <Alert Color="Color.Success" Visible>
+                                    <AlertMessage>Data Stored :)</AlertMessage>
+                                    <AlertDescription>Transaction Hash is: <a href="https://explorer.nebl.io/tx/@mintingResult.Item2" target="_blank">@mintingResult.Item2</a></AlertDescription>
+                                </Alert>      
+                            }
+                            else 
+                            {
+                                <Alert Color="Color.Danger" Visible>
+                                    <AlertMessage>Cannot save</AlertMessage>
+                                    <AlertDescription>@mintingResult.Item2</AlertDescription>
+                                </Alert>  
+                            }
+                        }
+                        </Column>
+                    </Row>
+                </LayoutContent>
+                <LayoutFooter>
+                    <BDP_WASM.Components.Minting.MintingToolbar IsPreviousButtonVisible="true" 
+                                                                IsFinishButtonVisible="@(!minting)" 
+                                                                ToolActionHandler="@OnToolActionHandler" />
+                </LayoutFooter>
+            </Layout>
+           
+        </StepPanel>
+    </Content>
+</Steps>
+
+@code {
+    string selectedStep = "stepUpload";
+    XrayImageNFT NFT = new XrayImageNFT();
+
+    bool IsMinted = false;
+    bool minting = false;
+    (bool, string) mintingResult = (false,string.Empty);
+
+    private Task OnSelectedStepChanged( string name )
+    {
+        selectedStep = name;
+
+        return Task.CompletedTask;
+    }
+
+    private async Task mintNFT(string[] args)
+    {
+        Console.WriteLine($"Name: {NFT.Name}");
+        Console.WriteLine($"Description: {NFT.Description}");
+        Console.WriteLine($"Text: {NFT.Text}");
+        Console.WriteLine($"Tags: {NFT.Tags}");
+        Console.WriteLine($"ImageLink: {NFT.ImageLink}");
+        Console.WriteLine($"Preview: {NFT.Preview}");
+        Console.WriteLine($"Voltage: {NFT.XrayParams.Voltage} kV");
+        Console.WriteLine($"Current: {NFT.XrayParams.Current} mA");
+        Console.WriteLine($"Exposure Time: {NFT.XrayParams.ExposureTime} ms");
+
+        if (string.IsNullOrEmpty(NFT.ImageLink))
+        {
+            mintingResult.Item1 = false;
+            mintingResult.Item2 = "Cannot save the data without the Image.";
+            return;
+        }
+        if (selectedStep == "stepFinish")
+        {
+            var res = await AppData.Account.MintNFT(NFT);
+            mintingResult = res;
+                if (res.Item1)
+                IsMinted = true;
+                else
+                IsMinted = false;
+        }
+    }
+
+    async Task OnToolActionHandler(MintingToolbarActionDto e)
+    {
+        if (e == null)
+            return;
+        switch(e.Type)
+        {
+            case MintingToolbarActionType.NextStep:
+                NextStep(e.Args);
+                break;
+            case MintingToolbarActionType.PreviousStep:
+                PreviousStep(e.Args);
+                break;
+            case MintingToolbarActionType.Finish:
+                await mintNFT(e.Args);
+                break;
+        }
+    }
+    
+    void NextStep(string[] args)
+    {
+        if (selectedStep == "stepUpload")
+            selectedStep = "stepData";
+        else if (selectedStep == "stepData")
+            selectedStep = "stepDevice";
+        else if (selectedStep == "stepDevice")
+            //selectedStep = "stepOther";
+        //else if (selectedStep == "stepOther")
+            selectedStep = "stepFinish";
+    }
+
+    void PreviousStep(string[] args)
+    {
+        if (selectedStep == "stepFinish")
+            //selectedStep = "stepOther";
+        //else if (selectedStep == "stepOther")
+            selectedStep = "stepDevice";
+        else if (selectedStep == "stepDevice")
+            selectedStep = "stepData";
+        else if (selectedStep == "stepData")
+            selectedStep = "stepUpload";
+    }
+}

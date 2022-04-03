@@ -1,0 +1,81 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Neblio
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+
+<Row>
+    <Column>      
+        <Row>
+            <Column>
+            @if (!AppData.IsAccountLoaded)
+            {
+                <Row Margin="Margin.Is3.FromBottom">
+                    <Column>
+                         <h1>Welcome in the Base Data Place Application</h1>               
+                    </Column>
+                </Row>
+                @if (!IsAccountStored)
+                {
+                    <BDP_WASM.Components.CreateAccount AccountCreated="@AccountCreatedHandler" />
+                }
+                else
+                {
+                    <BDP_WASM.Components.UnlockAccount AccountUnlocked="@AccountUnlockedHandler" />
+                }
+            }
+            else
+            {
+                <Alert Color="Color.Success" >Account loaded :)</Alert>
+            }
+            </Column>
+        </Row>
+        @if (AppData.IsAccountLoaded)
+        {
+        <Row Margin="Margin.Is3.FromTop">
+            <Column>
+                <BDP_WASM.Components.Account.AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
+            </Column>
+        </Row>
+        }        
+    </Column>
+</Row>
+
+@code {
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> AddressChanged { get; set; }
+    [Parameter]
+    public bool IsSubAccount { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsSubAccountChanged { get; set; }
+
+    private bool IsAccountStored { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAccount();
+    }
+
+    private async Task CheckAccount()
+    {
+        var key = await localStorage.GetItemAsync<string>("key");
+        if (string.IsNullOrEmpty(key))
+            IsAccountStored = false;
+        else
+            IsAccountStored = true;
+    }
+
+    void AccountCreatedHandler(string e)
+    {
+        Address = e;
+        IsAccountStored = true;
+        StateHasChanged();
+    }
+    void AccountUnlockedHandler(string e)
+    {
+        Address = e;
+        IsAccountStored = true;
+        StateHasChanged();
+    }
+}
