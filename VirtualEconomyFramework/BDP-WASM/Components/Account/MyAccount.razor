@@ -16,11 +16,11 @@
                 </Row>
                 @if (!IsAccountStored)
                 {
-                    <BDP_WASM.Components.CreateAccount AccountCreated="@AccountCreatedHandler" />
+                    <BDP_WASM.Components.Account.CreateAccount AccountCreated="@AccountCreatedHandler" />
                 }
                 else
                 {
-                    <BDP_WASM.Components.UnlockAccount AccountUnlocked="@AccountUnlockedHandler" />
+                    <BDP_WASM.Components.Account.UnlockAccount AccountUnlocked="@AccountUnlockedHandler" />
                 }
             }
             else

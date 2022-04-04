@@ -1,21 +1,42 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.Bookmarks
 @inject AppData AppData
 
-<CardGroup>
-    @foreach (var NFT in AppData.Account.NFTs)
-    {
-        @if (NFT.Type == NFTTypes.XrayImage)
-        {
-            <XrayImageCard NFT=@NFT 
-                           Address="@Address" 
-                           IsSubAccount="@IsSubAccount"
-                           IsOwnNFT="@IsOwnNFT" 
-                            Utxo="@NFT.Utxo"
-                            UtxoIndex="@NFT.UtxoIndex" />
-        }
-    }
-</CardGroup>
+<Row>
+    <Column>
+        <Row Width="Width.Is75" Flex="Flex.AlignItems.Center">
+            <Column>
+                <Field>
+                    <TextEdit Placeholder="Seacrh by Name, Author or Tags" @bind-Text="searchNFTsString" KeyUp="@RefreshRequested"/>
+                    <FieldHelp>You can use Name, Author or Tags. Search is not case sensitive.</FieldHelp>                
+                </Field>
+            </Column>
+            <Column>
+                <Button Color="Color.Light" Clicked="@Refresh"><Icon Name="IconName.Search" /></Button>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <CardGroup>
+                    @foreach (var NFT in NFTs) 
+                    {
+                        @if (IsInFilter(NFT))
+                        {
+                            <XrayImageCard NFT=@NFT 
+                                           Address="@Address" 
+                                           IsSubAccount="@IsSubAccount"
+                                           IsOwnNFT="@IsOwnNFT" 
+                                            Utxo="@NFT.Utxo"
+                                            UtxoIndex="@NFT.UtxoIndex"
+                                            OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
+                        }
+                    }
+                </CardGroup>
+            </Column>
+        </Row>
+    </Column>
+</Row>
 
 @code {
     [Parameter]
@@ -30,4 +51,80 @@
     public bool IsOwnNFT { get; set; } = false;
     [Parameter]
     public EventCallback<bool> IsOwnNFTChanged { get; set; }
+    [Parameter]
+    public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }
+
+    public IEnumerable<INFT> NFTs 
+    { 
+        get
+        {
+            if (IsOwnNFT)
+                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.XrayImage);
+            else
+                return Tab.NFTs.Where(n => n.Type == NFTTypes.XrayImage);
+        }
+    }
+
+    string searchNFTsString = string.Empty;
+
+    public ActiveTab Tab { get; set; } = new ActiveTab();
+
+    protected override Task OnInitializedAsync()
+    {
+        Tab = new ActiveTab(Address);
+        Tab.MaxLoadedNFTItems = 20;
+        Tab.StartRefreshing();
+        return base.OnInitializedAsync();
+    }
+
+    void RefreshRequested(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+            Refresh();
+    }
+    void Refresh()
+    {
+        StateHasChanged();
+    }
+
+    public bool IsInFilter(INFT nft)
+    {
+        if (!string.IsNullOrEmpty(searchNFTsString))
+        {
+            if (nft.Author.ToLower().Contains(searchNFTsString) || nft.Name.ToLower().Contains(searchNFTsString))
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(nft.Tags))
+            {
+                if (nft.Tags.ToLower().Contains(searchNFTsString))
+                    return true;
+
+                var split = searchNFTsString.Split(' ');
+                if (split.Length > 1)
+                {
+                    var score = 0;
+                    nft.TagsList.ForEach(t =>
+                    {
+                        Array.ForEach(split, s =>
+                        {
+                            if (t.ToLower().Contains(s.ToLower()))
+                                score++;
+                            else if (s.ToLower().Contains(t.ToLower()))
+                                score++;
+                        });
+                    });
+                    if (score > 0)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }

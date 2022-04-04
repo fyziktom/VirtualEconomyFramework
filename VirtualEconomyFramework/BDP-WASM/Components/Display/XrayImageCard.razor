@@ -25,11 +25,27 @@
                     }    
                 </Row>
             </CardText>
+            <CardText>
+                <Row>
+                    <Column Class="text-center">
+                        <Button Color="Color.Primary" Clicked=@OpenNFTDetailsModal><Icon Name="IconName.Info"/></Button>
+                    </Column>
+                </Row>
+            </CardText>
         </CardBody>
     </Card>
 }
 
+<XrayImagesDetails @ref=XrayImagesDetailsModalComponent 
+                   NFT="@NFT" 
+                   Address="@Address" 
+                   IsSubAccount="@IsSubAccount" 
+                   NFTSent="@NFTSentHandler"
+                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
+
 @code {
+    private XrayImagesDetails XrayImagesDetailsModalComponent;
+
     [Parameter]
     public string Address { get; set; } = string.Empty;
     [Parameter]
@@ -54,6 +70,8 @@
     public int UtxoIndex { get; set; } = 0;
     [Parameter]
     public EventCallback<int> UtxoIndexChanged { get; set; }
+    [Parameter]
+    public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }
 
     [Parameter]
     public EventCallback<NFTSentResultDto> NFTSent { get; set; }
@@ -69,7 +87,7 @@
             if (!string.IsNullOrEmpty(preview))
                 return preview;
         }
-        
+
         if (!string.IsNullOrEmpty(NFT.ImageLink))
             return NFT.ImageLink;
         else
@@ -84,5 +102,17 @@
             return NFT.Preview;
         else
             return string.Empty;
+    }
+
+    public void OpenNFTDetailsModal()
+    {
+        if (NFT == null) return;
+        XrayImagesDetailsModalComponent.ShowNFTDetails();
+    }
+
+    async Task NFTSentHandler(NFTSentResultDto e)
+    {
+        XrayImagesDetailsModalComponent.HideNFTDetails();
+        await NFTSent.InvokeAsync(e);
     }
 }

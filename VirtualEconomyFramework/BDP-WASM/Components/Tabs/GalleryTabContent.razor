@@ -1,9 +1,10 @@
 ﻿@using VEDriversLite
+@using VEDriversLite.NFT
 @inject AppData AppData
 
 <Layout>
     <LayoutHeader>
-        Xray Images Galler
+        Xray Images Gallery
     </LayoutHeader>
     <LayoutContent>
         <Row Margin="Margin.Is2.FromBottom">
@@ -13,7 +14,10 @@
         </Row>
         <Row>
             <Column>
-                <BDP_WASM.Components.Display.NFTCardList Address="@Address" IsSubAccount="@IsSubAccount" IsOwnNFT="@IsOwnNFT" />
+                <BDP_WASM.Components.Display.NFTCardList Address="@Address" 
+                                                         IsSubAccount="@IsSubAccount" 
+                                                         IsOwnNFT="@IsOwnNFT" 
+                                                         OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
             </Column>
         </Row>
     </LayoutContent>
@@ -32,4 +36,6 @@
     public bool IsOwnNFT { get; set; } = false;
     [Parameter]
     public EventCallback<bool> IsOwnNFTChanged { get; set; }
+    [Parameter]
+    public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }
 }

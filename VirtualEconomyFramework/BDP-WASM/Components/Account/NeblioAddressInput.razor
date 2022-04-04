@@ -1,0 +1,109 @@
+﻿@using VEDriversLite
+@using VEDriversLite.UnstoppableDomains
+
+<Field>
+    <FieldLabel>Please enter the Neblio Address</FieldLabel>
+    <Row>
+        <Column>
+             <TextEdit Placeholder="Enter the Neblio Address" @bind-Text="receiver" @onchange="receiverAddressChangedHandler"/>
+        </Column>
+        <Column>
+            @if (unstoppableDomainAddressUsed)
+            {
+                <img style="width:16px; margin-left: 10px;" src="images/unstoppableDomainsLogo.png" />
+            }
+            @if (validAddress)
+            {
+                <i class="oi oi-check text-success" style="font-size:12px; margin-left:10px;"></i>
+            }
+            else
+            {
+                 <i class="oi oi-x text-danger" style="font-size:12px; margin-left:10px;"></i>
+            }
+        </Column>
+    </Row>
+    <FieldHelp>Please enter the Neblio Blockchain Address. You can use Unstoppable Domains name if Address has some.</FieldHelp>            
+</Field>
+
+@code {
+
+    private string receiver = string.Empty;
+    [Parameter]
+    public string Receiver
+    {
+        get => receiver;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                if (receiver != value)
+                {
+                    receiver = value;
+                    checkAddress(receiver);
+                }
+            }
+        }
+    }
+    [Parameter]
+    public EventCallback<string> ReceiverChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string> AddressCheckedInputed { get; set; }
+
+    private bool validAddress = false;
+    private bool unstoppableDomainAddressUsed = false;
+    private string unstoppableDomainAddress = string.Empty;
+
+    private void receiverAddressChangedHandler(EventArgs e)
+    {
+        if (string.IsNullOrEmpty(receiver))
+            return;
+        if (receiver.Length < 8)
+            return;
+
+        ReceiverChanged.InvokeAsync(receiver);
+        checkAddress(receiver);
+        StateHasChanged();
+    }
+
+    private async Task checkAddress(string address)
+    {
+        if (string.IsNullOrEmpty(address))
+            return;
+
+        var add = string.Empty;
+        if (address.Contains(".crypto") || address.Contains(".coin") || address.Contains(".wallet") || address.Contains(".nft") || address.Contains(".bitcoin"))
+        {
+            add = await UnstoppableDomainsHelpers.GetNeblioAddress(address);
+            if (!string.IsNullOrEmpty(add))
+            {
+                unstoppableDomainAddressUsed = true;
+                unstoppableDomainAddress = add;
+            }
+            else
+            {
+                unstoppableDomainAddressUsed = false;
+                unstoppableDomainAddress = string.Empty;
+            }
+        }
+        else
+        {
+            add = address;
+            unstoppableDomainAddress = string.Empty;
+            unstoppableDomainAddressUsed = false;
+        }
+        var res = NeblioTransactionHelpers.ValidateNeblioAddress(add);
+        if (!string.IsNullOrEmpty(res))
+        {
+            validAddress = true;
+            Receiver = res;
+            await AddressCheckedInputed.InvokeAsync(receiver);
+        }
+        else
+        {
+            validAddress = false;
+            await AddressCheckedInputed.InvokeAsync(string.Empty);
+        }
+        StateHasChanged();
+    }
+}

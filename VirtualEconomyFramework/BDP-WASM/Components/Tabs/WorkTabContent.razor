@@ -1,5 +1,35 @@
-﻿<h3>WorkTabContent</h3>
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+
+<h3>WorkTabContent</h3>
+
+<Container Fluid>
+    <CardGroup>
+        @foreach (var NFT in NFTs) 
+        {
+                <BDP_WASM.Components.Display.XrayImageCard NFT=@NFT 
+                                Address="@Address" 
+                                IsSubAccount="@IsSubAccount"
+                                IsOwnNFT="@IsOwnNFT" 
+                                Utxo="@NFT.Utxo"
+                                UtxoIndex="@NFT.UtxoIndex"/>
+        }
+    </CardGroup>
+</Container>
 
 @code {
-
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> AddressChanged { get; set; }
+    [Parameter]
+    public bool IsSubAccount { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsSubAccountChanged { get; set; }
+    [Parameter]
+    public bool IsOwnNFT { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsOwnNFTChanged { get; set; }
+    [Parameter]
+    public List<INFT> NFTs { get; set; } = new List<INFT>();
 }

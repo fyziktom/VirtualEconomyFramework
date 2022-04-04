@@ -5,7 +5,6 @@ public class NFTSentResultDto
 {
     public bool sucess { get; set; } = false;
     public string message { get; set; } = string.Empty;
-    public string error { get; set; } = string.Empty;
     public INFT NFT { get; set; } = null;
 }
 

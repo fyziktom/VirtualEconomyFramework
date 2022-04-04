@@ -13,7 +13,7 @@
     <Column>
         <Field>
             <FieldLabel>Please input your password.</FieldLabel>
-            <TextEdit Placeholder="Enter password" Role="TextRole.Password" @bind-Text="password" />
+            <TextEdit Placeholder="Enter password" Role="TextRole.Password" @bind-Text="password" KeyUp="@PassowrdEntryEnterKeyUp" />
         </Field>
     </Column>
 </Row>    
@@ -84,16 +84,16 @@ else
 
     [Inject] IPageProgressService PageProgressService { get; set; }
 
-    private Modal UnlockAccountModal;
+    Modal UnlockAccountModal;
 
-    private bool IsAccountLoaded { get; set; } = false;
-    private bool LoadingAccount { get; set; } = false;
+    bool IsAccountLoaded = false;
+    bool LoadingAccount = false;
 
-    private string encryptedKey { get; set; } = string.Empty;
-    private string password { get; set; } = string.Empty;
-    private string Address { get; set; } = string.Empty;
+    string encryptedKey= string.Empty;
+    string password = string.Empty;
+    string Address = string.Empty;
 
-    private async Task UnlockAccountHandler()
+    async Task UnlockAccountHandler()
     {
         if (string.IsNullOrEmpty(password))
             return;
@@ -125,4 +125,10 @@ else
         LoadingAccount = false;
         StateHasChanged();
     }  
+
+    async Task PassowrdEntryEnterKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+            await UnlockAccountHandler();
+    }
 }
