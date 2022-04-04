@@ -922,6 +922,18 @@ namespace VEDriversLite.Neblio
 
         #region Transactions
 
+        private async Task<(bool, string)> SignBroadcastAndInvokeSucessEvent(Transaction transaction, string message)
+        {
+            var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
+            if (rtxid != null)
+            {
+                await InvokeSendPaymentSuccessEvent(rtxid, message);
+                return (true, rtxid);
+            }
+            return (false, "");
+        }
+
         /// <summary>
         /// Send classic neblio payment
         /// </summary>
@@ -970,18 +982,6 @@ namespace VEDriversLite.Neblio
 
             await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
-        }
-
-        private async Task<(bool, string)> SignBroadcastAndInvokeSucessEvent(Transaction transaction, string message)
-        {
-            var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-            if (rtxid != null)
-            {
-                await InvokeSendPaymentSuccessEvent(rtxid, message);
-                return (true, rtxid);
-            }
-            return (false, "");
         }
 
         /// <summary>
