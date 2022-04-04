@@ -953,16 +953,13 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                // send tx                                                 
-
+                // send tx                                              
                 var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, res.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Payment Sent");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -973,6 +970,18 @@ namespace VEDriversLite.Neblio
 
             await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
             return (false, "Unexpected error during send.");
+        }
+
+        private async Task<(bool, string)> SignBroadcastAndInvokeSucessEvent(Transaction transaction, string message)
+        {
+            var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
+            if (rtxid != null)
+            {
+                await InvokeSendPaymentSuccessEvent(rtxid, message);
+                return (true, rtxid);
+            }
+            return (false, "");
         }
 
         /// <summary>
@@ -1010,12 +1019,10 @@ namespace VEDriversLite.Neblio
                 // send tx                
                 var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, utxos);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Payment Sent");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1068,12 +1075,10 @@ namespace VEDriversLite.Neblio
                 // send tx
                 var transaction = await NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(receivers, lots, amount, AccountKey, res.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Split Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Split Sent");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1129,13 +1134,10 @@ namespace VEDriversLite.Neblio
                 // send tx
                 var transaction = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AccountKey, res.Item2, tres.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Token Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Token Payment Sent");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1198,12 +1200,10 @@ namespace VEDriversLite.Neblio
                 // send tx
                 var transaction = await NeblioTransactionHelpers.SplitNTP1TokensAsync(receivers, lots, amount, tokenId, metadata, AccountKey, res.Item2, tres.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Split Token Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Split Token Payment Sent");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1257,15 +1257,12 @@ namespace VEDriversLite.Neblio
                 // send tx
                 var transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(mintNFTData, AccountKey, res.Item2, tres.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                    
-                
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio NFT Minted");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio NFT Minted");
                     if (NFT.Type == NFTTypes.Profile)
                         Profile = NFT as ProfileNFT;
-
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1313,15 +1310,12 @@ namespace VEDriversLite.Neblio
 
                 var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, coppies, AccountKey, res.Item2, res.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio NFT Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio NFT Sent");
                     if (NFT.Type == NFTTypes.Profile)
                         Profile = NFT as ProfileNFT;
-
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1541,12 +1535,10 @@ namespace VEDriversLite.Neblio
 
                 var transaction = await NeblioTransactionHelpers.DestroyNFTAsync(sendTokenTxData, AccountKey, res.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                              
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFTs Destroyed.");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFTs Destroyed.");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1594,7 +1586,11 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, nft, priceWrite, res.Item2, Secret, price, withDogePrice, dogeprice);
+                var sendTokenTxData = await NFTHelpers.GetNFTTxData(Address, receiver, AccountKey, nft, priceWrite, price, withDogePrice, dogeprice);
+                              
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                              
 
                 if (rtxid != null)
                 {
@@ -1648,12 +1644,10 @@ namespace VEDriversLite.Neblio
                                 
                 var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-                
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Changed");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Changed");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1699,12 +1693,10 @@ namespace VEDriversLite.Neblio
             {
                 var transaction = await NFTHelpers.GetIoTMessageNFTTransaction(Address, receiver, AccountKey, nft, res.Item2, tres.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Message sent.");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Message sent.");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1758,12 +1750,10 @@ namespace VEDriversLite.Neblio
             {
                 var transaction = await NFTHelpers.GetMessageNFTTransaction(Address, receiver, AccountKey, nft, res.Item2, tres.Item2, Secret, rewriteAuthor:rewriteAuthor);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);               
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Message sent.");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Message sent.");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1808,12 +1798,14 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.UseNFTTicket(Address, AccountKey, nft, res.Item2, Secret);
+                var sendTokenTxData = await NFTHelpers.GetTxDataForNFTTicket(Address, nft);
+                                
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Ticket used.");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Ticket used.");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1859,13 +1851,10 @@ namespace VEDriversLite.Neblio
                 
                 var transaction = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(sendTokenTxData, AccountKey, nft.Price, res.Item2, null, 0);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Payment for NFT Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Payment for NFT Sent");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1904,7 +1893,12 @@ namespace VEDriversLite.Neblio
             try
             {
                 NFT.Returned = true;
-                var rtxid = await NFTHelpers.ReturnNFTPayment(Address, AccountKey, NFT, res.Item2, Secret);
+                var sendTokenTxData = await NFTHelpers.GetTxDataForReturnNFTPayment(Address, NFT);
+
+                // send tx              
+                var transaction = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(sendTokenTxData, AccountKey, NFT.Price, res.Item2, NFT.Utxo, (int)NFT.UtxoIndex);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                                             
 
                 if (rtxid != null)
                 {
@@ -1969,12 +1963,10 @@ namespace VEDriversLite.Neblio
                 // send tx
                 var transaction = await NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(dto, AccountKey, neblioAmount, res.Item2, tres.Item2);
 
-                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
-
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Airdrop Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Airdrop Sent");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -2177,7 +2169,7 @@ namespace VEDriversLite.Neblio
                                                 SendTokenTxData tokenTxData;
 
                                                 if (!pn.SellJustCopy)
-                                                    tokenTxData = await NFTHelpers.GetTokenTxData(Address, (PaymentNFT)p, pntosend);
+                                                    tokenTxData = await NFTHelpers.GetTxDataForOrderedNFT(Address, (PaymentNFT)p, pntosend);
                                                 else
                                                     tokenTxData = await NFTHelpers.GetTokenTxDataCopy(Address, (PaymentNFT)p, pntosend);
                                                
