@@ -1083,42 +1083,6 @@ namespace VEDriversLite.NFT
             return dto;
         }
        
-        /// <summary>
-        /// This function will new Ticket NFTs. It is multimint tx
-        /// It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
-        /// </summary>
-        /// <param name="address">sender address</param>
-        /// <param name="coppies">number of copies. one NFT is minted even 0 coppies is input</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="NFT">Input NFT object with data to save to metadata</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-        /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintNFTTickets(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
-        {
-            var metadata = await NFT.GetMetadata();
-            // fill input data for sending tx
-            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Id = NFT.TokenId, // id of token
-                Metadata = metadata,
-                SenderAddress = address
-            };
-
-            try
-            {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
-                if (rtxid != null)
-                    return rtxid;
-                else
-                    return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
 
         /// <summary>
         /// This function will change NFT data.
@@ -1240,7 +1204,6 @@ namespace VEDriversLite.NFT
         /// <param name="mintingUtxo">Minting input Utxo if known</param>
         /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
-        public static async Task<string> DestroyNFTs(string address, EncryptionKey ekey, ICollection<INFT> nfts, ICollection<Utxos> nutxos, string receiver = "", Utxos mintingUtxo = null)
         public static async Task<SendTokenTxData> GetTxDataForDestroyNFTs(string address, ICollection<INFT> nfts, string receiver = "")
         {
             if (nfts == null || nfts.Count == 0)

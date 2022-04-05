@@ -1776,8 +1776,6 @@ namespace VEDriversLite
         /// <param name="isMintingOfCopy"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static async Task<string> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
-
         public static async Task<Transaction> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
         {
             // load key and address
@@ -1936,9 +1934,7 @@ namespace VEDriversLite
         /// <param name="mintingUtxo"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static async Task<string> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
-
-        public static async Task<Transaction> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
+        public static async Task<Transaction> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
         {
 
             // load key and address

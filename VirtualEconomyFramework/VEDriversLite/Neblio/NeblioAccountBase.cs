@@ -1572,7 +1572,7 @@ namespace VEDriversLite.Neblio
                 // send tx
                 var sendTokenTxData = await NFTHelpers.GetTxDataForDestroyNFTs(Address, nfts, receiver);                                             
 
-                var transaction = await NeblioTransactionHelpers.DestroyNFTAsync(sendTokenTxData, AccountKey, res.Item2);
+                var transaction = await NeblioTransactionHelpers.DestroyNFTAsync(sendTokenTxData, AccountKey, res.Item2, mintingUtxo:tres.Item2.FirstOrDefault());
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFTs Destroyed.");
                 if (result.Item1)
@@ -1734,7 +1734,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var transaction = await NFTHelpers.GetIoTMessageNFTTransaction(Address, receiver, AccountKey, nft, res.Item2, tres.Item2);
+                var transaction = await NFTHelpers.GetIoTMessageNFTTransaction(Address, receiver, AccountKey, NFT, res.Item2, tres.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Message sent.");
                 if (result.Item1)

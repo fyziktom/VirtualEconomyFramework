@@ -7111,7 +7111,7 @@
             <param name="multiTokens">If there is the multi token it needs to check if there is no conflict</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNTP1TokensAsync(System.Collections.Generic.List{System.String},System.Int32,System.Int32,System.String,System.Collections.Generic.IDictionary{System.String,System.String},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNTP1TokensAsync(System.Collections.Generic.List{System.String},System.Int32,System.Int32,System.String,System.Collections.Generic.IDictionary{System.String,System.String},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             Function will Split NTP1 tokens to smaller lots
             receiver list - If you input 0, split will be done to sender address, if you input 1 receiver split will be done to receiver (all inputs)
@@ -7128,7 +7128,7 @@
             <param name="fee">Fee - 20000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNFTTokenAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNFTTokenAsync(VEDriversLite.SendTokenTxData,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             Function will sent exact NFT. 
             You must fill the input token utxo in data object!
@@ -7150,7 +7150,7 @@
             <param name="fee">Fee - 20000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             Function will send standard Neblio transaction
             </summary>
@@ -7160,7 +7160,7 @@
             <param name="fee">Fee - 10000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(System.String,System.Collections.Generic.List{System.String},System.Int32,System.Double,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(System.Collections.Generic.List{System.String},System.Int32,System.Double,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             Function will send standard Neblio transaction
             </summary>
@@ -7196,7 +7196,7 @@
             <param name="tutxos">Optional list of the token utxos </param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SignAndBroadcast(NBitcoin.Transaction,NBitcoin.BitcoinSecret,NBitcoin.BitcoinAddress)">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SignAndBroadcast(NBitcoin.Transaction,NBitcoin.BitcoinSecret)">
             <summary>
             Function will sign transaction with provided key and broadcast with Neblio API
             </summary>
@@ -7961,20 +7961,7 @@
             <param name="nfts"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantNFTHelpers.MintCoruzantPostNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.String,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
-            <summary>
-            This function will new Coruzant Post NFT.
-            </summary>
-            <param name="address">sender address</param>
-            <param name="coppies">number of copies</param>
-            <param name="ekey">Encryption Key object of the address</param>
-            <param name="NFT">Input NFT object with data to save to metadata</param>
-            <param name="profileUtxo">related profile NFT utxo</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-            <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-            <returns>New Tx Id Hash</returns>
-        </member>
-        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantNFTHelpers.ChangeCoruzantPostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
+        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantNFTHelpers.ChangeCoruzantPostNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},NBitcoin.BitcoinSecret,System.String)">
             <summary>
             This function will change Coruzant Post NFT
             You can use this function for sending the NFT when you will fill receiver parameter
@@ -7982,29 +7969,6 @@
             <param name="address">sender address</param>
             <param name="ekey">Encryption Key object of the address</param>
             <param name="NFT">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-            <param name="receiver">Fill when you want to send NFT to another address</param>
-            <returns>New Tx Id Hash</returns>
-        </member>
-        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantNFTHelpers.MintCoruzantProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
-            <summary>
-            This function will new Coruzant Profile NFTs. 
-            </summary>
-            <param name="address">sender address</param>
-            <param name="ekey">Encryption Key object of the address</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-            <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-            <param name="nft">Input NFT</param>
-            <returns>New Tx Id Hash</returns>
-        </member>
-        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantNFTHelpers.ChangeCoruzantProfileNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
-            <summary>
-            This function will change Coruzant Profile NFT.
-            You can use this function for sending the NFT when you will fill receiver parameter
-            </summary>
-            <param name="address">sender address</param>
-            <param name="ekey">Encryption Key object of the address</param>
-            <param name="nft">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <param name="receiver">Fill when you want to send NFT to another address</param>
             <returns>New Tx Id Hash</returns>
@@ -9556,7 +9520,7 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.MintNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetMintNFTData(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.String)">
             <summary>
             This function will new NFTs. 
             </summary>
@@ -9568,7 +9532,7 @@
             <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.SendMessageNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetMessageNFTTransaction(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},NBitcoin.BitcoinSecret,System.String)">
             <summary>
             This function will new Post NFT.
             </summary>
@@ -9581,7 +9545,7 @@
             <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.SendIoTMessageNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetIoTMessageNFTTransaction(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             This function will new Post NFT.
             </summary>
@@ -9593,7 +9557,7 @@
             <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.MintMultiNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetMintMultiNFTData(System.String,VEDriversLite.NFT.INFT,System.String)">
             <summary>
             This function will new Post NFTs as multimint. 
             It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
@@ -9607,20 +9571,7 @@
             <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.MintNFTTickets(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
-            <summary>
-            This function will new Ticket NFTs. It is multimint tx
-            It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
-            </summary>
-            <param name="address">sender address</param>
-            <param name="coppies">number of copies. one NFT is minted even 0 coppies is input</param>
-            <param name="ekey">Encryption Key object of the address</param>
-            <param name="NFT">Input NFT object with data to save to metadata</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-            <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-            <returns>New Tx Id Hash</returns>
-        </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.ChangeNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetChangeNFTTxData(System.String,VEDriversLite.NFT.INFT)">
             <summary>
             This function will change NFT data.
             In NFT image and music it will be not relevant because it will always search for origin data even if you will rewrite it.
@@ -9631,7 +9582,7 @@
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.SendOrderedNFT(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetTxDataForOrderedNFT(System.String,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT)">
             <summary>
             This function will take some NFT which was matched with some payment, coppy data and create complete payment, which will send NFT to new owner.
             During this the payment NFT token is send back to project address
@@ -9643,7 +9594,7 @@
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.SendOrderedNFTCopy(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetTokenTxDataCopy(System.String,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT)">
             <summary>
             This function will take some NFT which was matched with some payment as copy, coppy data and create complete payment, which will send NFT to new owner.
             During this the payment NFT token is send back to project address
@@ -9655,7 +9606,7 @@
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.DestroyNFTs(System.String,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String,VEDriversLite.NeblioAPI.Utxos)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetTxDataForDestroyNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.String)">
             <summary>
             This function will destroy selected NFTs
             </summary>
@@ -9667,7 +9618,7 @@
             <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.SendNFTPayment(System.String,VEDriversLite.Security.EncryptionKey,System.String,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetNFTPaymentData(System.String,System.String,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             This function will send payment for some NFT.
             </summary>
@@ -9678,7 +9629,7 @@
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.ReturnNFTPayment(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.PaymentNFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetTxDataForReturnNFTPayment(System.String,VEDriversLite.NFT.PaymentNFT)">
             <summary>
             This function will return payment to the original sender.
             </summary>
@@ -9688,7 +9639,7 @@
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.SendNFT(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Boolean,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Double,System.Boolean,System.Double)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetNFTTxData(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Boolean,System.Double,System.Boolean,System.Double)">
             <summary>
             This function will send NFT. It can be also used for write the price of the NFT.
             </summary>
@@ -9703,7 +9654,7 @@
             <param name="dogeprice">Set doge price, min 0.1</param>
             <returns>New Tx Id hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.UseNFTTicket(System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetTxDataForNFTTicket(System.String,VEDriversLite.NFT.INFT)">
             <summary>
             This function will write Used flag to the NFT Ticket
             </summary>
