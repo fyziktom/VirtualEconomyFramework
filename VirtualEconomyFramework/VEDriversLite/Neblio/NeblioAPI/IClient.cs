@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NeblioAPI
 {
+    /// <summary>
+    /// Neblio API client interface
+    /// </summary>
     public partial interface IClient
     {
         /// <summary>Returns the tokenId representing a token</summary>
@@ -22,12 +25,14 @@ namespace VEDriversLite.NeblioAPI
         System.Threading.Tasks.Task<GetTokenIdResponse> GetTokenIdAsync(string tokensymbol, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>Broadcasts a signed raw transaction to the network</summary>
+        /// <param name="body"></param>
         /// <returns>An object containing the TXID if the broadcast was successful</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<BroadcastTxResponse> BroadcastTxAsync(BroadcastTxRequest body);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Broadcasts a signed raw transaction to the network</summary>
+        /// <param name="body"></param>
         /// <returns>An object containing the TXID if the broadcast was successful</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<BroadcastTxResponse> BroadcastTxAsync(BroadcastTxRequest body, System.Threading.CancellationToken cancellationToken);
@@ -110,6 +115,7 @@ namespace VEDriversLite.NeblioAPI
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Builds a transaction that issues a new NTP1 Token</summary>
+        /// <param name="body"></param>
         /// <returns>An object representing the token created</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<IssueTokenResponse> IssueTokenAsync(IssueTokenRequest body, System.Threading.CancellationToken cancellationToken);
@@ -318,7 +324,9 @@ namespace VEDriversLite.NeblioAPI
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<GetStatusResponse> GetStatusAsync(string q, System.Threading.CancellationToken cancellationToken);
     }
-
+    /// <summary>
+    /// Testnet API client interface
+    /// </summary>
     public partial interface ITestnetClient : IClient
     {
 

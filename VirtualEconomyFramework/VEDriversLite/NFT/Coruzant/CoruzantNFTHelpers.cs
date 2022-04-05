@@ -9,8 +9,15 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT.Coruzant
 {
+    /// <summary>
+    /// Helper class to load and handle Coruzant NFTs
+    /// Will be replaced with INFTModules soon
+    /// </summary>
     public static class CoruzantNFTHelpers
     {
+        /// <summary>
+        /// Coruzant token ID - CORZT on Neblio Blockchain
+        /// </summary>
         public static string CoruzantTokenId { get; set; } = "La9ADonmDwxsNKJGvnRWy8gmWmeo72AEeg8cK7";
 
         /// <summary>
@@ -51,7 +58,7 @@ namespace VEDriversLite.NFT.Coruzant
         /// </summary>
         /// <param name="address">sender address</param>
         /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="nft">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
+        /// <param name="NFT">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="receiver">Fill when you want to send NFT to another address</param>
         /// <returns>New Tx Id Hash</returns>

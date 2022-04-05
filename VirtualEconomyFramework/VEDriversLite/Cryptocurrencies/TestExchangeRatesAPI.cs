@@ -10,8 +10,14 @@ using VEDriversLite.Cryptocurrencies.Dto;
 
 namespace VEDriversLite.Cryptocurrencies
 {
+    /// <summary>
+    /// Mock of the API
+    /// </summary>
     public class TestExchangeRatesAPI : CommonExchangeRatesAPI, IDisposable
     {
+        /// <summary>
+        /// Create Test Exchange Rates API
+        /// </summary>
         public TestExchangeRatesAPI()
         {
             Name = "Test";
@@ -19,6 +25,12 @@ namespace VEDriversLite.Cryptocurrencies
             Type = ExchangeRatesAPITypes.Test;
         }
 
+        /// <summary>
+        /// Get Fake prices from the API
+        /// 150 USD/ 1 NEBL
+        /// 1.5 USD/ 1 DOGE
+        /// </summary>
+        /// <returns></returns>
         public override async Task<bool> GetPriceFromAPI()
         {
             var nebl = 150;

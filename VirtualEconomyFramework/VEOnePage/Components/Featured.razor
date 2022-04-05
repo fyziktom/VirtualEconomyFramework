@@ -1,7 +1,12 @@
-﻿@page "/feature"
+﻿@page "/feature/{pageIndex:int}"
 @using VEDriversLite.NFT.Coruzant 
 @inject AppData AppData 
 @inject IJSRuntime JsRuntime
+@using VEOnePage.Components
+@using Markdig 
+@using Coruzant.Models
+@inject NavigationManager NavigationManager
+
 
 <NavMenu></NavMenu>
 
@@ -10,58 +15,12 @@
          <h2 class="heading-title"><span>Top P</span>rofiles</h2>
     
          <div class="row profiles" >
-            @foreach (var profile in AppData.NFTs.Take(10))
-            {
-                if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
-                {
-                    var prof = profile as CoruzantProfileNFT;
-                    <div class="col-xs-6 col-sm-4 col-md-3  profiles-container">
-                    <div class="profile">
-                       <div class="profile-img">
-                        <img class="media-img" src="@prof.ImageLink" alt="@profile.Description">
-                        </div>        
-                        <div class="profile-details" @onclick="()=>ModalShow(prof)">
-                            <span class="profile-name">@prof.Name @prof.Surname</span> <br>
-                            <span class="position">@prof.WorkingPosition</span> <br>
-                            <span class="desc">@prof.Description</span>
-
-                        </div>
-                    </div>
-                  </div>
-                }
-            }
-         </div>
-    </div>
-
-    <div class="container ">
-        <div class="text-section">
-        <p>
-            Thanks to our community of thousands of amazing contributors, 
-            advisors, authors, and Fellows, we have created the largest 
-            technology publication on earth! Our featured profiles represent
-            CEOs of Fortune 100s, Silicon Valley CEOs, Celebrities, Influencers, 
-            technologists, CTOs and more! From New York to Dubai, from Taiwan to
-            Buenos Aires our contributors come from all over the world - 40+ 
-            countries and growing!
-        </p>
-       </div>
-    </div>
-
-
-   <div class="profiles-top "> <br /><br />
-       <h2 class="heading-title"><span>Latest</span> Guests</h2>
-       <h4 class="title-card"> Recent on the The Digital Executive podcast</h4>
-
-    
-       <div class="row profiles" >
-        @foreach (var profile in AppData.NFTs.Skip(10))
-        {
-            if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
+            @foreach (var profile in AppData.ProfilesNFTs.Take(10))
             {
                 var prof = profile as CoruzantProfileNFT;
                 <div class="col-xs-6 col-sm-4 col-md-3  profiles-container">
                     <div class="profile">
-                       <div class="profile-img">
+                        <div class="profile-img">
                         <img class="media-img" src="@prof.ImageLink" alt="@profile.Description">
                         </div>        
                         <div class="profile-details" @onclick="()=>ModalShow(prof)">
@@ -69,13 +28,61 @@
                             <span class="position">@prof.WorkingPosition</span> <br>
                             <span class="desc">@prof.Description</span>
 
+                            </div>
                         </div>
                     </div>
-              </div>
             }
-        }
-        </div>
+         </div>
     </div>
+
+        <div class="container ">
+                <div class="text-section">
+            <p>
+                Thanks to our community of thousands of amazing contributors, 
+                advisors, authors, and Fellows, we have created the largest 
+                technology publication on earth! Our featured profiles represent
+                CEOs of Fortune 100s, Silicon Valley CEOs, Celebrities, Influencers, 
+                technologists, CTOs and more! From New York to Dubai, from Taiwan to
+                Buenos Aires our contributors come from all over the world - 40+ 
+                countries and growing!
+            </p>
+           </div>
+        </div>
+        
+    }
+    
+   
+       <div class="profiles-top "> <br /><br />
+            <h2 class="heading-title"><span>Coruz</span>ant Profiles</h2>
+            <h4 class="title-card">Featured Guests on The Digital Executive podcast</h4>
+       
+            <div class="row profiles" >
+            @foreach (var profile in AppData.ProfilesNFTs.Skip(skipCount).Take(itemsPerPage))
+            {  
+                    var prof = profile as CoruzantProfileNFT;
+                    <div class="col-xs-6 col-sm-4 col-md-3  profiles-container">
+                        <div class="profile">
+                            <div class="profile-img">
+                            <img class="media-img" src="@prof.ImageLink" alt="@profile.Description">
+                            </div>        
+                            <div class="profile-details" @onclick="()=>ModalShow(prof)">
+                                <span class="profile-name">@prof.Name @prof.Surname</span> <br>
+                                <span class="position">@prof.WorkingPosition</span> <br>
+                                <span class="desc">@prof.Description</span>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+       </div>
+
+    
+    <Pagination TotalPages="@(totalPages != 0 ? totalPages : 1)"
+        PageIndex="@pageIndex"
+        Radius="3"
+        OnSelectedPage="@SelectedPage">
+    </Pagination>
 
 </div>
 
@@ -119,17 +126,40 @@
         </div>
 }
 
+
+
+
+
+
 @code {
-    VEDriversLite.NFT.Coruzant.CoruzantProfileNFT Prof { get; set; }
+    [Parameter]
+    public int pageIndex{ get; set; } = 1;
+    private int itemsPerPage = 5;
+    private int totalPages = 1;
+    private int skipCount = 5; 
+
+    protected override Task OnInitializedAsync()
+    {
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        totalPages = (int)Math.Ceiling(((decimal)((AppData.ProfilesNFTs).Count()-5)/itemsPerPage));
+        return base.OnInitializedAsync();
+    }
+
+    private void SelectedPage(int selectedPageIndex)
+    { 
+     skipCount = itemsPerPage*(selectedPageIndex);
+
+     NavigationManager.NavigateTo("/feature/"+selectedPageIndex);
+    }
+
+     VEDriversLite.NFT.Coruzant.CoruzantProfileNFT Prof { get; set; }
     public void ModalShow( VEDriversLite.NFT.Coruzant.CoruzantProfileNFT SelProfile){
         Prof = SelProfile;
     }
     void ModalCancel() => Prof = null;
-    protected override Task OnInitializedAsync()
-    {
-        AppData.NFTsLoaded += NFTsLoadedHandler;
-        return base.OnInitializedAsync();
-    }
+
+
+
     public void NFTsLoadedHandler(object sender, EventArgs e)
     {
         StateHasChanged();

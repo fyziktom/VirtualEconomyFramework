@@ -9,8 +9,17 @@ using VEDriversLite.NFT.DevicesNFTs;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Main factory for creating the NFTs from hash of the transaction
+    /// </summary>
     public static class NFTFactory
     {
+        /// <summary>
+        /// Parse the type of the NFT from the transaction metadata
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static NFTTypes ParseNFTType(IDictionary<string,string> metadata)
         {
             NFTTypes type = NFTTypes.Image;
@@ -106,6 +115,21 @@ namespace VEDriversLite.NFT
 
             throw new Exception("Metadata does not contain NFT Type.");
         }
+        /// <summary>
+        /// Create and load the NFT from the transaction hash
+        /// </summary>
+        /// <param name="tokenId">Optional. If you know please provide to speed up the loading.</param>
+        /// <param name="utxo">NFT transaction hash</param>
+        /// <param name="utxoindex">Index of the NFT output. This is important for NFTs from multimint.</param>
+        /// <param name="time">already parsed time</param>
+        /// <param name="wait">await load - obsolete</param>
+        /// <param name="loadJustType">load just specific type of NFT</param>
+        /// <param name="justType">specify the type of the NFT which can be load - you must turn on justType flag</param>
+        /// <param name="skipTheType">skip some type of NFT</param>
+        /// <param name="skipType">specify the type of NFT which should be skipped - you must turn on skipTheType flag</param>
+        /// <param name="address">Specify address of owner</param>
+        /// <param name="txinfo">if you have loaded txinfo provide it to speed up the loading</param>
+        /// <returns>INFT compatible object</returns>
         public static async Task<INFT> GetNFT(string tokenId,
                                               string utxo,
                                               int utxoindex = 0,
@@ -135,7 +159,7 @@ namespace VEDriversLite.NFT
                 if (string.IsNullOrEmpty(tokid))
                     tokid = NFTHelpers.TokenId;
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }
@@ -464,6 +488,13 @@ namespace VEDriversLite.NFT
             return nft;
         }
 
+        /// <summary>
+        /// Clone the NFT
+        /// </summary>
+        /// <param name="NFT">input NFT to clone</param>
+        /// <param name="asType">Force the type of the output NFT</param>
+        /// <param name="type">specify the type - you must turn on asType flag</param>
+        /// <returns>INFT compatible object cloned from source</returns>
         public static async Task<INFT> CloneNFT(INFT NFT, bool asType = false, NFTTypes type = NFTTypes.Image)
         {
             if (!asType)
@@ -565,6 +596,16 @@ namespace VEDriversLite.NFT
             return null;
         }
 
+        /// <summary>
+        /// Load the NFT based on the data from the cache
+        /// </summary>
+        /// <param name="metadata">Metadata from cache of NFTs</param>
+        /// <param name="utxo">Utxo of the NFT</param>
+        /// <param name="utxoindex">Utxo Index of the NFT</param>
+        /// <param name="txinfo">preloaded txinfo</param>
+        /// <param name="asType">Force the output type</param>
+        /// <param name="type">Specify the output type - you must set asType flag</param>
+        /// <returns>INFT compatible object</returns>
         public static async Task<INFT> GetNFTFromCacheMetadata(IDictionary<string,string> metadata, string utxo, int utxoindex, NeblioAPI.GetTransactionInfoResponse txinfo = null, bool asType = false, NFTTypes type = NFTTypes.Image)
         {
             if (!asType)

@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Cryptocurrencies
 {
+    /// <summary>
+    /// Price Calculator for the automated conversion
+    /// </summary>
     public class PriceCalculator
     {
         private object _lock = new object();

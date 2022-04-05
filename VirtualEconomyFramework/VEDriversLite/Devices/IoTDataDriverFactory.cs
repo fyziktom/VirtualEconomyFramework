@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Devices
 {
+    /// <summary>
+    /// Factory for IoT Data Drivers
+    /// </summary>
     public static class IoTDataDriverFactory
     {
         /// <summary>
         /// Return correct IoT Data Driver based on the selected type
+        /// It supports now just HARDWARIO IoT Data Driver
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>

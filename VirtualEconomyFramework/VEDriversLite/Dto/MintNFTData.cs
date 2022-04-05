@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Mint NFT Data Dto for NeblioTransactionHelpers MintNFT functions
+    /// </summary>
     public class MintNFTData
     {
+        /// <summary>
+        /// Init the metdata dictionary in constructor
+        /// </summary>
         public MintNFTData()
         {
             Metadata = new Dictionary<string, string>();

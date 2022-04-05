@@ -22,6 +22,9 @@ using VEDriversLite.WooCommerce;
 
 namespace VEDriversLite.Neblio
 {
+    /// <summary>
+    /// Basic function class for Neblio Account 
+    /// </summary>
     public abstract class NeblioAccountBase
     {
         private static object _lock { get; set; } = new object();
@@ -222,7 +225,11 @@ namespace VEDriversLite.Neblio
         }
 
         #region InfoEvents
-
+        /// <summary>
+        /// Redirect Info Event from lower layer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void FireInfoEvent(object sender, IEventInfo e)
         {
             NewEventInfo?.Invoke(sender, e);
@@ -352,8 +359,9 @@ namespace VEDriversLite.Neblio
         /// This function will load Secret property with Key
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="key">Private Key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountKey(string password, string key)
+        public bool LoadAccountKey(string password, string key)
         {
             try
             {
@@ -661,6 +669,12 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Redirect of the Event about added NFT to the payments
+        /// It can inform asap UI to block buy of the NFT if it is just original
+        /// </summary>
+        /// <param name="address">Address of the SubAccount</param>
+        /// <param name="e">Utxo hash and Utxo Index</param>
         public void FireNFTAddedToPayments(string address, (string,int) e)
         {
             NFTAddedToPayments?.Invoke(address, e);
@@ -756,7 +770,8 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// This function will validate if the NFT of this address is spendable
         /// </summary>
-        /// <param name="utxo"></param>
+        /// <param name="utxo">Utxo hash</param>
+        /// <param name="index">index of the Utxo</param>
         /// <returns></returns>
         public async Task<(bool, string)> ValidateNFTUtxo(string utxo, int index)
         {
@@ -823,16 +838,20 @@ namespace VEDriversLite.Neblio
         /// <param name="message">Input message</param>
         /// <param name="signature">Signature of this message created by owner of some address.</param>
         /// <param name="address">Neblio address which should sign the message and should be verified.</param>
+        /// <param name="bobPubKey">You must fill address or PubKey. If you will fill the PubKey function is much faster</param>
         /// <returns></returns>
-        public async Task<(bool, string)> VerifyMessage(string message, string signature, string address)
+        public async Task<(bool, string)> VerifyMessage(string message, string signature, string address, PubKey bobPubKey = null)
         {
-            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))
-                return (false, "You must fill all inputs.");
-            var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(address);
-            if (!ownerpubkey.Item1)
-                return (false, "Owner did not activate the function. He must have filled the profile.");
-            else
-                return await ECDSAProvider.VerifyMessage(message, signature, ownerpubkey.Item2);
+            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || (string.IsNullOrEmpty(address) && bobPubKey == null))
+                return (false, "You must fill all inputs. You can fill just one of these Address or PubKey.");
+            if (bobPubKey == null)
+            {
+                var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(address);
+                if (!ownerpubkey.Item1)
+                    return (false, "Owner did not activate the function. He must have filled the profile.");
+                bobPubKey = ownerpubkey.Item2;
+            }
+            return await ECDSAProvider.VerifyMessage(message, signature, bobPubKey);
         }
 
         /// <summary>
@@ -852,7 +871,7 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Decrypt message with use of ECDSA
         /// </summary>
-        /// <param name="message">Input message</param>
+        /// <param name="emessage">Input message</param>
         /// <returns></returns>
         public async Task<(bool, string)> DecryptMessage(string emessage)
         {
@@ -939,6 +958,7 @@ namespace VEDriversLite.Neblio
         /// </summary>
         /// <param name="receiver">Receiver Neblio Address</param>
         /// <param name="amount">Ammount in Neblio</param>
+        /// <param name="message">Message in transaction data</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendNeblioPayment(string receiver, double amount, string message = "")
         {
@@ -990,6 +1010,7 @@ namespace VEDriversLite.Neblio
         /// <param name="receiver">Receiver Neblio Address</param>
         /// <param name="amount">Ammount in Neblio</param>
         /// <param name="utxos">Input utxos</param>
+        /// <param name="message">Message in transaction data</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMultipleInputNeblioPayment(string receiver, double amount, List<Utxos> utxos, string message = "")
         {
@@ -1038,9 +1059,9 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Split neblio coin to smaller coins
         /// </summary>
-        /// <param name="receiver">Receiver Neblio Address</param>
-        /// <param name="splittedAmount">Ammount of new splitted coin in Neblio</param>
-        /// <param name="count">Count of new splited couns</param>
+        /// <param name="receivers">Receivers list of Neblio Address</param>
+        /// <param name="lots">Number of the lots</param>
+        /// <param name="amount">Amount of new splited couns</param>
         /// <returns></returns>
         public async Task<(bool, string)> SplitNeblioCoin(List<string> receivers, int lots, double amount)
         {
@@ -1225,8 +1246,8 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Mint new NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input
         /// </summary>
-        /// <param name="tokenId"></param>
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
         public async Task<(bool, string)> MintNFT(INFT NFT, string receiver = "")
         {
@@ -1278,9 +1299,9 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
         /// </summary>
-        /// <param name="tokenId"></param>
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
         /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
         public async Task<(bool, string)> MintMultiNFT(INFT NFT, int coppies, string receiver = "")
         {
@@ -1350,9 +1371,9 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
         /// </summary>
-        /// <param name="tokenId"></param>
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
         /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
         public async Task<(bool, string)> MintMultiNFTLargeAmount(INFT NFT, int coppies, string receiver = "")
         {
@@ -1372,7 +1393,6 @@ namespace VEDriversLite.Neblio
                 int rest = 0;
                 rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
                 lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
-                (bool, string) res = (false, string.Empty);
                 string txres = string.Empty;
                 NewMintingProcessInfo?.Invoke(this, $"Minting of {lots} lots started...");
 
@@ -1414,6 +1434,7 @@ namespace VEDriversLite.Neblio
                                     }
                                     catch (Exception ex)
                                     {
+                                        Console.WriteLine("Cannot send Mint. Probably need to wait for the confirmation. Error: " + ex.Message);
                                         await Task.Delay(5000);
                                         done = false;
                                     }
@@ -1511,11 +1532,23 @@ namespace VEDriversLite.Neblio
         /// Now it is possible to destroy just same kind of tokens. The first provided NFT will define TokenId. Different tokensIds will be skipped.
         /// Maximum to destroy in one transaction is 10 of NFTs
         /// </summary>
-        /// <param name="tokenId">Token Id hash</param>
         /// <param name="nfts">List of NFTs</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
         public async Task<(bool, string)> DestroyNFTs(ICollection<INFT> nfts, string receiver = "")
         {
+            if (nfts == null || nfts.Count == 0)
+            {
+                await InvokeErrorDuringSendEvent("Cannot Destroy NFTs", "No NFTs provided.");
+                return (false, "No NFTs provided.");
+            }
+            var nft = nfts.First();
+            if (nfts.Count != nfts.Where(n => nft.TokenId == n.TokenId).Count())
+            {
+                await InvokeErrorDuringSendEvent("Cannot Destroy NFTs", "Different NFTs provided. You can destroy just same kind of NFTs in one request.");
+                return (false, "Different NFTs provided.");
+            }
+            
             if (IsLocked())
             {
                 await InvokeAccountLockedEvent();
@@ -1526,6 +1559,12 @@ namespace VEDriversLite.Neblio
             {
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
+            }
+            var tres = await CheckSpendableNeblioTokens(nft.TokenId, 3);
+            if (tres.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs for minting. You need one input from minting supply. That one will be merged with destroyed free tokens.");
+                return (false, tres.Item1);
             }
 
             try
@@ -1543,7 +1582,7 @@ namespace VEDriversLite.Neblio
             }
             catch (Exception ex)
             {
-                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                await InvokeErrorDuringSendEvent(ex.Message, "Cannot Destroy NFT");
                 return (false, ex.Message);
             }
 
@@ -1559,6 +1598,8 @@ namespace VEDriversLite.Neblio
         /// <param name="NFT"></param>
         /// <param name="priceWrite">Set this if you need to just write the price to the NFT</param>
         /// <param name="price">Price must be bigger than 0.0002 NEBL</param>
+        /// <param name="withDogePrice">Set this if you need to just write the Doge price to the NFT</param>
+        /// <param name="dogeprice">Price must be bigger than 0.1 Doge</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite = false, double price = 0.0002, bool withDogePrice = false, double dogeprice = 1)
         {
@@ -1663,9 +1704,11 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Send NFT.
         /// </summary>
-        /// <param name="NFT"></param>
+        /// <param name="NFT">NFT to sent</param>
+        /// <param name="sender">Sender of the NFT</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendIoTMessageNFT(INFT nft, string sender, string receiver = "")
+        public async Task<(bool, string)> SendIoTMessageNFT(INFT NFT, string sender, string receiver = "")
         {
             if (string.IsNullOrEmpty(receiver))
                 receiver = sender;
@@ -1682,7 +1725,7 @@ namespace VEDriversLite.Neblio
                 return (false, res.Item1);
             }
 
-            var tres = await CheckSpendableNeblioTokens(nft.TokenId, 3);
+            var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 3);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs");
@@ -1710,9 +1753,17 @@ namespace VEDriversLite.Neblio
         }
 
         /// <summary>
-        /// Send NFT.
+        /// Send NFT Message.
         /// </summary>
-        /// <param name="NFT"></param>
+        /// <param name="name">Name of the Message</param>
+        /// <param name="message">Content of the Message</param>
+        /// <param name="receiver">Receiver of the Message</param>
+        /// <param name="utxo">original NFT Utxo - reply for the existing message</param>
+        /// <param name="text">Longer text in the message</param>
+        /// <param name="imagelink">Image link in the message</param>
+        /// <param name="link">Link in the message</param>
+        /// <param name="rewriteAuthor">Rewrite author of the message. Common is the sender (you can use txid of some NFT Profil, etc.)</param>
+        /// <param name="encrypt">Encrypt the message with the shared secret</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMessageNFT(string name, string message, string receiver, string utxo = "", bool encrypt = true, string imagelink = "", string link = "", string text = "", string rewriteAuthor = "")
         {
@@ -1872,6 +1923,7 @@ namespace VEDriversLite.Neblio
         /// The receiver is taken from the Minting transaction of the PaymentNFT
         /// </summary>
         /// <param name="NFT">NFT Payment to return</param>
+        /// <param name="receiver">Receiver of the returned NFT Payment</param>
         /// <returns></returns>
         public async Task<(bool, string)> ReturnNFTPayment(string receiver, PaymentNFT NFT)
         {
@@ -1922,7 +1974,9 @@ namespace VEDriversLite.Neblio
         /// This function will send airdrop.
         /// </summary>
         /// <param name="receiver">Receiver - owner of the NFT</param>
-        /// <param name="NFT">NFT what you want to buy</param>
+        /// <param name="tokenId">TokenId of the NTP1 token on Neblio network</param>
+        /// <param name="tokenAmount">Number of the tokens in the airdrop</param>
+        /// <param name="neblioAmount">Neblio amount in the airdrop</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendAirdrop(string receiver, string tokenId, double tokenAmount, double neblioAmount)
         {
@@ -2037,6 +2091,10 @@ namespace VEDriversLite.Neblio
         #endregion
 
         #region NFTIoTDevicesProcessing
+        /// <summary>
+        /// Init NFT IoT Devices automatically if they have allowed this function
+        /// </summary>
+        /// <returns></returns>
         public async Task<(bool, string)> InitAllAutoIoTDeviceNFT()
         {
             try
@@ -2054,6 +2112,12 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Init IoT Device manually
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <param name="utxoindex"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> InitIoTDeviceNFT(string utxo, int utxoindex = 0)
         {
             try
@@ -2073,6 +2137,12 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Deactivate the IoT Device
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <param name="utxoindex"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> DeInitIoTDeviceNFT(string utxo, int utxoindex = 0)
         {
             try
@@ -2245,7 +2315,7 @@ namespace VEDriversLite.Neblio
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine($"Cannot mark the NFT Payment {p.Name} with txid: {p.Utxo} with index: {p.UtxoIndex} as already sold.");
+                                        Console.WriteLine($"Cannot mark the NFT Payment {p.Name} with txid: {p.Utxo} with index: {p.UtxoIndex} as already sold. Error: " + ex.Message);
                                     }
                                 }
                             }

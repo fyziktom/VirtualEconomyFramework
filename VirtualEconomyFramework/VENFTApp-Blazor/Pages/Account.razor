@@ -10,6 +10,8 @@
 
 @page "/account"
 
+<PageTitle>VENFT App - Account</PageTitle>
+
 @if (AppData.Account != null && !string.IsNullOrEmpty(AppData.Account.Address))
 {
     <div class="container-fluid overflow-auto">
@@ -185,8 +187,10 @@
                             <div class="col d-flex justify-content-center align-items-center flex-wrap">
                                 <VENFTApp_Blazor.Components.Account.SignAndVerifyMessage />
                                 <VENFTApp_Blazor.Components.NFTs.Verification.NFTOwnerVerifier />
+                                <!--
                                 <VENFTApp_Blazor.Components.Crypto.NeblioPriceStats />
                                 <VENFTApp_Blazor.Components.Crypto.NeblioPriceConversion />
+                                -->
                             </div>
                         </div>
                     </div>

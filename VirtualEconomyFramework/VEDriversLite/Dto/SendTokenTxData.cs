@@ -11,6 +11,9 @@ namespace VEDriversLite
     /// </summary>
     public class SendTokenTxData
     {
+        /// <summary>
+        /// Init the metdata dictionary in constructor
+        /// </summary>
         public SendTokenTxData()
         {
             Metadata = new Dictionary<string, string>();

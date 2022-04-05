@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Devices.APIs.HARDWARIO.Dto
 {
+    /// <summary>
+    /// Dto for HARDWARIO CHESTER data about position and tracking
+    /// </summary>
     public class TrackingInfo
     {
         /// <summary>

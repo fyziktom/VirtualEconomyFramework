@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Dto
 {
+    /// <summary>
+    /// Dto for split Neblio transaction request
+    /// </summary>
     public class SplitNeblioDto
     {
         /// <summary>

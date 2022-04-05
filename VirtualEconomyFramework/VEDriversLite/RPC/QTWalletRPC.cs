@@ -10,9 +10,14 @@ using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.Common
 {
+    /// <summary>
+    /// QT Wallet RPC client controler
+    /// </summary>
     public static class QTWalletRPC
     {
-
+        /// <summary>
+        /// Main API functions
+        /// </summary>
         public static Dictionary<string, Func<string, string, string[], JsonClient, Task<string>>> ApiFunctions = new Dictionary<string, Func<string, string, string[], JsonClient, Task<string>>>
         {
             { "getaccount", CommonOneParameterRequest },
@@ -41,6 +46,7 @@ namespace VEDriversLite.Common
         /// <param name="uid">Request UID</param>
         /// <param name="command">Command to do</param>
         /// <param name="args">set of arguments</param>
+        /// <param name="jsonClient"></param>
         /// <returns></returns>
         public static async Task<string> ProcessRequest(string uid, string command, string[] args, JsonClient jsonClient)
         {
@@ -59,6 +65,7 @@ namespace VEDriversLite.Common
         /// <param name="uid"></param>
         /// <param name="command"></param>
         /// <param name="args"></param>
+        /// <param name="jsonClient"></param>
         /// <returns></returns>
         private static async Task<string> CommonMultipleParameterRequest(string uid, string command, string[] args, JsonClient jsonClient)
         {
@@ -106,6 +113,7 @@ namespace VEDriversLite.Common
         /// <param name="uid"></param>
         /// <param name="command"></param>
         /// <param name="args"></param>
+        /// <param name="jsonClient"></param>
         /// <returns></returns>
         private static async Task<string> CommonOneParameterRequest(string uid, string command, string[] args, JsonClient jsonClient)
         {
@@ -143,13 +151,14 @@ namespace VEDriversLite.Common
 
             return res;
         }
-        
+
         /// <summary>
         /// Common Api Function - Common request without parameter
         /// </summary>
         /// <param name="uid"></param>
         /// <param name="command"></param>
         /// <param name="args"></param>
+        /// <param name="jsonClient"></param>
         /// <returns></returns>
         private static async Task<string> CommonNoParameterRequest(string uid, string command, string[] args, JsonClient jsonClient)
         {

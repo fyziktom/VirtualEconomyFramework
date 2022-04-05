@@ -11,39 +11,85 @@ using VEDriversLite.NFT;
 
 namespace VEDriversLite.Messaging
 {
+    /// <summary>
+    /// Message tab loads the messages between main address and the partner address
+    /// </summary>
     public class MessageTab
     {
         private object _lock = new object();
+        /// <summary>
+        /// Main constructor. Input the address of the partner
+        /// </summary>
+        /// <param name="address"></param>
         public MessageTab(string address)
         {
             Address = address;
             ShortAddress = NeblioTransactionHelpers.ShortenAddress(address);
         }
-
+        /// <summary>
+        /// Message tab is selected
+        /// </summary>
         public bool Selected { get; set; } = false;
+        /// <summary>
+        /// Address of the partner - loaded address
+        /// </summary>
         public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// Address of the main account
+        /// </summary>
         [JsonIgnore]
         public string AccountAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// Main Account Secret - it is used for decryption of the messages
+        /// </summary>
         [JsonIgnore]
         public BitcoinSecret AccountSecret { get; set; } = null;
+        /// <summary>
+        /// Shorten address of the partner
+        /// </summary>
         [JsonIgnore]
         public string ShortAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// This flag is set when address of the partner is stored in the bookmark of the main account
+        /// </summary>
         [JsonIgnore]
         public bool IsInBookmark { get; set; } = false;
+        /// <summary>
+        /// List of the NFTs of partner address
+        /// </summary>
         [JsonIgnore]
         public List<INFT> NFTs { get; set; } = new List<INFT>();
+        /// <summary>
+        /// List of the NFTs related to the conversation between main account and partner address
+        /// </summary>
         [JsonIgnore]
         public List<INFT> NFTMessages { get; set; } = new List<INFT>();
+        /// <summary>
+        /// Loaded bookaark form the main account if the bookmark exists
+        /// Otherwise it is empty (not null)
+        /// </summary>
         [JsonIgnore]
         public Bookmark BookmarkFromAccount { get; set; } = new Bookmark();
-        [JsonIgnore]
-        public ConcurrentDictionary<string, INFT> ReceivedPayments = new ConcurrentDictionary<string, INFT>();
+        /// <summary>
+        /// Profile of the partner account - it is NFT profile
+        /// </summary>
         [JsonIgnore]
         public ProfileNFT Profile { get; set; } = new ProfileNFT("");
+        /// <summary>
+        /// Public key of the partner if it was already found
+        /// </summary>
         [JsonIgnore]
         public PubKey PublicKey { get; set; }
+        /// <summary>
+        /// This is set when the public key has been already found and loaded
+        /// </summary>
         public bool PublicKeyFound { get; set; } = false;
 
+        /// <summary>
+        /// Reload the NFTs 
+        /// </summary>
+        /// <param name="innfts"></param>
+        /// <returns></returns>
         public async Task Reload(List<INFT> innfts)
         {
             if (string.IsNullOrEmpty(Address))
@@ -59,19 +105,24 @@ namespace VEDriversLite.Messaging
             await RefreshMessages(innfts);
         }
 
+        /// <summary>
+        /// Refresh the messages list
+        /// </summary>
+        /// <param name="innfts"></param>
+        /// <returns></returns>
         public async Task RefreshMessages(List<INFT> innfts)
         {
-            var bobPubKey = await NFTHelpers.GetPubKeyFromLastFoundTx(Address);
-            if (bobPubKey.Item1)
+            if (!PublicKeyFound)
             {
-                PublicKey = bobPubKey.Item2;
-                PublicKeyFound = true;
+                var bobPubKey = await NFTHelpers.GetPubKeyFromLastFoundTx(Address);
+                if (bobPubKey.Item1)
+                {
+                    PublicKey = bobPubKey.Item2;
+                    PublicKeyFound = true;
+                }
+                else
+                    PublicKeyFound = false;
             }
-            else
-            {
-                PublicKeyFound = false;
-            }
-            
             var msgs = await NFTHelpers.LoadAddressNFTMessages(Address, AccountAddress, NFTs);
             lock (_lock)
             {
@@ -86,6 +137,12 @@ namespace VEDriversLite.Messaging
             NFTMessages = NFTMessages.OrderBy(m => m.Time).Reverse().ToList();
         }
 
+        /// <summary>
+        /// Add messages from the main account to the list
+        /// This will combine list of received and sent messages to one list
+        /// </summary>
+        /// <param name="innfts"></param>
+        /// <returns></returns>
         public async Task AddAccoundMessages(List<INFT> innfts)
         {
             var msgs = await NFTHelpers.LoadAddressNFTMessages(Address, AccountAddress, innfts);
@@ -106,6 +163,10 @@ namespace VEDriversLite.Messaging
             await Task.WhenAll(dmsgst);
         }
 
+        /// <summary>
+        /// Load the bookmark object
+        /// </summary>
+        /// <param name="bkm"></param>
         public void LoadBookmark(Bookmark bkm)
         {
             if (!string.IsNullOrEmpty(bkm.Address) && !string.IsNullOrEmpty(bkm.Name))
@@ -116,6 +177,9 @@ namespace VEDriversLite.Messaging
             else
                 ClearBookmark();
         }
+        /// <summary>
+        /// Clear the bookmark object
+        /// </summary>
         public void ClearBookmark()
         {
             IsInBookmark = false;

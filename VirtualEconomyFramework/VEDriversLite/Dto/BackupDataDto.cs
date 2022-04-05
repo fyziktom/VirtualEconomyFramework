@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Dto
 {
+    /// <summary>
+    /// VENFT Backup Data Dto
+    /// </summary>
     public class BackupDataDto
     {
         /// <summary>

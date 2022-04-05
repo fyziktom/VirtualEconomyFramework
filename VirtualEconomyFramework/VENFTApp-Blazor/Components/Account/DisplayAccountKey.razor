@@ -33,6 +33,11 @@
                     <span>Your Private Key</span>
                 </div>
             </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span class="text-warning text-uppercase">Dont show/share/send this anywhere!!! Keep it in secret!!!</span>
+                </div> 
+            </div>
             <div class="row d-flex justify-content-center align-items-center text-wrap">
                 <div class="col">
                     <h6 class="text-center text-wrap">@accountKey</h6>
@@ -179,7 +184,7 @@
         keyToSave = "{ \"Address\":\"" + addr + "\", \"EncryptedKey\":\"" + ekey + "\" }";
         if (!DogeAccountKey && AppData.Account.SubAccounts.Count > 0)
         {
-            var saccnts = await AppData.Account.SerializeSubAccounts();
+            var saccnts = AppData.Account.SerializeSubAccounts();
             keyToSave = "{ \"Address\":\"" + addr + "\", \"EncryptedKey\":\"" + ekey + "\", \"SubAccounts\": " + saccnts + " }";
         }
         if (!DogeAccountKey)
