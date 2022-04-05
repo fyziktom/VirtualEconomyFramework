@@ -4,39 +4,43 @@
 @inject AppData AppData
 
 <Row>
-    <Column>      
+    <Column>
         <Row>
             <Column>
-            @if (!AppData.IsAccountLoaded)
-            {
-                <Row Margin="Margin.Is3.FromBottom">
-                    <Column>
-                         <h1>Welcome in the Base Data Place Application</h1>               
-                    </Column>
-                </Row>
-                @if (!IsAccountStored)
+                @if ( !AppData.IsAccountLoaded )
                 {
-                    <BDP_WASM.Components.Account.CreateAccount AccountCreated="@AccountCreatedHandler" />
+                    <Row Margin="Margin.Is3.FromBottom">
+                        <Column>
+                            <Heading Size="HeadingSize.Is1">Welcome in the Base Data Place Application</Heading>
+                        </Column>
+                    </Row>
+                    @if ( !IsAccountStored )
+                    {
+                        <BDP_WASM.Components.Account.CreateAccount AccountCreated="@AccountCreatedHandler" />
+                    }
+                    else
+                    {
+                        <BDP_WASM.Components.Account.UnlockAccount AccountUnlocked="@AccountUnlockedHandler" />
+                    }
                 }
                 else
                 {
-                    <BDP_WASM.Components.Account.UnlockAccount AccountUnlocked="@AccountUnlockedHandler" />
+                    <Alert Color="Color.Success" Visible>
+                        <AlertDescription>
+                            Account loaded :)
+                        </AlertDescription>
+                    </Alert>
                 }
-            }
-            else
-            {
-                <Alert Color="Color.Success" >Account loaded :)</Alert>
-            }
             </Column>
         </Row>
-        @if (AppData.IsAccountLoaded)
+        @if ( AppData.IsAccountLoaded )
         {
-        <Row Margin="Margin.Is3.FromTop">
-            <Column>
-                <BDP_WASM.Components.Account.AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
-            </Column>
-        </Row>
-        }        
+            <Row Margin="Margin.Is3.FromTop">
+                <Column>
+                    <BDP_WASM.Components.Account.AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
+                </Column>
+            </Row>
+        }
     </Column>
 </Row>
 
@@ -59,20 +63,20 @@
 
     private async Task CheckAccount()
     {
-        var key = await localStorage.GetItemAsync<string>("key");
-        if (string.IsNullOrEmpty(key))
+        var key = await localStorage.GetItemAsync<string>( "key" );
+        if ( string.IsNullOrEmpty( key ) )
             IsAccountStored = false;
         else
             IsAccountStored = true;
     }
 
-    void AccountCreatedHandler(string e)
+    void AccountCreatedHandler( string e )
     {
         Address = e;
         IsAccountStored = true;
         StateHasChanged();
     }
-    void AccountUnlockedHandler(string e)
+    void AccountUnlockedHandler( string e )
     {
         Address = e;
         IsAccountStored = true;
