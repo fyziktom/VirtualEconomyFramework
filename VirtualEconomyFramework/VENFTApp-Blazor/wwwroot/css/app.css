@@ -172,14 +172,15 @@ app {
     transition: 0.2s;
 }
 
+    .blazor-modal .modal-dialog {
+        /* Update JS if change the transition duration */
+        transition: 0.3s ease-out;
+    }
+
     .blazor-modal.open {
         opacity: 1;
         transform: scale3d(1, 1, 1);
         pointer-events: auto;
-    }
-
-    .blazor-modal .modal-dialog {
-        transition: 0.3s ease-out;
     }
 
     .blazor-modal.open .modal-dialog {

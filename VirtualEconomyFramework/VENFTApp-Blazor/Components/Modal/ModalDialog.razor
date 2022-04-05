@@ -1,0 +1,46 @@
+﻿@inject IJSRuntime JS
+@inherits StyledComponent
+@implements IDisposable
+
+<div @ref="@reference" class="blazor-modal overflow-auto" tabindex="-1" role="dialog" @onclick="@TryCancel">
+    <div class="modal-dialog @Class" style="@Style" role="document" @onclick:stopPropagation="true">
+        <div class="modal-content @ContentClass" style="@ContentStyle">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public String ContentClass { get; set; }
+    [Parameter]
+    public String ContentStyle { get; set; }
+
+    [CascadingParameter(Name = "Modal")]
+    private Modal Modal { get; set; }
+
+    private ElementReference reference;
+
+    private async Task TryCancel()
+    {
+        if (!Modal.Busy)
+        {
+            Modal.Busy = true;
+            await Modal.Cancel();
+            Modal.Busy = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Console.WriteLine("ModalDialog - OnAfterRenderAsync");
+        if (firstRender)
+            await JS.InvokeVoidAsync("jsFunctions.addModal", reference);
+    }
+
+    // TODO: Maybe switch to `IAsyncDisposable` when upgrade to .NET 6
+    public void Dispose()
+    {
+        JS.InvokeVoidAsync("jsFunctions.removeModal", reference);
+    }
+}

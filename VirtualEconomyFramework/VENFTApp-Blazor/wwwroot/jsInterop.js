@@ -9,6 +9,26 @@ var ipfs = null;
     //global init
 })();
 
+var openedModals = [];
+function handleModalClose(element) {
+    const index = openedModals.indexOf(element);
+    if (index !== -1) {
+        openedModals.splice(index, 1);
+        if (openedModals.length == 0)
+            document.body.removeAttribute("style");
+    }
+}
+function handleModalOpen(element) {
+    if (openedModals.length === 0) {
+        const strollbarWidth = window.innerWidth - document.body.clientWidth;
+        const style = `width: calc(100% - ${strollbarWidth}px); overflow: hidden;`;
+        document.body.setAttribute("style", style)
+    }
+    const index = openedModals.indexOf(element);
+    if (index === -1)
+        openedModals.push(element);
+}
+
 window.setMusicInfo = (title, artist, description) => {
     
     if ('mediaSession' in navigator) {
@@ -378,5 +398,31 @@ window.jsFunctions = {
 
         };
         input.click();
+    },
+    modal: {
+        add: function (element) {
+            const container = document.getElementById("modal-container");
+            if (element && container) {
+                container.appendChild(element);
+            }
+        },
+        dispose: async function (element) {
+            if (!element || !element instanceof Element)
+                return;
+            handleModalClose(element);
+            element.remove();
+        },
+        open: function (element) {
+            if (!element || !element instanceof Element)
+                return;
+            element.classList.add("open");
+            handleModalOpen(element);
+        },
+        close: function (element) {
+            if (!element || !element instanceof Element)
+                return;
+            element.classList.remove("open");
+            handleModalClose(element);
+        },
     },
 };
