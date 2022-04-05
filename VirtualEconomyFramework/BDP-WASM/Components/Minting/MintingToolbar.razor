@@ -1,18 +1,18 @@
 ﻿<Row Margin="Margin.Is2.FromBottom">
     @if ( ShowPrevButton )
     {
-        <Column Class="text-left">
+        <Column>
             <ToolbarButton ToolType="MintingToolbarActionType.PreviousStep"
                        Icon="IconName.ArrowLeft"
                        Label="Back"
                        Size="@MainButtonsSize"
-                       Color="@MainButtonsColor"
+                       Color="@SecondaryButtonsColor"
                        ToolActionHandler="@PreviousStep" />
         </Column>
     }
     @if ( ShowNextButton )
     {
-        <Column Class="text-right">
+        <Column TextAlignment="TextAlignment.End">
             <ToolbarButton ToolType="MintingToolbarActionType.NextStep"
                        Icon="IconName.ArrowRight"
                        Label="Next"
@@ -23,7 +23,7 @@
     }
     @if ( ShowMintButton )
     {
-        <Column Class="text-right">
+        <Column TextAlignment="TextAlignment.End">
             <ToolbarButton ToolType="MintingToolbarActionType.Mint"
                        Icon="IconName.CloudUploadAlt"
                        Label="Mint"
@@ -34,7 +34,7 @@
     }
     @if ( ShowFinishButton )
     {
-        <Column Class="text-right">
+        <Column TextAlignment="TextAlignment.End">
             <ToolbarButton ToolType="MintingToolbarActionType.Finish"
                        Icon="IconName.CloudUploadAlt"
                        Label="Finish"
@@ -45,7 +45,7 @@
     }
     @if ( ShowSaveButton )
     {
-        <Column Class="text-left">
+        <Column>
             <ToolbarButton ToolType="MintingToolbarActionType.Save"
                        Icon="IconName.Save"
                        Label="Save"
@@ -59,21 +59,33 @@
 @code {
     [Parameter]
     public bool ShowPrevButton { get; set; } = false;
+
     [Parameter]
     public bool ShowNextButton { get; set; } = false;
+
     [Parameter]
     public bool ShowMintButton { get; set; } = false;
+
     [Parameter]
     public bool ShowFinishButton { get; set; } = false;
+
     [Parameter]
     public bool ShowSaveButton { get; set; } = false;
+
     [Parameter]
-    public Blazorise.Color MainButtonsColor { get; set; } = Blazorise.Color.Light;
+    public Blazorise.Color MainButtonsColor { get; set; } = Blazorise.Color.Primary;
+
+    [Parameter]
+    public Blazorise.Color SecondaryButtonsColor { get; set; } = Blazorise.Color.Light;
+
     [Parameter]
     public Blazorise.Size MainButtonsSize { get; set; } = Size.Default;
 
     [Parameter]
     public EventCallback<MintingToolbarActionDto> ToolActionHandler { get; set; }
+
+    [Inject]
+    public IMessageService MessageService { get; set; }
 
     async Task PreviousStep()
     {
@@ -87,10 +99,15 @@
     {
         await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Mint } );
     }
+
     async Task FinishStep()
     {
-        await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Finish } );
+        if ( await MessageService.Confirm( "Are you sure you want to save the minting data? Please be aware that it could take a few seconds until it is visible in the gallery.", "Finish" ) == true )
+        {
+            await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Finish } );
+        }
     }
+
     async Task SaveStep()
     {
         await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Save } );
