@@ -1,6 +1,6 @@
 ﻿<Row Margin="Margin.Is2.FromBottom">
     
-@if (IsPreviousButtonVisible)
+@if (ShowPrevButton)
     {
         <Column Class="text-left">
             <ToolbarButton ToolType="MintingToolbarActionType.PreviousStep"
@@ -11,7 +11,7 @@
                            ToolActionHandler="@PreviousStep"/>
         </Column>
     }                    
-    @if (IsNextButtonVisible)
+    @if (ShowNextButton)
     {
         <Column Class="text-right">
             <ToolbarButton ToolType="MintingToolbarActionType.NextStep"
@@ -22,7 +22,7 @@
                            ToolActionHandler="@NextStep"/>
         </Column>
     }
-    @if (IsMintButtonVisible)
+    @if (ShowMintButton)
     {
             <Column Class="text-right">
                 <ToolbarButton ToolType="MintingToolbarActionType.Mint"
@@ -33,7 +33,7 @@
                            ToolActionHandler="@MintStep"/>
         </Column>
     }
-    @if (IsFinishButtonVisible)
+    @if (ShowFinishButton)
     {
         <Column Class="text-right">
             <ToolbarButton ToolType="MintingToolbarActionType.Finish"
@@ -44,7 +44,7 @@
                            ToolActionHandler="@FinishStep"/>
         </Column>
     }
-    @if (IsSaveButtonVisible)
+    @if (ShowSaveButton)
     {
        <Column Class="text-left">
             <ToolbarButton ToolType="MintingToolbarActionType.Save"
@@ -59,15 +59,15 @@
 
 @code {
     [Parameter]
-    public bool IsPreviousButtonVisible { get; set; } = false;
+    public bool ShowPrevButton { get; set; } = false;
     [Parameter]
-    public bool IsNextButtonVisible { get; set; } = false;
+    public bool ShowNextButton { get; set; } = false;
     [Parameter]
-    public bool IsMintButtonVisible { get; set; } = false;
+    public bool ShowMintButton { get; set; } = false;
     [Parameter]
-    public bool IsFinishButtonVisible { get; set; } = false;
+    public bool ShowFinishButton { get; set; } = false;
     [Parameter]
-    public bool IsSaveButtonVisible { get; set; } = false;
+    public bool ShowSaveButton { get; set; } = false;
     [Parameter]
     public Blazorise.Color MainButtonsColor { get; set; } = Blazorise.Color.Light;
     [Parameter]
