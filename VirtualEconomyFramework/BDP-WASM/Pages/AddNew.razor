@@ -29,33 +29,29 @@
     </Items>
     <Content>
         <StepPanel Name="stepUpload">
-            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" />
+            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
             <Row>
                 <Column>
-                    <BDP_WASM.Components.Minting.UploadData @bind-MainIPFSLink="@NFT.ImageLink" @bind-PreviewIPFSLink="@NFT.Preview" />
+                    <BDP_WASM.Components.Minting.UploadData @ref="@uploadDataRef" @bind-MainIPFSLink="@NFT.ImageLink" @bind-PreviewIPFSLink="@NFT.Preview" />
                 </Column>
             </Row>
-            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" />
-
-
-
+            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
         </StepPanel>
         <StepPanel Name="stepData">
-            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" />
+            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
             <Row>
                 <Column>
-                    <BDP_WASM.Components.Minting.DataInfoForm @bind-Name="@NFT.Name"
+                    <BDP_WASM.Components.Minting.DataInfoForm @ref="@dataInfoFormRef"
+                                                              @bind-Name="@NFT.Name"
                                                               @bind-Description="@NFT.Description"
                                                               @bind-Text="@NFT.Text"
                                                               @bind-Tags="@NFT.Tags" />
                 </Column>
             </Row>
-            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" />
+            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
         </StepPanel>
         <StepPanel Name="stepDevice">
-            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true"
-                                                        ShowPrevButton="true"
-                                                        ToolActionHandler="@OnToolActionHandler" />
+            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
             <Row>
                 <Column>
                     <BDP_WASM.Components.Minting.XrayExposureParamsForm @bind-Voltage="@NFT.XrayParams.Voltage"
@@ -68,7 +64,7 @@
                     <BDP_WASM.Components.Minting.DeviceInfoForm />
                 </Column>
             </Row>
-            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" />
+            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
         </StepPanel>
         @*        <StepPanel Name="stepOther">
             <Layout>
@@ -92,7 +88,7 @@
             </Layout>
             </StepPanel>  *@
         <StepPanel Name="stepFinish">
-            <BDP_WASM.Components.Minting.MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" />
+            <BDP_WASM.Components.Minting.MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
             <Row>
                 <Column>
                     <Span>Now you can confirm the storage of the data.</Span>
@@ -129,7 +125,7 @@
                     }
                 </Column>
             </Row>
-            <BDP_WASM.Components.Minting.MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" />
+            <BDP_WASM.Components.Minting.MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
         </StepPanel>
     </Content>
 </Steps>
@@ -218,5 +214,23 @@
             selectedStep = "stepData";
         else if ( selectedStep == "stepData" )
             selectedStep = "stepUpload";
+    }
+
+    BDP_WASM.Components.Minting.UploadData uploadDataRef;
+    BDP_WASM.Components.Minting.DataInfoForm dataInfoFormRef;
+
+    async Task<bool> OnCanProceed()
+    {
+        if ( uploadDataRef != null && selectedStep == "stepUpload" )
+        {
+            return await uploadDataRef.IsValidated();
+        }
+
+        if ( dataInfoFormRef != null && selectedStep == "stepData" )
+        {
+            return await dataInfoFormRef.IsValidated();
+        }
+
+        return true;
     }
 }

@@ -84,6 +84,9 @@
     [Parameter]
     public EventCallback<MintingToolbarActionDto> ToolActionHandler { get; set; }
 
+    [Parameter]
+    public Func<Task<bool>> CanProceed { get; set; }
+
     [Inject]
     public IMessageService MessageService { get; set; }
 
@@ -91,10 +94,20 @@
     {
         await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.PreviousStep } );
     }
+
     async Task NextStep()
     {
+        if ( CanProceed != null )
+        {
+            var result = await CanProceed.Invoke();
+
+            if ( !result )
+                return;
+        }
+
         await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.NextStep } );
     }
+
     async Task MintStep()
     {
         await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Mint } );

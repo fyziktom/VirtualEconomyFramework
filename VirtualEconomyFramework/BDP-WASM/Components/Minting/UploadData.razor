@@ -12,10 +12,21 @@
                 <Column>
                     <Row Margin="Margin.Is3.FromTop">
                         <Column>
-                            <FileEdit Changed="@OnChanged" Ended="@OnEnded" Progressed="@OnProgressed" />
+                            <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
+                                <Validation Validator="ImageUploaded">
+                                    <Field>
+                                        <FieldLabel>Please enter the name.</FieldLabel>
+                                        <FileEdit Changed="@OnChanged" Ended="@OnEnded" Progressed="@OnProgressed">
+                                            <Feedback>
+                                                <ValidationError>Missing image.</ValidationError>
+                                            </Feedback>
+                                        </FileEdit>
+                                    </Field>
+                                </Validation>
+                            </Validations>
                         </Column>
                     </Row>
-                    @if (fileLoaded && !string.IsNullOrEmpty(ImageDataString))
+                    @if ( fileLoaded && !string.IsNullOrEmpty( ImageDataString ) )
                     {
                         <Row Margin="Margin.Is3.FromTop">
                             <Column>
@@ -25,29 +36,40 @@
                                 </Figure>
                             </Column>
                         </Row>
-                                           
+
                         <Row Margin="Margin.Is3.FromTop">
                             <Column>
                                 <Alert Color="Color.Success">Image loaded.</Alert>
                             </Column>
-                        </Row>    
+                        </Row>
                     }
                     <Row Margin="Margin.Is3.FromTop">
-                        <Column>                          
-                            @if (loadStarted ) { <Span>Uploading the image... Progress: @progress %</Span> }
-                            else if (uploadingToIPFS) { <Span>Uploading to IPFS...please wait...</Span> }
-                            else if (uploadedFinished) {  <Span>Upload to IPFS finished with hash: <a href="@_ipfsLink" target="_blank">@_ipfsLink</a> . You can continue now...</Span> }
+                        <Column>
+                            @if ( loadStarted )
+                            {
+                                <Span>Uploading the image... Progress: @progress %</Span>
+                            }
+                            else if ( uploadingToIPFS )
+                            {
+                                <Span>Uploading to IPFS...please wait...</Span>
+                            }
+                            else if ( uploadedFinished )
+                            {
+                                <Span>Upload to IPFS finished with hash: <a href="@_ipfsLink" target="_blank">@_ipfsLink</a> . You can continue now...</Span>
+                            }
                         </Column>
                     </Row>
                 </Column>
             </Row>
-            <FieldHelp>You can upload any image file such as PNG, BMP, JPEG, but we recommend you to use the PNG format.</FieldHelp>                
+            <FieldHelp>You can upload any image file such as PNG, BMP, JPEG, but we recommend you to use the PNG format.</FieldHelp>
         </Field>
     </CardBody>
 </Card>
 
 
 @code {
+    Validations validationsRef;
+
     string _ipfsLink = string.Empty;
     [Parameter]
     public string MainIPFSLink { get => _ipfsLink; set => _ipfsLink = value; }
@@ -75,7 +97,9 @@
     {
         try
         {
-            foreach (var file in e.Files)
+            await validationsRef.ClearAll();
+
+            foreach ( var file in e.Files )
             {
                 loadStarted = true;
                 ImageDataString = string.Empty;
@@ -86,24 +110,26 @@
                 this.StateHasChanged();
 
                 imageData = new byte[file.Size];
-                using (Stream stream = new MemoryStream(imageData))
+                using ( Stream stream = new MemoryStream( imageData ) )
                 {
-                    await file.WriteToStreamAsync(stream);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    using (MemoryStream ms = new MemoryStream())
+                    await file.WriteToStreamAsync( stream );
+                    stream.Seek( 0, SeekOrigin.Begin );
+                    using ( MemoryStream ms = new MemoryStream() )
                     {
-                        await stream.CopyToAsync(ms);
+                        await stream.CopyToAsync( ms );
                         imageData = ms.ToArray();
-                        ImageDataString = "data:image;base64," + Convert.ToBase64String(imageData);
+                        ImageDataString = "data:image;base64," + Convert.ToBase64String( imageData );
+
+                        await validationsRef.ValidateAll();
                     }
                 }
             }
         }
-        catch (Exception exc)
+        catch ( Exception exc )
         {
             fileLoaded = false;
-            loadStarted = false;            
-            Console.WriteLine(exc.Message);
+            loadStarted = false;
+            Console.WriteLine( exc.Message );
         }
         finally
         {
@@ -113,30 +139,30 @@
 
     async Task UploadToIPFS()
     {
-        if (imageData != null && imageData.Length > 0)
+        if ( imageData != null && imageData.Length > 0 )
         {
-            Console.WriteLine("Uploading to IPFS...");
+            Console.WriteLine( "Uploading to IPFS..." );
             uploadingToIPFS = true;
             this.StateHasChanged();
 
             try
             {
-                using (Stream stream = new MemoryStream(imageData))
-                {                
-                    stream.Seek(0, SeekOrigin.Begin);
-                    var result = await NFTHelpers.UploadInfura(stream, fileName);
-                    if (!string.IsNullOrEmpty(result))
+                using ( Stream stream = new MemoryStream( imageData ) )
+                {
+                    stream.Seek( 0, SeekOrigin.Begin );
+                    var result = await NFTHelpers.UploadInfura( stream, fileName );
+                    if ( !string.IsNullOrEmpty( result ) )
                     {
                         _ipfsLink = result;
-                        Console.WriteLine($"File: {fileName} Uploaded to the IPFS with hash: " + _ipfsLink);
-                        await MainIPFSLinkChanged.InvokeAsync(_ipfsLink);
+                        Console.WriteLine( $"File: {fileName} Uploaded to the IPFS with hash: " + _ipfsLink );
+                        await MainIPFSLinkChanged.InvokeAsync( _ipfsLink );
                         uploadedFinished = true;
                     }
-                }                
+                }
             }
-            catch (Exception ex)
+            catch ( Exception ex )
             {
-                Console.WriteLine("Cannot upload file to the IPFS. " + ex.Message);
+                Console.WriteLine( "Cannot upload file to the IPFS. " + ex.Message );
             }
             finally
             {
@@ -145,10 +171,11 @@
             }
 
         }
-        else { Console.WriteLine("Cannot Upload empty image."); }
+        else
+        { Console.WriteLine( "Cannot Upload empty image." ); }
     }
 
-    async Task OnEnded(FileEndedEventArgs e)
+    async Task OnEnded( FileEndedEventArgs e )
     {
         Console.WriteLine( $"File: {e.File.Name} Loaded." );
         fileLoaded = true;
@@ -156,11 +183,24 @@
         StateHasChanged();
         await UploadToIPFS();
     }
-    
+
     async Task OnProgressed( FileProgressedEventArgs e )
     {
         progress = e.Percentage;
         this.StateHasChanged();
         Console.WriteLine( $"File: {e.File.Name} Progress: {e.Percentage}" );
+    }
+
+    void ImageUploaded( ValidatorEventArgs e )
+    {
+        if ( !string.IsNullOrEmpty( ImageDataString ) )
+            e.Status = ValidationStatus.Success;
+        else
+            e.Status = ValidationStatus.Error;
+    }
+
+    public Task<bool> IsValidated()
+    {
+        return validationsRef.ValidateAll();
     }
 }
