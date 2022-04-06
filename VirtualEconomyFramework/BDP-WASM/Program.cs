@@ -5,6 +5,7 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Blazored.LocalStorage;
+using BlazorPanzoom;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -23,5 +24,6 @@ builder.Services
     .AddFontAwesomeIcons();
 
 builder.Services.AddSingleton<AppData>();
+builder.Services.AddBlazorPanzoomServices();
 
 await builder.Build().RunAsync();

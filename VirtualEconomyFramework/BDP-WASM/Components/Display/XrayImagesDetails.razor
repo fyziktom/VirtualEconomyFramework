@@ -14,8 +14,12 @@
             </ModalHeader>
             <ModalBody>
                 <Card Margin="Margin.Is4.FromBottom">
-                    <CardImage Source="@GetImageUrl()" Alt="No image found" Style="max-height:400px;" />
                     <CardBody>
+                        <Row>
+                            <Column>
+                                <PanzoomImage Source="@GetImageUrl()" />
+                            </Column>
+                        </Row>
                         <CardTitle Size="5">Basic Info</CardTitle>
                         <CardText Margin="Margin.Is2.FromTop">
                             @NFT.Description
@@ -117,6 +121,8 @@
     private Modal NFTDetailsModal;
     private BDP_WASM.Components.Account.DestroyNFT DestroyNFTModalComponent;
     private BDP_WASM.Components.Account.SendNFT SendNFTModalComponent;
+
+    private Panzoom _panzoom;    
 
     [Parameter]
     public string Address { get; set; } = string.Empty;
@@ -225,4 +231,5 @@
         DestroyNFTModalComponent.HideDestroyNFTModal();
         await NFTSent.InvokeAsync( e );
     }
+
 }
