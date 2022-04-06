@@ -3,11 +3,11 @@
 @if (profile != null)
 {
     <Card Style="max-width:250px;">
-        <CardImage Source="@profile.ImageLink" Alt="Avatar" Style="min-width:128px;min-height:128px;max-width:128px;max-height:128px;"></CardImage>
+        <CardImage Source="@profile.ImageLink" Alt="Avatar"></CardImage>
         <CardBody>
             <CardTitle Size="5">@((profile.Name == "" && profile.Surname == "") ? "No Name" : $"{profile.Name} {profile.Surname}")</CardTitle>
             <CardText>
-                @(profile.Description == "" ? "No Description" : profile.Description)
+                @(profile.Description == "" ? "No Bio" : profile.Description)
             </CardText>
             <Button Color="Color.Light" Clicked="@EditProfile"><Icon Name="IconName.Edit" />&nbsp;Edit</Button>
         </CardBody>

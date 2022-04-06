@@ -5,8 +5,8 @@
 @if (NFT != null && NFT.Type == NFTTypes.XrayImage)
 {
     var nft = NFT as XrayImageNFT;
-    <Card Margin="Margin.Is4.FromBottom" Style="max-width:250px;">
-        <CardImage Source="@GetImageUrl()" Alt="No image found" Style="max-height:200px;" />
+    <Card Margin="Margin.Is4.FromBottom" Style="min-width:150px; max-width:250px;">
+        <CardImage Source="@GetImageUrl()" Alt="No image found" Style="max-height:200px;" @onclick="() => NFTImageDetailModal.Show()" />
         <CardBody>
             <CardTitle Size="5">@NFT.Name</CardTitle>
             <CardText>
@@ -36,15 +36,30 @@
     </Card>
 }
 
+
+<Modal @ref="NFTImageDetailModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>NFT Image Detail</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <PanzoomImage Source="@GetImageUrl()" />         
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
 <XrayImagesDetails @ref=XrayImagesDetailsModalComponent 
                    NFT="@NFT" 
                    Address="@Address" 
+                   IsOwnNFT="@IsOwnNFT"
                    IsSubAccount="@IsSubAccount" 
                    NFTSent="@NFTSentHandler"
                    OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
 
 @code {
     private XrayImagesDetails XrayImagesDetailsModalComponent;
+    private Modal NFTImageDetailModal;
 
     [Parameter]
     public string Address { get; set; } = string.Empty;

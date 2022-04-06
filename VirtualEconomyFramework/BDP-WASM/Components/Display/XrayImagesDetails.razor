@@ -2,6 +2,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Imaging.Xray
 @using Markdig
+@inject AppData AppData
 
 @if ( NFT != null && NFT.Type == NFTTypes.XrayImage )
 {
@@ -120,6 +121,8 @@
     private BDP_WASM.Components.Account.DestroyNFT DestroyNFTModalComponent;
     private BDP_WASM.Components.Account.SendNFT SendNFTModalComponent;
 
+    private Panzoom _panzoom;    
+
     [Parameter]
     public string Address { get; set; } = string.Empty;
     [Parameter]
@@ -227,4 +230,5 @@
         DestroyNFTModalComponent.HideDestroyNFTModal();
         await NFTSent.InvokeAsync( e );
     }
+
 }

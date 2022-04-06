@@ -4134,7 +4134,7 @@
             <param name="tabs">List of ActiveTabs as json string</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.AddTab(System.String)">
+        <member name="M:VEDriversLite.NeblioAccount.AddTab(System.String,System.Int32)">
             <summary>
             Add new tab based on some Neblio address
             </summary>
@@ -7477,7 +7477,7 @@
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.CheckTokensSupplies(System.String,VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
             <summary>
-            Check supply of all VENFT tokens on address.
+            Check supply of all tokens on address.
             </summary>
             <param name="address">address which has utxos</param>
             <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
@@ -9726,6 +9726,11 @@
         <member name="F:VEDriversLite.NFT.NFTHelpers.TokenId">
             <summary>
             Main default tokens in VEFramework - VENFT
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.BDPTokenId">
+            <summary>
+            Main default Data storage tokens in VEFramework - BDP
             </summary>
         </member>
         <member name="F:VEDriversLite.NFT.NFTHelpers.TokenSymbol">

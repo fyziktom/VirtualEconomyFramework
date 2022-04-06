@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.Bookmarks
+@inject AppData AppData
 
 @page "/gallery"
 
@@ -8,15 +9,15 @@
 
 <h1>Data Gallery</h1>
 
-<Tabs RenderMode="TabsRenderMode.LazyReload" SelectedTab="@_selectedTabName">
+<Tabs RenderMode="TabsRenderMode.LazyReload" @bind-SelectedTab="@SelectedTabName">
     <Items>
         <Tab Name="gallery">Gallery </Tab>
-        @foreach (var tab in OpenedTabs)
+        @foreach (var tab in AppData.OpenedTabs)
         {
             <Tab Name="@tab.Name">
                 <Row>
                     <Column>
-                        @(tab.Type == TabType.ActiveTab ? "AT - " : "WT - ") @tab.Name
+                        <Span>@(tab.Type == TabType.ActiveTab ? "AT - " : "WT - ") @tab.Name</Span>
                     </Column>
                     <Column Margin="Margin.Is2.FromStart">
                         <Icon Name="IconName.MinusCircle" Clicked="() => CloseTab(tab.Name)" />
@@ -29,18 +30,19 @@
     <Content>
         <TabPanel Name="gallery">
             <BDP_WASM.Components.Tabs.GalleryTabContent Address="@Address" 
-                                                        IsSubAccount="@IsSubAccount" 
+                                                        IsSubAccount="false" 
                                                         IsOwnNFT="true"
                                                         OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler"/>
         </TabPanel>
-        @foreach (var tab in OpenedTabs)
+        @foreach (var tab in AppData.OpenedTabs)
         {
             @if (tab.Type == TabType.ActiveTab)
             {
                 <TabPanel Name="@tab.Name">
                     <BDP_WASM.Components.Tabs.GalleryTabContent Address="@tab.Address" 
                                                                 IsSubAccount="false" 
-                                                                IsOwnNFT="false" />
+                                                                IsOwnNFT="false"
+                                                                OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
                 </TabPanel>
             }
             @if (tab.Type == TabType.WorkTab)
@@ -49,7 +51,8 @@
                    <BDP_WASM.Components.Tabs.WorkTabContent NFTs="@((tab.Tab as WorkTab).NFTs)" 
                                                             Address="@Address" 
                                                             IsSubAccount="@IsSubAccount" 
-                                                            IsOwnNFT="true" />
+                                                            IsOwnNFT="true" 
+                                                            OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
                 </TabPanel>
             }
         }
@@ -87,27 +90,8 @@
 
 
 @code {
-
-    public enum TabType
-    {
-        Main,
-        WorkTab,
-        ActiveTab
-    }
-    public class WorkTab
-    {
-        public string Name { get; set; } = "Empty WT";
-        public List<INFT> NFTs { get; set; } = new List<INFT>();
-    }
-    public class GalleryTab
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public TabType Type { get; set; } = TabType.WorkTab;
-        public object Tab { get; set; } = null;
-        public bool IsActiove { get; set; } = false;
-    }
-
+    [Inject] IPageProgressService PageProgressService { get; set; }
+    
     [Parameter]
     public string Address { get; set; } = string.Empty;
     [Parameter]
@@ -125,46 +109,77 @@
     [Parameter]
     public string SelectedTabName { get => _selectedTabName; set => _selectedTabName = value; }
 
-    public List<GalleryTab> OpenedTabs { get; set; } = new List<GalleryTab>();
-
     public string NewTabAddress { get; set; } = string.Empty;
 
     public int NewTabNameIterator = 1;
 
     async Task OpenSearchTab()
     {
-        if (!string.IsNullOrEmpty(NewTabAddress))
+        if (string.IsNullOrEmpty(NewTabAddress))
             return;
 
-        OpenedTabs.Add(new GalleryTab() { Type = TabType.ActiveTab, Tab = new ActiveTab(), Name = Address, Address = Address } );
-        SelectedTabName = Address;
+        var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == NewTabAddress);
+        if (tab != null)
+        {
+            SelectedTabName = tab.ShortAddress;
+            return;
+        }
+
+        await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+        var res = await AppData.Account.AddTab(NewTabAddress, 10);
+        if (res.Item1)
+        {
+            tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == NewTabAddress);
+            if (tab != null)
+            {
+                AppData.OpenedTabs.Add(new GalleryTab() { 
+                    Type = TabType.ActiveTab, 
+                    Name = tab.ShortAddress, 
+                    Address = NewTabAddress
+                });
+            }                
+            SelectedTabName = tab.ShortAddress;
+            await PageProgressService.Go(-1);
+        }
     }
-    async Task OpenWorkTab()
+
+    void OpenWorkTab()
     {
         var wt = new WorkTab();
-        OpenedTabs.Add(new GalleryTab() { Type = TabType.WorkTab, Tab = wt, Name = wt.Name } );
+        AppData.OpenedTabs.Add(new GalleryTab() { 
+            Type = TabType.WorkTab, 
+            Tab = wt, 
+            Name = wt.Name 
+        });
         SelectedTabName = wt.Name;
     }
+
     void OpenNFTsInWorkTabHandler(List<INFT> e)
     {
         var wt = new WorkTab();
         wt.NFTs = e;
         wt.Name = "New" + NewTabNameIterator.ToString();
         NewTabNameIterator++;
-        OpenedTabs.Add(new GalleryTab() { Type = TabType.WorkTab, Tab = wt, Name = wt.Name } );
+        AppData.OpenedTabs.Add(new GalleryTab() { 
+            Type = TabType.WorkTab, 
+            Tab = wt, 
+            Name = wt.Name 
+        });
         SelectedTabName = wt.Name;
     }
-    void CloseTab(string tabName)
+
+    async Task CloseTab(string tabName)
     {
-        var tab = OpenedTabs.FirstOrDefault(t => t.Name == tabName);
+        var tab = AppData.OpenedTabs.FirstOrDefault(t => t.Name == tabName);
         if (tab != null)
         {
-            OpenedTabs.Remove(tab);
+            AppData.OpenedTabs.Remove(tab);
             if (tab.Type == TabType.ActiveTab)
-            {
-                (tab.Tab as ActiveTab).StopRefreshing();
-            }
-            StateHasChanged();
+                await AppData.Account.RemoveTab(tab.Address);
+            if (AppData.OpenedTabs.Count == 0)
+                SelectedTabName = "gallery";
+            else
+                SelectedTabName = AppData.OpenedTabs.Last().Name;
         }
     }
 }

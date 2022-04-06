@@ -1,4 +1,5 @@
 ﻿@using VEDriversLite
+@using VEDriversLite.NFT
 @using VEDriversLite.Neblio
 @using VEDriversLite.Dto
 @using Newtonsoft.Json
@@ -24,6 +25,7 @@
             <Column>
                 <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance" 
                                  TokensBalance="@TokenSupply" 
+                                 BDPBalance="@BDPSupply"
                                  NFTsCount="@AppData.Account.NFTs.Count" />
             </Column>
         </Row>
@@ -44,7 +46,27 @@
     [Parameter]
     public EventCallback<bool> IsSubAccountChanged { get; set; }
 
-    public int TokenSupply { get => (AppData.Account.TokensSupplies.Count > 0) ? Convert.ToInt32(AppData.Account.TokensSupplies.FirstOrDefault().Value.Amount) : 0; }
+    public int TokenSupply
+    {
+        get
+        {
+            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.TokenId, out var tokens))
+                return Convert.ToInt32(tokens.Amount);
+            else
+                return 0;
+        }
+    }
+    public int BDPSupply
+    {
+        get
+        {
+            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.BDPTokenId, out var tokens))
+                return Convert.ToInt32(tokens.Amount);
+            else
+                return 0;
+        }
+    }
+    
     private string filename = "";
     private string backupData = "";
     

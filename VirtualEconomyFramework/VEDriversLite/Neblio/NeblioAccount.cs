@@ -771,7 +771,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="address"></param>
         /// <returns>true and string with serialized tabs list as json string</returns>
-        public async Task<(bool, string)> AddTab(string address)
+        public async Task<(bool, string)> AddTab(string address, int maxLoadItems = 40)
         {
             if (!Tabs.Any(t => t.Address == address))
             {
@@ -779,6 +779,7 @@ namespace VEDriversLite
                 var tab = new ActiveTab(address);
                 tab.BookmarkFromAccount = bkm.Item2;
                 tab.Selected = true;
+                tab.MaxLoadedNFTItems = maxLoadItems;
                 tab.NFTsChanged += T_NFTsChanged;
                 tab.NFTAddedToPayments += T_NFTAddedToPayments;
 
