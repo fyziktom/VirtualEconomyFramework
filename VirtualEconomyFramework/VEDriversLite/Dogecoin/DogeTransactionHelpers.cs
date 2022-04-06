@@ -105,8 +105,18 @@ namespace VEDriversLite
         /// <param name="address">NBitcoin address - must match with the provided key</param>
         /// <param name="utxos">List of the input utxos</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key, BitcoinAddress address, ICollection<Utxo> utxos)
-        {
+        public static async Task<string> SignAndBroadcastTransaction(Transaction transaction, BitcoinSecret key, ICollection<Utxo> utxos)
+        {            
+            BitcoinAddress addressForTx = null;
+            if (key != null)
+            {
+                addressForTx = key.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+            }
+            else
+            {
+                throw new Exception("BitcoinSecret is null");
+            }
+
             // add coins
             List<ICoin> coins = new List<ICoin>();
             try
@@ -116,14 +126,14 @@ namespace VEDriversLite
                     if (transaction.Inputs.FirstOrDefault(i => (i.PrevOut.Hash == uint256.Parse(inp.TxId)) && i.PrevOut.N == (uint)inp.N) != null)
                     {
                         var val = (ulong)(Convert.ToDouble(inp.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio);
-                        coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money(val), address.ScriptPubKey));
+                        coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money(val), addressForTx.ScriptPubKey));
                     }
                 }
 
                 // add signature to inputs before signing
                 foreach (var inp in transaction.Inputs)
                 {
-                    inp.ScriptSig = address.ScriptPubKey;
+                    inp.ScriptSig = addressForTx.ScriptPubKey;
                 }
             }
             catch (Exception ex)
@@ -253,7 +263,7 @@ namespace VEDriversLite
             return (null, 0);
         }        
 
-        private static async Task<string> SendTransactions(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, bool withMessage = false)
+        private static Transaction GetTransactionObject(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, bool withMessage = false)
         {
             if (data == null)
             {
@@ -334,14 +344,8 @@ namespace VEDriversLite
             {
                 throw new Exception("Exception during creating outputs. " + ex.Message);
             }
-            try
-            {
-                return await SignAndBroadcast(transaction, key, addressForTx, utxos);
-            }
-            catch (Exception)
-            {
-                throw new Exception("Cannot Broadcast the dogecoin transaction. Trouble with Dogecoin API. ");
-            }
+
+            return transaction;
         }
 
         /// <summary>
@@ -351,9 +355,9 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
+        public static Transaction GetDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
         {
-            return await SendTransactions(data, ekey, utxos);            
+            return GetTransactionObject(data, ekey, utxos);            
         }
 
         /// <summary>
@@ -363,9 +367,9 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
+        public static Transaction GetDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
         {
-            return await SendTransactions(data, ekey, utxos, withMessage: true);
+            return GetTransactionObject(data, ekey, utxos, withMessage: true);
         }
 
         /// <summary>
@@ -377,7 +381,7 @@ namespace VEDriversLite
         /// <param name="password">Password for encrypted key if it is encrypted and locked</param>
         /// <param name="message">Custom message</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string, double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, string password = "", string message = "")
+        public static Transaction SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string, double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, string password = "", string message = "")
         {
             if (receiverAmount == null)
             {
@@ -463,14 +467,7 @@ namespace VEDriversLite
             {
                 throw new Exception("Exception during creating outputs. " + ex.Message);
             }
-            try
-            {
-                return await SignAndBroadcast(transaction, key, addressForTx, utxos);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+           return transaction;
         }
 
         /// <summary>

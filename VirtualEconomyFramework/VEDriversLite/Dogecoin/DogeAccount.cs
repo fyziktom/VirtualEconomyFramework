@@ -170,6 +170,18 @@ namespace VEDriversLite
                                                     100));
         }
 
+        private async Task<(bool, string)> SignBroadcastAndInvokeSucessEvent(Transaction transaction, BitcoinSecret Secret, ICollection<Utxo> utxos, string message)
+        {
+            var rtxid = await DogeTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret, utxos);
+
+            if (rtxid != null)
+            {
+                await InvokeSendPaymentSuccessEvent(rtxid, message);
+                return (true, rtxid);
+            }
+            return (false, "");
+        }
+
         /// <summary>
         /// This function will create new account - Doge address and its Private key.
         /// </summary>
@@ -583,16 +595,18 @@ namespace VEDriversLite
             {
                 // send tx
                 var rtxid = string.Empty;
-                if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
-                else 
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                Transaction transaction;
 
-                if (rtxid != null)
+                if (string.IsNullOrEmpty(message))
+                    transaction = DogeTransactionHelpers.GetDogeTransactionAsync(dto, AccountKey, res.Item2);
+                else
+                    transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
-                    return (true, rtxid);
-                }
+                    return (true, result.Item2);
+                }                
             }
             catch (Exception ex)
             {
@@ -645,16 +659,17 @@ namespace VEDriversLite
             {
                 // send tx
                 var rtxid = string.Empty;
+                Transaction transaction;
                 if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
+                    transaction = DogeTransactionHelpers.GetDogeTransactionAsync(dto, AccountKey, res.Item2);
                 else
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                    transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
-                    return (true, rtxid);
-                }
+                    return (true, result.Item2);
+                }                
             }
             catch (Exception ex)
             {
@@ -697,12 +712,12 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, message: message);
+                var transaction = DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, message: message);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -715,7 +730,7 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
-
+        
         /// <summary>
         /// Buy the NFT based on the NFT and Neblio Address
         /// </summary>
@@ -756,13 +771,13 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                var transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
-                    return (true, rtxid);
-                }
+                    return (true, result.Item2);
+                }               
             }
             catch (Exception ex)
             {
