@@ -20,7 +20,7 @@
 
     [Parameter] public EventCallback Started { get; set; }
 
-    [Parameter] public EventCallback<byte[]> Uploaded { get; set; }
+    [Parameter] public Func<string, byte[], Task> Uploaded { get; set; }
 
     bool uploading = false;
     int progress = 0;
@@ -67,12 +67,12 @@
         }
     }
 
-    Task OnStarted( FileStartedEventArgs e )
+    async Task OnStarted( FileStartedEventArgs e )
     {
         uploading = true;
         progress = 0;
 
-        return Started.InvokeAsync();
+        await Started.InvokeAsync();
     }
 
     async Task OnEnded( FileEndedEventArgs e )
@@ -82,7 +82,8 @@
 
         await InvokeAsync( StateHasChanged );
 
-        await Uploaded.InvokeAsync( imageData );
+        if ( Uploaded != null )
+            await Uploaded.Invoke( fileName, imageData );
     }
 
     async Task OnProgressed( FileProgressedEventArgs e )

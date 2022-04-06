@@ -13,12 +13,12 @@
         </Alert>
         <Row Flex="Flex.AlignItems.Center">
             <Column>
-                <Row Margin="Margin.Is3.FromTop">
+                <Row>
                     <Column>
                         <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
                             <Validation Validator="ImageValidator">
                                 <Field>
-                                    <FieldLabel>Please enter the name.</FieldLabel>
+                                    <FieldLabel>Please select the image.</FieldLabel>
                                     <FieldBody>
                                         <FileUpload Started="@OnImageUploadStarted" Uploaded="@OnImageUploadEnded" ValidationsRef="@validationsRef" />
                                     </FieldBody>
@@ -27,9 +27,17 @@
                         </Validations>
                     </Column>
                 </Row>
+                @if ( uploadingImage )
+                {
+                    <Row>
+                        <Column>
+                            <Span>Uploading the image...</Span>
+                        </Column>
+                    </Row>
+                }
                 @if ( !string.IsNullOrEmpty( ImageDataString ) )
                 {
-                    <Row Margin="Margin.Is3.FromTop">
+                    <Row>
                         <Column>
                             <Figure Size="FigureSize.Is256x256">
                                 <FigureImage Source="@ImageDataString" AlternateText="empty-256x256" />
@@ -37,29 +45,17 @@
                             </Figure>
                         </Column>
                     </Row>
-
-                    <Row Margin="Margin.Is3.FromTop">
+                    <Row>
                         <Column>
-                            <Alert Color="Color.Success">Image loaded.</Alert>
+                            <Alert Color="Color.Success">Image loaded!</Alert>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column>
+                            <IPFSUpload @ref="@ipfsUploadRef" Started="@OnIPFSUploadStarted" Uploaded="@OnIPFSUploadEnded" ValidationsRef="@validationsRef" />
                         </Column>
                     </Row>
                 }
-                <Row Margin="Margin.Is3.FromTop">
-                    <Column>
-                        @if ( uploadingImage )
-                        {
-                            <Span>Uploading the image...</Span>
-                        }
-                        else if ( uploadingToIPFS )
-                        {
-                            <Span>Uploading to IPFS... please wait...</Span>
-                        }
-                        else if ( uploadFinished )
-                        {
-                            <Span>Upload to IPFS finished with hash: <a href="@_ipfsLink" target="_blank">@_ipfsLink</a> . You can continue now...</Span>
-                        }
-                    </Column>
-                </Row>
             </Column>
         </Row>
     </CardBody>
@@ -68,22 +64,17 @@
 
 @code {
     Validations validationsRef;
+    IPFSUpload ipfsUploadRef;
 
-    string _ipfsLink = string.Empty;
-    [Parameter]
-    public string MainIPFSLink { get => _ipfsLink; set => _ipfsLink = value; }
-    [Parameter]
-    public EventCallback<string> MainIPFSLinkChanged { get; set; }
+    [Parameter] public string MainIPFSLink { get; set; }
 
-    string _previewIpfsLink = string.Empty;
-    [Parameter]
-    public string PreviewIPFSLink { get => _previewIpfsLink; set => _previewIpfsLink = value; }
-    [Parameter]
-    public EventCallback<string> PreviewIPFSLinkChanged { get; set; }
+    [Parameter] public EventCallback<string> MainIPFSLinkChanged { get; set; }
 
-    //public string ImageData { get => imageData != null ? "data:image;base64," + Convert.ToBase64String(imageData) : string.Empty; }
+    [Parameter] public string PreviewIPFSLink { get; set; }
+
+    [Parameter] public EventCallback<string> PreviewIPFSLinkChanged { get; set; }
+
     string ImageDataString = string.Empty;
-
     bool uploadingImage = false;
     bool uploadingToIPFS = false;
     bool uploadFinished = false;
@@ -97,52 +88,33 @@
         return InvokeAsync( StateHasChanged );
     }
 
-    async Task OnImageUploadEnded( byte[] data )
+    async Task OnImageUploadEnded( string fileName, byte[] data )
     {
         uploadingImage = false;
 
-        imageData = data;
+        this.fileName = fileName;
+        this.imageData = data;
         ImageDataString = "data:image;base64," + Convert.ToBase64String( imageData );
 
-        await UploadToIPFS();
+        await InvokeAsync( StateHasChanged );
+
+        if ( ipfsUploadRef != null )
+            await ipfsUploadRef.UploadToIPFS( fileName, imageData );
     }
 
-    async Task UploadToIPFS()
+    Task OnIPFSUploadStarted()
     {
-        if ( imageData != null && imageData.Length > 0 )
-        {
-            Console.WriteLine( "Uploading to IPFS..." );
-            uploadingToIPFS = true;
-            this.StateHasChanged();
+        uploadingToIPFS = true;
 
-            try
-            {
-                using ( Stream stream = new MemoryStream( imageData ) )
-                {
-                    stream.Seek( 0, SeekOrigin.Begin );
-                    var result = await NFTHelpers.UploadInfura( stream, fileName );
-                    if ( !string.IsNullOrEmpty( result ) )
-                    {
-                        _ipfsLink = result;
-                        Console.WriteLine( $"File: {fileName} Uploaded to the IPFS with hash: " + _ipfsLink );
-                        await MainIPFSLinkChanged.InvokeAsync( _ipfsLink );
-                        uploadFinished = true;
-                    }
-                }
-            }
-            catch ( Exception ex )
-            {
-                Console.WriteLine( "Cannot upload file to the IPFS. " + ex.Message );
-            }
-            finally
-            {
-                uploadingToIPFS = false;
-                this.StateHasChanged();
-            }
+        return InvokeAsync( StateHasChanged );
+    }
 
-        }
-        else
-        { Console.WriteLine( "Cannot Upload empty image." ); }
+    async Task OnIPFSUploadEnded( string mainIPFSLink )
+    {
+        uploadingToIPFS = false;
+
+        MainIPFSLink = mainIPFSLink;
+        await MainIPFSLinkChanged.InvokeAsync( MainIPFSLink );
     }
 
     void ImageValidator( ValidatorEventArgs e )
