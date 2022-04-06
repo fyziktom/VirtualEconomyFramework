@@ -5,6 +5,7 @@
     <RootNamespace>VENFTApp_Server</RootNamespace>
     <UserSecretsId>b8f75dcb-207c-4c80-bbd4-b4e8ce90c276</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <Configurations>Debug;Release;Docker</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

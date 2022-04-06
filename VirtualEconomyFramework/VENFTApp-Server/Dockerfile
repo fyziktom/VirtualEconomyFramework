@@ -12,10 +12,11 @@ COPY ["VEDriversLite/VEDriversLite.csproj", "VEDriversLite/"]
 RUN dotnet restore "VENFTApp-Server/VENFTApp-Server.csproj"
 COPY . .
 WORKDIR "/src/VENFTApp-Server"
-RUN dotnet build "VENFTApp-Server.csproj" -c Release -o /app/build
-
+RUN dotnet build "VENFTApp-Server.csproj" -c Docker -o /app/build
+# -c Docker/Release/Debug
 FROM build AS publish
-RUN dotnet publish "VENFTApp-Server.csproj" -c Release -o /app/publish
+RUN dotnet publish "VENFTApp-Server.csproj" -c Docker -o /app/publish
+# -c Docker/Release/Debug
 
 #--- docfx-----
 #FROM mono as docs-env
