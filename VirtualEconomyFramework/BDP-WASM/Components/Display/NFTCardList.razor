@@ -8,12 +8,16 @@
         <Row Width="Width.Is75" Flex="Flex.AlignItems.Center">
             <Column>
                 <Field>
-                    <TextEdit Placeholder="Seacrh by Name, Author or Tags" @bind-Text="searchNFTsString" KeyUp="@RefreshRequested"/>
+                    <Row>
+                        <Column>
+                           <TextEdit Placeholder="Seacrh by Name, Author or Tags" @bind-Text="searchNFTsString" KeyUp="@RefreshRequested"/>
+                        </Column>
+                        <Column Margin="Margin.Is3.FromStart">
+                            <Button Color="Color.Light" Clicked="@Refresh"><Icon Name="IconName.Search" /></Button>
+                        </Column>
+                    </Row>
                     <FieldHelp>You can use Name, Author or Tags. Search is not case sensitive.</FieldHelp>                
                 </Field>
-            </Column>
-            <Column>
-                <Button Color="Color.Light" Clicked="@Refresh"><Icon Name="IconName.Search" /></Button>
             </Column>
         </Row>
         <Row>
@@ -27,9 +31,9 @@
                                            Address="@Address" 
                                            IsSubAccount="@IsSubAccount"
                                            IsOwnNFT="@IsOwnNFT" 
-                                            Utxo="@NFT.Utxo"
-                                            UtxoIndex="@NFT.UtxoIndex"
-                                            OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
+                                           Utxo="@NFT.Utxo"
+                                           UtxoIndex="@NFT.UtxoIndex"
+                                           OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
                         }
                     }
                 </CardGroup>
@@ -61,20 +65,32 @@
             if (IsOwnNFT)
                 return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.XrayImage);
             else
-                return Tab.NFTs.Where(n => n.Type == NFTTypes.XrayImage);
+            {
+                var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == Address);
+                if (tab != null)
+                    return tab.NFTs.Where(n => n.Type == NFTTypes.XrayImage);
+                else
+                    return new List<INFT>();
+            }                
         }
     }
 
     string searchNFTsString = string.Empty;
 
-    public ActiveTab Tab { get; set; } = new ActiveTab();
-
-    protected override Task OnInitializedAsync()
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Tab = new ActiveTab(Address);
-        Tab.MaxLoadedNFTItems = 20;
-        Tab.StartRefreshing();
-        return base.OnInitializedAsync();
+        if (firstRender)
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
+            AppData.Account.Refreshed += RefreshedHandler;
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
     }
 
     void RefreshRequested(KeyboardEventArgs e)

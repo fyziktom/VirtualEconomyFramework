@@ -12,7 +12,8 @@
                                 IsSubAccount="@IsSubAccount"
                                 IsOwnNFT="@IsOwnNFT" 
                                 Utxo="@NFT.Utxo"
-                                UtxoIndex="@NFT.UtxoIndex"/>
+                                UtxoIndex="@NFT.UtxoIndex" 
+                                OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
         }
     </CardGroup>
 </Container>
@@ -32,4 +33,6 @@
     public EventCallback<bool> IsOwnNFTChanged { get; set; }
     [Parameter]
     public List<INFT> NFTs { get; set; } = new List<INFT>();
+    [Parameter]
+    public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }    
 }
