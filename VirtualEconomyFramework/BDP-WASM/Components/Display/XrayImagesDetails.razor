@@ -15,12 +15,12 @@
             <ModalBody>
                 <Card Margin="Margin.Is4.FromBottom">
                     <CardBody>
+                        <CardTitle Size="5">Basic Info</CardTitle>
                         <Row>
                             <Column>
                                 <PanzoomImage Source="@GetImageUrl()" />
                             </Column>
                         </Row>
-                        <CardTitle Size="5">Basic Info</CardTitle>
                         <CardText Margin="Margin.Is2.FromTop">
                             @NFT.Description
                         </CardText>
@@ -34,24 +34,9 @@
                                 }
                             </Row>
                         </CardText>
-                        <CardText Margin="Margin.Is2.FromTop">
-                            Image IPFS Storage info:
-                        </CardText>
-                        <Row Margin="Margin.Is2.FromTop">
-                            <Column>
-                                <a href="@NFT.ImageLink" target="_blank">@NFT.ImageLink</a>
-                            </Column>
-                        </Row>
-                        <CardText Margin="Margin.Is2.FromTop">
-                            Blockchain Storage transaction info:
-                        </CardText>
-                        <Row Margin="Margin.Is2.FromTop">
-                            <Column>
-                                <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">@NFT.Utxo</a>
-                            </Column>
-                        </Row>
                     </CardBody>
                 </Card>
+                
                 <Card Margin="Margin.Is4.FromBottom">
                     <CardBody>
                         <CardTitle Size="5">Xray Parameters</CardTitle>
@@ -99,6 +84,40 @@
                                 </Column>
                             </Row>
                         }
+                    </CardBody>
+                </Card>
+                
+                <Card Margin="Margin.Is4.FromBottom">
+                    <CardBody>
+                        <CardTitle Size="5">Storage Info</CardTitle>
+                        <CardText Margin="Margin.Is2.FromTop">
+                            Image IPFS Storage info:
+                        </CardText>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                                <CopyButton TextToCopy="@NFT.ImageLink" ButtonText="Copy IPFS Link" />
+                            </Column>
+                            <Column>
+                                <CopyButton TextToCopy="@(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink))" ButtonText="Copy IPFS Hash" />
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                                <Button Color="Color.Light" Type="ButtonType.Link" To="@NFT.ImageLink" Target="Target.Blank" Block>Open Image Link</Button>
+                            </Column>
+                        </Row>
+                        
+                        <CardText Margin="Margin.Is2.FromTop">
+                            Blockchain Storage transaction info:
+                        </CardText>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                                <CopyButton TextToCopy="@($"{NFT.Utxo}:{NFT.UtxoIndex}")" ButtonText="Copy Tx Hash" />
+                            </Column>
+                            <Column>
+                                <Button Color="Color.Light" Type="ButtonType.Link" To="@($"https://explorer.nebl.io/tx/{NFT.Utxo}")" Target="Target.Blank" Block>To Explorer</Button>
+                            </Column>
+                        </Row>
                     </CardBody>
                 </Card>
             </ModalBody>
