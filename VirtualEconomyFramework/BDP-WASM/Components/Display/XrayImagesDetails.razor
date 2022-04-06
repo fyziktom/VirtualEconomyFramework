@@ -2,6 +2,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Imaging.Xray
 @using Markdig
+@inject AppData AppData
 
 @if ( NFT != null && NFT.Type == NFTTypes.XrayImage )
 {
@@ -77,20 +78,23 @@
                                 </Button>
                             </Column>
                         </Row>
-                        <Row Margin="Margin.Is3.FromTop">
-                            <Column>
-                                <Button Color="Color.Primary" Clicked=@SendNFT Block>
-                                    <Icon Name="IconName.Mail" />
-                                    Send
-                                </Button>
-                            </Column>
-                            <Column>
-                                <Button Color="Color.Danger" Clicked=@DestroyNFT Block>
-                                    <Icon Name="IconName.MinusCircle" />
-                                    Destroy
-                                </Button>
-                            </Column>
-                        </Row>
+                        @if (IsOwnNFT && AppData.IsAccountLoaded)
+                        {
+                            <Row Margin="Margin.Is3.FromTop">
+                                <Column>
+                                    <Button Color="Color.Primary" Clicked=@SendNFT Block>
+                                        <Icon Name="IconName.Mail" />
+                                        Send
+                                    </Button>
+                                </Column>
+                                <Column>
+                                    <Button Color="Color.Danger" Clicked=@DestroyNFT Block>
+                                        <Icon Name="IconName.MinusCircle" />
+                                        Destroy
+                                    </Button>
+                                </Column>
+                            </Row>
+                        }
                     </CardBody>
                 </Card>
             </ModalBody>

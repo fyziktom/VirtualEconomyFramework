@@ -36,7 +36,7 @@
     
     double _current = 0.0;
     [Parameter]
-    public double Current { get => _current; set => _current = value; }
+    public double Current { get => _current; set => _current = value / 1000; }
     [Parameter]
     public EventCallback<double> CurrentChanged { get; set; }
 
@@ -52,7 +52,7 @@
     }
     async Task currentChanged(double e)
     {
-        await CurrentChanged.InvokeAsync(e/1000); // we are storing it in mA
+        await CurrentChanged.InvokeAsync(e*1000); // we are storing it in mA
     }
     async Task timeChanged(double e)
     {
