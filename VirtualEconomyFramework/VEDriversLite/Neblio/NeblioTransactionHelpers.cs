@@ -575,7 +575,6 @@ namespace VEDriversLite
                 }
             }
 
-
             if (dto.Metadata.UserData.Meta.Count == 0)
             {
                 throw new Exception("Cannot mint NFT without any metadata");
@@ -3068,7 +3067,7 @@ namespace VEDriversLite
             public string mimeType { get; set; } = string.Empty;
         }
         /// <summary>
-        /// Check supply of all VENFT tokens on address.
+        /// Check supply of all tokens on address.
         /// </summary>
         /// <param name="address">address which has utxos</param>
         /// <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>

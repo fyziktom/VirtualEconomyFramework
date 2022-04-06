@@ -165,6 +165,18 @@
         }
         if ( selectedStep == "stepFinish" )
         {
+            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.BDPTokenId, out var supply))
+            {
+                if (supply.Amount > 3)
+                    NFT.TokenId = NFTHelpers.BDPTokenId;
+                else
+                    NFT.TokenId = NFTHelpers.TokenId;
+            }
+            else
+            {
+                NFT.TokenId = NFTHelpers.TokenId;
+            }
+            
             var res = await AppData.Account.MintNFT( NFT );
             mintingResult = res;
             if ( res.Item1 )

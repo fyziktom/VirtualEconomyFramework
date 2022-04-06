@@ -414,6 +414,7 @@ namespace VEDriversLite.Neblio
             var tos = await NeblioTransactionHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
             lock (_lock)
             {
+                TokensSupplies.Clear();
                 TokensSupplies = tos;
             }
             

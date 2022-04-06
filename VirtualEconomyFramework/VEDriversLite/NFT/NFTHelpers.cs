@@ -100,6 +100,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         public static List<string> AllowedTokens = new List<string>() {
                 "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
+                "LaAUG3WSAHWkrVtNYcd7CLdCYrA4phy1gjChvW",
                 Coruzant.CoruzantNFTHelpers.CoruzantTokenId,
                 HardwarioNFTHelpers.TokenId };
         /// <summary>
@@ -118,6 +119,10 @@ namespace VEDriversLite.NFT
         /// Main default tokens in VEFramework - VENFT
         /// </summary>
         public static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+        /// <summary>
+        /// Main default Data storage tokens in VEFramework - BDP
+        /// </summary>
+        public static string BDPTokenId = "LaAUG3WSAHWkrVtNYcd7CLdCYrA4phy1gjChvW";
         /// <summary>
         /// Main default tokens symbol in VEFramework - VENFT
         /// </summary>
