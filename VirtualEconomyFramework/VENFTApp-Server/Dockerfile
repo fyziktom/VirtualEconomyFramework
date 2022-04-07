@@ -64,7 +64,7 @@ ENTRYPOINT ["dotnet", "VENFTApp-Server.dll"]
 #docker image save -o <<imageFilename.tar>> <<imageId>>
 
 ##########to load image #########
-#docker load < <<imageFilename.tar>>
+#docker load -i <<imageFilename.tar>>
 
 ########################## DOCKER HUB ##########################
 
