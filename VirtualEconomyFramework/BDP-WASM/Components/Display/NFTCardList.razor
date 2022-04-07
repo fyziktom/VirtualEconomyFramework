@@ -5,35 +5,38 @@
 
 <Row>
     <Column>
-        <Row Width="Width.Is75" Flex="Flex.AlignItems.Center">
+        <Row Width="Width.Is50">
             <Column>
                 <Field>
-                    <Row>
-                        <Column>
-                           <TextEdit Placeholder="Seacrh by Name, Author or Tags" @bind-Text="searchNFTsString" KeyUp="@RefreshRequested"/>
-                        </Column>
-                        <Column Margin="Margin.Is3.FromStart">
-                            <Button Color="Color.Light" Clicked="@Refresh"><Icon Name="IconName.Search" /></Button>
-                        </Column>
-                    </Row>
-                    <FieldHelp>You can use Name, Author or Tags. Search is not case sensitive.</FieldHelp>                
+                    <FieldBody>
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="Search by Name, Author or Tags" @bind-Text="searchNFTsString" KeyUp="@RefreshRequested" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Color="Color.Light" Clicked="@Refresh"><Icon Name="IconName.Search" /></Button>
+                            </Addon>
+                        </Addons>
+                    </FieldBody>
+                    <FieldHelp>You can use Name, Author or Tags. Search is not case sensitive.</FieldHelp>
                 </Field>
             </Column>
         </Row>
         <Row>
             <Column>
                 <CardGroup>
-                    @foreach (var NFT in NFTs) 
+                    @foreach ( var NFT in NFTs )
                     {
-                        @if (IsInFilter(NFT))
+                        @if ( IsInFilter( NFT ) )
                         {
-                            <XrayImageCard NFT=@NFT 
-                                           Address="@Address" 
-                                           IsSubAccount="@IsSubAccount"
-                                           IsOwnNFT="@IsOwnNFT" 
-                                           Utxo="@NFT.Utxo"
-                                           UtxoIndex="@NFT.UtxoIndex"
-                                           OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
+                            <XrayImageCard @key="@NFT"
+                                   NFT=@NFT
+                                   Address="@Address"
+                                   IsSubAccount="@IsSubAccount"
+                                   IsOwnNFT="@IsOwnNFT"
+                                   Utxo="@NFT.Utxo"
+                                   UtxoIndex="@NFT.UtxoIndex"
+                                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
                         }
                     }
                 </CardGroup>
@@ -58,44 +61,44 @@
     [Parameter]
     public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }
 
-    public IEnumerable<INFT> NFTs 
-    { 
+    public IEnumerable<INFT> NFTs
+    {
         get
         {
-            if (IsOwnNFT)
-                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.XrayImage);
+            if ( IsOwnNFT )
+                return AppData.Account.NFTs.Where( n => n.Type == NFTTypes.XrayImage );
             else
             {
-                var tab = AppData.Account.Tabs.FirstOrDefault(t => t.Address == Address);
-                if (tab != null)
-                    return tab.NFTs.Where(n => n.Type == NFTTypes.XrayImage);
+                var tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == Address );
+                if ( tab != null )
+                    return tab.NFTs.Where( n => n.Type == NFTTypes.XrayImage );
                 else
                     return new List<INFT>();
-            }                
+            }
         }
     }
 
     string searchNFTsString = string.Empty;
 
-    
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+
+    protected override async Task OnAfterRenderAsync( bool firstRender )
     {
-        if (firstRender)
+        if ( firstRender )
         {
             AppData.Account.Refreshed -= RefreshedHandler;
             AppData.Account.Refreshed += RefreshedHandler;
         }
-        await base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync( firstRender );
     }
 
-    private void RefreshedHandler(object sender, EventArgs e)
+    private void RefreshedHandler( object sender, EventArgs e )
     {
         StateHasChanged();
     }
 
-    void RefreshRequested(KeyboardEventArgs e)
+    void RefreshRequested( KeyboardEventArgs e )
     {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        if ( e.Code == "Enter" || e.Code == "NumpadEnter" )
             Refresh();
     }
     void Refresh()
@@ -103,35 +106,35 @@
         StateHasChanged();
     }
 
-    public bool IsInFilter(INFT nft)
+    public bool IsInFilter( INFT nft )
     {
-        if (!string.IsNullOrEmpty(searchNFTsString))
+        if ( !string.IsNullOrEmpty( searchNFTsString ) )
         {
-            if (nft.Author.ToLower().Contains(searchNFTsString) || nft.Name.ToLower().Contains(searchNFTsString))
+            if ( nft.Author.ToLower().Contains( searchNFTsString ) || nft.Name.ToLower().Contains( searchNFTsString ) )
             {
                 return true;
             }
 
-            if (!string.IsNullOrEmpty(nft.Tags))
+            if ( !string.IsNullOrEmpty( nft.Tags ) )
             {
-                if (nft.Tags.ToLower().Contains(searchNFTsString))
+                if ( nft.Tags.ToLower().Contains( searchNFTsString ) )
                     return true;
 
-                var split = searchNFTsString.Split(' ');
-                if (split.Length > 1)
+                var split = searchNFTsString.Split( ' ' );
+                if ( split.Length > 1 )
                 {
                     var score = 0;
-                    nft.TagsList.ForEach(t =>
+                    nft.TagsList.ForEach( t =>
                     {
-                        Array.ForEach(split, s =>
+                        Array.ForEach( split, s =>
                         {
-                            if (t.ToLower().Contains(s.ToLower()))
+                            if ( t.ToLower().Contains( s.ToLower() ) )
                                 score++;
-                            else if (s.ToLower().Contains(t.ToLower()))
+                            else if ( s.ToLower().Contains( t.ToLower() ) )
                                 score++;
-                        });
-                    });
-                    if (score > 0)
+                        } );
+                    } );
+                    if ( score > 0 )
                         return true;
                 }
             }

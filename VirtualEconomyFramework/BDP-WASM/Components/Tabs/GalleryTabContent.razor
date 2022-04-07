@@ -2,26 +2,20 @@
 @using VEDriversLite.NFT
 @inject AppData AppData
 
-<Layout>
-    <LayoutHeader>
-        Xray Images Gallery
-    </LayoutHeader>
-    <LayoutContent>
-        <Row Margin="Margin.Is2.FromBottom">
-            <Column>            
-                <h5>For Address: @Address</h5>
-            </Column>
-        </Row>
-        <Row>
-            <Column>
-                <BDP_WASM.Components.Display.NFTCardList Address="@Address" 
-                                                         IsSubAccount="@IsSubAccount" 
-                                                         IsOwnNFT="@IsOwnNFT" 
-                                                         OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
-            </Column>
-        </Row>
-    </LayoutContent>
-</Layout>
+<Row>
+    <Column Margin="Margin.Is3.FromTop">
+        <Heading Size="HeadingSize.Is5">For Address: @Address</Heading>
+    </Column>
+</Row>
+
+<Row>
+    <Column>
+        <BDP_WASM.Components.Display.NFTCardList Address="@Address"
+                                                 IsSubAccount="@IsSubAccount"
+                                                 IsOwnNFT="@IsOwnNFT"
+                                                 OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
+    </Column>
+</Row>
 
 @code {
     [Parameter]
