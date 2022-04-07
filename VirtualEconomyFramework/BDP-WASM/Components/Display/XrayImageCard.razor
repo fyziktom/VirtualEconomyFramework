@@ -2,40 +2,37 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Imaging.Xray
 
-@if (NFT != null && NFT.Type == NFTTypes.XrayImage)
+@if ( NFT != null && NFT.Type == NFTTypes.XrayImage )
 {
     var nft = NFT as XrayImageNFT;
+
     <Card Margin="Margin.Is4.FromBottom" Style="min-width:150px; max-width:250px;">
-        <CardImage Source="@GetImageUrl()" Alt="No image found" Style="max-height:200px;" @onclick="() => NFTImageDetailModal.Show()" />
+        <CardImage Source="@GetImageUrl()" Alt="No image found" Style="max-height:200px;" @onclick="() => NFTImageDetailModal.Show()">
+        </CardImage>
         <CardBody>
-            <CardTitle Size="5">@NFT.Name</CardTitle>
+            <CardTitle Size="5" TextOverflow="TextOverflow.Truncate">
+                @NFT.Name
+            </CardTitle>
             <CardText>
-                @NFT.Description
+                <Small>@NFT.Description</Small>
             </CardText>
             <CardText>
-                <XrayParamsValues XrayParams="nft.XrayParams" />
-           </CardText>
-            <CardText>
-                <Row>
-                    @foreach (var tag in NFT.TagsList)
-                    {
-                        <Column Margin="Margin.Is2.FromEnd" >
-                            <small class="text-muted">#@tag</small>
-                        </Column>
-                    }    
-                </Row>
+                <XrayParamsValues XrayParams="@nft.XrayParams" />
             </CardText>
             <CardText>
-                <Row>
-                    <Column Class="text-center">
-                        <Button Color="Color.Primary" Clicked=@OpenNFTDetailsModal><Icon Name="IconName.Info"/></Button>
-                    </Column>
-                </Row>
+                @foreach ( var tag in NFT.TagsList )
+                {
+                    <Badge Color="Color.Light">#@tag</Badge>
+                }
             </CardText>
         </CardBody>
+        <CardFooter>
+            <Button Color="Color.Primary" Clicked=@OpenNFTDetailsModal Block>
+                <Icon Name="IconName.Info" />
+            </Button>
+        </CardFooter>
     </Card>
 }
-
 
 <Modal @ref="NFTImageDetailModal">
     <ModalContent Centered>
@@ -44,18 +41,18 @@
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            <PanzoomImage Source="@GetImageUrl()" />         
+            <PanzoomImage Source="@GetImageUrl()" />
         </ModalBody>
     </ModalContent>
 </Modal>
 
-<XrayImagesDetails @ref=XrayImagesDetailsModalComponent 
-                   NFT="@NFT" 
-                   Address="@Address" 
+<XrayImagesDetails @ref=XrayImagesDetailsModalComponent
+                   NFT="@NFT"
+                   Address="@Address"
                    IsOwnNFT="@IsOwnNFT"
-                   IsSubAccount="@IsSubAccount" 
+                   IsSubAccount="@IsSubAccount"
                    NFTSent="@NFTSentHandler"
-                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
+                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
 
 @code {
     private XrayImagesDetails XrayImagesDetailsModalComponent;
@@ -72,9 +69,9 @@
     [Parameter]
     public bool IsOwnNFT { get; set; } = false;
     [Parameter]
-    public EventCallback<bool> IsOwnNFTChanged { get; set; }    
+    public EventCallback<bool> IsOwnNFTChanged { get; set; }
     [Parameter]
-    public INFT NFT { get; set; } = new ImageNFT("");
+    public INFT NFT { get; set; } = new ImageNFT( "" );
     [Parameter]
     public EventCallback<INFT> NFTChanged { get; set; }
     [Parameter]
@@ -91,29 +88,29 @@
     [Parameter]
     public EventCallback<NFTSentResultDto> NFTSent { get; set; }
 
-    public string GetImageUrl(bool returnPreviewIfExists = false)
+    public string GetImageUrl( bool returnPreviewIfExists = false )
     {
-        if (NFT == null)
+        if ( NFT == null )
             return string.Empty;
 
-        if (returnPreviewIfExists)
+        if ( returnPreviewIfExists )
         {
             var preview = GetPreviewUrl();
-            if (!string.IsNullOrEmpty(preview))
+            if ( !string.IsNullOrEmpty( preview ) )
                 return preview;
         }
 
-        if (!string.IsNullOrEmpty(NFT.ImageLink))
+        if ( !string.IsNullOrEmpty( NFT.ImageLink ) )
             return NFT.ImageLink;
         else
             return string.Empty;
     }
     public string GetPreviewUrl()
     {
-        if (NFT == null)
+        if ( NFT == null )
             return string.Empty;
 
-        if (!string.IsNullOrEmpty(NFT.Preview))
+        if ( !string.IsNullOrEmpty( NFT.Preview ) )
             return NFT.Preview;
         else
             return string.Empty;
@@ -121,13 +118,14 @@
 
     public void OpenNFTDetailsModal()
     {
-        if (NFT == null) return;
+        if ( NFT == null )
+            return;
         XrayImagesDetailsModalComponent.ShowNFTDetails();
     }
 
-    async Task NFTSentHandler(NFTSentResultDto e)
+    async Task NFTSentHandler( NFTSentResultDto e )
     {
         XrayImagesDetailsModalComponent.HideNFTDetails();
-        await NFTSent.InvokeAsync(e);
+        await NFTSent.InvokeAsync( e );
     }
 }

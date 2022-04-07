@@ -1,8 +1,8 @@
 ﻿
 <Field>
     <FieldLabel>@ParameterName</FieldLabel>
-    <Progress Min="@Min" Max="@Max" Color="@Color" Value="@(Convert.ToInt32(Value))" Margin="Margin.Is3.FromBottom" />
-    <FieldHelp>@(Value)&nbsp;@ParameterUnit</FieldHelp>    
+    <Progress Min="@Min" Max="@Max" Color="@Color" Value="@(Convert.ToInt32(Value))" Margin="Margin.Is3.FromBottom" Size="Size.Small" />
+    <FieldHelp>@(Value)&nbsp;@ParameterUnit</FieldHelp>
 </Field>
 
 @code {
@@ -18,7 +18,7 @@
     public int RoundDecimals { get; set; } = 2;
     private double _value = 0.0;
     [Parameter]
-    public double Value { get => Math.Round(_value, RoundDecimals); set => _value = value; }
+    public double Value { get => Math.Round( _value, RoundDecimals ); set => _value = value; }
     [Parameter]
     public Color Color { get; set; } = Color.Info;
 }

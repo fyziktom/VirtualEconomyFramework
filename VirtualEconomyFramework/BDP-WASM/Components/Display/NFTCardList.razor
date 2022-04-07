@@ -24,7 +24,7 @@
         </Row>
         <Row>
             <Column>
-                <CardGroup>
+                <CardDeck>
                     @foreach ( var NFT in NFTs )
                     {
                         @if ( IsInFilter( NFT ) )
@@ -39,7 +39,7 @@
                                    OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
                         }
                     }
-                </CardGroup>
+                </CardDeck>
             </Column>
         </Row>
     </Column>
