@@ -2,7 +2,7 @@ name: latests from Sonarqube_Branch
 on:
   push:
     branches:
-      - Sonarqube1_Branch
+      - SonarQube_Branch
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
