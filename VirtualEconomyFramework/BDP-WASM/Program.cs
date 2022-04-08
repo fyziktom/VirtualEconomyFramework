@@ -23,7 +23,8 @@ builder.Services
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
 
-builder.Services.AddSingleton<AppData>();
+builder.Services.AddScoped<AppData>();
+builder.Services.AddSingleton<TransactionsService>();
 builder.Services.AddBlazorPanzoomServices();
 
 await builder.Build().RunAsync();

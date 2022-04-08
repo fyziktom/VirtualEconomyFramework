@@ -35,6 +35,18 @@
             </Column>
         </Row>
     </Column>
+    <Column>
+        <Row>
+            <Column>
+                <BookmarksManagerList />                
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <TransactionsList Address="@AppData.Account.Address" IsSubAccount="false" />
+            </Column>
+        </Row>
+    </Column>
 </Row>
 @code {
     [Parameter]

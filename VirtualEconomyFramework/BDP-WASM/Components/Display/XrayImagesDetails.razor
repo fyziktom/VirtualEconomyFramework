@@ -26,15 +26,11 @@
                                 <CardText Margin="Margin.Is2.FromTop">
                                     @NFT.Description
                                 </CardText>
-                                <CardText Margin="Margin.Is2.FromTop">
-                                    <Row>
-                                        @foreach ( var tag in NFT.TagsList )
-                                        {
-                                            <Column Margin="Margin.Is2.FromEnd">
-                                                <small class="text-muted">#@tag</small>
-                                            </Column>
-                                        }
-                                    </Row>
+                                <CardText Margin="Margin.Is2.FromTop" Flex="Flex.AlignContent.Center">
+                                    @foreach ( var tag in NFT.TagsList )
+                                    {
+                                        <Badge Color="Color.Light" Margin="Margin.Is1.FromEnd">#@tag</Badge>
+                                    }
                                 </CardText>
                             </CardBody>
                         </Card>
@@ -62,6 +58,8 @@
                         <Card Margin="Margin.Is4.FromBottom">
                             <CardBody>
                                 <CardTitle Size="5">Actions</CardTitle>
+                                @if (!HideOpenInWorkTabButton)
+                                {                                
                                 <Row>
                                     <Column>
                                         <Button Color="Color.Primary" Clicked=@OpenNFTInWorkTab Block>
@@ -70,6 +68,7 @@
                                         </Button>
                                     </Column>
                                 </Row>
+                                }
                                 @if (IsOwnNFT && AppData.IsAccountLoaded) 
                                 { 
                                     <Row Margin="Margin.Is3.FromTop"> 
@@ -175,6 +174,9 @@
     public int UtxoIndex { get; set; } = 0;
     [Parameter]
     public EventCallback<int> UtxoIndexChanged { get; set; }
+
+    [Parameter]
+    public bool HideOpenInWorkTabButton { get; set; } = false;
 
     [Parameter]
     public EventCallback<NFTSentResultDto> NFTSent { get; set; }

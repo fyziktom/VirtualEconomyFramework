@@ -16,23 +16,28 @@
                 <Tabs RenderMode="TabsRenderMode.LazyReload" @bind-SelectedTab="@SelectedTabName" Pills>
                     <Items>
                         <Tab Name="gallery">
-                            <Icon Name="IconName.Images" />
-                            Xray Images Gallery
+                            <Tooltip Text="Here you can find all yours images." Placement="TooltipPlacement.Bottom">
+                                <Icon Name="IconName.Images" />
+                                <Span>My Gallery</Span>
+                            </Tooltip>
                         </Tab>
                         @foreach ( var tab in AppData.OpenedTabs )
                         {
+                            var bookmark = AppData.Account.IsInTheBookmarks(tab.Address);
                             <Tab @key="@tab" Name="@tab.Name">
-                                <Span>
-                                    @(tab.Type == TabType.ActiveTab ? "AT - " : "WT - ") @tab.Name
-                                    <Icon Name="IconName.MinusCircle" Clicked="() => CloseTab(tab.Name)" />
-                                </Span>
+                                <Tooltip Text="@(bookmark.Item1 ? (MarkupString)"Bookmark Name:<br />" + bookmark.Item2.Name + (MarkupString)"<br /><br /> Note:<br />" + bookmark.Item2.Note : "This tab is not in bookmark. You can add it by click to the star icon.")" Placement="TooltipPlacement.Bottom">                
+                                    <Span>
+                                        @(tab.Type == TabType.ActiveTab ? "AT - " : "WT - ") @(bookmark.Item1 ? bookmark.Item2.Name : tab.Name)
+                                        <Icon Name="IconName.MinusCircle" Clicked="() => CloseTab(tab.Name)" />
+                                    </Span>
+                                </Tooltip>
                             </Tab>
                         }
-                        <Tab Name="newWorkTab"><Icon Name="IconName.CartPlus" />New Tab</Tab>
+                        <Tab Name="newWorkTab"><Icon Name="IconName.SearchPlus" /> New Tab</Tab>
                     </Items>
                     <Content>
                         <TabPanel Name="gallery">
-                            <BDP_WASM.Components.Tabs.GalleryTabContent Address="@Address"
+                            <BDP_WASM.Components.Tabs.GalleryTabContent Address="@AppData.Account.Address"
                                                                         IsSubAccount="false"
                                                                         IsOwnNFT="true"
                                                                         OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
@@ -51,7 +56,7 @@
                             @if ( tab.Type == TabType.WorkTab )
                             {
                                 <TabPanel Name="@tab.Name">
-                                    <BDP_WASM.Components.Tabs.WorkTabContent NFTs="@((tab.Tab as WorkTab).NFTs)"
+                                    <BDP_WASM.Components.Tabs.WorkTabContent NFTs="@GetWTNFTs(tab)"
                                                                      Address="@Address"
                                                                      IsSubAccount="@IsSubAccount"
                                                                      IsOwnNFT="true"
@@ -117,6 +122,16 @@
     public string NewTabAddress { get; set; } = string.Empty;
 
     public int NewTabNameIterator = 1;
+
+    List<INFT> GetWTNFTs(GalleryTab tab)
+    {
+        if (tab.Tab != null && tab.Type == TabType.WorkTab)
+        {
+            var n = (tab.Tab as WorkTab)?.NFTs;
+            if (n != null) return n;
+        }
+        return new List<INFT>();
+    }
 
     async Task OpenSearchTab()
     {

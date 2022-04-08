@@ -107,11 +107,20 @@ else
         StateHasChanged();
         await Task.Delay(500);
 
+        AppData.Account.RunningAsVENFTBlazorApp = true; // block the start of the IoT NFTs, etc.
+        VEDLDataContext.AllowCache = true; //turn on/off NFT cache
+
+        await AppData.LoadChache();
+
         if (await AppData.Account.LoadAccount(password, ekey, "", false))
         {
             Address = AppData.Account.Address;
             AppData.IsAccountLoaded = true;
             IsAccountLoaded = true;
+
+            await AppData.LoadBookmarks();
+            await AppData.SaveCache();
+
             await AccountUnlocked.InvokeAsync(Address);
         }
         else
@@ -131,4 +140,5 @@ else
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
             await UnlockAccountHandler();
     }
+
 }
