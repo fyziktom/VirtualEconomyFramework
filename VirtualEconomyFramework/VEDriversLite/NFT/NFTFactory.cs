@@ -161,8 +161,11 @@ namespace VEDriversLite.NFT
             var tokid = tokenId;
             try
             {
-                var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0]?.TokenId;
-                tokid = tid;
+                var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0];
+                if (tid == null && tid.Amount > 1)
+                    return null;
+                
+                tokid = tid.TokenId;
                 if (string.IsNullOrEmpty(tokid))
                     tokid = NFTHelpers.TokenId;
             }
