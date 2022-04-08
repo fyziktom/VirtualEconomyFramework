@@ -1,0 +1,41 @@
+﻿@using VEDriversLite.Bookmarks
+@inject AppData AppData
+
+<Card>
+    <CardHeader>
+        <Row>
+            <Column Width="Width.Auto">
+                <Span>Bookmarks</Span>
+            </Column>
+            <Column Width="Width.Is100" Flex="Flex.AlignContent.End">
+                <Button Color="Color.Light" Clicked="@addNew"><Icon Name="IconName.Add" /> Add</Button>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <ListGroup>
+            @foreach (var bkm in AppData.Account.Bookmarks)
+            {
+                <ListGroupItem>
+                    <BookmarkItem InputBookmark="@bkm" InputBookmarkChanged="StateHasChanged" />
+                </ListGroupItem>
+            }
+        </ListGroup>
+    </CardBody>
+</Card>
+
+<BookmarkIcon @ref="bookmarkIcon"
+                HideIcon="true"
+                IsEditing="false"
+                FieldForAddress="true"
+                BookmarkChanged="StateHasChanged" />
+
+@code {
+    private BookmarkIcon bookmarkIcon;
+
+    private async Task addNew()
+    {
+        await bookmarkIcon.ShowAddBookmarkModal();
+    }
+    
+}

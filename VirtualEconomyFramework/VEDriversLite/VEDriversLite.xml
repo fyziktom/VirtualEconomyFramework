@@ -4124,7 +4124,7 @@
             <summary>
             Check if the address is already in the bookmarks and return this bookmark
             </summary>
-            <param name="address">Address which should be in the bookmarks</param>
+            <param name="address">Address or Name which should be in the bookmarks</param>
             <returns>true and bookmark class if exists</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.LoadTabs(System.String)">

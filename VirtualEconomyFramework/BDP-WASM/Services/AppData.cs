@@ -5,6 +5,8 @@ using VEDriversLite;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Imaging.Xray.Dto;
 using VEDriversLite.Bookmarks;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 
 public enum TabType
 {
@@ -46,11 +48,174 @@ public class MintingToolbarActionDto
 }
 public class AppData
 {
+    protected readonly ILocalStorageService localStorage;
+
+    public AppData(ILocalStorageService LocalStorage)
+    {
+        localStorage = LocalStorage;
+    }
+    
     public NeblioAccount Account { get; set; } = new NeblioAccount();
     public bool IsAccountLoaded { get; set; } = false;
     public Dictionary<string,XrayExposureParameters> ExposureParametersTemplates { get; set; } = new Dictionary<string, XrayExposureParameters>();
     public Dictionary<string, DetectorDataDto> DetectorParametersTemplates { get; set; } = new Dictionary<string, DetectorDataDto>();
 
     public List<GalleryTab> OpenedTabs { get; set; } = new List<GalleryTab>();
+
+    public async Task LoadBookmarks()
+    {
+        try
+        {
+            if (Account.Bookmarks.Count == 0)
+            {
+                var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+                if (bookmarks == null || (bookmarks != null && (bookmarks == "" || bookmarks == "{}" || bookmarks == "[]")))
+                {
+                    bookmarks = string.Empty;
+                    return;
+                }
+                else
+                {
+                    await Account.LoadBookmarks(bookmarks);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot load bookmarks!" + ex.Message);
+        }
+    }
+
+    public async Task StoreBookmarks()
+    {
+        try
+        {
+            if (Account.Bookmarks.Count == 0)
+            {
+                var bks = Account.SerializeBookmarks();
+                if (!string.IsNullOrEmpty(bks))
+                    await localStorage.SetItemAsync("bookmarks", bks);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot store bookmarks!" + ex.Message);
+        }
+    }
+
+    public async Task<(bool,string)> AddBookmark(Bookmark bkm)
+    {
+        var res = (false, string.Empty);
+        try
+        {
+            if (!string.IsNullOrEmpty(bkm.Name) && !string.IsNullOrEmpty(bkm.Address))
+            {
+                if (string.IsNullOrEmpty(bkm.Note))
+                    bkm.Note = string.Empty;
+                
+                res = await Account.AddBookmark(bkm.Name, bkm.Address, bkm.Note);
+                if (res.Item1)
+                {
+                    await localStorage.SetItemAsync("bookmarks", res.Item2);
+                    return (true, "Bookmark added and stored to memory.");
+                }                    
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot add bookmarks!" + ex.Message);
+            return (false, ex.Message);
+        }
+        return res;
+    }
+
+    public async Task<(bool,string)> RemoveBookmark(string address)
+    {
+        var res = (false, string.Empty);
+        try
+        {
+            if (!string.IsNullOrEmpty(address))
+            {
+                res = await Account.RemoveBookmark(address);
+                if (res.Item1)
+                {
+                    await localStorage.SetItemAsync("bookmarks", res.Item2);
+                    return (true,"Bookmarked removed");
+                }                    
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot remove bookmarks!" + ex.Message);
+            return (false, ex.Message);            
+        }
+        return res;
+    }    
+    
+    public async Task<(bool,string)> LoadChache()
+    {
+        if (VEDLDataContext.AllowCache)
+        {
+            try
+            {
+                var cch = await localStorage.GetItemAsync<IDictionary<string, VEDriversLite.NFT.Dto.NFTCacheDto>>("nftcache");
+                var resload = Account.LoadCacheNFTsFromString(cch);
+                if (!resload) 
+                    Console.WriteLine("Cannot load data from cache.");
+                else
+                    return (true, "Data loaded from cache.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load data from cache." + ex.Message);
+                return (false, ex.Message);                
+            }           
+        }
+        return (false, string.Empty);        
+    }
+    public async Task<(bool,string)> SaveCache()
+    {
+        if (VEDLDataContext.AllowCache)
+        {
+            // save cached NFTs
+            try
+            {
+                var nftcache = Account.CacheNFTs();
+                if (!string.IsNullOrEmpty(nftcache))
+                {
+                    await localStorage.SetItemAsync("nftcache", nftcache);
+                    return (true, "NFTs cached");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot save data to cache." + ex.Message);
+                return (false, ex.Message);
+            }
+        }
+        return (false, string.Empty);
+    }
+
+    public string GetAddressKnownAsName(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            if (address == Account.Address)
+                return "My Address";
+            if (Account.SubAccounts.TryGetValue(address, out var sacc))
+            {
+                if (!string.IsNullOrEmpty(sacc.Name))
+                    return sacc.Name;
+                else
+                    return sacc.BookmarkFromAccount.Name;
+            }
+            var bk = Account.IsInTheBookmarks(address);
+            if (bk.Item1)
+                return bk.Item2.Name;
+
+            return address;
+        }
+        return address;
+    }
 }
 

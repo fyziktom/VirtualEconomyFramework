@@ -694,11 +694,11 @@ namespace VEDriversLite
         /// <summary>
         /// Check if the address is already in the bookmarks and return this bookmark
         /// </summary>
-        /// <param name="address">Address which should be in the bookmarks</param>
+        /// <param name="address">Address or Name which should be in the bookmarks</param>
         /// <returns>true and bookmark class if exists</returns>
-        public async Task<(bool, Bookmark)> IsInTheBookmarks(string address)
+        public (bool, Bookmark) IsInTheBookmarks(string address)
         {
-            var bkm = Bookmarks.Find(b => b.Address == address);
+            var bkm = Bookmarks.Find(b => b.Address == address || b.Name == address);
             if (bkm == null || string.IsNullOrEmpty(bkm.Address) || string.IsNullOrEmpty(bkm.Name))
                 return (false, new Bookmark());
             //return (false, new Bookmark() { Address = NeblioTransactionHelpers.ShortenAddress(address) });
@@ -738,7 +738,7 @@ namespace VEDriversLite
                     var first = true;
                     foreach (var t in Tabs)
                     {
-                        var bkm = await IsInTheBookmarks(t.Address);
+                        var bkm = IsInTheBookmarks(t.Address);
                         t.LoadBookmark(bkm.Item2);
                         if (first)
                         {
@@ -775,7 +775,7 @@ namespace VEDriversLite
         {
             if (!Tabs.Any(t => t.Address == address))
             {
-                var bkm = await IsInTheBookmarks(address);
+                var bkm = IsInTheBookmarks(address);
                 var tab = new ActiveTab(address);
                 tab.BookmarkFromAccount = bkm.Item2;
                 tab.Selected = true;
@@ -882,7 +882,7 @@ namespace VEDriversLite
                     foreach (var t in MessageTabs)
                     {
                         t.Selected = false;
-                        var bkm = await IsInTheBookmarks(t.Address);
+                        var bkm = IsInTheBookmarks(t.Address);
                         t.AccountSecret = Secret;
                         t.AccountAddress = Address;
                         t.LoadBookmark(bkm.Item2);
@@ -917,7 +917,7 @@ namespace VEDriversLite
         {
             if (!MessageTabs.Any(t => t.Address == address))
             {
-                var bkm = await IsInTheBookmarks(address);
+                var bkm = IsInTheBookmarks(address);
                 var tab = new MessageTab(address);
                 tab.BookmarkFromAccount = bkm.Item2;
                 tab.Selected = true;
@@ -1022,11 +1022,11 @@ namespace VEDriversLite
                             var res = await nsa.LoadFromBackupDto(Secret, a);
                             if (res.Item1)
                             {
-                                var bkm = await IsInTheBookmarks(a.Address);
+                                var bkm = IsInTheBookmarks(a.Address);
                                 if (!bkm.Item1)
                                 {
                                     await AddBookmark(a.Name, a.Address, "SubAccount");
-                                    bkm = await IsInTheBookmarks(a.Address);
+                                    bkm = IsInTheBookmarks(a.Address);
                                 }
                                 nsa.LoadBookmark(bkm.Item2);
                                 nsa.IsAutoRefreshActive = true;
@@ -1104,7 +1104,7 @@ namespace VEDriversLite
                     return (false, "Cannot create SubAccount Address." + r.Item2);
                 }
                 await AddBookmark(name, nsa.Address, "SubAccount");
-                var bkm = await IsInTheBookmarks(nsa.Address);
+                var bkm = IsInTheBookmarks(nsa.Address);
                 nsa.LoadBookmark(bkm.Item2);
                 nsa.IsAutoRefreshActive = true;
                 nsa.NewEventInfo += Nsa_NewEventInfo;
