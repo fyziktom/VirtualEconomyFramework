@@ -3,37 +3,22 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 
-<Row>
-    <Column>
-        <Span>You do not have the account. This steps will help you to create new account.</Span>
-    </Column>
-</Row>
-
-<Row>
-    <Column>
-        <Field>
-            <FieldLabel>Please create your password.</FieldLabel>
-            <TextEdit Placeholder="Enter password" Role="TextRole.Password" @bind-Text="password" />
-        </Field>
-    </Column>
-</Row>    
-
-@if (!string.IsNullOrEmpty(password))
-{
+<Container Fluid>
     <Row>
         <Column>
-            <Button Color="Color.Primary" Clicked=@CreateAccountHandler>Create Account</Button>
+            <Row>
+                <Column>
+                    <Heading Size="HeadingSize.Is4">Create New Account</Heading>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@CreateAccountModal.Show" Block>Please create new account here</Button>
+                </Column>
+            </Row>
         </Column>
     </Row>
-}
-else
-{
-    <Row>
-        <Column>
-            <Span>Please Fill the password to continue.</Span>
-        </Column>
-    </Row>
-}
+</Container>
 
 <Modal @ref="CreateAccountModal">
     <ModalContent Centered>
@@ -42,34 +27,41 @@ else
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            @if (IsAccountLoaded)
+            <Row>
+                <Column>
+                    <Span>You do not have the account. This steps will help you to create new account.</Span>
+                </Column>
+            </Row>
+
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>Please create your password.</FieldLabel>
+                        <TextEdit Placeholder="Enter password" Role="TextRole.Password" @bind-Text="password" />
+                        <FieldHelp>Please use at least 8 characters. Dont forget this password. There is no 3rd party service to restore passwords.</FieldHelp>
+                    </Field>
+                </Column>
+            </Row>    
+
+            @if (!string.IsNullOrEmpty(password))
             {
                 <Row>
                     <Column>
-                    <h3>Your new Address</h3>
-                </Column>
-            </Row>
-            <Row>
-                <Column>
-                    <Span>@Address</Span>
-                </Column>
+                        <Button Color="Color.Primary" Loading="@CreatingAccount" Clicked=@CreateAccountHandler>Create Account</Button>
+                    </Column>
                 </Row>
             }
             else
             {
-                @if (CreatingAccount)
-                {
                 <Row>
                     <Column>
-                        <Span>Creating Account...</Span>
+                        <Span>Please Fill the password to continue.</Span>
                     </Column>
                 </Row>
-                }
             }
         </ModalBody>
     </ModalContent>
 </Modal>
-
 
 @code {
     [Inject] INotificationService NotificationService { get; set; }

@@ -3,67 +3,39 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 
-<Row>
-    <Column>
-        <Span>You have account created. Please unlock it to continue.</Span>
-    </Column>
-</Row>
-
-<Row>
-    <Column>
-        <Field>
-            <FieldLabel>Please input your password.</FieldLabel>
-            <TextEdit Placeholder="Enter password" Role="TextRole.Password" @bind-Text="password" KeyUp="@PassowrdEntryEnterKeyUp" />
-        </Field>
-    </Column>
-</Row>    
-
-@if (!string.IsNullOrEmpty(password))
-{
-    <Row>
-        <Column>
-            <Button Color="Color.Primary" Clicked=@UnlockAccountHandler>Unlock Account</Button>
-        </Column>
-    </Row>
-}
-else
-{
-    <Row>
-        <Column>
-            <Span>Please Fill the password to continue.</Span>
-        </Column>
-    </Row>
-}
-
-<Modal @ref="UnlockAccountModal">
+<Modal @ref="UnlockAccountModal" Opened="ModalOpenedHandler">
     <ModalContent Centered>
         <ModalHeader>
             <ModalTitle>Unlock Account</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            @if (LoadingAccount)
+            @if (!AppData.IsAccountLoaded)
             {
                 <Row>
                     <Column>
-                        <h3>Loading Account...</h3>
+                        <Field>
+                            <FieldLabel>Please input your password.</FieldLabel>
+                            <TextEdit @ref="PassEdit" Placeholder="Enter password" Role="TextRole.Password" @bind-Text="password" KeyUp="@PassowrdEntryEnterKeyUp" />
+                        </Field>
                     </Column>
-                </Row>
-            }
-            else 
-            {
-                @if (IsAccountLoaded)
-                {                
-                <Row>
-                    <Column>
-                        <h3>Your Address Unlocked</h3>
-                    </Column>
-                </Row>
-                <Row>
-                    <Column>
-                        <Span>@Address</Span>
-                    </Column>
-                </Row>
+                </Row>    
+
+                @if (!string.IsNullOrEmpty(password))
+                {
+                    <Row>
+                        <Column>
+                            <Button  Color="Color.Primary" Loading="@LoadingAccount" Clicked="@UnlockAccountHandler" Block>Unlock Account</Button>
+                        </Column>
+                    </Row>
+                }
+                else
+                {
+                    <Row>
+                        <Column>
+                            <Span>Please Fill the password to continue.</Span>
+                        </Column>
+                    </Row>
                 }
             }
         </ModalBody>
@@ -72,27 +44,29 @@ else
 
 @code {
     [Inject] INotificationService NotificationService { get; set; }
-    
+
     [Parameter]
     public EventCallback<string> AccountUnlocked { get; set; }
 
     [Inject] IPageProgressService PageProgressService { get; set; }
 
     Modal UnlockAccountModal;
+    TextEdit PassEdit;
 
-    bool IsAccountLoaded = false;
     bool LoadingAccount = false;
 
     string encryptedKey= string.Empty;
     string password = string.Empty;
     string Address = string.Empty;
 
+    public void ShowUnlockAccountModal()
+    {
+        UnlockAccountModal.Show();
+    }
+
     async Task UnlockAccountHandler()
     {
         if (string.IsNullOrEmpty(password))
-            return;
-        var ekey = await localStorage.GetItemAsync<string>("key");
-        if (string.IsNullOrEmpty(ekey))
             return;
 
         LoadingAccount = true;
@@ -101,39 +75,31 @@ else
         StateHasChanged();
         await Task.Delay(500);
 
-        AppData.Account.RunningAsVENFTBlazorApp = true; // block the start of the IoT NFTs, etc.
-        VEDLDataContext.AllowCache = true; //turn on/off NFT cache
-
-        await AppData.LoadChache();
-
-        if (await AppData.Account.LoadAccount(password, ekey, "", false))
+        var res = await AppData.UnlockAccount(password);
+        password = string.Empty;
+        
+        if (!res.Item1)
+            await NotificationService.Error( "Cannot unlock the account :(", "Cannot unlock" );
+        else   
         {
-            Address = AppData.Account.Address;
-            AppData.IsAccountLoaded = true;
-            IsAccountLoaded = true;
-
-            await AppData.LoadBookmarks();
-            await AppData.SaveCache();
-
+            Address = res.Item2;
             await AccountUnlocked.InvokeAsync(Address);
         }
-        else
-        {
-            IsAccountLoaded = false;            
-            AppData.IsAccountLoaded = false;            
-            Console.WriteLine("Cannot unlock the account.");
-            await NotificationService.Error( "Cannot unlock the account :(", "Cannot unlock" );
-        }
-
         await PageProgressService.Go(-1);
         LoadingAccount = false;
         StateHasChanged();
+        await UnlockAccountModal.Hide();
     }  
 
     async Task PassowrdEntryEnterKeyUp(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
             await UnlockAccountHandler();
+    }
+
+    async Task ModalOpenedHandler()
+    {
+        await PassEdit.Focus();
     }
 
 }

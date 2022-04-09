@@ -3,7 +3,7 @@
 <Bar Breakpoint="Breakpoint.Desktop" Background="Background.Light" ThemeContrast="ThemeContrast.Light">
     <BarBrand>
         <BarItem>
-            <BarLink To="">
+            <BarLink To="https://basedataplace.com/">
                 BaseDataPlace
             </BarLink>
         </BarItem>
@@ -14,38 +14,57 @@
         </BarStart>
         <BarEnd>
             <BarItem>
-                <BarLink To="https://veframework.com" Target="Target.Blank">
-                    About
-                </BarLink>
-            </BarItem>
-            <BarItem>
                 <Dropdown RightAligned>
                     <DropdownToggle Display="Blazorise.Display.InlineBlock.None.OnMobile">
                         <Span TextColor="TextColor.Dark">Account</Span>
                     </DropdownToggle>
                     <DropdownMenu>
-                        <DropdownItem>
-                            <Icon Name="IconName.Wrench" />
-                            User Settings
-                        </DropdownItem>
                         <DropdownDivider />
                             @if (AppData.IsAccountLoaded)
                             {
-                                <DropdownItem>
+                                <DropdownItem Clicked="@Lock">
                                     <Icon Name="IconName.Lock" TextColor="TextColor.Danger" />
                                     Logout
                                 </DropdownItem>                                
                             }
                             else 
                             {
-                                <DropdownItem>                                
+                                <DropdownItem Clicked="@Unlock">                                
                                     <Icon Name="IconName.Unlock" TextColor="TextColor.Success" />
                                     Login
                                 </DropdownItem>
                             }
+                            <DropdownItem>  
+                                <BarLink To="https://basedataplace.com/" Target="Target.Blank">
+                                    <Icon Name="IconName.QuestionCircle" TextColor="TextColor.Primary" />
+                                    About
+                                </BarLink>
+                            </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>
             </BarItem>
         </BarEnd>
     </BarMenu>
 </Bar>
+
+<UnlockAccount @ref="UnlockAccountComponent" AccountUnlocked="@AccountUnlockedHandler" />
+
+@code {
+    [Inject] INotificationService NotificationService { get; set; }
+
+    private UnlockAccount UnlockAccountComponent;
+
+    void Unlock()
+    {
+        UnlockAccountComponent.ShowUnlockAccountModal();
+    }
+    async Task Lock()
+    {
+        await AppData.LockAccount();     
+    }
+    async Task AccountUnlockedHandler( string e )
+    {
+        await NotificationService.Success( "Account Unlocked :)", "Unlocked" );
+        StateHasChanged();
+    }     
+}

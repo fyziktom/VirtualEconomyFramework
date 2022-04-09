@@ -3,36 +3,53 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 
-<Container Fluid>
-@if ( AppData.IsAccountLoaded )
-{
-    <Row Margin="Margin.Is3.FromTop">
-        <Column>
-            <BDP_WASM.Components.Account.AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
-        </Column>
-    </Row>
-}
-else 
-{
-    <Row Margin="Margin.Is3.FromBottom">
-        <Column>
-            <Heading Size="HeadingSize.Is1">Welcome in the Base Data Place App</Heading>
-        </Column>
-    </Row>
-    @if ( !IsAccountStored )
-    {
-        <BDP_WASM.Components.Account.CreateAccount AccountCreated="@AccountCreatedHandler" />
-    }
-    else
-    {
-        <BDP_WASM.Components.Account.UnlockAccount AccountUnlocked="@AccountUnlockedHandler" />
-    }
-}
+<Container Fluid Flex="Flex.AlignItems.Center.JustifyContent.Center" Height="Height.Is100">
+<Row Width="Width.Is100">
+    <Column>
+        @if ( AppData.IsAccountLoaded )
+        {
+            <Row Margin="Margin.Is3.FromTop">
+                <Column Height="Height.Is100">
+                    <AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
+                </Column>
+            </Row>
+        }
+        else 
+        {
+            <Row Margin="Margin.Is3.FromBottom">
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Figure Size="FigureSize.Is128x128">
+                        <FigureImage Source="images/BDPLogo-big-bw-transparent.png" />
+                    </Figure>
+                </Column>
+            </Row>
+            
+            <Row Margin="Margin.Is3.FromBottom">
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Heading Size="HeadingSize.Is2">Welcome in the Base Data Place App</Heading>
+                </Column>
+            </Row>
+            @if ( !IsAccountStored )
+            {
+                <CreateAccount AccountCreated="@AccountCreatedHandler" />
+            }
+            else 
+            {
+                <Row Margin="Margin.Is5.FromBottom">
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Text>You already have account in this web browser. Please use login in top menu to continue.</Text>
+                    </Column>
+                </Row>
+            }
+        }  
+        
+    </Column>
+</Row>        
 </Container>
 
 @code {
     [Inject] INotificationService NotificationService { get; set; }
-    
+
     [Parameter]
     public string Address { get; set; } = string.Empty;
     [Parameter]
@@ -46,7 +63,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+        AppData.LockUnlockAccount -= LockUnlockAccountHandler;
+        AppData.LockUnlockAccount += LockUnlockAccountHandler;
         await CheckAccount();
+    }
+
+    private void LockUnlockAccountHandler(object sender, bool e)
+    {
+        StateHasChanged();
     }
 
     private async Task CheckAccount()
@@ -63,13 +88,6 @@ else
         Address = e;
         IsAccountStored = true;
         NotificationService.Success( "Account Created :)", "Created" );
-        StateHasChanged();
-    }
-    void AccountUnlockedHandler( string e )
-    {
-        Address = e;
-        IsAccountStored = true;
-        NotificationService.Success( "Account Unlocked :)", "Unlocked" );
         StateHasChanged();
     }
 }

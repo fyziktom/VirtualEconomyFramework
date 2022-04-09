@@ -54,13 +54,58 @@ public class AppData
     {
         localStorage = LocalStorage;
     }
-    
+
     public NeblioAccount Account { get; set; } = new NeblioAccount();
     public bool IsAccountLoaded { get; set; } = false;
-    public Dictionary<string,XrayExposureParameters> ExposureParametersTemplates { get; set; } = new Dictionary<string, XrayExposureParameters>();
+    public Dictionary<string, XrayExposureParameters> ExposureParametersTemplates { get; set; } = new Dictionary<string, XrayExposureParameters>();
     public Dictionary<string, DetectorDataDto> DetectorParametersTemplates { get; set; } = new Dictionary<string, DetectorDataDto>();
 
     public List<GalleryTab> OpenedTabs { get; set; } = new List<GalleryTab>();
+
+    public event EventHandler<bool> LockUnlockAccount;
+
+    public async Task<(bool,string)> UnlockAccount(string password)
+    {
+        var ekey = await localStorage.GetItemAsync<string>("key");
+        if (string.IsNullOrEmpty(ekey))
+            return (false, string.Empty);
+
+        Account.RunningAsVENFTBlazorApp = true; // block the start of the IoT NFTs, etc.
+        VEDLDataContext.AllowCache = true; //turn on/off NFT cache
+
+        await LoadChache();
+        var address = string.Empty;
+        if (await Account.LoadAccount(password, ekey, "", false))
+        {
+            address = Account.Address;
+            IsAccountLoaded = true;
+
+            await LoadBookmarks();
+            await SaveCache();
+        }
+        else
+        {
+            IsAccountLoaded = false;
+            Console.WriteLine("Cannot unlock the account.");
+        }
+
+        LockUnlockAccount?.Invoke(null, IsAccountLoaded);
+        
+        return (IsAccountLoaded,address);
+    }
+
+    public async Task<bool> LockAccount(bool clearAll = false)
+    {
+        Account.AccountKey.Lock();
+        IsAccountLoaded = false;
+        if (clearAll)
+        {
+            Account = new NeblioAccount();
+            OpenedTabs = new List<GalleryTab>();
+        }
+        LockUnlockAccount?.Invoke(null, IsAccountLoaded);
+        return true;
+    }
 
     public async Task LoadBookmarks()
     {
@@ -94,7 +139,7 @@ public class AppData
             {
                 var bks = Account.SerializeBookmarks();
                 if (!string.IsNullOrEmpty(bks))
-                    await localStorage.SetItemAsync("bookmarks", bks);
+                    await localStorage.SetItemAsStringAsync("bookmarks", bks);
             }
         }
         catch (Exception ex)
@@ -116,7 +161,7 @@ public class AppData
                 res = await Account.AddBookmark(bkm.Name, bkm.Address, bkm.Note);
                 if (res.Item1)
                 {
-                    await localStorage.SetItemAsync("bookmarks", res.Item2);
+                    await localStorage.SetItemAsStringAsync("bookmarks", res.Item2);
                     return (true, "Bookmark added and stored to memory.");
                 }                    
             }
@@ -139,7 +184,7 @@ public class AppData
                 res = await Account.RemoveBookmark(address);
                 if (res.Item1)
                 {
-                    await localStorage.SetItemAsync("bookmarks", res.Item2);
+                    await localStorage.SetItemAsStringAsync("bookmarks", res.Item2);
                     return (true,"Bookmarked removed");
                 }                    
             }
@@ -160,14 +205,18 @@ public class AppData
             {
                 var cch = await localStorage.GetItemAsync<IDictionary<string, VEDriversLite.NFT.Dto.NFTCacheDto>>("nftcache");
                 var resload = Account.LoadCacheNFTsFromString(cch);
-                if (!resload) 
+                if (!resload)
+                {
                     Console.WriteLine("Cannot load data from cache.");
+                    await localStorage.SetItemAsStringAsync("nftcache", "");                    
+                }
                 else
                     return (true, "Data loaded from cache.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot load data from cache." + ex.Message);
+                await localStorage.SetItemAsStringAsync("nftcache", "");
                 return (false, ex.Message);                
             }           
         }
@@ -183,13 +232,14 @@ public class AppData
                 var nftcache = Account.CacheNFTs();
                 if (!string.IsNullOrEmpty(nftcache))
                 {
-                    await localStorage.SetItemAsync("nftcache", nftcache);
+                    await localStorage.SetItemAsStringAsync("nftcache", nftcache);
                     return (true, "NFTs cached");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot save data to cache." + ex.Message);
+                await localStorage.SetItemAsStringAsync("nftcache", "");
                 return (false, ex.Message);
             }
         }

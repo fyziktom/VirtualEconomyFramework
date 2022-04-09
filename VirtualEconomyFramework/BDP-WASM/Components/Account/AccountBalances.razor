@@ -1,21 +1,28 @@
-﻿
-<Card Style="max-width:250px;">
+﻿@inject AppData AppData
+
+<Card Style="max-width:350px;">
     <CardBody>
         <CardTitle Size="5">Balances</CardTitle>
+        <Field>
+            <FieldLabel>Your Address</FieldLabel>
+            <Tooltip Text="Click to copy to clipboard" Placement="TooltipPlacement.Bottom">                   
+                <Heading Size="HeadingSize.Is6" CopyToClipboard="true" TextOverflow="TextOverflow.Wrap">@AppData.Account.Address</Heading>
+            </Tooltip> 
+        </Field>
         <CardText>
            <Row>
                <Column>
-                   Neblio: @(Math.Round(NeblioBalance, 8)) NEBL <img style="width: 10px;margin-left: 10px; margin-bottom:2px;" src="images/neblio-icon.png" />
+                   Neblio: @(Math.Round(NeblioBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/neblio-icon.png" /></Figure>
                </Column>
            </Row>
            <Row>
                <Column>
-                   Tokens: @TokensBalance VENFT <img style="width: 10px;margin-left: 10px; margin-bottom:2px;" src="images/VENFT_icon.png" />
+                   Tokens: @TokensBalance VENFT <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/VENFT_icon.png" /></Figure>
                </Column>
            </Row>
            <Row>
                <Column>
-                   Tokens: @BDPBalance BDP <img style="width: 10px;margin-left: 10px; margin-bottom:2px;" src="images/BDPLogo-transparent.png" />
+                   Tokens: @BDPBalance BDP <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/BDPLogo-transparent.png" /></Figure>
                </Column>
            </Row>
            <Row>
