@@ -138,6 +138,8 @@
 
 
 @code {
+    [Inject] INotificationService NotificationService { get; set; }
+
     string selectedStep = "stepUpload";
     XrayImageNFT NFT = new XrayImageNFT();
 
@@ -187,9 +189,15 @@
             var res = await AppData.Account.MintNFT( NFT );
             mintingResult = res;
             if ( res.Item1 )
+            {            
                 IsMinted = true;
+                await NotificationService.Success( "Image saved :)", "Saved" );
+            }                
             else
+            {
+                await NotificationService.Success( "Cannot save the data. " + res.Item2, "Cannot Save" );                
                 IsMinted = false;
+            }
         }
     }
 

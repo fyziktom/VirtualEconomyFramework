@@ -65,15 +65,6 @@ else
                     </Column>
                 </Row>
                 }
-                else 
-                {
-                    <Row>
-                        <Column>
-                            <Span>Cannot create Account.</Span>
-                        </Column>
-                    </Row>
-                }
-
             }
         </ModalBody>
     </ModalContent>
@@ -81,6 +72,8 @@ else
 
 
 @code {
+    [Inject] INotificationService NotificationService { get; set; }
+    
     [Parameter]
     public EventCallback<string> AccountCreated { get; set; }
 
@@ -126,6 +119,7 @@ else
             IsAccountLoaded = false;
             CreatingAccount = false;
             AppData.IsAccountLoaded = false;
+            await NotificationService.Error( "Cannot create the account :(", "Cannot create" );
         }
 
         await PageProgressService.Go( -1 );

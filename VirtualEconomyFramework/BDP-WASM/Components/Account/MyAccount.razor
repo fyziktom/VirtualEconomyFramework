@@ -3,48 +3,36 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 
-<Row>
-    <Column>
-        <Row>
-            <Column>
-                @if ( !AppData.IsAccountLoaded )
-                {
-                    <Row Margin="Margin.Is3.FromBottom">
-                        <Column>
-                            <Heading Size="HeadingSize.Is1">Welcome in the Base Data Place App</Heading>
-                        </Column>
-                    </Row>
-                    @if ( !IsAccountStored )
-                    {
-                        <BDP_WASM.Components.Account.CreateAccount AccountCreated="@AccountCreatedHandler" />
-                    }
-                    else
-                    {
-                        <BDP_WASM.Components.Account.UnlockAccount AccountUnlocked="@AccountUnlockedHandler" />
-                    }
-                }
-                else
-                {
-                    <Alert Color="Color.Success" Visible>
-                        <AlertDescription>
-                            Account loaded :)
-                        </AlertDescription>
-                    </Alert>
-                }
-            </Column>
-        </Row>
-        @if ( AppData.IsAccountLoaded )
-        {
-            <Row Margin="Margin.Is3.FromTop">
-                <Column>
-                    <BDP_WASM.Components.Account.AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
-                </Column>
-            </Row>
-        }
-    </Column>
-</Row>
+<Container Fluid>
+@if ( AppData.IsAccountLoaded )
+{
+    <Row Margin="Margin.Is3.FromTop">
+        <Column>
+            <BDP_WASM.Components.Account.AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
+        </Column>
+    </Row>
+}
+else 
+{
+    <Row Margin="Margin.Is3.FromBottom">
+        <Column>
+            <Heading Size="HeadingSize.Is1">Welcome in the Base Data Place App</Heading>
+        </Column>
+    </Row>
+    @if ( !IsAccountStored )
+    {
+        <BDP_WASM.Components.Account.CreateAccount AccountCreated="@AccountCreatedHandler" />
+    }
+    else
+    {
+        <BDP_WASM.Components.Account.UnlockAccount AccountUnlocked="@AccountUnlockedHandler" />
+    }
+}
+</Container>
 
 @code {
+    [Inject] INotificationService NotificationService { get; set; }
+    
     [Parameter]
     public string Address { get; set; } = string.Empty;
     [Parameter]
@@ -74,12 +62,14 @@
     {
         Address = e;
         IsAccountStored = true;
+        NotificationService.Success( "Account Created :)", "Created" );
         StateHasChanged();
     }
     void AccountUnlockedHandler( string e )
     {
         Address = e;
         IsAccountStored = true;
+        NotificationService.Success( "Account Unlocked :)", "Unlocked" );
         StateHasChanged();
     }
 }

@@ -1,4 +1,6 @@
-﻿<Bar Breakpoint="Breakpoint.Desktop" Background="Background.Light" ThemeContrast="ThemeContrast.Light">
+﻿@inject AppData AppData
+
+<Bar Breakpoint="Breakpoint.Desktop" Background="Background.Light" ThemeContrast="ThemeContrast.Light">
     <BarBrand>
         <BarItem>
             <BarLink To="">
@@ -27,10 +29,20 @@
                             User Settings
                         </DropdownItem>
                         <DropdownDivider />
-                        <DropdownItem>
-                            <Icon Name="IconName.Lock" TextColor="TextColor.Danger" />
-                            Logout
-                        </DropdownItem>
+                            @if (AppData.IsAccountLoaded)
+                            {
+                                <DropdownItem>
+                                    <Icon Name="IconName.Lock" TextColor="TextColor.Danger" />
+                                    Logout
+                                </DropdownItem>                                
+                            }
+                            else 
+                            {
+                                <DropdownItem>                                
+                                    <Icon Name="IconName.Unlock" TextColor="TextColor.Success" />
+                                    Login
+                                </DropdownItem>
+                            }
                     </DropdownMenu>
                 </Dropdown>
             </BarItem>

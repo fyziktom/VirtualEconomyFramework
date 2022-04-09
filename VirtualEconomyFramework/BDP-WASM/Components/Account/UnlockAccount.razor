@@ -65,20 +65,14 @@ else
                     </Column>
                 </Row>
                 }
-                else
-                {
-                    <Row>
-                        <Column>
-                            <h3>Cannot unlock Account</h3>
-                        </Column>
-                    </Row>
-                }
             }
         </ModalBody>
     </ModalContent>
 </Modal>
 
 @code {
+    [Inject] INotificationService NotificationService { get; set; }
+    
     [Parameter]
     public EventCallback<string> AccountUnlocked { get; set; }
 
@@ -128,6 +122,7 @@ else
             IsAccountLoaded = false;            
             AppData.IsAccountLoaded = false;            
             Console.WriteLine("Cannot unlock the account.");
+            await NotificationService.Error( "Cannot unlock the account :(", "Cannot unlock" );
         }
 
         await PageProgressService.Go(-1);

@@ -36,6 +36,7 @@
                                    IsOwnNFT="@IsOwnNFT"
                                    Utxo="@NFT.Utxo"
                                    UtxoIndex="@NFT.UtxoIndex"
+                                   NFTSent="@NFTSentHandler"
                                    OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
                         }
                     }
@@ -46,6 +47,8 @@
 </Row>
 
 @code {
+    [Inject] INotificationService NotificationService { get; set; }
+
     [Parameter]
     public string Address { get; set; } = string.Empty;
     [Parameter]
@@ -89,6 +92,14 @@
             AppData.Account.Refreshed += RefreshedHandler;
         }
         await base.OnAfterRenderAsync( firstRender );
+    }
+
+    private void NFTSentHandler(NFTSentResultDto e)
+    {
+        if (e.sucess)
+            NotificationService.Success("NFT sent successfully.", "NFT Sent");
+        else
+            NotificationService.Error(e.message, "NFT Not Sent");
     }
 
     private void RefreshedHandler( object sender, EventArgs e )

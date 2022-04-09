@@ -59,6 +59,7 @@
 </Modal>
 
 @code {
+    [Inject] INotificationService NotificationService { get; set; }
 
     [Inject]
     public IMessageService MessageService { get; set; }
@@ -126,6 +127,8 @@
             var bks = await AppData.AddBookmark(b);
             if (bks.Item1)
                 await BookmarkChanged.InvokeAsync(b);
+            
+            await NotificationService.Success( "Bookmark Added", "Added" );
         }
     }
 
@@ -138,6 +141,8 @@
             await AppData.RemoveBookmark(_address);
             NewBookmark = new VEDriversLite.Bookmarks.Bookmark() { Address = _address };
             await BookmarkChanged.InvokeAsync(NewBookmark);
+            
+            await NotificationService.Success( "Bookmark Removed", "Removed" );
         }     
     }
 

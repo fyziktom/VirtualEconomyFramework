@@ -126,6 +126,7 @@
     async Task NFTSentHandler( NFTSentResultDto e )
     {
         XrayImagesDetailsModalComponent.HideNFTDetails();
+        await NFTImageDetailModal.Hide();
         await NFTSent.InvokeAsync( e );
     }
 }
