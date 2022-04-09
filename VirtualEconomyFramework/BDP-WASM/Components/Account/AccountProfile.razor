@@ -1,6 +1,6 @@
 ﻿@using VEDriversLite.NFT
 
-@if (profile != null)
+@if ( profile != null )
 {
     <Card Style="max-width:250px;">
         <CardImage Source="@profile.ImageLink" Alt="Avatar"></CardImage>
@@ -9,43 +9,35 @@
             <CardText>
                 @(profile.Description == "" ? "No Bio" : profile.Description)
             </CardText>
-            <Button Color="Color.Light" Clicked="@EditProfile"><Icon Name="IconName.Edit" />&nbsp;Edit</Button>
+            <Button Color="Color.Light" Clicked="@OnEditProfile"><Icon Name="IconName.Edit" />&nbsp;Edit</Button>
         </CardBody>
     </Card>
 }
 
-<Modal @ref="EditProfileModal">
-    <ModalContent Centered>
-        <ModalHeader>
-            <ModalTitle>Edit Profile</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <EditProfile NFT="@profile" 
-                         Name="@profile.Name" 
-                         Surname="@profile.Surname" 
-                         Nickname="@profile.Nickname" 
-                         Description="@profile.Description" 
-                         NFTChanged="@NFTChangedHandler" />
-        </ModalBody>
-    </ModalContent>
-</Modal>
+<EditProfile @ref="@EditProfileRef"
+             NFT="@profile"
+             Name="@profile.Name"
+             Surname="@profile.Surname"
+             Nickname="@profile.Nickname"
+             Description="@profile.Description"
+             NFTChanged="@NFTChangedHandler" />
 
 @code {
-    private Modal EditProfileModal;
+    private EditProfile EditProfileRef;
 
     [Parameter]
-    public INFT Profile { get; set; } = new ProfileNFT("");
-    public ProfileNFT profile 
+    public INFT Profile { get; set; } = new ProfileNFT( "" );
+    public ProfileNFT profile
     {
-        get => (Profile.Type == NFTTypes.Profile) ? (Profile as ProfileNFT) : new ProfileNFT(""); 
+        get => ( Profile.Type == NFTTypes.Profile ) ? ( Profile as ProfileNFT ) : new ProfileNFT( "" );
     }
 
-    async Task EditProfile()
+    async Task OnEditProfile()
     {
-        await EditProfileModal.Show();
+        await EditProfileRef.Show();
     }
-    void NFTChangedHandler(INFT e)
+
+    void NFTChangedHandler( INFT e )
     {
         Profile = e;
     }
