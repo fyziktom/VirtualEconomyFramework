@@ -2,80 +2,70 @@
 @inject TransactionsService TransactionsService
 
 
+@if ( TransactionsDetails == null )
+{
+    <Heading Size="HeadingSize.Is5"> No transaction found. </Heading>
+}
+else
+{
+    <Heading Size="HeadingSize.Is5">Number Of Transactions: @Transactions.Count</Heading>
 
-<Card>
-
-    <CardTitle>Transactions History</CardTitle>
-    @if ( TransactionsDetails == null )
+    @if ( TransactionsDetails.Count > 0 )
     {
-        <CardBody>
-            <Span> No transaction found. </Span>
-        </CardBody>
-    }
-    else
-    {
-        <CardHeader>
-            <Span>Number Of Transactions: @Transactions.Count</Span>
-        </CardHeader>
-        <CardBody>
-            @if ( TransactionsDetails.Count > 0 )
-            {
-                @foreach ( var tx in TransactionsDetails )
-                {
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is1">
-                            @if ( tx.Way == TxWay.In )
-                            {
-                                <Span><Icon Name="IconName.ArrowUp" TextColor="TextColor.Success" /></Span>
-                            }
-                            else if ( tx.Way == TxWay.Out )
-                            {
-                                <Span><Icon Name="IconName.ArrowDown" TextColor="TextColor.Danger" /></Span>
-                            }
-                        </Column>
-                        <Column>
-                            <Field>
-                                <FieldLabel>Receiver</FieldLabel>
-                                <Span>@(tx.Receiver.Length > 15 ? tx.Receiver.Substring(0,15) + "..." : tx.Receiver)</Span>
-                                <FieldHelp>@tx.Time</FieldHelp>
-                            </Field>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is2">
-                            <Button Color="Color.Light" Size="Size.Small" Clicked="(e) => ShowTxDetails(tx)">Details</Button>
-                        </Column>
-                    </Row>
-                }
-                <Row Width="Width.Is100" Flex="Flex.AlignItems.Center">
-                    <Column>
-                        <Pagination>
-                            <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
-                                <PaginationLink>
-                                    <span aria-hidden="true">«</span>
+        @foreach ( var tx in TransactionsDetails )
+        {
+            <Row>
+                <Column ColumnSize="ColumnSize.Is1">
+                    @if ( tx.Way == TxWay.In )
+                    {
+                        <Span><Icon Name="IconName.ArrowUp" TextColor="TextColor.Success" /></Span>
+                    }
+                    else if ( tx.Way == TxWay.Out )
+                    {
+                        <Span><Icon Name="IconName.ArrowDown" TextColor="TextColor.Danger" /></Span>
+                    }
+                </Column>
+                <Column>
+                    <Field>
+                        <FieldLabel>Receiver</FieldLabel>
+                        <Span>@(tx.Receiver.Length > 15 ? tx.Receiver.Substring(0,15) + "..." : tx.Receiver)</Span>
+                        <FieldHelp>@tx.Time</FieldHelp>
+                    </Field>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Button Color="Color.Light" Size="Size.Small" Clicked="(e) => ShowTxDetails(tx)" Float="Float.End">Details</Button>
+                </Column>
+            </Row>
+        }
+        <Row Width="Width.Is100" Flex="Flex.AlignItems.Center">
+            <Column>
+                <Pagination>
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                        <PaginationLink>
+                            <span aria-hidden="true">«</span>
+                        </PaginationLink>
+                    </PaginationItem>
+                    @{
+                        for ( var i = 1; i <= pageItems; i++ )
+                        {
+                            var pageNumberAsString = i.ToString();
+                            <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                    @pageNumberAsString
                                 </PaginationLink>
                             </PaginationItem>
-                            @{
-                                for ( var i = 1; i <= pageItems; i++ )
-                                {
-                                    var pageNumberAsString = i.ToString();
-                                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
-                                            @pageNumberAsString
-                                        </PaginationLink>
-                                    </PaginationItem>
-                                }
-                            }
-                            <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
-                                <PaginationLink>
-                                    <span aria-hidden="true">»</span>
-                                </PaginationLink>
-                            </PaginationItem>
-                        </Pagination>
-                    </Column>
-                </Row>
-            }
-        </CardBody>
+                        }
+                    }
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                        <PaginationLink>
+                            <span aria-hidden="true">»</span>
+                        </PaginationLink>
+                    </PaginationItem>
+                </Pagination>
+            </Column>
+        </Row>
     }
-</Card>
+}
 
 <TransactionDetails @ref="TxDetailsComponent" />
 

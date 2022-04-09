@@ -1,13 +1,13 @@
 ﻿@using VEDriversLite.Bookmarks
-@if (InputBookmark != null && !string.IsNullOrEmpty(InputBookmark.Name))
+@if ( InputBookmark != null && !string.IsNullOrEmpty( InputBookmark.Name ) )
 {
-    <Addons>
-        <Addon AddonType="AddonType.Start">
-            <Icon Name="IconName.Edit" IconSize="IconSize.Default" Clicked="@EditBookmarkHandler" Margin="Margin.Is2.FromEnd" />    
-        </Addon>
-        <Addon AddonType="AddonType.Body" Flex="Flex.JustifyContent.Center">
+    <Row>
+        <Column ColumnSize="ColumnSize.Is1">
+            <Icon Name="IconName.Edit" IconSize="IconSize.Default" Clicked="@EditBookmarkHandler" Margin="Margin.Is2.FromEnd" />
+        </Column>
+        <Column>
             <Field>
-                 <FieldLabel>
+                <FieldLabel>
                     @InputBookmark.Name
                 </FieldLabel>
                 <Span>
@@ -15,23 +15,23 @@
                 </Span>
                 <FieldHelp>
                     @InputBookmark.Note
-                </FieldHelp> 
+                </FieldHelp>
             </Field>
-        </Addon>
-        <Addon AddonType="AddonType.End">
-            <Icon Name="IconName.Delete" IconSize="IconSize.Default" Clicked="@RemoveBookmarkHandler" Margin="Margin.Is2.FromStart" />                      
-        </Addon>        
-    </Addons>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is1">
+            <Icon Name="IconName.Delete" IconSize="IconSize.Default" Clicked="@RemoveBookmarkHandler" Margin="Margin.Is2.FromStart" />
+        </Column>
+    </Row>
 }
 
-@if (InputBookmark != null)
+@if ( InputBookmark != null )
 {
     <BookmarkIcon @ref="bookmarkIcon"
-                  Address="@InputBookmark.Address" 
-                  HideIcon="true"
-                  IsEditing="true"
-                  NewBookmark="@InputBookmark" 
-                  BookmarkChanged="BookmarkChangedHandler" />
+              Address="@InputBookmark.Address"
+              HideIcon="true"
+              IsEditing="true"
+              NewBookmark="@InputBookmark"
+              BookmarkChanged="BookmarkChangedHandler" />
 }
 
 @code {
@@ -45,7 +45,7 @@
 
     private async Task BookmarkChangedHandler()
     {
-        await InputBookmarkChanged.InvokeAsync(InputBookmark);
+        await InputBookmarkChanged.InvokeAsync( InputBookmark );
         StateHasChanged();
     }
 
@@ -53,10 +53,10 @@
     {
         await bookmarkIcon.ShowAddBookmarkModal();
     }
-    
+
     private async Task RemoveBookmarkHandler()
     {
         await bookmarkIcon.RemoveBookmark();
     }
-    
+
 }

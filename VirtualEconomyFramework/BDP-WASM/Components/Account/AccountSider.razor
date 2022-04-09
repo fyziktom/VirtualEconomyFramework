@@ -18,13 +18,13 @@
             <Column>
                 <ErrorBoundary>
                     <AccountProfile Profile="@AppData.Account.Profile" />
-                </ErrorBoundary>   
+                </ErrorBoundary>
             </Column>
         </Row>
         <Row Margin="Margin.Is3.FromBottom" Flex="Flex.AlignItems.Start">
             <Column>
-                <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance" 
-                                 TokensBalance="@TokenSupply" 
+                <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance"
+                                 TokensBalance="@TokenSupply"
                                  BDPBalance="@BDPSupply"
                                  NFTsCount="@AppData.Account.NFTs.Count" />
             </Column>
@@ -36,16 +36,64 @@
         </Row>
     </Column>
     <Column>
-        <Row>
-            <Column>
-                <BookmarksManagerList />                
-            </Column>
-        </Row>
-        <Row>
-            <Column>
-                <TransactionsList Address="@AppData.Account.Address" IsSubAccount="false" />
-            </Column>
-        </Row>
+        <Accordion>
+            <Collapse Visible="@collapse1Visible">
+                <CollapseHeader Padding="Padding.Is0.FromBottom">
+                    <Row>
+                        <Column>
+                            <Button Clicked="@(()=>collapse1Visible = !collapse1Visible)">
+                                <Icon Name="@(collapse1Visible ? IconName.AngleUp : IconName.AngleDown)" />
+                                Bookmarks
+                            </Button>
+                        </Column>
+                        <Column>
+                            <Button Color="Color.Light" Clicked="@addNewBookmark" Float="Float.End">
+                                <Icon Name="IconName.Add" /> Add
+                            </Button>
+
+                            <BookmarkIcon @ref="bookmarkIcon"
+                                          HideIcon="true"
+                                          IsEditing="false"
+                                          FieldForAddress="true"
+                                          BookmarkChanged="StateHasChanged" />
+                        </Column>
+                    </Row>
+                    <Heading Size="HeadingSize.Is5">
+
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <BookmarksManagerList />
+                </CollapseBody>
+            </Collapse>
+            <Collapse Visible="@collapse2Visible">
+                <CollapseHeader>
+                    <Row>
+                        <Column>
+                            <Button Clicked="@(()=>collapse2Visible = !collapse2Visible)">
+                                <Icon Name="@(collapse2Visible ? IconName.AngleUp : IconName.AngleDown)" />
+                                Transactions History
+                            </Button>
+                        </Column>
+                    </Row>
+                </CollapseHeader>
+                <CollapseBody>
+                    <TransactionsList Address="@AppData.Account.Address" IsSubAccount="false" />
+                </CollapseBody>
+            </Collapse>
+        </Accordion>
+
+        @code {
+        bool collapse1Visible = true;
+        bool collapse2Visible = true;
+
+        private BookmarkIcon bookmarkIcon;
+
+        private async Task addNewBookmark()
+        {
+            await bookmarkIcon.ShowAddBookmarkModal();
+        }
+        }
     </Column>
 </Row>
 @code {
@@ -62,8 +110,8 @@
     {
         get
         {
-            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.TokenId, out var tokens))
-                return Convert.ToInt32(tokens.Amount);
+            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.TokenId, out var tokens ) )
+                return Convert.ToInt32( tokens.Amount );
             else
                 return 0;
         }
@@ -72,46 +120,46 @@
     {
         get
         {
-            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.BDPTokenId, out var tokens))
-                return Convert.ToInt32(tokens.Amount);
+            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.BDPTokenId, out var tokens ) )
+                return Convert.ToInt32( tokens.Amount );
             else
                 return 0;
         }
     }
-    
+
     private string filename = "";
     private string backupData = "";
-    
+
     async Task Backup()
     {
-        var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
-        var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
-        var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
-        var messageTabs = await localStorage.GetItemAsync<string>("messageTabs");
-        var address = await localStorage.GetItemAsync<string>("address");
-        var key = await localStorage.GetItemAsync<string>("key");
+        var bookmarks = await localStorage.GetItemAsync<string>( "bookmarks" );
+        var subAccounts = await localStorage.GetItemAsync<string>( "subAccounts" );
+        var browserTabs = await localStorage.GetItemAsync<string>( "browserTabs" );
+        var messageTabs = await localStorage.GetItemAsync<string>( "messageTabs" );
+        var address = await localStorage.GetItemAsync<string>( "address" );
+        var key = await localStorage.GetItemAsync<string>( "key" );
 
         var dto = new BackupDataDto();
-        if (!string.IsNullOrEmpty(bookmarks))
+        if ( !string.IsNullOrEmpty( bookmarks ) )
             dto.Bookmarks = bookmarks;
-        if (!string.IsNullOrEmpty(browserTabs))
+        if ( !string.IsNullOrEmpty( browserTabs ) )
             dto.BrowserTabs = browserTabs;
-        if (!string.IsNullOrEmpty(messageTabs))
+        if ( !string.IsNullOrEmpty( messageTabs ) )
             dto.MessageTabs = messageTabs;
-        if (!string.IsNullOrEmpty(subAccounts))
+        if ( !string.IsNullOrEmpty( subAccounts ) )
             dto.SubAccounts = subAccounts;
-        if (!string.IsNullOrEmpty(address))
+        if ( !string.IsNullOrEmpty( address ) )
             dto.Address = address;
-        if (!string.IsNullOrEmpty(key))
+        if ( !string.IsNullOrEmpty( key ) )
             dto.Key = key;
 
-        filename = "Backup-Export-" + AppData.Account.Address + "-" + DateTime.UtcNow.ToString("dd-MM-yyyyThh_mm_ss") + ".txt";
-        backupData = JsonConvert.SerializeObject(dto);
+        filename = "Backup-Export-" + AppData.Account.Address + "-" + DateTime.UtcNow.ToString( "dd-MM-yyyyThh_mm_ss" ) + ".txt";
+        backupData = JsonConvert.SerializeObject( dto );
 
-        if (string.IsNullOrEmpty(backupData))
+        if ( string.IsNullOrEmpty( backupData ) )
             return;
 
-        await JSRuntime.InvokeVoidAsync("jsFunctions.downloadText", backupData, filename);        
+        await JSRuntime.InvokeVoidAsync( "jsFunctions.downloadText", backupData, filename );
 
     }
 }
