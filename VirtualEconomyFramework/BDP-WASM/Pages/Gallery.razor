@@ -88,7 +88,7 @@
                                 </Row>
                                 <Row Margin="Margin.Is2.FromTop" Flex="Flex.JustifyContent.Center">
                                     <Column>
-                                        <Button Color="Color.Primary" Clicked="@OpenSearchTab"><Icon Name="IconName.Add" /> Open Search Tab</Button>
+                                        <Button Color="Color.Primary" Clicked="@OpenSearchTabAction"><Icon Name="IconName.Add" /> Open Search Tab</Button>
                                     </Column>
                                 </Row>
                             </Container>
@@ -123,6 +123,65 @@
 
     public int NewTabNameIterator = 1;
 
+    [Parameter]
+    [SupplyParameterFromQuery(Name="utxo")]
+    public string[]? InUtxos { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name="addr")]
+    public string[]? InAddresses { get; set; }    
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (InUtxos != null)
+            await OpenInUtxoInTab(InUtxos);
+        if (InAddresses != null)
+            await OpenInAddressesInTab(InAddresses);
+    }
+
+    async Task OpenInUtxoInTab(string[] inUtxo)
+    {
+        if (inUtxo == null || inUtxo.Length == 0)
+            return;
+        await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+        var nfts = new List<INFT>();
+        foreach (var utxo in inUtxo)
+        {
+            var index = 0;
+            var utx = utxo;
+            if (utxo.Contains(":"))
+            {
+                var us = utxo.Split(":");
+                if (us.Length == 2)
+                {
+                    index = int.Parse(us[1]);
+                    utx = us[0];
+                }
+            }
+            var nft = await NFTFactory.GetNFT("", utx, index, loadJustType: true, justType: NFTTypes.XrayImage);
+            if (nft != null)
+                nfts.Add(nft);
+        }
+
+        OpenNFTsInWorkTabHandler(nfts);
+        await PageProgressService.Go( -1 );        
+    }
+
+    async Task OpenInAddressesInTab(string[] addresses)
+    {
+        if (addresses == null || addresses.Length == 0)
+            return;
+        await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+
+        foreach (var addr in addresses)
+            if (!string.IsNullOrEmpty(NeblioTransactionHelpers.ValidateNeblioAddress(addr)))
+                await OpenSearchTab(addr);
+
+        await PageProgressService.Go( -1 );
+    }
+
     List<INFT> GetWTNFTs(GalleryTab tab)
     {
         if (tab.Tab != null && tab.Type == TabType.WorkTab)
@@ -133,12 +192,18 @@
         return new List<INFT>();
     }
 
-    async Task OpenSearchTab()
+    async Task OpenSearchTabAction()
     {
-        if ( string.IsNullOrEmpty( NewTabAddress ) )
+        await OpenSearchTab();
+    }
+    async Task OpenSearchTab(string address = "")
+    {
+        if (string.IsNullOrEmpty(address))
+            address = NewTabAddress;
+        if ( string.IsNullOrEmpty( address ) )
             return;
 
-        var tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == NewTabAddress );
+        var tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == address );
         if ( tab != null )
         {
             SelectedTabName = tab.ShortAddress;
@@ -146,20 +211,20 @@
         }
 
         await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
-        var res = await AppData.Account.AddTab( NewTabAddress, 10 );
+        var res = await AppData.Account.AddTab( address, 10 );
         if ( res.Item1 )
         {
-            tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == NewTabAddress );
+            tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == address );
             if ( tab != null )
             {
                 AppData.OpenedTabs.Add( new GalleryTab()
                     {
                         Type = TabType.ActiveTab,
                         Name = tab.ShortAddress,
-                        Address = NewTabAddress
+                        Address = address
                     } );
+                SelectedTabName = tab.ShortAddress;
             }
-            SelectedTabName = tab.ShortAddress;
             await PageProgressService.Go( -1 );
         }
     }
@@ -178,6 +243,8 @@
 
     void OpenNFTsInWorkTabHandler( List<INFT> e )
     {
+        if (e == null || e.Count == 0)
+            return;
         var wt = new WorkTab();
         wt.NFTs = e;
         wt.Name = "New" + NewTabNameIterator.ToString();

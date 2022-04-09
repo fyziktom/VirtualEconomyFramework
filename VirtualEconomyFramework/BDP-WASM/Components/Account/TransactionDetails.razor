@@ -13,7 +13,7 @@
     <ModalBody>
         <Card>
             <CardHeader>
-                <Span>Transaction ID: @TxDetails.Info.Txid</Span>
+                <Span>Transaction ID: <Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></Span>
             </CardHeader>
             <CardBody>
                 <Row>
@@ -21,7 +21,7 @@
                         <Field>
                             <FieldLabel>Sender</FieldLabel>
                                 <Tooltip Text="@(senderBookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
-                                    <Span>@TxDetails.Sender </Span>
+                                    <Text CopyToClipboard="true">@TxDetails.Sender </Text>
                                     <Span Margin="Margin.Is1.FromBottom">
                                                                     
                                       <BookmarkIcon Address="@TxDetails.Sender" 
@@ -37,7 +37,7 @@
                         <Field>
                             <FieldLabel>Receiver</FieldLabel>
                                 <Tooltip Text="@(receiverBookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
-                                    <Span>@TxDetails.Receiver </Span>
+                                    <Text CopyToClipboard="true">@TxDetails.Receiver </Text>
                                     <Span Margin="Margin.Is1.FromBottom">
                                                                     
                                       <BookmarkIcon Address="@TxDetails.Receiver" 

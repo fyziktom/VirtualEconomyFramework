@@ -7,10 +7,12 @@
         <Column Flex="Flex.AlignContent.Center">
             <Heading Size="HeadingSize.Is5">
                 <Tooltip Inline Text="@(bookmark.Item1 ? (MarkupString)"Bookmark Name:<br />" + bookmark.Item2.Name + (MarkupString)"<br /><br /> Note:<br />" + bookmark.Item2.Note : "This tab is not in bookmark. You can add it by click to the star icon.")" Placement="TooltipPlacement.Bottom">
-                    <Span Margin="Margin.Is3.FromEnd">
-                        Loaded Address: @(bookmark.Item1 ? (bookmark.Item2.Name + " - " + NeblioTransactionHelpers.ShortenAddress(bookmark.Item2.Address)) : this.Address)
-                    </Span>
+                    <Text Margin="Margin.Is3.FromEnd">
+                       Address: <Text CopyToClipboard="true">@(bookmark.Item1 ? (bookmark.Item2.Name + " - " + NeblioTransactionHelpers.ShortenAddress(bookmark.Item2.Address)) : this.Address)</Text>
+                    </Text>
                 </Tooltip>
+                @if (!string.IsNullOrEmpty(Address))
+                {                
                 <Tooltip Inline Text="@(bookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
                     <Span Margin="Margin.Is1.FromBottom">
                         <BookmarkIcon Address="@Address"
@@ -18,6 +20,12 @@
                                       BookmarkChanged="@StateHasChanged" />
                     </Span>
                 </Tooltip>
+                <Tooltip Inline Text="You can share your gallery with this link." Placement="TooltipPlacement.Bottom">
+                    <Span Margin="Margin.Is1.FromBottom">
+                            <CopyIcon TextToCopy="@($"https://test.basedataplace.com/gallery?addr={Address}")"/>  
+                    </Span>
+                </Tooltip>
+                }                
             </Heading>
         </Column>
     </Row>
