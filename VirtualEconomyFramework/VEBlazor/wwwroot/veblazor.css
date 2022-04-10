@@ -1,6 +1,6 @@
-﻿@import url("https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css");
-@import url("_content/Blazorise/blazorise.css");
-@import url("_content/Blazorise.Bootstrap/blazorise.bootstrap.css");
-@import url("https://unpkg.com/easymde/dist/easymde.min.css");
-@import url("VEBlazor.styles.css");
-@import url("css/app.css");
+﻿@import url("bootstrap.min.css");
+@import url("all.css");
+@import url("/_content/Blazorise/blazorise.css");
+@import url("/_content/Blazorise.Bootstrap/blazorise.bootstrap.css");
+@import url("easymde.min.css");
+

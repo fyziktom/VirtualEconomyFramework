@@ -63,6 +63,21 @@ public class AppData
     }
 
     public string AppName { get; set; } = "VEBlazorApp";
+    public string AppHomeWebsiteUrl { get; set; } = "https://veframework.com/";
+    public List<NFTTypes> AllowedNFTTypes { get; set; } = new List<NFTTypes>() 
+    {
+        NFTTypes.Image,
+        NFTTypes.Post,
+        NFTTypes.Message,
+        NFTTypes.Profile,
+        NFTTypes.Payment,
+        NFTTypes.Receipt,
+        NFTTypes.Order,
+        NFTTypes.Event,
+        NFTTypes.Ticket,
+        NFTTypes.Xray,
+        NFTTypes.XrayImage
+    };
     public NeblioAccount Account { get; set; } = new NeblioAccount();
     public bool IsAccountLoaded { get; set; } = false;
     public Dictionary<string, XrayExposureParameters> ExposureParametersTemplates { get; set; } = new Dictionary<string, XrayExposureParameters>();

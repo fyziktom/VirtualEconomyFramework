@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEOnePage", "VEOnePage\VEOn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDP-WASM", "BDP-WASM\BDP-WASM.csproj", "{1675020C-37D1-4920-A8B4-65D2996BA4DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEBlazor", "VEBlazor\VEBlazor.csproj", "{03751B14-871B-4FC3-AE19-CE96EA5D20D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor", "VEBlazor\VEBlazor.csproj", "{03751B14-871B-4FC3-AE19-CE96EA5D20D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

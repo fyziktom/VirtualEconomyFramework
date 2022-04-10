@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace VEBlazor.Models.Themes
 {
-    internal static class DefaultTheme
+    public static class DefaultTheme
     {
         public static Theme GetDefaultTheme()
         {

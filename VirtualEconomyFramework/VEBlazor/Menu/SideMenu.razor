@@ -1,10 +1,12 @@
-﻿<Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Light" Mode="BarMode.VerticalInline" CollapseMode="BarCollapseMode.Small">
+﻿@inject AppData AppData
+
+<Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Light" Mode="BarMode.VerticalInline" CollapseMode="BarCollapseMode.Small">
     <BarToggler />
     <BarBrand>
         <BarItem>
             <BarLink To="">
                 <BarIcon IconName="customIcon" />
-                BaseDataPlace
+                @AppData.AppName
             </BarLink>
         </BarItem>
     </BarBrand>
@@ -32,5 +34,5 @@
     </BarMenu>
 </Bar>
 @code {
-    RenderFragment customIcon =@<img src="/images/BDPLogo-big-bw-transparent.png" style="width:32px;" />;
+    RenderFragment customIcon =@<img src="/images/main-bw-big.png" style="width:32px;" />;
 }

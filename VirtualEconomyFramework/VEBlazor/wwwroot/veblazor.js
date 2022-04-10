@@ -1,6 +1,33 @@
-// This is a JavaScript module that is loaded on demand. It can export any number of
-// functions, and may import other JavaScript modules if required.
+class VEBlazorInterop {
+    constructor() {
+    }
 
-export function showPrompt(message) {
-  return prompt(message, 'Type anything here');
+    downloadText(data, filename) {
+        var text = data;
+        //text = text.replace(/\n/g, "\r\n"); // To retain the Line breaks.
+        var blob = new Blob([text], { type: "text/plain" });
+        var anchor = document.createElement("a");
+        anchor.download = filename;
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.target = "_blank";
+        anchor.style.display = "none"; // just to be safe!
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+    }
+
+    copyToClipboard(text) {
+        navigator.clipboard.writeText(text);
+    }
+
+    focusElement(element) {
+        try {
+            element.focus();
+        }
+        catch {
+
+        }
+    }
 }
+
+window.veblazor = new VEBlazorInterop()

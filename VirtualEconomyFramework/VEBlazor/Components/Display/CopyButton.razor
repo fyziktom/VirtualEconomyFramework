@@ -31,7 +31,7 @@ else
         if (string.IsNullOrEmpty(textToCopy))
             return;
 
-        await JSRuntime.InvokeVoidAsync("jsFunctions.copyToClipboard", textToCopy);
+        await JSRuntime.InvokeVoidAsync("veblazor.copyToClipboard", textToCopy);
         await copyCodeToClipboardButtonTextEfect();
     }
 
