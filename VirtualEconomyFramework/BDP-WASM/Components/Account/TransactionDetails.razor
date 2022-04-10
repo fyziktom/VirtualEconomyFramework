@@ -55,7 +55,7 @@
                         <Column>
                             <Field>
                                 <FieldLabel>Time</FieldLabel>
-                                <Badge Color="Color.Info"  Padding="Padding.Is2">@TxDetails.Time</Badge>
+                                <Badge Color="Color.Info" Padding="Padding.Is2">@TxDetails.Time</Badge>
                             </Field>
                         </Column>
                         <Column>
@@ -83,45 +83,54 @@
                                     </CardTitle>
                                 </CardHeader>
                                 <CardBody>
-                                    <ListGroup Flush>
-                                        @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vin != null )
-                                        {
+                                    @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vin != null )
+                                    {
+                                        <DataGrid TItem="VEDriversLite.NeblioAPI.Vin"
+                                              Data="TxDetails.Info.Vin"
+                                              Virtualize
+                                              ShowCaptions="false">
+                                                <DataGridColumn>
+                                                    <DisplayTemplate Context="inp">
+                                                        <Row>
+                                                            <Column>
+                                                                <Div>
+                                                                    From: <Badge Color="Color.Light" Padding="Padding.Is2">@getInputAddress(inp)</Badge>
+                                                                </Div>                                                                
+                                                            </Column>
+                                                            <Column Flex="Flex.JustifyContent.End">
+                                                                <Div>
+                                                                    @if ( inp.ValueSat != 10000 )
+                                                                    {
+                                                                        <FieldLabel>Neblio Input</FieldLabel>
+                                                                        <Row>
+                                                                            <Column>
+                                                                                <small>@((double)inp.ValueSat / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
+                                                                                <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/neblio-icon.png" /></Figure>
+                                                                            </Column>
+                                                                        </Row>
+                                                                    }
+                                                                    @if ( inp.Tokens.Count > 0 )
+                                                                    {
+                                                                        @foreach ( var tok in inp.Tokens )
+                                                                        {
+                                                                            var tokinfo = GetTokenInfo( tok.TokenId );
 
-
-                                            @foreach ( var inp in TxDetails.Info.Vin )
-                                            {
-                                                <ListGroupItem>
-                                                    <Field>
-                                                        <FieldHelp>From: @getInputAddress(inp)</FieldHelp>
-                                                        @if ( inp.ValueSat != 10000 )
-                                                        {
-                                                            <FieldLabel>Neblio Input</FieldLabel>
-                                                            <Row>
-                                                                <Column>
-                                                                    <small>@((double)inp.ValueSat / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
-                                                                    <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/neblio-icon.png" /></Figure>
-                                                                </Column>
-                                                            </Row>
-                                                        }
-                                                        @if ( inp.Tokens.Count > 0 )
-                                                        {
-                                                            @foreach ( var tok in inp.Tokens )
-                                                            {
-                                                                var tokinfo = GetTokenInfo( tok.TokenId );
-                                                                <FieldLabel>Token Input</FieldLabel>
-                                                                <Row Margin="Margin.Is2.FromTop">
-                                                                    <Column>
-                                                                        <small>@tok.Amount @tokinfo.TokenSymbol </small>
-                                                                        <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
-                                                                    </Column>
-                                                                </Row>
-                                                            }
-                                                        }
-                                                    </Field>
-                                                </ListGroupItem>
-                                            }
-                                        }
-                                    </ListGroup>
+                                                                            <FieldLabel>Token Input</FieldLabel>
+                                                                            <Row Margin="Margin.Is2.FromTop">
+                                                                                <Column>
+                                                                                    <small>@tok.Amount @tokinfo.TokenSymbol </small>
+                                                                                    <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
+                                                                                </Column>
+                                                                            </Row>
+                                                                        }
+                                                                    }
+                                                                </Div>
+                                                            </Column>
+                                                        </Row>
+                                                </DisplayTemplate>
+                                            </DataGridColumn>
+                                        </DataGrid>
+                                    }
                                 </CardBody>
                             </Card>
                         </Column>
@@ -134,46 +143,53 @@
                                     </CardTitle>
                                 </CardHeader>
                                 <CardBody>
-                                    <ListGroup Flush>
-                                        @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vout != null )
-                                        {
-                                            @foreach ( var output in TxDetails.Info.Vout )
-                                            {
-                                                @if ( output.Value != 10000 || ( output.Value == 10000 && output.Tokens.Count > 0 ) )
-                                                {
-                                                    <ListGroupItem>
-                                                        <Field>
-                                                            <FieldHelp>From: @getOutputAddress(output)</FieldHelp>
-                                                            @if ( output.Value != 10000 )
-                                                            {
-                                                                <FieldLabel>Neblio Input</FieldLabel>
-                                                                <Row>
-                                                                    <Column>
-                                                                        <small>@((double)output.Value / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
-                                                                        <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/neblio-icon.png" /></Figure>
-                                                                    </Column>
-                                                                </Row>
-                                                            }
-                                                            @if ( output.Tokens.Count > 0 )
-                                                            {
-                                                                @foreach ( var tok in output.Tokens )
-                                                                {
-                                                                    var tokinfo = GetTokenInfo( tok.TokenId );
-                                                                    <FieldLabel>Token Input</FieldLabel>
-                                                                    <Row Margin="Margin.Is2.FromTop">
-                                                                        <Column>
-                                                                            <small>@tok.Amount @tokinfo.TokenSymbol </small>
-                                                                            <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
-                                                                        </Column>
-                                                                    </Row>
-                                                                }
-                                                            }
-                                                        </Field>
-                                                    </ListGroupItem>
-                                                }
-                                            }
-                                        }
-                                    </ListGroup>
+                                    @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vout != null )
+                                    {
+                                        <DataGrid TItem="VEDriversLite.NeblioAPI.Vout"
+                                              Data="TxDetails.Info.Vout.Where(x=>x.Value != 10000 || ( x.Value == 10000 && x.Tokens.Count > 0))"
+                                              Virtualize
+                                              ShowCaptions="false">
+                                                <DataGridColumn>
+                                                    <DisplayTemplate Context="output">
+                                                        <Row>
+                                                            <Column>
+                                                                <Div>
+                                                                    From: <Badge Color="Color.Light" Padding="Padding.Is2">@getOutputAddress(output)</Badge>
+                                                                </Div>                                                                
+                                                            </Column>
+                                                            <Column Flex="Flex.JustifyContent.End">
+                                                                <Div>
+                                                                    @if ( output.Value != 10000 )
+                                                                    {
+                                                                        <FieldLabel>Neblio Input</FieldLabel>
+                                                                        <Row>
+                                                                            <Column>
+                                                                                <small>@((double)output.Value / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
+                                                                                <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/neblio-icon.png" /></Figure>
+                                                                            </Column>
+                                                                        </Row>
+                                                                    }
+                                                                    @if ( output.Tokens.Count > 0 )
+                                                                    {
+                                                                        @foreach ( var tok in output.Tokens )
+                                                                        {
+                                                                            var tokinfo = GetTokenInfo( tok.TokenId );
+                                                                            <FieldLabel>Token Input</FieldLabel>
+                                                                            <Row Margin="Margin.Is2.FromTop">
+                                                                                <Column>
+                                                                                    <small>@tok.Amount @tokinfo.TokenSymbol </small>
+                                                                                    <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
+                                                                                </Column>
+                                                                            </Row>
+                                                                        }
+                                                                    }
+                                                                </Div>
+                                                            </Column>
+                                                        </Row>
+                                                </DisplayTemplate>
+                                            </DataGridColumn>
+                                        </DataGrid>
+                                    }
                                 </CardBody>
                             </Card>
                         </Column>
