@@ -14,34 +14,32 @@
         </BarStart>
         <BarEnd>
             <BarItem>
-                <Dropdown RightAligned>
-                    <DropdownToggle Display="Blazorise.Display.InlineBlock.None.OnMobile">
+                <BarDropdown RightAligned>
+                    <BarDropdownToggle Display="Blazorise.Display.InlineBlock.None.OnMobile">
                         <Span TextColor="TextColor.Dark">Account</Span>
-                    </DropdownToggle>
-                    <DropdownMenu>
-                        <DropdownDivider />
-                            @if (AppData.IsAccountLoaded)
-                            {
-                                <DropdownItem Clicked="@Lock">
-                                    <Icon Name="IconName.Lock" TextColor="TextColor.Danger" />
-                                    Logout
-                                </DropdownItem>                                
-                            }
-                            else 
-                            {
-                                <DropdownItem Clicked="@Unlock">                                
-                                    <Icon Name="IconName.Unlock" TextColor="TextColor.Success" />
-                                    Login
-                                </DropdownItem>
-                            }
-                            <DropdownItem>  
-                                <BarLink To="https://basedataplace.com/" Target="Target.Blank">
-                                    <Icon Name="IconName.QuestionCircle" TextColor="TextColor.Primary" />
-                                    About
-                                </BarLink>
-                            </DropdownItem>
-                    </DropdownMenu>
-                </Dropdown>
+                    </BarDropdownToggle>
+                    <BarDropdownMenu>
+                        @if ( AppData.IsAccountLoaded )
+                        {
+                            <BarDropdownItem Clicked="@Lock">
+                                <Icon Name="IconName.Lock" TextColor="TextColor.Danger" />
+                                Logout
+                            </BarDropdownItem>
+                        }
+                        else
+                        {
+                            <BarDropdownItem Clicked="@Unlock">
+                                <Icon Name="IconName.Unlock" TextColor="TextColor.Success" />
+                                Login
+                            </BarDropdownItem>
+                        }
+                        <BarDropdownDivider />
+                        <BarDropdownItem To="https://basedataplace.com/" Target="Target.Blank">
+                            <Icon Name="IconName.QuestionCircle" TextColor="TextColor.Primary" />
+                            About
+                        </BarDropdownItem>
+                    </BarDropdownMenu>
+                </BarDropdown>
             </BarItem>
         </BarEnd>
     </BarMenu>
@@ -60,11 +58,11 @@
     }
     async Task Lock()
     {
-        await AppData.LockAccount();     
+        await AppData.LockAccount();
     }
     async Task AccountUnlockedHandler( string e )
     {
         await NotificationService.Success( "Account Unlocked :)", "Unlocked" );
         StateHasChanged();
-    }     
+    }
 }
