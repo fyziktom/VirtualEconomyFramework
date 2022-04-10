@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Imaging.Xray
+@inherits AccountRelatedComponentBase 
 
 <Container Border="Border.Is2.Primary" Fluid>
     @if (NFT != null)
@@ -61,38 +62,29 @@
     </ModalContent>
 </Modal>
 
-<Modal @ref="EditXrayParamsModal">
-    <ModalContent Centered Size="ModalSize.Large">
-        <ModalHeader>
-            <ModalTitle>Edit Xray Parameters Properties</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <XrayExposureParamsForm @bind-Voltage="@((NFT as XrayImageNFT).XrayParams.Voltage)"
+@if (NFT != null && NFT.Type == NFTTypes.XrayImage)
+{
+    <Modal @ref="EditXrayParamsModal">
+        <ModalContent Centered Size="ModalSize.Large">
+            <ModalHeader>
+                <ModalTitle>Edit Xray Parameters Properties</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <XrayExposureParamsForm @bind-Voltage="@((NFT as XrayImageNFT).XrayParams.Voltage)"
                                     @bind-Current="@((NFT as XrayImageNFT).XrayParams.Current)"
                                     @bind-Time="@((NFT as XrayImageNFT).XrayParams.ExposureTime)" />
-        </ModalBody>
-    </ModalContent>
-</Modal>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+}
 
 <ShareNFT @ref="ShareNFTComponent" />
                                      
 @code {
     [Inject]
-    public IMessageService MessageService { get; set; }
+    public IMessageService? MessageService { get; set; }
 
-    [Parameter]
-    public string Address { get; set; } = string.Empty;
-    [Parameter]
-    public EventCallback<string> AddressChanged { get; set; }
-    [Parameter]
-    public bool IsSubAccount { get; set; } = false;
-    [Parameter]
-    public EventCallback<bool> IsSubAccountChanged { get; set; }
-    [Parameter]
-    public bool IsOwnNFT { get; set; } = false;
-    [Parameter]
-    public EventCallback<bool> IsOwnNFTChanged { get; set; }
 
     private INFT _NFT = new XrayImageNFT("");
     [Parameter]
@@ -121,12 +113,12 @@
     [Parameter]
     public EventCallback<NFTSentResultDto> NFTSent { get; set; }
 
-    private Modal EditPropertiesModal;
-    private Modal EditXrayParamsModal;
-    private ShareNFT ShareNFTComponent;
-    private DestroyNFT DestroyNFTModalComponent;
-    private SendNFT SendNFTModalComponent;
-    private SaveNFT SaveNFTModalComponent;
+    private Modal? EditPropertiesModal;
+    private Modal? EditXrayParamsModal;
+    private ShareNFT? ShareNFTComponent;
+    private DestroyNFT? DestroyNFTModalComponent;
+    private SendNFT? SendNFTModalComponent;
+    private SaveNFT? SaveNFTModalComponent;
 
     async Task StoreOriginal()
     {
@@ -143,19 +135,19 @@
                 await ShareNFT( e.Args );
                 break;            
             case MintingToolbarActionType.Save:
-                await SaveNFT( e.Args );
+                SaveNFT( e.Args );
                 break;
             case MintingToolbarActionType.Send:
-                await SendNFT( e.Args );
+                SendNFT( e.Args );
                 break;
             case MintingToolbarActionType.SendCopy:
-                await SendCopyNFT( e.Args );
+                SendCopyNFT( e.Args );
                 break;    
             case MintingToolbarActionType.ClearAll:
                 await ResetToDefaultNFT( e.Args );
                 break;
             case MintingToolbarActionType.Delete:
-                await DeleteNFT( e.Args );
+                DeleteNFT( e.Args );
                 break;
             case MintingToolbarActionType.EditProps:
                 await OpenEditPropertiesModal( e.Args );
@@ -168,31 +160,31 @@
 
     private async Task ShareNFT(string[] e)
     {
-        if ( NFT == null )
+        if ( NFT == null  || ShareNFTComponent == null)
             return;
-        ShareNFTComponent.ShowShareNFTModal(NFT.Utxo, NFT.UtxoIndex);
+        await ShareNFTComponent.ShowShareNFTModal(NFT.Utxo, NFT.UtxoIndex);
     }
-    private async Task SaveNFT(string[] e)
+    private void SaveNFT(string[] e)
     {
         if ( NFT == null )
             return;
-        SaveNFTModalComponent.ShowSaveNFTModal(Address);
+        SaveNFTModalComponent?.ShowSaveNFTModal(Address);
     }
-    private async Task SendNFT(string[] e)
+    private void SendNFT(string[] e)
     {
         if ( NFT == null )
             return;
-        SendNFTModalComponent.ShowSendNFTModal();
+        SendNFTModalComponent?.ShowSendNFTModal();
     }
-    private async Task SendCopyNFT(string[] e)
+    private void SendCopyNFT(string[] e)
     {
         if ( NFT == null )
             return;
-        SendNFTModalComponent.ShowSendNFTModal(sendCopy:true);
+        SendNFTModalComponent?.ShowSendNFTModal(sendCopy:true);
     }
     private async Task ResetToDefaultNFT(string[] e)
     {
-        if (OriginalNFT == null)
+        if (OriginalNFT == null || MessageService == null)
             return;
         if (await MessageService.Confirm("Are you sure you want reset the NFT to original?", "Reset") == true)
         {
@@ -201,32 +193,32 @@
         }  
     }    
 
-    private async Task DeleteNFT(string[] e)
+    private void DeleteNFT(string[] e)
     {        
         if ( NFT == null )
             return;
-        DestroyNFTModalComponent.ShowDestroyNFTModal();
+        DestroyNFTModalComponent?.ShowDestroyNFTModal();
     }
     public async Task NFTSendHandler( NFTSentResultDto e )
     {
-        SaveNFTModalComponent.HideSaveNFTModal();
-        SendNFTModalComponent.HideSendNFTModal();
+        SaveNFTModalComponent?.HideSaveNFTModal();
+        SendNFTModalComponent?.HideSendNFTModal();
         await NFTSent.InvokeAsync( e );
     }
     public async Task NFTDestroyedHandler( NFTSentResultDto e )
     {
-        DestroyNFTModalComponent.HideDestroyNFTModal();
+        DestroyNFTModalComponent?.HideDestroyNFTModal();
         await NFTSent.InvokeAsync( e );
     }
     public async Task OpenEditPropertiesModal(string[] e)
     {
-        if ( NFT == null )
+        if (NFT == null || EditPropertiesModal == null)
             return;        
         await EditPropertiesModal.Show();
     }
     public async Task OpenEditXrayParamsModal(string[] e)
     {
-        if ( NFT == null )
+        if ( NFT == null || EditXrayParamsModal == null)
             return;
         await EditXrayParamsModal.Show();
     }

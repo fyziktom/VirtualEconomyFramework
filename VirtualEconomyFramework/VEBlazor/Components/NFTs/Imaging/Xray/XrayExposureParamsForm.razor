@@ -1,0 +1,62 @@
+﻿<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>Information about the exposure / capture of the data</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Field>
+            <FieldLabel>Please enter the Anode Voltage in kilo Volts.</FieldLabel>
+            <Slider TValue="double" Min="1" Max="450" Step="1" Value="@_voltage" ValueChanged="@voltageChanged" /> @_voltage kV
+            <FieldHelp>This is the Voltage in the Xray tube.</FieldHelp>
+        </Field>
+        <Field>
+            @*<Slider TValue="double" Min="0.01" Max="100" Step="0.01" Value="@_current" ValueChanged="@currentChanged" /> @_current mA*@
+            <PreciseSlider Value="@_current"
+                           ValueChanged="@currentChanged"
+                           DisplayMain="true"
+                           DisplayMili="true"
+                           DisplayMicro="true"
+                           Name="Anode Current"
+                           Unit="A" />
+            <FieldHelp>This is the Current in the Xray tube.</FieldHelp>
+        </Field>
+        <Field>
+            <FieldLabel>Please enter the Exposure time in miliseconds.</FieldLabel>
+            <Slider TValue="double" Min="1" Max="5000" Step="10" Value="@_time" ValueChanged="@timeChanged" /> @_time ms
+            <FieldHelp>Time of the exposure of one image</FieldHelp>
+        </Field>
+    </CardBody>
+</Card>
+
+@code {
+    double _voltage = 0.0;
+    [Parameter]
+    public double Voltage { get => _voltage; set => _voltage = value; }
+    [Parameter]
+    public EventCallback<double> VoltageChanged { get; set; }
+
+    double _current = 0.0;
+    [Parameter]
+    public double Current { get => _current; set => _current = value / 1000; }
+    [Parameter]
+    public EventCallback<double> CurrentChanged { get; set; }
+
+    double _time = 0.0;
+    [Parameter]
+    public double Time { get => _time; set => _time = value; }
+    [Parameter]
+    public EventCallback<double> TimeChanged { get; set; }
+
+    async Task voltageChanged( double e )
+    {
+        await VoltageChanged.InvokeAsync( e );
+    }
+    async Task currentChanged( double e )
+    {
+        await CurrentChanged.InvokeAsync( e * 1000 ); // we are storing it in mA
+    }
+    async Task timeChanged( double e )
+    {
+        await TimeChanged.InvokeAsync( e );
+    }
+
+}

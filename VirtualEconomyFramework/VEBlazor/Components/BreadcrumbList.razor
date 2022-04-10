@@ -1,0 +1,20 @@
+﻿@if (Items != null)
+{
+    <Breadcrumb Background="Background.Transparent">
+        @foreach (var item in Items ?? Enumerable.Empty<string>())
+        {
+            <BreadcrumbItem Active="@(Items[Items.Length-1] == item)">
+                <BreadcrumbLink To="#">
+                    @if (Items[0] == item)
+                    {
+                        <Icon Name="IconName.Home" IconSize="IconSize.Small" Margin="Margin.Is2.FromEnd" />
+                    }
+                    @item
+                </BreadcrumbLink>
+            </BreadcrumbItem>
+        }
+    </Breadcrumb>
+}
+@code{
+    [Parameter] public string[]? Items { get; set; }
+}
