@@ -87,7 +87,7 @@
                                         </Column> 
                                         <Column> 
                                             <Button Color="Color.Danger" Clicked=@DestroyNFT Block> 
-                                                <Icon Name="IconName.MinusCircle" /> 
+                                                <Icon Name="IconName.Delete" /> 
                                                 Destroy 
                                             </Button> 
                                         </Column> 
@@ -149,8 +149,8 @@
 
 @code {
     private Modal NFTDetailsModal;
-    private BDP_WASM.Components.Account.DestroyNFT DestroyNFTModalComponent;
-    private BDP_WASM.Components.Account.SendNFT SendNFTModalComponent;
+    private DestroyNFT DestroyNFTModalComponent;
+    private SendNFT SendNFTModalComponent;
 
     private Panzoom _panzoom;    
 

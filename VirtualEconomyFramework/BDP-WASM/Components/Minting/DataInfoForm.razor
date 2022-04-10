@@ -15,6 +15,11 @@
                 </Field>
             </Validation>
             <Field>
+                <FieldLabel>Please enter the tags.</FieldLabel>
+                <TextEdit Placeholder="Enter the tags" @bind-Text="Tags" @onchange="tagsChanged" />
+                <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
+            </Field>
+            <Field>
                 <FieldLabel>Please enter the short description.</FieldLabel>
                 <TextEdit Placeholder="Enter short description" @bind-Text="Description" @onchange="descChanged" />
                 <FieldHelp>If you need to write longer description please use the text field.</FieldHelp>
@@ -23,11 +28,6 @@
                 <FieldLabel>Here you can enter the longer description.</FieldLabel>
                 <Markdown Value="@_text" ValueChanged="textChanged" />
                 <FieldHelp>You can use Markdown formating in this editor.</FieldHelp>
-            </Field>
-            <Field>
-                <FieldLabel>Please enter the tags.</FieldLabel>
-                <TextEdit Placeholder="Enter the tags" @bind-Text="Tags" @onchange="tagsChanged" />
-                <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
             </Field>
         </Validations>
     </CardBody>

@@ -5,40 +5,35 @@
 
 @if (NFT != null && !string.IsNullOrEmpty(NFT.Utxo))
 {
-<Modal @ref="NFTSendModal">
+<Modal @ref="NFTSaveModal">
     <ModalContent Centered>
         <ModalHeader>
-            <ModalTitle>Send @(SendCopy ? "Copy of" : "") the NFT</ModalTitle>
+            <ModalTitle>Save the NFT</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
             <Container Fluid>
             <Row>
                 <Column Flex="Flex.AlignItems.Center">
-                    <Span>Do you really want to Send <b>@(SendCopy ? "Copy of" : "")</b> this NFT? You cannot take this action back.</Span>
-                </Column>
-            </Row>
-            <Row Width="Width.Is100"> 
-                <Column>
-                   <NeblioAddressInput @bind-Receiver="@Receiver" />
+                    <Span>Do you really want to Save this NFT? You cannot take this action back.</Span>
                 </Column>
             </Row>
             <Row Flex="Flex.JustifyContent.Center"> 
                 <Column>
-                    <Button Color="Color.Primary" Clicked=@NFTAction>Yes, I understand. Send @(SendCopy ? "Copy of" : "") the NFT now.</Button>
+                    <Button Color="Color.Primary" Clicked=@NFTAction>Yes, I understand. Save the NFT now.</Button>
                 </Column>
             </Row>
-            @if (SendFinished)
+            @if (SaveFinished)
                 {
                     <Row Flex="Flex.JustifyContent.Center">
                         <Column>
-                            @if (SendResult.Item1)
+                            @if (SaveResult.Item1)
                             {
-                                <Alert Color="Color.Success">@SendResult.Item2</Alert>
+                                <Alert Color="Color.Success">@SaveResult.Item2</Alert>
                             }
                             else
                             {
-                                <Alert Color="Color.Danger">@SendResult.Item2</Alert>
+                                <Alert Color="Color.Danger">@SaveResult.Item2</Alert>
                             }
                         </Column>
                     </Row>
@@ -50,7 +45,7 @@
 }
 @code {
 
-    private Modal NFTSendModal;
+    private Modal NFTSaveModal;
 
     [Parameter]
     public string Receiver { get; set; } = string.Empty;
@@ -83,58 +78,43 @@
     [Parameter]
     public EventCallback<NFTSentResultDto> NFTSent { get; set; }
 
-    bool Sending = false;
-    bool SendFinished = false;
-    bool SendCopy = false;
-    (bool,string) SendResult = (false,string.Empty);
+    bool Saveing = false;
+    bool SaveFinished = false;
+    (bool,string) SaveResult = (false,string.Empty);
 
-    public void ShowSendNFTModal(string receiver = "", bool sendCopy = false)
+    public void ShowSaveNFTModal(string receiver = "")
     {
         if (NFT == null) return;
         if (!string.IsNullOrEmpty(receiver))
             Receiver = receiver;
-
-        SendCopy = sendCopy;
-        StateHasChanged();
-        NFTSendModal.Show();
+        NFTSaveModal.Show();
     }
-    public void HideSendNFTModal()
+    public void HideSaveNFTModal()
     {
         if (NFT == null) return;
-        NFTSendModal.Hide();
+        NFTSaveModal.Hide();
     }
 
     async Task NFTAction()
     {
         if (NFT == null) return;
-        Sending = true;
+        Saveing = true;
         StateHasChanged();
 
-        if (!SendCopy)
-        {
-            if (!IsSubAccount)
-                SendResult = await AppData.Account.SendNFT(Receiver, NFT);
-            else
-                SendResult = await AppData.Account.SendNFTFromSubAccount(Address, Receiver, NFT);
-        }
+        if (!IsSubAccount)
+            SaveResult = await AppData.Account.SendNFT(Receiver, NFT);
         else
-        {
-            NFT.Utxo = "";
-            NFT.UtxoIndex = 0;
-            if (!IsSubAccount)
-                SendResult = await AppData.Account.MintNFT(NFT, Receiver);
-            else
-                SendResult = await AppData.Account.MintNFTOnSubAccount(Address, NFT, Receiver);
-        }
-        Console.WriteLine($"Send of the NFT result: {SendResult.Item1}, with message: {SendResult.Item2}");
+            SaveResult = await AppData.Account.SendNFTFromSubAccount(Address, Receiver, NFT);
 
-        SendFinished = false;
+        Console.WriteLine($"Save of the NFT result: {SaveResult.Item1}, with message: {SaveResult.Item2}");
 
-        Sending = false;
+        SaveFinished = false;
+
+        Saveing = false;
         StateHasChanged();
 
         //close automatically after 2 seconds
         await Task.Delay(2000);
-        await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = SendResult.Item1, message = SendResult.Item2, NFT = NFT });       
+        await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = SaveResult.Item1, message = SaveResult.Item2, NFT = NFT });       
     }
 }

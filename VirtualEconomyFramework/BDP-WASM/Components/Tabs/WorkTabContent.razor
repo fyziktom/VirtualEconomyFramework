@@ -1,21 +1,28 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 
-<h3>WorkTabContent</h3>
-
 <Container Fluid>
-    <CardGroup>
-        @foreach (var NFT in NFTs) 
-        {
-                <BDP_WASM.Components.Display.XrayImageCard NFT=@NFT 
-                                Address="@Address" 
-                                IsSubAccount="@IsSubAccount"
-                                IsOwnNFT="@IsOwnNFT" 
-                                Utxo="@NFT.Utxo"
-                                UtxoIndex="@NFT.UtxoIndex" 
-                                OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
-        }
-    </CardGroup>
+    <Div>
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center">
+                <Heading Size="HeadingSize.Is4">WorkTab - @WorkTabName</Heading>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                  <CardGroup>
+                    @foreach (var NFT in NFTs) 
+                    {
+                            <XrayImageNFTEditor NFT="@NFT"
+                                            Address="@Address" 
+                                            IsSubAccount="@IsSubAccount"
+                                            IsOwnNFT="@IsOwnNFT" 
+                                            OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
+                    }
+                </CardGroup>              
+            </Column>
+        </Row>
+    </Div>
 </Container>
 
 @code {
@@ -35,4 +42,6 @@
     public List<INFT> NFTs { get; set; } = new List<INFT>();
     [Parameter]
     public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }    
+    [Parameter]
+    public string WorkTabName { get; set; } = "WorkTab";
 }

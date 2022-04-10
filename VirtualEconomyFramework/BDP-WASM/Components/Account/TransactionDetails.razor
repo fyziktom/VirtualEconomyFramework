@@ -9,6 +9,7 @@
 <Modal @ref="TransactionDetailsModal">
     <ModalHeader>
         <ModalTitle>Transaction Details</ModalTitle>
+        <CloseButton />
     </ModalHeader>
     <ModalBody>
         <Card>
@@ -159,6 +160,7 @@
 
             </CardBody>
         </Card>
+        <Button Color="Color.Secondary" Clicked="@HideDetails" Block>Hide</Button>
     </ModalBody>
 </Modal>
 }
@@ -207,8 +209,14 @@
         foreach (var vout in txdetails.Info.Vout)
             if (vout.Tokens?.FirstOrDefault(t => t.Amount == 1) != null)
                 return true;
-            
+
         return false;
+    }
+
+    public async Task HideDetails()
+    {
+        await TransactionDetailsModal.Hide();
+        NFTDetailsModal.HideNFTDetails();
     }
 
     public async Task ShowNFTDetails()

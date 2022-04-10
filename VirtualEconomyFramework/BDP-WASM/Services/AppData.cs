@@ -39,7 +39,14 @@ public enum MintingToolbarActionType
     Mint,
     Cancel,
     ClearAll,
-    ClearActualForm
+    ClearActualForm,
+    Share,
+    Send,
+    SendCopy,
+    Delete,
+    AddMarker,
+    EditProps,
+    EditXrayParams
 }
 public class MintingToolbarActionDto
 {

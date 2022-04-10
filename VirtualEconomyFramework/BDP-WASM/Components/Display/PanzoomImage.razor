@@ -1,5 +1,5 @@
 ﻿
-<Container Fluid>
+<Container Fluid Height="Height.Is100">
     <Panzoom @ref="_panzoom" WheelMode="@(WheelMode.Custom)" OnWheel="@OnWheel">
         <div @ref="@context.ElementReference" class="panzoom" style="width: @(InitWidth)px; height: @(InitHeight)px; margin: 0 auto;">
             <img src="@Source" Alt="No image found" Style="width: 100%; height: 100%;" />
