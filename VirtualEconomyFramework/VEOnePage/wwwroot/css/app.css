@@ -972,20 +972,7 @@ span.title-modal, .article-title {
     cursor: default;
 }
 
-.article-modal .content-modal {
-    width: 84%;
-    height:90vh;
-    margin: auto;
-    border: 1px solid #c1bfbf;
-    z-index: 99999;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 0 !important;
-    border-radius: 0.5rem;
-}
+
 .article-modal .img-wrap {
     margin-bottom: 2vh;
     position: relative;
@@ -1153,12 +1140,12 @@ span.title-modal, .article-title {
     }
 
     .long-desc {
-        line-height: 1.2rem;
-        font-size: .8rem;
+        line-height: 1.6rem;
+        font-size: 1rem;
     }
 
     span.comp-link {
-        font-size: .6rem;
+        font-size: .8rem;
     }
 }
 @media(max-width: 800px) {
@@ -1309,11 +1296,12 @@ span.title-modal, .article-title {
         padding-bottom: 7vh;
     }
      .profile-modal .content-modal {
-            top: 3vh;
-            max-height: 90vh;
+            top: 1vh;
+            max-height: 85vh;
             transform: none;
             left: 2%;
             overflow: hidden;
+            bottom: 14vh;
         }
     .profile-meta br {
         content: "A" !important;
@@ -1547,8 +1535,8 @@ span.title-modal, .article-title {
     }
 
     .article-modal .long-desc {
-        line-height: 1rem;
-        font-size: .8rem;
+        line-height: 1.6rem;
+        font-size: 1rem;
     }
     .article-modal .text {
         height: 50%;
@@ -1583,10 +1571,16 @@ span.title-modal, .article-title {
         .profile-details .position {
             font-size: 0.8rem;
         }
-
+    .heading-title, .title-card {
+        text-align: center;
+    }
+    .profile-img {
+        height: auto;
+        min-height: 12rem;
+    }
     .profile-img img {
-        height: 100%;
-        width: auto;
+        height: auto;
+        width: 100%;
         margin-left: 50%;
         transform: translate(-50%);
     }
@@ -1603,6 +1597,74 @@ span.title-modal, .article-title {
         font-size: 0.8rem;
         line-height: 1.1rem;
     }
+    .article-modal .content-modal {
+        width: 84%;
+        height: 85vh;
+        margin: auto;
+        border: 1px solid #c1bfbf;
+        z-index: 99999;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%);
+        background: white;
+        padding: 0 !important;
+        border-radius: 0.5rem;
+        top: 1vh;
+        bottom: 14vh;
+    }
+
+    .content-modal {
+        overflow-y: scroll;
+    }
+
+    .article-meta, .article-modal .text {
+        height: auto !important;
+        max-height: none;
+    }
+
+    .content-modal {
+        width: 94% !important;
+    }
+
+    .article-modal .spans {
+        position: relative;
+        padding-top: 2rem;
+        top: 0%;
+    }
+
+    .article-modal .img-wrap {
+        height: auto;
+    }
+
+    .article-modal .long-desc {
+        height: auto;
+        max-height: none;
+        overflow-y: visible !important;
+        padding-bottom: 3rem;
+    }
+
+    .long-desc h1 {
+        font-size: 1.7rem;
+    }
+
+    .long-desc h2 {
+        font-size: 1.6rem;
+    }
+
+    .long-desc h3 {
+        font-size: 1.5rem;
+    }
+    .full-banner {
+        height: 10vh;
+    }
+    .navbar-mobile .container {
+        background: #222222;
+        padding: 1rem 0;
+    }
+    .navbar-mobile .search {
+        bottom: 0.5rem !important;
+    }
+
 }
 
 @media(min-width:561px) {
