@@ -7,197 +7,201 @@
 @if ( TxDetails != null )
 {
     <Modal @ref="TransactionDetailsModal">
-        <ModalHeader>
-            <ModalTitle>Transaction Details</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <Card>
-                <CardHeader>
-                    <Span>Transaction ID: <Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></Span>
-                </CardHeader>
-                <CardBody>
-                    <Row>
-                        <Column>
-                            <Field>
-                                <FieldLabel>Sender</FieldLabel>
-                                <Tooltip Text="@(senderBookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
-                                    <Text CopyToClipboard="true">@TxDetails.Sender </Text>
-                                    <Span Margin="Margin.Is1.FromBottom">
+        <ModalContent Size="ModalSize.Fullscreen">
+            <ModalHeader>
+                <ModalTitle>Transaction Details</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Card>
+                    <CardHeader>
+                        <Span>Transaction ID: <Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></Span>
+                    </CardHeader>
+                    <CardBody>
+                        <Row>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Sender</FieldLabel>
+                                    <Tooltip Text="@(senderBookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
+                                        <Text CopyToClipboard="true">@TxDetails.Sender </Text>
+                                        <Span Margin="Margin.Is1.FromBottom">
 
-                                        <BookmarkIcon Address="@TxDetails.Sender"
-                                                  NewBookmark="@senderBookmark.Item2"
-                                                  IsInBookmarks="senderBookmark.Item1"
-                                                  IsEditing="senderBookmark.Item1"
-                                                  BookmarkChanged="@StateHasChanged" />
-                                    </Span>
-                                </Tooltip>
-                            </Field>
-                        </Column>
-                        <Column>
-                            <Field>
-                                <FieldLabel>Receiver</FieldLabel>
-                                <Tooltip Text="@(receiverBookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
-                                    <Text CopyToClipboard="true">@TxDetails.Receiver </Text>
-                                    <Span Margin="Margin.Is1.FromBottom">
+                                            <BookmarkIcon Address="@TxDetails.Sender"
+                                                      NewBookmark="@senderBookmark.Item2"
+                                                      IsInBookmarks="senderBookmark.Item1"
+                                                      IsEditing="senderBookmark.Item1"
+                                                      BookmarkChanged="@StateHasChanged" />
+                                        </Span>
+                                    </Tooltip>
+                                </Field>
+                            </Column>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Receiver</FieldLabel>
+                                    <Tooltip Text="@(receiverBookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
+                                        <Text CopyToClipboard="true">@TxDetails.Receiver </Text>
+                                        <Span Margin="Margin.Is1.FromBottom">
 
-                                        <BookmarkIcon Address="@TxDetails.Receiver"
-                                                  NewBookmark="@receiverBookmark.Item2"
-                                                  IsInBookmarks="receiverBookmark.Item1"
-                                                  IsEditing="receiverBookmark.Item1"
-                                                  BookmarkChanged="@StateHasChanged" />
-                                    </Span>
-                                </Tooltip>
-                            </Field>
-                        </Column>
-                    </Row>
-                    <Row>
-                        <Column>
+                                            <BookmarkIcon Address="@TxDetails.Receiver"
+                                                      NewBookmark="@receiverBookmark.Item2"
+                                                      IsInBookmarks="receiverBookmark.Item1"
+                                                      IsEditing="receiverBookmark.Item1"
+                                                      BookmarkChanged="@StateHasChanged" />
+                                        </Span>
+                                    </Tooltip>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Time</FieldLabel>
+                                    <Badge Color="Color.Info" Padding="Padding.Is2">@TxDetails.Time</Badge>
+                                </Field>
+                            </Column>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Confirmations:</FieldLabel>
+                                    <Badge Color="Color.Info" Padding="Padding.Is2">@TxDetails.Info.Confirmations</Badge>
+                                </Field>
+                            </Column>
+                        </Row>
+                        @if ( IsNFTTransaction( TxDetails ) )
+                        {
                             <Field>
-                                <FieldLabel>Time</FieldLabel>
-                                <Badge Color="Color.Info" Padding="Padding.Is2">@TxDetails.Time</Badge>
+                                <FieldLabel>This Transaction cointains the data</FieldLabel>
+                                <Button Color="Color.Light" Clicked="@ShowNFTDetails" Block> Show Data</Button>
                             </Field>
-                        </Column>
-                        <Column>
-                            <Field>
-                                <FieldLabel>Confirmations:</FieldLabel>
-                                <Badge Color="Color.Info" Padding="Padding.Is2">@TxDetails.Info.Confirmations</Badge>
-                            </Field>
-                        </Column>
-                    </Row>
-                    @if ( IsNFTTransaction( TxDetails ) )
-                    {
-                        <Field>
-                            <FieldLabel>This Transaction cointains the data</FieldLabel>
-                            <Button Color="Color.Light" Clicked="@ShowNFTDetails" Block> Show Data</Button>
-                        </Field>
-                    }
+                        }
 
-                    <Row>
-                        <Column>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>
-                                        <Icon Name="IconName.ArrowDown" TextColor="TextColor.Danger" />
-                                        Inputs
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardBody>
-                                    @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vin != null )
-                                    {
-                                        <DataGrid TItem="VEDriversLite.NeblioAPI.Vin"
-                                              Data="TxDetails.Info.Vin"
-                                              Virtualize
-                                              ShowCaptions="false">
-                                                <DataGridColumn>
-                                                    <DisplayTemplate Context="inp">
-                                                        <Row>
-                                                            <Column>
-                                                                <Div>
-                                                                    From: <Badge Color="Color.Light" Padding="Padding.Is2">@getInputAddress(inp)</Badge>
-                                                                </Div>                                                                
-                                                            </Column>
-                                                            <Column Flex="Flex.JustifyContent.End">
-                                                                <Div>
-                                                                    @if ( inp?.ValueSat != 10000 )
-                                                                    {
-                                                                        <FieldLabel>Neblio Input</FieldLabel>
-                                                                        <Row>
-                                                                            <Column>
-                                                                                <small>@((double)inp.ValueSat / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
-                                                                                <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/neblio-icon.png" /></Figure>
-                                                                            </Column>
-                                                                        </Row>
-                                                                    }
-                                                                    @if ( inp?.Tokens.Count > 0 )
-                                                                    {
-                                                                        @foreach ( var tok in inp.Tokens )
+                        <Row>
+                            <Column>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>
+                                            <Icon Name="IconName.ArrowDown" TextColor="TextColor.Danger" />
+                                            Inputs
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardBody>
+                                        @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vin != null )
+                                        {
+                                            <DataGrid TItem="VEDriversLite.NeblioAPI.Vin"
+                                                  Data="TxDetails.Info.Vin"
+                                                  Virtualize
+                                                  ShowCaptions="false">
+                                                    <DataGridColumn>
+                                                        <DisplayTemplate Context="inp">
+                                                            <Row>
+                                                                <Column>
+                                                                    <Div>
+                                                                        From: <Badge Color="Color.Light" Padding="Padding.Is2">@getInputAddress(inp)</Badge>
+                                                                    </Div>                                                                
+                                                                </Column>
+                                                                <Column Flex="Flex.JustifyContent.End">
+                                                                    <Div>
+                                                                        @if ( inp?.ValueSat != 10000 )
                                                                         {
-                                                                            var tokinfo = GetTokenInfo( tok.TokenId );
-
-                                                                            <FieldLabel>Token Input</FieldLabel>
-                                                                            <Row Margin="Margin.Is2.FromTop">
+                                                                            <FieldLabel>Neblio Input</FieldLabel>
+                                                                            <Row>
                                                                                 <Column>
-                                                                                    <small>@tok.Amount @tokinfo.TokenSymbol </small>
-                                                                                    <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
+                                                                                    <small>@((double)inp.ValueSat / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
+                                                                                    <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/neblio-icon.png" /></Figure>
                                                                                 </Column>
                                                                             </Row>
                                                                         }
-                                                                    }
-                                                                </Div>
-                                                            </Column>
-                                                        </Row>
-                                                </DisplayTemplate>
-                                            </DataGridColumn>
-                                        </DataGrid>
-                                    }
-                                </CardBody>
-                            </Card>
-                        </Column>
-                        <Column>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>
-                                        <Icon Name="IconName.ArrowUp" TextColor="TextColor.Success" />
-                                        Outputs
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardBody>
-                                    @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vout != null )
-                                    {
-                                        <DataGrid TItem="VEDriversLite.NeblioAPI.Vout"
-                                              Data="TxDetails.Info.Vout.Where(x=>x.Value != 10000 || ( x.Value == 10000 && x.Tokens.Count > 0))"
-                                              Virtualize
-                                              ShowCaptions="false">
-                                                <DataGridColumn>
-                                                    <DisplayTemplate Context="output">
-                                                        <Row>
-                                                            <Column>
-                                                                <Div>
-                                                                    From: <Badge Color="Color.Light" Padding="Padding.Is2">@getOutputAddress(output)</Badge>
-                                                                </Div>                                                                
-                                                            </Column>
-                                                            <Column Flex="Flex.JustifyContent.End">
-                                                                <Div>
-                                                                    @if (output?.Value != 10000 )
-                                                                    {
-                                                                        <FieldLabel>Neblio Input</FieldLabel>
-                                                                        <Row>
-                                                                            <Column>
-                                                                                <small>@((double)output.Value / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
-                                                                                <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/neblio-icon.png" /></Figure>
-                                                                            </Column>
-                                                                        </Row>
-                                                                    }
-                                                                    @if (output?.Tokens?.Count > 0 )
-                                                                    {
-                                                                        @foreach ( var tok in output.Tokens )
+                                                                        @if ( inp?.Tokens.Count > 0 )
                                                                         {
-                                                                            var tokinfo = GetTokenInfo( tok.TokenId );
-                                                                            <FieldLabel>Token Input</FieldLabel>
-                                                                            <Row Margin="Margin.Is2.FromTop">
+                                                                            @foreach ( var tok in inp.Tokens )
+                                                                            {
+                                                                                var tokinfo = GetTokenInfo( tok.TokenId );
+
+                                                                                <FieldLabel>Token Input</FieldLabel>
+                                                                                <Row Margin="Margin.Is2.FromTop">
+                                                                                    <Column>
+                                                                                        <small>@tok.Amount @tokinfo.TokenSymbol </small>
+                                                                                        <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
+                                                                                    </Column>
+                                                                                </Row>
+                                                                            }
+                                                                        }
+                                                                    </Div>
+                                                                </Column>
+                                                            </Row>
+                                                    </DisplayTemplate>
+                                                </DataGridColumn>
+                                            </DataGrid>
+                                        }
+                                    </CardBody>
+                                </Card>
+                            </Column>
+                            <Column>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>
+                                            <Icon Name="IconName.ArrowUp" TextColor="TextColor.Success" />
+                                            Outputs
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardBody>
+                                        @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vout != null )
+                                        {
+                                            <DataGrid TItem="VEDriversLite.NeblioAPI.Vout"
+                                                  Data="TxDetails.Info.Vout.Where(x=>x.Value != 10000 || ( x.Value == 10000 && x.Tokens.Count > 0))"
+                                                  Virtualize
+                                                  ShowCaptions="false">
+                                                    <DataGridColumn>
+                                                        <DisplayTemplate Context="output">
+                                                            <Row>
+                                                                <Column>
+                                                                    <Div>
+                                                                        From: <Badge Color="Color.Light" Padding="Padding.Is2">@getOutputAddress(output)</Badge>
+                                                                    </Div>                                                                
+                                                                </Column>
+                                                                <Column Flex="Flex.JustifyContent.End">
+                                                                    <Div>
+                                                                        @if (output?.Value != 10000 )
+                                                                        {
+                                                                            <FieldLabel>Neblio Input</FieldLabel>
+                                                                            <Row>
                                                                                 <Column>
-                                                                                    <small>@tok.Amount @tokinfo.TokenSymbol </small>
-                                                                                    <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
+                                                                                    <small>@((double)output.Value / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
+                                                                                    <Figure Size="FigureSize.Is16x16"><FigureImage Source="images/neblio-icon.png" /></Figure>
                                                                                 </Column>
                                                                             </Row>
                                                                         }
-                                                                    }
-                                                                </Div>
-                                                            </Column>
-                                                        </Row>
-                                                </DisplayTemplate>
-                                            </DataGridColumn>
-                                        </DataGrid>
-                                    }
-                                </CardBody>
-                            </Card>
-                        </Column>
-                    </Row>
-                </CardBody>
-            </Card>
-            <Button Color="Color.Secondary" Clicked="@HideDetails" Block>Hide</Button>
-        </ModalBody>
+                                                                        @if (output?.Tokens?.Count > 0 )
+                                                                        {
+                                                                            @foreach ( var tok in output.Tokens )
+                                                                            {
+                                                                                var tokinfo = GetTokenInfo( tok.TokenId );
+                                                                                <FieldLabel>Token Input</FieldLabel>
+                                                                                <Row Margin="Margin.Is2.FromTop">
+                                                                                    <Column>
+                                                                                        <small>@tok.Amount @tokinfo.TokenSymbol </small>
+                                                                                        <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
+                                                                                    </Column>
+                                                                                </Row>
+                                                                            }
+                                                                        }
+                                                                    </Div>
+                                                                </Column>
+                                                            </Row>
+                                                    </DisplayTemplate>
+                                                </DataGridColumn>
+                                            </DataGrid>
+                                        }
+                                    </CardBody>
+                                </Card>
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="@HideDetails" Block>Hide</Button>
+            </ModalFooter>
+        </ModalContent>
     </Modal>
 }
 
