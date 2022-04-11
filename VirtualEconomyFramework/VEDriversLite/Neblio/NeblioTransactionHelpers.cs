@@ -1106,7 +1106,7 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="fee">Fee - 10000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> SendNeblioTransactionAPIAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos)
+        public static Transaction GetNeblioTransactionObject(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos)
         {
             if (data == null)
             {

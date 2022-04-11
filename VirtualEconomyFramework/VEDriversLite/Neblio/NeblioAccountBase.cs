@@ -986,7 +986,7 @@ namespace VEDriversLite.Neblio
             try
             {
                 // send tx                                              
-                var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, res.Item2);
+                var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(dto, AccountKey, res.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Payment Sent");
                 if (result.Item1)
@@ -1038,7 +1038,7 @@ namespace VEDriversLite.Neblio
             try
             {
                 // send tx                
-                var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, utxos);
+                var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(dto, AccountKey, utxos);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Payment Sent");
                 if (result.Item1)
@@ -2162,11 +2162,11 @@ namespace VEDriversLite.Neblio
             }
         }
 
-        private void NeblioAccountBase_NewMessage(object sender, (string, INFT) e)
+        private async void NeblioAccountBase_NewMessage(object sender, (string, INFT) e)
         {
             var n = e.Item2;
             Console.WriteLine("New Message received from the IoTDevice to main.");
-            MintNFTMessageForIoTDeviceEvent((sender as IoTDeviceNFT).Utxo, n.Name, n.Description, n, e.Item1, (sender as IoTDeviceNFT));
+            await MintNFTMessageForIoTDeviceEvent((sender as IoTDeviceNFT).Utxo, n.Name, n.Description, n, e.Item1, (sender as IoTDeviceNFT));
         }
 
         private async Task MintNFTMessageForIoTDeviceEvent(string senderUtxo, string name, string message, INFT nft, string messagekey, IoTDeviceNFT sender)

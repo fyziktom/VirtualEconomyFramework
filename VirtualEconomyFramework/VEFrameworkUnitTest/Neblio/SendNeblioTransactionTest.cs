@@ -89,7 +89,7 @@ namespace VEFrameworkUnitTest.Neblio
             var k = NeblioTransactionHelpers.GetAddressAndKey(AccountKey);
             var key1 = k.Item2;
 
-            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos);
+            var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos);
 
             var neblioTransactionResult = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, key1);
 
@@ -100,11 +100,11 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning an error result if Data object is null.
         /// </summary>
         [Fact]
-        public async void SendNeblioTransaction_Data_Null_Test()
+        public void SendNeblioTransaction_Data_Null_Test()
         {
             string message = "Data cannot be null!";
-            var exception = Assert.ThrowsAsync<Exception>(async () => await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(null, null, new List<Utxos>()));
-            Assert.Equal(message, exception.Result.Message);
+            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(null, null, new List<Utxos>()));
+            Assert.Equal(message, exception.Message);
         }
 
         /// <summary>
@@ -115,8 +115,8 @@ namespace VEFrameworkUnitTest.Neblio
         {
             SendTxData txData = new SendTxData();
             string message = "Account cannot be null!";
-            var exception = Assert.ThrowsAsync<Exception>(async () => await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(txData, null, new List<Utxos>()));
-            Assert.Equal(message, exception.Result.Message);
+            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(txData, null, new List<Utxos>()));
+            Assert.Equal(message, exception.Message);
         }
 
         /// <summary>
@@ -129,8 +129,8 @@ namespace VEFrameworkUnitTest.Neblio
             EncryptionKey encryptionKey = new EncryptionKey("Test");
 
             string message = "Cannot send transaction. cannot create receiver address!";
-            var exception = Assert.ThrowsAsync<Exception>(async () => await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(txData, encryptionKey, new List<Utxos>()));
-            Assert.Equal(message, exception.Result.Message);
+            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(txData, encryptionKey, new List<Utxos>()));
+            Assert.Equal(message, exception.Message);
         }
 
         /// <summary>
@@ -155,8 +155,8 @@ namespace VEFrameworkUnitTest.Neblio
             };
 
             string message = "Cannot create the transaction object.";
-            var exception = Assert.ThrowsAsync<Exception>(async () => await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, null));
-            Assert.Equal(message, exception.Result.Message);
+            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, null));
+            Assert.Equal(message, exception.Message);
         }
 
         /// <summary>
@@ -186,8 +186,8 @@ namespace VEFrameworkUnitTest.Neblio
             NeblioTransactionHelpers.FromSatToMainRatio = 0;
 
             string message = "Exception during creating outputs. ";
-            var exception = Assert.ThrowsAsync<Exception>(async () => await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos));
-            Assert.Contains(message, exception.Result.Message);
+            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos));
+            Assert.Contains(message, exception.Message);
         }
         
         /// <summary>
@@ -220,15 +220,15 @@ namespace VEFrameworkUnitTest.Neblio
             };
 
             string message = "Cannot send token transaction. Password is not filled and key is encrypted or unlock account!";
-            var exception = Assert.ThrowsAsync<Exception>(async () => await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos));
-            Assert.Equal(message, exception.Result.Message);
+            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos));
+            Assert.Equal(message, exception.Message);
         }
 
         /// <summary>
         /// Unit test method to verify if system is returning an error result if broadcast failed.
         /// </summary>
         [Fact]
-        public async void SendNeblioTransaction_CannotSignTransaction_Error_Test()
+        public void SendNeblioTransaction_CannotSignTransaction_Error_Test()
         {
             //Arrange           
             
@@ -256,7 +256,7 @@ namespace VEFrameworkUnitTest.Neblio
             var key1 = k.Item2;
 
             string message = "Exception during signing tx";
-            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject1.Utxos);
+            var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject1.Utxos);
 
             var exception = Assert.ThrowsAsync<Exception>(async ()=> await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, key1));
             
@@ -267,7 +267,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify inputs in transactions
         /// </summary>
         [Fact]
-        public async void SendNeblioTransaction_CorrectInputsInTx_Test()
+        public void SendNeblioTransaction_CorrectInputsInTx_Test()
         {
             //Arrange           
 
@@ -291,7 +291,8 @@ namespace VEFrameworkUnitTest.Neblio
             foreach(var u in addressObject.Utxos)
                  u.Index = 2;
 
-            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos);
+            NeblioTransactionHelpers.FromSatToMainRatio = 100000000;
+            var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos);
 
             Assert.Equal(10, transaction.Inputs.Count);
             Assert.Equal(2, (int)transaction.Inputs[0].PrevOut.N);
@@ -303,7 +304,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if outputs are correct
         /// </summary>
         [Fact]
-        public async void SendNeblioTransaction_CorrectNumberOfOutputsInTx_Test()
+        public void SendNeblioTransaction_CorrectNumberOfOutputsInTx_Test()
         {
             //Arrange           
 
@@ -331,7 +332,7 @@ namespace VEFrameworkUnitTest.Neblio
 
             totInputs /= NeblioTransactionHelpers.FromSatToMainRatio;
 
-            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos);
+            var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos);
 
             // we can expect use of two outputs for this tx. One to cover amount. second for rest of money back to source
             Assert.Equal(2, transaction.Outputs.Count);
@@ -347,7 +348,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is adding message to tx correctly
         /// </summary>
         [Fact]
-        public async void SendNeblioTransaction_MessageInNeblioTx_Test()
+        public void SendNeblioTransaction_MessageInNeblioTx_Test()
         {
             //Arrange           
 
@@ -376,7 +377,7 @@ namespace VEFrameworkUnitTest.Neblio
 
             totInputs /= NeblioTransactionHelpers.FromSatToMainRatio;
 
-            var transaction = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(sendTxData, AccountKey, addressObject.Utxos);
+            var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos);
 
             // we can expect use of three outputs for this tx.
             // One to cover amount. 
