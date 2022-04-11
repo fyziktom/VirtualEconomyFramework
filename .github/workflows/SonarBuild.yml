@@ -2,7 +2,7 @@ name: SonarBuild_Dev
 on:
   push:
     branches:
-      - Sonarqube_branch
+      - latest_branch
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
