@@ -2,7 +2,7 @@ name: lates Sonarqube_Branch
 on:
   push:
     branches:
-      - Sonarqube_Branch
+      - SonarQube_Branch
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
