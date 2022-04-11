@@ -78,6 +78,7 @@ public class AppData
         NFTTypes.Xray,
         NFTTypes.XrayImage
     };
+
     public NeblioAccount Account { get; set; } = new NeblioAccount();
     public bool IsAccountLoaded { get; set; } = false;
     public Dictionary<string, XrayExposureParameters> ExposureParametersTemplates { get; set; } = new Dictionary<string, XrayExposureParameters>();
