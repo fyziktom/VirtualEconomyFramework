@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using VEBlazor.Components.NFTs.Common;
 using VEDriversLite.NFT;
 
 namespace VEBlazor.Components.Base
@@ -10,7 +11,26 @@ namespace VEBlazor.Components.Base
         public INFT NFT { get; set; } = new ImageNFT("");
     }
 
-    public abstract class AccountRelatedComponentBase : ComponentBase
+    public abstract class StyledComponent : ComponentBase
+    {
+        [Parameter]
+        public string Style { get; set; }
+        [Parameter]
+        public string Class { get; set; }
+        [Parameter]
+        public RenderFragment ChildContent { get; set; }
+    }
+
+    public abstract class StyledComponent<T> : ComponentBase
+    {
+        [Parameter]
+        public string Style { get; set; }
+        [Parameter]
+        public string Class { get; set; }
+        [Parameter]
+        public RenderFragment<T> ChildContent { get; set; }
+    }
+    public abstract class AccountRelatedComponentBase : StyledComponent
     {
         [Parameter]
         public string Address { get; set; } = string.Empty;
@@ -47,6 +67,11 @@ namespace VEBlazor.Components.Base
         [Parameter]
         public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }
 
+        [Parameter]
+        public EventCallback<INFT> OpenNFTDetailsRequest { get; set; }
+
+        [Parameter]
+        public bool HideOpenInWorkTabButton { get; set; } = false;
         public string GetImageUrl(bool returnPreviewIfExists = false)
         {
             if (NFT == null)
@@ -73,6 +98,43 @@ namespace VEBlazor.Components.Base
                 return NFT.Preview;
             else
                 return string.Empty;
+        }
+        internal virtual async Task OpenNFTInWorkTab()
+        {
+            if (NFT == null)
+                return;
+            await OpenNFTsInWorkTab.InvokeAsync(new List<INFT>() { NFT });
+        }
+        
+        internal virtual async Task OpenNFTInWorkTabHandler(List<INFT> e)
+        {
+            if (NFT == null)
+                return;
+            await OpenNFTsInWorkTab.InvokeAsync(e);
+        }
+        
+        internal virtual Task NFTSentHandler(NFTSentResultDto e)
+        {
+            return NFTSent.InvokeAsync(e);
+        }
+        
+    }
+    
+    public abstract class NFTDetailsBase : NFTComponentBase
+    {
+        public NFTDetails? NFTDetailsComponent;
+        public bool ShowNFTDetails()
+        {
+            if (NFT == null)
+                return false;
+
+            NFTDetailsComponent?.ShowNFTDetails();
+            return true;
+        }
+        public bool HideNFTDetails()
+        {
+            NFTDetailsComponent?.HideNFTDetails();
+            return true;
         }
     }
 }

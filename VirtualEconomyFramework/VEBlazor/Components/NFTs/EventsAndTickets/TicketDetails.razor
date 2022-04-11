@@ -1,0 +1,51 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits NFTDetailsBase;
+
+@if ( NFT != null && NFT.Type == NFTTypes.Ticket )
+{
+    var nft = NFT as TicketNFT;
+    <NFTDetails @ref="NFTDetailsComponent"
+                Address="@Address" 
+                IsSubAccount="@IsSubAccount" 
+                IsOwnNFT="IsOwnNFT" 
+                NFT="@NFT" 
+                NFTSent="@NFTSentHandler" 
+                OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
+                HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                SpecificInfoHeading="Event Details">
+        <Field>
+            <FieldLabel>Location</FieldLabel>
+            <Text>@nft.Location</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Location Coordinates</FieldLabel>
+            <Text>@nft.LocationCoordinates</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Date Time</FieldLabel>
+            <Text>@nft.EventDate</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Link</FieldLabel>
+            <Text>@nft.Link</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Class</FieldLabel>
+            <Text>@nft.TicketClass</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Duration</FieldLabel>
+            <Text>@nft.TicketDuration</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Mint Author Address</FieldLabel>
+            <Text>@nft.MintAuthorAddress</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Is Used Status?</FieldLabel>
+            <Text>@(nft.Used ? "Ticket Is used" : "Ticket is not used.")</Text>
+        </Field>
+    </NFTDetails>
+}

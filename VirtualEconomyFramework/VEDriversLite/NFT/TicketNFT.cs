@@ -14,6 +14,7 @@ namespace VEDriversLite.NFT
         Standard,
         VIP,
         VIPPlus,
+        Legendary,
         Family,
         Children
     }

@@ -1,0 +1,21 @@
+﻿@inherits NFTComponentBase
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardBody>
+        <CardTitle Size="5">Basic Info</CardTitle>
+        <Row> 
+            <Column> 
+                <PanzoomImage Source="@GetImageUrl()" /> 
+            </Column> 
+        </Row> 
+        <CardText Margin="Margin.Is2.FromTop">
+            @NFT.Description
+        </CardText>
+        <NFTTags TagsList="@NFT.TagsList" />
+        <Row Margin="Margin.Is2.FromTop"> 
+            <Column> 
+                <CopyButton TextToCopy="@($"https://test.basedataplace.com/gallery?utxo={NFT.Utxo}:{NFT.UtxoIndex}")" ButtonText="Copy Share Link" /> 
+            </Column> 
+        </Row>
+    </CardBody>
+</Card>

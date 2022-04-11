@@ -1,0 +1,13 @@
+﻿<Row Margin="Margin.Is2.FromTop" Flex="Flex.AlignContent.Center">
+    <Column>
+    @foreach ( var tag in TagsList )
+    {
+        <Badge Color="Color.Light" Margin="Margin.Is1.FromEnd">#@tag</Badge>
+    }
+    </Column>                                    
+</Row>
+
+@code {
+    [Parameter]
+    public List<string> TagsList { get; set; } = new List<string>();
+}

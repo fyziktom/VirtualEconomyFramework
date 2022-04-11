@@ -60,6 +60,20 @@
         AppData.LockUnlockAccount += LockUnlockAccountHandler;
         await CheckAccount();
     }
+    
+    protected override async Task OnAfterRenderAsync( bool firstRender )
+    {
+        if ( firstRender )
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
+            AppData.Account.Refreshed += RefreshedHandler;
+        }
+        await base.OnAfterRenderAsync( firstRender );
+    }
+    private void RefreshedHandler( object sender, EventArgs e )
+    {
+        StateHasChanged();
+    }  
 
     private void LockUnlockAccountHandler(object sender, bool e)
     {

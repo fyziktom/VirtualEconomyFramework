@@ -1,0 +1,63 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Bookmarks
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if(NFT.Type == NFTTypes.XrayImage)
+{
+    <XrayImagesDetails @ref=XrayImagesDetailsModalComponent
+                       NFT="@NFT"
+                       Address="@Address"
+                       IsOwnNFT="@IsOwnNFT"
+                       IsSubAccount="@IsSubAccount"
+                       NFTSent="@NFTSentHandler"
+                       OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
+}
+else if(NFT.Type == NFTTypes.Event)
+{
+    <EventDetails @ref=EventDetailsModalComponent
+                       NFT="@NFT"
+                       Address="@Address"
+                       IsOwnNFT="@IsOwnNFT"
+                       IsSubAccount="@IsSubAccount"
+                       NFTSent="@NFTSentHandler"
+                       OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                             
+}
+else if(NFT.Type == NFTTypes.Ticket)
+{
+    <TicketDetails @ref=TicketDetailsModalComponent
+                   NFT="@NFT"
+                   Address="@Address"
+                   IsOwnNFT="@IsOwnNFT"
+                   IsSubAccount="@IsSubAccount"
+                   NFTSent="@NFTSentHandler"
+                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+}
+
+@code {
+
+    private XrayImagesDetails? XrayImagesDetailsModalComponent;    
+    private TicketDetails? TicketDetailsModalComponent;
+    private EventDetails? EventDetailsModalComponent;
+
+    public bool OpenNFTDetails(INFT nft)
+    {
+        if (nft == null) return false;
+        NFT = nft;
+        StateHasChanged();
+        switch(nft.Type)
+        {
+            case NFTTypes.XrayImage:
+                XrayImagesDetailsModalComponent?.ShowNFTDetails();
+                break;
+            case NFTTypes.Event:
+                EventDetailsModalComponent?.ShowNFTDetails();
+                break;
+            case NFTTypes.Ticket:
+                TicketDetailsModalComponent?.ShowNFTDetails();
+                break;
+        }
+        return true;
+    }
+}

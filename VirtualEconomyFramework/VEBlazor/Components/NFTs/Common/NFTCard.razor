@@ -1,12 +1,10 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
-@using VEDriversLite.NFT.Imaging.Xray
-@inherits NFTComponentBase;
+@inject AppData AppData
+@inherits NFTComponentBase
 
-@if ( NFT != null && NFT.Type == NFTTypes.XrayImage )
+@if ( NFT != null )
 {
-    var nft = NFT as XrayImageNFT;
-
     <Card Margin="Margin.Is4.FromBottom" Style="min-width:150px; max-width:250px;">
         <CardImage Source="@GetImageUrl()" Alt="No image found" Style="max-height:200px;" @onclick="() => NFTImageDetailModal.Show()">
         </CardImage>
@@ -17,18 +15,17 @@
             <CardText>
                 <Small>@NFT.Description</Small>
             </CardText>
-            @*<CardText>
-                <XrayParamsValues XrayParams="@nft.XrayParams" />
-            </CardText>*@
             <CardText>
                 @foreach ( var tag in NFT.TagsList )
                 {
                     <Badge Color="Color.Light" Margin="Margin.Is1.FromEnd">#@tag</Badge>
                 }
             </CardText>
+            
+            @ChildContent
         </CardBody>
         <CardFooter>
-            <Button Color="Color.Primary" Clicked=@OpenNFTDetailsModal Block>
+            <Button Color="Color.Primary" Clicked=@OpenDetailsRequest Block>
                 <Icon Name="IconName.Info" />
             </Button>
         </CardFooter>
@@ -46,31 +43,14 @@
         </ModalBody>
     </ModalContent>
 </Modal>
-
-<XrayImagesDetails @ref=XrayImagesDetailsModalComponent
-                   NFT="@NFT"
-                   Address="@Address"
-                   IsOwnNFT="@IsOwnNFT"
-                   IsSubAccount="@IsSubAccount"
-                   NFTSent="@NFTSentHandler"
-                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
-
+                   
 @code {
-    private XrayImagesDetails? XrayImagesDetailsModalComponent;
+
     private Modal? NFTImageDetailModal;
-
-    public void OpenNFTDetailsModal()
+    
+    async Task OpenDetailsRequest()
     {
-        if ( NFT == null )
-            return;
-        XrayImagesDetailsModalComponent?.ShowNFTDetails();
+        await OpenNFTDetailsRequest.InvokeAsync(NFT);
     }
 
-    async Task NFTSentHandler( NFTSentResultDto e )
-    {
-        XrayImagesDetailsModalComponent?.HideNFTDetails();
-        if (NFTImageDetailModal != null)
-            await NFTImageDetailModal.Hide();
-        await NFTSent.InvokeAsync( e );
-    }
 }

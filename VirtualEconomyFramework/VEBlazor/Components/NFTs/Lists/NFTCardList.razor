@@ -30,15 +30,27 @@
                     {
                         @if ( IsInFilter( NFT ) )
                         {
-                            <XrayImageCard @key="@NFT"
-                                   NFT=@NFT
-                                   Address="@Address"
-                                   IsSubAccount="@IsSubAccount"
-                                   IsOwnNFT="@IsOwnNFT"
-                                   Utxo="@NFT.Utxo"
-                                   UtxoIndex="@NFT.UtxoIndex"
-                                   NFTSent="@NFTSentHandler"
-                                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
+                            @if(NFT.Type == NFTTypes.XrayImage)
+                            {
+                                
+                            <NFTCard @key="@NFT"
+                                     NFT=@NFT
+                                     Address="@Address"
+                                     IsSubAccount="@IsSubAccount"
+                                     IsOwnNFT="@IsOwnNFT"
+                                     Utxo="@NFT.Utxo"
+                                     UtxoIndex="@NFT.UtxoIndex"
+                                     OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler"
+                                     NFTSent="@NFTSentHandler"
+                                     OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" >
+
+                                    @*@if (NFT.Type == NFTTypes.XrayImage)
+                                    {
+                                        <XrayParamsValues XrayParams="@((NFT as XrayImageNFT).XrayParams)" />
+                                    }*@
+                            </NFTCard>
+                            }
+                            
                         }
                     }
                 </CardDeck>
@@ -46,6 +58,13 @@
         </Row>
     </Column>
 </Row>
+
+<OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                       Address="@Address"
+                       IsSubAccount="@IsSubAccount"
+                       IsOwnNFT="@IsOwnNFT"
+                       NFTSent="@NFTSentHandler"
+                       OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
 
 @code {
     [Inject] INotificationService? NotificationService { get; set; }
@@ -55,18 +74,19 @@
         get
         {
             if ( IsOwnNFT )
-                return AppData.Account.NFTs.Where( n => n.Type == NFTTypes.XrayImage );
+                return AppData.Account.NFTs.Where( n => AppData.AllowedNFTTypes.Contains(n.Type) );
             else
             {
                 var tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == Address );
                 if ( tab != null )
-                    return tab.NFTs.Where( n => n.Type == NFTTypes.XrayImage );
+                    return tab.NFTs.Where( n => AppData.AllowedNFTTypes.Contains(n.Type) );
                 else
                     return new List<INFT>();
             }
         }
     }
 
+    OpenNFTDetailsFactory? openNFTDetailsFactory;
     string searchNFTsString = string.Empty;
 
 
@@ -79,6 +99,16 @@
         }
         await base.OnAfterRenderAsync( firstRender );
     }
+    private void RefreshedHandler( object sender, EventArgs e )
+    {
+        StateHasChanged();
+    }    
+
+    void OpenNFTDetailsRequestHandler(INFT nft)
+    {    
+        if (nft != null)
+            openNFTDetailsFactory?.OpenNFTDetails(nft);
+    }
 
     private void NFTSentHandler(NFTSentResultDto e)
     {
@@ -86,11 +116,6 @@
             NotificationService?.Success("NFT sent successfully.", "NFT Sent");
         else
             NotificationService?.Error(e.message, "NFT Not Sent");
-    }
-
-    private void RefreshedHandler( object sender, EventArgs e )
-    {
-        StateHasChanged();
     }
 
     void RefreshRequested( KeyboardEventArgs e )
