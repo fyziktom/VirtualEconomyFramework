@@ -1,4 +1,4 @@
-name:  from Sonarqube_Branchs
+name: Sonarqube_Branchs
 on:
   push:
     branches:
