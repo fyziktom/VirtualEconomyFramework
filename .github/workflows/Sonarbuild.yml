@@ -42,7 +42,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"fyziktom_VirtualEconomyFramework" /o:"fyziktom" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="D:\a\VirtualEconomyFramework\VirtualEconomyFramework\VirtualEconomyFramework\VEFrameworkUnitTest\opencover.xml"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"mohanpaladugu_VirtualEconomyFramework" /o:"mohanpaladugu" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="D:\a\VirtualEconomyFramework\VirtualEconomyFramework\VirtualEconomyFramework\VEFrameworkUnitTest\opencover.xml"
           dotnet restore  ./VirtualEconomyFramework/VENFTApp-Server
           dotnet build  ./VirtualEconomyFramework/VENFTApp-Server --configuration Release --no-restore
           dotnet test ./VirtualEconomyFramework/VEFrameworkUnitTest/VEFrameworkUnitTest.csproj
