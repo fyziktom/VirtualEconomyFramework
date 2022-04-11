@@ -14,11 +14,18 @@
                     </TextEdit>
                 </Field>
             </Validation>
-            <Field>
-                <FieldLabel>Please enter the tags.</FieldLabel>
-                <TextEdit Placeholder="Enter the tags" @bind-Text="Tags" @onchange="tagsChanged" />
-                <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
-            </Field>
+            <Validation Validator="ValidationRule.IsNotEmpty">
+                <Field>
+                    <FieldLabel>Please enter the tags.</FieldLabel>
+                    <TextEdit Placeholder="Enter the tags" @bind-Text="Tags" @onchange="tagsChanged" >
+                        <Feedback>
+                            <ValidationError>Missing tags. Add at least one tag please.</ValidationError>
+                        </Feedback>                        
+                    </TextEdit>
+                    <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
+                </Field>
+            </Validation>
+
             <Field>
                 <FieldLabel>Please enter the short description.</FieldLabel>
                 <TextEdit Placeholder="Enter short description" @bind-Text="Description" @onchange="descChanged" />

@@ -70,13 +70,28 @@ public class AppData
         NFTTypes.Post,
         NFTTypes.Message,
         NFTTypes.Profile,
+        NFTTypes.Message,
+        NFTTypes.IoTDevice,
+        NFTTypes.IoTMessage,
+        NFTTypes.Order,
+        NFTTypes.Invoice,
         NFTTypes.Payment,
         NFTTypes.Receipt,
-        NFTTypes.Order,
         NFTTypes.Event,
         NFTTypes.Ticket,
         NFTTypes.Xray,
         NFTTypes.XrayImage
+    };
+    public List<NFTTypes> RestrictedInGalleryNFTTypes { get; set; } = new List<NFTTypes>()
+    {
+        NFTTypes.Profile,
+        NFTTypes.Message,
+        NFTTypes.IoTDevice,
+        NFTTypes.IoTMessage,
+        NFTTypes.Order,
+        NFTTypes.Invoice,
+        NFTTypes.Payment,
+        NFTTypes.Receipt,
     };
 
     public NeblioAccount Account { get; set; } = new NeblioAccount();

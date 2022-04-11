@@ -46,15 +46,19 @@
 
 @code {
     private Modal? NFTDetailsModal;
-    
+
     [Parameter]
     public string SpecificInfoHeading { get; set; } = "Specific Info";
-    
-    public bool ShowNFTDetails()
-    {
-        if ( NFT == null )
-            return false;
 
+    public bool ShowNFTDetails(INFT nft = null)
+    {
+        if (NFT == null && nft == null)
+            return false;
+        else if (NFT == null && nft != null)
+        {
+            NFT = nft;
+            StateHasChanged();
+        }   
         NFTDetailsModal?.Show();
         return true;
     }

@@ -123,12 +123,16 @@ namespace VEBlazor.Components.Base
     public abstract class NFTDetailsBase : NFTComponentBase
     {
         public NFTDetails? NFTDetailsComponent;
-        public bool ShowNFTDetails()
+        public bool ShowNFTDetails(INFT nft = null)
         {
-            if (NFT == null)
+            if (NFT == null && nft == null)
                 return false;
-
-            NFTDetailsComponent?.ShowNFTDetails();
+            else if (NFT == null && nft != null)
+            {
+                NFT = nft;
+                StateHasChanged();
+            }
+            NFTDetailsComponent?.ShowNFTDetails(nft);
             return true;
         }
         public bool HideNFTDetails()

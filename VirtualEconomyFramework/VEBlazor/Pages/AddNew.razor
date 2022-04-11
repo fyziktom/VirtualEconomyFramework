@@ -1,145 +1,151 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Imaging.Xray
+@inherits NFTComponentBase
 @inject AppData AppData
 
-@*<PageTitle>@AppName - Add New Data</PageTitle>
-
-<PageHeader Title="Add New Data" BreadcrumbItems="@(new string[] { "BDP", "Add New Data" })" />
-*@
-<Row>
-    <Column>
-        <Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Default">
-            <CardBody>
-                <Steps SelectedStep="@selectedStep" SelectedStepChanged="@OnSelectedStepChanged">
-                    <Items>
-                        <Step Name="stepUpload">Upload</Step>
-                        <Step Name="stepData">Data Info</Step>
-                        <Step Name="stepDevice">Device Info</Step>
-                        @*<Step Name="stepOther">Other</Step>*@
-                        <Step Name="stepFinish">
-                            <Marker>
-                                <Icon Name="IconName.Flag" />
-                            </Marker>
-                            <Caption>
-                                Finish
-                            </Caption>
-                        </Step>
-                    </Items>
-                    <Content>
-                        <StepPanel Name="stepUpload">
-                            <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                            <Row>
+@if (NFT != null)
+{
+    <Row>
+        <Column>
+            <Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Default">
+                <CardBody>
+                    <Steps SelectedStep="@selectedStep" SelectedStepChanged="@OnSelectedStepChanged">
+                        <Items>
+                            <Step Name="stepUpload">Upload</Step>
+                            <Step Name="stepData">Data Info</Step>
+                            <Step Name="stepDevice">Device Info</Step>
+                            @*<Step Name="stepOther">Other</Step>*@
+                            <Step Name="stepFinish">
+                                <Marker>
+                                    <Icon Name="IconName.Flag" />
+                                </Marker>
+                                <Caption>
+                                    Finish
+                                </Caption>
+                            </Step>
+                        </Items>
+                        <Content>
+                            <StepPanel Name="stepUpload">
+                                <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                                <Row>
+                                    <Column>
+                                        <UploadData @ref="@uploadDataRef" @bind-MainIPFSLink="@NFT.ImageLink" @bind-PreviewIPFSLink="@NFT.Preview" />
+                                    </Column>
+                                </Row>
+                                <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                            </StepPanel>
+                            <StepPanel Name="stepData">
+                                <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                                <Row>
+                                    <Column>
+                                        <DataInfoForm @ref="@dataInfoFormRef"
+                                                            @bind-Name="@NFT.Name"
+                                                            @bind-Description="@NFT.Description"
+                                                            @bind-Text="@NFT.Text"
+                                                            @bind-Tags="@NFT.Tags" />
+                                    </Column>
+                                </Row>
+                                <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                            </StepPanel>
+                            <StepPanel Name="stepDevice">
+                                @if (NFT.Type == NFTTypes.XrayImage)
+                                {
+                                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                                    <Row>
+                                        <Column>
+                                            <XrayExposureParamsForm @bind-Voltage="@((NFT as XrayImageNFT).XrayParams.Voltage)"
+                                                                    @bind-Current="@((NFT as XrayImageNFT).XrayParams.Current)"
+                                                                    @bind-Time="@((NFT as XrayImageNFT).XrayParams.ExposureTime)" />
+                                        </Column>
+                                    </Row>
+                                    <Row>
+                                        <Column>
+                                            <DeviceInfoForm />
+                                        </Column>
+                                    </Row>
+                                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                                }
+                            </StepPanel>
+                            @*        <StepPanel Name="stepOther">
+                                <Layout>
+                                <LayoutHeader>
+                                <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true"
+                                ShowPrevButton="true"
+                                ToolActionHandler="@OnToolActionHandler" />
+                                </LayoutHeader>
+                                <LayoutContent>
+                                <Row>
                                 <Column>
-                                    <UploadData @ref="@uploadDataRef" @bind-MainIPFSLink="@NFT.ImageLink" @bind-PreviewIPFSLink="@NFT.Preview" />
+                                <BDP_WASM.Components.Minting.OtherInfo />
                                 </Column>
-                            </Row>
-                            <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                        </StepPanel>
-                        <StepPanel Name="stepData">
-                            <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                            <Row>
-                                <Column>
-                                    <DataInfoForm @ref="@dataInfoFormRef"
-                                                        @bind-Name="@NFT.Name"
-                                                        @bind-Description="@NFT.Description"
-                                                        @bind-Text="@NFT.Text"
-                                                        @bind-Tags="@NFT.Tags" />
-                                </Column>
-                            </Row>
-                            <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                        </StepPanel>
-                        <StepPanel Name="stepDevice">
-                            <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                            <Row>
-                                <Column>
-                                    <XrayExposureParamsForm @bind-Voltage="@NFT.XrayParams.Voltage"
-                                                            @bind-Current="@NFT.XrayParams.Current"
-                                                            @bind-Time="@NFT.XrayParams.ExposureTime" />
-                                </Column>
-                            </Row>
-                            <Row>
-                                <Column>
-                                    <DeviceInfoForm />
-                                </Column>
-                            </Row>
-                            <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                        </StepPanel>
-                        @*        <StepPanel Name="stepOther">
-                            <Layout>
-                            <LayoutHeader>
-                            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true"
-                            ShowPrevButton="true"
-                            ToolActionHandler="@OnToolActionHandler" />
-                            </LayoutHeader>
-                            <LayoutContent>
-                            <Row>
-                            <Column>
-                            <BDP_WASM.Components.Minting.OtherInfo />
-                            </Column>
-                            </Row>
-                            </LayoutContent>
-                            <LayoutFooter>
-                            <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true"
-                            ShowPrevButton="true"
-                            ToolActionHandler="@OnToolActionHandler" />
-                            </LayoutFooter>
-                            </Layout>
-                            </StepPanel>  *@
-                        <StepPanel Name="stepFinish">
-                            <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                            <Row>
-                                <Column>
-                                    <Span>Now you can confirm the storage of the data.</Span>
-                                </Column>
-                            </Row>
-                            <Row>
-                                <Column>
-                                    <Span>Here you can check the expected result:</Span>
-                                </Column>
-                            </Row>
-                            <Row Margin="Margin.Is3.FromTop">
-                                <Column>
-                                    <XrayImageCard NFT=@NFT />
-                                </Column>
-                            </Row>
-                            <Row Margin="Margin.Is3.FromTop">
-                                <Column>
-                                    @if ( IsMinted )
-                                    {
-                                        if ( mintingResult.Item1 )
+                                </Row>
+                                </LayoutContent>
+                                <LayoutFooter>
+                                <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true"
+                                ShowPrevButton="true"
+                                ToolActionHandler="@OnToolActionHandler" />
+                                </LayoutFooter>
+                                </Layout>
+                                </StepPanel>  *@
+                            <StepPanel Name="stepFinish">
+                                <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                                <Row>
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Span>Now you can confirm the storage of the data.</Span>
+                                    </Column>
+                                </Row>
+                                <Row>
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Span>Here you can check the expected result:</Span>
+                                    </Column>
+                                </Row>
+                                <Row Margin="Margin.Is3.FromTop">
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <NFTCard NFT=@NFT OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler" />
+                                    </Column>
+                                </Row>
+                                <Row Margin="Margin.Is3.FromTop">
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        @if ( IsMinted )
                                         {
-                                            <Alert Color="Color.Success" Visible>
-                                                <AlertMessage>Data Stored :)</AlertMessage>
-                                                <AlertDescription>Transaction Hash is: <a href="https://explorer.nebl.io/tx/@mintingResult.Item2" target="_blank">@mintingResult.Item2</a></AlertDescription>
-                                            </Alert>
+                                            if ( mintingResult.Item1 )
+                                            {
+                                                <Alert Color="Color.Success" Visible>
+                                                    <AlertMessage>Data Stored :)</AlertMessage>
+                                                    <AlertDescription>Transaction Hash is: <a href="https://explorer.nebl.io/tx/@mintingResult.Item2" target="_blank">@mintingResult.Item2</a></AlertDescription>
+                                                </Alert>
+                                            }
+                                            else
+                                            {
+                                                <Alert Color="Color.Danger" Visible>
+                                                    <AlertMessage>Cannot save</AlertMessage>
+                                                    <AlertDescription>@mintingResult.Item2</AlertDescription>
+                                                </Alert>
+                                            }
                                         }
-                                        else
-                                        {
-                                            <Alert Color="Color.Danger" Visible>
-                                                <AlertMessage>Cannot save</AlertMessage>
-                                                <AlertDescription>@mintingResult.Item2</AlertDescription>
-                                            </Alert>
-                                        }
-                                    }
-                                </Column>
-                            </Row>
-                            <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                        </StepPanel>
-                    </Content>
-                </Steps>
-            </CardBody>
-        </Card>
-    </Column>
-</Row>
+                                    </Column>
+                                </Row>
+                                <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                            </StepPanel>
+                        </Content>
+                    </Steps>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
 
-
+    <OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                           Address="@Address"
+                           IsSubAccount="@false"
+                           IsOwnNFT="@false" />
+} 
 
 @code {
     [Inject] INotificationService? NotificationService { get; set; }
 
+    OpenNFTDetailsFactory? openNFTDetailsFactory;
     string selectedStep = "stepUpload";
-    XrayImageNFT NFT = new XrayImageNFT();
 
     bool IsMinted = false;
     bool minting = false;
@@ -152,6 +158,14 @@
         return Task.CompletedTask;
     }
 
+    async Task OpenNFTDetailsRequestHandler(INFT nft)
+    {    
+        if (nft != null && openNFTDetailsFactory != null)
+        {        
+            await openNFTDetailsFactory?.OpenNFTDetails(nft);
+        }            
+    }
+    
     private async Task mintNFT( string[] args )
     {
         Console.WriteLine( $"Name: {NFT.Name}" );
@@ -160,10 +174,12 @@
         Console.WriteLine( $"Tags: {NFT.Tags}" );
         Console.WriteLine( $"ImageLink: {NFT.ImageLink}" );
         Console.WriteLine( $"Preview: {NFT.Preview}" );
-        Console.WriteLine( $"Voltage: {NFT.XrayParams.Voltage} kV" );
-        Console.WriteLine( $"Current: {NFT.XrayParams.Current} mA" );
-        Console.WriteLine( $"Exposure Time: {NFT.XrayParams.ExposureTime} ms" );
-
+        @if (NFT.Type == NFTTypes.XrayImage)
+        {
+            Console.WriteLine($"Voltage: {(NFT as XrayImageNFT).XrayParams.Voltage} kV");
+            Console.WriteLine($"Current: {(NFT as XrayImageNFT).XrayParams.Current} mA");
+            Console.WriteLine($"Exposure Time: {(NFT as XrayImageNFT).XrayParams.ExposureTime} ms");
+        }
         if ( string.IsNullOrEmpty( NFT.ImageLink ) )
         {
             mintingResult.Item1 = false;

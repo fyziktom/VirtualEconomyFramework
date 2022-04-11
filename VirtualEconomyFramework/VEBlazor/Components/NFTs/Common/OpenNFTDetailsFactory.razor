@@ -11,6 +11,7 @@
                        Address="@Address"
                        IsOwnNFT="@IsOwnNFT"
                        IsSubAccount="@IsSubAccount"
+                       HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                        NFTSent="@NFTSentHandler"
                        OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
 }
@@ -21,6 +22,7 @@ else if(NFT.Type == NFTTypes.Event)
                        Address="@Address"
                        IsOwnNFT="@IsOwnNFT"
                        IsSubAccount="@IsSubAccount"
+                       HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                        NFTSent="@NFTSentHandler"
                        OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                             
 }
@@ -31,6 +33,7 @@ else if(NFT.Type == NFTTypes.Ticket)
                    Address="@Address"
                    IsOwnNFT="@IsOwnNFT"
                    IsSubAccount="@IsSubAccount"
+                   HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                    NFTSent="@NFTSentHandler"
                    OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
 }
@@ -41,23 +44,42 @@ else if(NFT.Type == NFTTypes.Ticket)
     private TicketDetails? TicketDetailsModalComponent;
     private EventDetails? EventDetailsModalComponent;
 
-    public bool OpenNFTDetails(INFT nft)
+    public async Task OpenNFTDetails(INFT nft)
     {
-        if (nft == null) return false;
+        if (nft == null) return;
         NFT = nft;
         StateHasChanged();
+        await Task.Delay(50);
+        
         switch(nft.Type)
         {
             case NFTTypes.XrayImage:
-                XrayImagesDetailsModalComponent?.ShowNFTDetails();
+                XrayImagesDetailsModalComponent?.ShowNFTDetails(nft);
                 break;
             case NFTTypes.Event:
-                EventDetailsModalComponent?.ShowNFTDetails();
+                EventDetailsModalComponent?.ShowNFTDetails(nft);
                 break;
             case NFTTypes.Ticket:
-                TicketDetailsModalComponent?.ShowNFTDetails();
+                TicketDetailsModalComponent?.ShowNFTDetails(nft);
                 break;
         }
-        return true;
+        return;
+    }
+
+    public void HideNFTDetails()
+    {
+        switch(NFT.Type)
+        {
+            case NFTTypes.XrayImage:
+                XrayImagesDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Event:
+                EventDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Ticket:
+                TicketDetailsModalComponent?.HideNFTDetails();
+                break;
+        }
+        return;
     }
 }

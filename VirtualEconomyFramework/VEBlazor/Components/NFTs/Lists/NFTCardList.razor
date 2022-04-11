@@ -30,7 +30,7 @@
                     {
                         @if ( IsInFilter( NFT ) )
                         {
-                            @if(NFT.Type == NFTTypes.XrayImage)
+                            @if ( AppData.AllowedNFTTypes.Contains(NFT.Type) && !AppData.RestrictedInGalleryNFTTypes.Contains(NFT.Type) )
                             {
                                 
                             <NFTCard @key="@NFT"
@@ -61,6 +61,7 @@
 
 <OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
                        Address="@Address"
+                       NFT="@nftInDetails"                       
                        IsSubAccount="@IsSubAccount"
                        IsOwnNFT="@IsOwnNFT"
                        NFTSent="@NFTSentHandler"
@@ -88,7 +89,7 @@
 
     OpenNFTDetailsFactory? openNFTDetailsFactory;
     string searchNFTsString = string.Empty;
-
+    INFT nftInDetails = new ImageNFT("");
 
     protected override async Task OnAfterRenderAsync( bool firstRender )
     {
@@ -104,12 +105,16 @@
         StateHasChanged();
     }    
 
-    void OpenNFTDetailsRequestHandler(INFT nft)
+    async Task OpenNFTDetailsRequestHandler(INFT nft)
     {    
-        if (nft != null)
-            openNFTDetailsFactory?.OpenNFTDetails(nft);
+        if (nft != null && openNFTDetailsFactory != null)
+        {        
+            nftInDetails = nft;
+            StateHasChanged();
+            await openNFTDetailsFactory?.OpenNFTDetails(nft);
+        }
     }
-
+    
     private void NFTSentHandler(NFTSentResultDto e)
     {
         if (e.sucess)

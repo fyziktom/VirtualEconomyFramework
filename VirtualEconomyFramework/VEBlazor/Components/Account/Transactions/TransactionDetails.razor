@@ -201,14 +201,16 @@
     </Modal>
 }
 
-<XrayImagesDetails @ref="NFTDetailsModal" Address="@AppData.Account.Address"
-                   IsOwnNFT="false"
-                   HideOpenInWorkTabButton="true"
-                   NFT="@NFT" />
+<OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                       Address="@AppData.Account.Address"
+                       HideOpenInWorkTabButton="true"
+                       NFT="@NFT"
+                       IsOwnNFT="false"/>
 
 @code {
     private Modal? TransactionDetailsModal;
-    private XrayImagesDetails? NFTDetailsModal;
+
+    OpenNFTDetailsFactory? openNFTDetailsFactory;   
 
     private (bool, VEDriversLite.Bookmarks.Bookmark) senderBookmark = (false, new VEDriversLite.Bookmarks.Bookmark());
     private (bool, VEDriversLite.Bookmarks.Bookmark) receiverBookmark = (false, new VEDriversLite.Bookmarks.Bookmark());
@@ -254,7 +256,7 @@
     public void HideDetails()
     {
         TransactionDetailsModal?.Hide();
-        NFTDetailsModal?.HideNFTDetails();
+        openNFTDetailsFactory?.HideNFTDetails();
     }
 
     public async Task ShowNFTDetails()
@@ -263,10 +265,10 @@
                                               txinfo: TxDetails.Info,
                                               loadJustType: true,
                                               justType: NFTTypes.XrayImage );
-        if ( nft != null )
+        if ( nft != null  && openNFTDetailsFactory != null)
         {
             NFT = nft;
-            NFTDetailsModal?.ShowNFTDetails();
+            await openNFTDetailsFactory?.OpenNFTDetails(nft);
         }
     }
 
