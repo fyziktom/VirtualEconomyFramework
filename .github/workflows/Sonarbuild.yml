@@ -1,4 +1,4 @@
-name: SonarBuilds_Dev
+name: SonarBuild_Dev
 on:
   push:
     branches:
