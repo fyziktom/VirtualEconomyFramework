@@ -35,6 +35,10 @@
             <BarItem>
                 <BarDropdown RightAligned>
                     <BarDropdownToggle Display="Blazorise.Display.InlineBlock.None.OnMobile">
+                        @if ( AppData.IsAccountLoaded )
+                        {
+                            <Image Source="@AppData.Account.Profile.ImageLink" Text="Account" Style="width: 30px; height: 30px;" Margin="Margin.Is2.FromEnd" />
+                        }
                         <Span TextColor="TextColor.Dark">Account</Span>
                     </BarDropdownToggle>
                     <BarDropdownMenu>
