@@ -1,4 +1,4 @@
-name: latest from Sonarqube_Branchs
+name:  from Sonarqube_Branchs
 on:
   push:
     branches:
