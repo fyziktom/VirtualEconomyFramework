@@ -31,8 +31,63 @@
                 </BarLink>
             </BarItem>
         </BarStart>
+        <BarEnd>
+            <BarItem>
+                <BarDropdown RightAligned>
+                    <BarDropdownToggle Display="Blazorise.Display.InlineBlock.None.OnMobile">
+                        <Span TextColor="TextColor.Dark">Account</Span>
+                    </BarDropdownToggle>
+                    <BarDropdownMenu>
+                        @if ( AppData.IsAccountLoaded )
+                        {
+                            <BarDropdownItem Clicked="@Lock">
+                                <Icon Name="IconName.Lock" TextColor="TextColor.Danger" />
+                                Logout
+                            </BarDropdownItem>
+                        }
+                        else
+                        {
+                            <BarDropdownItem Clicked="@Unlock">
+                                <Icon Name="IconName.Unlock" TextColor="TextColor.Success" />
+                                Login
+                            </BarDropdownItem>
+                        }
+                        <BarDropdownDivider />
+                        <BarDropdownItem To="https://basedataplace.com/" Target="Target.Blank">
+                            <Icon Name="IconName.QuestionCircle" TextColor="TextColor.Primary" />
+                            About
+                        </BarDropdownItem>
+                    </BarDropdownMenu>
+                </BarDropdown>
+            </BarItem>
+        </BarEnd>
     </BarMenu>
 </Bar>
+
+<UnlockAccount @ref="UnlockAccountComponent" AccountUnlocked="@AccountUnlockedHandler" />
+
 @code {
     RenderFragment customIcon =@<img src="/images/main-bw-big.png" style="width:32px;" />;
+
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    private UnlockAccount? UnlockAccountComponent;
+
+    void Unlock()
+    {
+        UnlockAccountComponent?.ShowUnlockAccountModal();
+    }
+
+    void Lock()
+    {
+        AppData.LockAccount();
+    }
+
+    async Task AccountUnlockedHandler( string e )
+    {
+        if ( NotificationService != null )
+            await NotificationService.Success( "Account Unlocked :)", "Unlocked" );
+
+        await InvokeAsync( StateHasChanged );
+    }
 }
