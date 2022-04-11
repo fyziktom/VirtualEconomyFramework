@@ -2,7 +2,7 @@ name: Sonarqube_Branchs
 on:
   push:
     branches:
-      - Sonarqube_Branch
+      - mohanpaladugu-patch-1
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
