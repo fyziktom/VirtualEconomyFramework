@@ -6,7 +6,9 @@
 @if ( NFT != null && NFT.Type == NFTTypes.Event )
 {
     var nft = NFT as EventNFT;
-    <NFTDetails @ref="NFTDetailsComponent"
+    if (nft != null)
+    {
+        <NFTDetails @ref="NFTDetailsComponent"
                 Address="@Address" 
                 IsSubAccount="@IsSubAccount" 
                 IsOwnNFT="IsOwnNFT" 
@@ -14,7 +16,7 @@
                 NFTSent="@NFTSentHandler" 
                 OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
                 HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
-                SpecificInfoHeading="Ticket Details">
+                SpecificInfoHeading="Event Details">
         <Field>
             <FieldLabel>Location</FieldLabel>
             <Text>@nft.Location</Text>
@@ -36,6 +38,7 @@
             <Text>@nft.EventClass</Text>
         </Field>
     </NFTDetails>
+    }
 }
 
 @code {

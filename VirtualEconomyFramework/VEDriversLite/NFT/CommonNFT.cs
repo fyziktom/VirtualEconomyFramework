@@ -70,7 +70,20 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// List of the tags separated by space
         /// </summary>
-        public string Tags { get; set; } = string.Empty;
+        private string _tags = string.Empty;
+        public string Tags 
+        {
+            get => _tags;
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    _tags = value;
+                    ParseTags();
+                }
+            }
+           
+        }
         /// <summary>
         /// Parsed tag list. It is parsed in Common NFT class
         /// </summary>

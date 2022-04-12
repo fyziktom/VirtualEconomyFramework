@@ -22,12 +22,17 @@
     protected override async Task OnInitializedAsync()
     {
         AppData.AppName = "BaseDataPlace";
+        AppData.AppNick = "BDP";
         AppData.AppHomeWebsiteUrl = "https://basedataplace.com/";
+
+        AppData.NFTInMintingForm = new VEDriversLite.NFT.Imaging.Xray.XrayImageNFT();
         AppData.AllowedNFTTypes = new List<VEDriversLite.NFT.NFTTypes>()
         { 
             VEDriversLite.NFT.NFTTypes.Profile, 
             VEDriversLite.NFT.NFTTypes.Xray, 
             VEDriversLite.NFT.NFTTypes.XrayImage 
         };
+
+        await base.OnInitializedAsync();
     }
 }

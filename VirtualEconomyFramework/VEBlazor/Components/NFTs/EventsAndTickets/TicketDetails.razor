@@ -6,7 +6,9 @@
 @if ( NFT != null && NFT.Type == NFTTypes.Ticket )
 {
     var nft = NFT as TicketNFT;
-    <NFTDetails @ref="NFTDetailsComponent"
+    if (nft != null)
+    {
+        <NFTDetails @ref="NFTDetailsComponent"
                 Address="@Address" 
                 IsSubAccount="@IsSubAccount" 
                 IsOwnNFT="IsOwnNFT" 
@@ -14,7 +16,7 @@
                 NFTSent="@NFTSentHandler" 
                 OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
                 HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
-                SpecificInfoHeading="Event Details">
+                SpecificInfoHeading="Ticket Details">
         <Field>
             <FieldLabel>Location</FieldLabel>
             <Text>@nft.Location</Text>
@@ -48,4 +50,5 @@
             <Text>@(nft.Used ? "Ticket Is used" : "Ticket is not used.")</Text>
         </Field>
     </NFTDetails>
+    }
 }

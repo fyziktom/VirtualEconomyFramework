@@ -1,7 +1,30 @@
-﻿@page "/addnew"
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@using VEBlazor.Components.Minting
+@using VEBlazor.Components.NFTs.Imaging.Xray
+@inject AppData AppData
+
+@page "/addnew"
 
 <PageTitle>BDP - Add New Data</PageTitle>
 
 <VEBlazor.Components.PageHeader Title="Add New Data" BreadcrumbItems="@(new string[] { "BDP", "Add New Data" })" />
 
-<VEBlazor.Pages.AddNew NFT="@(new VEDriversLite.NFT.Imaging.Xray.XrayImageNFT())" />
+<VEBlazor.Pages.AddNew NFT="@AppData.NFTInMintingForm" NFTType="@NFTTypes.XrayImage" Address="@AppData.Account.Address" >
+    <SpecificParamsStepHeader>
+        Xray
+    </SpecificParamsStepHeader>
+    <SpecificParamsStepContent>
+    @if (AppData.NFTInMintingForm.Type == NFTTypes.XrayImage)
+    {
+      <Row>
+            <Column>
+                <XrayExposureParamsForm @bind-Voltage="@((AppData.NFTInMintingForm as XrayImageNFT).XrayParams.Voltage)"
+                                        @bind-Current="@((AppData.NFTInMintingForm as XrayImageNFT).XrayParams.Current)"
+                                        @bind-Time="@((AppData.NFTInMintingForm as XrayImageNFT).XrayParams.ExposureTime)" />
+            </Column>
+        </Row>
+    }
+    </SpecificParamsStepContent>
+</VEBlazor.Pages.AddNew>
+

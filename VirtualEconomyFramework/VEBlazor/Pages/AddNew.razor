@@ -6,143 +6,115 @@
 
 @if (NFT != null)
 {
-    <Row>
-        <Column>
-            <Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Default">
-                <CardBody>
-                    <Steps SelectedStep="@selectedStep" SelectedStepChanged="@OnSelectedStepChanged">
-                        <Items>
-                            <Step Name="stepUpload">Upload</Step>
-                            <Step Name="stepData">Data Info</Step>
-                            <Step Name="stepDevice">Device Info</Step>
-                            @*<Step Name="stepOther">Other</Step>*@
-                            <Step Name="stepFinish">
-                                <Marker>
-                                    <Icon Name="IconName.Flag" />
-                                </Marker>
-                                <Caption>
-                                    Finish
-                                </Caption>
-                            </Step>
-                        </Items>
-                        <Content>
-                            <StepPanel Name="stepUpload">
-                                <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                                <Row>
-                                    <Column>
-                                        <UploadData @ref="@uploadDataRef" @bind-MainIPFSLink="@NFT.ImageLink" @bind-PreviewIPFSLink="@NFT.Preview" />
-                                    </Column>
-                                </Row>
-                                <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                            </StepPanel>
-                            <StepPanel Name="stepData">
-                                <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                                <Row>
-                                    <Column>
-                                        <DataInfoForm @ref="@dataInfoFormRef"
-                                                            @bind-Name="@NFT.Name"
-                                                            @bind-Description="@NFT.Description"
-                                                            @bind-Text="@NFT.Text"
-                                                            @bind-Tags="@NFT.Tags" />
-                                    </Column>
-                                </Row>
-                                <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                            </StepPanel>
-                            <StepPanel Name="stepDevice">
-                                @if (NFT.Type == NFTTypes.XrayImage)
+    <Container Fluid Margin="Margin.Is4.FromBottom">
+        <Steps SelectedStep="@selectedStep" SelectedStepChanged="@OnSelectedStepChanged">
+            <Items>
+                <Step Name="stepUpload">Upload</Step>
+                <Step Name="stepData">Data Info</Step>
+                <Step Name="specificParams">@SpecificParamsStepHeader</Step>
+                <Step Name="stepFinish">
+                    <Marker>
+                        <Icon Name="IconName.Flag" />
+                    </Marker>
+                    <Caption>
+                        Finish
+                    </Caption>
+                </Step>
+            </Items>
+            <Content>
+                <StepPanel Name="stepUpload">
+                    <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <Row>
+                        <Column>
+                            <UploadData @ref="@uploadDataRef" @bind-MainIPFSLink="@AppData.NFTInMintingForm.ImageLink" @bind-PreviewIPFSLink="@AppData.NFTInMintingForm.Preview" />
+                        </Column>
+                    </Row>
+                    <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                </StepPanel>
+                <StepPanel Name="stepData">
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <Row>
+                        <Column>
+                            <DataInfoForm @ref="@dataInfoFormRef"
+                                          @bind-Name="@AppData.NFTInMintingForm.Name"
+                                          @bind-Description="@AppData.NFTInMintingForm.Description"
+                                          @bind-Text="@AppData.NFTInMintingForm.Text"
+                                          @bind-Tags="@AppData.NFTInMintingForm.Tags" />
+                        </Column>
+                    </Row>
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                </StepPanel>
+                <StepPanel Name="specificParams">
+                    @if (SpecificParamsStepContent != null)
+                    {
+                        <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                        <ErrorBoundary>
+                            @SpecificParamsStepContent
+                        </ErrorBoundary>
+                        <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    }
+                </StepPanel>
+
+                <StepPanel Name="stepFinish">
+                    <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <Row>
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <Span>Now you can confirm the storage of the data.</Span>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <Span>Here you can check the expected result:</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is3.FromTop">
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <NFTCard NFT="@AppData.NFTInMintingForm" OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler" />
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is3.FromTop">
+                        <Column Flex="Flex.JustifyContent.Center">
+                            @if ( IsMinted )
+                            {
+                                if ( mintingResult.Item1 )
                                 {
-                                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                                    <Row>
-                                        <Column>
-                                            <XrayExposureParamsForm @bind-Voltage="@((NFT as XrayImageNFT).XrayParams.Voltage)"
-                                                                    @bind-Current="@((NFT as XrayImageNFT).XrayParams.Current)"
-                                                                    @bind-Time="@((NFT as XrayImageNFT).XrayParams.ExposureTime)" />
-                                        </Column>
-                                    </Row>
-                                    <Row>
-                                        <Column>
-                                            <DeviceInfoForm />
-                                        </Column>
-                                    </Row>
-                                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                                    <Alert Color="Color.Success" Visible>
+                                        <AlertMessage>Data Stored :)</AlertMessage>
+                                        <AlertDescription>Transaction Hash is: <a href="https://explorer.nebl.io/tx/@mintingResult.Item2" target="_blank">@mintingResult.Item2</a></AlertDescription>
+                                    </Alert>
                                 }
-                            </StepPanel>
-                            @*        <StepPanel Name="stepOther">
-                                <Layout>
-                                <LayoutHeader>
-                                <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true"
-                                ShowPrevButton="true"
-                                ToolActionHandler="@OnToolActionHandler" />
-                                </LayoutHeader>
-                                <LayoutContent>
-                                <Row>
-                                <Column>
-                                <BDP_WASM.Components.Minting.OtherInfo />
-                                </Column>
-                                </Row>
-                                </LayoutContent>
-                                <LayoutFooter>
-                                <BDP_WASM.Components.Minting.MintingToolbar ShowNextButton="true"
-                                ShowPrevButton="true"
-                                ToolActionHandler="@OnToolActionHandler" />
-                                </LayoutFooter>
-                                </Layout>
-                                </StepPanel>  *@
-                            <StepPanel Name="stepFinish">
-                                <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                                <Row>
-                                    <Column Flex="Flex.JustifyContent.Center">
-                                        <Span>Now you can confirm the storage of the data.</Span>
-                                    </Column>
-                                </Row>
-                                <Row>
-                                    <Column Flex="Flex.JustifyContent.Center">
-                                        <Span>Here you can check the expected result:</Span>
-                                    </Column>
-                                </Row>
-                                <Row Margin="Margin.Is3.FromTop">
-                                    <Column Flex="Flex.JustifyContent.Center">
-                                        <NFTCard NFT=@NFT OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler" />
-                                    </Column>
-                                </Row>
-                                <Row Margin="Margin.Is3.FromTop">
-                                    <Column Flex="Flex.JustifyContent.Center">
-                                        @if ( IsMinted )
-                                        {
-                                            if ( mintingResult.Item1 )
-                                            {
-                                                <Alert Color="Color.Success" Visible>
-                                                    <AlertMessage>Data Stored :)</AlertMessage>
-                                                    <AlertDescription>Transaction Hash is: <a href="https://explorer.nebl.io/tx/@mintingResult.Item2" target="_blank">@mintingResult.Item2</a></AlertDescription>
-                                                </Alert>
-                                            }
-                                            else
-                                            {
-                                                <Alert Color="Color.Danger" Visible>
-                                                    <AlertMessage>Cannot save</AlertMessage>
-                                                    <AlertDescription>@mintingResult.Item2</AlertDescription>
-                                                </Alert>
-                                            }
-                                        }
-                                    </Column>
-                                </Row>
-                                <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
-                            </StepPanel>
-                        </Content>
-                    </Steps>
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
+                                else
+                                {
+                                    <Alert Color="Color.Danger" Visible>
+                                        <AlertMessage>Cannot save</AlertMessage>
+                                        <AlertDescription>@mintingResult.Item2</AlertDescription>
+                                    </Alert>
+                                }
+                            }
+                        </Column>
+                    </Row>
+                    <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                </StepPanel>
+            </Content>
+        </Steps>
+    </Container>
 
     <OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
                            Address="@Address"
                            IsSubAccount="@false"
+                           HideOpenInWorkTabButton="true"
                            IsOwnNFT="@false" />
 } 
 
 @code {
     [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter]
+    public RenderFragment SpecificParamsStepHeader { get; set; }
+    [Parameter]
+    public RenderFragment SpecificParamsStepContent { get; set; }
+    [Parameter]
+    public NFTTypes NFTType { get; set; } = NFTTypes.Image;
 
     OpenNFTDetailsFactory? openNFTDetailsFactory;
     string selectedStep = "stepUpload";
@@ -161,25 +133,20 @@
     async Task OpenNFTDetailsRequestHandler(INFT nft)
     {    
         if (nft != null && openNFTDetailsFactory != null)
-        {        
-            await openNFTDetailsFactory?.OpenNFTDetails(nft);
-        }            
+            await openNFTDetailsFactory.OpenNFTDetails(nft);
     }
     
     private async Task mintNFT( string[] args )
     {
+        NFT = AppData.NFTInMintingForm;
+
         Console.WriteLine( $"Name: {NFT.Name}" );
         Console.WriteLine( $"Description: {NFT.Description}" );
         Console.WriteLine( $"Text: {NFT.Text}" );
         Console.WriteLine( $"Tags: {NFT.Tags}" );
         Console.WriteLine( $"ImageLink: {NFT.ImageLink}" );
         Console.WriteLine( $"Preview: {NFT.Preview}" );
-        @if (NFT.Type == NFTTypes.XrayImage)
-        {
-            Console.WriteLine($"Voltage: {(NFT as XrayImageNFT).XrayParams.Voltage} kV");
-            Console.WriteLine($"Current: {(NFT as XrayImageNFT).XrayParams.Current} mA");
-            Console.WriteLine($"Exposure Time: {(NFT as XrayImageNFT).XrayParams.ExposureTime} ms");
-        }
+
         if ( string.IsNullOrEmpty( NFT.ImageLink ) )
         {
             mintingResult.Item1 = false;
@@ -240,20 +207,16 @@
         if ( selectedStep == "stepUpload" )
             selectedStep = "stepData";
         else if ( selectedStep == "stepData" )
-            selectedStep = "stepDevice";
-        else if ( selectedStep == "stepDevice" )
-            //selectedStep = "stepOther";
-            //else if (selectedStep == "stepOther")
+            selectedStep = "specificParams";
+        else if ( selectedStep == "specificParams" )
             selectedStep = "stepFinish";
     }
 
     void PreviousStep( string[] args )
     {
         if ( selectedStep == "stepFinish" )
-            //selectedStep = "stepOther";
-            //else if (selectedStep == "stepOther")
-            selectedStep = "stepDevice";
-        else if ( selectedStep == "stepDevice" )
+            selectedStep = "specificParams";
+        else if ( selectedStep == "specificParams" )
             selectedStep = "stepData";
         else if ( selectedStep == "stepData" )
             selectedStep = "stepUpload";

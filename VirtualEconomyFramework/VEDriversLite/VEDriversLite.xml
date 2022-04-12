@@ -7564,7 +7564,7 @@
             Loaded Image Preview data as byte array
             </summary>
         </member>
-        <member name="P:VEDriversLite.NFT.CommonNFT.Tags">
+        <member name="F:VEDriversLite.NFT.CommonNFT._tags">
             <summary>
             List of the tags separated by space
             </summary>

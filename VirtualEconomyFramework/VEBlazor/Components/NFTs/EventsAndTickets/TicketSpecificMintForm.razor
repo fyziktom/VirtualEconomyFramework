@@ -1,0 +1,168 @@
+﻿@using VEDriversLite.NFT
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>Information about the Ticket</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Row>
+            <Column>
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Please select the Ticket class</FieldLabel>
+                            <RadioGroup CheckedValue="@TicketClass" 
+                                        TValue="@ClassOfNFTTicket" 
+                                        Name="ticketclass"
+                                        CheckedValueChanged="@ticketClassChanged">
+                                @foreach( var ctype in Enum.GetValues(typeof(ClassOfNFTTicket)) )
+                                {
+                                    <Radio Group="ticketclass" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</Radio>
+                                }
+                            </RadioGroup>
+                        </Field>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Please select the Ticket duration</FieldLabel>
+                            <RadioGroup CheckedValue="@TicketDuration" 
+                                        TValue="@DurationOfNFTTicket" 
+                                        Name="ticketduration"
+                                        CheckedValueChanged="@ticketDurationChanged">
+                                @foreach( var ctype in Enum.GetValues(typeof(DurationOfNFTTicket)) )
+                                {
+                                    <Radio Group="ticketduration" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</Radio>
+                                }
+                            </RadioGroup>
+                        </Field>
+                    </Column>
+                </Row>
+            </Column>
+            <Column>
+                <Field>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Light" Clicked="@(()=>datePicker.ToggleAsync())">
+                                <Icon Name="IconName.CalendarDay" />
+                            </Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <DatePicker @ref="@datePicker" Date="@EventDate" DateChanged="@eventDateChanged" TValue="DateTime?" />
+                        </Addon>
+                    </Addons>
+                </Field>
+                <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <Field>
+                            <FieldLabel>Please enter the location name.</FieldLabel>
+                            <TextEdit Placeholder="Enter location name" @bind-Text="Location" @onchange="locationChanged">
+                                <Feedback>
+                                    <ValidationError>Missing location.</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <Field>
+                            <FieldLabel>Please enter location Coordinates</FieldLabel>
+                            <TextEdit Placeholder="Enter the location coordinates" @bind-Text="LocationCords" @onchange="locationCordsChanged" >
+                                <Feedback>
+                                    <ValidationError>Missing location coordinates.</ValidationError>
+                                </Feedback>                        
+                            </TextEdit>
+                            <FieldHelp>Please add it in the shape XX.XXXXXX,YY.YYYYYY</FieldHelp>
+                        </Field>
+                    </Validation>
+                </Validations>
+        
+                <Field>
+                    <FieldLabel>Please enter the author website link</FieldLabel>
+                    <TextEdit Placeholder="Enter author website" @bind-Text="AuthorLink" @onchange="authorLinkChanged" />
+                </Field>
+            </Column>
+        </Row>
+
+    </CardBody>
+</Card>
+
+@code {
+    Validations validationsRef;
+
+    string _location = string.Empty;
+    [Parameter]
+    public string Location { get => _location; set => _location = value; }
+    [Parameter]
+    public EventCallback<string> LocationChanged { get; set; }
+
+    string _locationCords = string.Empty;
+    [Parameter]
+    public string LocationCords { get => _locationCords; set => _locationCords = value; }
+    [Parameter]
+    public EventCallback<string> LocationCordsChanged { get; set; }
+
+    string _authorLink = string.Empty;
+    [Parameter]
+    public string AuthorLink { get => _authorLink; set => _authorLink = value; }
+    [Parameter]
+    public EventCallback<string> AuthorLinkChanged { get; set; }
+
+    DateTime? _eventDate = DateTime.UtcNow;
+    [Parameter]
+    public DateTime? EventDate { get => _eventDate; set => _eventDate = value; }
+    [Parameter]
+    public EventCallback<DateTime> EventDateChanged { get; set; }
+
+    ClassOfNFTTicket _ticketClass = ClassOfNFTTicket.General;
+    [Parameter]
+    public ClassOfNFTTicket TicketClass { get => _ticketClass; set => _ticketClass = value; }
+    [Parameter]
+    public EventCallback<ClassOfNFTTicket> TicketClassChanged { get; set; }
+
+    DurationOfNFTTicket _ticketDuration = DurationOfNFTTicket.Day;
+    [Parameter]
+    public DurationOfNFTTicket TicketDuration { get => _ticketDuration; set => _ticketDuration = value; }
+    [Parameter]
+    public EventCallback<DurationOfNFTTicket> TicketDurationChanged { get; set; }
+
+    DatePicker<DateTime?> datePicker;
+
+    async Task locationChanged( ChangeEventArgs e )
+    {
+        if (e != null && e.Value != null )        
+            await LocationChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task locationCordsChanged( ChangeEventArgs e )
+    {
+        if (e != null && e.Value != null )        
+            await LocationCordsChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task authorLinkChanged( ChangeEventArgs e )
+    {
+        if (e != null && e.Value != null )        
+            await AuthorLinkChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task ticketClassChanged( ClassOfNFTTicket e )
+    {
+        TicketClass = e;
+        await TicketClassChanged.InvokeAsync( e );
+    }
+    async Task ticketDurationChanged( DurationOfNFTTicket e )
+    {
+       TicketDuration = e;
+       await TicketDurationChanged.InvokeAsync( e );
+    }
+    async Task eventDateChanged( DateTime? e)
+    {
+        if (e == null) return;
+
+        EventDate = (DateTime)e;
+        await EventDateChanged.InvokeAsync((DateTime)e);
+    }
+
+    public Task<bool> IsValidated()
+    {
+        return validationsRef.ValidateAll();
+    }
+}

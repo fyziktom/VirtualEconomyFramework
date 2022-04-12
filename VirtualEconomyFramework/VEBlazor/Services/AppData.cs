@@ -63,6 +63,7 @@ public class AppData
     }
 
     public string AppName { get; set; } = "VEBlazorApp";
+    public string AppNick { get; set; } = "VEBA";
     public string AppHomeWebsiteUrl { get; set; } = "https://veframework.com/";
     public List<NFTTypes> AllowedNFTTypes { get; set; } = new List<NFTTypes>() 
     {
@@ -100,6 +101,8 @@ public class AppData
     public Dictionary<string, DetectorDataDto> DetectorParametersTemplates { get; set; } = new Dictionary<string, DetectorDataDto>();
 
     public List<GalleryTab> OpenedTabs { get; set; } = new List<GalleryTab>();
+
+    public INFT NFTInMintingForm { get; set; } = new ImageNFT("");
 
     public event EventHandler<bool> LockUnlockAccount;
 
