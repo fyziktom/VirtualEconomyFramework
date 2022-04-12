@@ -1,4 +1,4 @@
-name: sonarqube_testing_branch
+name: sonarqubes_testing_branch
 on:
   push:
     branches:
