@@ -1,4 +1,4 @@
-name: Buildss
+name: Builds
 on:
   push:
     branches:
