@@ -2,7 +2,7 @@ name: sonarqube_testing_branch
 on:
   push:
     branches:
-      - sonarqube_testing_branch
+      - sonarqube
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
