@@ -1,11 +1,19 @@
 ﻿@using VEDriversLite.NFT
 
+@inject AppData AppData
+
 <Card Margin="Margin.Is4.FromBottom">
     <CardHeader>
         <CardTitle>Information about the Ticket</CardTitle>
     </CardHeader>
     <CardBody>
-        <Row>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <Button Color="Color.Primary" Clicked="() => loadNFTFromTemplate.Show()" Block>Load from template</Button>
+                <LoadNFTFromTemplate @ref="loadNFTFromTemplate" OnLoadNFTTemplate="@onLoadNFTTemplateHandler" />
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is2.FromTop">
             <Column>
                 <Row>
                     <Column>
@@ -73,6 +81,12 @@
                                 </Feedback>                        
                             </TextEdit>
                             <FieldHelp>Please add it in the shape XX.XXXXXX,YY.YYYYYY</FieldHelp>
+                            @if (!string.IsNullOrEmpty(LocationCords))
+                            {
+                                <FieldHelp>
+                                    <a href="http://www.google.com/maps/place/@LocationCords" taret="_blank">Test the location link</a>
+                                </FieldHelp>
+                            }
                         </Field>
                     </Validation>
                 </Validations>
@@ -80,6 +94,12 @@
                 <Field>
                     <FieldLabel>Please enter the author website link</FieldLabel>
                     <TextEdit Placeholder="Enter author website" @bind-Text="AuthorLink" @onchange="authorLinkChanged" />
+                    @if (!string.IsNullOrEmpty(AuthorLink))
+                    {
+                        <FieldHelp>
+                            <a href="@AuthorLink" taret="_blank">Test the location link</a>
+                        </FieldHelp>
+                    }
                 </Field>
             </Column>
         </Row>
@@ -88,6 +108,8 @@
 </Card>
 
 @code {
+    LoadNFTFromTemplate loadNFTFromTemplate;
+
     Validations validationsRef;
 
     string _location = string.Empty;
@@ -126,6 +148,9 @@
     [Parameter]
     public EventCallback<DurationOfNFTTicket> TicketDurationChanged { get; set; }
 
+    [Parameter]
+    public EventCallback<INFT> OnLoadNFTTemplate { get; set; }
+
     DatePicker<DateTime?> datePicker;
 
     async Task locationChanged( ChangeEventArgs e )
@@ -150,8 +175,8 @@
     }
     async Task ticketDurationChanged( DurationOfNFTTicket e )
     {
-       TicketDuration = e;
-       await TicketDurationChanged.InvokeAsync( e );
+        TicketDuration = e;
+        await TicketDurationChanged.InvokeAsync( e );
     }
     async Task eventDateChanged( DateTime? e)
     {
@@ -164,5 +189,11 @@
     public Task<bool> IsValidated()
     {
         return validationsRef.ValidateAll();
+    }
+
+    async Task onLoadNFTTemplateHandler(INFT nft)
+    {
+        StateHasChanged();
+        await OnLoadNFTTemplate.InvokeAsync(nft);
     }
 }

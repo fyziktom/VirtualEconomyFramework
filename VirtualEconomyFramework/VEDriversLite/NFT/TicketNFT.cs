@@ -65,6 +65,24 @@ namespace VEDriversLite.NFT
             Used = nft.Used;
         }
 
+        public async Task FillFromEvent(INFT NFT)
+        {
+            await FillCommon(NFT);
+
+            var nft = NFT as EventNFT;
+            Location = nft.Location;
+            LocationCoordinates = nft.LocationCoordinates;
+            LocationCoordinatesLat = nft.LocationCoordinatesLat;
+            LocationCoordinatesLen = nft.LocationCoordinatesLen;
+            MintAuthorAddress = nft.MintAuthorAddress;
+            VideoLink = nft.VideoLink;
+            AuthorLink = nft.AuthorLink;
+            EventDate = nft.EventDate;
+            EventId = nft.EventId;
+            MusicInLink = nft.MusicInLink;
+            Used = nft.Used;
+        }
+
         public string MintAuthorAddress { get; set; } = string.Empty;
         public string EventAddress { get; set; } = string.Empty;
         public string EventId { get; set; } = string.Empty;

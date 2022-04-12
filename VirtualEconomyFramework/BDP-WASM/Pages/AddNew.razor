@@ -17,6 +17,12 @@
     <SpecificParamsStepContent>
     @if (AppData.NFTInMintingForm.Type == NFTTypes.XrayImage)
     {
+        <Row>
+            <Column>
+                <Button Color="Color.Primary" Clicked="() => loadNFTFromTemplate.Show()" Block>Load from template</Button>
+                <LoadNFTFromTemplate @ref="loadNFTFromTemplate" OnLoadNFTTemplate="@onLoadNFTTemplateHandler" />
+            </Column>
+        </Row>
       <Row>
             <Column>
                 <XrayExposureParamsForm @bind-Voltage="@((AppData.NFTInMintingForm as XrayImageNFT).XrayParams.Voltage)"
@@ -28,3 +34,16 @@
     </SpecificParamsStepContent>
 </VEBlazor.Pages.AddNew>
 
+@code {
+    
+    LoadNFTFromTemplate loadNFTFromTemplate;
+
+    async Task onLoadNFTTemplateHandler(INFT nft)
+    {
+        if (nft != null)
+        {
+            await AppData.NFTInMintingForm.Fill(nft);
+            StateHasChanged();
+        }
+    }
+}

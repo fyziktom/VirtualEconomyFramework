@@ -72,6 +72,17 @@ namespace VEBlazor.Components.Base
 
         [Parameter]
         public bool HideOpenInWorkTabButton { get; set; } = false;
+
+        public void LoadNFT(INFT nft)
+        {
+            if (nft != null)
+            {
+                NFT = nft;
+                Utxo = NFT.Utxo;
+                UtxoIndex = NFT.UtxoIndex;
+                StateHasChanged();
+            }
+        }
         public string GetImageUrl(bool returnPreviewIfExists = false)
         {
             if (NFT == null)
