@@ -21,7 +21,7 @@ namespace VEDriversLite.Messaging
         /// Main constructor. Input the address of the partner
         /// </summary>
         /// <param name="address"></param>
-        public MessageTab(string address)
+        public MessageTabTest(string address)
         {
             Address = address;
             ShortAddress = NeblioTransactionHelpers.ShortenAddress(address);
