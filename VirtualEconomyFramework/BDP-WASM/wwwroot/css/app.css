@@ -90,7 +90,7 @@ a, .btn-link {
         width: 100%;
         height: 100%;
         border-right: solid 5px #2672ed;
-        background: #486da8;
+        background: rgba(99,102,241,.12);
         transition: 0.35s ease left;
     }
 

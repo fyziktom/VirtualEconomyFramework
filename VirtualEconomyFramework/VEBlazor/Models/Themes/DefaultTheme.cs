@@ -25,43 +25,43 @@ namespace VEBlazor.Models.Themes
                     {
                         ItemColorOptions = new ThemeBarItemColorOptions
                         {
-                            ActiveBackgroundColor = "#6366F1",
+                            ActiveBackgroundColor = "#6366f1",
                             ActiveColor = "#ffffff",
-                            HoverBackgroundColor = "#585aad",
+                            HoverBackgroundColor = "rgba(99,102,241,.12)",
                         }
                     }
                 },
                 ColorOptions = new ThemeColorOptions
                 {
-                    Primary = "#6366F1",
-                    Secondary = "#566ea8",
-                    Success = "#12a55d",
-                    Info = "#AEC5EB",
-                    Warning = "#e4cb12",
-                    Danger = "#e4cb12",
+                    Primary = "#6366f1",
+                    Secondary = "#cfd8f6",
+                    Success = "#1ca44e",
+                    Info = "#2768f5",
+                    Warning = "#e1a200",
+                    Danger = "#e1a200",
                     Light = "#d8dfe8",
                     Dark = "#0f100e",
                     Link = "#204167",
                 },
                 BackgroundOptions = new ThemeBackgroundOptions
                 {
-                    Primary = "#6366F1",
-                    Secondary = "#566ea8",
-                    Success = "#12a55d",
-                    Info = "#AEC5EB",
-                    Warning = "#e4cb12",
-                    Danger = "#e4cb12",
+                    Primary = "#6366f1",
+                    Secondary = "#cfd8f6",
+                    Success = "#1ca44e",
+                    Info = "#2768f5",
+                    Warning = "#e1a200",
+                    Danger = "#e1a200",
                     Light = "#d8dfe8",
                     Dark = "#0f100e",
                 },
                 TextColorOptions = new ThemeTextColorOptions
                 {
-                    Primary = "#6366F1",
-                    Secondary = "#566ea8",
-                    Success = "#12a55d",
-                    Info = "#AEC5EB",
-                    Warning = "#e4cb12",
-                    Danger = "#e4cb12",
+                    Primary = "#6366f1",
+                    Secondary = "#cfd8f6",
+                    Success = "#1ca44e",
+                    Info = "#2768f5",
+                    Warning = "#e1a200",
+                    Danger = "#e1a200",
                     Light = "#d8dfe8",
                     Dark = "#0f100e",
                 },
