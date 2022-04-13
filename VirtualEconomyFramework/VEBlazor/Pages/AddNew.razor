@@ -123,6 +123,18 @@
     bool minting = false;
     (bool, string) mintingResult = (false, string.Empty);
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await RefreshImageInUploadComponent();
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task RefreshImageInUploadComponent()
+    {    
+        if (uploadDataRef != null)
+            await uploadDataRef.LoadImage(NFT.ImageLink);
+    }
+
     private Task OnSelectedStepChanged( string name )
     {
         selectedStep = name;

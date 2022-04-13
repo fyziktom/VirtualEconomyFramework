@@ -88,6 +88,23 @@
         return InvokeAsync( StateHasChanged );
     }
 
+    public async Task LoadImage(string link, string previewlink = "")
+    {
+        if (!string.IsNullOrEmpty(link))
+        {
+            var imageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(link));
+            if (imageData != null)
+            { 
+                ImageDataString = "data:image;base64," + Convert.ToBase64String( imageData );
+                this.imageData = imageData;
+                uploadFinished = true;
+                if (ipfsUploadRef != null)
+                    await ipfsUploadRef.LoadIPFSLink(link);
+                await InvokeAsync( StateHasChanged );
+            }
+        }
+    }
+
     async Task OnImageUploadEnded( string fileName, byte[] data )
     {
         uploadingImage = false;

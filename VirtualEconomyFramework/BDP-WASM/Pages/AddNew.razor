@@ -10,7 +10,7 @@
 
 <VEBlazor.Components.PageHeader Title="Add New Data" BreadcrumbItems="@(new string[] { "BDP", "Add New Data" })" />
 
-<VEBlazor.Pages.AddNew NFT="@AppData.NFTInMintingForm" NFTType="@NFTTypes.XrayImage" Address="@AppData.Account.Address" >
+<VEBlazor.Pages.AddNew @ref="AddnewRef" NFT="@AppData.NFTInMintingForm" NFTType="@NFTTypes.XrayImage" Address="@AppData.Account.Address" >
     <SpecificParamsStepHeader>
         Xray
     </SpecificParamsStepHeader>
@@ -35,14 +35,16 @@
 </VEBlazor.Pages.AddNew>
 
 @code {
-    
-    LoadNFTFromTemplate loadNFTFromTemplate;
+    VEBlazor.Pages.AddNew? AddnewRef;
+    LoadNFTFromTemplate? loadNFTFromTemplate;
 
     async Task onLoadNFTTemplateHandler(INFT nft)
     {
         if (nft != null)
         {
             await AppData.NFTInMintingForm.Fill(nft);
+            if (AddnewRef != null)
+                await AddnewRef.RefreshImageInUploadComponent();
             StateHasChanged();
         }
     }
