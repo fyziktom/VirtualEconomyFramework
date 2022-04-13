@@ -97,3 +97,8 @@ a, .btn-link {
     .list-hover-slide a.is-current:before, .list-hover-slide a:hover:before {
         left: 0;
     }
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}

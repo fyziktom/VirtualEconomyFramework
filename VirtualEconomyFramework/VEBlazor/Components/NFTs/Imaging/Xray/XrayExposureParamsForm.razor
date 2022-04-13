@@ -1,8 +1,8 @@
 ﻿<Card Margin="Margin.Is4.FromBottom">
-    <CardHeader>
-        <CardTitle>Information about the exposure / capture of the data</CardTitle>
-    </CardHeader>
     <CardBody>
+        <CardTitle>
+            Information about the exposure / capture of the data
+        </CardTitle>
         <Field>
             <FieldLabel>Please enter the Anode Voltage in kilo Volts.</FieldLabel>
             <Slider TValue="double" Min="1" Max="450" Step="1" Value="@_voltage" ValueChanged="@voltageChanged" /> @_voltage kV
