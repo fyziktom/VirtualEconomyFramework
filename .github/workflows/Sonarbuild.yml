@@ -1,8 +1,8 @@
-name: SonarQubePR_Branch
+name: SonarQubeDevelopment_Build
 on:
   push:
     branches:
-      - SonarQube_Branch
+      - Development
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
