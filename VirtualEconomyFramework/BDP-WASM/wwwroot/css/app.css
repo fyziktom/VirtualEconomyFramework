@@ -108,3 +108,7 @@ a, .btn-link {
     margin-bottom: 0;
     line-height: 1.6;
 }
+
+.b-bar-link.active {
+    box-shadow: 0 0.5rem 1.125rem -0.5rem rgb(99 102 241 / 90%);
+}
