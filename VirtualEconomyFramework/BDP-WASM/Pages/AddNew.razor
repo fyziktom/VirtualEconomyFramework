@@ -6,9 +6,9 @@
 
 @page "/addnew"
 
-<PageTitle>BDP - Add New Data</PageTitle>
+<PageTitle>@AppData.AppNick - Add New Data</PageTitle>
 
-<VEBlazor.Components.PageHeader Title="Add New Data" BreadcrumbItems="@(new string[] { "BDP", "Add New Data" })" />
+<VEBlazor.Components.PageHeader Title="Add New Data" BreadcrumbItems="@(new string[] { AppData.AppNick, "Add New Data" })" />
 
 <VEBlazor.Pages.AddNew @ref="AddnewRef" NFT="@AppData.NFTInMintingForm" NFTType="@NFTTypes.XrayImage" Address="@AppData.Account.Address" >
     <SpecificParamsStepHeader>
@@ -28,7 +28,8 @@
         </Row>
       <Row>
             <Column>
-                <XrayExposureParamsForm @bind-Voltage="@((AppData.NFTInMintingForm as XrayImageNFT).XrayParams.Voltage)"
+                <XrayExposureParamsForm @ref="xrayParamsFormRef"
+                                        @bind-Voltage="@((AppData.NFTInMintingForm as XrayImageNFT).XrayParams.Voltage)"
                                         @bind-Current="@((AppData.NFTInMintingForm as XrayImageNFT).XrayParams.Current)"
                                         @bind-Time="@((AppData.NFTInMintingForm as XrayImageNFT).XrayParams.ExposureTime)" />
             </Column>
@@ -38,6 +39,7 @@
 </VEBlazor.Pages.AddNew>
 
 @code {
+    XrayExposureParamsForm? xrayParamsFormRef;
     VEBlazor.Pages.AddNew? AddnewRef;
     LoadNFTFromTemplate? loadNFTFromTemplate;
 
@@ -48,6 +50,10 @@
             await AppData.NFTInMintingForm.Fill(nft);
             if (AddnewRef != null)
                 await AddnewRef.RefreshImageInUploadComponent();
+            if (xrayParamsFormRef != null)
+                xrayParamsFormRef.SetValues((AppData.NFTInMintingForm as XrayImageNFT).XrayParams.Voltage,
+                                            (AppData.NFTInMintingForm as XrayImageNFT).XrayParams.Current,
+                                            (AppData.NFTInMintingForm as XrayImageNFT).XrayParams.ExposureTime);
             StateHasChanged();
         }
     }

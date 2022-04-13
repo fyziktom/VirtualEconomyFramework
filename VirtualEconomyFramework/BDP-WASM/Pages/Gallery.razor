@@ -1,8 +1,10 @@
-﻿@page "/gallery"
+﻿@inject AppData AppData
 
-<PageTitle>BDP - Gallery</PageTitle>
+@page "/gallery"
 
-<VEBlazor.Components.PageHeader Title="Data Gallery" BreadcrumbItems="@(new string[] { "BDP", "Gallery" })" />
+<PageTitle>@AppData.AppNick - Gallery</PageTitle>
+
+<VEBlazor.Components.PageHeader Title="Data Gallery" BreadcrumbItems="@(new string[] { AppData.AppNick, "Gallery" })" />
 
 <VEBlazor.Pages.Gallery @ref="galleryComponent" />
 

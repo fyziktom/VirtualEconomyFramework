@@ -670,7 +670,7 @@ namespace VEDriversLite.NFT
                             var txi = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
                             TxDetails = txi;
                             TxDataRefreshed?.Invoke(this, TxDetails);
-                            if (TxDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations + 2))
+                            if (TxDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations))
                                 await StopRefreshingData();
                         }
                         catch (Exception ex)
