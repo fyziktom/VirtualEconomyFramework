@@ -28,6 +28,7 @@ namespace VEBlazor.Models.Themes
                             ActiveBackgroundColor = "#6366f1",
                             ActiveColor = "#ffffff",
                             HoverBackgroundColor = "rgba(99,102,241,.12)",
+                            HoverColor = "#6366f1"
                         }
                     }
                 },
@@ -65,22 +66,22 @@ namespace VEBlazor.Models.Themes
                     Light = "#d8dfe8",
                     Dark = "#0f100e",
                 },
-                ButtonOptions = new ThemeButtonOptions
-                {
-                    BorderRadius = "0",
-                },
-                CardOptions = new ThemeCardOptions
-                {
-                    BorderRadius = "0",
-                },
-                ModalOptions = new ThemeModalOptions
-                {
-                    BorderRadius = "0",
-                },
-                ProgressOptions = new ThemeProgressOptions
-                {
-                    BorderRadius = "0",
-                },
+                //ButtonOptions = new ThemeButtonOptions
+                //{
+                //    BorderRadius = "0",
+                //},
+                //CardOptions = new ThemeCardOptions
+                //{
+                //    BorderRadius = "0",
+                //},
+                //ModalOptions = new ThemeModalOptions
+                //{
+                //    BorderRadius = "0",
+                //},
+                //ProgressOptions = new ThemeProgressOptions
+                //{
+                //    BorderRadius = "0",
+                //},
             };
         }
     }

@@ -19,7 +19,10 @@
     {
         <Row>
             <Column>
-                <Button Color="Color.Primary" Clicked="() => loadNFTFromTemplate.Show()" Block>Load from template</Button>
+                <Button Color="Color.Primary" Clicked="() => loadNFTFromTemplate.Show()" Block Margin="Margin.Is2.FromBottom">
+                    <Icon Name="IconName.FolderPlus" Margin="Margin.Is3.FromEnd" />
+                    Load from template
+                </Button>
                 <LoadNFTFromTemplate @ref="loadNFTFromTemplate" OnLoadNFTTemplate="@onLoadNFTTemplateHandler" />
             </Column>
         </Row>

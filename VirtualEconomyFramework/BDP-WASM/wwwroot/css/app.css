@@ -1,7 +1,7 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Manrope', sans-serif;
 }
 /*
 h1:focus {
@@ -101,4 +101,10 @@ a, .btn-link {
 .card-title {
     font-size: 1.25rem;
     margin-bottom: 0.75rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+    line-height: 1.6;
 }
