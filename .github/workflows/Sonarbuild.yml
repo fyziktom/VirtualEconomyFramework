@@ -1,8 +1,8 @@
-name: sonarqubes_testing_branch
+name: SonarQubePR_Branch
 on:
   push:
     branches:
-      - sonarqube_testing_branch
+      - SonarQubePR_Branch
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
