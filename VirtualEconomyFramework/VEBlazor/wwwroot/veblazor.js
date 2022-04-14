@@ -20,6 +20,10 @@ class VEBlazorInterop {
         navigator.clipboard.writeText(text);
     }
 
+    readFromClipboard() {
+        return navigator.clipboard.readText();
+    }
+
     focusElement(element) {
         try {
             element.focus();

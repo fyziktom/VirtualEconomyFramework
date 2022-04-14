@@ -1,15 +1,23 @@
 ﻿@using VEDriversLite.NFT
 @inherits NFTDetailsBase
+@inject IJSRuntime JS
 
 @if (NFT != null)
 {
 <Modal @ref="LoadNFTModal">
-    <ModalContent Centered Size="ModalSize.Large">
+    <ModalContent Centered Size="ModalSize.Default">
     <ModalHeader>Load NFT</ModalHeader>
     <ModalBody>
         <Field>
             <FieldLabel>Input transaction id of the NFT</FieldLabel>
-            <TextEdit Placeholder="Enter transaction id" @bind-Text="Utxo" />
+            <Addons>
+@*                <Addon AddonType="AddonType.Start">
+                    <Button Color="Color.Primary" Clicked="@pasteFromClipboard">Paste</Button>
+                </Addon>   *@             
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit @ref="textRef" Placeholder="Enter transaction id" @bind-Text="Utxo" />
+                </Addon>
+            </Addons>
         </Field>
         <Div Margin="Margin.Is2.FromTop">
             <Button Color="Color.Primary" Clicked="@loadTemplateNFT" Loading="@loading" Block>1. Load Template NFT</Button>
@@ -41,6 +49,7 @@
     [Inject]
     public IMessageService? MessageService { get; set; }
 
+    TextEdit? textRef;
     Modal? LoadNFTModal;
     OpenNFTDetailsFactory? openNFTDetailsFactory;
     NFTCard? nftCard;
@@ -71,7 +80,10 @@
                     nftCard.LoadNFT(NFT);
             }
             else
+            {
                 NFT = new ImageNFT("");
+                await textRef.Focus();
+            }
             loading = false;
         }
         StateHasChanged();
@@ -112,5 +124,22 @@
             Hide();
         }
     }
-        
+
+    async Task pasteFromClipboard()
+    {
+        try
+        {
+            var u = await JS.InvokeAsync<string>("veblazor.readFromClipboard");
+            if (!string.IsNullOrEmpty(u))
+            {
+                Utxo = u;
+                await loadTemplateNFT();
+            }
+        }
+        catch
+        {
+            Console.WriteLine("Cannot paste from clipboard.");
+        }
+    }
+
 }
