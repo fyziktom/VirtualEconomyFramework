@@ -66,6 +66,12 @@ public class AppData
     public string AppName { get; set; } = "VEBlazorApp";
     public string AppNick { get; set; } = "VEBA";
     public string AppHomeWebsiteUrl { get; set; } = "https://veframework.com/";
+    private string _appshareNFTUrl = "https://veframework.com/";
+    public string AppShareNFTUrl 
+    {
+        get => _appshareNFTUrl.Trim('/');
+        set => _appshareNFTUrl = value;
+    }
     public bool AllowWorkTabs { get; set; } = true;
     public bool AllowDestroy { get; set; } = true;
     public bool AllowSend { get; set; } = true;

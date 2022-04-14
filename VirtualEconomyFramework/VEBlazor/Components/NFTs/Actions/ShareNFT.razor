@@ -1,4 +1,5 @@
-﻿
+﻿@inject AppData AppData
+
 <Modal @ref="ShareNFTModal">
     <ModalContent Centered Size="ModalSize.Default">
         <ModalHeader>
@@ -8,12 +9,12 @@
         <ModalBody>
             <Row Margin="Margin.Is2.FromTop">
                 <Column>
-                    <Button Color="Color.Light" Type="ButtonType.Link" To="@($"https://test.basedataplace.com/gallery?utxo={Utxo}:{UtxoIndex}")" Target="Target.Blank" Block>Open Share Link</Button>
+                    <Button Color="Color.Light" Type="ButtonType.Link" To="@($"{AppData.AppShareNFTUrl}/gallery?utxo={Utxo}:{UtxoIndex}")" Target="Target.Blank" Block>Open Share Link</Button>
                 </Column>
             </Row>
             <Row Margin="Margin.Is2.FromTop"> 
                 <Column Flex="Flex.JustifyContent.Center"> 
-                    <CopyButton ColorOfButton="Color.Light" TextToCopy="@($"https://test.basedataplace.com/gallery?utxo={Utxo}:{UtxoIndex}")" ButtonText="Copy Share Link" /> 
+                    <CopyButton ColorOfButton="Color.Light" TextToCopy="@($"{AppData.AppShareNFTUrl}/gallery?utxo={Utxo}:{UtxoIndex}")" ButtonText="Copy Share Link" /> 
                 </Column> 
             </Row>
         </ModalBody>

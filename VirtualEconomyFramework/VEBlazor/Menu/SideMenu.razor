@@ -40,7 +40,10 @@
                     <BarDropdownToggle Display="Blazorise.Display.InlineBlock.None.OnMobile">
                         @if ( AppData.IsAccountLoaded )
                         {
-                            <Image Source="@AppData.Account.Profile.ImageLink" Text="Account" Style="width: 30px; height: 30px;" Margin="Margin.Is2.FromEnd" />
+                            @if (!string.IsNullOrEmpty(AppData.Account.Profile.ImageLink))
+                            {
+                                <Image Source="@AppData.Account.Profile.ImageLink" Text="Account" Style="width: 30px; height: 30px;" Margin="Margin.Is2.FromEnd" />
+                            }
                         }
                         else
                         {
