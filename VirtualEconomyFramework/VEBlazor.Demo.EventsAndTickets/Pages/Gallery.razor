@@ -1,0 +1,10 @@
+﻿@inject AppData AppData
+
+@page "/gallery"
+
+<PageTitle>@AppData.AppName - Gallery</PageTitle>
+
+<VEBlazor.Components.PageHeader Title="Tickets Gallery" BreadcrumbItems="@(new string[] { AppData.AppName, "Gallery" })" />
+
+
+<VEBlazor.Pages.Gallery />

@@ -1,0 +1,51 @@
+﻿@using VEDriversLite.NFT
+@using VEBlazor.Components.NFTs.EventsAndTickets
+@using VEBlazor.Components.Minting
+@inject AppData AppData
+
+@page "/addnew"
+
+<PageTitle>@AppData.AppName - @headerLabel</PageTitle>
+
+<VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
+
+<VEBlazor.Pages.AddNew NFT="@AppData.GetMintingNFTTabNFT(formName)" NFTType="@NFTTypes.Ticket" Address="@AppData.Account.Address" >
+    <SpecificParamsStepHeader>
+        Ticket
+    </SpecificParamsStepHeader>
+    <SpecificParamsStepContent>
+    @if (AppData.GetMintingNFTTabNFT(formName).Type == NFTTypes.Ticket)
+    {
+        <Row>
+            <Column>    
+                <TicketSpecificMintForm @bind-Location="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).Location)"
+                                        @bind-LocationCords="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).LocationCoordinates)"
+                                        @bind-AuthorLink="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).AuthorLink)"
+                                        @bind-TicketClass="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).TicketClass)"
+                                        @bind-TicketDuration="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).TicketDuration)"
+                                        @bind-EventId="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).EventId)"
+                                        @bind-EventDate="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).EventDate)"
+                                        OnLoadNFTTemplate="@onLoadNFTTemplateHandler"/>
+            </Column>
+        </Row>
+    }
+    </SpecificParamsStepContent>
+</VEBlazor.Pages.AddNew>
+
+@code {
+    string formName = "default";
+    string headerLabel = "Add New";
+    protected override void OnInitialized()
+    {
+        headerLabel = AppData.GetMintingNFTTab(formName).HeaderLabel;
+        base.OnInitialized();
+    }
+    async Task onLoadNFTTemplateHandler(INFT nft)
+    {
+        if (nft != null && AppData.GetMintingNFTTabNFT(formName) != null && AppData.GetMintingNFTTabNFT(formName).Type == NFTTypes.Ticket)
+        {
+            await (AppData.GetMintingNFTTabNFT(formName) as TicketNFT).FillFromEvent(nft);
+            StateHasChanged();
+        }
+    }
+}
