@@ -10,7 +10,29 @@
 }
 else if ( uploadFinished )
 {
-    <Span>Upload to IPFS finished with hash: <a href="@MainIPFSLink" target="_blank">@MainIPFSLink</a> . You can continue now...</Span>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Span>Upload to IPFS finished.</Span>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is2.FromTop"> 
+            <Column> 
+                <CopyButton TextToCopy="@MainIPFSLink" ButtonText="Copy IPFS Link" /> 
+            </Column> 
+            <Column> 
+                <CopyButton TextToCopy="@MainIPFSLink" ButtonText="Copy IPFS Hash" /> 
+            </Column> 
+        </Row> 
+        <Row Margin="Margin.Is2.FromTop"> 
+            <Column> 
+                <Button Color="Color.Light" Type="ButtonType.Link" To="@MainIPFSLink" Target="Target.Blank" Block>Open Image Link</Button> 
+            </Column> 
+        </Row> 
+        <Row Margin="Margin.Is2.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Span>You can continue now...</Span>
+            </Column>
+        </Row>
 }
 
 @code {
