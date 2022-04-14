@@ -22,10 +22,11 @@
                             <RadioGroup CheckedValue="@TicketClass" 
                                         TValue="@ClassOfNFTTicket" 
                                         Name="ticketclass"
+                                        Orientation="Orientation.Horizontal"
                                         CheckedValueChanged="@ticketClassChanged">
                                 @foreach( var ctype in Enum.GetValues(typeof(ClassOfNFTTicket)) )
                                 {
-                                    <Radio Group="ticketclass" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</Radio>
+                                    <Radio Group="ticketclass" Checked="@((ClassOfNFTTicket)ctype == TicketClass ? true : false)" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</Radio>
                                 }
                             </RadioGroup>
                         </Field>
@@ -38,10 +39,11 @@
                             <RadioGroup CheckedValue="@TicketDuration" 
                                         TValue="@DurationOfNFTTicket" 
                                         Name="ticketduration"
+                                        Orientation="Orientation.Horizontal"
                                         CheckedValueChanged="@ticketDurationChanged">
                                 @foreach( var ctype in Enum.GetValues(typeof(DurationOfNFTTicket)) )
                                 {
-                                    <Radio Group="ticketduration" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</Radio>
+                                    <Radio Group="ticketduration" Checked="@((DurationOfNFTTicket)ctype == TicketDuration ? true : false)" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</Radio>
                                 }
                             </RadioGroup>
                         </Field>
@@ -57,7 +59,11 @@
                             </Button>
                         </Addon>
                         <Addon AddonType="AddonType.Body">
-                            <DatePicker @ref="@datePicker" Date="@EventDate" DateChanged="@eventDateChanged" TValue="DateTime?" />
+                            <DatePicker @ref="@datePicker" 
+                                        Date="@EventDate" 
+                                        InputMode="DateInputMode.DateTime" 
+                                        DateChanged="@eventDateChanged" 
+                                        TValue="DateTime?" />
                         </Addon>
                     </Addons>
                 </Field>
@@ -97,9 +103,13 @@
                     @if (!string.IsNullOrEmpty(AuthorLink))
                     {
                         <FieldHelp>
-                            <a href="@AuthorLink" taret="_blank">Test the location link</a>
+                            <a href="@AuthorLink" target="_blank">Test the link</a>
                         </FieldHelp>
                     }
+                </Field>
+                <Field>
+                    <FieldLabel>Please enter the Event NFT Utxo</FieldLabel>
+                    <LoadAndDisplayNFTModal Utxo="@EventId" UtxoChanged="@eventIdChanged" OnLoadNFTTemplate="@onLoadNFTTemplateHandler" />
                 </Field>
             </Column>
         </Row>
@@ -129,6 +139,12 @@
     public string AuthorLink { get => _authorLink; set => _authorLink = value; }
     [Parameter]
     public EventCallback<string> AuthorLinkChanged { get; set; }
+    
+    string _eventId = string.Empty;
+    [Parameter]
+    public string EventId { get => _eventId; set => _eventId = value; }
+    [Parameter]
+    public EventCallback<string> EventIdChanged { get; set; }
 
     DateTime? _eventDate = DateTime.UtcNow;
     [Parameter]
@@ -167,6 +183,11 @@
     {
         if (e != null && e.Value != null )        
             await AuthorLinkChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task eventIdChanged( string e )
+    {
+        if (e != null)        
+            await EventIdChanged.InvokeAsync( e );
     }
     async Task ticketClassChanged( ClassOfNFTTicket e )
     {

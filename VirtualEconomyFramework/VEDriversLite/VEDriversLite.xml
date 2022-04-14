@@ -8634,6 +8634,58 @@
             Author Deposit Doge address where Dogeft will send the reward from sale
             </summary>
         </member>
+        <member name="T:VEDriversLite.NFT.Dto.MintingTabData">
+            <summary>
+            Data for the minting tab/page
+            It contains common dtos for usuall need of minting page
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.MintingNFTType">
+            <summary>
+            Type of the NFT which should be minted on the form
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.MenuButonLabel">
+            <summary>
+            Label of the button in the menu.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.HeaderLabel">
+            <summary>
+            Second part in header of the page "{AppData.Nick} - {HeaderLabel}"
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.TabPageLocationName">
+            <summary>
+            Page location name for example for https://basedataplace.com/addnew is "addnew"
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.NFT">
+            <summary>
+            NFT to mint
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.NFTTemplate">
+            <summary>
+            Template NFT loaded from network, text or file
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.IsMinting">
+            <summary>
+            Is minting in process?
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.IsMinted">
+            <summary>
+            Is minting finished
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.MintingResult">
+            <summary>
+            Result of the minting.
+            In case of false it holds the message, in case of true it holds NFT hash
+            </summary>
+        </member>
         <member name="T:VEDriversLite.NFT.Dto.NFTCacheDto">
             <summary>
             Class offers way how to store the loaded NFT data for the recovering of the NFT after reload without requesting API

@@ -34,7 +34,7 @@ namespace VEDriversLite.NFT
     }
     public class TicketNFT : CommonNFT
     {
-        public TicketNFT(string utxo)
+        public TicketNFT(string utxo = "")
         {
             Utxo = utxo;
             Type = NFTTypes.Ticket;
@@ -68,8 +68,9 @@ namespace VEDriversLite.NFT
         public async Task FillFromEvent(INFT NFT)
         {
             await FillCommon(NFT);
-
+            
             var nft = NFT as EventNFT;
+            EventId = nft.Utxo;
             Location = nft.Location;
             LocationCoordinates = nft.LocationCoordinates;
             LocationCoordinatesLat = nft.LocationCoordinatesLat;
@@ -78,9 +79,11 @@ namespace VEDriversLite.NFT
             VideoLink = nft.VideoLink;
             AuthorLink = nft.AuthorLink;
             EventDate = nft.EventDate;
-            EventId = nft.EventId;
             MusicInLink = nft.MusicInLink;
             Used = nft.Used;
+
+            Type = NFTTypes.Ticket;
+            TypeText = "NFT Ticket";
         }
 
         public string MintAuthorAddress { get; set; } = string.Empty;
@@ -100,20 +103,6 @@ namespace VEDriversLite.NFT
         public DurationOfNFTTicket TicketDuration { get; set; } = DurationOfNFTTicket.Day;
         [JsonIgnore]
         public EventNFT EventNFTForTheTicket { get; set; } = new EventNFT("");
-
-        public async Task FillFromEventNFT(INFT nft)
-        {
-            await FillCommon(nft);
-
-            EventId = (nft as EventNFT).NFTOriginTxId;
-            EventDate = (nft as EventNFT).EventDate;
-            Location = (nft as EventNFT).Location;
-            LocationCoordinates = (nft as EventNFT).LocationCoordinates;
-            LocationCoordinatesLat = (nft as EventNFT).LocationCoordinatesLat;
-            LocationCoordinatesLen = (nft as EventNFT).LocationCoordinatesLen;
-            VideoLink = (nft as EventNFT).VideoLink;
-            AuthorLink = (nft as EventNFT).AuthorLink;
-        }
 
         public override void ParseSpecific(IDictionary<string,string> metadata)
         {
@@ -254,12 +243,6 @@ namespace VEDriversLite.NFT
                 throw new Exception("Cannot create NFT Ticket without image link or music link.");
             if (string.IsNullOrEmpty(EventId))
                 throw new Exception("Cannot create NFT Ticket without event Id.");
-            //if (string.IsNullOrEmpty(EventAddress))
-            //    throw new Exception("Cannot create NFT Ticket without event Address.");
-            if (string.IsNullOrEmpty(Author))
-                throw new Exception("Cannot create NFT Ticket without author.");
-            //if (string.IsNullOrEmpty(LocationCoordinates) || string.IsNullOrEmpty(Location))
-            //    throw new Exception("Cannot create NFT Ticket without location.");
 
             // create token metadata
             var metadata = await GetCommonMetadata();

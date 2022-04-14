@@ -188,8 +188,6 @@ namespace VEDriversLite.NFT
                 throw new Exception("Cannot create NFT Event without name.");
             if (string.IsNullOrEmpty(ImageLink))
                 throw new Exception("Cannot create NFT Event without image link.");
-            if (string.IsNullOrEmpty(Author))
-                throw new Exception("Cannot create NFT Event without author.");
             if (string.IsNullOrEmpty(LocationCoordinates) || string.IsNullOrEmpty(Location))
                 throw new Exception("Cannot create NFT Event without location.");
 

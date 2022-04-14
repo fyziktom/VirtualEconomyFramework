@@ -14,21 +14,21 @@ namespace VEBlazor.Components.Base
     public abstract class StyledComponent : ComponentBase
     {
         [Parameter]
-        public string Style { get; set; }
+        public string Style { get; set; } = string.Empty;
         [Parameter]
-        public string Class { get; set; }
+        public string Class { get; set; } = string.Empty;
         [Parameter]
-        public RenderFragment ChildContent { get; set; }
+        public RenderFragment? ChildContent { get; set; }
     }
 
     public abstract class StyledComponent<T> : ComponentBase
     {
         [Parameter]
-        public string Style { get; set; }
+        public string Style { get; set; } = string.Empty;
         [Parameter]
-        public string Class { get; set; }
+        public string Class { get; set; } = string.Empty;
         [Parameter]
-        public RenderFragment<T> ChildContent { get; set; }
+        public RenderFragment<T>? ChildContent { get; set; }
     }
     public abstract class AccountRelatedComponentBase : StyledComponent
     {
@@ -73,6 +73,9 @@ namespace VEBlazor.Components.Base
         [Parameter]
         public bool HideOpenInWorkTabButton { get; set; } = false;
 
+        public bool Loading = false;
+        public NFTCard? nftCard;        
+
         public void LoadNFT(INFT nft)
         {
             if (nft != null)
@@ -83,6 +86,30 @@ namespace VEBlazor.Components.Base
                 StateHasChanged();
             }
         }
+
+        public async Task LoadNFTFromNetwork()
+        {
+            if (!string.IsNullOrEmpty(Utxo))
+            {
+                Loading = true;
+                if (Utxo.Contains(':'))
+                    NFT = await NFTFactory.GetNFT("", Utxo.Split(':')[0], wait: true);
+                else
+                    NFT = await NFTFactory.GetNFT("", Utxo, wait: true);
+
+                if (NFT != null)
+                {
+                    if (nftCard != null)
+                        nftCard.LoadNFT(NFT);
+                }
+                else
+                    NFT = new ImageNFT("");
+                
+                Loading = false;
+            }
+            StateHasChanged();
+        }
+        
         public string GetImageUrl(bool returnPreviewIfExists = false)
         {
             if (NFT == null)
@@ -134,7 +161,7 @@ namespace VEBlazor.Components.Base
     public abstract class NFTDetailsBase : NFTComponentBase
     {
         public NFTDetails? NFTDetailsComponent;
-        public bool ShowNFTDetails(INFT nft = null)
+        public bool ShowNFTDetails(INFT nft)
         {
             if (NFT == null && nft == null)
                 return false;
@@ -143,7 +170,9 @@ namespace VEBlazor.Components.Base
                 NFT = nft;
                 StateHasChanged();
             }
-            NFTDetailsComponent?.ShowNFTDetails(nft);
+
+            if (nft != null)
+                NFTDetailsComponent?.ShowNFTDetails(nft);
             return true;
         }
         public bool HideNFTDetails()

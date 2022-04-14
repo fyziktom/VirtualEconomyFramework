@@ -11,7 +11,10 @@
             <Items>
                 <Step Name="stepUpload">Upload</Step>
                 <Step Name="stepData">Data Info</Step>
-                <Step Name="specificParams">@SpecificParamsStepHeader</Step>
+                @if (SpecificParamsStepHeader != null)
+                {
+                    <Step Name="specificParams">@SpecificParamsStepHeader</Step>
+                }
                 <Step Name="stepFinish">
                     <Marker>
                         <Icon Name="IconName.Flag" />
@@ -26,7 +29,9 @@
                     <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     <Row>
                         <Column>
-                            <UploadData @ref="@uploadDataRef" @bind-MainIPFSLink="@AppData.NFTInMintingForm.ImageLink" @bind-PreviewIPFSLink="@AppData.NFTInMintingForm.Preview" />
+                            <UploadData @ref="@uploadDataRef" 
+                                        @bind-MainIPFSLink="@AppData.GetMintingNFTTabNFT(MintingPageName).ImageLink" 
+                                        @bind-PreviewIPFSLink="@AppData.GetMintingNFTTabNFT(MintingPageName).Preview" />
                         </Column>
                     </Row>
                     <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
@@ -36,23 +41,23 @@
                     <Row>
                         <Column>
                             <DataInfoForm @ref="@dataInfoFormRef"
-                                          @bind-Name="@AppData.NFTInMintingForm.Name"
-                                          @bind-Description="@AppData.NFTInMintingForm.Description"
-                                          @bind-Text="@AppData.NFTInMintingForm.Text"
-                                          @bind-Tags="@AppData.NFTInMintingForm.Tags" />
+                                          @bind-Name="@AppData.GetMintingNFTTabNFT(MintingPageName).Name"
+                                          @bind-Description="@AppData.GetMintingNFTTabNFT(MintingPageName).Description"
+                                          @bind-Text="@AppData.GetMintingNFTTabNFT(MintingPageName).Text"
+                                          @bind-Tags="@AppData.GetMintingNFTTabNFT(MintingPageName).Tags" />
                         </Column>
                     </Row>
                     <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                 </StepPanel>
-                <StepPanel Name="specificParams">
+                <StepPanel Name="specificParams"> 
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />                      
                     @if (SpecificParamsStepContent != null)
                     {
-                        <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                         <ErrorBoundary>
                             @SpecificParamsStepContent
                         </ErrorBoundary>
-                        <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     }
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                 </StepPanel>
 
                 <StepPanel Name="stepFinish">
@@ -69,7 +74,7 @@
                     </Row>
                     <Row Margin="Margin.Is3.FromTop">
                         <Column Flex="Flex.JustifyContent.Center">
-                            <NFTCard NFT="@AppData.NFTInMintingForm" OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler" />
+                            <NFTCard NFT="@AppData.GetMintingNFTTabNFT(MintingPageName)" OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler" />
                         </Column>
                     </Row>
                     <Row Margin="Margin.Is3.FromTop">
@@ -107,21 +112,23 @@
 } 
 
 @code {
-    [Inject] INotificationService? NotificationService { get; set; }
+        [Inject] INotificationService? NotificationService { get; set; }
 
-    [Parameter]
-    public RenderFragment SpecificParamsStepHeader { get; set; }
-    [Parameter]
-    public RenderFragment SpecificParamsStepContent { get; set; }
-    [Parameter]
-    public NFTTypes NFTType { get; set; } = NFTTypes.Image;
+        [Parameter]
+        public RenderFragment SpecificParamsStepHeader { get; set; }
+        [Parameter]
+        public RenderFragment SpecificParamsStepContent { get; set; }
+        [Parameter]
+        public NFTTypes NFTType { get; set; } = NFTTypes.Image;
+        [Parameter]
+        public string MintingPageName { get; set; } = "default";
 
-    OpenNFTDetailsFactory? openNFTDetailsFactory;
-    string selectedStep = "stepUpload";
+        OpenNFTDetailsFactory? openNFTDetailsFactory;
+        string selectedStep = "stepUpload";
 
-    bool IsMinted = false;
-    bool minting = false;
-    (bool, string) mintingResult = (false, string.Empty);
+        bool IsMinted = false;
+        bool minting = false;
+        (bool, string) mintingResult = (false, string.Empty);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -147,10 +154,10 @@
         if (nft != null && openNFTDetailsFactory != null)
             await openNFTDetailsFactory.OpenNFTDetails(nft);
     }
-    
+
     private async Task mintNFT( string[] args )
     {
-        NFT = AppData.NFTInMintingForm;
+        NFT = AppData.GetMintingNFTTabNFT(MintingPageName);
 
         Console.WriteLine( $"Name: {NFT.Name}" );
         Console.WriteLine( $"Description: {NFT.Description}" );
@@ -159,6 +166,19 @@
         Console.WriteLine( $"ImageLink: {NFT.ImageLink}" );
         Console.WriteLine( $"Preview: {NFT.Preview}" );
 
+        // todo make generic
+        if (NFT.Type == NFTTypes.Event)
+            (NFT as EventNFT).MintAuthorAddress = Address;
+        else if ( NFT.Type == NFTTypes.Ticket )           
+            (NFT as TicketNFT).MintAuthorAddress = Address;
+
+        if (string.IsNullOrEmpty(NFT.Author))
+        {
+            var profile = AppData.Account.Profile as ProfileNFT;
+            if (!string.IsNullOrEmpty(profile.Name))
+                NFT.Author = $"{profile.Name} {profile.Surname}";           
+        }
+        
         if ( string.IsNullOrEmpty( NFT.ImageLink ) )
         {
             mintingResult.Item1 = false;
@@ -190,7 +210,8 @@
             else
             {
                 if (NotificationService != null)
-                    await NotificationService.Success( "Cannot save the data. " + res.Item2, "Cannot Save" );                
+                    await NotificationService.Success( "Cannot save the data. " + res.Item2, "Cannot Save" );     
+                Console.WriteLine("Cannot mint the NFT: " + res.Item2);
                 IsMinted = false;
             }
         }
@@ -219,7 +240,12 @@
         if ( selectedStep == "stepUpload" )
             selectedStep = "stepData";
         else if ( selectedStep == "stepData" )
-            selectedStep = "specificParams";
+        {
+            if (SpecificParamsStepHeader != null && SpecificParamsStepContent != null)
+                selectedStep = "specificParams";
+            else
+                selectedStep = "stepFinish";
+        }
         else if ( selectedStep == "specificParams" )
             selectedStep = "stepFinish";
     }
@@ -227,7 +253,12 @@
     void PreviousStep( string[] args )
     {
         if ( selectedStep == "stepFinish" )
-            selectedStep = "specificParams";
+        {
+            if (SpecificParamsStepHeader != null && SpecificParamsStepContent != null)
+                selectedStep = "specificParams";
+            else
+                selectedStep = "stepData";
+        }
         else if ( selectedStep == "specificParams" )
             selectedStep = "stepData";
         else if ( selectedStep == "stepData" )

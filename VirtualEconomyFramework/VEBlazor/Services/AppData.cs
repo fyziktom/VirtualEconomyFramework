@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using VEDriversLite;
 using VEDriversLite.NFT;
+using VEDriversLite.NFT.Dto;
 using VEDriversLite.NFT.Imaging.Xray.Dto;
 using VEDriversLite.Bookmarks;
 using Blazored.LocalStorage;
@@ -51,7 +52,7 @@ public enum MintingToolbarActionType
 public class MintingToolbarActionDto
 {
     public MintingToolbarActionType Type { get; set; }
-    public string[] Args { get; set; }
+    public string[]? Args { get; set; }
 }
 public class AppData
 {
@@ -69,7 +70,7 @@ public class AppData
     public bool AllowDestroy { get; set; } = true;
     public bool AllowSend { get; set; } = true;
     public bool AllowSell { get; set; } = false;
-    public List<NFTTypes> AllowedNFTTypes { get; set; } = new List<NFTTypes>() 
+    public List<NFTTypes> AllowedNFTTypes { get; set; } = new List<NFTTypes>()
     {
         NFTTypes.Image,
         NFTTypes.Post,
@@ -105,8 +106,10 @@ public class AppData
     public Dictionary<string, DetectorDataDto> DetectorParametersTemplates { get; set; } = new Dictionary<string, DetectorDataDto>();
 
     public List<GalleryTab> OpenedTabs { get; set; } = new List<GalleryTab>();
-
-    public INFT NFTInMintingForm { get; set; } = new ImageNFT("");
+    public Dictionary<string, MintingTabData> MintingTabsData { get; set; } = new Dictionary<string, MintingTabData>()
+    {
+        {"default", new MintingTabData() }
+    };
 
     public event EventHandler<bool> LockUnlockAccount;
 
@@ -312,6 +315,25 @@ public class AppData
             return address;
         }
         return address;
+    }
+
+    public INFT GetMintingNFTTabNFT(string name = "default")
+    {
+        if (MintingTabsData.TryGetValue(name, out var tab))
+            return tab.NFT;
+        return new ImageNFT("");
+    }
+    public INFT GetMintingNFTTabTemplateNFT(string name = "default")
+    {
+        if (MintingTabsData.TryGetValue(name, out var tab))
+            return tab.NFTTemplate;
+        return new ImageNFT("");
+    }
+    public MintingTabData GetMintingNFTTab(string name = "default")
+    {
+        if (MintingTabsData.TryGetValue(name, out var tab))
+            return tab;
+        return new MintingTabData();
     }
 }
 
