@@ -25,7 +25,11 @@
         AppData.AppNick = "BDP";
         AppData.AppHomeWebsiteUrl = "https://basedataplace.com/";
 
-        AppData.NFTInMintingForm = new VEDriversLite.NFT.Imaging.Xray.XrayImageNFT();
+        if (AppData.MintingTabsData.TryGetValue("default", out var tab))
+        {
+            tab.MintingNFTType = VEDriversLite.NFT.NFTTypes.XrayImage;
+            tab.NFT = new VEDriversLite.NFT.Imaging.Xray.XrayImageNFT();
+        }
         AppData.AllowedNFTTypes = new List<VEDriversLite.NFT.NFTTypes>()
         { 
             VEDriversLite.NFT.NFTTypes.Profile, 
