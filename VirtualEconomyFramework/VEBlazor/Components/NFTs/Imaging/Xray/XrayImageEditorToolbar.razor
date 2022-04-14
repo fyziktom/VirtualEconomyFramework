@@ -1,4 +1,6 @@
-﻿<Bar Mode="BarMode.VerticalInline"
+﻿@inject AppData AppData
+
+<Bar Mode="BarMode.VerticalInline"
      CollapseMode="BarCollapseMode.Small"
      Breakpoint="Breakpoint.Desktop"
      NavigationBreakpoint="Breakpoint.Tablet"
@@ -67,25 +69,31 @@
                     <BarIcon IconName="IconName.Clear" />
                     Reset to defaults
                 </BarLink>
-            </BarItem>            
-            <BarItem>
-                <BarLink Clicked="@SendAction">
-                    <BarIcon IconName="IconName.Mail" />
-                    Send
-                </BarLink>
-            </BarItem>
+            </BarItem> 
+            @if (AppData.AllowSend )
+            {
+                <BarItem>
+                    <BarLink Clicked="@SendAction">
+                        <BarIcon IconName="IconName.Mail" />
+                        Send
+                    </BarLink>
+                </BarItem>
+            }
             <BarItem>
                 <BarLink Clicked="@SendCopyAction">
                     <BarIcon IconName="IconName.UserPlus" />
                     Send Copy
                 </BarLink>
-            </BarItem>           
-            <BarItem>
-                <BarLink Clicked="@DeleteAction">
-                    <BarIcon IconName="IconName.Delete" />
-                    Delete
-                </BarLink>
-            </BarItem>
+            </BarItem>       
+            @if (AppData.AllowDestroy )
+            {
+                <BarItem>
+                    <BarLink Clicked="@DeleteAction">
+                        <BarIcon IconName="IconName.Delete" />
+                        Delete
+                    </BarLink>
+                </BarItem>
+            }
         </BarStart>
     </BarMenu>
 </Bar>

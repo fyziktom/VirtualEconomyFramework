@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VEDriversLite;
@@ -65,6 +65,10 @@ public class AppData
     public string AppName { get; set; } = "VEBlazorApp";
     public string AppNick { get; set; } = "VEBA";
     public string AppHomeWebsiteUrl { get; set; } = "https://veframework.com/";
+    public bool AllowWorkTabs { get; set; } = true;
+    public bool AllowDestroy { get; set; } = true;
+    public bool AllowSend { get; set; } = true;
+    public bool AllowSell { get; set; } = false;
     public List<NFTTypes> AllowedNFTTypes { get; set; } = new List<NFTTypes>() 
     {
         NFTTypes.Image,

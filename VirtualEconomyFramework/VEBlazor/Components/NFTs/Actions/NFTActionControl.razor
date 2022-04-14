@@ -4,7 +4,7 @@
 <Card Margin="Margin.Is4.FromBottom">
     <CardBody>
         <CardTitle Size="5">Actions</CardTitle>
-        @if (!HideOpenInWorkTabButton)
+        @if (AppData.AllowWorkTabs && !HideOpenInWorkTabButton)
         {                                
         <Row>
             <Column>
@@ -15,21 +15,27 @@
             </Column>
         </Row>
         }
-        @if (IsOwnNFT && AppData.IsAccountLoaded) 
+        @if ( IsOwnNFT && AppData.IsAccountLoaded) 
         { 
             <Row Margin="Margin.Is3.FromTop"> 
+                @if (AppData.AllowSend )
+                {                
                 <Column> 
                     <Button Color="Color.Primary" Clicked=@SendNFT Block> 
                         <Icon Name="IconName.Mail" /> 
                         Send 
                     </Button> 
                 </Column> 
+                }
+                @if (AppData.AllowDestroy )
+                {
                 <Column> 
                     <Button Color="Color.Danger" Clicked=@DestroyNFT Block> 
                         <Icon Name="IconName.Delete" /> 
                         Destroy 
                     </Button> 
                 </Column> 
+                }
             </Row> 
         } 
     </CardBody>
