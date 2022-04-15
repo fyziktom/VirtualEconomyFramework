@@ -9,7 +9,7 @@
 
 <VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
 
-<VEBlazor.Pages.AddNew NFT="@AppData.GetMintingNFTTabNFT(formName)" NFTType="@NFTTypes.Ticket" Address="@AppData.Account.Address" >
+<VEBlazor.Pages.AddNew NFT="AppData.GetMintingNFTTabNFT(formName)" NFTType="@NFTTypes.Ticket" Address="@AppData.Account.Address" NFTChanged="nftChangedHandler">
     <SpecificParamsStepHeader>
         Ticket
     </SpecificParamsStepHeader>
@@ -24,8 +24,7 @@
                                         @bind-TicketClass="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).TicketClass)"
                                         @bind-TicketDuration="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).TicketDuration)"
                                         @bind-EventId="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).EventId)"
-                                        @bind-EventDate="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).EventDate)"
-                                        OnLoadNFTTemplate="@onLoadNFTTemplateHandler"/>
+                                        @bind-EventDate="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).EventDate)" />
             </Column>
         </Row>
     }
@@ -35,17 +34,14 @@
 @code {
     string formName = "default";
     string headerLabel = "Add New";
+
     protected override void OnInitialized()
     {
         headerLabel = AppData.GetMintingNFTTab(formName).HeaderLabel;
         base.OnInitialized();
     }
-    async Task onLoadNFTTemplateHandler(INFT nft)
+    void nftChangedHandler(INFT nft)
     {
-        if (nft != null && AppData.GetMintingNFTTabNFT(formName) != null && AppData.GetMintingNFTTabNFT(formName).Type == NFTTypes.Ticket)
-        {
-            await (AppData.GetMintingNFTTabNFT(formName) as TicketNFT).FillFromEvent(nft);
-            StateHasChanged();
-        }
+        AppData.SetMintingNFTTabNFT(nft, formName);       
     }
 }

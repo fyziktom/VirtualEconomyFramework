@@ -33,7 +33,7 @@
             </Field>
             <Field>
                 <FieldLabel>Here you can enter the longer description.</FieldLabel>
-                <Markdown Value="@_text" ValueChanged="textChanged" />
+                <Markdown @ref="markdownRef" Value="@Text" ValueChanged="textChanged" />
                 <FieldHelp>You can use Markdown formating in this editor.</FieldHelp>
             </Field>
         </Validations>
@@ -42,40 +42,41 @@
 
 @code {
     Validations validationsRef;
+    Markdown markdownRef;
 
     string _name = string.Empty;
-    [Parameter]
-    public string Name { get => _name; set => _name = value; }
-    [Parameter]
-    public EventCallback<string> NameChanged { get; set; }
+    [Parameter] public string Name { get => _name; set => _name = value; }
+    [Parameter] public EventCallback<string> NameChanged { get; set; }
 
     string _description = string.Empty;
-    [Parameter]
-    public string Description { get => _description; set => _description = value; }
-    [Parameter]
-    public EventCallback<string> DescriptionChanged { get; set; }
+    [Parameter] public string Description { get => _description; set => _description = value; }
+    [Parameter] public EventCallback<string> DescriptionChanged { get; set; }
 
     string _text = string.Empty;
-    [Parameter]
-    public string Text { get => _text; set => _text = value; }
-    [Parameter]
-    public EventCallback<string> TextChanged { get; set; }
+    [Parameter] public string Text { get => _text; set => _text = value; }
+    [Parameter] public EventCallback<string> TextChanged { get; set; }
 
     string _tags = string.Empty;
-    [Parameter]
-    public string Tags { get => _tags; set => _tags = value; }
-    [Parameter]
-    public EventCallback<string> TagsChanged { get; set; }
+    [Parameter] public string Tags { get => _tags; set => _tags = value; }
+    [Parameter] public EventCallback<string> TagsChanged { get; set; }
+
+    [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
 
     async Task nameChanged( ChangeEventArgs e )
     {
         if (e != null && e.Value != null )        
+        {
             await NameChanged.InvokeAsync( (string)e.Value );
+            await OnPropsChanged.InvokeAsync();            
+        }
     }
     async Task descChanged( ChangeEventArgs e )
     {
-        if (e != null && e.Value != null )        
+        if (e != null && e.Value != null )  
+        {
             await DescriptionChanged.InvokeAsync( (string)e.Value );
+            await OnPropsChanged.InvokeAsync();
+        }
     }
     async Task textChanged( string e )
     {
@@ -85,11 +86,20 @@
     async Task tagsChanged( ChangeEventArgs e )
     {
         if (e != null && e.Value != null )
+        {
             await TagsChanged.InvokeAsync( (string)e.Value );
+            await OnPropsChanged.InvokeAsync();
+        }
     }
 
     public Task<bool> IsValidated()
     {
         return validationsRef.ValidateAll();
+    }
+    
+    public void Refresh()
+    {
+        markdownRef.SetValueAsync(_text);
+        StateHasChanged();       
     }
 }

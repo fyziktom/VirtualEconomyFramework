@@ -9,7 +9,7 @@
 
 <VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
 
-<VEBlazor.Pages.AddNew MintingPageName="@formName" NFT="@AppData.GetMintingNFTTabNFT(formName)" NFTType="@NFTTypes.Event" Address="@AppData.Account.Address" >
+<VEBlazor.Pages.AddNew MintingPageName="@formName" NFT="AppData.GetMintingNFTTabNFT(formName)" NFTType="@NFTTypes.Event" Address="@AppData.Account.Address" OnLoadNFTTemplate="@onLoadNFTTemplateHandler"  NFTChanged="nftChangedHandler">
     <SpecificParamsStepHeader>
         Event
     </SpecificParamsStepHeader>
@@ -22,8 +22,7 @@
                                         @bind-LocationCords="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).LocationCoordinates)"
                                         @bind-AuthorLink="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).AuthorLink)"
                                         @bind-EventClass="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).EventClass)"
-                                        @bind-EventDate="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).EventDate)"
-                                        OnLoadNFTTemplate="@onLoadNFTTemplateHandler"/>
+                                        @bind-EventDate="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).EventDate)" />
             </Column>
         </Row>
     }
@@ -45,5 +44,9 @@
             await (AppData.GetMintingNFTTabNFT(formName) as EventNFT).Fill(nft);
             StateHasChanged();
         }
+    }
+    void nftChangedHandler(INFT nft)
+    {
+        AppData.SetMintingNFTTabNFT(nft, formName);    
     }
 }

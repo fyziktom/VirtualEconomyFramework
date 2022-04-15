@@ -1,6 +1,6 @@
 ﻿@inject AppData AppData
 
-<Card Style="max-width:320px;">
+<Card Height="Height.Is100">
     <CardBody>
         <CardTitle Size="5">Balances</CardTitle>
         <Field>
@@ -12,17 +12,17 @@
         <CardText>
            <Row>
                <Column>
-                   Neblio: @(Math.Round(NeblioBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="https://ipfs.infura.io/ipfs/QmWhAUQps774YtUjhn2xDFn1vHs8LXXTTGGvFyP2MLjKXK" /></Figure>
+                   Neblio: @(Math.Round(NeblioBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                </Column>
            </Row>
            <Row>
                <Column>
-                   Tokens: @TokensBalance VENFT <Figure Size="FigureSize.Is16x16"><FigureImage Source="https://ipfs.infura.io/ipfs/QmZSdjuLTihuPzVwUKaHLtivw1HYhsyCdQFnVLLCjWoVBk" /></Figure>
+                   Tokens: @TokensBalance VENFT <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.VENFTImageLink" /></Figure>
                </Column>
            </Row>
            <Row>
                <Column>
-                   Tokens: @BDPBalance BDP <Figure Size="FigureSize.Is16x16"><FigureImage Source="https://ipfs.infura.io/ipfs/QmYMVuotTTpW24eJftpbUFgK7Ln8B4ox3ydbKCB6gaVwVB" /></Figure>
+                   Tokens: @BDPBalance BDP <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.BDPImageLink" /></Figure>
                </Column>
            </Row>
            <Row>

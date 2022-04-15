@@ -37,12 +37,25 @@ else if(NFT.Type == NFTTypes.Ticket)
                    NFTSent="@NFTSentHandler"
                    OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
 }
+else if (NFT.Type == NFTTypes.Image || NFT.Type == NFTTypes.Post)
+{
+            <NFTDetails @ref="NFTDetailsModalComponent"
+                Address="@Address" 
+                IsSubAccount="@IsSubAccount" 
+                IsOwnNFT="IsOwnNFT" 
+                NFT="@NFT" 
+                NFTSent="@NFTSentHandler" 
+                OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
+                HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                SpecificInfoHeading="NFT Details" />
+}
 
 @code {
 
     private XrayImagesDetails? XrayImagesDetailsModalComponent;    
     private TicketDetails? TicketDetailsModalComponent;
     private EventDetails? EventDetailsModalComponent;
+    private NFTDetails? NFTDetailsModalComponent;
 
     public async Task OpenNFTDetails(INFT nft)
     {
@@ -62,6 +75,12 @@ else if(NFT.Type == NFTTypes.Ticket)
             case NFTTypes.Ticket:
                 TicketDetailsModalComponent?.ShowNFTDetails(nft);
                 break;
+            case NFTTypes.Image:
+                NFTDetailsModalComponent?.ShowNFTDetails(nft);
+                break;  
+            case NFTTypes.Post:
+                NFTDetailsModalComponent?.ShowNFTDetails(nft);
+                break;  
         }
         return;
     }

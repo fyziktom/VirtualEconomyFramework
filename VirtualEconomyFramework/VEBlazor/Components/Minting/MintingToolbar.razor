@@ -10,6 +10,21 @@
                        ToolActionHandler="@PreviousStep" />
         </Column>
     }
+    @if ( ShowLoadFromTemplateButton )
+    {
+        @if (!ShowPrevButton)
+        {
+            <Column></Column>
+        }
+        <Column TextAlignment="TextAlignment.Center">
+            <ToolbarButton ToolType="MintingToolbarActionType.LoadFromTemplate"
+                       Icon="IconName.FolderOpen"
+                       Label="Load Template"
+                       Size="@MainButtonsSize"
+                       Color="@MainButtonsColor"
+                       ToolActionHandler="@LoadFromTemplateStep" />
+        </Column>
+    } 
     @if ( ShowNextButton )
     {
         <Column TextAlignment="TextAlignment.End">
@@ -20,7 +35,7 @@
                        Color="@MainButtonsColor"
                        ToolActionHandler="@NextStep" />
         </Column>
-    }
+    }   
     @if ( ShowMintButton )
     {
         <Column TextAlignment="TextAlignment.End">
@@ -71,6 +86,8 @@
 
     [Parameter]
     public bool ShowSaveButton { get; set; } = false;
+    [Parameter]
+    public bool ShowLoadFromTemplateButton { get; set; } = false;
 
     [Parameter]
     public Blazorise.Color MainButtonsColor { get; set; } = Blazorise.Color.Primary;
@@ -106,6 +123,11 @@
         }
 
         await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.NextStep } );
+    }
+
+    async Task LoadFromTemplateStep()
+    {
+        await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.LoadFromTemplate } );
     }
 
     async Task MintStep()
