@@ -17,36 +17,50 @@
             <Column>
                 <Row>
                     <Column>
-                        <Field>
-                            <FieldLabel>Please select the Ticket class</FieldLabel>
-                            <RadioGroup CheckedValue="@TicketClass" 
-                                        TValue="@ClassOfNFTTicket" 
-                                        Name="ticketclass"
-                                        Orientation="Orientation.Horizontal"
-                                        CheckedValueChanged="@ticketClassChanged">
-                                @foreach( var ctype in Enum.GetValues(typeof(ClassOfNFTTicket)) )
-                                {
-                                    <Radio Group="ticketclass" Checked="@((ClassOfNFTTicket)ctype == TicketClass ? true : false)" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</Radio>
-                                }
-                            </RadioGroup>
-                        </Field>
+                        <Row>
+                            <Column Margin="Margin.Is3.FromBottom">
+                                Please select the Ticket class
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <RadioGroup CheckedValue="@TicketClass"
+                                            CheckedValueChanged="@ticketClassChanged"
+                                            TValue="ClassOfNFTTicket"
+                                            Name="ticketclass"
+                                            Orientation="Orientation.Vertical"
+                                            Buttons
+                                            Color="Color.Light">
+                                    @foreach ( var ctype in Enum.GetValues<ClassOfNFTTicket>() )
+                                    {
+                                        <Radio TValue="ClassOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</Radio>
+                                    }
+                                </RadioGroup>
+                            </Column>
+                        </Row>
                     </Column>
-                </Row>
-                <Row>
                     <Column>
-                        <Field>
-                            <FieldLabel>Please select the Ticket duration</FieldLabel>
-                            <RadioGroup CheckedValue="@TicketDuration" 
-                                        TValue="@DurationOfNFTTicket" 
-                                        Name="ticketduration"
-                                        Orientation="Orientation.Horizontal"
-                                        CheckedValueChanged="@ticketDurationChanged">
-                                @foreach( var ctype in Enum.GetValues(typeof(DurationOfNFTTicket)) )
-                                {
-                                    <Radio Group="ticketduration" Checked="@((DurationOfNFTTicket)ctype == TicketDuration ? true : false)" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</Radio>
-                                }
-                            </RadioGroup>
-                        </Field>
+                        <Row>
+                            <Column Margin="Margin.Is3.FromBottom">
+                                Please select the Ticket duration
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <RadioGroup CheckedValue="@TicketDuration"
+                                            CheckedValueChanged="@ticketDurationChanged"
+                                            TValue="DurationOfNFTTicket"
+                                            Name="ticketduration"
+                                            Orientation="Orientation.Vertical"
+                                            Buttons
+                                            Color="Color.Light">
+                                    @foreach ( var ctype in Enum.GetValues<DurationOfNFTTicket>() )
+                                    {
+                                        <Radio TValue="DurationOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</Radio>
+                                    }
+                                </RadioGroup>
+                            </Column>
+                        </Row>
                     </Column>
                 </Row>
             </Column>
