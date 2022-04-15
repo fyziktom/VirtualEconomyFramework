@@ -17,19 +17,27 @@
             <Column>
                 <Row>
                     <Column>
-                        <Field>
-                            <FieldLabel>Please select the Event class</FieldLabel>
-                            <RadioGroup CheckedValue="@EventClass" 
-                                        TValue="@ClassOfNFTEvent" 
-                                        Name="eventclass"
-                                        Orientation="Orientation.Horizontal"
-                                        CheckedValueChanged="@eventClassChanged">
-                                @foreach( var ctype in Enum.GetValues(typeof(ClassOfNFTEvent)) )
-                                {
-                                    <Radio Group="eventclass" Checked="@((ClassOfNFTEvent)ctype == EventClass ? true : false)" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTEvent), ctype) )</Radio>
-                                }
-                            </RadioGroup>
-                        </Field>
+                        <Row>
+                            <Column Margin="Margin.Is3.FromBottom">
+                                Please select the Event class
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                    <RadioGroup CheckedValue="@EventClass"
+                                                CheckedValueChanged="@eventClassChanged"
+                                                TValue="ClassOfNFTEvent" 
+                                                Name="eventclass"
+                                                Orientation="Orientation.Vertical"
+                                                Buttons
+                                                Color="Color.Light">
+                                        @foreach( var ctype in Enum.GetValues<ClassOfNFTEvent>() )
+                                        {
+                                            <Radio TValue="ClassOfNFTEvent" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTEvent), ctype) )</Radio>
+                                        }
+                                    </RadioGroup>
+                            </Column>
+                        </Row>
                     </Column>
                 </Row>
             </Column>
