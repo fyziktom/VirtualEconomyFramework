@@ -14,10 +14,10 @@
             </ModalHeader>
             <ModalBody>
                 <Card>
-                    <CardHeader>
-                        <Span>Transaction ID: <Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></Span>
-                    </CardHeader>
                     <CardBody>
+                        <CardTitle>
+                            <Span>Transaction ID: <Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></Span>
+                        </CardTitle>
                         <Row>
                             <Column>
                                 <Field>
@@ -77,13 +77,11 @@
                         <Row>
                             <Column>
                                 <Card>
-                                    <CardHeader>
+                                    <CardBody>
                                         <CardTitle>
                                             <Icon Name="IconName.ArrowDown" TextColor="TextColor.Danger" />
                                             Inputs
                                         </CardTitle>
-                                    </CardHeader>
-                                    <CardBody>
                                         @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vin != null )
                                         {
                                             <DataGrid TItem="VEDriversLite.NeblioAPI.Vin"
@@ -137,13 +135,11 @@
                             </Column>
                             <Column>
                                 <Card>
-                                    <CardHeader>
+                                    <CardBody>
                                         <CardTitle>
                                             <Icon Name="IconName.ArrowUp" TextColor="TextColor.Success" />
                                             Outputs
                                         </CardTitle>
-                                    </CardHeader>
-                                    <CardBody>
                                         @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vout != null )
                                         {
                                             <DataGrid TItem="VEDriversLite.NeblioAPI.Vout"
