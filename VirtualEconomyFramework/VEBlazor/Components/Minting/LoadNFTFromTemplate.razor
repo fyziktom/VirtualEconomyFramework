@@ -30,7 +30,7 @@
                 </Column>
             </Row>
             <Div Margin="Margin.Is2.FromTop">
-                <Button Color="Color.Primary" Clicked="@loadTemplateToFormHandler" Block>2. Load NFT to Minting Form</Button>
+                <Button Color="Color.Primary" Loading="@loadingImage" Clicked="@loadTemplateToFormHandler" Block>2. Load NFT to Minting Form</Button>
             </Div>
         }
             </ModalBody>
@@ -54,6 +54,7 @@
     OpenNFTDetailsFactory? openNFTDetailsFactory;
     NFTCard? nftCard;
     bool loading = false;
+    bool loadingImage = false;
 
     [Parameter]
     public EventCallback<INFT> OnLoadNFTTemplate { get; set; }
@@ -119,8 +120,15 @@
     {
         if (await MessageService.Confirm("Are you sure you want to load the NFT to Mintin Form? It will remove existing data in the form?", "Load NFT Template"))
         {
+            loadingImage = true;
+            StateHasChanged();
+
+            if (!string.IsNullOrEmpty(NFT.ImageLink))
+                NFT.ImageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
             await OnLoadNFTTemplate.InvokeAsync(NFT);
             openNFTDetailsFactory?.HideNFTDetails();
+            loadingImage = false;
+            StateHasChanged();
             Hide();
         }
     }

@@ -8,29 +8,35 @@
 @inject IJSRuntime JSRuntime
 @inherits AccountRelatedComponentBase ;
 
-<Row>
+<Row Margin="Margin.Is3.FromBottom.Is3.FromTop" Flex="Flex.JustifyContent.Between">
     <Column>
-        <Row Margin="Margin.Is3.FromBottom.Is3.FromTop" Flex="Flex.AlignItems.Start">
-            <Column>
-                <ErrorBoundary>
-                    <AccountProfile Profile="@AppData.Account.Profile" />
-                </ErrorBoundary>
-            </Column>
-        </Row>
-        <Row Margin="Margin.Is3.FromBottom" Flex="Flex.AlignItems.Start">
-            <Column>
-                <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance"
-                                 TokensBalance="@TokenSupply"
-                                 BDPBalance="@BDPSupply"
-                                 NFTsCount="@AppData.Account.NFTs.Count" />
-            </Column>
-        </Row>
-        <Row Margin="Margin.Is3.FromBottom" Flex="Flex.AlignItems.End">
-            <Column>
-                <Button Color="Color.Light" Clicked="@Backup">Backup</Button>
-            </Column>
-        </Row>
+        <ErrorBoundary>
+            <AccountProfile Profile="@AppData.Account.Profile" />
+        </ErrorBoundary>
     </Column>
+    <Column>
+        <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance"
+                            TokensBalance="@TokenSupply"
+                            BDPBalance="@BDPSupply"
+                            NFTsCount="@AppData.Account.NFTs.Count" />
+    </Column>
+    <Column>
+        <Card>
+            <CardHeader>Backup!</CardHeader>
+            <CardBody>
+                <CardText TextAlignment="TextAlignment.Center">Dogepalooza is distributed app (dApp). For storing and creating NFTs using <Link To="https://nebl.io/" Target="Target.Blank">Neblio Blockchain</Link> and <Link To="https://veframework.com/" Target="Target.Blank">VEFramework</Link>.</CardText>              
+                <CardText TextAlignment="TextAlignment.Center">Blockchain address and key cannot be restored by 3rd party. It is important to do backup.</CardText>              
+                <CardText TextAlignment="TextAlignment.Center">Please backup your private key by storing the backup file securely. This can be used to restore your account at any time.</CardText>              
+            </CardBody>
+            <CardFooter>
+                <Button Color="Color.Light" Clicked="@Backup" Block>Backup</Button>
+            </CardFooter>
+        </Card>
+        
+    </Column>
+</Row>
+
+<Row>
     <Column>
         <Accordion>
             <Collapse Visible="@collapse1Visible">
@@ -80,6 +86,7 @@
         </Accordion>
     </Column>
 </Row>
+
 @code {
 
     public int TokenSupply

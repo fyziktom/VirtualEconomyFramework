@@ -83,6 +83,7 @@ else if ( uploadFinished )
         if (!string.IsNullOrEmpty(link))
         {
             MainIPFSLink = link;
+            uploadingToIPFS = false;
             uploadFinished = true;
             await InvokeAsync(StateHasChanged);
         }

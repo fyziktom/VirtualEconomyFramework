@@ -74,6 +74,9 @@
 
     [Parameter] public EventCallback<string> PreviewIPFSLinkChanged { get; set; }
 
+    [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
+    //[Parameter] public EventCallback<byte[]> OnImageDataLoaded { get; set; }
+
     string ImageDataString = string.Empty;
     bool uploadingImage = false;
     bool uploadingToIPFS = false;
@@ -88,16 +91,25 @@
         return InvokeAsync( StateHasChanged );
     }
 
-    public async Task LoadImage(string link, string previewlink = "")
+    public async Task LoadImage(string link, string previewlink = "", byte[] _imageData = null)
     {
-        if (!string.IsNullOrEmpty(link))
+        if (!string.IsNullOrEmpty(link) || _imageData?.Length > 0)
         {
-            var imageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(link));
-            if (imageData != null)
-            { 
-                ImageDataString = "data:image;base64," + Convert.ToBase64String( imageData );
-                this.imageData = imageData;
+            byte[] imd = null;          
+            if (_imageData == null || _imageData.Length == 0)
+                imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(link));
+            else if (_imageData.Length > 0)
+                imd = _imageData;
+                
+            if (imd != null)
+            {
+                //await OnImageDataLoaded.InvokeAsync(imd);
+                ImageDataString = "data:image;base64," + Convert.ToBase64String( imd );
+                this.imageData = imd;
                 uploadFinished = true;
+                StateHasChanged();
+                await Task.Delay(1);
+                
                 if (ipfsUploadRef != null)
                     await ipfsUploadRef.LoadIPFSLink(link);
                 await InvokeAsync( StateHasChanged );
@@ -117,6 +129,8 @@
 
         if ( ipfsUploadRef != null )
             await ipfsUploadRef.UploadToIPFS( fileName, imageData );
+
+        await OnPropsChanged.InvokeAsync();
     }
 
     Task OnIPFSUploadStarted()

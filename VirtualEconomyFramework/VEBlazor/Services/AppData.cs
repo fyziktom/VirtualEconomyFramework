@@ -35,6 +35,7 @@ public enum MintingToolbarActionType
     None,
     PreviousStep,
     NextStep,
+    LoadFromTemplate,
     Save,
     Finish,
     Mint,
@@ -47,7 +48,7 @@ public enum MintingToolbarActionType
     Delete,
     AddMarker,
     EditProps,
-    EditXrayParams
+    EditXrayParams,
 }
 public class MintingToolbarActionDto
 {
@@ -62,6 +63,11 @@ public class AppData
     {
         localStorage = LocalStorage;
     }
+
+    public const string NeblioImageLink = "https://ipfs.infura.io/ipfs/QmPUvBN4qKvGyKKhADBJKSmNC7JGnr3Rwf5ndENGMfpX54";
+    public const string DogecoinImageLink = "https://ipfs.infura.io/ipfs/QmRp3eyUeqctcgBFcRuBa7uRWiABTXmLBeYuhLp8xLX1sy";
+    public const string VENFTImageLink = "https://ipfs.infura.io/ipfs/QmZSdjuLTihuPzVwUKaHLtivw1HYhsyCdQFnVLLCjWoVBk";
+    public const string BDPImageLink = "https://ipfs.infura.io/ipfs/QmYMVuotTTpW24eJftpbUFgK7Ln8B4ox3ydbKCB6gaVwVB";
 
     public string AppName { get; set; } = "VEBlazorApp";
     public string AppNick { get; set; } = "VEBA";
@@ -328,6 +334,11 @@ public class AppData
         if (MintingTabsData.TryGetValue(name, out var tab))
             return tab.NFT;
         return new ImageNFT("");
+    }
+    public void SetMintingNFTTabNFT(INFT nft, string name = "default")
+    {
+        if (MintingTabsData.TryGetValue(name, out var tab))
+            tab.NFT = nft;
     }
     public INFT GetMintingNFTTabTemplateNFT(string name = "default")
     {

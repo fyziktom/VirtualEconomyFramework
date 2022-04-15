@@ -26,38 +26,38 @@
             </Items>
             <Content>
                 <StepPanel Name="stepUpload">
-                    <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     <Row>
                         <Column>
                             <UploadData @ref="@uploadDataRef" 
-                                        @bind-MainIPFSLink="@AppData.GetMintingNFTTabNFT(MintingPageName).ImageLink" 
-                                        @bind-PreviewIPFSLink="@AppData.GetMintingNFTTabNFT(MintingPageName).Preview" />
+                                        @bind-MainIPFSLink="@NFT.ImageLink" 
+                                        @bind-PreviewIPFSLink="@NFT.Preview" OnPropsChanged="@onPropsChangedHandler" />
                         </Column>
                     </Row>
-                    <MintingToolbar ShowNextButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                 </StepPanel>
                 <StepPanel Name="stepData">
-                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     <Row>
                         <Column>
                             <DataInfoForm @ref="@dataInfoFormRef"
-                                          @bind-Name="@AppData.GetMintingNFTTabNFT(MintingPageName).Name"
-                                          @bind-Description="@AppData.GetMintingNFTTabNFT(MintingPageName).Description"
-                                          @bind-Text="@AppData.GetMintingNFTTabNFT(MintingPageName).Text"
-                                          @bind-Tags="@AppData.GetMintingNFTTabNFT(MintingPageName).Tags" />
+                                          @bind-Name="@NFT.Name"
+                                          @bind-Description="@NFT.Description"
+                                          @bind-Text="@NFT.Text"
+                                          @bind-Tags="@NFT.Tags" OnPropsChanged="@onPropsChangedHandler" />
                         </Column>
                     </Row>
-                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                 </StepPanel>
                 <StepPanel Name="specificParams"> 
-                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />                      
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />                      
                     @if (SpecificParamsStepContent != null)
                     {
                         <ErrorBoundary>
                             @SpecificParamsStepContent
                         </ErrorBoundary>
                     }
-                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                 </StepPanel>
 
                 <StepPanel Name="stepFinish">
@@ -74,7 +74,7 @@
                     </Row>
                     <Row Margin="Margin.Is3.FromTop">
                         <Column Flex="Flex.JustifyContent.Center">
-                            <NFTCard NFT="@AppData.GetMintingNFTTabNFT(MintingPageName)" OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler" />
+                            <NFTCard NFT="@NFT" OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler" />
                         </Column>
                     </Row>
                     <Row Margin="Margin.Is3.FromTop">
@@ -109,26 +109,31 @@
                            IsSubAccount="@false"
                            HideOpenInWorkTabButton="true"
                            IsOwnNFT="@false" />
+                           
+    <LoadNFTFromTemplate @ref="loadNFTFromTemplate" OnLoadNFTTemplate="@onLoadNFTTemplateHandler" />
 } 
 
 @code {
-        [Inject] INotificationService? NotificationService { get; set; }
+    [Inject] INotificationService? NotificationService { get; set; }
 
-        [Parameter]
-        public RenderFragment SpecificParamsStepHeader { get; set; }
-        [Parameter]
-        public RenderFragment SpecificParamsStepContent { get; set; }
-        [Parameter]
-        public NFTTypes NFTType { get; set; } = NFTTypes.Image;
-        [Parameter]
-        public string MintingPageName { get; set; } = "default";
+    [Parameter]
+    public RenderFragment SpecificParamsStepHeader { get; set; }
+    [Parameter]
+    public RenderFragment SpecificParamsStepContent { get; set; }
+    [Parameter]
+    public NFTTypes NFTType { get; set; } = NFTTypes.Image;
+    [Parameter]
+    public string MintingPageName { get; set; } = "default";    
+    [Parameter]
+    public EventCallback<INFT> OnLoadNFTTemplate { get; set; }
 
-        OpenNFTDetailsFactory? openNFTDetailsFactory;
-        string selectedStep = "stepUpload";
+    LoadNFTFromTemplate? loadNFTFromTemplate;
+    OpenNFTDetailsFactory? openNFTDetailsFactory;
+    string selectedStep = "stepUpload";
 
-        bool IsMinted = false;
-        bool minting = false;
-        (bool, string) mintingResult = (false, string.Empty);
+    bool IsMinted = false;
+    bool minting = false;
+    (bool, string) mintingResult = (false, string.Empty);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -139,7 +144,7 @@
     public async Task RefreshImageInUploadComponent()
     {    
         if (uploadDataRef != null)
-            await uploadDataRef.LoadImage(NFT.ImageLink);
+            await uploadDataRef.LoadImage(NFT.ImageLink, NFT.Preview, NFT.ImageData);
     }
 
     private Task OnSelectedStepChanged( string name )
@@ -155,10 +160,13 @@
             await openNFTDetailsFactory.OpenNFTDetails(nft);
     }
 
+    async Task onPropsChangedHandler()
+    {
+        await NFTChanged.InvokeAsync(NFT);
+    }
+
     private async Task mintNFT( string[] args )
     {
-        NFT = AppData.GetMintingNFTTabNFT(MintingPageName);
-
         Console.WriteLine( $"Name: {NFT.Name}" );
         Console.WriteLine( $"Description: {NFT.Description}" );
         Console.WriteLine( $"Text: {NFT.Text}" );
@@ -178,7 +186,7 @@
             if (!string.IsNullOrEmpty(profile.Name))
                 NFT.Author = $"{profile.Name} {profile.Surname}";           
         }
-        
+
         if ( string.IsNullOrEmpty( NFT.ImageLink ) )
         {
             mintingResult.Item1 = false;
@@ -232,7 +240,15 @@
             case MintingToolbarActionType.Finish:
                 await mintNFT( e.Args );
                 break;
+            case MintingToolbarActionType.LoadFromTemplate:
+                openLoadFromTemplate( e.Args );
+                break;
         }
+    }
+
+    void openLoadFromTemplate( string[] args )
+    {
+        loadNFTFromTemplate?.Show();
     }
 
     void NextStep( string[] args )
@@ -281,5 +297,31 @@
         }
 
         return true;
+    }
+
+    async Task onLoadNFTTemplateHandler(INFT nft)
+    {
+        if (nft.Type == NFT.Type)
+            await NFT.Fill(nft);
+
+        if (nft.Type == NFTTypes.Image || nft.Type == NFTTypes.Post)
+        {
+            await NFTChanged.InvokeAsync(nft);
+        }
+        else if (NFT.Type == NFTTypes.Ticket && nft.Type == NFTTypes.Event)
+        {
+            await (NFT as TicketNFT).FillFromEvent(nft);
+            await NFTChanged.InvokeAsync(NFT);
+        }
+        else if (nft.Type == NFTTypes.Event)
+        {
+            await NFTChanged.InvokeAsync(nft);
+        }        
+        else
+        {
+            await OnLoadNFTTemplate.InvokeAsync(nft);
+        }
+        dataInfoFormRef.Refresh();
+        StateHasChanged();
     }
 }
