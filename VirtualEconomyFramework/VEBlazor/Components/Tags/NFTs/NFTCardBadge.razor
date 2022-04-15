@@ -1,0 +1,34 @@
+﻿@using VEDriversLite.NFT
+
+@if (NFTType == NFTTypes.Image)
+{
+<Badge Margin="@Margin" Color="Color.Primary">Image</Badge>
+}
+else if (NFTType == NFTTypes.Post)
+{
+<Badge Margin="@Margin" Color="Color.Secondary">Post</Badge>
+}
+else if (NFTType == NFTTypes.Event)
+{
+<Badge Margin="@Margin" Color="Color.Link">Event</Badge>
+}
+else if (NFTType == NFTTypes.Ticket)
+{
+<Badge Margin="@Margin" Color="Color.Warning">Ticket</Badge>
+}
+else if (NFTType == NFTTypes.XrayImage)
+{
+<Badge Margin="@Margin" Color="Color.Danger">XrayImage</Badge>
+}
+else if (NFTType == NFTTypes.Music)
+{
+<Badge Margin="@Margin" Color="Color.Dark">Music</Badge>
+}
+
+@code {
+    [Parameter]
+    public NFTTypes NFTType { get; set; } = NFTTypes.Image;
+    
+    [Parameter]
+    public IFluentSpacing Margin { get; set; }
+}
