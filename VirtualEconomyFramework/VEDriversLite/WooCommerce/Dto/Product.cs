@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.WooCommerce.Dto
 {
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class CategoryOfDownloads
     {
         /// <summary>
@@ -11,6 +14,9 @@ namespace VEDriversLite.WooCommerce.Dto
         /// </summary>
         public int id { get; set; } = 0;
     }
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class DownloadsObject
     {
         /// <summary>
@@ -30,6 +36,9 @@ namespace VEDriversLite.WooCommerce.Dto
         /// </summary>
         public List<CategoryOfDownloads> categories { get; set; } = new List<CategoryOfDownloads>();
     }
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class ImageObject
     {
         /// <summary>
@@ -41,6 +50,9 @@ namespace VEDriversLite.WooCommerce.Dto
         /// </summary>
         public string src { get; set; } = string.Empty;
     }
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class ProductMetadata
     {
         /// <summary>
@@ -52,12 +64,27 @@ namespace VEDriversLite.WooCommerce.Dto
         /// </summary>
         public object value { get; set; }
     }
+    /// <summary>
+    /// TODO
+    /// </summary>
     public enum StockStatus
     {
+        /// <summary>
+        /// TODO
+        /// </summary>
         instock,
+        /// <summary>
+        /// TODO
+        /// </summary>
         outofstock,
+        /// <summary>
+        /// TODO
+        /// </summary>
         onbackorder
     }
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class Product
     {
         /// <summary>

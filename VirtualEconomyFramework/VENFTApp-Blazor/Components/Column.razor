@@ -1,0 +1,23 @@
+﻿@typeparam ItemType
+
+@code {
+    [Parameter]
+    public RenderFragment<ItemType> ChildContent { get; set; }
+    [CascadingParameter(Name = "Table")]
+    public Table<ItemType> Table { get; set; }
+
+    [Parameter]
+    public String Title { get; set; }
+    [Parameter]
+    public Align Align { get; set; } = Align.Default;
+
+    protected override void OnInitialized()
+    {
+        Table.AddColumn(this);
+    }
+
+    public RenderFragment Render(ItemType data)
+    {
+        return ChildContent(data);
+    }
+}

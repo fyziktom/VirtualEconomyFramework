@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col">
-        <Spin Tip="Loading..." Spinning="@loading">
+        <VENFTApp_Blazor.Components.Spin Tip="Loading..." Spinning="@loading">
             @if (!string.IsNullOrEmpty(NFT.Utxo))
             {
                 <div style="position: absolute;right: 5px;top: -20px;">
@@ -24,7 +24,7 @@
                     <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
                         <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
                     </a>
-                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations).Item2)</span>
+                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations))</span>
                 </div>
                 @if (OwnNFT)
                 {
@@ -145,7 +145,7 @@
                                                                 NFTSent="@NFTSentHandler" />
 
             <NFTHistory Utxo="@NFT.Utxo" NftType="@NFT.Type" />
-        </Spin>
+        </VENFTApp_Blazor.Components.Spin>
     </div>
 
 </div>

@@ -86,11 +86,11 @@
             unstoppableDomainAddress = string.Empty;
             unstoppableDomainAddressUsed = false;
         }
-        var res = await NeblioTransactionHelpers.ValidateNeblioAddress(add);
-        if (res.Item1)
+        var res = NeblioTransactionHelpers.ValidateNeblioAddress(add);
+        if (!string.IsNullOrEmpty(res))
         {
             validAddress = true;
-            Receiver = res.Item2;
+            Receiver = res;
             await AddressCheckedInputed.InvokeAsync(receiver);
         }
         else

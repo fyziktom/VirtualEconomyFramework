@@ -12,9 +12,19 @@ using VEDriversLite.NFT;
 
 namespace VEDriversLite.Devices
 {
+    /// <summary>
+    /// Data driver to obtain data from the HARDWARIO Cloud API
+    /// Can be used primarly for the CHESTER devices
+    /// </summary>
     public class HARDWARIOIoTDataDriver : CommonIoTDataDriver
     {
+        /// <summary>
+        /// New data on the API
+        /// </summary>
         public override event EventHandler<string> NewDataReceived;
+        /// <summary>
+        /// Main client
+        /// </summary>
 
         public HARDWARIOApiClient HWApiClient { get; set; } = new HARDWARIOApiClient();
 

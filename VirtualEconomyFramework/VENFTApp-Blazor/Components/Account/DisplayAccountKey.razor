@@ -33,6 +33,11 @@
                     <span>Your Private Key</span>
                 </div>
             </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center align-items-center">
+                    <span class="text-warning text-uppercase">Dont show/share/send this anywhere!!! Keep it in secret!!!</span>
+                </div> 
+            </div>
             <div class="row d-flex justify-content-center align-items-center text-wrap">
                 <div class="col">
                     <h6 class="text-center text-wrap">@accountKey</h6>
@@ -128,7 +133,7 @@
         if (!DogeAccountKey)
         {
             addr = AppData.Account.Address;
-            ekey = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            ekey = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: true);
             if (AppData.Account.IsLocked())
             {
                 accountKey = ekey;
@@ -138,7 +143,7 @@
             {
                 try
                 {
-                    accountKey = await AppData.Account.AccountKey.GetEncryptedKey();
+                    accountKey = AppData.Account.AccountKey.GetEncryptedKey();
                     var ack = await AppData.Account.GetSubAccountKeys();
                     subaccountkeys = ack.Item2;
                     privateKeyDialogVisible = true;
@@ -152,7 +157,7 @@
         else
         {
             addr = AppData.DogeAccount.Address;
-            ekey = await AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
+            ekey = AppData.DogeAccount.AccountKey.GetEncryptedKey(returnEncrypted: true);
             if (AppData.DogeAccount.IsLocked())
             {
                 accountKey = ekey;
@@ -162,7 +167,7 @@
             {
                 try
                 {
-                    accountKey = await AppData.DogeAccount.AccountKey.GetEncryptedKey();
+                    accountKey = AppData.DogeAccount.AccountKey.GetEncryptedKey();
                     privateKeyDialogVisible = true;
                 }
                 catch (Exception ex)
@@ -179,7 +184,7 @@
         keyToSave = "{ \"Address\":\"" + addr + "\", \"EncryptedKey\":\"" + ekey + "\" }";
         if (!DogeAccountKey && AppData.Account.SubAccounts.Count > 0)
         {
-            var saccnts = await AppData.Account.SerializeSubAccounts();
+            var saccnts = AppData.Account.SerializeSubAccounts();
             keyToSave = "{ \"Address\":\"" + addr + "\", \"EncryptedKey\":\"" + ekey + "\", \"SubAccounts\": " + saccnts + " }";
         }
         if (!DogeAccountKey)

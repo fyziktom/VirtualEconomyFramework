@@ -10,6 +10,8 @@
 
 @page "/account"
 
+<PageTitle>VENFT App - Account</PageTitle>
+
 @if (AppData.Account != null && !string.IsNullOrEmpty(AppData.Account.Address))
 {
     <div class="container-fluid overflow-auto">
@@ -163,9 +165,9 @@
                     <div class="card-body" style="min-height: 150px; padding: 5px; padding-left: 20px; padding-right: 20px; padding-bottom: 10px;">
                         <div class="row" style="margin-top:30px;">
                             <div class="col">
-                                <div class="row" style="margin-top:30px; min-width:350px;">
+                                <div class="row" style="min-width:350px;">
                                     <div class="col w-100 d-flex d-xl-flex justify-content-center justify-content-xl-center align-items-xl-center">
-                                        <VENFTApp_Blazor.Components.Account.TransactionsList @bind-MaxLoadedTx="maxLoadedTransaction" Address="@AppData.Account.Address" SubAccount="@false" />
+                                        <VENFTApp_Blazor.Components.Account.TransactionsList Address="@AppData.Account.Address" SubAccount="@false" />
                                     </div>
                                 </div>
                             </div>
@@ -185,8 +187,10 @@
                             <div class="col d-flex justify-content-center align-items-center flex-wrap">
                                 <VENFTApp_Blazor.Components.Account.SignAndVerifyMessage />
                                 <VENFTApp_Blazor.Components.NFTs.Verification.NFTOwnerVerifier />
+                                <!--
                                 <VENFTApp_Blazor.Components.Crypto.NeblioPriceStats />
                                 <VENFTApp_Blazor.Components.Crypto.NeblioPriceConversion />
+                                -->
                             </div>
                         </div>
                     </div>
@@ -222,7 +226,6 @@
 
     private bool downloadBackupDataVisible = false;
 
-    private int maxLoadedTransaction = 10;
     private string backupData = string.Empty;
     private string filename = string.Empty;
 
@@ -303,6 +306,12 @@
                 Console.WriteLine("Cannot load sub accounts from memory!" + ex.Message);
             }
         }
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        Console.WriteLine("Account - Rendered");
+        return base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task Redirect()

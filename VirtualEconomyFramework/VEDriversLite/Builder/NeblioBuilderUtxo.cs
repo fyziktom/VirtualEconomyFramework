@@ -7,18 +7,44 @@ using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.Builder
 {
+    /// <summary>
+    /// Neblio Builder Utxo object
+    /// </summary>
     public class NeblioBuilderUtxo
     {
+        /// <summary>
+        /// Constructor which loads the Utxo hash
+        /// </summary>
+        /// <param name="utxo"></param>
         public NeblioBuilderUtxo(Utxos utxo)
         {
             Utxo = utxo;
         }
+        /// <summary>
+        /// Is Utxo already used, if yes, this is true.
+        /// </summary>
         public bool Used { get; set; } = false;
+        /// <summary>
+        /// Origina Utxos object
+        /// </summary>
         public Utxos Utxo { get; set; } = new Utxos();
+        /// <summary>
+        /// Total tokens in the Utxo
+        /// </summary>
         public int TotalTokens { get; set; } = 0;
+        /// <summary>
+        /// Token info about the available tokens in this Utxo
+        /// </summary>
         public List<GetTokenMetadataResponse> TokenInfo { get; set; } = new List<GetTokenMetadataResponse>();
+        /// <summary>
+        /// Tx info from Neblio API for this Utxo
+        /// </summary>
         public GetTransactionInfoResponse TxInfo { get; set; } = new GetTransactionInfoResponse();
-
+        /// <summary>
+        /// Load info about the Utxo
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public async Task LoadInfo()
         {
             if (string.IsNullOrEmpty(Utxo.Txid))

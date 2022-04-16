@@ -34,7 +34,7 @@
 
     <div class="row" style="margin-bottom:20px;">
         <div class="col">
-            <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
+            <VENFTApp_Blazor.Components.Spin Spinning="@sendingTransaction" Tip="Sending Transaction...">
                 <div class="card" style="margin-top:10px;">
                     <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                         @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
@@ -54,6 +54,19 @@
                                         <h5>NFT</h5>
                                     </div>
                                 </div>
+                                @if (NFT.SellJustCopy)
+                                {
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>You are buying just copy of the NFT.</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:5px;">
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <span>Author of the NFT offered just copies.</span>
+                                        </div>
+                                    </div>
+                                }
                                 <div class="row" style="margin-top:10px;">
                                     <div class="col d-flex justify-content-center align-items-center">
                                         <VENFTApp_Blazor.Components.NFTs.NFT InputNFT="@NFT" OwnNFT="false" AllowBuy="false" />
@@ -165,10 +178,10 @@
                                 @if (sucessfullSend)
                                 {
                                     <hr />
-                                    <Alert Type="@AlertType.Success"
-                                           Message="Payment Sent."
-                                           Description="Your payment has been sent :)"
-                                           ShowIcon="true" />
+                                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+                                        <Title>Payment Sent.</Title>
+                                        <Message>Your payment has been sent :)</Message>
+                                    </VENFTApp_Blazor.Components.Alert>
                                     <div class="row" style="margin-top:10px;">
                                         <div class="col d-flex justify-content-center align-items-center">
                                             <span>Transaction Id</span>
@@ -202,7 +215,7 @@
                         </div>
                     </div>
                 </div>
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 
@@ -215,7 +228,7 @@
        OnCancel="@UnclockAccountCancel">
     <div class="row">
         <div class="col">
-            <Spin Tip="Unlocking..." Spinning="@unlockingAccount">
+            <VENFTApp_Blazor.Components.Spin Tip="Unlocking..." Spinning="@unlockingAccount">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         <span>Please Input password</span>
@@ -229,19 +242,17 @@
 
                 @if (unlockOrClearCashMessage)
                 {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Unlock account."
-                           ShowIcon="true" />
+                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                        <Message>Unlock account.</Message>
+                    </VENFTApp_Blazor.Components.Alert>
                 }
                 @if (accountUnlockingError)
                 {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Wrong Password."
-                           ShowIcon="true" />
+                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                        <Message>Wrong Password.</Message>
+                    </VENFTApp_Blazor.Components.Alert>
                 }
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 </Modal>
@@ -411,7 +422,7 @@
             receiver = await NeblioTransactionHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
 
             var r = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
-            if (!r.Item1)
+            if (r != 0)
             {
                 //await JSRuntime.InvokeVoidAsync("alertMessage", "This is NFT is not spendable tx on the address of receiver of it. Probably it was already spended.");
                 isPossibleToBuy = false;

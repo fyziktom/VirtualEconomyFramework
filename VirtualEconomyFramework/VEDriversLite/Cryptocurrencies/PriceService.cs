@@ -6,11 +6,23 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Cryptocurrencies
 {
+    /// <summary>
+    /// Price service class.
+    /// This service can load the exchange rates, calculate conversion, etc.
+    /// </summary>
     public class PriceService
     {
         private static object _lock = new object();
 
+        /// <summary>
+        /// Main empty constructor
+        /// </summary>
         public PriceService() { }
+        /// <summary>
+        /// Constructor for specific address
+        /// </summary>
+        /// <param name="relatedAddress"></param>
+        /// <param name="relatedAddressType"></param>
         public PriceService(string relatedAddress, CurrencyTypes relatedAddressType)
         {
             if (!string.IsNullOrEmpty(relatedAddress))

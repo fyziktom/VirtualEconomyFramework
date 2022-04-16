@@ -7,8 +7,16 @@ using NBitcoin;
 
 namespace VEDriversLite.Builder
 {
+    /// <summary>
+    /// Create Builder Neblio Address and load all necessary parameters 
+    /// </summary>
     public class NeblioBuilderAddress
     {
+        /// <summary>
+        /// Main constructor which loads the address in the shape of BitcoinAddress
+        /// </summary>
+        /// <param name="address"></param>
+        /// <exception cref="Exception"></exception>
         public NeblioBuilderAddress(string address)
         {
             Address = address;
@@ -24,14 +32,33 @@ namespace VEDriversLite.Builder
                 throw new Exception("Wrong Input Address." + ex.Message);
             }
         }
+        /// <summary>
+        /// Address as text
+        /// </summary>
         public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// Address as NBitcoin.BitcoinAddress object
+        /// </summary>
         public BitcoinAddress NBitcoinAddress { get; set; }
+        /// <summary>
+        /// Loaded bitcoin secret
+        /// </summary>
         public BitcoinSecret Secret { get; set; }
+        /// <summary>
+        /// Object was refreshed
+        /// </summary>
 
         public event EventHandler Refreshed;
 
+        /// <summary>
+        /// Loaded NeblioBuilderUtxos objects
+        /// </summary>
         public ConcurrentDictionary<string, NeblioBuilderUtxo> Utxos { get; set; } = new ConcurrentDictionary<string, NeblioBuilderUtxo>();
 
+        /// <summary>
+        /// Load Utxos for the address
+        /// </summary>
+        /// <returns></returns>
         public async Task LoadUtxos()
         {
             //Utxos.Clear();
@@ -53,6 +80,11 @@ namespace VEDriversLite.Builder
             
         }
 
+        /// <summary>
+        /// Start refreshing the data in cycle of the interval
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public async Task StartRefreshingData(int interval = 10000)
         {
             _ = Task.Run(async () =>
@@ -74,14 +106,5 @@ namespace VEDriversLite.Builder
             });
         }
 
-        public async Task<bool> SignMessage(string message)
-        {
-            var msgSigned = Secret.PrivateKey.SignMessage(message);
-            if (Secret.PubKey.VerifyMessage(message, msgSigned))
-            {
-                return true;
-            }
-            return false;
-        }
     }
 }

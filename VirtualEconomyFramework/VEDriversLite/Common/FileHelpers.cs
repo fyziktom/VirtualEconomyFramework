@@ -1,20 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Extend of the String functions
+    /// </summary>
     public static class StringExt
     {
+        /// <summary>
+        /// Turncate the string to some max length
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="maxLength"></param>
+        /// <returns></returns>
         public static string Truncate(this string value, int maxLength)
         {
             if (string.IsNullOrEmpty(value)) return value;
             return value.Length <= maxLength ? value : value.Substring(0, maxLength);
         }
+
+        /// <summary>
+        /// https://stackoverflow.com/questions/2118904/zip-and-unzip-string-with-deflate
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static byte[] ZipStr(String str)
+        {
+            using (MemoryStream output = new MemoryStream())
+            {
+                using (DeflateStream gzip =
+                  new DeflateStream(output, CompressionMode.Compress))
+                {
+                    using (StreamWriter writer =
+                      new StreamWriter(gzip, System.Text.Encoding.UTF8))
+                    {
+                        writer.Write(str);
+                    }
+                }
+
+                return output.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// https://stackoverflow.com/questions/2118904/zip-and-unzip-string-with-deflate
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string UnZipStr(byte[] input)
+        {
+            using (MemoryStream inputStream = new MemoryStream(input))
+            {
+                using (DeflateStream gzip =
+                  new DeflateStream(inputStream, CompressionMode.Decompress))
+                {
+                    using (StreamReader reader =
+                      new StreamReader(gzip, System.Text.Encoding.UTF8))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+            }
+        }
     }
+    
+    /// <summary>
+    /// Helper class for handle the files
+    /// </summary>
     public static class FileHelpers
     {
         /// <summary>
@@ -54,6 +112,11 @@ namespace VEDriversLite
             }
         }
 
+        
+        /// <summary>
+        /// short datetime string...todo use formating in ToString
+        /// </summary>
+        /// <returns></returns>
         public static string GetDateTimeString()
         {
             string date = DateTime.Today.ToShortDateString().Replace('.', '_').Replace('/', '_');
@@ -61,13 +124,19 @@ namespace VEDriversLite
 
             return date + "-" + time;
         }
-
+        /// <summary>
+        /// short time string...todo use formating in ToString
+        /// </summary>
+        /// <returns></returns>
         public static string GetTimeString()
         {
             string time = DateTime.Now.ToLongTimeString().Replace(':', '_');
             return time;
         }
-
+        /// <summary>
+        /// short date string...todo use formating in ToString
+        /// </summary>
+        /// <returns></returns>
         public static string GetDateString()
         {
             string date = DateTime.Today.ToShortDateString().Replace('.', '_').Replace('/', '_');

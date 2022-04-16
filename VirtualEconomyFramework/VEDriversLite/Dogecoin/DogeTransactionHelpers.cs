@@ -3,8 +3,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -14,9 +12,12 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Doge Transaction Helpers
+    /// </summary>
     public static class DogeTransactionHelpers
     {
-        private static HttpClient httpClient = new HttpClient();
+        private static readonly HttpClient httpClient = new HttpClient();
         private static IClient _client;
         /// <summary>
         /// Conversion ration for Doge to convert from sat to 1 DOGE
@@ -31,7 +32,7 @@ namespace VEDriversLite
         /// </summary>
         public static int MinimumConfirmations = 1;
 
-        private static ConcurrentDictionary<string, GetTransactionInfoResponse> transactionDetails = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
+        private static readonly ConcurrentDictionary<string, GetTransactionInfoResponse> transactionDetails = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
 
         /// <summary>
         /// Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
@@ -40,7 +41,7 @@ namespace VEDriversLite
         /// <param name="ekey"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public static async Task<(BitcoinAddress, BitcoinSecret)> GetAddressAndKey(EncryptionKey ekey, string password = "")
+        public static (BitcoinAddress, BitcoinSecret) GetAddressAndKey(EncryptionKey ekey, string password)
         {
             var key = string.Empty;
 
@@ -49,41 +50,51 @@ namespace VEDriversLite
                 if (ekey.IsLoaded)
                 {
                     if (ekey.IsEncrypted && string.IsNullOrEmpty(password) && !ekey.IsPassLoaded)
+                    {
                         throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
+                    }
                     else if (!ekey.IsEncrypted)
-                        key = await ekey.GetEncryptedKey();
+                    {
+                        key = ekey.GetEncryptedKey();
+                    }
                     else if (ekey.IsEncrypted && (!string.IsNullOrEmpty(password) || ekey.IsPassLoaded))
+                    {
                         if (ekey.IsPassLoaded)
-                            key = await ekey.GetEncryptedKey(string.Empty);
+                        {
+                            key = ekey.GetEncryptedKey(string.Empty);
+                        }
                         else
-                            key = await ekey.GetEncryptedKey(password);
+                        {
+                            key = ekey.GetEncryptedKey(password);
+                        }
+                    }
 
                     if (string.IsNullOrEmpty(key))
+                    {
                         throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
-
+                    }
                 }
             }
 
-            BitcoinSecret loadedkey = null;
-            BitcoinAddress addressForTx = null;
             if (!string.IsNullOrEmpty(key))
             {
                 try
                 {
-                    loadedkey = Network.CreateBitcoinSecret(key);
-                    addressForTx = loadedkey.GetAddress(ScriptPubKeyType.Legacy);
+                    BitcoinSecret loadedkey = Network.CreateBitcoinSecret(key);
+                    BitcoinAddress addressForTx = loadedkey.GetAddress(ScriptPubKeyType.Legacy);
 
                     return (addressForTx, loadedkey);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Cannot send token transaction!", ex);
-                    //Console.WriteLine($"Cannot send token transaction, cannot create keys");
                     throw new Exception("Cannot send token transaction. cannot create keys!");
                 }
             }
             else
+            {
                 throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
+            }
         }
 
         /// <summary>
@@ -100,11 +111,6 @@ namespace VEDriversLite
             List<ICoin> coins = new List<ICoin>();
             try
             {
-                
-                //var addrutxos = await AddressUtxosAsync(address.ToString());
-
-                // add all spendable coins of this address
-                //foreach (var inp in addrutxos.Data.Utxos)
                 foreach (var inp in utxos)
                 {
                     if (transaction.Inputs.FirstOrDefault(i => (i.PrevOut.Hash == uint256.Parse(inp.TxId)) && i.PrevOut.N == (uint)inp.N) != null)
@@ -113,10 +119,12 @@ namespace VEDriversLite
                         coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money(val), address.ScriptPubKey));
                     }
                 }
-                
+
                 // add signature to inputs before signing
                 foreach (var inp in transaction.Inputs)
+                {
                     inp.ScriptSig = address.ScriptPubKey;
+                }
             }
             catch (Exception ex)
             {
@@ -133,7 +141,9 @@ namespace VEDriversLite
                 var sx = transaction.ToString();
 
                 if (tx == sx)
+                {
                     throw new Exception("Transaction was not signed. Probably not spendable source.");
+                }
             }
             catch (Exception ex)
             {
@@ -144,12 +154,10 @@ namespace VEDriversLite
             try
             {
                 var txhex = transaction.ToHex();
-                //var res = await BroadcastTxAsync(new BroadcastTxRequest() { data = txhex });
-                //var res = await ChainSoBroadcastTxAsync(new ChainSoBroadcastTxRequest() { tx_hex = txhex });
                 var res = await VENFTBroadcastTxAsync(new VENFTBroadcastTxRequest() { network = "dogecoin", tx_hex = txhex });
                 return res;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("Cannot Broadcast the dogecoin transaction. Trouble with Dogecoin API. ");
             }
@@ -185,18 +193,28 @@ namespace VEDriversLite
 
             // add custom message if there is some
             if (!string.IsNullOrEmpty(customMessageInOPReturn))
+            {
                 expectedSize += emptyOpReturn + customMessageInOPReturn.Length;
+            }
 
             // Expected outputs for the rest of the coins/tokens
             expectedSize += outputWithAddress; // DOGECOIN
-            if (isTokenTransaction) expectedSize += outputWithAddress;
+            if (isTokenTransaction)
+            {
+                expectedSize += outputWithAddress;
+            }
 
             if (expectedSize > 10000)
+            {
                 throw new Exception("Cannot send transaction bigger than 10kB on DOGE network!");
+            }
 
             var fee = expectedSize * basicFee;
             if (fee < basicFee)
+            {
                 fee = basicFee * 250;
+            }
+
             return fee;
         }
 
@@ -220,10 +238,10 @@ namespace VEDriversLite
                 {
                     transaction.Inputs.Add(new TxIn()
                     {
-                        PrevOut = new OutPoint(uint256.Parse(utxo.TxId), (int)utxo.N),
+                        PrevOut = new OutPoint(uint256.Parse(utxo.TxId), utxo.N),
                         ScriptSig = address.ScriptPubKey,
                     });
-                    allNeblInputCoins += Convert.ToDouble(utxo.Value,CultureInfo.InvariantCulture);
+                    allNeblInputCoins += Convert.ToDouble(utxo.Value, CultureInfo.InvariantCulture);
                 }
                 return (transaction, allNeblInputCoins);
             }
@@ -233,55 +251,38 @@ namespace VEDriversLite
             }
 
             return (null, 0);
-        }
+        }        
 
-
-        /// <summary>
-        /// Function will send standard Neblio transaction - sync version
-        /// </summary>
-        /// <param name="data">Send data, please see SendTxData class for the details</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="utxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static string SendDogeTransaction(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
-        {
-            var res = SendDogeTransactionAsync(data, ekey, utxos, fee).GetAwaiter().GetResult();
-            return res;
-        }
-        /// <summary>
-        /// Function will send standard Neblio transaction - Async version
-        /// </summary>
-        /// <param name="data">Send data, please see SendTxData class for the details</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="utxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
+        private static async Task<string> SendTransactions(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, bool withMessage = false)
         {
             if (data == null)
+            {
                 throw new Exception("Data cannot be null!");
+            }
 
             if (ekey == null)
+            {
                 throw new Exception("Account cannot be null!");
+            }
 
             // create receiver address
-            BitcoinAddress recaddr = null;
+            BitcoinAddress recaddr;
             try
             {
                 recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
             }
 
             // load key and address
-            BitcoinSecret key = null;
-            BitcoinAddress addressForTx = null;
+            BitcoinSecret key;
+
+            BitcoinAddress addressForTx;
             try
             {
-                var k = await GetAddressAndKey(ekey, data.Password);
+                var k = GetAddressAndKey(ekey, data.Password);
                 key = k.Item2;
                 addressForTx = k.Item1;
             }
@@ -293,38 +294,66 @@ namespace VEDriversLite
             // create template for new tx from last one
             var tx = GetTransactionWithDogecoinInputs(utxos, addressForTx);
             if (tx.Item1 == null)
+            {
                 throw new Exception("Cannot create the transaction object.");
+            }
 
             var transaction = tx.Item1;
             var allDogelCoins = tx.Item2;
             try
             {
-                fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
+                var fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
                 if (allDogelCoins < (data.Amount))
+                {
                     throw new Exception("Not enough Doge to spend.");
+                }
 
                 var amountinSat = Convert.ToUInt64(data.Amount * FromSatToMainRatio);
                 var diffinSat = (Convert.ToUInt64(allDogelCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
+
+                if (withMessage)
+                {
+                    var bytes = Encoding.UTF8.GetBytes(data.CustomMessage);
+                    transaction.Outputs.Add(new TxOut()
+                    {
+                        Value = (long)0,
+                        ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
+                    });
+                }                               
+
                 if (diffinSat > 0)
+                {
                     transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception("Exception during creating outputs. " + ex.Message);
             }
-
             try
             {
                 return await SignAndBroadcast(transaction, key, addressForTx, utxos);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("Cannot Broadcast the dogecoin transaction. Trouble with Dogecoin API. ");
             }
+        }
+
+        /// <summary>
+        /// Function will send standard Neblio transaction - Async version
+        /// </summary>
+        /// <param name="data">Send data, please see SendTxData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="utxos">Optional input neblio utxo</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<string> SendDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
+        {
+            return await SendTransactions(data, ekey, utxos);            
         }
 
         /// <summary>
@@ -333,81 +362,10 @@ namespace VEDriversLite
         /// <param name="data">Send data, please see SendTxData class for the details - this include field for custom message</param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 100000000)
+        public static async Task<string> SendDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
         {
-            if (data == null)
-                throw new Exception("Data cannot be null!");
-
-            if (ekey == null)
-                throw new Exception("Account cannot be null!");
-
-            // create receiver address
-            BitcoinAddress recaddr = null;
-            try
-            {
-                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot send transaction. cannot create receiver address!");
-            }
-
-            // load key and address
-            BitcoinSecret key = null;
-            BitcoinAddress addressForTx = null;
-            try
-            {
-                var k = await GetAddressAndKey(ekey, data.Password);
-                key = k.Item2;
-                addressForTx = k.Item1;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            // create template for new tx from last one
-            var tx = GetTransactionWithDogecoinInputs(utxos, addressForTx);
-            if (tx.Item1 == null)
-                throw new Exception("Cannot create the transaction object.");
-
-            var transaction = tx.Item1;
-            var allDogelCoins = tx.Item2;
-
-            try
-            {
-                fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
-
-                var amountinSat = Convert.ToUInt64(data.Amount) * Convert.ToUInt64(FromSatToMainRatio);
-                var diffinSat = (Convert.ToUInt64(allDogelCoins) * FromSatToMainRatio) - amountinSat - Convert.ToUInt64(fee);
-
-                // create outputs
-                transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount
-                
-                var bytes = Encoding.UTF8.GetBytes(data.CustomMessage);
-                transaction.Outputs.Add(new TxOut()
-                {
-                    Value = 0,
-                    ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
-                });
-                
-                if (diffinSat > 0)
-                    transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Exception during creating outputs. " + ex.Message);
-            }
-            try
-            {
-                return await SignAndBroadcast(transaction, key, addressForTx, utxos);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot Broadcast the dogecoin transaction. Trouble with Dogecoin API. ");
-            }
+            return await SendTransactions(data, ekey, utxos, withMessage: true);
         }
 
         /// <summary>
@@ -416,39 +374,44 @@ namespace VEDriversLite
         /// <param name="receiverAmount">Dictionary of all receivers and amounts to send them</param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 100000000sat = 1 DOGE minimum</param>
         /// <param name="password">Password for encrypted key if it is encrypted and locked</param>
         /// <param name="message">Custom message</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string,double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, double fee = 200000000, string password = "", string message = "")
+        public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string, double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, string password = "", string message = "")
         {
             if (receiverAmount == null)
+            {
                 throw new Exception("Receivers Dictionary cannot be null!");
+            }
 
             if (ekey == null)
+            {
                 throw new Exception("Account cannot be null!");
+            }
 
             // create receiver address
-            Dictionary<string,BitcoinAddress> recsaddr = new Dictionary<string, BitcoinAddress>();
+            Dictionary<string, BitcoinAddress> recsaddr = new Dictionary<string, BitcoinAddress>();
             try
             {
                 foreach (var r in receiverAmount)
                 {
                     var rca = BitcoinAddress.Create(r.Key, Network);
-                    recsaddr.Add(r.Key,rca);
+                    recsaddr.Add(r.Key, rca);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
             }
 
+
             // load key and address
-            BitcoinSecret key = null;
-            BitcoinAddress addressForTx = null;
+            BitcoinSecret key;
+
+            BitcoinAddress addressForTx;
             try
             {
-                var k = await GetAddressAndKey(ekey, password);
+                var k = GetAddressAndKey(ekey, password);
                 key = k.Item2;
                 addressForTx = k.Item1;
             }
@@ -460,35 +423,41 @@ namespace VEDriversLite
             // create template for new tx from last one
             var tx = GetTransactionWithDogecoinInputs(utxos, addressForTx);
             if (tx.Item1 == null)
+            {
                 throw new Exception("Cannot create the transaction object.");
+            }
 
             var transaction = tx.Item1;
             var allDogeInputCoins = tx.Item2;
 
             try
             {
-                fee = CalcFee(transaction.Inputs.Count, receiverAmount.Count, message, false);
+                var fee = CalcFee(transaction.Inputs.Count, receiverAmount.Count, message, false);
 
-                UInt64 totalamnt = 0;
+                ulong totalamnt = 0;
                 foreach (var r in receiverAmount)
                 {
-                    var amntinSat = Convert.ToUInt64(r.Value) * Convert.ToUInt64(FromSatToMainRatio);
+                    var amntinSat = Convert.ToUInt64(r.Value * FromSatToMainRatio);
                     totalamnt += amntinSat;
                     // create outputs
                     if (recsaddr.TryGetValue(r.Key, out var badd))
+                    {
                         transaction.Outputs.Add(new Money(amntinSat), badd.ScriptPubKey); // send to receiver required amount
+                    }
                 }
 
                 var bytes = Encoding.UTF8.GetBytes(message);
                 transaction.Outputs.Add(new TxOut()
                 {
-                    Value = 0,
+                    Value = (long)0,
                     ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(bytes)
                 });
 
                 var diffinSat = (Convert.ToUInt64(allDogeInputCoins) * FromSatToMainRatio) - totalamnt - Convert.ToUInt64(fee);
                 if (diffinSat > 0)
+                {
                     transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
+                }
             }
             catch (Exception ex)
             {
@@ -509,14 +478,23 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="txinfo"></param>
         /// <returns></returns>
-        public static async Task<(bool, double)> ParseTotalSentValue(GetTransactionInfoResponse txinfo)
+        public static (bool, double) ParseTotalSentValue(GetTransactionInfoResponse txinfo)
         {
             if (txinfo == null)
+            {
                 return (false, 0.0);
+            }
+
             if (txinfo.Success != "success")
+            {
                 return (false, 0.0);
+            }
+
             if (txinfo.Transaction.Vout == null || txinfo.Transaction.Vout.Count == 0)
+            {
                 return (false, 0.0);
+            }
+
             var value = 0.0;
             var vouts = txinfo.Transaction.Vout.ToList();
             for (var i = 0; i < (vouts.Count - 2); i++)
@@ -536,23 +514,31 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="txinfo"></param>
         /// <returns></returns>
-        public static async Task<(bool,string)> ParseDogeMessage(GetTransactionInfoResponse txinfo)
+        public static (bool, string) ParseDogeMessage(GetTransactionInfoResponse txinfo)
         {
             if (txinfo == null)
+            {
                 return (false, "No input data provided.");
+            }
+
             if (txinfo.Success != "success")
+            {
                 return (false, "No input data provided.");
+            }
+
             if (txinfo.Transaction.Vout == null || txinfo.Transaction.Vout.Count == 0)
+            {
                 return (false, "No outputs in transaction.");
-            
-            foreach(var o in txinfo.Transaction.Vout)
+            }
+
+            foreach (var o in txinfo.Transaction.Vout)
             {
                 if (!string.IsNullOrEmpty(o.Script) && o.Script.Contains("OP_RETURN"))
                 {
                     var message = o.Script.Replace("OP_RETURN ", string.Empty);
                     var bytes = HexStringToBytes(message);
                     var msg = Encoding.UTF8.GetString(bytes);
-                    return (true,msg);
+                    return (true, msg);
                 }
             }
 
@@ -562,9 +548,15 @@ namespace VEDriversLite
         private static byte[] HexStringToBytes(string hexString)
         {
             if (hexString == null)
+            {
                 throw new ArgumentNullException("hexString");
+            }
+
             if (hexString.Length % 2 != 0)
+            {
                 throw new ArgumentException("hexString must have an even length", "hexString");
+            }
+
             var bytes = new byte[hexString.Length / 2];
             for (int i = 0; i < bytes.Length; i++)
             {
@@ -582,22 +574,22 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="dogeAddress">Excpected Dogecoin address</param>
         /// <returns>true and Address if it is correct Dogecoin Address</returns>
-        public static async Task<(bool, string)> ValidateDogeAddress(string dogeAddress)
+        public static (bool, string) ValidateDogeAddress(string dogeAddress)
         {
             try
             {
-                if (string.IsNullOrEmpty(dogeAddress))
+                if (string.IsNullOrEmpty(dogeAddress) || dogeAddress.Length < 34 || dogeAddress[0] != 'D')
+                {
                     return (false, string.Empty);
-                if (dogeAddress.Length < 34)
-                    return (false, string.Empty);
-                if (dogeAddress[0] != 'D')
-                    return (false, string.Empty);
+                }
 
                 var add = BitcoinAddress.Create(dogeAddress, Network);
                 if (!string.IsNullOrEmpty(add.ToString()))
+                {
                     return (true, add.ToString());
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return (false, string.Empty);
             }
@@ -609,23 +601,23 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="privatekey">Excpected Dogecoin private key</param>
         /// <returns>true and NBitcoin.BitcoinSecret if it is correct Dogecoin private key</returns>
-        public static async Task<(bool, BitcoinSecret)> IsPrivateKeyValid(string privatekey)
+        public static (bool, BitcoinSecret) IsPrivateKeyValid(string privatekey)
         {
             try
             {
-                if (string.IsNullOrEmpty(privatekey))
+                if (string.IsNullOrEmpty(privatekey) || privatekey.Length < 52 || privatekey[0] != 'Q')
+                {
                     return (false, null);
-                if (privatekey.Length < 52)
-                    return (false, null);
-                if (privatekey[0] != 'Q')
-                    return (false, null);
+                }
 
                 var sec = new BitcoinSecret(privatekey, Network);
 
                 if (sec != null)
+                {
                     return (true, sec);
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return (false, null);
             }
@@ -637,19 +629,21 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="privatekey">Excpected Dogecoin private key</param>
         /// <returns>true and Address if it is correct Dogecoin private key</returns>
-        public static async Task<(bool, string)> GetAddressFromPrivateKey(string privatekey)
+        public static (bool, string) GetAddressFromPrivateKey(string privatekey)
         {
             try
             {
-                var p = await IsPrivateKeyValid(privatekey);
+                var p = IsPrivateKeyValid(privatekey);
                 if (p.Item1)
                 {
                     var address = p.Item2.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
                     if (address != null)
+                    {
                         return (true, address.ToString());
+                    }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return (false, string.Empty);
             }
@@ -666,20 +660,13 @@ namespace VEDriversLite
         private static IClient GetClient()
         {
             if (_client == null)
-                _client = (IClient)new Client(httpClient);
+            {
+                _client = new Client(httpClient);
+            }
+
             return _client;
         }
-
-        /// <summary>
-        /// Broadcast of signed transaction.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static async Task<string> BroadcastTxAsync(BroadcastTxRequest data)
-        {
-            var info = await GetClient().BroadcastTxAsync(data);
-            return info.Data.TxId;
-        }
+    
 
         /// <summary>
         /// Broadcast of signed transaction. with chain.so
@@ -703,16 +690,6 @@ namespace VEDriversLite
             return info.Data.TxId;
         }
 
-        /// <summary>
-        /// Return address balance.
-        /// </summary>
-        /// <param name="addr"></param>
-        /// <returns></returns>
-        public static async Task<GetAddressBalanceResponse> AddressBalanceAsync(string addr)
-        {
-            var address = await GetClient().GetAddressBalanceAsync(addr);
-            return address;
-        }
 
         /// <summary>
         /// Return address info object. this object contains list of Utxos.
@@ -736,10 +713,14 @@ namespace VEDriversLite
             {
                 var txs = await GetClient().GetAddressSentTxAsync(addr);
                 if (txs != null && txs?.Data != null)
+                {
                     if (txs?.Data.Transactions != null)
+                    {
                         return txs?.Data.Transactions.ToList();
+                    }
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine("Cannot obtain dogecoin address info from the api.");
             }
@@ -754,9 +735,10 @@ namespace VEDriversLite
         public static async Task<List<ReceivedTx>> AddressReceivedTxsAsync(string addr)
         {
             var txs = await GetClient().GetAddressReceivedTxAsync(addr);
-            if (txs.Data != null)
-                if (txs.Data.Transactions != null)
-                    return txs.Data.Transactions.ToList();
+            if (txs.Data != null && txs.Data.Transactions != null)
+            {
+                return txs.Data.Transactions.ToList();
+            }
 
             return new List<ReceivedTx>();
         }
@@ -782,14 +764,22 @@ namespace VEDriversLite
                         else
                         {
                             var tx = await GetClient().GetTransactionInfoAsync(txid);
-                            if (tx != null) transactionDetails.TryUpdate(txid, tx, txinfo);
+                            if (tx != null)
+                            {
+                                transactionDetails.TryUpdate(txid, tx, txinfo);
+                            }
+
                             return tx;
                         }
                     }
                     else
                     {
                         var tx = await GetClient().GetTransactionInfoAsync(txid);
-                        if (tx != null) transactionDetails.TryAdd(txid, tx);
+                        if (tx != null)
+                        {
+                            transactionDetails.TryAdd(txid, tx);
+                        }
+
                         return tx;
                     }
                 }
@@ -799,7 +789,7 @@ namespace VEDriversLite
                     return tx;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Cannot obtain the data about the transaction from the API. " + ex.Message);
             }
@@ -821,16 +811,22 @@ namespace VEDriversLite
             {
                 addinfo = await GetClient().GetAddressUtxosAsync(addr);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine("Cannot obtain dogecoin address Utxos."  + ex.Message);
+                Console.WriteLine("Cannot obtain dogecoin address Utxos." + ex.Message);
                 return null;
             }
             if (addinfo == null)
+            {
                 return null;
+            }
+
             var utxos = addinfo.Data.Utxos;
             if (utxos == null)
+            {
                 return null;
+            }
+
             utxos = utxos.OrderBy(u => Convert.ToDouble(u.Value, CultureInfo.InvariantCulture)).Reverse().ToList();
 
             var founded = 0.0;
@@ -838,13 +834,17 @@ namespace VEDriversLite
             {
                 var val = Convert.ToDouble(utx.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio;
                 if (utx.Confirmations > MinimumConfirmations && val > 10000)
+                {
                     if (val > (minAmount * FromSatToMainRatio))
                     {
                         resp.Add(utx);
                         founded += (val / FromSatToMainRatio);
                         if (founded > requiredAmount)
+                        {
                             return resp;
+                        }
                     }
+                }
             }
             return null;
         }

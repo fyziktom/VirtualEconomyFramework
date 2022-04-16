@@ -17,7 +17,7 @@
 @page "/advanced"
 
 <div class="container-fluid overflow-auto">
-    <Spin Tip="Sending..." Spinning="@sending">
+    <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sending">
         <div class="row">
             <div class="col">
 
@@ -200,7 +200,7 @@
                                     <h5 class="text-center">VENFT Airdrop</h5>
                                 </div>
                                 <div class="card-body w-100">
-                                    <Spin Tip="Sending..." Spinning="@sendingTransaction">
+                                    <VENFTApp_Blazor.Components.Spin Tip="Sending..." Spinning="@sendingTransaction">
                                         <div class="row" style="margin-top:30px; min-width:250px;">
                                             <div class="col w-100">
                                                 <div class="row" style="margin-top:10px;">
@@ -220,7 +220,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </Spin>
+                                    </VENFTApp_Blazor.Components.Spin>
                                 </div>
                             </div>
 
@@ -230,7 +230,7 @@
             </div>
         </div>
         <VENFTApp_Blazor.Components.InfoEventModal />
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </div>
 
 @code {

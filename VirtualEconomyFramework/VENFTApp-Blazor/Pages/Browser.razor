@@ -10,7 +10,7 @@
 @inject IJSRuntime JSRuntime
 @page "/browser"
 
-<Spin Tip="Loading Browser..." Spinning="@loadingBrowser">
+<VENFTApp_Blazor.Components.Spin Tip="Loading Browser..." Spinning="@loadingBrowser">
     <div class="container-fluid overflow-auto">
         <div class="row">
             <div class="col d-flex justify-content-center align-items-center">
@@ -88,7 +88,7 @@
 
                     <div class="tab-content" id="shopTabsContent">
                                 <div role="tabpanel" class="tab-pane active" style="min-height: 200px;">
-                                    <Spin Spinning="@tabIsLoading" Tip="Tab Content is Loading...">
+                                    <VENFTApp_Blazor.Components.Spin Spinning="@tabIsLoading" Tip="Tab Content is Loading...">
                                     <div class="row">
                                         <div class="col">
                                             <div class="row" style="margin-top: 10px;">
@@ -163,7 +163,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    </Spin>
+                                    </VENFTApp_Blazor.Components.Spin>
                                 </div>
                     </div>
                 </div>
@@ -171,7 +171,7 @@
         </div>
         <VENFTApp_Blazor.Components.InfoEventModal />
     </div>
-</Spin>
+</VENFTApp_Blazor.Components.Spin>
 
 <!--Open New Tab Modal-->
 <Modal Title="Open Tab"
@@ -237,7 +237,7 @@
 
             @if (AppData.VENFTOwners.Count == 0)
             {
-                <p><Spin Tip="Loading..."></Spin></p>
+                <p><VENFTApp_Blazor.Components.Spin Tip="Loading..."></VENFTApp_Blazor.Components.Spin></p>
             }
             else
             {

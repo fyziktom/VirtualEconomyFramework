@@ -21,6 +21,12 @@ a {
 
 }
 
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
     a:hover {
         color: #FF6B6B
     }

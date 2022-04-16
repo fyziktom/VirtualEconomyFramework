@@ -13,8 +13,12 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Main Dogecoin Account class
+    /// </summary>
     public class DogeAccount
     {
+        private static object _lock = new object();
         /// <summary>
         /// Doge Address hash
         /// </summary>
@@ -188,8 +192,7 @@ namespace VEDriversLite
                     AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
                     AccountKey.PublicKey = Address;
                     Secret = privateKeyFromNetwork;
-                    if (!string.IsNullOrEmpty(password))
-                        AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(password);
+
                     SignMessage("init");
                     if (saveToFile)
                     {
@@ -197,7 +200,7 @@ namespace VEDriversLite
                         var kdto = new KeyDto()
                         {
                             Address = Address,
-                            Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
+                            Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
                         };
                         FileHelpers.WriteTextToFile("dogekey.txt", JsonConvert.SerializeObject(kdto));
                     }
@@ -220,6 +223,7 @@ namespace VEDriversLite
         /// Load account from "key.txt" file placed in the root exe directory. Doesnt work in WABS
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="filename">Filename with the key. Default name is dogekey.txt</param>
         /// <returns></returns>
         public async Task<bool> LoadAccount(string password, string filename = "dogekey.txt")
         {
@@ -231,16 +235,16 @@ namespace VEDriversLite
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
                     AccountKey = new EncryptionKey(kdto.Key, fromDb: true);
-                    await AccountKey.LoadPassword(password);
+                    AccountKey.LoadPassword(password);
                     AccountKey.IsEncrypted = true;
                     Address = kdto.Address;
 
-                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
+                    Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
                     //SignMessage("init");
                     await StartRefreshingData();
                     return true;
                 }
-                catch (Exception ex)
+                catch
                 {
                     throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
                 }
@@ -281,14 +285,14 @@ namespace VEDriversLite
                     }
                     if (!string.IsNullOrEmpty(password))
                     {
-                        await AccountKey.LoadPassword(password);
+                        AccountKey.LoadPassword(password);
                         AccountKey.IsEncrypted = true;
                     }
-                    Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
+                    Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
 
                     if (string.IsNullOrEmpty(address))
                     {
-                        var add = await DogeTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
+                        var add = DogeTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
                         if (add.Item1) Address = add.Item2;
                     }
                     else
@@ -353,9 +357,9 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                // todo
+                Console.WriteLine("Canont load dogecoin utxos. " + ex.Message);
             }
-
+            var first = true;
             // todo cancelation token
             _ = Task.Run(async () =>
             {
@@ -363,12 +367,16 @@ namespace VEDriversLite
                 {
                     try
                     {
-                        await ReloadUtxos();
+                        if (!first)
+                            await ReloadUtxos();
+                        else
+                            first = false;
+
                         await GetListOfReceivedTransactions();
                         await GetListOfSentTransactions();
                         Refreshed?.Invoke(this, null);
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         //await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
                     }
@@ -409,18 +417,26 @@ namespace VEDriversLite
 
             if (ouxox.Count > 0)
             {
-                Utxos.Clear();
+                lock (_lock)
+                {
+                    Utxos.Clear();
+                }
                 TotalBalance = 0.0;
                 TotalUnconfirmedBalance = 0.0;
                 TotalSpendableBalance = 0.0;
                 // add new ones
                 foreach (var u in ouxox)
                 {
-                    Utxos.Add(u);
-                    if (u.Confirmations == 0)
+                    if (u.Confirmations <= DogeTransactionHelpers.MinimumConfirmations)
                         TotalUnconfirmedBalance += (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture));
                     else
+                    {
                         TotalSpendableBalance += (Convert.ToDouble(u.Value, CultureInfo.InvariantCulture));
+                        lock (_lock)
+                        {
+                            Utxos.Add(u);
+                        }
+                    }
                 }
 
                 TotalBalance = TotalSpendableBalance + TotalUnconfirmedBalance;
@@ -435,7 +451,6 @@ namespace VEDriversLite
         /// <summary>
         /// This function will get list of spended transaction
         /// </summary>
-        /// <param name="amount"></param>
         /// <returns></returns>
         public async Task<ICollection<SpentTx>> GetListOfSentTransactions()
         {
@@ -461,7 +476,7 @@ namespace VEDriversLite
                 SentTransactions = txs;
                 return txs;
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Cannot load txs history");
             }
@@ -471,7 +486,6 @@ namespace VEDriversLite
         /// <summary>
         /// This function will get list of received transaction
         /// </summary>
-        /// <param name="amount"></param>
         /// <returns></returns>
         public async Task<ICollection<ReceivedTx>> GetListOfReceivedTransactions()
         {
@@ -482,7 +496,6 @@ namespace VEDriversLite
                 {
                     txs = await DogeTransactionHelpers.AddressReceivedTxsAsync(Address); 
                     txs.Reverse();
-
                 }
                 catch (Exception ex)
                 {
@@ -497,7 +510,7 @@ namespace VEDriversLite
                 ReceivedTransactions = txs;
                 return txs;
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Cannot load txs history");
             }
@@ -530,8 +543,11 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
+        /// <param name="message">add message to OP_RETURN data. max 83 bytes</param>
+        /// <param name="utxo">from specific utxo</param>
+        /// <param name="N">with specific utxo index</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "", UInt64 fee = 100000000, string utxo = "", int N = 0)
+        public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "", string utxo = "", int N = 0)
         {
             if (IsLocked())
             {
@@ -568,9 +584,9 @@ namespace VEDriversLite
                 // send tx
                 var rtxid = string.Empty;
                 if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
                 else 
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
 
                 if (rtxid != null)
                 {
@@ -593,6 +609,9 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
+        /// <param name="utxos"></param>
+        /// <param name="message"></param>
+        /// <param name="fee"></param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMultipleInputPayment(string receiver, double amount, List<Utxo> utxos, string message = "", UInt64 fee = 100000000)
         {
@@ -627,9 +646,9 @@ namespace VEDriversLite
                 // send tx
                 var rtxid = string.Empty;
                 if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
                 else
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2, fee);
+                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
 
                 if (rtxid != null)
                 {
@@ -653,9 +672,8 @@ namespace VEDriversLite
         /// <param name="receiverAmounts"></param>
         /// <param name="utxos"></param>
         /// <param name="message"></param>
-        /// <param name="fee"></param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "", UInt64 fee = 100000000)
+        public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "")
         {
             if (IsLocked())
             {
@@ -679,7 +697,7 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, fee, message: message);
+                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, message: message);
 
                 if (rtxid != null)
                 {
@@ -768,7 +786,7 @@ namespace VEDriversLite
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var key = await AccountKey.GetEncryptedKey();
+            var key = AccountKey.GetEncryptedKey();
             return await ECDSAProvider.SignMessage(message, Secret);
         }
 

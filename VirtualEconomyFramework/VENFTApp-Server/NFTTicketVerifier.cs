@@ -83,9 +83,9 @@ namespace VENFTApp_Server
                         throw new Exception("Cannot Load the owner Public Key.");
 
                     // verify of the signature of the NFT
-                    var verres = pubkey.VerifyMessage(msg, dto.Signature);
+                    var verres = await ECDSAProvider.VerifyMessage(msg, dto.Signature, pubkey);
                     //var vmsg = await ECDSAProvider.VerifyMessage(msg, dto.Signature, pubkey);
-                    if (!verres)
+                    if (!verres.Item1)
                         throw new Exception("Signature of the NFT is not valid.");
 
                     // check if the NFT is still as utxo on the address

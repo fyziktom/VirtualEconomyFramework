@@ -18,7 +18,7 @@
        Style="width:auto; max-width:300px;"
        OnCancel="@showOwnershipDialogCancel"
        Footer="null">
-    <Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
+    <VENFTApp_Blazor.Components.Spin Tip="@creatingOwnerQRCodeState" Spinning="@showOwnershipDialogLoading">
         <div class="row">
             <div class="col d-flex justify-content-center align-items-center">
                 <span class="text-center">Code is valid for: @qrCodeRefreshCounter s</span>
@@ -40,7 +40,7 @@
             </div>
         </div>
         <VENFTApp_Blazor.Components.HelperButtons.CopyButton TextToCopy="@ownershipCodeSerialized" />
-    </Spin>
+    </VENFTApp_Blazor.Components.Spin>
 </Modal>
 
 @code {

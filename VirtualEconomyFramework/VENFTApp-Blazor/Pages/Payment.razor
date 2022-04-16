@@ -32,7 +32,7 @@
 
     <div class="row" style="margin-bottom:20px;">
         <div class="col">
-            <Spin spinning="@sendingTransaction" tip="Sending Transaction...">
+            <VENFTApp_Blazor.Components.Spin Spinning="@sendingTransaction" Tip="Sending Transaction...">
                 <div class="card" style="margin-top:10px;">
                     <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
                         @if (currecncy == Currecncy.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
@@ -131,10 +131,10 @@
                                 @if (sucessfullSend)
                                 {
                                     <hr />
-                                    <Alert Type="@AlertType.Success"
-                                           Message="Payment Sent."
-                                           Description="Your payment has been sent :)"
-                                           ShowIcon="true" />
+                                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Success">
+                                        <Title>Payment Sent.</Title>
+                                        <Message>Your payment has been sent :)</Message>
+                                    </VENFTApp_Blazor.Components.Alert>
                                     <div class="row" style="margin-top:10px;">
                                         <div class="col d-flex justify-content-center align-items-center">
                                             <span>Transaction Id</span>
@@ -155,20 +155,20 @@
                                     </div>
                                     <hr />
                                     @if (!string.IsNullOrEmpty(redirect))
-                                    { 
-                                    <div class="row" style="margin-top:10px; margin-bottom:20px;">
-                                        <div class="col d-flex justify-content-center align-items-center">
-                                            <button class="btn btn-primary" @onclick="GoBackToShop">Go Back to the Shop</button>
+                                    {
+                                        <div class="row" style="margin-top:10px; margin-bottom:20px;">
+                                            <div class="col d-flex justify-content-center align-items-center">
+                                                <button class="btn btn-primary" @onclick="GoBackToShop">Go Back to the Shop</button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <hr />
+                                        <hr />
                                     }
                                 }
                             </div>
                         </div>
                     </div>
                 </div>
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 
@@ -181,7 +181,7 @@
        OnCancel="@UnclockAccountCancel">
     <div class="row">
         <div class="col">
-            <Spin Tip="Unlocking..." Spinning="@unlockingAccount">
+            <VENFTApp_Blazor.Components.Spin Tip="Unlocking..." Spinning="@unlockingAccount">
                 <div class="row">
                     <div class="col d-flex justify-content-center align-items-center">
                         <span>Please Input password</span>
@@ -195,26 +195,24 @@
 
                 @if (unlockOrClearCashMessage)
                 {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Unlock account."
-                           ShowIcon="true" />
+                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                        <Message>Unlock account.</Message>
+                    </VENFTApp_Blazor.Components.Alert>
                 }
                 @if (accountUnlockingError)
                 {
-                    <Alert Type="@AlertType.Error"
-                           Message="Error"
-                           Description="Wrong Password."
-                           ShowIcon="true" />
+                    <VENFTApp_Blazor.Components.Alert Type="VENFTApp_Blazor.Components.AlertType.Error">
+                        <Message>Wrong Password.</Message>
+                    </VENFTApp_Blazor.Components.Alert>
                 }
-            </Spin>
+            </VENFTApp_Blazor.Components.Spin>
         </div>
     </div>
 </Modal>
 
 <Modal Title="Redirecting back to the shop"
        Visible="@redirectingBackToShopVisible"
-        Footer="null">
+       Footer="null">
     <div class="row">
         <div class="col">
             <div class="row">
@@ -300,7 +298,9 @@
                 }
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("amnt", out var amnt))
                 {
-                    AmountToSend = Convert.ToDouble(amnt, CultureInfo.InvariantCulture);
+                    string am = amnt;
+                    am = am.Replace(',', '.');
+                    AmountToSend = Convert.ToDouble(am, CultureInfo.InvariantCulture);
                 }
 
                 if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
@@ -430,7 +430,7 @@
             var pass = unlockPassword;
 
             var load = false;
-            switch(currecncy)
+            switch (currecncy)
             {
                 case Currecncy.NBL:
                     load = await LoadNeblioAccount();

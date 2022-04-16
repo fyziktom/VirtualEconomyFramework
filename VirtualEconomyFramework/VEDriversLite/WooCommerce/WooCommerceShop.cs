@@ -298,17 +298,22 @@ namespace VEDriversLite.WooCommerce
         }
 
         /// <summary>
-        /// TODO
+        /// TODO REFACTOR THIS METHOD AND CHANGE THE REFERENCES
         /// </summary>
         /// <param name="o"></param>
         /// <returns></returns>
         public async Task<(bool,string)> GetNeblioAddressFromOrderMetadata(Order o)
         {
-            var res = (false, string.Empty);
+            string response = string.Empty;
+            bool counter = false;
+            var res = (counter, response);
             o.meta_data.ForEach(async (m) =>
             {
                 if (m.key == "_billing_virtual_economy_wallet_nebl_address" || m.key == "_billing_neblio_address" || m.key == VEDLDataContext.WooCommerceStoreCheckoutFieldCustomerNeblioAddress)
-                    res = await NeblioTransactionHelpers.ValidateNeblioAddress(Convert.ToString(m.value));
+                {
+                    response = NeblioTransactionHelpers.ValidateNeblioAddress(Convert.ToString(m.value));
+                    counter = true;
+                }
             });
             return res;
         }

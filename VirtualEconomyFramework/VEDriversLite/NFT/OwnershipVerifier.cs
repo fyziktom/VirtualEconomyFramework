@@ -5,7 +5,6 @@ using System.Collections.Generic;
 //using System.Drawing;
 //using System.Drawing.Imaging;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Security;
@@ -44,7 +43,7 @@ namespace VEDriversLite.NFT
         public static async Task<(bool, string)> GetCode(string txid, EncryptionKey key)
         {
             var msg = CreateMessage(txid);
-            var signed = await ECDSAProvider.SignMessage(msg, await key.GetEncryptedKey());
+            var signed = await ECDSAProvider.SignMessage(msg, key.GetEncryptedKey());
             return signed;
         }
         public static async Task<(bool, string)> GetCode(string txid, NBitcoin.BitcoinSecret key)
