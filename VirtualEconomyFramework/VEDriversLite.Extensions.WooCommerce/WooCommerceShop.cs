@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NFT;
-using VEDriversLite.WooCommerce.Dto;
+using VEDriversLite.Extensions.WooCommerce.Dto;
 
-namespace VEDriversLite.WooCommerce
+namespace VEDriversLite.Extensions.WooCommerce
 {
     public partial class WooCommerceShop
     {

@@ -2542,11 +2542,11 @@ namespace VEDriversLite
                 return resp;
             }
 
-            utxos = utxos.OrderByDescending(u => u.Value).ToList();
-
             if (latestBlockHeight == 0)
                 latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, address);
             
+            utxos = utxos.OrderByDescending(u => u.Value).ToList();
+
             foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Value > MinimumAmount && u.Tokens?.Count == 0 && ((double)u.Value) > (minAmount * FromSatToMainRatio)))
             {
                 double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
@@ -2659,10 +2659,10 @@ namespace VEDriversLite
                 return resp;
             }
 
-            utxos = utxos.OrderByDescending(u => u.Value).ToList();
-
             if (latestBlockHeight == 0)
                 latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, addr);
+            
+            utxos = utxos.OrderByDescending(u => u.Value).ToList();
 
             foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Tokens.Count > 0))
             {

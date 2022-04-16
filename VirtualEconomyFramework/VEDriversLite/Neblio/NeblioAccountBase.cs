@@ -18,7 +18,6 @@ using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.Security;
-using VEDriversLite.WooCommerce;
 
 namespace VEDriversLite.Neblio
 {
@@ -1402,6 +1401,8 @@ namespace VEDriversLite.Neblio
                                         {
                                             Console.WriteLine("Waiting for spendable utxo...");
                                             await Task.Delay(5000);
+                                            await ReloadUtxos();
+                                            await ReloadMintingSupply();
                                         }
                                         else
                                         {
@@ -1413,18 +1414,24 @@ namespace VEDriversLite.Neblio
                                             NewMintingProcessInfo?.Invoke(this, $"New Lot Minted: {txres}, Waiting for processing next {i + 1} of {lots} lots.");
                                             await Task.Delay(1500);
                                             await ReloadUtxos();
+                                            await ReloadMintingSupply();                                            
                                         }
                                     }
                                     catch (Exception ex)
                                     {
                                         Console.WriteLine("Cannot send Mint. Probably need to wait for the confirmation. Error: " + ex.Message);
                                         await Task.Delay(5000);
+                                        await ReloadUtxos();
+                                        await ReloadMintingSupply();                                        
                                         done = false;
                                     }
                                 }
                                 else
                                 {
+                                    Console.WriteLine("Cannot send Mint. Probably need to wait for the confirmation...");
                                     await Task.Delay(5000);
+                                    await ReloadUtxos();
+                                    await ReloadMintingSupply();
                                     done = false;
                                 }
                             }
@@ -1458,12 +1465,15 @@ namespace VEDriversLite.Neblio
                                         NewMintingProcessInfo?.Invoke(this, $"Rest of {rest} NFTs of total {coppies} NFTs was Minted: {txres}");
                                         await Task.Delay(1500);
                                         await ReloadUtxos();
+                                        await ReloadMintingSupply();
                                     }
                                 }
                                 else
                                 {
                                     Console.WriteLine("Waiting for spendable utxo...");
                                     await Task.Delay(5000);
+                                    await ReloadUtxos();
+                                    await ReloadMintingSupply();                                    
                                 }
                             }
                         });

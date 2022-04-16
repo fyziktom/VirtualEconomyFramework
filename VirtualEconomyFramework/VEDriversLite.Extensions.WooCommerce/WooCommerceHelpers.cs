@@ -11,10 +11,10 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Common;
 using VEDriversLite.NFT;
-using VEDriversLite.WooCommerce.Dto;
+using VEDriversLite.Extensions.WooCommerce.Dto;
 using WordPressPCL;
 
-namespace VEDriversLite.WooCommerce
+namespace VEDriversLite.Extensions.WooCommerce
 {
     /// <summary>
     /// Woo Commerce API integration helper class

@@ -17,7 +17,7 @@ using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Imaging.Xray;
 using VEDriversLite.Security;
 using VEDriversLite.UnstoppableDomains;
-using VEDriversLite.WooCommerce;
+using VEDriversLite.Extensions.WooCommerce;
 
 namespace TestVEDriversLite
 {

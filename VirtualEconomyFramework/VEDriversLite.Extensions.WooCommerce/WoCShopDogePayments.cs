@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Dto;
 using VEDriversLite.Events;
-using VEDriversLite.WooCommerce.Dto;
+using VEDriversLite.Extensions.WooCommerce.Dto;
 
-namespace VEDriversLite.WooCommerce
+namespace VEDriversLite.Extensions.WooCommerce
 {
     public partial class WooCommerceShop
     {

@@ -29,7 +29,6 @@ namespace VENFTApp_Server
         {
             services.AddMvc(options => options.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddRazorPages();
-            services.AddAntDesign();
             services.AddServerSideBlazor();
             services.AddSwaggerGen();
             services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5001/") });

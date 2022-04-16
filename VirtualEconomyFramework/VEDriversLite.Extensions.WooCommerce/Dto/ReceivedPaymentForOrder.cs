@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VEDriversLite.WooCommerce.Dto
+namespace VEDriversLite.Extensions.WooCommerce.Dto
 {
     /// <summary>
     /// Received payment for order in woocommerce

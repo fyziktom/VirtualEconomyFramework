@@ -18,7 +18,6 @@ using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
-using VEDriversLite.WooCommerce;
 
 namespace VEDriversLite
 {

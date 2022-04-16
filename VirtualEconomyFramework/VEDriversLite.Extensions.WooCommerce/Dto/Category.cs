@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VEDriversLite.WooCommerce.Dto
+namespace VEDriversLite.Extensions.WooCommerce.Dto
 {
     /// <summary>
     /// Woo commerce shop category dto

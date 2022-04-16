@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using VEDriversLite.NFT;
 
-namespace VEDriversLite.WooCommerce.Dto
+namespace VEDriversLite.Extensions.WooCommerce.Dto
 {
     /// <summary>
     /// NFT Order which should be send to the client
