@@ -3432,6 +3432,12 @@
             Address from where to send new NFT
             </summary>
         </member>
+        <member name="P:VEDriversLite.MintNFTData.MultipleReceivers">
+            <summary>
+            Fill when you have multiple receivers
+            Works now just for multimint of NFTs example in VEBlazor.Demo.TicketsAndEvents for minting tickets
+            </summary>
+        </member>
         <member name="P:VEDriversLite.MintNFTData.Password">
             <summary>
             If the account is locked you can provide password directly in the send token api command
@@ -4875,7 +4881,7 @@
             <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.MintMultiNFTLargeAmount(VEDriversLite.NFT.INFT,System.Int32,System.String)">
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.MintMultiNFTLargeAmount(VEDriversLite.NFT.INFT,System.Int32,System.String,System.Collections.Generic.List{System.String})">
             <summary>
             Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
             </summary>
@@ -10028,7 +10034,7 @@
             <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.MintMultiNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.MintMultiNFT(System.String,System.Int32,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String,System.Collections.Generic.List{System.String})">
             <summary>
             This function will new Post NFTs as multimint. 
             It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.

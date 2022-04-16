@@ -1090,7 +1090,7 @@ namespace VEDriversLite.NFT
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
         /// <param name="receiver">Receiver of the NFT</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintMultiNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string receiver = "")
+        public static async Task<string> MintMultiNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, string receiver = "", List<string> multipleReceivers = null)
         {
             var metadata = await NFT.GetMetadata();
             // fill input data for sending tx
@@ -1099,7 +1099,8 @@ namespace VEDriversLite.NFT
                 Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address,
-                ReceiverAddress = receiver
+                ReceiverAddress = receiver,
+                MultipleReceivers = multipleReceivers
             };
 
             try

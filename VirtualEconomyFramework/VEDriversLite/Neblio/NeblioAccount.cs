@@ -1361,7 +1361,7 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver of the NFT</param>
         /// <param name="coppies"></param>
         /// <returns>true and string with new TxId</returns>
-        public async Task<(bool, string)> MultimintNFTLargeOnSubAccount(string address, INFT NFT, int coppies, string receiver = "")
+        public async Task<(bool, Dictionary<string,string>)> MultimintNFTLargeOnSubAccount(string address, INFT NFT, int coppies, string receiver = "")
         {
             try
             {
@@ -1371,11 +1371,15 @@ namespace VEDriversLite
                     return res;
                 }
                 else
-                    return (false, "SubAccount is not in the list.");
+                {
+                    Console.WriteLine("SubAccount is not in the list.");
+                    return (false, null);
+                }
             }
             catch (Exception ex)
             {
-                return (false, ex.Message);
+                Console.WriteLine("Canont Multi Mint NFT on subaccount. " + ex.Message);
+                return (false, null);
             }
         }
 

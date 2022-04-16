@@ -494,7 +494,7 @@ namespace VEDriversLite
                 throw new Exception("Cannot send without metadata!");
             }
 
-            BitcoinAddress receiverAddres = null;
+            List<BitcoinAddress> receiverAddreses = new List<BitcoinAddress>();
 
             // load key and address
             BitcoinSecret key;
@@ -503,9 +503,15 @@ namespace VEDriversLite
             var k = GetAddressAndKey(ekey);
             key = k.Item2;
             addressForTx = k.Item1;
-            if (!string.IsNullOrEmpty(data.ReceiverAddress))
+            if (!string.IsNullOrEmpty(data.ReceiverAddress) || data.MultipleReceivers.Count > 0)
             {
-                receiverAddres = BitcoinAddress.Create(data.ReceiverAddress, Network);
+                if (data.MultipleReceivers.Count == 0)
+                    receiverAddreses.Add(BitcoinAddress.Create(data.ReceiverAddress, Network));
+                else
+                {
+                    foreach(var a in data.MultipleReceivers)
+                        receiverAddreses.Add(BitcoinAddress.Create(a, Network));
+                }                    
             }
 
             if (tutxos == null || tutxos.Count == 0)
@@ -619,11 +625,17 @@ namespace VEDriversLite
                 hexToSign = await SendRawNTP1TxAsync(dto);
                 if (string.IsNullOrEmpty(hexToSign))
                 {
+                    Console.WriteLine("Cannot get correct raw token hex.");
+                    Console.WriteLine("Data: " + JsonConvert.SerializeObject(data));
+                    Console.WriteLine("Dto: " + JsonConvert.SerializeObject(dto));
                     throw new Exception("Cannot get correct raw token hex.");
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception during sending raw token tx");
+                Console.WriteLine("Data: " + JsonConvert.SerializeObject(data));
+                Console.WriteLine("Dto: " + JsonConvert.SerializeObject(dto));
                 throw new Exception("Exception during sending raw token tx" + ex.Message);
             }
 
@@ -635,13 +647,26 @@ namespace VEDriversLite
 
             if (multiTokens)
             {
+                var i = 0;
                 foreach (var output in transaction.Outputs)
                 {
                     if (!output.ScriptPubKey.ToString().Contains("RETURN"))
                     {
-                        if (!string.IsNullOrEmpty(data.ReceiverAddress))
+                        if (receiverAddreses.Count > 0)
                         {
-                            output.ScriptPubKey = receiverAddres.ScriptPubKey;
+                            if (receiverAddreses.Count > 1)
+                            { 
+                                output.ScriptPubKey = receiverAddreses[i].ScriptPubKey;
+                                i++;
+                            }
+                            else if (receiverAddreses.Count == 1)
+                            {
+                                output.ScriptPubKey = receiverAddreses[0].ScriptPubKey;
+                            }
+                            else
+                            {
+                                throw new Exception("Cannot send token, no receiver address.");
+                            }
                         }
                         else
                         {

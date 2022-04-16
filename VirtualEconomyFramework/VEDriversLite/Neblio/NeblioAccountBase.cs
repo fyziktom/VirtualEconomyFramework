@@ -507,7 +507,7 @@ namespace VEDriversLite.Neblio
 
                     AddressInfoUtxos = new GetAddressInfoResponse()
                     {
-                        Utxos = Utxos
+                        Utxos = Utxos.Where(u => u.Blockheight > 0).ToList()
                     };
                 }
             }
@@ -1355,24 +1355,26 @@ namespace VEDriversLite.Neblio
         /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
         /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
-        public async Task<(bool, string)> MintMultiNFTLargeAmount(INFT NFT, int coppies, string receiver = "")
+        public async Task<(bool, Dictionary<string, string>)> MintMultiNFTLargeAmount(INFT NFT, int coppies, string receiver = "", List<string> multipleReceivers = null)
         {
+            Dictionary<string, string> sentResults = new Dictionary<string, string>();
+
             var nft = await NFTFactory.CloneNFT(NFT);
             try
             {
                 if (IsLocked())
                 {
                     await InvokeAccountLockedEvent();
-                    return (false, "Account is locked.");
+                    return (false, null);
                 }
-
+                
                 int cps = coppies;
-
+                
                 Console.WriteLine("Start of minting.");
                 int lots = 0;
                 int rest = 0;
-                rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
-                lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
+                rest += cps % (NeblioTransactionHelpers.MaximumTokensOutpus - 1);
+                lots += (int)((cps - rest) / (NeblioTransactionHelpers.MaximumTokensOutpus - 1));
                 string txres = string.Empty;
                 NewMintingProcessInfo?.Invoke(this, $"Minting of {lots} lots started...");
 
@@ -1394,7 +1396,8 @@ namespace VEDriversLite.Neblio
                                 {
                                     try
                                     {
-                                        txres = await NFTHelpers.MintMultiNFT(Address, NeblioTransactionHelpers.MaximumTokensOutpus - 1, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                                        var multipleReceiversPart = multipleReceivers != null ? multipleReceivers.GetRange(i * (NeblioTransactionHelpers.MaximumTokensOutpus - 1), NeblioTransactionHelpers.MaximumTokensOutpus - 1) : null;
+                                        txres = await NFTHelpers.MintMultiNFT(Address, NeblioTransactionHelpers.MaximumTokensOutpus - 1, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver, multipleReceiversPart);
                                         if (string.IsNullOrEmpty(txres))
                                         {
                                             Console.WriteLine("Waiting for spendable utxo...");
@@ -1404,7 +1407,12 @@ namespace VEDriversLite.Neblio
                                         {
                                             done = true;
                                             txsidsres += txres + "-";
+                                            foreach( var a in multipleReceiversPart)
+                                                sentResults.Add(a, txres);
+                                            
                                             NewMintingProcessInfo?.Invoke(this, $"New Lot Minted: {txres}, Waiting for processing next {i + 1} of {lots} lots.");
+                                            await Task.Delay(1500);
+                                            await ReloadUtxos();
                                         }
                                     }
                                     catch (Exception ex)
@@ -1433,7 +1441,8 @@ namespace VEDriversLite.Neblio
                                 var sres = await MultimintSourceCheck(NFT.TokenId, rest);
                                 if (sres.Item1)
                                 {
-                                    txres = await NFTHelpers.MintMultiNFT(Address, rest, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                                    var multipleReceiversPart = multipleReceivers != null ? multipleReceivers.GetRange(multipleReceivers.Count - rest, rest) : null;
+                                    txres = await NFTHelpers.MintMultiNFT(Address, rest, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver, multipleReceiversPart);
                                     if (string.IsNullOrEmpty(txres))
                                     {
                                         Console.WriteLine("Waiting for spendable utxo...");
@@ -1443,7 +1452,12 @@ namespace VEDriversLite.Neblio
                                     {
                                         done = true;
                                         txsidsres += txres + "-";
+                                        foreach (var a in multipleReceiversPart)
+                                            sentResults.Add(a, txres);
+
                                         NewMintingProcessInfo?.Invoke(this, $"Rest of {rest} NFTs of total {coppies} NFTs was Minted: {txres}");
+                                        await Task.Delay(1500);
+                                        await ReloadUtxos();
                                     }
                                 }
                                 else
@@ -1463,7 +1477,8 @@ namespace VEDriversLite.Neblio
                     else
                     {
                         await InvokeErrorDuringSendEvent("Cannot Mint NFTs", "Not enough spendable source.");
-                        return (false, "Not enough spendable source.");
+                        Console.WriteLine("Cannot Mint NFTs", "Not enough spendable source.");
+                        return (false, null);
                     }
                     if (!string.IsNullOrEmpty(txres)) txsidsres += txres;
                     txsidsres = txsidsres.Trim('-');
@@ -1472,7 +1487,7 @@ namespace VEDriversLite.Neblio
                 if (txres != null)
                 {
                     await InvokeSendPaymentSuccessEvent(txsidsres, "Neblio NFT Sent");
-                    return (true, txsidsres);
+                    return (true, sentResults);
                 }
                 else
                 {
@@ -1482,11 +1497,12 @@ namespace VEDriversLite.Neblio
             catch (Exception ex)
             {
                 await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
-                return (false, ex.Message);
+                Console.WriteLine("Error during minting: " + ex.Message);
+                return (false, null);
             }
-
+            
             await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
-            return (false, "Unexpected error during send.");
+            return (false, null);
         }
 
 

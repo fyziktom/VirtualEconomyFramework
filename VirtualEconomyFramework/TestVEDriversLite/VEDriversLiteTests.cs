@@ -154,7 +154,7 @@ namespace TestVEDriversLite
 
             Console.WriteLine("Loading account NFTs...");
             var attempts = 100;
-            while(account.NFTs.Count == 0)
+            while (account.NFTs.Count == 0)
             {
                 await Task.Delay(1000);
                 if (attempts < 0)
@@ -235,7 +235,7 @@ namespace TestVEDriversLite
             var file = split[1];
             account.FirsLoadingStatus -= Account_FirsLoadingStatus;
             account.FirsLoadingStatus += Account_FirsLoadingStatus;
-            await account.LoadAccountFromVENFTBackup(pass,filename: file);
+            await account.LoadAccountFromVENFTBackup(pass, filename: file);
 
             //StartRefreshingData(null);
         }
@@ -908,7 +908,7 @@ namespace TestVEDriversLite
             }
             // create NFT object
             var nft = new TicketNFT("");
-            await nft.FillFromEventNFT(enft);
+            await nft.FillFromEvent(enft);
             nft.TicketClass = (ClassOfNFTTicket)Enum.Parse(typeof(ClassOfNFTTicket), ticketType);
 
             // count of the tickets
@@ -1003,7 +1003,7 @@ namespace TestVEDriversLite
             Console.WriteLine("Start of minting tickets.");
 
             var res = await account.MintNFT(nft);
-            
+
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }
@@ -1038,6 +1038,97 @@ namespace TestVEDriversLite
 
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
+        }
+
+        /// <summary>
+        /// Airdrop of the NFT Tickets based on the file with addresses and template ticket
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void CreateTestAirdropAddressesList(string param)
+        {
+            CreateTestAirdropAddressesListAsync(param);
+        }
+        public static async Task CreateTestAirdropAddressesListAsync(string param)
+        {
+            var count = 50;
+            var file = "test_addresses.txt";
+            var filekeys = "test_addresses_keys.txt";
+            
+            for (var i = 0; i < count; i++)
+            {
+                var key = new NBitcoin.Key();
+                var address = key.PubKey.GetAddress(NBitcoin.ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
+                Console.WriteLine("New Address: " + address);
+                await File.AppendAllTextAsync(file, address + "\n");
+                await File.AppendAllTextAsync(filekeys, address + ";" + key.GetBitcoinSecret(NeblioTransactionHelpers.Network) + "\n");
+            }
+        }
+        
+        /// <summary>
+        /// Airdrop of the NFT Tickets based on the file with addresses and template ticket
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void AirdropNFTTickets(string param)
+        {
+            AirdropNFTTicketsAsync(param);
+        }
+        public static async Task AirdropNFTTicketsAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input filename,utxo");
+
+            Console.WriteLine("Input NFT Utxo: ");
+            var nftutxo = split[1];
+            Console.WriteLine("Input file with addresses: ");
+            var addressesFileInput =  FileHelpers.ReadTextFromFile(split[0]);
+            var addresses = new List<string>();
+            // load existing NFT object and wait for whole data synchronisation
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, 0, true);
+            // send NFT to receiver
+            if (nft == null)
+                throw new Exception("NFT does not exists!");
+
+            Console.WriteLine("----------------------------------------");
+            Console.WriteLine("Automatic VENFT Airdrop started");
+            Console.WriteLine("----------------------------------------");
+            using (var reader = new StringReader(addressesFileInput))
+            {
+                for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+                {
+                    var address = NeblioTransactionHelpers.ValidateNeblioAddress(line);
+                    if (!string.IsNullOrEmpty(address))
+                        addresses.Add(address);
+                }
+            }
+
+            try
+            {
+                Console.WriteLine($"Airdrop started.");
+                account.NewMintingProcessInfo += Account_NewMintingProcessInfo;
+                var res = await account.MintMultiNFTLargeAmount(nft, addresses.Count, "", addresses);
+                account.NewMintingProcessInfo -= Account_NewMintingProcessInfo;
+                
+                FileHelpers.WriteTextToFile(Path.Combine(Environment.CurrentDirectory, "AirdropedAddresses.txt"), JsonConvert.SerializeObject(res.Item2, Formatting.Indented));
+                Console.WriteLine($"Airdrop result:");
+                Console.WriteLine(JsonConvert.SerializeObject(res.Item2, Formatting.Indented));
+                Console.WriteLine("----------------------------------------");
+            }
+            catch (Exception ex)
+            {
+                // probably just waiting for enought confirmation
+                Console.WriteLine("Waiting for confirmation. " + ex.Message);
+                await Task.Delay(5000);
+            }
+            
+            
+        }
+
+        private static void Account_NewMintingProcessInfo(object sender, string e)
+        {
+            Console.WriteLine("New multimint info: " + e);
         }
 
         /// <summary>

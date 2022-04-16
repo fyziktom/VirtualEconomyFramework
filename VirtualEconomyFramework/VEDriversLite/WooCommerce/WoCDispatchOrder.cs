@@ -138,7 +138,7 @@ namespace VEDriversLite.WooCommerce
                                         return;
                                     }
                                     var done = false;
-                                    (bool, string) res = (false, string.Empty);
+                                    (bool, Dictionary<string,string>) res = (false, new Dictionary<string, string>());
                                     if (dto.IsCategory)
                                     {
                                         var check = false;
@@ -220,20 +220,21 @@ namespace VEDriversLite.WooCommerce
                                                         Currency = "DOGE",
                                                         Platform = "dogeft.com"
                                                     };
+                                                    var rs = (false, string.Empty);
                                                     if (string.IsNullOrEmpty(dto.OwnerSubAccount))
-                                                        res = await account.SendNFT(dto.NeblioCustomerAddress, nft);
+                                                        rs = await account.SendNFT(dto.NeblioCustomerAddress, nft);
                                                     else
-                                                        res = await account.SendNFTFromSubAccount(dto.OwnerSubAccount, dto.NeblioCustomerAddress, nft);
-                                                    done = res.Item1;
-                                                    if (!res.Item1)
+                                                        rs = await account.SendNFTFromSubAccount(dto.OwnerSubAccount, dto.NeblioCustomerAddress, nft);
+                                                    done = rs.Item1;
+                                                    if (!rs.Item1)
                                                     {
-                                                        Console.WriteLine("Some error during sending unique NFT for the customer: " + res.Item2);
+                                                        Console.WriteLine("Some error during sending unique NFT for the customer: " + rs.Item2);
                                                         await Task.Delay(5000);
                                                     }
                                                     else
                                                     {
-                                                        order.meta_data.Add(new ProductMetadata() { key = dto.ShortHash, value = res.Item2 });
-                                                        Console.WriteLine($"Order {order.id}, {order.order_key}. NFT {dto.ShortHash} sent in tx: https://explorer.nebl.io/tx/{res.Item2}");
+                                                        order.meta_data.Add(new ProductMetadata() { key = dto.ShortHash, value = rs.Item2 });
+                                                        Console.WriteLine($"Order {order.id}, {order.order_key}. NFT {dto.ShortHash} sent in tx: https://explorer.nebl.io/tx/{rs.Item2}");
                                                     }
                                                 }
                                                 catch (Exception ex)

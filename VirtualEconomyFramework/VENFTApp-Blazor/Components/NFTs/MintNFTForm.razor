@@ -645,10 +645,12 @@
             }
             else if (string.IsNullOrEmpty(newNFT.Utxo) && withCoppies && nftType != NFTTypes.Profile)
             {
+                var rs = (false, new Dictionary<string, string>());
                 if (!SubAccount)
                     res = await AppData.Account.MintMultiNFT(newNFT, NumberOfCoppies);
                 else
-                    res = await AppData.Account.MultimintNFTLargeOnSubAccount(Address, newNFT, NumberOfCoppies);
+                    rs = await AppData.Account.MultimintNFTLargeOnSubAccount(Address, newNFT, NumberOfCoppies);
+                res = (rs.Item1, Newtonsoft.Json.JsonConvert.SerializeObject(rs.Item2));
             }
             else
             {
