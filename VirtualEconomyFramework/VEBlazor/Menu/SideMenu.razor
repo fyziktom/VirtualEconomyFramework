@@ -24,14 +24,17 @@
                     Gallery
                 </BarLink>
             </BarItem>
-            @foreach (var tab in AppData.MintingTabsData)
-            {            
-                <BarItem>
-                    <BarLink To="@tab.Value.TabPageLocationName">
-                        <BarIcon IconName="IconName.Add" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
-                        @tab.Value.MenuButonLabel
-                    </BarLink>
-                </BarItem>
+            @if ( AppData.IsAccountLoaded )
+            {
+                @foreach (var tab in AppData.MintingTabsData)
+                {            
+                    <BarItem>
+                        <BarLink To="@tab.Value.TabPageLocationName">
+                            <BarIcon IconName="IconName.Add" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                            @tab.Value.MenuButonLabel
+                        </BarLink>
+                    </BarItem>
+                }
             }
         </BarStart>
         <BarEnd>
