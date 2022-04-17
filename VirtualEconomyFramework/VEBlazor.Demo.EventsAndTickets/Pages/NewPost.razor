@@ -9,10 +9,11 @@
 
 <VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
 
-<VEBlazor.Pages.AddNew NFT="AppData.GetMintingNFTTabNFT(formName)" 
+<VEBlazor.Pages.AddNew @bind-NFT="@AppData.GetMintingNFTTab(formName).NFT" 
+                       @bind-Addresses="@AppData.GetMintingNFTTab(formName).Addresses"
                        NFTType="@NFTTypes.Post" 
-                       MintingPageName="@formName"
-                       NFTChanged="nftChangedHandler"                       
+                       MintingPageName="@formName"         
+                       @bind-ConsoleOutFromMinting="@AppData.GetMintingNFTTab(formName).ConsoleOutFromMinting" 
                        Address="@AppData.Account.Address" />
                        
 @code {
@@ -23,9 +24,5 @@
     {
         headerLabel = AppData.GetMintingNFTTab(formName).HeaderLabel;
         base.OnInitialized();
-    }
-    void nftChangedHandler(INFT nft)
-    {
-        AppData.SetMintingNFTTabNFT(nft, formName);       
     }
 }

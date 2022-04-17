@@ -1,12 +1,18 @@
 ﻿@using System.IO
+@using System.Text
 @using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using Newtonsoft.Json
+@using Blazored.LocalStorage
 @inject AppData AppData
+@inject IJSRuntime JS
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
     <CardBody>
        <CardTitle>
-           Advanced - Ticket Airdrop
+           Advanced - Airdrop To Multiple Addresses
         </CardTitle>
         <Alert Color="Color.Info" Visible>
             <AlertDescription>
@@ -29,11 +35,16 @@
                         </Validations>                        
                     </Column>
                 </Row>
+                <Row Margin="Margin.Is2.FromTop"> 
+                        <Column>
+                            <Button Color="Color.Secondary" Clicked="@loadLastStateHandler" Block>Or Try load last state</Button>
+                        </Column>
+                    </Row>
                 @if ( uploadingFile )
                 {
                     <Row>
                         <Column>
-                            <Span>Uploading the image...</Span>
+                            <Span>Uploading the file...</Span>
                         </Column>
                     </Row>
                 }
@@ -65,12 +76,35 @@
                     <Row Margin="Margin.Is1.FromTop">
                         <Column>
                             <ListGroup>
-                                @foreach(var addr in addresses)
+                                @foreach(var addr in Addresses)
                                 {
+                                    var addlink = AppData.AppShareNFTUrl + "/gallery?addr=" + addr.Key;
                                 <ListGroupItem>
                                     <Row>
-                                        <Column>@addr.Address</Column>
-                                        <Column><Check Checked="@addr.UseAsReceiver" TValue="bool" CheckedChanged="@((e) => addr.UseAsReceiver = e)">Send to this address</Check></Column>
+                                        
+                                        <Column Flex="Flex.JustifyContent.Center"><Button Color="Color.Light" Type="ButtonType.Link" To="@addlink" Target="Target.Blank" Block>@addr.Key</Button></Column>
+                                        <Column Flex="Flex.JustifyContent.Center"><Check Checked="@addr.Value.UseAsReceiver" TValue="bool" CheckedChanged="@((e) => addr.Value.UseAsReceiver = e)">Send to this address</Check></Column>
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            @if (addr.Value.Done)
+                                            {
+                                                var link = "https://explorer.nebl.io/tx/" + addr.Value.TxId;
+                                                <Button Color="Color.Light" Type="ButtonType.Link" To="@link" Target="Target.Blank" Block>
+                                                    <Icon Name="IconName.CheckCircle" TextColor="TextColor.Success" Margin="Margin.Is1.FromEnd" />
+                                                    Done
+                                                </Button>
+                                            }
+                                            else
+                                            {
+                                                @if (addr.Value.UseAsReceiver)
+                                                {
+                                                    <Span><Icon TextColor="TextColor.Info" Name="IconName.Clock" Margin="Margin.Is1.FromEnd" />Waiting For processing...</Span>
+                                                }
+                                                else
+                                                {
+                                                    <Span><Icon TextColor="TextColor.Danger" Name="IconName.Ban" Margin="Margin.Is1.FromEnd" />Will be skipped...</Span>
+                                                }
+                                            }
+                                        </Column>
                                     </Row>
                                 </ListGroupItem>
                                 }
@@ -82,16 +116,45 @@
                             <Button Loading="@minting" Color="Color.Primary" Clicked="@SendNFTs" Block>Send</Button>
                         </Column>
                     </Row>
-                    <Row Margin="Margin.Is2.FromTop">
+                    
+                    @if (IsAllMinted())
+                    {
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                                <Alert Color="Color.Success" Visible>All NFTs to All addresses sent :) </Alert>
+                            </Column>
+                        </Row>
+                    }
+                    <Row Margin="Margin.Is2.FromTop"> 
                         <Column>
-                            <ListGroup>
-                                @foreach(var adt in AddressTx)
-                                {
-                                    <ListGroupItem>
-                                        <Span>@adt.Key - <a href="https://explorer.nebl.io/tx/@adt.Value" target="_blank" >@adt.Value</a></Span>
-                                    </ListGroupItem>
-                                }
-                            </ListGroup>
+                            <Button Color="Color.Primary" Clicked="@saveResultHandler" Block><Icon Name="IconName.Save" Margin="Margin.Is1.FromEnd" />Save Actual State of List</Button>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop"> 
+                        <Column>
+                            <Button Color="Color.Danger" Clicked="@resetHandler" Block><Icon Name="IconName.Undo" Margin="Margin.Is1.FromEnd" />Reset</Button>
+                        </Column>
+                    </Row>
+
+                    <Row Margin="Margin.Is3.FromTop">
+                        <Column>
+                            <Field>
+                                <FieldLabel>Process Output</FieldLabel>
+                                <Row>
+                                    <Column>
+                                        <Row>
+                                            <Column>
+                                                <MemoEdit @ref="memoEditOutputFromMintRef" Text="@consoleMintingOutput" Size="Size.Default" />
+                                            </Column>
+                                        </Row>
+                                        <Row Margin="Margin.Is1.FromTop">
+                                            <Column>
+                                                <Button Color="Color.Warning" Clicked="@(() => {consoleMintingOutput = string.Empty; StateHasChanged();})" Block><Icon Name="IconName.Clear" Margin="Margin.Is1.FromEnd" />Clear console</Button>
+                                            </Column>
+                                        </Row>
+                                    </Column>
+                                </Row>
+                            </Field>
                         </Column>
                     </Row>
                 }
@@ -102,20 +165,24 @@
 
 
 @code {
+    [Inject] public IMessageService? MessageService { get; set; }
 
-    Validations? validationsRef;
-
-    private class ReceiversListItem
-    {
-        public string Address { get; set; } = string.Empty;
-        public bool UseAsReceiver { get; set; } = true;
-    }
+    [Parameter] public string MintingPageName { get; set; } = string.Empty;
 
     [Parameter] public string FileString { get; set; } = string.Empty;
-
     [Parameter] public EventCallback<string> FileStringChanged { get; set; }
 
+    [Parameter] public string ConsoleOutFromMinting { get => consoleMintingOutput; set => consoleMintingOutput = value; }
+    [Parameter] public EventCallback<string> ConsoleOutFromMintingChanged { get; set; }
+
+
     [Parameter] public INFT NFT { get; set; }
+
+    [Parameter] public Dictionary<string, ReceiversListItem> Addresses { get; set; } = new Dictionary<string, ReceiversListItem>();
+    [Parameter] public EventCallback<Dictionary<string, ReceiversListItem>> AddressesChanged { get; set; }
+
+    MemoEdit? memoEditOutputFromMintRef;
+    Validations? validationsRef;
 
     bool minting = false;
     bool minted = false;
@@ -126,8 +193,9 @@
     bool uploadFinished = false;
     string fileName = string.Empty;
     byte[] fileData = new byte[0];
-    List<ReceiversListItem> addresses { get; set; } = new List<ReceiversListItem>();
-    Dictionary<string, string> AddressTx { get; set; } = new Dictionary<string, string>();
+    string consoleMintingOutput = string.Empty;
+
+    Dictionary<string, string> AddressesTx { get; set; } = new Dictionary<string, string>();
 
     Task OnFileUploadStarted()
     {
@@ -155,24 +223,64 @@
         await FileStringChanged.InvokeAsync(fileString);
     }
 
-    void Update()
+    public bool IsAllMinted()
+    {
+        var done = Addresses.Values.Where(a => a.Done == true).Count();
+        var todone = Addresses.Values.Where(x => x.UseAsReceiver == true).Count();
+        if (done == todone) 
+            return true; 
+        else 
+            return false;
+    }
+
+    public void Update()
     {    
         ParseAdresses();
         StateHasChanged();
     }
 
+    public void LoadAddresees(Dictionary<string, ReceiversListItem> dict)
+    {    
+        if (dict != null && dict.Count > 0)
+        {
+            Addresses = dict;
+            fileString = string.Empty;
+            var builder = new StringBuilder();
+            foreach (var add in Addresses)
+                builder.AppendLine(add.Key);
+            fileString = builder.ToString();
+            StateHasChanged();
+        }      
+    }
+
     void ParseAdresses()
     {
-        addresses.Clear();
-        using (var reader = new StringReader(fileString))
+        Addresses.Clear();
+        var isDict = false;
+        try
         {
-            for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+            var adds = JsonConvert.DeserializeObject<Dictionary<string, ReceiversListItem>>(fileString);
+            if (adds != null)
             {
-                var address = NeblioTransactionHelpers.ValidateNeblioAddress(line);
-                if (!string.IsNullOrEmpty(address))
-                    addresses.Add(new ReceiversListItem() { Address = address, UseAsReceiver = true });
+                isDict = true;
+                Addresses = adds;
             }
         }
+        catch { }
+        if (!isDict)
+        {
+            using (var reader = new StringReader(fileString))
+            {
+                for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+                {
+                    var address = NeblioTransactionHelpers.ValidateNeblioAddress(line);
+                    if (!string.IsNullOrEmpty(address))
+                        Addresses.TryAdd(address, new ReceiversListItem() { Address = address, UseAsReceiver = true, Done = false, TxId = string.Empty });
+                }
+            }
+        }
+
+        AddressesChanged.InvokeAsync(Addresses);
     }
 
     async Task SendNFTs()
@@ -185,20 +293,22 @@
             minting = true;
             StateHasChanged();
 
-            var addrs = this.addresses.Where(x => x.UseAsReceiver).Select(x => x.Address).ToList();
+            var addrs = this.Addresses.Values.Where(x => x.UseAsReceiver == true && x.Done == false).Select(x => x.Address).ToList();
             Console.WriteLine($"Airdrop started.");
             AppData.Account.NewMintingProcessInfo += Account_NewMintingProcessInfo;
+            AppData.Account.AddressesAirdroped += Account_AddressesAirdropedHanlder;
             var res = await AppData.Account.MintMultiNFTLargeAmount(NFT, addrs.Count, "", addrs);
             AppData.Account.NewMintingProcessInfo -= Account_NewMintingProcessInfo;
+            AppData.Account.AddressesAirdroped -= Account_AddressesAirdropedHanlder;
 
             minted = res.Item1;
 
             if (res.Item2 != null)
             {
-                AddressTx = res.Item2;
-                resultAddressDictAsString =  Newtonsoft.Json.JsonConvert.SerializeObject(res.Item2, Newtonsoft.Json.Formatting.Indented);
+                AddressesTx = res.Item2;
+                resultAddressDictAsString = Newtonsoft.Json.JsonConvert.SerializeObject(res.Item2, Newtonsoft.Json.Formatting.Indented);
             }
-            
+
             minting = false;
             Console.WriteLine($"Airdrop result:");
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(res.Item2, Newtonsoft.Json.Formatting.Indented));
@@ -208,15 +318,53 @@
         {
             Console.WriteLine("Cannot mint all the tickets. " + ex.Message);
         }
+
+        await SaveAndInvoke();
         StateHasChanged();
     }
-    
-    private static void Account_NewMintingProcessInfo(object sender, string e)
+
+    private void Account_AddressesAirdropedHanlder(object sender, Dictionary<string,string> e)
     {
-        Console.WriteLine("New multimint info: " + e);
+        if (e != null)
+            foreach (var item in e)
+                if (Addresses.ContainsKey(item.Key))
+                {
+                    Addresses[item.Key].Done = true;
+                    Addresses[item.Key].TxId = item.Value;
+                }
+        //SaveAndInvoke();
     }
 
-        void ImageValidator( ValidatorEventArgs e )
+    private async Task SaveAndInvoke()
+    {
+        try
+        {
+            await localStorage.SetItemAsStringAsync($"multiminting-{MintingPageName}", JsonConvert.SerializeObject(Addresses));
+        }
+        catch { }
+        await AddressesChanged.InvokeAsync(Addresses);
+    }
+
+    async Task loadLastStateHandler()
+    {
+        try
+        {
+            var adds = await localStorage.GetItemAsync<Dictionary<string, ReceiversListItem>>($"multiminting-{MintingPageName}");
+            if (adds != null)
+                LoadAddresees(adds);
+            StateHasChanged();
+        }
+        catch { }
+    }
+
+    private void Account_NewMintingProcessInfo(object sender, string e)
+    {
+        Console.WriteLine("New multiminting info: " + e);
+        consoleMintingOutput = DateTime.UtcNow.ToString("MM-dd-yyyyThh-mm-ss") + " - New info: " + e + "\n\n" + consoleMintingOutput;
+        ConsoleOutFromMintingChanged.InvokeAsync(consoleMintingOutput);
+    }
+
+    void ImageValidator( ValidatorEventArgs e )
     {
         if ( !string.IsNullOrEmpty( fileString ) )
             e.Status = ValidationStatus.Success;
@@ -232,4 +380,23 @@
             return Task.FromResult(false);
     }
 
+    async Task saveResultHandler()
+    {
+        if (Addresses != null)
+            await JS.InvokeVoidAsync( "veblazor.downloadText", JsonConvert.SerializeObject(Addresses), $"airdrop-{DateTime.UtcNow.ToString("MM-dd-yyyyThh-mm-ss")}.json" );
+    }
+
+    async Task resetHandler()
+    {
+        if (await MessageService.Confirm("Are you sure you want reset the airdrop form? The NFT Template will not be cleared. Just the list of the addresses and actual results.", "Reset Airdrop Form") == true)
+        {
+            consoleMintingOutput = string.Empty;
+            fileString = string.Empty;
+            Addresses = new Dictionary<string, ReceiversListItem>();
+            await AddressesChanged.InvokeAsync(Addresses);
+            await localStorage.SetItemAsStringAsync($"multiminting-{MintingPageName}", "");
+            IsAllMinted();
+            StateHasChanged();
+        }
+    }
 }

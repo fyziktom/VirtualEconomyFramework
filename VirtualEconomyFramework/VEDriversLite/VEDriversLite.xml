@@ -3972,6 +3972,11 @@
             This event is called whenever some progress during multimint happens
             </summary>
         </member>
+        <member name="E:VEDriversLite.NeblioAccount.AddressesAirdroped">
+            <summary>
+            This event is fired whenever new lot of addresses was airdroped
+            </summary>
+        </member>
         <member name="E:VEDriversLite.NeblioAccount.SubAccountNFTsChanged">
             <summary>
             This event is called whenever the list of NFTs on SubAccount is changed
@@ -4569,6 +4574,11 @@
             This event is fired whenever some progress during multimint happens
             </summary>
         </member>
+        <member name="E:VEDriversLite.Neblio.NeblioAccountBase.AddressesAirdroped">
+            <summary>
+            This event is fired whenever new lot of addresses was airdroped
+            </summary>
+        </member>
         <member name="E:VEDriversLite.Neblio.NeblioAccountBase.PricesRefreshed">
             <summary>
             This event is fired whenever price from exchanges is refreshed. It provides dictionary of the actual available rates.
@@ -4881,7 +4891,7 @@
             <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.MintMultiNFTLargeAmount(VEDriversLite.NFT.INFT,System.Int32,System.String,System.Collections.Generic.List{System.String})">
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.MintMultiNFTLargeAmount(VEDriversLite.NFT.INFT,System.Int32,System.String,System.Collections.Generic.List{System.String},System.Int32)">
             <summary>
             Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
             </summary>
@@ -8690,6 +8700,16 @@
             <summary>
             Result of the minting.
             In case of false it holds the message, in case of true it holds NFT hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.Addresses">
+            <summary>
+            Receivers with details about the transaction if it is done
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.MintingTabData.ConsoleOutFromMinting">
+            <summary>
+            Console output from the minting process
             </summary>
         </member>
         <member name="T:VEDriversLite.NFT.Dto.NFTCacheDto">

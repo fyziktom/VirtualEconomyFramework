@@ -61,22 +61,15 @@
 @code {
     [Inject] INotificationService? NotificationService { get; set; }
 
-    [Inject]
-    public IMessageService? MessageService { get; set; }
+    [Inject] public IMessageService? MessageService { get; set; }
 
-    [Parameter]
-    public bool IsInBookmarks { get; set; }
-    [Parameter]
-    public bool HideIcon { get; set; } = false;
-    [Parameter]
-    public bool IsEditing { get; set; } = false;
-    [Parameter]
-    public bool FieldForAddress { get; set; } = false;
-    [Parameter]
-    public Bookmark NewBookmark { get; set; } = new Bookmark();
+    [Parameter] public bool IsInBookmarks { get; set; }
+    [Parameter] public bool HideIcon { get; set; } = false;
+    [Parameter] public bool IsEditing { get; set; } = false;
+    [Parameter] public bool FieldForAddress { get; set; } = false;
+    [Parameter] public Bookmark NewBookmark { get; set; } = new Bookmark();
 
-    [Parameter]
-    public EventCallback<Bookmark> BookmarkChanged { get; set; }
+    [Parameter] public EventCallback<Bookmark> BookmarkChanged { get; set; }
 
     private string _address = string.Empty;
     [Parameter]

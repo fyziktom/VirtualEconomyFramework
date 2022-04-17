@@ -114,9 +114,6 @@ public class AppData
 
     public NeblioAccount Account { get; set; } = new NeblioAccount();
     public bool IsAccountLoaded { get; set; } = false;
-    public Dictionary<string, XrayExposureParameters> ExposureParametersTemplates { get; set; } = new Dictionary<string, XrayExposureParameters>();
-    public Dictionary<string, DetectorDataDto> DetectorParametersTemplates { get; set; } = new Dictionary<string, DetectorDataDto>();
-
     public List<GalleryTab> OpenedTabs { get; set; } = new List<GalleryTab>();
     public Dictionary<string, MintingTabData> MintingTabsData { get; set; } = new Dictionary<string, MintingTabData>()
     {

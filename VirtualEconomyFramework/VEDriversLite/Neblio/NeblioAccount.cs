@@ -77,6 +77,10 @@ namespace VEDriversLite
         /// This event is called whenever some progress during multimint happens
         /// </summary>
         public event EventHandler<string> NewMintingProcessInfo;
+        /// <summary>
+        /// This event is fired whenever new lot of addresses was airdroped
+        /// </summary>
+        public event EventHandler<Dictionary<string, string>> AddressesAirdroped;
 
         /// <summary>
         /// This event is called whenever the list of NFTs on SubAccount is changed
@@ -130,6 +134,11 @@ namespace VEDriversLite
         {
             try
             {
+                base.NewMintingProcessInfo -= NeblioAccount_NewMintingProcessInfo;
+                base.NewMintingProcessInfo += NeblioAccount_NewMintingProcessInfo;
+                base.AddressesAirdroped -= NeblioAccount_AddressesAirdroped;
+                base.AddressesAirdroped += NeblioAccount_AddressesAirdroped;
+                base.FirsLoadingStatus -= NeblioAccount_FirsLoadingStatus;
                 base.FirsLoadingStatus += NeblioAccount_FirsLoadingStatus;
                 FirsLoadingStatus?.Invoke(this, "Loading of address data started.");
 
@@ -267,6 +276,16 @@ namespace VEDriversLite
             });
             IsRefreshingRunning = false;
             return await Task.FromResult("RUNNING");
+        }
+
+        private void NeblioAccount_AddressesAirdroped(object sender, Dictionary<string, string> e)
+        {
+            AddressesAirdroped?.Invoke(this, e);
+        }
+
+        private void NeblioAccount_NewMintingProcessInfo(object sender, string e)
+        {
+            NewMintingProcessInfo?.Invoke(this, e);
         }
 
         private void NeblioAccount_FirsLoadingStatus(object sender, string e)

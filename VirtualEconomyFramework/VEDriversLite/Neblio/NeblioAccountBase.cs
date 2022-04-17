@@ -168,6 +168,10 @@ namespace VEDriversLite.Neblio
         /// This event is fired whenever some progress during multimint happens
         /// </summary>
         public event EventHandler<string> NewMintingProcessInfo;
+        /// <summary>
+        /// This event is fired whenever new lot of addresses was airdroped
+        /// </summary>
+        public event EventHandler<Dictionary<string,string>> AddressesAirdroped;
 
         /// <summary>
         /// This event is fired whenever price from exchanges is refreshed. It provides dictionary of the actual available rates.
@@ -481,8 +485,8 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReloadUtxos()
         {
-            var ux = await NeblioTransactionHelpers.GetAddressUtxosObjects(Address);
-            var ouxox = ux.OrderBy(u => u.Blocktime).Reverse().ToList();
+            var aux = await NeblioTransactionHelpers.AddressInfoUtxosAsync(Address);
+            var ouxox = aux.Utxos.OrderBy(u => u.Blocktime).Reverse().ToList();
 
             if (ouxox.Count > 0)
             {
@@ -506,7 +510,7 @@ namespace VEDriversLite.Neblio
 
                     AddressInfoUtxos = new GetAddressInfoResponse()
                     {
-                        Utxos = Utxos.Where(u => u.Blockheight > 0).ToList()
+                        Utxos = Utxos//.Where(u => u.Blockheight > 0).ToList()
                     };
                 }
             }
@@ -1354,7 +1358,7 @@ namespace VEDriversLite.Neblio
         /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
         /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
-        public async Task<(bool, Dictionary<string, string>)> MintMultiNFTLargeAmount(INFT NFT, int coppies, string receiver = "", List<string> multipleReceivers = null)
+        public async Task<(bool, Dictionary<string, string>)> MintMultiNFTLargeAmount(INFT NFT, int coppies, string receiver = "", List<string> multipleReceivers = null, int maxInLot = 0)
         {
             Dictionary<string, string> sentResults = new Dictionary<string, string>();
 
@@ -1369,11 +1373,14 @@ namespace VEDriversLite.Neblio
                 
                 int cps = coppies;
                 
+                if (maxInLot <= 0 && NeblioTransactionHelpers.MaximumTokensOutpus >= 2)
+                    maxInLot = NeblioTransactionHelpers.MaximumTokensOutpus - 1;
+
                 Console.WriteLine("Start of minting.");
                 int lots = 0;
                 int rest = 0;
-                rest += cps % (NeblioTransactionHelpers.MaximumTokensOutpus - 1);
-                lots += (int)((cps - rest) / (NeblioTransactionHelpers.MaximumTokensOutpus - 1));
+                rest += cps % (maxInLot);
+                lots += (int)((cps - rest) / maxInLot);
                 string txres = string.Empty;
                 NewMintingProcessInfo?.Invoke(this, $"Minting of {lots} lots started...");
 
@@ -1390,13 +1397,13 @@ namespace VEDriversLite.Neblio
                         {
                             while (!done)
                             {
-                                var sres = await MultimintSourceCheck(NFT.TokenId, NeblioTransactionHelpers.MaximumTokensOutpus);
+                                var sres = await MultimintSourceCheck(NFT.TokenId, maxInLot + 2);
                                 if (sres.Item1)
                                 {
                                     try
                                     {
-                                        var multipleReceiversPart = multipleReceivers != null ? multipleReceivers.GetRange(i * (NeblioTransactionHelpers.MaximumTokensOutpus - 1), NeblioTransactionHelpers.MaximumTokensOutpus - 1) : null;
-                                        txres = await NFTHelpers.MintMultiNFT(Address, NeblioTransactionHelpers.MaximumTokensOutpus - 1, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver, multipleReceiversPart);
+                                        var multipleReceiversPart = multipleReceivers != null ? multipleReceivers.GetRange(i * (maxInLot), maxInLot) : null;
+                                        txres = await NFTHelpers.MintMultiNFT(Address, maxInLot, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver, multipleReceiversPart);
                                         if (string.IsNullOrEmpty(txres))
                                         {
                                             Console.WriteLine("Waiting for spendable utxo...");
@@ -1412,6 +1419,11 @@ namespace VEDriversLite.Neblio
                                                 sentResults.Add(a, txres);
                                             
                                             NewMintingProcessInfo?.Invoke(this, $"New Lot Minted: {txres}, Waiting for processing next {i + 1} of {lots} lots.");
+                                            var airdroped = new Dictionary<string, string>();
+                                            foreach (var a in multipleReceiversPart)
+                                                airdroped.Add(a, txres);
+                                            AddressesAirdroped?.Invoke(this, airdroped);
+                                            
                                             await Task.Delay(1500);
                                             await ReloadUtxos();
                                             await ReloadMintingSupply();                                            
@@ -1463,6 +1475,12 @@ namespace VEDriversLite.Neblio
                                             sentResults.Add(a, txres);
 
                                         NewMintingProcessInfo?.Invoke(this, $"Rest of {rest} NFTs of total {coppies} NFTs was Minted: {txres}");
+                                        
+                                        var airdroped = new Dictionary<string, string>();
+                                        foreach (var a in multipleReceiversPart)
+                                            airdroped.Add(a, txres);
+                                        AddressesAirdroped?.Invoke(this, airdroped);
+                                        
                                         await Task.Delay(1500);
                                         await ReloadUtxos();
                                         await ReloadMintingSupply();
@@ -1481,16 +1499,26 @@ namespace VEDriversLite.Neblio
                 }
                 else
                 {
-                    var sres = await MultimintSourceCheck(NFT.TokenId, NeblioTransactionHelpers.MaximumTokensOutpus);
+                    var sres = await MultimintSourceCheck(NFT.TokenId, maxInLot + 2);
                     if (sres.Item1)
-                        txres = await NFTHelpers.MintMultiNFT(Address, cps, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                        txres = await NFTHelpers.MintMultiNFT(Address, cps, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver, multipleReceivers);
                     else
                     {
                         await InvokeErrorDuringSendEvent("Cannot Mint NFTs", "Not enough spendable source.");
                         Console.WriteLine("Cannot Mint NFTs", "Not enough spendable source.");
                         return (false, null);
                     }
-                    if (!string.IsNullOrEmpty(txres)) txsidsres += txres;
+                    if (!string.IsNullOrEmpty(txres))
+                    {
+                        txsidsres += txres;
+                        if (multipleReceivers != null && multipleReceivers.Count > 0)
+                        {
+                            var airdroped = new Dictionary<string, string>();
+                            foreach (var a in multipleReceivers)
+                                airdroped.Add(a, txres);
+                            AddressesAirdroped?.Invoke(this, airdroped);
+                        }
+                    }
                     txsidsres = txsidsres.Trim('-');
                 }
 

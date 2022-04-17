@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
 @using VEDriversLite.NFT.Imaging.Xray
 @inherits NFTComponentBase
 @inject AppData AppData
@@ -79,7 +80,13 @@
                     </Row>
                     <Row>
                         <Column>
-                            <MultimintForm NFT="@NFT" />
+                            <MultimintForm @ref=multimintFormRef 
+                                           MintingPageName="@MintingPageName" 
+                                           NFT="@NFT" 
+                                           Addresses="@Addresses" 
+                                           AddressesChanged="async (e) => await AddressesChanged.InvokeAsync(e)"
+                                           ConsoleOutFromMinting="@ConsoleOutFromMinting"
+                                           ConsoleOutFromMintingChanged="async (e) => await ConsoleOutFromMintingChanged.InvokeAsync(e)" />
                         </Column>
                     </Row>
                     <Row Margin="Margin.Is3.FromTop">
@@ -110,6 +117,7 @@
     </Container>
 
     <OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                           NFT="@NFT"
                            Address="@Address"
                            IsSubAccount="@false"
                            HideOpenInWorkTabButton="true"
@@ -132,8 +140,15 @@
     [Parameter]
     public EventCallback<INFT> OnLoadNFTTemplate { get; set; }
 
+    [Parameter] public Dictionary<string, ReceiversListItem> Addresses { get; set; } = new Dictionary<string, ReceiversListItem>();
+    [Parameter] public EventCallback<Dictionary<string, ReceiversListItem>> AddressesChanged { get; set; }
+    [Parameter] public string ConsoleOutFromMinting { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ConsoleOutFromMintingChanged { get; set; }
+    
     LoadNFTFromTemplate? loadNFTFromTemplate;
     OpenNFTDetailsFactory? openNFTDetailsFactory;
+    MultimintForm? multimintFormRef;
+
     string selectedStep = "stepUpload";
 
     bool IsMinted = false;
@@ -143,6 +158,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await RefreshImageInUploadComponent();
+        //multimintFormRef?.LoadAddresees(Addresses); 
         await base.OnAfterRenderAsync(firstRender);
     }
 

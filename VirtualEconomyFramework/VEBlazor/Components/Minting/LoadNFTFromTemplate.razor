@@ -24,14 +24,15 @@
         </Div>
         @if (!string.IsNullOrEmpty(NFT.Utxo))
         {
+            <Div Margin="Margin.Is2.FromTop">
+                <Button Color="Color.Primary" Loading="@loadingImage" Clicked="@loadTemplateToFormHandler" Block>2. Load NFT to Minting Form</Button>
+            </Div>
+            
             <Row Margin="Margin.Is2.FromTop">
                 <Column Flex="Flex.JustifyContent.Center">
                     <NFTCard @ref="nftCard" NFT="@NFT" OpenNFTDetailsRequest="@OpenNFTDetailsRequestHandler" />
                 </Column>
             </Row>
-            <Div Margin="Margin.Is2.FromTop">
-                <Button Color="Color.Primary" Loading="@loadingImage" Clicked="@loadTemplateToFormHandler" Block>2. Load NFT to Minting Form</Button>
-            </Div>
         }
             </ModalBody>
     </ModalContent>

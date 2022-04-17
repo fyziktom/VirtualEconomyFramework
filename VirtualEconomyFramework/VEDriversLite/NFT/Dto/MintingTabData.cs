@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT.Dto
 {
+    public class ReceiversListItem
+    {
+        public string Address { get; set; } = string.Empty;
+        public bool UseAsReceiver { get; set; } = true;
+        public bool Done { get; set; } = true;
+        public string TxId { get; set; } = string.Empty;
+    }
+    
     /// <summary>
     /// Data for the minting tab/page
     /// It contains common dtos for usuall need of minting page
@@ -49,5 +57,13 @@ namespace VEDriversLite.NFT.Dto
         /// In case of false it holds the message, in case of true it holds NFT hash
         /// </summary>
         public (bool,string) MintingResult { get; set; } = (false,string.Empty);
+        /// <summary>
+        /// Receivers with details about the transaction if it is done
+        /// </summary>
+        public Dictionary<string, ReceiversListItem> Addresses { get; set; } = new Dictionary<string, ReceiversListItem>();
+        /// <summary>
+        /// Console output from the minting process
+        /// </summary>
+        public string ConsoleOutFromMinting { get; set; } = string.Empty;
     }
 }
