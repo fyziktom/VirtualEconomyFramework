@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{DCD69FD2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.EventsAndTickets", "VEBlazor.Demo.EventsAndTickets\VEBlazor.Demo.EventsAndTickets.csproj", "{161470AE-0F8F-4BAF-846C-E4CCB9FC019B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEDriversLite.Extensions.WooCommerce", "VEDriversLite.Extensions.WooCommerce\VEDriversLite.Extensions.WooCommerce.csproj", "{BAA77C02-6DE5-42E2-95B5-5C1CD96759E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.Extensions.WooCommerce", "VEDriversLite.Extensions.WooCommerce\VEDriversLite.Extensions.WooCommerce.csproj", "{BAA77C02-6DE5-42E2-95B5-5C1CD96759E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

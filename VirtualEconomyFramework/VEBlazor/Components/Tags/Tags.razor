@@ -63,12 +63,15 @@
     {
         var text = tag.ToLower();
         if (NeblioTags.Match(text))
-            return 
-    @<NeblioTags Text="@tag" Margin="Margin.Is1.FromEnd" />;        
+            return @<NeblioTags Text="@tag" Margin="Margin.Is1.FromEnd" />;        
         else if (DogepaloozaTags.Match(text))
             return @<DogepaloozaTags Text="@tag" Margin="Margin.Is1.FromEnd" />;
         else if (DogecoinTags.Match(text))
             return @<DogecoinTags Text="@tag" Margin="Margin.Is1.FromEnd" />;
+        else if (NFTType == NFTTypes.Ticket && text == "Used")
+            return @<Badge Color="Color.Danger" Margin="Margin.Is1.FromEnd" >#@tag Ticket</Badge>;
+        else if (NFTType == NFTTypes.Ticket && text == "FreeToUse")
+            return @<Badge Color="Color.Success" Margin="Margin.Is1.FromEnd" >#@tag Ticket</Badge>;
         else 
             return @<Badge Color="Color.Primary" Margin="Margin.Is1.FromEnd" >#@tag</Badge>;
     }

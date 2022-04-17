@@ -49,6 +49,33 @@
             <FieldLabel>Is Used Status?</FieldLabel>
             <Text>@(nft.Used ? "Ticket Is used" : "Ticket is not used.")</Text>
         </Field>
-    </NFTDetails>
+        @if (!(NFT as TicketNFT).Used)
+        {
+            <Row Margin="Margin.Is2.FromTop.Is1.FromBottom">
+                <Column>
+                     <Button Color="Color.Primary" Clicked="@showUseTicket" Block>Use Ticket</Button>  
+                         <UseTicket @ref="useTicketRef"
+                                    NFT="@NFT" 
+                                    Address="@Address" 
+                                    IsOwnNFT="@IsOwnNFT" 
+                                    IsSubAccount="@IsSubAccount" 
+                                    NFTSent="@NFTSentHandler" />    
+                </Column>                
+            </Row>
+        }
+        </NFTDetails>
+    }
+    
+}
+
+@code {
+    UseTicket? useTicketRef;
+
+    async Task showUseTicket()
+    {
+        if (useTicketRef != null)
+        {
+            useTicketRef.ShowSaveNFTModal();
+        }
     }
 }

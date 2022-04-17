@@ -24,11 +24,11 @@
     {
         <Row>
             <Column>    
-                <EventSpecificMintForm @bind-Location="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).Location)"
-                                        @bind-LocationCords="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).LocationCoordinates)"
-                                        @bind-AuthorLink="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).AuthorLink)"
-                                        @bind-EventClass="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).EventClass)"
-                                        @bind-EventDate="@((AppData.GetMintingNFTTabNFT(formName) as EventNFT).EventDate)" />
+                <EventSpecificMintForm @bind-Location="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).Location)"
+                                        @bind-LocationCords="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).LocationCoordinates)"
+                                        @bind-AuthorLink="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).AuthorLink)"
+                                        @bind-EventClass="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).EventClass)"
+                                        @bind-EventDate="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).EventDate)" />
             </Column>
         </Row>
     }

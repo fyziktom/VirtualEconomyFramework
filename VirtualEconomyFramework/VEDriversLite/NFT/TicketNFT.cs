@@ -63,6 +63,7 @@ namespace VEDriversLite.NFT
             Seat = nft.Seat;
             MusicInLink = nft.MusicInLink;
             Used = nft.Used;
+            AddUsedTags();
         }
 
         public async Task FillFromEvent(INFT NFT)
@@ -81,7 +82,7 @@ namespace VEDriversLite.NFT
             EventDate = nft.EventDate;
             MusicInLink = nft.MusicInLink;
             Used = nft.Used;
-
+            AddUsedTags();
             Type = NFTTypes.Ticket;
             TypeText = "NFT Ticket";
         }
@@ -182,7 +183,7 @@ namespace VEDriversLite.NFT
                     TicketDuration = DurationOfNFTTicket.Day;
                 }
             }
-
+            AddUsedTags();
             //LoadEventNFT();
         }
 
@@ -202,6 +203,8 @@ namespace VEDriversLite.NFT
                 ParseSpecific(nftData.NFTMetadata);
 
                 Used = nftData.Used;
+                AddUsedTags();
+                
                 MintAuthorAddress = await NeblioTransactionHelpers.GetTransactionSender(NFTOriginTxId);
 
                 IsLoaded = true;
@@ -222,7 +225,9 @@ namespace VEDriversLite.NFT
 
                 ParseSpecific(nftData.NFTMetadata);
                 MintAuthorAddress = await NeblioTransactionHelpers.GetTransactionSender(NFTOriginTxId);
-
+                Used = nftData.Used;
+                AddUsedTags();
+                
                 IsLoaded = true;
             }
         }
@@ -266,6 +271,30 @@ namespace VEDriversLite.NFT
                 metadata.Add("Used", "true");
             
             return metadata;
+        }
+
+        public override void ParseTags()
+        {
+            base.ParseTags();
+            AddUsedTags();
+        }
+        
+        public void AddUsedTags()
+        {
+            if (Used)
+            {
+                if (TagsList.Contains("FreeToUse"))
+                    TagsList.Remove("FreeToUse");
+                if (!TagsList.Contains("Used"))
+                    TagsList.Insert(0,"Used");
+            }
+            else
+            {
+                if (TagsList.Contains("Used"))
+                    TagsList.Remove("Used");
+                if (!TagsList.Contains("FreeToUse"))
+                    TagsList.Insert(0, "FreeToUse");
+            }
         }
     }
 }

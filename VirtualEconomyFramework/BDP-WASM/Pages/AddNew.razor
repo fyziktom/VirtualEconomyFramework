@@ -10,7 +10,14 @@
 
 <VEBlazor.Components.PageHeader Title="Add New Data" BreadcrumbItems="@(new string[] { AppData.AppNick, "Add New Data" })" />
 
-<VEBlazor.Pages.AddNew @ref="AddnewRef" MintingPageName="default" NFT="@AppData.GetMintingNFTTabNFT()" NFTType="@NFTTypes.XrayImage" Address="@AppData.Account.Address" >
+<VEBlazor.Pages.AddNew @ref="AddnewRef" 
+                       MintingPageName="default" 
+                       @bind-NFT="@AppData.GetMintingNFTTab().NFT" 
+                       @bind-Addresses="@AppData.GetMintingNFTTab().Addresses" 
+                       @bind-ConsoleOutFromMinting="@AppData.GetMintingNFTTab().ConsoleOutFromMinting"
+                       NFTType="@NFTTypes.XrayImage" 
+                       Address="@AppData.Account.Address" >
+                       
     <SpecificParamsStepHeader>
         Xray
     </SpecificParamsStepHeader>
@@ -29,9 +36,9 @@
       <Row>
             <Column>
                 <XrayExposureParamsForm @ref="xrayParamsFormRef"
-                                        @bind-Voltage="@((AppData.GetMintingNFTTabNFT() as XrayImageNFT).XrayParams.Voltage)"
-                                        @bind-Current="@((AppData.GetMintingNFTTabNFT() as XrayImageNFT).XrayParams.Current)"
-                                        @bind-Time="@((AppData.GetMintingNFTTabNFT() as XrayImageNFT).XrayParams.ExposureTime)" />
+                                        @bind-Voltage="@((AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Voltage)"
+                                        @bind-Current="@((AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Current)"
+                                        @bind-Time="@((AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.ExposureTime)" />
             </Column>
         </Row>
     }
@@ -47,13 +54,13 @@
     {
         if (nft != null)
         {
-            await AppData.GetMintingNFTTabNFT().Fill(nft);
+            await AppData.GetMintingNFTTab().NFT.Fill(nft);
             if (AddnewRef != null)
                 await AddnewRef.RefreshImageInUploadComponent();
             if (xrayParamsFormRef != null)
-                xrayParamsFormRef.SetValues((AppData.GetMintingNFTTabNFT() as XrayImageNFT).XrayParams.Voltage,
-                                            (AppData.GetMintingNFTTabNFT() as XrayImageNFT).XrayParams.Current,
-                                            (AppData.GetMintingNFTTabNFT() as XrayImageNFT).XrayParams.ExposureTime);
+                xrayParamsFormRef.SetValues((AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Voltage,
+                                            (AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Current,
+                                            (AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.ExposureTime);
             StateHasChanged();
         }
     }

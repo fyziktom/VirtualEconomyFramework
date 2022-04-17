@@ -8,7 +8,7 @@
     </CardHeader>
     <CardBody>
         <Row Margin="Margin.Is2.FromTop">
-            <Column>
+            <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is5.OnDesktop.Is4.OnFullHD">
                 <Row>
                     <Column>
                         <Row>
@@ -25,10 +25,10 @@
                                             Orientation="Orientation.Vertical"
                                             Buttons
                                             Color="Color.Light">
-                                    @foreach ( var ctype in Enum.GetValues<ClassOfNFTTicket>() )
-                                    {
-                                        <Radio TValue="ClassOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</Radio>
-                                    }
+                                                @foreach ( var ctype in Enum.GetValues<ClassOfNFTTicket>() )
+                                                {
+                                                     <Radio TValue="ClassOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</Radio>
+                                                }
                                 </RadioGroup>
                             </Column>
                         </Row>
@@ -41,24 +41,24 @@
                         </Row>
                         <Row>
                             <Column>
-                                <RadioGroup CheckedValue="@TicketDuration"
+                                <RadioGroup CheckedValue="@TicketDuration"                                   
                                             CheckedValueChanged="@ticketDurationChanged"
                                             TValue="DurationOfNFTTicket"
                                             Name="ticketduration"
                                             Orientation="Orientation.Vertical"
                                             Buttons
                                             Color="Color.Light">
-                                    @foreach ( var ctype in Enum.GetValues<DurationOfNFTTicket>() )
-                                    {
-                                        <Radio TValue="DurationOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</Radio>
-                                    }
+                                                @foreach ( var ctype in Enum.GetValues<DurationOfNFTTicket>() )
+                                                {                         
+                                                     <Radio TValue="DurationOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</Radio>
+                                                }
                                 </RadioGroup>
                             </Column>
                         </Row>
                     </Column>
                 </Row>
             </Column>
-            <Column>
+            <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is7.OnDesktop.Is8.OnFullHD">
                 <Field>
                     <Addons>
                         <Addon AddonType="AddonType.Start">

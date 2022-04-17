@@ -281,7 +281,7 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// Function will parse tags to the list of the tags
         /// </summary>
-        public void ParseTags()
+        public virtual void ParseTags()
         {
             var split = Tags.Split(' ');
             TagsList.Clear();

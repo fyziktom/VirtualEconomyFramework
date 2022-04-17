@@ -22,13 +22,13 @@
     {
         <Row>
             <Column>    
-                <TicketSpecificMintForm @bind-Location="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).Location)"
-                                        @bind-LocationCords="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).LocationCoordinates)"
-                                        @bind-AuthorLink="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).AuthorLink)"
-                                        @bind-TicketClass="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).TicketClass)"
-                                        @bind-TicketDuration="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).TicketDuration)"
-                                        @bind-EventId="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).EventId)"
-                                        @bind-EventDate="@((AppData.GetMintingNFTTabNFT(formName) as TicketNFT).EventDate)" />
+                <TicketSpecificMintForm @bind-Location="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).Location)"
+                                        @bind-LocationCords="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).LocationCoordinates)"
+                                        @bind-AuthorLink="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).AuthorLink)"
+                                        @bind-TicketClass="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).TicketClass)"
+                                        @bind-TicketDuration="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).TicketDuration)"
+                                        @bind-EventId="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).EventId)"
+                                        @bind-EventDate="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).EventDate)" />
             </Column>
         </Row>
     }
