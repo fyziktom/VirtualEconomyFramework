@@ -305,7 +305,7 @@ namespace VEDriversLite
                     if (string.IsNullOrEmpty(address))
                     {
                         var add = DogeTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
-                        if (add.Item1) Address = add.Item2;
+                        if (add.Success) Address = add.Value.ToString();
                     }
                     else
                     {

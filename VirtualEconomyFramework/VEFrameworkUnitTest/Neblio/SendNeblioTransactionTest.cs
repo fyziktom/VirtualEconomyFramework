@@ -159,37 +159,37 @@ namespace VEFrameworkUnitTest.Neblio
             Assert.Equal(message, exception.Message);
         }
 
-        /// <summary>
-        /// Unit test method to verify if system is returning an error result on Output creation when there is an exception.
-        /// </summary>
-        [Fact]
-        public void SendNeblioTransaction_Outputs_Error_Test()
-        {
+        ///// <summary>
+        ///// Unit test method to verify if system is returning an error result on Output creation when there is an exception.
+        ///// </summary>
+        //[Fact]
+        //public void SendNeblioTransaction_Outputs_Error_Test()
+        //{
 
-            var res = Common.FakeDataGenerator.GetKeyAndAddress();
+        //    var res = Common.FakeDataGenerator.GetKeyAndAddress();
 
-            string address = res.Item1.ToString();
-            string key = res.Item2.ToString();
-            var AccountKey = new EncryptionKey(key);
+        //    string address = res.Item1.ToString();
+        //    string key = res.Item2.ToString();
+        //    var AccountKey = new EncryptionKey(key);
 
-            GetAddressInfoResponse addressObject = Common.FakeDataGenerator.GetAddressWithNeblUtxos(address, 10, 1000000);
+        //    GetAddressInfoResponse addressObject = Common.FakeDataGenerator.GetAddressWithNeblUtxos(address, 10, 1000000);
 
-            SendTxData sendTxData = new SendTxData()
-            {
-                ReceiverAddress = address,
-                SenderAddress = address,
-                Amount = 100,
-                CustomMessage = "test",
-                Password = ""
-            };
+        //    SendTxData sendTxData = new SendTxData()
+        //    {
+        //        ReceiverAddress = address,
+        //        SenderAddress = address,
+        //        Amount = 100,
+        //        CustomMessage = "test",
+        //        Password = ""
+        //    };
 
-            NeblioTransactionHelpers.FromSatToMainRatio = 0;
+        //    //NeblioTransactionHelpers.FromSatToMainRatio = 0;
 
-            string message = "Exception during creating outputs. ";
-            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos));
-            Assert.Contains(message, exception.Message);
-        }
-        
+        //    string message = "Exception during creating outputs. ";
+        //    var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos));
+        //    Assert.Contains(message, exception.Message);
+        //}
+
         /// <summary>
         /// Unit test method to verify if system is returning an error result when password is empty.
         /// </summary>
@@ -291,7 +291,6 @@ namespace VEFrameworkUnitTest.Neblio
             foreach(var u in addressObject.Utxos)
                  u.Index = 2;
 
-            NeblioTransactionHelpers.FromSatToMainRatio = 100000000;
             var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos);
 
             Assert.Equal(10, transaction.Inputs.Count);

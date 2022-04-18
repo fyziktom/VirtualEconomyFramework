@@ -511,21 +511,28 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="txinfo"></param>
         /// <returns></returns>
-        public static (bool, string) ParseDogeMessage(GetTransactionInfoResponse txinfo)
+        public static CommonReturnTypeDto ParseDogeMessage(GetTransactionInfoResponse txinfo)
         {
+            var dto = new CommonReturnTypeDto();
             if (txinfo == null)
             {
-                return (false, "No input data provided.");
+                dto.Success = false;
+                dto.Value = "No input data provided.";
+                return dto;
             }
 
             if (txinfo.Success != "success")
             {
-                return (false, "No input data provided.");
+                dto.Success = false;
+                dto.Value = "No input data provided.";
+                return dto;
             }
 
             if (txinfo.Transaction.Vout == null || txinfo.Transaction.Vout.Count == 0)
             {
-                return (false, "No outputs in transaction.");
+                dto.Success = false;
+                dto.Value = "No outputs in transaction.";
+                return dto;
             }
 
             foreach (var o in txinfo.Transaction.Vout)
@@ -535,11 +542,15 @@ namespace VEDriversLite
                     var message = o.Script.Replace("OP_RETURN ", string.Empty);
                     var bytes = HexStringToBytes(message);
                     var msg = Encoding.UTF8.GetString(bytes);
-                    return (true, msg);
+                    dto.Success = true;
+                    dto.Value = msg;
+                    return dto;
                 }
             }
 
-            return (false, string.Empty);
+            dto.Success = false;
+            dto.Value = string.Empty;
+            return dto;
         }
 
         private static byte[] HexStringToBytes(string hexString)
@@ -571,26 +582,35 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="dogeAddress">Excpected Dogecoin address</param>
         /// <returns>true and Address if it is correct Dogecoin Address</returns>
-        public static (bool, string) ValidateDogeAddress(string dogeAddress)
+        public static CommonReturnTypeDto ValidateDogeAddress(string dogeAddress)
         {
+            var dto = new CommonReturnTypeDto();
             try
             {
                 if (string.IsNullOrEmpty(dogeAddress) || dogeAddress.Length < 34 || dogeAddress[0] != 'D')
                 {
-                    return (false, string.Empty);
+                    dto.Success = false;
+                    dto.Value = string.Empty;
+                    return dto;
                 }
 
                 var add = BitcoinAddress.Create(dogeAddress, Network);
                 if (!string.IsNullOrEmpty(add.ToString()))
                 {
-                    return (true, add.ToString());
+                    dto.Success = true;
+                    dto.Value = add.ToString();
+                    return dto;
                 }
             }
             catch (Exception)
             {
-                return (false, string.Empty);
+                dto.Success = false;
+                dto.Value = string.Empty;
+                return dto;
             }
-            return (false, string.Empty);
+            dto.Success = false;
+            dto.Value = string.Empty;
+            return dto;
         }
 
         /// <summary>
@@ -598,27 +618,33 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="privatekey">Excpected Dogecoin private key</param>
         /// <returns>true and NBitcoin.BitcoinSecret if it is correct Dogecoin private key</returns>
-        public static (bool, BitcoinSecret) IsPrivateKeyValid(string privatekey)
+        public static CommonReturnTypeDto IsPrivateKeyValid(string privatekey)
         {
+            var dto = new CommonReturnTypeDto();    
             try
             {
                 if (string.IsNullOrEmpty(privatekey) || privatekey.Length < 52 || privatekey[0] != 'Q')
                 {
-                    return (false, null);
+                    dto.Success = false;
+                    return dto;
                 }
 
                 var sec = new BitcoinSecret(privatekey, Network);
 
                 if (sec != null)
                 {
-                    return (true, sec);
+                    dto.Success = true;
+                    dto.Value = sec;
+                    return dto;
                 }
             }
             catch (Exception)
             {
-                return (false, null);
+                dto.Success = false;
+                return dto;
             }
-            return (false, null);
+            dto.Success = false;
+            return dto;
         }
 
         /// <summary>
@@ -626,25 +652,33 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="privatekey">Excpected Dogecoin private key</param>
         /// <returns>true and Address if it is correct Dogecoin private key</returns>
-        public static (bool, string) GetAddressFromPrivateKey(string privatekey)
+        public static CommonReturnTypeDto GetAddressFromPrivateKey(string privatekey)
         {
+            var dto = new CommonReturnTypeDto();
             try
             {
                 var p = IsPrivateKeyValid(privatekey);
-                if (p.Item1)
+                if (p.Success)
                 {
-                    var address = p.Item2.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+                    BitcoinSecret secret = (BitcoinSecret)p.Value;
+                    var address = secret.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
                     if (address != null)
                     {
-                        return (true, address.ToString());
+                        dto.Success = true;
+                        dto.Value = address.ToString();
+                        return dto;
                     }
                 }
             }
             catch (Exception)
             {
-                return (false, string.Empty);
+                dto.Success = false;
+                dto.Value = string.Empty;
+                return dto;
             }
-            return (false, string.Empty);
+            dto.Success = false;
+            dto.Value = string.Empty;
+            return dto;
         }
 
         ///////////////////////////////////////////

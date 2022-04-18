@@ -77,7 +77,7 @@ namespace VEDriversLite
         /// <summary>
         /// Conversion ration for Neblio to convert from sat to 1 NEBL
         /// </summary>
-        public static double FromSatToMainRatio = 100000000;
+        public const double FromSatToMainRatio = 100000000;
         /// <summary>
         /// Maximum number of outputs which carry some token in the Neblio transaction
         /// </summary>
