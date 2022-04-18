@@ -4,7 +4,7 @@
 {
     <Card Height="Height.Is100">
         <CardBody Height="Height.Is100">
-            <Row Height="Height.Is75">
+            <Row>
                 <Column Flex="Flex.AlignItems.Center.JustifyContent.Center" Height="Height.Is100">
                     <Figure Size="FigureSize.Is128x128">
                         <FigureImage Source ="@profile.ImageLink" Rounded/>
@@ -28,10 +28,12 @@
                     </Row>                    
                 </Column>
             </Row>
-            <Row Flex="Flex.AlignItems.End" Height="Height.Is25" Margin="Margin.Is3.FromTop">
-                <Button Margin="Margin.Is3.FromTop" Color="Color.Light" Clicked="@OnEditProfile" Block><Icon Name="IconName.Edit" />&nbsp;Edit</Button>
-            </Row>
         </CardBody>
+        <CardFooter>
+            <Row Flex="Flex.AlignItems.End" Margin="Margin.Is3.FromTop">
+                <Button Margin="Margin.Is3.FromTop.Is1.FromBottom" Color="Color.Light" Clicked="@OnEditProfile" Block><Icon Name="IconName.Edit" />&nbsp;Edit</Button>
+            </Row>
+        </CardFooter>
     </Card>
 }
 

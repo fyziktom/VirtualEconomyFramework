@@ -21,16 +21,12 @@
     </SpecificParamsStepHeader>
     <SpecificParamsStepContent>
     @if (AppData.GetMintingNFTTabNFT(formName).Type == NFTTypes.Event)
-    {
-        <Row>
-            <Column>    
+    {   
                 <EventSpecificMintForm @bind-Location="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).Location)"
                                         @bind-LocationCords="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).LocationCoordinates)"
                                         @bind-AuthorLink="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).AuthorLink)"
                                         @bind-EventClass="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).EventClass)"
                                         @bind-EventDate="@((AppData.GetMintingNFTTab(formName).NFT as EventNFT).EventDate)" />
-            </Column>
-        </Row>
     }
     </SpecificParamsStepContent>
 </VEBlazor.Pages.AddNew>

@@ -2,16 +2,16 @@
 
 <Card Margin="Margin.Is4.FromBottom"> 
     <CardBody> 
-        <CardTitle Size="5">Storage Info</CardTitle> 
+        <CardTitle Size="5">IPFS Storage Info</CardTitle> 
         <CardText Margin="Margin.Is2.FromTop"> 
             Image IPFS Storage info: 
         </CardText> 
         <Row Margin="Margin.Is2.FromTop"> 
             <Column> 
-                <CopyButton TextToCopy="@IPFSLink" ButtonText="Copy IPFS Link" /> 
+                <CopyButton TextToCopy="@IPFSLink" ButtonText="Copy Link" /> 
             </Column> 
             <Column> 
-                <CopyButton TextToCopy="@(NFTHelpers.GetHashFromIPFSLink(IPFSLink))" ButtonText="Copy IPFS Hash" /> 
+                <CopyButton TextToCopy="@(NFTHelpers.GetHashFromIPFSLink(IPFSLink))" ButtonText="Copy Hash" /> 
             </Column> 
         </Row> 
         <Row Margin="Margin.Is2.FromTop"> 
