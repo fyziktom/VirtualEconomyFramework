@@ -3,7 +3,7 @@
      @if(WithIcon) {
          <Icon Name="@Icon" />
      }      
-     &nbsp;@(!string.IsNullOrEmpty(Label) ? Label : "")
+     <Div Display="Display.None.Block.OnTablet">&nbsp;@(!string.IsNullOrEmpty(Label) ? Label : "")</Div>
 </Button>
 
 @code {

@@ -15,30 +15,40 @@ else
         @foreach ( var tx in TransactionsDetails )
         {
             <Row>
-                <Column ColumnSize="ColumnSize.Is1">
+                <Column Flex="Flex.JustifyContent.Center.AlignContent.Center" ColumnSize="ColumnSize.Is1">
                     @if ( tx.Way == TxWay.In )
                     {
-                        <Span><Icon Name="IconName.ArrowUp" TextColor="TextColor.Success" /></Span>
+                        <Icon Name="IconName.ArrowUp" TextColor="TextColor.Success" />
                     }
                     else if ( tx.Way == TxWay.Out )
                     {
-                        <Span><Icon Name="IconName.ArrowDown" TextColor="TextColor.Danger" /></Span>
+                        <Icon Name="IconName.ArrowDown" TextColor="TextColor.Danger" />
                     }
                 </Column>
                 <Column>
                     <Field>
                         <FieldLabel>Receiver</FieldLabel>
-                        <Span>@(tx.Receiver.Length > 15 ? tx.Receiver.Substring(0,15) + "..." : tx.Receiver)</Span>
+                        <Span Display="Display.Block.OnMobile.None.OnTablet.None.OnDesktop.None.OnFullHD.None.OnWidescreen">
+                            @(tx.Receiver.Length > 8 ? tx.Receiver.Substring(0,8) + "..." : tx.Receiver)
+                        </Span>
+                        <Span Display="Display.None.OnMobile.Block.OnTablet.Block.OnDesktop.None.OnFullHD.None.OnWidescreen">
+                            @(tx.Receiver.Length > 15 ? tx.Receiver.Substring(0,15) + "..." : tx.Receiver)
+                        </Span>
+                        <Span Display="Display.None.OnMobile.None.OnTablet.None.OnDesktop.Block.OnFullHD.Block.OnWidescreen">
+                            @(tx.Receiver.Length > 30 ? tx.Receiver.Substring(0,30) + "..." : tx.Receiver)
+                        </Span>
                         <FieldHelp>@tx.Time</FieldHelp>
                     </Field>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is2">
-                    <Button Color="Color.Light" Size="Size.Small" Clicked="(e) => ShowTxDetails(tx)" Float="Float.End">Details</Button>
+                    <Button Color="Color.Light" Size="Size.Small" Clicked="(e) => ShowTxDetails(tx)" Float="Float.End">
+                        <Icon Name="IconName.Info" /><Span Display="Display.None.Block.OnTablet"> Details</Span>
+                    </Button>
                 </Column>
             </Row>
         }
-        <Row Width="Width.Is100" Flex="Flex.AlignItems.Center">
-            <Column>
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center">
                 <Pagination>
                     <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
                         <PaginationLink>
@@ -99,7 +109,8 @@ else
     {
         Transactions = await LoadTransactions( IsSubAccount );
         var pit = (double)Transactions.Count / PerPage + ( Transactions.Count % PerPage > 0 ? 1 : 0 );
-        pageItems = Convert.ToInt32( pit );
+        if (pit > 5) pit = 5;
+        pageItems = Convert.ToInt32( pit > 1 ? pit : 1 );
         TransactionsDetails = await LoadTxDetails();
         StateHasChanged();
     }
