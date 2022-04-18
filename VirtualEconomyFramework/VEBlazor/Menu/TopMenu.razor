@@ -11,11 +11,46 @@
     <BarToggler />
     <BarMenu>
         <BarStart>
+            <BarItem>
+                <BarLink To="">
+                    <BarIcon IconName="IconName.Home" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                    Home
+                </BarLink>
+            </BarItem>
+            <BarItem>
+                <BarLink To="gallery">
+                    <BarIcon IconName="IconName.Images" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                    Gallery
+                </BarLink>
+            </BarItem>
+            @if ( AppData.IsAccountLoaded )
+            {
+                @foreach (var tab in AppData.MintingTabsData)
+                {            
+                    <BarItem>
+                        <BarLink To="@tab.Value.TabPageLocationName">
+                            <BarIcon IconName="IconName.Add" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                            @tab.Value.MenuButonLabel
+                        </BarLink>
+                    </BarItem>
+                }
+            }
         </BarStart>
         <BarEnd>
-            <BarItem>
-                <BarDropdown RightAligned>
+           <BarItem>
+                <BarDropdown>
                     <BarDropdownToggle Display="Blazorise.Display.InlineBlock.None.OnMobile">
+                        @if ( AppData.IsAccountLoaded )
+                        {
+                            @if (!string.IsNullOrEmpty(AppData.Account.Profile.ImageLink))
+                            {
+                                <Image Source="@AppData.Account.Profile.ImageLink" Text="Account" Style="width: 30px; height: 30px;" Margin="Margin.Is2.FromEnd" />
+                            }
+                        }
+                        else
+                        {
+                            <BarIcon IconName="IconName.User" />
+                        }
                         <Span TextColor="TextColor.Dark">Account</Span>
                     </BarDropdownToggle>
                     <BarDropdownMenu>
@@ -34,7 +69,7 @@
                             </BarDropdownItem>
                         }
                         <BarDropdownDivider />
-                        <BarDropdownItem To="https://basedataplace.com/" Target="Target.Blank">
+                        <BarDropdownItem To="@AppData.AppHomeWebsiteUrl" Target="Target.Blank">
                             <Icon Name="IconName.QuestionCircle" TextColor="TextColor.Primary" />
                             About
                         </BarDropdownItem>

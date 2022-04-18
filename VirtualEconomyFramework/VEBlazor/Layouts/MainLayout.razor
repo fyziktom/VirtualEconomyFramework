@@ -1,15 +1,15 @@
 ﻿@inherits LayoutComponentBase
 
-<Layout Sider="true">
-    <LayoutSider>
-        <LayoutSiderContent>
+<Layout Sider>
+    <LayoutSider Display="Display.Block.OnDesktop.Block.OnFullHD.Block.OnWidescreen.None.OnMobile.None.OnTablet">
+        <LayoutSiderContent Height="Height.Is100">
             <SideMenu />
         </LayoutSiderContent>
-    </LayoutSider>
+    </LayoutSider>  
     <Layout>
-        @*<LayoutHeader Fixed="true">
+        <LayoutHeader Display="Display.Block.OnTablet.None.OnDesktop.None.OnFullHD.None.OnWidescreen" Fixed="true">
             <TopMenu/>
-        </LayoutHeader>*@
+        </LayoutHeader>
         <LayoutContent>
             <Container Fluid Padding="Padding.Is4" Height="Height.Is100">
                 @Body
