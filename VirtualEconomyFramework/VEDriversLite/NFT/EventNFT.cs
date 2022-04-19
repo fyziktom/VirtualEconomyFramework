@@ -238,13 +238,6 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public override async Task<IDictionary<string,string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
-            if (string.IsNullOrEmpty(Name))
-                throw new Exception("Cannot create NFT Event without name.");
-            if (string.IsNullOrEmpty(ImageLink))
-                throw new Exception("Cannot create NFT Event without image link.");
-            if (string.IsNullOrEmpty(LocationCoordinates) || string.IsNullOrEmpty(Location))
-                throw new Exception("Cannot create NFT Event without location.");
-
             // create token metadata
             var metadata = await GetCommonMetadata();
 

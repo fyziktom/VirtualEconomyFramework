@@ -274,10 +274,8 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public override async Task<IDictionary<string,string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
-            if (string.IsNullOrEmpty(ImageLink) && string.IsNullOrEmpty(Link))
-                throw new Exception("Cannot create NFT Ticket without image link or music link.");
             if (string.IsNullOrEmpty(EventId))
-                throw new Exception("Cannot create NFT Ticket without event Id.");
+                throw new Exception("Cannot create NFT Ticket without Event Id = transaction hash of the NFT Event.");
 
             // create token metadata
             var metadata = await GetCommonMetadata();
