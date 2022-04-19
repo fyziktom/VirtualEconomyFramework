@@ -1675,9 +1675,9 @@ namespace VEDriversLite
                             if (info != null && info.Transaction != null)
                             {
                                 var msg = DogeTransactionHelpers.ParseDogeMessage(info);
-                                if (msg.Item1)
+                                if (msg.Success)
                                 {
-                                    var split = msg.Item2.Split('-');
+                                    var split = msg.Value.ToString().Split('-');
                                     if (split != null && split.Length == 2 && !string.IsNullOrEmpty(split[1]) && split[1].Contains(":") && split[1].Length == 18)
                                     {
                                         var nft = NFTs.FirstOrDefault(n => n.ShortHash == split[1]);

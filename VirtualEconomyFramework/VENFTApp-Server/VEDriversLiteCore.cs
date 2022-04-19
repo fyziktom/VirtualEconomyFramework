@@ -166,7 +166,7 @@ namespace VENFTApp_Server
                             else
                             {
                                 var dadd = DogeTransactionHelpers.ValidateDogeAddress(k.Address);
-                                if (dadd.Item1)
+                                if (dadd.Success)
                                 {
                                     Console.WriteLine("");
                                     Console.WriteLine("========Dogecoin Main Account=======");

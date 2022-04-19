@@ -73,9 +73,9 @@ namespace VEDriversLite.Extensions.WooCommerce
                         if (info != null && info.Transaction != null)
                         {
                             var msg = DogeTransactionHelpers.ParseDogeMessage(info);
-                            if (msg.Item1)
+                            if (msg.Success)
                             {
-                                var ordkey = msg.Item2;
+                                var ordkey = msg.Value.ToString();
                                 if (!string.IsNullOrEmpty(ordkey) && Orders.TryGetValue(ordkey, out var ord))
                                 {
                                     if (ord.statusclass == OrderStatus.pending && ord.currency == "DGC") // && ord.payment_method == "cod")

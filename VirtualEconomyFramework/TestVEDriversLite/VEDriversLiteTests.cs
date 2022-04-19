@@ -2005,8 +2005,8 @@ namespace TestVEDriversLite
             Console.WriteLine("TxInfo:");
             Console.WriteLine(JsonConvert.SerializeObject(txinfo, Formatting.Indented));
             Console.WriteLine("-------------------------------------------------------");
-            if (msg.Item1)
-                Console.WriteLine("This Transaction contains message: " + msg.Item2);
+            if (msg.Success)
+                Console.WriteLine("This Transaction contains message: " + msg.Value.ToString());
         }
 
         [TestEntry]
