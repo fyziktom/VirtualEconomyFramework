@@ -17,11 +17,19 @@
             <Validation Validator="ValidationRule.IsNotEmpty">
                 <Field>
                     <FieldLabel>Please enter the tags.</FieldLabel>
-                    <TextEdit Placeholder="Enter the tags" @bind-Text="Tags" @onchange="tagsChanged" >
-                        <Feedback>
-                            <ValidationError>Missing tags. Add at least one tag please.</ValidationError>
-                        </Feedback>                        
-                    </TextEdit>
+                    <Autocomplete TItem="string"
+                                  TValue="string"
+                                  Data="@DummyTags"
+                                  TextField="@(( item ) => item)"
+                                  ValueField="@(( item ) => item)"
+                                  Placeholder="Tags..."
+                                  Multiple
+                                  FreeTyping
+                                  SelectedValues="@TagValues"
+                                  SelectedValuesChanged="@OnTagValuesChanged"
+                                  SelectedTexts="@TagNames"
+                                  SelectedTextsChanged="@OnTagNamesChanged">
+                    </Autocomplete>
                     <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
                 </Field>
             </Validation>
@@ -62,17 +70,22 @@
 
     [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
 
+    List<string> DummyTags = new List<string>();
+    List<string> TagValues => Tags?.Split( " " )?.Where( x => !string.IsNullOrEmpty( x ) )?.ToList() ?? new List<string>();
+    List<string> TagNames => Tags?.Split( " " )?.Where( x => !string.IsNullOrEmpty( x ) )?.ToList() ?? new List<string>();
+
     async Task nameChanged( ChangeEventArgs e )
     {
-        if (e != null && e.Value != null )        
+        if ( e != null && e.Value != null )
         {
             await NameChanged.InvokeAsync( (string)e.Value );
-            await OnPropsChanged.InvokeAsync();            
+            await OnPropsChanged.InvokeAsync();
         }
     }
+
     async Task descChanged( ChangeEventArgs e )
     {
-        if (e != null && e.Value != null )  
+        if ( e != null && e.Value != null )
         {
             await DescriptionChanged.InvokeAsync( (string)e.Value );
             await OnPropsChanged.InvokeAsync();
@@ -83,22 +96,28 @@
         _text = e;
         await TextChanged.InvokeAsync( _text );
     }
-    async Task tagsChanged( ChangeEventArgs e )
+
+    async Task OnTagValuesChanged( List<string> values )
     {
-        if (e != null && e.Value != null )
-        {
-            await TagsChanged.InvokeAsync( (string)e.Value );
-            await OnPropsChanged.InvokeAsync();
-        }
+        Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
+        await TagsChanged.InvokeAsync( Tags );
+        await OnPropsChanged.InvokeAsync();
+    }
+
+    async Task OnTagNamesChanged( List<string> values )
+    {
+        Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
+        await TagsChanged.InvokeAsync( Tags );
+        await OnPropsChanged.InvokeAsync();
     }
 
     public Task<bool> IsValidated()
     {
         return validationsRef.ValidateAll();
     }
-    
+
     public void Refresh()
     {
-        markdownRef.SetValueAsync(_text);
+        markdownRef.SetValueAsync( _text );
     }
 }
