@@ -28,13 +28,13 @@ else
                 <Column>
                     <Field>
                         <FieldLabel>Receiver</FieldLabel>
-                        <Span Display="Display.Block.OnMobile.None.OnTablet.None.OnDesktop.None.OnFullHD.None.OnWidescreen">
+                        <Span Display="Display.InlineBlock.OnMobile.None.OnTablet">
                             @(tx.Receiver.Length > 8 ? tx.Receiver.Substring(0,8) + "..." : tx.Receiver)
                         </Span>
-                        <Span Display="Display.None.OnMobile.Block.OnTablet.Block.OnDesktop.None.OnFullHD.None.OnWidescreen">
+                        <Span Display="Display.None.OnMobile.InlineBlock.OnTablet.InlineBlock.OnDesktop.None.OnFullHD">
                             @(tx.Receiver.Length > 15 ? tx.Receiver.Substring(0,15) + "..." : tx.Receiver)
                         </Span>
-                        <Span Display="Display.None.OnMobile.None.OnTablet.None.OnDesktop.Block.OnFullHD.Block.OnWidescreen">
+                        <Span Display="Display.None.OnMobile.InlineBlock.OnFullHD">
                             @(tx.Receiver.Length > 30 ? tx.Receiver.Substring(0,30) + "..." : tx.Receiver)
                         </Span>
                         <FieldHelp>@tx.Time</FieldHelp>
@@ -42,7 +42,7 @@ else
                 </Column>
                 <Column ColumnSize="ColumnSize.Is2">
                     <Button Color="Color.Light" Size="Size.Small" Clicked="(e) => ShowTxDetails(tx)" Float="Float.End">
-                        <Icon Name="IconName.Info" /><Span Display="Display.None.Block.OnTablet"> Details</Span>
+                        <Icon Name="IconName.Info" Margin="Margin.Is1.FromEnd" /><Span Display="Display.None.OnMobile.InlineBlock.OnTablet">Details</Span>
                     </Button>
                 </Column>
             </Row>
