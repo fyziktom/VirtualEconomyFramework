@@ -1,0 +1,27 @@
+﻿<Autocomplete TItem="string"
+              TValue="string"
+              Data="@DummyTags"
+              TextField="@(( item ) => item)"
+              ValueField="@(( item ) => item)"
+              Placeholder="@Placeholder"
+              Multiple
+              FreeTyping
+              SelectedValues="@TagNames"
+              SelectedTexts="@TagNames"
+              SelectedTextsChanged="@OnTagNamesChanged"
+              Validator="ValidationRule.IsSelected">
+</Autocomplete>
+@code {
+    [Parameter] public string? Tags { get; set; }
+    [Parameter] public EventCallback<string> TagsChanged { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "Tags...";
+
+    List<string> DummyTags = new List<string>();
+    List<string> TagNames => Tags?.Split( " " )?.Where( x => !string.IsNullOrEmpty( x ) )?.ToList() ?? new List<string>();
+
+    async Task OnTagNamesChanged( List<string> values )
+    {
+        Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
+        await TagsChanged.InvokeAsync( Tags );
+    }
+}

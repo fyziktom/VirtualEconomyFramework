@@ -7,41 +7,27 @@
             <Validation Validator="ValidationRule.IsNotEmpty">
                 <Field>
                     <FieldLabel>Please enter the name.</FieldLabel>
-                    <TextEdit Placeholder="Enter name" @bind-Text="Name" @onchange="nameChanged">
+                    <TextEdit Placeholder="Enter name" @bind-Text="Name" @onchange="OnNameChanged">
                         <Feedback>
                             <ValidationError>Missing name.</ValidationError>
                         </Feedback>
                     </TextEdit>
                 </Field>
             </Validation>
-            <Validation Validator="ValidationRule.IsNotEmpty">
-                <Field>
-                    <FieldLabel>Please enter the tags.</FieldLabel>
-                    <Autocomplete TItem="string"
-                                  TValue="string"
-                                  Data="@DummyTags"
-                                  TextField="@(( item ) => item)"
-                                  ValueField="@(( item ) => item)"
-                                  Placeholder="Tags..."
-                                  Multiple
-                                  FreeTyping
-                                  SelectedValues="@TagValues"
-                                  SelectedValuesChanged="@OnTagValuesChanged"
-                                  SelectedTexts="@TagNames"
-                                  SelectedTextsChanged="@OnTagNamesChanged">
-                    </Autocomplete>
-                    <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
-                </Field>
-            </Validation>
+            <Field>
+                <FieldLabel>Please enter the tags.</FieldLabel>
+                <SpaceTags Tags="@Tags" TagsChanged="@OnTagsChanged" />
+                <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
+            </Field>
 
             <Field>
                 <FieldLabel>Please enter the short description.</FieldLabel>
-                <TextEdit Placeholder="Enter short description" @bind-Text="Description" @onchange="descChanged" />
+                <TextEdit Placeholder="Enter short description" @bind-Text="Description" @onchange="OnDescChanged" />
                 <FieldHelp>If you need to write longer description please use the text field.</FieldHelp>
             </Field>
             <Field>
                 <FieldLabel>Here you can enter the longer description.</FieldLabel>
-                <Markdown @ref="markdownRef" Value="@Text" ValueChanged="textChanged" />
+                <Markdown @ref="markdownRef" Value="@Text" ValueChanged="OnTextChanged" />
                 <FieldHelp>You can use Markdown formating in this editor.</FieldHelp>
             </Field>
         </Validations>
@@ -70,11 +56,7 @@
 
     [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
 
-    List<string> DummyTags = new List<string>();
-    List<string> TagValues => Tags?.Split( " " )?.Where( x => !string.IsNullOrEmpty( x ) )?.ToList() ?? new List<string>();
-    List<string> TagNames => Tags?.Split( " " )?.Where( x => !string.IsNullOrEmpty( x ) )?.ToList() ?? new List<string>();
-
-    async Task nameChanged( ChangeEventArgs e )
+    async Task OnNameChanged( ChangeEventArgs e )
     {
         if ( e != null && e.Value != null )
         {
@@ -83,7 +65,7 @@
         }
     }
 
-    async Task descChanged( ChangeEventArgs e )
+    async Task OnDescChanged( ChangeEventArgs e )
     {
         if ( e != null && e.Value != null )
         {
@@ -91,22 +73,16 @@
             await OnPropsChanged.InvokeAsync();
         }
     }
-    async Task textChanged( string e )
+
+    async Task OnTextChanged( string e )
     {
         _text = e;
         await TextChanged.InvokeAsync( _text );
     }
 
-    async Task OnTagValuesChanged( List<string> values )
+    async Task OnTagsChanged( string tags )
     {
-        Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
-        await TagsChanged.InvokeAsync( Tags );
-        await OnPropsChanged.InvokeAsync();
-    }
-
-    async Task OnTagNamesChanged( List<string> values )
-    {
-        Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
+        Tags = tags;
         await TagsChanged.InvokeAsync( Tags );
         await OnPropsChanged.InvokeAsync();
     }
