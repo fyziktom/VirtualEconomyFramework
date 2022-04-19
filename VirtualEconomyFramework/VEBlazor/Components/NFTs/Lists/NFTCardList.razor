@@ -114,11 +114,14 @@
             await openNFTDetailsFactory?.OpenNFTDetails(nft);
         }
     }
-    
+
     private void NFTSentHandler(NFTSentResultDto e)
     {
         if (e.sucess)
+        {
+            openNFTDetailsFactory?.HideNFTDetails();
             NotificationService?.Success("NFT sent successfully.", "NFT Sent");
+        }
         else
             NotificationService?.Error(e.message, "NFT Not Sent");
     }

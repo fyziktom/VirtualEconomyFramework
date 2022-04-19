@@ -38,10 +38,10 @@
                 @if ( !string.IsNullOrEmpty( ImageDataString ) )
                 {
                     <Row>
-                        <Column>
+                        <Column Flex="Flex.JustifyContent.Center">
                             <Figure Size="FigureSize.Is256x256">
                                 <FigureImage Source="@ImageDataString" AlternateText="empty-256x256" />
-                                <FigureCaption>Uploaded New Image</FigureCaption>
+                                <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Image</FigureCaption>
                             </Figure>
                         </Column>
                     </Row>

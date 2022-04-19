@@ -73,7 +73,8 @@
         if (NFT == null) return;
         Saveing = true;
         StateHasChanged();
-
+        //save means send to yourself
+        Receiver = Address;
         if (!IsSubAccount)
             SaveResult = await AppData.Account.SendNFT(Receiver, NFT);
         else
@@ -88,6 +89,7 @@
 
         //close automatically after 2 seconds
         await Task.Delay(2000);
+        HideSaveNFTModal();
         await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = SaveResult.Item1, message = SaveResult.Item2, NFT = NFT });       
     }
 }

@@ -69,7 +69,7 @@
                         @if ( !string.IsNullOrEmpty( AuthorLink ) )
                         {
                             <FieldHelp>
-                                <a href="@AuthorLink" target="_blank">Test the link</a>
+                                <a href="@(AuthorLink.Contains("http://") || AuthorLink.Contains("https://") ? AuthorLink : "http://" + AuthorLink)" target="_blank">Test the link</a>
                             </FieldHelp>
                         }
                     </FieldBody>

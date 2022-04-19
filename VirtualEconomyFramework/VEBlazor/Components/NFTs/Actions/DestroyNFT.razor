@@ -43,7 +43,7 @@
 </Modal>
 }
 @code {
-    
+
     private Modal? NFTDestroyModal;
 
     bool Destroying = false;
@@ -81,6 +81,7 @@
 
         //close automatically after 2 seconds
         await Task.Delay(2000);
+        HideDestroyNFTModal();
         await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = DestroyResult.Item1, message = DestroyResult.Item2, NFT = NFT });       
     }
 }
