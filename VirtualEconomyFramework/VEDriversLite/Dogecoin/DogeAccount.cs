@@ -27,6 +27,10 @@ namespace VEDriversLite
         /// Loaded Secret, NBitcoin Class which carry Public Key and Private Key
         /// </summary>
         public BitcoinSecret Secret { get; set; }
+        /// <summary>
+        /// Address in form of BitcoinAddress object
+        /// </summary>
+        public BitcoinAddress BAddress { get; set; }
 
         /// <summary>
         /// Total actual balance based on Utxos. This means sum of spendable and unconfirmed balances.
@@ -204,8 +208,8 @@ namespace VEDriversLite
                     AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
                     AccountKey.PublicKey = Address;
                     Secret = privateKeyFromNetwork;
+                    BAddress = Secret.GetAddress(ScriptPubKeyType.Legacy);
 
-                    SignMessage("init");
                     if (saveToFile)
                     {
                         // save to file
@@ -252,7 +256,8 @@ namespace VEDriversLite
                     Address = kdto.Address;
 
                     Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
-                    //SignMessage("init");
+                    BAddress = Secret.GetAddress(ScriptPubKeyType.Legacy);
+
                     await StartRefreshingData();
                     return true;
                 }
@@ -263,7 +268,7 @@ namespace VEDriversLite
             }
             else
             {
-                CreateNewAccount(password);
+                await CreateNewAccount(password);
             }
 
             return false;
@@ -301,6 +306,7 @@ namespace VEDriversLite
                         AccountKey.IsEncrypted = true;
                     }
                     Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
+                    BAddress = Secret.GetAddress(ScriptPubKeyType.Legacy);
 
                     if (string.IsNullOrEmpty(address))
                     {
@@ -312,7 +318,6 @@ namespace VEDriversLite
                         Address = address;
                     }
 
-                    //SignMessage("init");
                 });
 
                 await StartRefreshingData();
@@ -598,9 +603,9 @@ namespace VEDriversLite
                 Transaction transaction;
 
                 if (string.IsNullOrEmpty(message))
-                    transaction = DogeTransactionHelpers.GetDogeTransactionAsync(dto, AccountKey, res.Item2);
+                    transaction = DogeTransactionHelpers.GetDogeTransactionAsync(dto, BAddress, res.Item2);
                 else
-                    transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                    transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, BAddress, res.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
                 if (result.Item1)
@@ -661,9 +666,9 @@ namespace VEDriversLite
                 var rtxid = string.Empty;
                 Transaction transaction;
                 if (string.IsNullOrEmpty(message))
-                    transaction = DogeTransactionHelpers.GetDogeTransactionAsync(dto, AccountKey, res.Item2);
+                    transaction = DogeTransactionHelpers.GetDogeTransactionAsync(dto, BAddress, res.Item2);
                 else
-                    transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                    transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, BAddress, res.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
                 if (result.Item1)
@@ -712,7 +717,7 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var transaction = DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, message: message);
+                var transaction = DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, BAddress, res.Item2, message: message);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
                 if (result.Item1)
@@ -771,7 +776,7 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                var transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, BAddress, res.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
                 if (result.Item1)

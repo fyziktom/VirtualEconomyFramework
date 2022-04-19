@@ -35,69 +35,6 @@ namespace VEDriversLite
         private static readonly ConcurrentDictionary<string, GetTransactionInfoResponse> transactionDetails = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
 
         /// <summary>
-        /// Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
-        /// and returns BitcoinAddress and BitcoinSecret classes from NBitcoin
-        /// </summary>
-        /// <param name="ekey"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public static (BitcoinAddress, BitcoinSecret) GetAddressAndKey(EncryptionKey ekey, string password)
-        {
-            var key = string.Empty;
-
-            if (ekey != null)
-            {
-                if (ekey.IsLoaded)
-                {
-                    if (ekey.IsEncrypted && string.IsNullOrEmpty(password) && !ekey.IsPassLoaded)
-                    {
-                        throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
-                    }
-                    else if (!ekey.IsEncrypted)
-                    {
-                        key = ekey.GetEncryptedKey();
-                    }
-                    else if (ekey.IsEncrypted && (!string.IsNullOrEmpty(password) || ekey.IsPassLoaded))
-                    {
-                        if (ekey.IsPassLoaded)
-                        {
-                            key = ekey.GetEncryptedKey(string.Empty);
-                        }
-                        else
-                        {
-                            key = ekey.GetEncryptedKey(password);
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(key))
-                    {
-                        throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
-                    }
-                }
-            }
-
-            if (!string.IsNullOrEmpty(key))
-            {
-                try
-                {
-                    BitcoinSecret loadedkey = Network.CreateBitcoinSecret(key);
-                    BitcoinAddress addressForTx = loadedkey.GetAddress(ScriptPubKeyType.Legacy);
-
-                    return (addressForTx, loadedkey);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Cannot send token transaction!", ex);
-                    throw new Exception("Cannot send token transaction. cannot create keys!");
-                }
-            }
-            else
-            {
-                throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
-            }
-        }
-
-        /// <summary>
         /// Function will sign transaction with provided key and broadcast with Neblio API
         /// </summary>
         /// <param name="transaction">NBitcoin Transaction object</param>
@@ -185,6 +122,11 @@ namespace VEDriversLite
         /// <returns></returns>
         public static double CalcFee(int numOfInputs, int numOfOutputs, string customMessageInOPReturn, bool isTokenTransaction)
         {
+            if (numOfInputs <= 0)
+                numOfInputs = 1;
+            if (numOfOutputs <= 0)
+                numOfOutputs = 1;
+
             var basicFee = 1000; //0.00001 per 1 byte 
 
             // inputs
@@ -263,16 +205,16 @@ namespace VEDriversLite
             return (null, 0);
         }        
 
-        private static Transaction GetTransactionObject(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, bool withMessage = false)
+        private static Transaction GetTransactionObject(SendTxData data, BitcoinAddress addressForTx, ICollection<Utxo> utxos, bool withMessage = false)
         {
             if (data == null)
             {
                 throw new Exception("Data cannot be null!");
             }
 
-            if (ekey == null)
+            if (addressForTx == null)
             {
-                throw new Exception("Account cannot be null!");
+                throw new Exception("BitcoinAddress object cannot be null!");
             }
 
             // create receiver address
@@ -284,21 +226,6 @@ namespace VEDriversLite
             catch (Exception)
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
-            }
-
-            // load key and address
-            BitcoinSecret key;
-
-            BitcoinAddress addressForTx;
-            try
-            {
-                var k = GetAddressAndKey(ekey, data.Password);
-                key = k.Item2;
-                addressForTx = k.Item1;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
 
             // create template for new tx from last one
@@ -336,9 +263,7 @@ namespace VEDriversLite
                 }                               
 
                 if (diffinSat > 0)
-                {
                     transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
-                }
             }
             catch (Exception ex)
             {
@@ -355,9 +280,9 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static Transaction GetDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
+        public static Transaction GetDogeTransactionAsync(SendTxData data, BitcoinAddress addressForTx, ICollection<Utxo> utxos)
         {
-            return GetTransactionObject(data, ekey, utxos);            
+            return GetTransactionObject(data, addressForTx, utxos);            
         }
 
         /// <summary>
@@ -367,9 +292,9 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static Transaction GetDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
+        public static Transaction GetDogeTransactionWithMessageAsync(SendTxData data, BitcoinAddress addressForTx, ICollection<Utxo> utxos)
         {
-            return GetTransactionObject(data, ekey, utxos, withMessage: true);
+            return GetTransactionObject(data, addressForTx, utxos, withMessage: true);
         }
 
         /// <summary>
@@ -381,17 +306,13 @@ namespace VEDriversLite
         /// <param name="password">Password for encrypted key if it is encrypted and locked</param>
         /// <param name="message">Custom message</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static Transaction SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string, double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, string password = "", string message = "")
+        public static Transaction SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string, double> receiverAmount, BitcoinAddress addressForTx, ICollection<Utxo> utxos, string password = "", string message = "")
         {
             if (receiverAmount == null)
-            {
                 throw new Exception("Receivers Dictionary cannot be null!");
-            }
 
-            if (ekey == null)
-            {
-                throw new Exception("Account cannot be null!");
-            }
+            if (addressForTx == null)
+                throw new Exception("BitcoinAddress object cannot be null!");
 
             // create receiver address
             Dictionary<string, BitcoinAddress> recsaddr = new Dictionary<string, BitcoinAddress>();
@@ -406,22 +327,6 @@ namespace VEDriversLite
             catch (Exception)
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
-            }
-
-
-            // load key and address
-            BitcoinSecret key;
-
-            BitcoinAddress addressForTx;
-            try
-            {
-                var k = GetAddressAndKey(ekey, password);
-                key = k.Item2;
-                addressForTx = k.Item1;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
 
             // create template for new tx from last one

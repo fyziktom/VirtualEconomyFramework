@@ -2309,6 +2309,11 @@
             Loaded Secret, NBitcoin Class which carry Public Key and Private Key
             </summary>
         </member>
+        <member name="P:VEDriversLite.DogeAccount.BAddress">
+            <summary>
+            Address in form of BitcoinAddress object
+            </summary>
+        </member>
         <member name="P:VEDriversLite.DogeAccount.TotalBalance">
             <summary>
             Total actual balance based on Utxos. This means sum of spendable and unconfirmed balances.
@@ -3018,15 +3023,6 @@
             Minimum number of confirmation to send the transaction
             </summary>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.GetAddressAndKey(VEDriversLite.Security.EncryptionKey,System.String)">
-            <summary>
-            Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
-            and returns BitcoinAddress and BitcoinSecret classes from NBitcoin
-            </summary>
-            <param name="ekey"></param>
-            <param name="password"></param>
-            <returns></returns>
-        </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.SignAndBroadcastTransaction(NBitcoin.Transaction,NBitcoin.BitcoinSecret,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
             <summary>
             Function will sign transaction with provided key and broadcast with Neblio API
@@ -3058,7 +3054,7 @@
             <param name="address">Address of the owner</param>
             <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.GetDogeTransactionAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.GetDogeTransactionAsync(VEDriversLite.SendTxData,NBitcoin.BitcoinAddress,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
             <summary>
             Function will send standard Neblio transaction - Async version
             </summary>
@@ -3067,7 +3063,7 @@
             <param name="utxos">Optional input neblio utxo</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(VEDriversLite.SendTxData,NBitcoin.BitcoinAddress,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
             <summary>
             Function will send standard Neblio transaction with included message.
             </summary>
@@ -3076,7 +3072,7 @@
             <param name="utxos">Optional input neblio utxo</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(System.Collections.Generic.Dictionary{System.String,System.Double},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.String,System.String)">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(System.Collections.Generic.Dictionary{System.String,System.Double},NBitcoin.BitcoinAddress,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.String,System.String)">
             <summary>
             Function will send standard Neblio transaction with message and outputs which goes to different addresses
             </summary>

@@ -326,6 +326,11 @@ namespace VEDriversLite
         /// <returns></returns>
         public static double CalcFee(int numOfInputs, int numOfOutputs, string customMessageInOPReturn, bool isTokenTransaction)
         {
+            if (numOfInputs <= 0)
+                numOfInputs = 1;
+            if (numOfOutputs <= 0)
+                numOfOutputs = 1;
+
             const string exceptionMessage = "Cannot send transaction bigger than 4kB on Neblio network!";
             var basicFee = MinimumAmount;
 
