@@ -51,64 +51,7 @@ namespace VEDriversLite.NFT.Coruzant
             return new CoruzantProfileNFT("");
         }
 
-        /// <summary>
-        /// This function will new Coruzant Post NFT.
-        /// </summary>
-        /// <param name="address">sender address</param>
-        /// <param name="coppies">number of copies</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="NFT">Input NFT object with data to save to metadata</param>
-        /// <param name="profileUtxo">related profile NFT utxo</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-        /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintCoruzantPostNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, string profileUtxo, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
-        {
-            var cnft = NFT as CoruzantArticleNFT;
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Type", "NFT CoruzantPost");
-            metadata.Add("Name", NFT.Name);
-            metadata.Add("Author", NFT.Author);
-            metadata.Add("AuthorProfileUtxo", cnft.AuthorProfileUtxo);
-            metadata.Add("Description", NFT.Description);
-            metadata.Add("Image", NFT.ImageLink);
-            metadata.Add("Link", NFT.Link);
-            metadata.Add("Tags", NFT.Tags);
-            metadata.Add("FullPostLink", cnft.FullPostLink);
-            metadata.Add("LastComment", cnft.LastComment);
-            metadata.Add("LastCommentBy", cnft.LastCommentBy);
-            if (NFT.Price > 0)
-                metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
-            
-            // fill input data for sending tx
-            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Id = CoruzantTokenId, // id of token
-                Metadata = metadata,
-                SenderAddress = address
-            };
-
-            try
-            {
-                // send tx
-                var rtxid = string.Empty;
-                if (coppies == 0)
-                    rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
-                else
-                    rtxid = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
-                if (rtxid != null)
-                    return rtxid;
-                else
-                    return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
+        
         /// <summary>
         /// This function will change Coruzant Post NFT
         /// You can use this function for sending the NFT when you will fill receiver parameter
@@ -119,7 +62,7 @@ namespace VEDriversLite.NFT.Coruzant
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="receiver">Fill when you want to send NFT to another address</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> ChangeCoruzantPostNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, string receiver = "")
+        public static async Task<string> ChangeCoruzantPostNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, NBitcoin.BitcoinSecret secret, string receiver = "")
         {
             var cnft = NFT as CoruzantArticleNFT;
             // create token metadata
@@ -157,7 +100,11 @@ namespace VEDriversLite.NFT.Coruzant
             try
             {
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, nutxos);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, secret);
+
                 if (rtxid != null)
                     return rtxid;
                 else
@@ -169,114 +116,179 @@ namespace VEDriversLite.NFT.Coruzant
             }
         }
 
-        /// <summary>
-        /// This function will new Coruzant Profile NFTs. 
-        /// </summary>
-        /// <param name="address">sender address</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-        /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
-        /// <param name="nft">Input NFT</param>
-        /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> MintCoruzantProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
-        {
-            var profile = nft as CoruzantProfileNFT;
+        ///// <summary>
+        ///// This function will new Coruzant Post NFT.
+        ///// </summary>
+        ///// <param name="address">sender address</param>
+        ///// <param name="ekey">Encryption Key object of the address</param>
+        ///// <param name="NFT">Input NFT object with data to save to metadata</param>
+        ///// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        ///// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        ///// <returns>New Tx Id Hash</returns>
+        //public static async Task<string> MintCoruzantPostNFT(string address, int coppies, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, NBitcoin.BitcoinSecret secret)
+        //{
+        //    var cnft = NFT as CoruzantArticleNFT;
+        //    // create token metadata
+        //    var metadata = new Dictionary<string, string>();
+        //    metadata.Add("NFT", "true");
+        //    metadata.Add("Type", "NFT CoruzantPost");
+        //    metadata.Add("Name", NFT.Name);
+        //    metadata.Add("Author", NFT.Author);
+        //    metadata.Add("AuthorProfileUtxo", cnft.AuthorProfileUtxo);
+        //    metadata.Add("Description", NFT.Description);
+        //    metadata.Add("Image", NFT.ImageLink);
+        //    metadata.Add("Link", NFT.Link);
+        //    metadata.Add("Tags", NFT.Tags);
+        //    metadata.Add("FullPostLink", cnft.FullPostLink);
+        //    metadata.Add("LastComment", cnft.LastComment);
+        //    metadata.Add("LastCommentBy", cnft.LastCommentBy);
+        //    if (NFT.Price > 0)
+        //        metadata.Add("Price", NFT.Price.ToString(CultureInfo.InvariantCulture));
 
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Type", "NFT CoruzantProfile");
-            metadata.Add("Name", profile.Name);
-            metadata.Add("Surname", profile.Surname);
-            metadata.Add("Age", profile.Age.ToString());
-            metadata.Add("Description", profile.Description);
-            metadata.Add("Image", profile.ImageLink);
-            metadata.Add("Link", profile.Link);
-            metadata.Add("PersonalPageLink", profile.PersonalPageLink);
-            metadata.Add("CompanyName", profile.CompanyName);
-            metadata.Add("CompanyLink", profile.CompanyLink);
-            metadata.Add("WorkingPosition", profile.WorkingPosition);
-            
-            // fill input data for sending tx
-            var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Id = CoruzantTokenId, // id of token
-                Metadata = metadata,
-                SenderAddress = address
-            };
+        //    // fill input data for sending tx
+        //    var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
+        //    {
+        //        Id = CoruzantTokenId, // id of token
+        //        Metadata = metadata,
+        //        SenderAddress = address
+        //    };
 
-            try
-            {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
-                if (rtxid != null)
-                    return rtxid;
-                else
-                    return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //    try
+        //    {
+        //        // send tx                
+        //        NBitcoin.Transaction transaction;
 
-        /// <summary>
-        /// This function will change Coruzant Profile NFT.
-        /// You can use this function for sending the NFT when you will fill receiver parameter
-        /// </summary>
-        /// <param name="address">sender address</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
-        /// <param name="nft">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-        /// <param name="receiver">Fill when you want to send NFT to another address</param>
-        /// <returns>New Tx Id Hash</returns>
-        public static async Task<string> ChangeCoruzantProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, string receiver = "")
-        {
-            var profile = nft as CoruzantProfileNFT;
+        //        if (coppies == 0)
+        //            transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
+        //        else
+        //            transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(dto, coppies, ekey, nutxos, tutxos);
 
-            // create token metadata
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("NFT", "true");
-            metadata.Add("Type", "NFT CoruzantProfile");
-            metadata.Add("Name", profile.Name);
-            metadata.Add("Surname", profile.Surname);
-            metadata.Add("Age", profile.Age.ToString());
-            metadata.Add("Description", profile.Description);
-            metadata.Add("Image", profile.ImageLink);
-            metadata.Add("Link", profile.Link);
-            metadata.Add("PersonalPageLink", profile.PersonalPageLink);
-            metadata.Add("CompanyName", profile.CompanyName);
-            metadata.Add("CompanyLink", profile.CompanyLink);
-            metadata.Add("WorkingPosition", profile.WorkingPosition);
+        //        var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, secret);
+        //        if (rtxid != null)
+        //            return rtxid;
+        //        else
+        //            return string.Empty;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
-            var rec = address;
-            if (!string.IsNullOrEmpty(receiver))
-                rec = receiver;
+        ///// <summary>
+        ///// This function will new Coruzant Profile NFTs. 
+        ///// </summary>
+        ///// <param name="address">sender address</param>
+        ///// <param name="ekey">Encryption Key object of the address</param>
+        ///// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        ///// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
+        ///// <returns>New Tx Id Hash</returns>
+        //public static async Task<string> MintCoruzantProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, NBitcoin.BitcoinSecret secret)
+        //{
+        //    var profile = nft as CoruzantProfileNFT;
 
-            // fill input data for sending tx
-            var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
-            {
-                Id = CoruzantTokenId, // id of token
-                Metadata = metadata,
-                Amount = 1,
-                sendUtxo = new List<string>() { profile.Utxo },
-                SenderAddress = address,
-                ReceiverAddress = rec
-            };
+        //    // create token metadata
+        //    var metadata = new Dictionary<string, string>();
+        //    metadata.Add("NFT", "true");
+        //    metadata.Add("Type", "NFT CoruzantProfile");
+        //    metadata.Add("Name", profile.Name);
+        //    metadata.Add("Surname", profile.Surname);
+        //    metadata.Add("Age", profile.Age.ToString());
+        //    metadata.Add("Description", profile.Description);
+        //    metadata.Add("Image", profile.ImageLink);
+        //    metadata.Add("Link", profile.Link);
+        //    metadata.Add("PersonalPageLink", profile.PersonalPageLink);
+        //    metadata.Add("CompanyName", profile.CompanyName);
+        //    metadata.Add("CompanyLink", profile.CompanyLink);
+        //    metadata.Add("WorkingPosition", profile.WorkingPosition);
 
-            try
-            {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
-                if (rtxid != null)
-                    return rtxid;
-                else
-                    return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //    // fill input data for sending tx
+        //    var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
+        //    {
+        //        Id = CoruzantTokenId, // id of token
+        //        Metadata = metadata,
+        //        SenderAddress = address
+        //    };
+
+        //    try
+        //    {
+        //        // send tx
+        //        var transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
+
+        //        var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, secret);
+
+        //        if (rtxid != null)
+        //            return rtxid;
+        //        else
+        //            return string.Empty;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        ///// <summary>
+        ///// This function will change Coruzant Profile NFT.
+        ///// You can use this function for sending the NFT when you will fill receiver parameter
+        ///// </summary>
+        ///// <param name="address">sender address</param>
+        ///// <param name="ekey">Encryption Key object of the address</param>
+        ///// <param name="nft">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
+        ///// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
+        ///// <param name="receiver">Fill when you want to send NFT to another address</param>
+        ///// <returns>New Tx Id Hash</returns>
+        //public static async Task<string> ChangeCoruzantProfileNFT(string address, EncryptionKey ekey, INFT nft, ICollection<Utxos> nutxos, NBitcoin.BitcoinSecret secret, string receiver = "")
+        //{
+        //    var profile = nft as CoruzantProfileNFT;
+
+        //    // create token metadata
+        //    var metadata = new Dictionary<string, string>();
+        //    metadata.Add("NFT", "true");
+        //    metadata.Add("Type", "NFT CoruzantProfile");
+        //    metadata.Add("Name", profile.Name);
+        //    metadata.Add("Surname", profile.Surname);
+        //    metadata.Add("Age", profile.Age.ToString());
+        //    metadata.Add("Description", profile.Description);
+        //    metadata.Add("Image", profile.ImageLink);
+        //    metadata.Add("Link", profile.Link);
+        //    metadata.Add("PersonalPageLink", profile.PersonalPageLink);
+        //    metadata.Add("CompanyName", profile.CompanyName);
+        //    metadata.Add("CompanyLink", profile.CompanyLink);
+        //    metadata.Add("WorkingPosition", profile.WorkingPosition);
+
+        //    var rec = address;
+        //    if (!string.IsNullOrEmpty(receiver))
+        //        rec = receiver;
+
+        //    // fill input data for sending tx
+        //    var dto = new SendTokenTxData() // please check SendTokenTxData for another properties such as specify source UTXOs
+        //    {
+        //        Id = CoruzantTokenId, // id of token
+        //        Metadata = metadata,
+        //        Amount = 1,
+        //        sendUtxo = new List<string>() { profile.Utxo },
+        //        SenderAddress = address,
+        //        ReceiverAddress = rec
+        //    };
+
+        //    try
+        //    {
+        //        // send tx
+        //        var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, nutxos);
+
+        //        var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, secret);
+
+        //        if (rtxid != null)
+        //            return rtxid;
+        //        else
+        //            return string.Empty;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
     }
 }

@@ -86,11 +86,11 @@
             unstoppableDomainAddress = string.Empty;
             unstoppableDomainAddressUsed = false;
         }
-        var res = DogeTransactionHelpers.ValidateDogeAddress(add);
-        if (res.Item1)
+        VEDriversLite.CommonReturnTypeDto res = DogeTransactionHelpers.ValidateDogeAddress(add);
+        if (res.Success)
         {
             validAddress = true;
-            Receiver = res.Item2;
+            Receiver = res.Value.ToString();
             await AddressCheckedInputed.InvokeAsync(receiver);
         }
         else
