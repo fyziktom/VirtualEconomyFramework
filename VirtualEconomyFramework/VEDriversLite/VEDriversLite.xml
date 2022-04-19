@@ -977,6 +977,21 @@
             Tokens in the outputs
             </summary>
         </member>
+        <member name="T:VEDriversLite.CommonReturnTypeDto">
+            <summary>
+            This class is to declare the common method return type used mostly in helper classes. To generalize the return data we have added this class.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.CommonReturnTypeDto.Success">
+            <summary>
+            This property tells whether the return type is a success or a failure
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.CommonReturnTypeDto.Value">
+            <summary>
+            This property holds the actual value
+            </summary>
+        </member>
         <member name="T:VEDriversLite.StringExt">
             <summary>
             Extend of the String functions
@@ -3012,7 +3027,7 @@
             <param name="password"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SignAndBroadcast(NBitcoin.Transaction,NBitcoin.BitcoinSecret,NBitcoin.BitcoinAddress,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.SignAndBroadcastTransaction(NBitcoin.Transaction,NBitcoin.BitcoinSecret,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
             <summary>
             Function will sign transaction with provided key and broadcast with Neblio API
             </summary>
@@ -3043,7 +3058,7 @@
             <param name="address">Address of the owner</param>
             <returns>(NBitcoin Transaction object, sum of all inputs values in double)</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.GetDogeTransactionAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
             <summary>
             Function will send standard Neblio transaction - Async version
             </summary>
@@ -3052,7 +3067,7 @@
             <param name="utxos">Optional input neblio utxo</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
+        <member name="M:VEDriversLite.DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo})">
             <summary>
             Function will send standard Neblio transaction with included message.
             </summary>
@@ -3395,6 +3410,56 @@
         <member name="P:VEDriversLite.Dto.SplitNeblioTokensDto.TotalAmount">
             <summary>
             Total amount of all lots together
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.Dto.TokenOwnerDto">
+            <summary>
+            Dto for info about owner of some kind of the tokens
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.TokenOwnerDto.Address">
+            <summary>
+            Address of the Owner
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.TokenOwnerDto.ShortenAddress">
+            <summary>
+            Shorten Address of the Owner
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.TokenOwnerDto.AmountOfTokens">
+            <summary>
+            Amount of the tokens on the Owner Address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.TokenOwnerDto.AmountOfNFTs">
+            <summary>
+            Amount of the NFTs on the Owner Address
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.Dto.TokenSupplyDto">
+            <summary>
+            Dto for info about actual Token supply on address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.TokenSupplyDto.TokenSymbol">
+            <summary>
+            Symbol of token - up to 5 unique letters
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.TokenSupplyDto.TokenId">
+            <summary>
+            Token Id hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.TokenSupplyDto.Amount">
+            <summary>
+            Amount of tokens available
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Dto.TokenSupplyDto.ImageUrl">
+            <summary>
+            Token icon image url
             </summary>
         </member>
         <member name="T:VEDriversLite.KeyDto">
@@ -4541,6 +4606,11 @@
         <member name="P:VEDriversLite.Neblio.NeblioAccountBase.AddressInfoUtxos">
             <summary>
             Actual loaded address info with list of Utxos. When utxos are loaded first, this is just fill with it to prevent not necessary API request.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Neblio.NeblioAccountBase.UsedUtxos">
+            <summary>
+            When some utxo is used, it is placed to this list to prevent second use. Key is Utxo and Value is TxId where it was used
             </summary>
         </member>
         <member name="E:VEDriversLite.Neblio.NeblioAccountBase.Refreshed">
@@ -6883,56 +6953,6 @@
         <member name="P:VEDriversLite.NeblioAPI.Items2.Value">
             <summary>Amount of NTP1 token, or NEBL (in satoshi) to pay as fee</summary>
         </member>
-        <member name="T:VEDriversLite.TokenSupplyDto">
-            <summary>
-            Dto for info about actual Token supply on address
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.TokenSupplyDto.TokenSymbol">
-            <summary>
-            Symbol of token - up to 5 unique letters
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.TokenSupplyDto.TokenId">
-            <summary>
-            Token Id hash
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.TokenSupplyDto.Amount">
-            <summary>
-            Amount of tokens available
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.TokenSupplyDto.ImageUrl">
-            <summary>
-            Token icon image url
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.TokenOwnerDto">
-            <summary>
-            Dto for info about owner of some kind of the tokens
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.TokenOwnerDto.Address">
-            <summary>
-            Address of the Owner
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.TokenOwnerDto.ShortenAddress">
-            <summary>
-            Shorten Address of the Owner
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.TokenOwnerDto.AmountOfTokens">
-            <summary>
-            Amount of the tokens on the Owner Address
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.TokenOwnerDto.AmountOfNFTs">
-            <summary>
-            Amount of the NFTs on the Owner Address
-            </summary>
-        </member>
         <member name="T:VEDriversLite.NeblioTransactionHelpers">
             <summary>
             Main Helper class for the Neblio Blockchain Transactions
@@ -7150,7 +7170,7 @@
             <param name="fee">Fee - 20000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetNeblioTransactionObject(VEDriversLite.SendTxData,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             Function will send standard Neblio transaction
             </summary>

@@ -295,7 +295,7 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, string key, PubKey bobPublicKey = null)
         {
-            if (string.IsNullOrEmpty(key) || (!string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
+            if (string.IsNullOrEmpty(key) || (string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
                 return (false, "Input parameters cannot be empty or null.");
             try
             {
@@ -317,7 +317,7 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret, PubKey bobPublicKey = null)
         {
-            if (secret == null || (!string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
+            if (secret == null || (string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
                 return (false, "Input parameters cannot be empty or null.");
             
             var aliceadd = secret.PubKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);

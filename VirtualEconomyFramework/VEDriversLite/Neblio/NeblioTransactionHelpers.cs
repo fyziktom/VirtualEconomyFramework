@@ -9,56 +9,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Events;
+using VEDriversLite.Dto;
 using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.Security;
 
 namespace VEDriversLite
 {
-    /// <summary>
-    /// Dto for info about actual Token supply on address
-    /// </summary>
-    public class TokenSupplyDto
-    {
-        /// <summary>
-        /// Symbol of token - up to 5 unique letters
-        /// </summary>
-        public string TokenSymbol { get; set; } = string.Empty;
-        /// <summary>
-        /// Token Id hash
-        /// </summary>
-        public string TokenId { get; set; } = string.Empty;
-        /// <summary>
-        /// Amount of tokens available
-        /// </summary>
-        public double Amount { get; set; } = 0.0;
-        /// <summary>
-        /// Token icon image url
-        /// </summary>
-        public string ImageUrl { get; set; } = string.Empty;
-    }
-    /// <summary>
-    /// Dto for info about owner of some kind of the tokens
-    /// </summary>
-    public class TokenOwnerDto
-    {
-        /// <summary>
-        /// Address of the Owner
-        /// </summary>
-        public string Address { get; set; } = string.Empty;
-        /// <summary>
-        /// Shorten Address of the Owner
-        /// </summary>
-        public string ShortenAddress { get; set; } = string.Empty;
-        /// <summary>
-        /// Amount of the tokens on the Owner Address
-        /// </summary>
-        public int AmountOfTokens { get; set; } = 0;
-        /// <summary>
-        /// Amount of the NFTs on the Owner Address
-        /// </summary>
-        public int AmountOfNFTs { get; set; } = 0;
-    }
+
     /// <summary>
     /// Main Helper class for the Neblio Blockchain Transactions
     /// </summary>
@@ -2619,14 +2577,14 @@ namespace VEDriversLite
             var founded = 0.0;
 
             if (utxos == null)
-            {
                 return resp;
-            }
-
-            utxos = utxos.OrderByDescending(u => u.Value).ToList();
 
             if (latestBlockHeight == 0)
                 latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, addr);
+
+            utxos = utxos.Where(u => u.Tokens != null).ToList();
+            if (utxos == null)
+                return resp;
 
             foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Tokens.Count > 0))
             {
