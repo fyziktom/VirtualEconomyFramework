@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
+    <PackageReference Include="Blazorise" Version="1.0.3" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.0.3" />
+    <PackageReference Include="Blazorise.Components" Version="1.0.3" />
+    <PackageReference Include="Blazorise.DataGrid" Version="1.0.3" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.0.3" />
+    <PackageReference Include="Blazorise.Markdown" Version="1.0.3" />
+    <PackageReference Include="BlazorPanzoom" Version="0.2.1" />
+    <PackageReference Include="Markdig" Version="0.28.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -100,6 +100,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         public static List<string> AllowedTokens = new List<string>() {
                 "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
+                "LaAUG3WSAHWkrVtNYcd7CLdCYrA4phy1gjChvW",
                 Coruzant.CoruzantNFTHelpers.CoruzantTokenId,
                 HardwarioNFTHelpers.TokenId };
         /// <summary>
@@ -118,6 +119,10 @@ namespace VEDriversLite.NFT
         /// Main default tokens in VEFramework - VENFT
         /// </summary>
         public static string TokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+        /// <summary>
+        /// Main default Data storage tokens in VEFramework - BDP
+        /// </summary>
+        public static string BDPTokenId = "LaAUG3WSAHWkrVtNYcd7CLdCYrA4phy1gjChvW";
         /// <summary>
         /// Main default tokens symbol in VEFramework - VENFT
         /// </summary>
@@ -185,6 +190,17 @@ namespace VEDriversLite.NFT
         private static void NeblioTransactionHelpers_NewEventInfo(object sender, IEventInfo e)
         {
             NewEventInfo?.Invoke(null, e);
+        }
+
+        /// <summary>
+        /// Remove the server address from link and return just IPFS Hash
+        /// </summary>
+        /// <param name="link"></param>
+        /// <returns></returns>
+        public static string GetHashFromIPFSLink(string link)
+        {
+            var hash = link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty);
+            return hash;
         }
         /// <summary>
         /// Obsolete function - just example how to redirect upload through different server
@@ -1069,7 +1085,8 @@ namespace VEDriversLite.NFT
         /// <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
         /// <param name="receiver">Receiver of the NFT</param>
         /// <returns>New Tx Id Hash</returns>
-        public static async Task<MintNFTData> GetMintMultiNFTData(string address, INFT NFT, string receiver = "")
+
+        public static async Task<MintNFTData> GetMintMultiNFTData(string address, INFT NFT, string receiver = "", List<string> multipleReceivers = null)
         {
             var metadata = await NFT.GetMetadata();
             // fill input data for sending tx
@@ -1078,7 +1095,8 @@ namespace VEDriversLite.NFT
                 Id = NFT.TokenId, // id of token
                 Metadata = metadata,
                 SenderAddress = address,
-                ReceiverAddress = receiver
+                ReceiverAddress = receiver,
+                MultipleReceivers = multipleReceivers
             };
             return dto;
         }

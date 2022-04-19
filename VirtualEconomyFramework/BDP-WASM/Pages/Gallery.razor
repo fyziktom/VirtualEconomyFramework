@@ -1,0 +1,32 @@
+﻿@inject AppData AppData
+
+@page "/gallery"
+
+<PageTitle>@AppData.AppNick - Gallery</PageTitle>
+
+<VEBlazor.Components.PageHeader Title="Data Gallery" BreadcrumbItems="@(new string[] { AppData.AppNick, "Gallery" })" />
+
+<VEBlazor.Pages.Gallery @ref="galleryComponent" />
+
+@code {
+    VEBlazor.Pages.Gallery? galleryComponent;
+
+    [Parameter]
+    [SupplyParameterFromQuery( Name = "utxo" )]
+    public string[]? InUtxos { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery( Name = "addr" )]
+    public string[]? InAddresses { get; set; }
+
+    protected override async Task OnAfterRenderAsync( bool firstRender )
+    {
+        await base.OnAfterRenderAsync( firstRender );
+        if ( galleryComponent == null )
+            return;
+        if ( InUtxos != null && InUtxos.Length > 0 )
+            await galleryComponent.OpenInUtxoInTab( InUtxos );
+        if ( InAddresses != null && InAddresses.Length > 0 )
+            await galleryComponent.OpenInAddressesInTab( InAddresses );
+    }
+}

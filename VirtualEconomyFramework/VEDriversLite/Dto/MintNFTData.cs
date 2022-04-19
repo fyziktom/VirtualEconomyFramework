@@ -27,6 +27,11 @@ namespace VEDriversLite
         /// </summary>
         public string ReceiverAddress { get; set; }
         /// <summary>
+        /// Fill when you have multiple receivers
+        /// Works now just for multimint of NFTs example in VEBlazor.Demo.TicketsAndEvents for minting tickets
+        /// </summary>
+        public List<string> MultipleReceivers { get; set; } = new List<string>();
+        /// <summary>
         /// If the account is locked you can provide password directly in the send token api command
         /// if the account is unlocked or the QT wallet is connected fill empty string
         /// </summary>

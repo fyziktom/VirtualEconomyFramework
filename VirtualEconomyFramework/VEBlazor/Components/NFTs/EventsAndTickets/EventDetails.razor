@@ -1,0 +1,47 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits NFTDetailsBase;
+
+@if ( NFT != null && NFT.Type == NFTTypes.Event )
+{
+    var nft = NFT as EventNFT;
+    if (nft != null)
+    {
+        <NFTDetails @ref="NFTDetailsComponent"
+                Address="@Address" 
+                IsSubAccount="@IsSubAccount" 
+                IsOwnNFT="IsOwnNFT" 
+                NFT="@NFT" 
+                NFTSent="@NFTSentHandler" 
+                OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
+                HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                SpecificInfoHeading="Event Details">
+        <Field>
+            <FieldLabel>Location</FieldLabel>
+            <Text>@nft.Location</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Location Coordinates</FieldLabel>
+            <Text>@nft.LocationCoordinates</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Date Time</FieldLabel>
+            <Text>@nft.EventDate</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Link</FieldLabel>
+            <a href="@nft.AuthorLink" target="_blank">@nft.AuthorLink</a>
+        </Field>
+        <Field>
+            <FieldLabel>Class</FieldLabel>
+            <Text>@nft.EventClass</Text>
+        </Field>
+    </NFTDetails>
+    }
+}
+
+@code {
+
+
+}

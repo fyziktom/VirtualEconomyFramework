@@ -6,25 +6,62 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Class of the Event NFT
+    /// </summary>
     public enum ClassOfNFTEvent
     {
+        /// <summary>
+        /// Personal event
+        /// </summary>
         PersonalEvent,
+        /// <summary>
+        /// Online meeting, webinar, etc.
+        /// </summary>
         OnlineMeeting,
+        /// <summary>
+        /// Business or company meetings
+        /// </summary>
         CorporateMeeting,
+        /// <summary>
+        /// Common festival
+        /// </summary>
         Festival,
+        /// <summary>
+        /// Common concert
+        /// </summary>
         Concert,
+        /// <summary>
+        /// Birthday parties events
+        /// </summary>
         Birthday,
+        /// <summary>
+        /// Plane flight event
+        /// </summary>
         PlaneFlight
     }
+    /// <summary>
+    /// Event NFT
+    /// Describing Event for the creating of the NFT Tickets
+    /// </summary>
     public class EventNFT : CommonNFT
     {
+        /// <summary>
+        /// Create empty event
+        /// </summary>
+        /// <param name="utxo"></param>
         public EventNFT(string utxo)
         {
             Utxo = utxo;
             Type = NFTTypes.Event;
             TypeText = "NFT Event";
         }
-        
+
+        /// <summary>
+        /// Fill basic parameters
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT) 
         {
             await FillCommon(NFT);
@@ -61,6 +98,10 @@ namespace VEDriversLite.NFT
         public DateTime EventDate { get; set; } = DateTime.UtcNow;
         public ClassOfNFTEvent EventClass { get; set; } = ClassOfNFTEvent.PersonalEvent;
 
+        /// <summary>
+        /// Parse specific parameters
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string,string> metadata)
         {
             if (metadata.TryGetValue("EventId", out var ei))
@@ -142,7 +183,11 @@ namespace VEDriversLite.NFT
                 PriceInDogeActive = false;
             }
         }
-
+        /// <summary>
+        /// Find and parse origin data
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo, true);
@@ -164,7 +209,10 @@ namespace VEDriversLite.NFT
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Get last data of this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             var nftData = await NFTHelpers.LoadLastData(Utxo);
@@ -181,18 +229,15 @@ namespace VEDriversLite.NFT
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Get the NFT data for the NFT
+        /// </summary>
+        /// <param name="address">Address of the sender</param>
+        /// <param name="key">Private key of the sender for encryption</param>
+        /// <param name="receiver">receiver of the NFT</param>
+        /// <returns></returns>
         public override async Task<IDictionary<string,string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
-            if (string.IsNullOrEmpty(Name))
-                throw new Exception("Cannot create NFT Event without name.");
-            if (string.IsNullOrEmpty(ImageLink))
-                throw new Exception("Cannot create NFT Event without image link.");
-            if (string.IsNullOrEmpty(Author))
-                throw new Exception("Cannot create NFT Event without author.");
-            if (string.IsNullOrEmpty(LocationCoordinates) || string.IsNullOrEmpty(Location))
-                throw new Exception("Cannot create NFT Event without location.");
-
             // create token metadata
             var metadata = await GetCommonMetadata();
 

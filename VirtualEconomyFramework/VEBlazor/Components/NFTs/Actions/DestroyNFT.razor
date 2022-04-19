@@ -1,0 +1,87 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if (NFT != null && !string.IsNullOrEmpty(NFT.Utxo))
+{
+<Modal @ref="NFTDestroyModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Destroy the NFT</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Span>Do you really want to destroy this NFT? You cannot take this action back.</Span>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center"> 
+                <Column>
+                    <Button Color="Color.Danger" Clicked="@DestroyNFTAction" Loading="@Destroying">Yes, I understand. Destroy the NFT now.</Button>
+                </Column>
+            </Row>
+            @if (DestroyFinished)
+                {
+                    <Row Flex="Flex.AlignItems.Center">
+                        <Column>
+                            @if (DestroyResult.Item1)
+                            {
+                                <Alert Color="Color.Success">@DestroyResult.Item2</Alert>
+                            }
+                            else
+                            {
+                                <Alert Color="Color.Danger">@DestroyResult.Item2</Alert>
+                            }
+                        </Column>
+                    </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+}
+@code {
+
+    private Modal? NFTDestroyModal;
+
+    bool Destroying = false;
+    bool DestroyFinished = false;
+    (bool,string) DestroyResult = (false,string.Empty);
+
+    public void ShowDestroyNFTModal()
+    {
+        if (NFT == null) return;
+        NFTDestroyModal?.Show();
+    }
+    public void HideDestroyNFTModal()
+    {
+        if (NFT == null) return;
+        NFTDestroyModal?.Hide();
+    }
+
+    async Task DestroyNFTAction()
+    {
+        if (NFT == null) return;
+        Destroying = true;
+        StateHasChanged();
+
+        if (!IsSubAccount)
+            DestroyResult = await AppData.Account.DestroyNFTs(new List<INFT>() { NFT });
+        else
+            DestroyResult = await AppData.Account.DestroyNFTOnSubAccount(Address, new List<INFT>() { NFT });
+
+        Console.WriteLine($"Destroy of the NFT result: {DestroyResult.Item1}, with message: {DestroyResult.Item2}");
+
+        DestroyFinished = false;
+
+        Destroying = false;
+        StateHasChanged();
+
+        //close automatically after 2 seconds
+        await Task.Delay(2000);
+        HideDestroyNFTModal();
+        await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = DestroyResult.Item1, message = DestroyResult.Item2, NFT = NFT });       
+    }
+}

@@ -1,0 +1,63 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if ( NFT != null )
+{
+    <Card Margin="Margin.Is4.FromBottom" Style="min-width:200px; max-width:250px;">
+        <CardImage Source="@GetImageUrl()" Alt="No image found" Style="max-height:200px;" @onclick="() => NFTImageDetailModal.Show()">
+        </CardImage>
+        <CardBody>
+            @*<Figure Size="FigureSize.Is16x16" Position="Position.Absolute.Top.Is0.Start.Is0">
+                <FigureImage Source="@(GetTokenImage())" />
+            </Figure>*@
+            <CardTitle Size="5" TextOverflow="TextOverflow.Truncate">
+                @NFT.Name
+            </CardTitle>
+            <CardText>
+                <Small>@NFT.Description</Small>
+            </CardText>
+            <CardText>
+                <Tags NFTType="@NFT.Type" TagsList="@NFT.TagsList" />
+            </CardText>
+            
+            @ChildContent
+        </CardBody>
+        <CardFooter>
+            <Button Color="Color.Primary" Clicked=@OpenDetailsRequest Block>
+                <Icon Name="IconName.Info" />
+            </Button>
+        </CardFooter>
+    </Card>
+}
+
+<Modal @ref="NFTImageDetailModal">
+    <ModalContent Centered Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>NFT Image Detail</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <PanzoomImage Source="@GetImageUrl()" />
+        </ModalBody>
+    </ModalContent>
+</Modal>
+                   
+@code {
+
+    private Modal? NFTImageDetailModal;
+
+    async Task OpenDetailsRequest()
+    {
+        await OpenNFTDetailsRequest.InvokeAsync(NFT);
+    }
+
+    string GetTokenImage()
+    {
+        if (AppData.Account.TokensSupplies.TryGetValue(NFT.TokenId, out var tokenSupply))
+            return tokenSupply.ImageUrl;
+        else
+            return string.Empty;
+    }
+}

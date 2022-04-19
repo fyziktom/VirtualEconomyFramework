@@ -1,0 +1,11 @@
+﻿@using VEDriversLite.Bookmarks
+@inject AppData AppData
+
+<ListGroup Flush>
+    @foreach ( var bkm in AppData.Account.Bookmarks )
+    {
+        <ListGroupItem>
+            <BookmarkItem InputBookmark="@bkm" InputBookmarkChanged="StateHasChanged" />
+        </ListGroupItem>
+    }
+</ListGroup>

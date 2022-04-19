@@ -1,0 +1,64 @@
+﻿@using VEDriversLite.Bookmarks
+@if ( InputBookmark != null && !string.IsNullOrEmpty( InputBookmark.Name ) )
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.Is1">
+            <Icon Name="IconName.Edit" IconSize="IconSize.Default" Clicked="@EditBookmarkHandler" Margin="Margin.Is2.FromEnd" />
+        </Column>
+        <Column ColumnSize="ColumnSize.Is8">
+            <Field>
+                <FieldLabel>
+                    @InputBookmark.Name
+                </FieldLabel>
+                <Span>
+                    @InputBookmark.Address
+                </Span>
+                <FieldHelp>
+                    @InputBookmark.Note
+                </FieldHelp>
+            </Field>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is1">
+            <Icon Name="IconName.Delete" IconSize="IconSize.Default" Clicked="@RemoveBookmarkHandler" Margin="Margin.Is2.FromStart" />
+        </Column>
+    </Row>
+}
+
+@if ( InputBookmark != null )
+{
+    <BookmarkIcon @ref="bookmarkIcon"
+              Address="@InputBookmark.Address"
+              HideIcon="true"
+              IsEditing="true"
+              NewBookmark="@InputBookmark"
+              BookmarkChanged="BookmarkChangedHandler" />
+}
+
+@code {
+
+    [Parameter]
+    public Bookmark InputBookmark { get; set; } = new Bookmark();
+    [Parameter]
+    public EventCallback<Bookmark> InputBookmarkChanged { get; set; }
+
+    private BookmarkIcon? bookmarkIcon;
+
+    private async Task BookmarkChangedHandler()
+    {
+        await InputBookmarkChanged.InvokeAsync( InputBookmark );
+        StateHasChanged();
+    }
+
+    private async Task EditBookmarkHandler()
+    {
+        if (bookmarkIcon != null)
+            await bookmarkIcon.ShowAddBookmarkModal();
+    }
+
+    private async Task RemoveBookmarkHandler()
+    {
+        if (bookmarkIcon != null)
+            await bookmarkIcon.RemoveBookmark();
+    }
+
+}

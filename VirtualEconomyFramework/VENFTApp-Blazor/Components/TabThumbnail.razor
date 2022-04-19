@@ -119,7 +119,7 @@
     {
         if (firstRender)
         {
-            var bkm = AppData.Account.IsInTheBookmarks(Address).GetAwaiter().GetResult();
+            var bkm = AppData.Account.IsInTheBookmarks(Address);
             if (bkm.Item1)
                 BookmarkName = bkm.Item2.Name;
 

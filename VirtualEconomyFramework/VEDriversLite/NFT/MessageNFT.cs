@@ -8,15 +8,25 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// NFT message allows to send encrypted messages between two peers
+    /// </summary>
     public class MessageNFT : CommonNFT
     {
+        /// <summary>
+        /// Create empty NFT class
+        /// </summary>
         public MessageNFT(string utxo)
         {
             Utxo = utxo;
             Type = NFTTypes.Message;
             TypeText = "NFT Message";
         }
-
+        /// <summary>
+        /// Fill basic parameters
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT) 
         {
             await FillCommon(NFT);
@@ -26,19 +36,33 @@ namespace VEDriversLite.NFT
             Decrypted = (NFT as MessageNFT).Decrypted;
             ImageData = (NFT as MessageNFT).ImageData;
         }
-
+        /// <summary>
+        /// Encrypt the message before the send
+        /// </summary>
         public bool Encrypt { get; set; } = true;
+        /// <summary>
+        /// Has been message already decrypted?
+        /// </summary>
         public bool Decrypted { get; set; } = false;
+        /// <summary>
+        /// Communication partner
+        /// </summary>
         public string Partner { get; set; } = string.Empty;
+        /// <summary>
+        /// If the shared key was calculated, take it from here
+        /// </summary>
         [JsonIgnore]
         public string SharedKey { get; set; } = string.Empty;
-        [JsonIgnore]
-        public byte[] ImageData { get; set; }
-
+        /// <summary>
+        /// Was this message received or sent
+        /// </summary>
         public bool IsReceivedMessage { get; set; } = false;
 
         private bool runningDecryption = false;
-
+        /// <summary>
+        /// Parse specific parameters
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             GetPartnerAsync().GetAwaiter().GetResult();
@@ -48,7 +72,11 @@ namespace VEDriversLite.NFT
         {
             await GetPartner();
         }
-
+        /// <summary>
+        /// Find and parse origin data
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             await GetPartner();
@@ -62,7 +90,10 @@ namespace VEDriversLite.NFT
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Get last data of this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             await GetPartner();
@@ -76,14 +107,20 @@ namespace VEDriversLite.NFT
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Load communication partner info
+        /// </summary>
+        /// <returns></returns>
         public async Task GetPartner()
         {
             var rec = await NeblioTransactionHelpers.GetTransactionSender(Utxo, TxDetails);
             if (!string.IsNullOrEmpty(rec))
                 Partner = rec;
         }
-
+        /// <summary>
+        /// Get receiver of this message
+        /// </summary>
+        /// <returns></returns>
         public async Task GetReceiver()
         {
             var rec = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo, TxDetails);
@@ -158,7 +195,13 @@ namespace VEDriversLite.NFT
             else
                 return true;
         }
-        
+        /// <summary>
+        /// Get the NFT data for the NFT
+        /// </summary>
+        /// <param name="address">Address of the sender</param>
+        /// <param name="key">Private key of the sender for encryption</param>
+        /// <param name="receiver">receiver of the NFT</param>
+        /// <returns></returns>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             var metadata = await GetCommonMetadata();

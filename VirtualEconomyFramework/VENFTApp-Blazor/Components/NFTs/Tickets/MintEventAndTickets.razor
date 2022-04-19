@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Coruzant
+@using Newtonsoft.Json
 @using Markdig
 @inject AppData AppData
 @inject NavigationManager NavManager
@@ -572,7 +573,7 @@
     private bool eventNFTDetailsVisible = false;
     private bool mintToAnotherAddressConfirmModalVisible = false;
     private bool processingMinting = false;
-    
+
     private bool withPrice = false;
     private bool withDogePrice = false;
     private bool withCoppies = false;
@@ -939,10 +940,12 @@
             }
             else if (string.IsNullOrEmpty(newNFT.Utxo) && withCoppies)
             {
+                var rs = (false, new Dictionary<string,string>());
                 if (!SubAccount)
-                    res = await AppData.Account.MintMultiNFTLargeAmount(newNFT, NumberOfCoppies, mintReceiverAddress);
+                    rs = await AppData.Account.MintMultiNFTLargeAmount(newNFT, NumberOfCoppies, mintReceiverAddress);
                 else
-                    res = await AppData.Account.MultimintNFTLargeOnSubAccount(Address, newNFT, NumberOfCoppies, mintReceiverAddress);
+                    rs = await AppData.Account.MultimintNFTLargeOnSubAccount(Address, newNFT, NumberOfCoppies, mintReceiverAddress);
+                res = (rs.Item1, JsonConvert.SerializeObject(rs.Item2));
             }
             else
             {

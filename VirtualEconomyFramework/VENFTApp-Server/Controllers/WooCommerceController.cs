@@ -17,8 +17,8 @@ using VEDriversLite.NFT;
 using VEDriversLite.Admin.Dto;
 using VEDriversLite.Admin;
 using VEDriversLite.NFT.Dto;
-using VEDriversLite.WooCommerce.Dto;
-using VEDriversLite.WooCommerce;
+using VEDriversLite.Extensions.WooCommerce.Dto;
+using VEDriversLite.Extensions.WooCommerce;
 
 namespace VENFTApp_Server.Controllers
 {

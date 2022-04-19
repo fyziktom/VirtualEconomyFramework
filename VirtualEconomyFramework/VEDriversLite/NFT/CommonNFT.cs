@@ -53,9 +53,37 @@ namespace VEDriversLite.NFT
         /// </summary>
         public string ImageLink { get; set; } = string.Empty;
         /// <summary>
+        /// Loaded Image data as byte array
+        /// </summary>
+        [JsonIgnore]
+        public byte[] ImageData { get; set; } = null;
+
+        /// <summary>
+        /// Preview data of image or music
+        /// </summary>
+        public string Preview { get; set; } = string.Empty;
+        /// <summary>
+        /// Loaded Image Preview data as byte array
+        /// </summary>
+        [JsonIgnore]
+        public byte[] PreviewData { get; set; } = null;
+        /// <summary>
         /// List of the tags separated by space
         /// </summary>
-        public string Tags { get; set; } = string.Empty;
+        private string _tags = string.Empty;
+        public string Tags 
+        {
+            get => _tags;
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    _tags = value;
+                    ParseTags();
+                }
+            }
+           
+        }
         /// <summary>
         /// Parsed tag list. It is parsed in Common NFT class
         /// </summary>
@@ -83,7 +111,7 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// Id of the token on what the NFT is created
         /// </summary>
-        public string TokenId { get; set; } = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8"; // VENFT tokens as default
+        public string TokenId { get; set; } = NFTHelpers.TokenId; // VENFT tokens as default
         /// <summary>
         /// Price of the NFT in the Neblio
         /// </summary>
@@ -202,6 +230,9 @@ namespace VEDriversLite.NFT
         {
             IconLink = nft.IconLink;
             ImageLink = nft.ImageLink;
+            ImageData = nft.ImageData;
+            Preview = nft.Preview;
+            PreviewData = nft.PreviewData;
             Name = nft.Name;
             Link = nft.Link;
             Description = nft.Description;
@@ -250,7 +281,7 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// Function will parse tags to the list of the tags
         /// </summary>
-        public void ParseTags()
+        public virtual void ParseTags()
         {
             var split = Tags.Split(' ');
             TagsList.Clear();
@@ -361,6 +392,15 @@ namespace VEDriversLite.NFT
                         ImageLink = ImageLink.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
                 }
             }
+            if (meta.TryGetValue("Preview", out var preview))
+            {
+                if (!string.IsNullOrEmpty(preview))
+                {
+                    Preview = preview;
+                    if (Preview.Contains("https://gateway.ipfs.io"))
+                        Preview = Preview.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
+                }
+            }
             if (meta.TryGetValue("IconLink", out var iconlink))
                 IconLink = iconlink;
             if (meta.TryGetValue("Type", out var type))
@@ -426,10 +466,16 @@ namespace VEDriversLite.NFT
             if (string.IsNullOrEmpty(TypeText))
                 throw new Exception("Cannot get NFT metadata without filled property TypeText!");
             metadata.Add("Type", TypeText);
-            metadata.Add("Name", Name);
-            metadata.Add("Author", Author);
-            metadata.Add("Description", Description);
-            metadata.Add("Image", ImageLink);
+            if (!string.IsNullOrEmpty(Name))
+                metadata.Add("Name", Name);
+            if (!string.IsNullOrEmpty(Author))
+                metadata.Add("Author", Author);
+            if (!string.IsNullOrEmpty(Description))
+                metadata.Add("Description", Description);
+            if (!string.IsNullOrEmpty(ImageLink))
+                metadata.Add("Image", ImageLink);
+            if (!string.IsNullOrEmpty(Preview))
+                metadata.Add("Preview", Preview);
             Tags = Tags.Replace("#", string.Empty);
             Tags = Tags.Replace(",", string.Empty);
             Tags = Tags.Replace(";", string.Empty);
@@ -437,7 +483,8 @@ namespace VEDriversLite.NFT
                 metadata.Add("Tags", Tags);
             if (!string.IsNullOrEmpty(Text))
                 metadata.Add("Text", Text);
-            metadata.Add("Link", Link);
+            if (!string.IsNullOrEmpty(Link))
+                metadata.Add("Link", Link);
             if (Price > 0)
                 metadata.Add("Price", Price.ToString("F6", CultureInfo.InvariantCulture));
             if (DogePrice > 0)
@@ -455,6 +502,56 @@ namespace VEDriversLite.NFT
             if (!string.IsNullOrEmpty(NFTOriginTxId))
                 metadata.Add("NFTOriginTxId", NFTOriginTxId);
             return metadata;
+        }
+
+        /// <summary>
+        /// Download preview data if there are some
+        /// </summary>
+        /// <returns>true if success</returns>
+        public virtual async Task<bool> DownloadPreviewData()
+        {
+            if (!string.IsNullOrEmpty(Preview))
+            {
+                try
+                {
+                    var data = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(Preview));
+                    if (data != null)
+                    {
+                        PreviewData = data;
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot download the Image Preview data");
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Download Image data if there are some
+        /// </summary>
+        /// <returns>true if success</returns>
+        public virtual async Task<bool> DownloadImageData()
+        {
+            if (!string.IsNullOrEmpty(ImageLink))
+            {
+                try
+                {
+                    var data = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(ImageLink));
+                    if (data != null)
+                    {
+                        ImageData = data;
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot download the Image data");
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -573,7 +670,7 @@ namespace VEDriversLite.NFT
                             var txi = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
                             TxDetails = txi;
                             TxDataRefreshed?.Invoke(this, TxDetails);
-                            if (TxDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations + 2))
+                            if (TxDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations))
                                 await StopRefreshingData();
                         }
                         catch (Exception ex)

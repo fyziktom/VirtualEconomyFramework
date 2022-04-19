@@ -1,0 +1,22 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@inject AppData AppData
+@inherits NFTDetailsBase;
+
+@if ( NFT != null && NFT.Type == NFTTypes.XrayImage )
+{
+    var nft = NFT as XrayImageNFT;
+    <NFTDetails @ref="NFTDetailsComponent"
+                Address="@Address" 
+                IsSubAccount="@IsSubAccount" 
+                IsOwnNFT="IsOwnNFT" 
+                NFT="@NFT" 
+                NFTSent="@NFTSentHandler" 
+                OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
+                HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                SpecificInfoHeading="Xray Parameters">
+
+                <XrayParamsValues XrayParams="nft.XrayParams" />
+    </NFTDetails>
+}
