@@ -5,6 +5,9 @@ using VEDriversLite.NFT.Imaging.Xray;
 
 namespace VEDriversLite.NFT.Imaging.Xray.Dto
 {
+    /// <summary>
+    /// Parameters of the Xray detector
+    /// </summary>
     public class DetectorDataDto
     {
         /// <summary>
@@ -40,7 +43,9 @@ namespace VEDriversLite.NFT.Imaging.Xray.Dto
             return (W == 0 && H == 0 && Bits == 16 && Sc == "DRZ" && Pw == 0.0 && Ph == 0.0);
         }
     }
-
+    /// <summary>
+    /// Parameters of the Xray source
+    /// </summary>
     public class SourceParametersDto
     {
         /// <summary>
@@ -83,7 +88,9 @@ namespace VEDriversLite.NFT.Imaging.Xray.Dto
             return (AT == "R" && TM == "W" && FW == 0.0 && FH == 0.0 && FA == 0.0 && MinV == 0.0 && MaxV == 0.0);
         }
     }
-
+    /// <summary>
+    /// Parameters of the axis of positionning system
+    /// </summary>
     public class AxisDto
     {
         /// <summary>
@@ -113,7 +120,9 @@ namespace VEDriversLite.NFT.Imaging.Xray.Dto
         /// </summary>
         public double End { get; set; } = 0.0;
     }
-
+    /// <summary>
+    /// Positioner parameters, including axis parameters
+    /// </summary>
     public class PositionerParametersDto
     {
         /// <summary>
@@ -129,7 +138,9 @@ namespace VEDriversLite.NFT.Imaging.Xray.Dto
             return (Axes.Count == 0);
         }
     }
-
+    /// <summary>
+    /// Scanned object position in the scene
+    /// </summary>
     public class ObjectPositionDto
     {
         /// <summary>

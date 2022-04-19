@@ -6,11 +6,26 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT.Dto
 {
+    /// <summary>
+    /// List of the receivers for multiminting.
+    /// </summary>
     public class ReceiversListItem
     {
+        /// <summary>
+        /// Address of the receiver
+        /// </summary>
         public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// Use as the receiver during the sending
+        /// </summary>
         public bool UseAsReceiver { get; set; } = true;
+        /// <summary>
+        /// Was send to this receiver
+        /// </summary>
         public bool Done { get; set; } = true;
+        /// <summary>
+        /// Transaction hash of the sending
+        /// </summary>
         public string TxId { get; set; } = string.Empty;
     }
     

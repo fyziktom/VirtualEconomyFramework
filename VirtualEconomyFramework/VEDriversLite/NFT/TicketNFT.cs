@@ -32,15 +32,25 @@ namespace VEDriversLite.NFT
         Month,
         Year
     }
+    /// <summary>
+    /// Ticket NFT. Should related to the NFT Event
+    /// </summary>
     public class TicketNFT : CommonNFT
     {
+        /// <summary>
+        /// Create empty NFT class
+        /// </summary>
         public TicketNFT(string utxo = "")
         {
             Utxo = utxo;
             Type = NFTTypes.Ticket;
             TypeText = "NFT Ticket";
         }
-        
+        /// <summary>
+        /// Fill basic parameters
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT) 
         {
             await FillCommon(NFT);
@@ -104,7 +114,10 @@ namespace VEDriversLite.NFT
         public DurationOfNFTTicket TicketDuration { get; set; } = DurationOfNFTTicket.Day;
         [JsonIgnore]
         public EventNFT EventNFTForTheTicket { get; set; } = new EventNFT("");
-
+        /// <summary>
+        /// Parse specific parameters
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string,string> metadata)
         {
             if (metadata.TryGetValue("EventId", out var ei))
@@ -186,7 +199,11 @@ namespace VEDriversLite.NFT
             AddUsedTags();
             //LoadEventNFT();
         }
-
+        /// <summary>
+        /// Find and parse origin data
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo, true);
@@ -210,7 +227,10 @@ namespace VEDriversLite.NFT
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Get last data of this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             var nftData = await NFTHelpers.LoadLastData(Utxo);
@@ -232,6 +252,10 @@ namespace VEDriversLite.NFT
             }
         }
 
+        /// <summary>
+        /// Get last data for the Event NFT related to this NFT Ticket
+        /// </summary>
+        /// <returns></returns>
         public async Task LoadEventNFT()
         {
             if (string.IsNullOrEmpty(NFTOriginTxId))
@@ -241,7 +265,13 @@ namespace VEDriversLite.NFT
             if (nft != null)
                 EventNFTForTheTicket = nft as EventNFT;
         }
-
+        /// <summary>
+        /// Get the NFT data for the NFT
+        /// </summary>
+        /// <param name="address">Address of the sender</param>
+        /// <param name="key">Private key of the sender for encryption</param>
+        /// <param name="receiver">receiver of the NFT</param>
+        /// <returns></returns>
         public override async Task<IDictionary<string,string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             if (string.IsNullOrEmpty(ImageLink) && string.IsNullOrEmpty(Link))

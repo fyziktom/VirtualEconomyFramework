@@ -122,7 +122,13 @@ namespace VEDriversLite.NFT
         /// IoT specific message. usually carry JSON object in Description or Text properties
         /// </summary>
         IoTMessage = 1008,
+        /// <summary>
+        /// Xray device
+        /// </summary>
         Xray = 1895,
+        /// <summary>
+        /// Xray Image
+        /// </summary>
         XrayImage = 1896,
 
 

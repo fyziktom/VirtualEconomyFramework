@@ -9,13 +9,23 @@ using VEDriversLite.NFT.Imaging.Xray.Dto;
 
 namespace VEDriversLite.NFT.Imaging.Xray
 {
+    /// <summary>
+    /// Xray device NFT
+    /// </summary>
     public class XrayNFT : CommonNFT
     {
+        /// <summary>
+        /// Create empty NFT
+        /// </summary>
         public XrayNFT()
         {
             Type = NFTTypes.Xray;
             TypeText = "NFT Xray";
         }
+        /// <summary>
+        /// Create empty NFT with preload hash
+        /// </summary>
+        /// <param name="utxo"></param>
         public XrayNFT(string utxo)
         {
             Utxo = utxo;
@@ -72,6 +82,10 @@ namespace VEDriversLite.NFT.Imaging.Xray
             SourceParameters = nft.SourceParameters;
             PositionerParameters = nft.PositionerParameters;
         }
+        /// <summary>
+        /// Parse specific parameters
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             if (metadata.TryGetValue("DetPar", out var detparam))
@@ -82,7 +96,7 @@ namespace VEDriversLite.NFT.Imaging.Xray
                     {
                         DetectorParameters = JsonConvert.DeserializeObject<DetectorDataDto>(detparam);
                     }
-                    catch (Exception ex) { Console.WriteLine("Cannot parse detector parameters in the NFT"); }
+                    catch { Console.WriteLine("Cannot parse detector parameters in the NFT"); }
                 }
             }
             if (metadata.TryGetValue("SrcPar", out var srcparam))
@@ -93,7 +107,7 @@ namespace VEDriversLite.NFT.Imaging.Xray
                     {
                         SourceParameters = JsonConvert.DeserializeObject<SourceParametersDto>(srcparam);
                     }
-                    catch (Exception ex) { Console.WriteLine("Cannot parse source parameters in the NFT"); }
+                    catch { Console.WriteLine("Cannot parse source parameters in the NFT"); }
                 }
             }
             if (metadata.TryGetValue("PosPar", out var posparam))
@@ -104,7 +118,7 @@ namespace VEDriversLite.NFT.Imaging.Xray
                     {
                         PositionerParameters = JsonConvert.DeserializeObject<PositionerParametersDto>(posparam);
                     }
-                    catch (Exception ex) { Console.WriteLine("Cannot parse detector parameters in the NFT"); }
+                    catch { Console.WriteLine("Cannot parse detector parameters in the NFT"); }
                 }
             }
 
@@ -117,7 +131,11 @@ namespace VEDriversLite.NFT.Imaging.Xray
             if (metadata.TryGetValue("PositionerName", out var posn))
                 PositionerName = posn;
         }
-
+        /// <summary>
+        /// Find and parse origin data
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
@@ -134,7 +152,10 @@ namespace VEDriversLite.NFT.Imaging.Xray
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Get last data of this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             var nftData = await NFTHelpers.LoadLastData(Utxo);
@@ -150,7 +171,13 @@ namespace VEDriversLite.NFT.Imaging.Xray
             IsLoaded = true;
         }
 
-
+        /// <summary>
+        /// Get the NFT data for the NFT
+        /// </summary>
+        /// <param name="address">Address of the sender</param>
+        /// <param name="key">Private key of the sender for encryption</param>
+        /// <param name="receiver">receiver of the NFT</param>
+        /// <returns></returns>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata

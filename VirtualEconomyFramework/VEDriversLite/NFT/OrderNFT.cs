@@ -7,31 +7,78 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT
 {
-
+    /// <summary>
+    /// Order NFT is base for Invoice NFT and it needs to load some NFT Products
+    /// </summary>
     public class OrderNFT : CommonNFT
     {
+        /// <summary>
+        /// Create empty NFT class
+        /// </summary>
         public OrderNFT(string utxo)
         {
             Utxo = utxo;
             Type = NFTTypes.Order;
             TypeText = "NFT Order";
         }
+        /// <summary>
+        /// List of the invoice items - ivoice lines
+        /// </summary>
         public List<InvoiceItem> InvoiceItems { get; set; } = new List<InvoiceItem>();
 
+        /// <summary>
+        /// Seller profile NFT hash
+        /// </summary>
         public string SellerProfileNFT { get; set; } = string.Empty;
+        /// <summary>
+        /// Buyer profile NFT hash
+        /// </summary>
         public string BuyerProfileNFT { get; set; } = string.Empty;
+        /// <summary>
+        /// Hash of the original payment
+        /// </summary>
         public string OriginalPaymentTxId { get; set; } = string.Empty;
+        /// <summary>
+        /// Related file link - for example some attachenment on IPFS
+        /// </summary>
         public string FileLink { get; set; } = string.Empty;
+        /// <summary>
+        /// Total price of the invoice
+        /// </summary>
         public double TotalPrice { get; set; } = 0.0;
+        /// <summary>
+        /// Hash of the profile who approved the order
+        /// </summary>
         public string ApprovedByProfile { get; set; } = string.Empty;
+        /// <summary>
+        /// Note for the order approval
+        /// </summary>
         public string ApprovedNote { get; set; } = string.Empty;
+        /// <summary>
+        /// Was the order approved?
+        /// </summary>
         public bool Aprooved { get; set; } = false;
+        /// <summary>
+        /// Has been the order already paid?
+        /// </summary>
         public bool AlreadyPaid { get; set; } = false;
-
+        /// <summary>
+        /// Date when invoice has been created
+        /// </summary>
         public DateTime ExposeDate { get; set; } = DateTime.UtcNow;
+        /// <summary>
+        /// Maximum pay term - how long can the buyer pay the invoice
+        /// </summary>
         public int MaxCountOfDaysFromExposeToPayment { get; set; } = 30;
+        /// <summary>
+        /// Maximum count of days after the peyment should be paid
+        /// </summary>
         public int MaxCountOfDaysAfterPaymentDate { get; set; } = 30;
-
+        /// <summary>
+        /// Fill basic parameters
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT)
         {
             await FillCommon(NFT);
@@ -51,7 +98,10 @@ namespace VEDriversLite.NFT
             MaxCountOfDaysAfterPaymentDate = pnft.MaxCountOfDaysAfterPaymentDate;
             Aprooved = pnft.Aprooved;
         }
-
+        /// <summary>
+        /// Parse specific parameters
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             if (metadata.TryGetValue("Seller", out var seller))
@@ -114,12 +164,22 @@ namespace VEDriversLite.NFT
                 AlreadyPaid = true;
 
         }
-
+        /// <summary>
+        /// Find and parse origin data
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
-
+        /// <summary>
+        /// Get the NFT data for the NFT
+        /// </summary>
+        /// <param name="address">Address of the sender</param>
+        /// <param name="key">Private key of the sender for encryption</param>
+        /// <param name="receiver">receiver of the NFT</param>
+        /// <returns></returns>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
@@ -145,7 +205,13 @@ namespace VEDriversLite.NFT
                 metadata.Add("TotalPrice", Convert.ToString(TotalPrice,CultureInfo.InvariantCulture));
             return metadata;
         }
-
+        /// <summary>
+        /// Add new invoice item to this NFT Invoice
+        /// </summary>
+        /// <param name="utxo">for example Product NFT hash</param>
+        /// <param name="index"></param>
+        /// <param name="price"></param>
+        /// <param name="amount"></param>
         public void AddInvoiceItem(string utxo, int index, double price, int amount)
         {
             var invit = new InvoiceItem()

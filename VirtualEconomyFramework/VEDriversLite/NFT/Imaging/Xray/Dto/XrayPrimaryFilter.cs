@@ -10,9 +10,21 @@ namespace VEDriversLite.NFT.Imaging.Xray.Dto
     /// </summary>
     public enum XrayTubeAnodeType
     {
+        /// <summary>
+        /// Reflexive anode
+        /// </summary>
         Reflexive,
+        /// <summary>
+        /// Transmision anode
+        /// </summary>
         Transmision,
+        /// <summary>
+        /// Rotary anode with classic reflexive target
+        /// </summary>
         ReflexiveRotary,
+        /// <summary>
+        /// Rotary anode type Straton 
+        /// </summary>
         Straton
     }
 
@@ -21,10 +33,22 @@ namespace VEDriversLite.NFT.Imaging.Xray.Dto
     /// </summary>
     public enum XrayPrimaryFiltrationMaterials
     {
+        /// <summary>
+        /// Aluminium
+        /// </summary>
         Al,
+        /// <summary>
+        /// Cuprum
+        /// </summary>
         Cu,
+        /// <summary>
+        /// Lead
+        /// </summary>
         Pb,
     }
+    /// <summary>
+    /// Primary filter on the xray tube
+    /// </summary>
     public class XrayPrimaryFilter
     {
         /// <summary>

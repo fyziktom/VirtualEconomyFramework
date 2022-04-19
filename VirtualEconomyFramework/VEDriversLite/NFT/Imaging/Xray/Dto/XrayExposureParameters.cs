@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.NFT.Imaging.Xray.Dto
 {
+    /// <summary>
+    /// Exposure parameters of the captured image
+    /// </summary>
     public class XrayExposureParameters
     {
         /// <summary>

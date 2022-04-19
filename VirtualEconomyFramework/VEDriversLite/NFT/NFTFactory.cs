@@ -162,8 +162,8 @@ namespace VEDriversLite.NFT
             try
             {
                 var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0];
-                if (tid == null && tid.Amount > 1)
-                    return null;
+                if (tid == null) return null;
+                if (tid.Amount > 1) return null;
                 
                 tokid = tid.TokenId;
                 if (string.IsNullOrEmpty(tokid))

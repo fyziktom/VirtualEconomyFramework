@@ -1504,13 +1504,15 @@ namespace VEDriversLite.Neblio
                                             await StoreUsedUtxos(transaction, txres);
                                             done = true;
                                             txsidsres += txres + "-";
-                                            foreach( var a in multipleReceiversPart)
-                                                sentResults.Add(a, txres);
+                                            if (multipleReceiversPart != null)
+                                                foreach( var a in multipleReceiversPart)
+                                                    sentResults.Add(a, txres);
                                             
                                             NewMintingProcessInfo?.Invoke(this, $"New Lot Minted: {txres}, Waiting for processing next {i + 1} of {lots} lots.");
                                             var airdroped = new Dictionary<string, string>();
-                                            foreach (var a in multipleReceiversPart)
-                                                airdroped.Add(a, txres);
+                                            if (multipleReceiversPart != null)
+                                                foreach (var a in multipleReceiversPart)
+                                                    airdroped.Add(a, txres);
                                             AddressesAirdroped?.Invoke(this, airdroped);
                                             
                                             await Task.Delay(1500);
@@ -1567,14 +1569,16 @@ namespace VEDriversLite.Neblio
                                         await StoreUsedUtxos(transaction, txres);
                                         done = true;
                                         txsidsres += txres + "-";
-                                        foreach (var a in multipleReceiversPart)
-                                            sentResults.Add(a, txres);
+                                        if (multipleReceiversPart != null)
+                                            foreach (var a in multipleReceiversPart)
+                                                sentResults.Add(a, txres);
 
                                         NewMintingProcessInfo?.Invoke(this, $"Rest of {rest} NFTs of total {coppies} NFTs was Minted: {txres}");
                                         
                                         var airdroped = new Dictionary<string, string>();
-                                        foreach (var a in multipleReceiversPart)
-                                            airdroped.Add(a, txres);
+                                        if (multipleReceiversPart != null)
+                                            foreach (var a in multipleReceiversPart)
+                                                airdroped.Add(a, txres);
                                         AddressesAirdroped?.Invoke(this, airdroped);
                                         
                                         await Task.Delay(1500);

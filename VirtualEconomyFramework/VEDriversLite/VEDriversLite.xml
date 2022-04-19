@@ -8630,6 +8630,31 @@
             Author Deposit Doge address where Dogeft will send the reward from sale
             </summary>
         </member>
+        <member name="T:VEDriversLite.NFT.Dto.ReceiversListItem">
+            <summary>
+            List of the receivers for multiminting.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.ReceiversListItem.Address">
+            <summary>
+            Address of the receiver
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.ReceiversListItem.UseAsReceiver">
+            <summary>
+            Use as the receiver during the sending
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.ReceiversListItem.Done">
+            <summary>
+            Was send to this receiver
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.ReceiversListItem.TxId">
+            <summary>
+            Transaction hash of the sending
+            </summary>
+        </member>
         <member name="T:VEDriversLite.NFT.Dto.MintingTabData">
             <summary>
             Data for the minting tab/page
@@ -8836,6 +8861,137 @@
             Is this dto empty?
             </summary>
         </member>
+        <member name="T:VEDriversLite.NFT.ClassOfNFTEvent">
+            <summary>
+            Class of the Event NFT
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.ClassOfNFTEvent.PersonalEvent">
+            <summary>
+            Personal event
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.ClassOfNFTEvent.OnlineMeeting">
+            <summary>
+            Online meeting, webinar, etc.
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.ClassOfNFTEvent.CorporateMeeting">
+            <summary>
+            Business or company meetings
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.ClassOfNFTEvent.Festival">
+            <summary>
+            Common festival
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.ClassOfNFTEvent.Concert">
+            <summary>
+            Common concert
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.ClassOfNFTEvent.Birthday">
+            <summary>
+            Birthday parties events
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.ClassOfNFTEvent.PlaneFlight">
+            <summary>
+            Plane flight event
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.EventNFT">
+            <summary>
+            Event NFT
+            Describing Event for the creating of the NFT Tickets
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.EventNFT.#ctor(System.String)">
+            <summary>
+            Create empty event
+            </summary>
+            <param name="utxo"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.EventNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.EventNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.EventNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.EventNFT.GetLastData">
+            <summary>
+            Get last data of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.EventNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.ImageNFT">
+            <summary>
+            Basic Image NFT
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.ImageNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.ImageNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.ImageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.ImageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.ImageNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto">
+            <summary>
+            Parameters of the Xray detector
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.W">
             <summary>
             Number of columnts - width
@@ -8871,6 +9027,11 @@
             Returns true if the all values inside class are in default values
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto">
+            <summary>
+            Parameters of the Xray source
+            </summary>
         </member>
         <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.AT">
             <summary>
@@ -8916,6 +9077,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto">
+            <summary>
+            Parameters of the axis of positionning system
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto.Ax">
             <summary>
             Axis name: X, Y, Z, R
@@ -8948,6 +9114,11 @@
             End of the used part of the axis - virtual end point
             </summary>
         </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.PositionerParametersDto">
+            <summary>
+            Positioner parameters, including axis parameters
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.PositionerParametersDto.Axes">
             <summary>
             Information about the all axes in the positioner
@@ -8958,6 +9129,11 @@
             Returns true if the all values inside class are in default values
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto">
+            <summary>
+            Scanned object position in the scene
+            </summary>
         </member>
         <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.X">
             <summary>
@@ -9013,6 +9189,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.XrayExposureParameters">
+            <summary>
+            Exposure parameters of the captured image
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.XrayExposureParameters.Voltage">
             <summary>
             Anode voltage on the X-ray tube in the kilo Volts - kV
@@ -9049,9 +9230,49 @@
             Most of the Xray tubes uses Reflexive or Transmision
             </summary>
         </member>
+        <member name="F:VEDriversLite.NFT.Imaging.Xray.Dto.XrayTubeAnodeType.Reflexive">
+            <summary>
+            Reflexive anode
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Imaging.Xray.Dto.XrayTubeAnodeType.Transmision">
+            <summary>
+            Transmision anode
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Imaging.Xray.Dto.XrayTubeAnodeType.ReflexiveRotary">
+            <summary>
+            Rotary anode with classic reflexive target
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Imaging.Xray.Dto.XrayTubeAnodeType.Straton">
+            <summary>
+            Rotary anode type Straton 
+            </summary>
+        </member>
         <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFiltrationMaterials">
             <summary>
             Materials list for primary filtration
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFiltrationMaterials.Al">
+            <summary>
+            Aluminium
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFiltrationMaterials.Cu">
+            <summary>
+            Cuprum
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFiltrationMaterials.Pb">
+            <summary>
+            Lead
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFilter">
+            <summary>
+            Primary filter on the xray tube
             </summary>
         </member>
         <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFilter.Material">
@@ -9062,6 +9283,22 @@
         <member name="P:VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFilter.Thickness">
             <summary>
             Thickness of the primary filter
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT">
+            <summary>
+            Xray image NFT
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.#ctor">
+            <summary>
+            Create empty Xray Image NFT
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.#ctor(System.String)">
+            <summary>
+            Create empty Xray Image NFT
+            <paramref name="utxo">Input utxo of this NFT</paramref>
             </summary>
         </member>
         <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.XrayParams">
@@ -9111,6 +9348,63 @@
             Loaded Xray Device NFT 
             </summary>
         </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.GetLastData">
+            <summary>
+            Get last data of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.LoadXrayNFT">
+            <summary>
+            Load Xray device NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.Imaging.Xray.XrayNFT">
+            <summary>
+            Xray device NFT
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.#ctor">
+            <summary>
+            Create empty NFT
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT with preload hash
+            </summary>
+            <param name="utxo"></param>
+        </member>
         <member name="P:VEDriversLite.NFT.Imaging.Xray.XrayNFT.DeviceName">
             <summary>
             Commercial Xray Device Product Type
@@ -9152,6 +9446,34 @@
             <summary>
             Positioner parameters. Informations about the axes
             </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.GetLastData">
+            <summary>
+            Get last data of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
         </member>
         <member name="T:VEDriversLite.NFT.NFTTypes">
             <summary>
@@ -9292,6 +9614,16 @@
         <member name="F:VEDriversLite.NFT.NFTTypes.IoTMessage">
             <summary>
             IoT specific message. usually carry JSON object in Description or Text properties
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTTypes.Xray">
+            <summary>
+            Xray device
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTTypes.XrayImage">
+            <summary>
+            Xray Image
             </summary>
         </member>
         <member name="T:VEDriversLite.NFT.INFT">
@@ -9620,6 +9952,203 @@
             <param name="secret">NFT Owner Private Key</param>
             <returns></returns>
         </member>
+        <member name="T:VEDriversLite.NFT.InvoiceItem">
+            <summary>
+            Item for Invoice or Order NFTs
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceItem.ItemUtxo">
+            <summary>
+            Item Utxo hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceItem.ItemUtxoIndex">
+            <summary>
+            Item Utxo index
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceItem.ItemPrice">
+            <summary>
+            Item price - one line of invoice
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceItem.ItemCount">
+            <summary>
+            Count of the items - one line of invoice
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceItem.InvoiceProductNFT">
+            <summary>
+            Loaded Product NFT
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.InvoiceNFT">
+            <summary>
+            Invoice NFT is based on NFT Order and NFT Product
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.InvoiceNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.InvoiceItems">
+            <summary>
+            List of the invoice items - ivoice lines
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.SellerProfileNFT">
+            <summary>
+            Seller profile NFT hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.BuyerProfileNFT">
+            <summary>
+            Buyer profile NFT hahs
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.OriginalPaymentTxId">
+            <summary>
+            Hash of the original payment
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.OrderTxId">
+            <summary>
+            Hash of the Order NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.FileLink">
+            <summary>
+            Related file link - for example some attachenment on IPFS
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.TotalPrice">
+            <summary>
+            Total price of the invoice
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.InvoiceNFT.AlreadyPaid">
+            <summary>
+            Flag for already paid invoices
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.ExposeDate">
+            <summary>
+            Date when invoice has been created
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.MaxCountOfDaysFromExposeToPayment">
+            <summary>
+            Maximum pay term - how long can the buyer pay the invoice
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.InvoiceNFT.MaxCountOfDaysAfterPaymentDate">
+            <summary>
+            Maximum count of days after the peyment should be paid
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.InvoiceNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.InvoiceNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.InvoiceNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.InvoiceNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.MessageNFT">
+            <summary>
+            NFT message allows to send encrypted messages between two peers
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.NFT.MessageNFT.Encrypt">
+            <summary>
+            Encrypt the message before the send
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.MessageNFT.Decrypted">
+            <summary>
+            Has been message already decrypted?
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.MessageNFT.Partner">
+            <summary>
+            Communication partner
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.MessageNFT.SharedKey">
+            <summary>
+            If the shared key was calculated, take it from here
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.MessageNFT.IsReceivedMessage">
+            <summary>
+            Was this message received or sent
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.GetLastData">
+            <summary>
+            Get last data of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.GetPartner">
+            <summary>
+            Load communication partner info
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.GetReceiver">
+            <summary>
+            Get receiver of this message
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:VEDriversLite.NFT.MessageNFT.Decrypt(NBitcoin.BitcoinSecret,System.Boolean)">
             <summary>
             this function will decrypt the NFT if it is possile
@@ -9628,6 +10157,60 @@
             <param name="secret">Owner Private Key</param>
             <param name="decryptEvenOnSameAddress">Set true when you have preset the partner address manually - for example encryption on same address. </param>
             <returns>true if success</returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MessageNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.MusicNFT">
+            <summary>
+            Basic music NFT
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.MusicNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.MusicNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MusicNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.MusicNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MusicNFT.GetLastData">
+            <summary>
+            Get last data of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.MusicNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
         </member>
         <member name="T:VEDriversLite.NFT.NFTFactory">
             <summary>
@@ -10171,10 +10754,487 @@
             <param name="txid"></param>
             <returns></returns>
         </member>
+        <member name="T:VEDriversLite.NFT.OrderNFT">
+            <summary>
+            Order NFT is base for Invoice NFT and it needs to load some NFT Products
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.OrderNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.InvoiceItems">
+            <summary>
+            List of the invoice items - ivoice lines
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.SellerProfileNFT">
+            <summary>
+            Seller profile NFT hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.BuyerProfileNFT">
+            <summary>
+            Buyer profile NFT hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.OriginalPaymentTxId">
+            <summary>
+            Hash of the original payment
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.FileLink">
+            <summary>
+            Related file link - for example some attachenment on IPFS
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.TotalPrice">
+            <summary>
+            Total price of the invoice
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.ApprovedByProfile">
+            <summary>
+            Hash of the profile who approved the order
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.ApprovedNote">
+            <summary>
+            Note for the order approval
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.Aprooved">
+            <summary>
+            Was the order approved?
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.AlreadyPaid">
+            <summary>
+            Has been the order already paid?
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.ExposeDate">
+            <summary>
+            Date when invoice has been created
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.MaxCountOfDaysFromExposeToPayment">
+            <summary>
+            Maximum pay term - how long can the buyer pay the invoice
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.OrderNFT.MaxCountOfDaysAfterPaymentDate">
+            <summary>
+            Maximum count of days after the peyment should be paid
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.OrderNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.OrderNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.OrderNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.OrderNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.OrderNFT.AddInvoiceItem(System.String,System.Int32,System.Double,System.Int32)">
+            <summary>
+            Add new invoice item to this NFT Invoice
+            </summary>
+            <param name="utxo">for example Product NFT hash</param>
+            <param name="index"></param>
+            <param name="price"></param>
+            <param name="amount"></param>
+        </member>
+        <member name="T:VEDriversLite.NFT.PaymentNFT">
+            <summary>
+            Payment NFT is used for buying NFTs
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.PaymentNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.PaymentNFT.NFTUtxoTxId">
+            <summary>
+            original NFT hash which was sold
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.PaymentNFT.NFTUtxoIndex">
+            <summary>
+            original NFT index which was sold
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.PaymentNFT.Sender">
+            <summary>
+            Sender of the payment
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.PaymentNFT.OriginalPaymentTxId">
+            <summary>
+            Original payment hash (can be from different blockchain or payment method)
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.PaymentNFT.Matched">
+            <summary>
+            When payment match the NFT which was bought this is set
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.PaymentNFT.AlreadySoldItem">
+            <summary>
+            If you receive payment and NFT is already sold this is set to true
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.PaymentNFT.Returned">
+            <summary>
+            If this payment was returned because NFT is not available this will be set as true
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.PaymentNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.PaymentNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.PaymentNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.PaymentNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.PostNFT">
+            <summary>
+            Post NFT is common text NFT, for example for articles or kind of publishing news of blockchain
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.PostNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.PostNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.PostNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.PostNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.PostNFT.GetLastData">
+            <summary>
+            Get last data of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.PostNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.ProductNFT">
+            <summary>
+            Product NFT, used as base for orders or invoices
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProductNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ProductNFT.ProducerProfileNFT">
+            <summary>
+            Hash of the NFT profile of the producer of this product
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ProductNFT.Datasheet">
+            <summary>
+            Datasheet link or hash
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.ProductNFT.UnitPrice">
             <summary>
             Price in USD per one Unit
             </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProductNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProductNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProductNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProductNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.ProfileNFT">
+            <summary>
+            Profile NFT
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProfileNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>        
+        </member>
+        <member name="P:VEDriversLite.NFT.ProfileNFT.Age">
+            <summary>
+            Age of the entity
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ProfileNFT.Surname">
+            <summary>
+            Surname of the entity
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ProfileNFT.Nickname">
+            <summary>
+            Nickname of the entity
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ProfileNFT.ID">
+            <summary>
+            Other related ID of the entity
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ProfileNFT.RelationshipStatus">
+            <summary>
+            Relations status to other entity/entities
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProfileNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProfileNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProfileNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProfileNFT.GetLastData">
+            <summary>
+            Get last data of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.ProfileNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.ReceiptNFT">
+            <summary>
+            Receipt NFT
+            Used for example for receipts for sold NFTs
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.ReceiptNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>        
+        </member>
+        <member name="P:VEDriversLite.NFT.ReceiptNFT.NFTUtxoTxId">
+            <summary>
+            original NFT hash which was sold
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ReceiptNFT.NFTUtxoIndex">
+            <summary>
+            original NFT index which was sold
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ReceiptNFT.Sender">
+            <summary>
+            Sender of the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ReceiptNFT.Buyer">
+            <summary>
+            Buyer of the NFT
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ReceiptNFT.OriginalPaymentTxId">
+            <summary>
+            Original payment transaction hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ReceiptNFT.ReceiptFromPaymentUtxo">
+            <summary>
+            Receipt from the payment Utxo
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.ReceiptNFT.SoldPrice">
+            <summary>
+            Sold price for this NFT
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.ReceiptNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.ReceiptNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.ReceiptNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.ReceiptNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.TicketNFT">
+            <summary>
+            Ticket NFT. Should related to the NFT Event
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.TicketNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.TicketNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.TicketNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.TicketNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.TicketNFT.GetLastData">
+            <summary>
+            Get last data of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.TicketNFT.LoadEventNFT">
+            <summary>
+            Get last data for the Event NFT related to this NFT Ticket
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.TicketNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
         </member>
         <member name="T:VEDriversLite.Security.ECDSAProvider">
             <summary>
