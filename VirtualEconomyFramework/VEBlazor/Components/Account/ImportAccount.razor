@@ -374,9 +374,6 @@
                     AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
                     accountLoaded = await AppData.Account.LoadAccountFromVENFTBackup(importAccountPass, fileString);
                     AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
-                    password = string.Empty;
-                    passwordConfirm = string.Empty;
-                    importAccountPass = string.Empty;
                     
                     if (accountLoaded)
                     {
@@ -401,6 +398,10 @@
                 if (accountLoaded && !string.IsNullOrEmpty(key))
                 {
                     await localStorage.SetItemAsStringAsync("key", key);
+                    password = string.Empty;
+                    passwordConfirm = string.Empty;
+                    importAccountPass = string.Empty;
+                    
                     return true;
                 }
             }
