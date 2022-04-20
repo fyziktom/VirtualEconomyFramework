@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VEDriversLite;
@@ -82,6 +82,8 @@ public class AppData
     public bool AllowDestroy { get; set; } = true;
     public bool AllowSend { get; set; } = true;
     public bool AllowSell { get; set; } = false;
+    public bool DisplayGettingStartedMenuItem { get; set; } = false;
+    public string GettingStartedPageName { get; set; } = "gettingstarted";
     public List<NFTTypes> AllowedNFTTypes { get; set; } = new List<NFTTypes>()
     {
         NFTTypes.Image,

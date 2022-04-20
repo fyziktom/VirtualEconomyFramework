@@ -28,6 +28,18 @@
                             <Button  Color="Color.Primary" Loading="@LoadingAccount" Clicked="@UnlockAccountHandler" Block>Unlock Account</Button>
                         </Column>
                     </Row>
+
+                    @if (LoadingAccount)
+                    {
+                        <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                <Alert Visible Color="Color.Info">
+                                    <AlertMessage>Loading Account Status</AlertMessage>
+                                    <AlertDescription>@state</AlertDescription>
+                                </Alert>
+                            </Column>
+                        </Row>
+                    }
                 }
                 else
                 {
@@ -58,6 +70,7 @@
     string encryptedKey= string.Empty;
     string password = string.Empty;
     string Address = string.Empty;
+    string state = "Unlocking Account...";    
 
     public void ShowUnlockAccountModal()
     {
@@ -76,8 +89,10 @@
             await UnlockAccountModal.Show();
         StateHasChanged();
         await Task.Delay(500);
-
+        AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
+        AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
         var res = await AppData.UnlockAccount(password);
+        AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
         password = string.Empty;
         
         if (!res.Item1)
@@ -97,6 +112,12 @@
         if (UnlockAccountModal != null)
             await UnlockAccountModal.Hide();
     }  
+
+    void FirstLoadingStatusHandler(object sender, string e)
+    {
+        if (!string.IsNullOrEmpty(e)) state = e;
+        StateHasChanged();
+    }
 
     async Task PassowrdEntryEnterKeyUp(KeyboardEventArgs e)
     {
