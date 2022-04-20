@@ -12,11 +12,12 @@
                     <FieldBody>
                         <Addons>
                             <Addon AddonType="AddonType.Body">
-                                <TextEdit Placeholder="Search by Name, Author or Tags" @bind-Text="searchNFTsString" KeyUp="@RefreshRequested" />
+                                <SpaceTags Tags="@searchNFTsString" TagsChanged="RefreshSearchString" Validator="ValidationRule.None" Placeholder="Search..." />
+                                @*<TextEdit Placeholder="Search by Name, Author or Tags" @bind-Text="searchNFTsString" KeyUp="@RefreshRequested" />*@
                             </Addon>
-                            <Addon AddonType="AddonType.End">
+                            @*<Addon AddonType="AddonType.End">
                                 <Button Color="Color.Light" Clicked="@Refresh"><Icon Name="IconName.Search" /></Button>
-                            </Addon>
+                            </Addon>*@
                         </Addons>
                     </FieldBody>
                     <FieldHelp>You can use Name, Author or Tags. Search is not case sensitive.</FieldHelp>
@@ -135,22 +136,28 @@
     {
         StateHasChanged();
     }
+    void RefreshSearchString(string search)
+    {
+        searchNFTsString = search;
+        StateHasChanged();
+    }
 
     public bool IsInFilter( INFT nft )
     {
         if ( !string.IsNullOrEmpty( searchNFTsString ) )
         {
-            if ( nft.Author.ToLower().Contains( searchNFTsString ) || nft.Name.ToLower().Contains( searchNFTsString ) )
+            var ls = searchNFTsString.ToLower();
+            if ( nft.Author.ToLower().Contains( ls ) || nft.Name.ToLower().Contains( ls ) )
             {
                 return true;
             }
 
             if ( !string.IsNullOrEmpty( nft.Tags ) )
             {
-                if ( nft.Tags.ToLower().Contains( searchNFTsString ) )
+                if ( nft.Tags.ToLower().Contains( ls ) )
                     return true;
-
-                var split = searchNFTsString.Split( ' ' );
+                    
+                var split = ls.Split( ' ' );
                 if ( split.Length > 1 )
                 {
                     var score = 0;

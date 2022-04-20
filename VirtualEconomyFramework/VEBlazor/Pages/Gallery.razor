@@ -214,6 +214,8 @@
         }
         if (PageProgressService != null)            
             await PageProgressService.Go( -1 );
+            
+        await AppData.SaveTags();
     }
 
     void OpenWorkTab()

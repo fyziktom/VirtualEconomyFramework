@@ -289,6 +289,14 @@ namespace VEDriversLite.NFT
                 foreach (var s in split)
                     if (!string.IsNullOrEmpty(s))
                         TagsList.Add(s);
+
+            TagsList.ForEach(t =>
+            {
+                if (NFTDataContext.Tags.TryGetValue(t, out var tag))
+                    tag.Count++;
+                else
+                    NFTDataContext.Tags.TryAdd(t, new Tags.Tag() { Name = t, Count = 1 }); //todo add related tags
+            });
         }
         /// <summary>
         /// Load last data of the NFT.

@@ -292,10 +292,13 @@
             StateHasChanged();
             await Task.Delay(1);
 
+            await AppData.LoadTags();
+
             var res = await LoadNeblioAccount();
 
             if (res)
             {
+                await AppData.SaveTags();
                 accountImportError = false;
                 imported = true;
                 AppData.IsAccountLoaded = true;

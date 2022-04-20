@@ -89,6 +89,8 @@
             await UnlockAccountModal.Show();
         StateHasChanged();
         await Task.Delay(500);
+
+        await AppData.LoadTags();
         AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
         AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
         var res = await AppData.UnlockAccount(password);
@@ -102,6 +104,7 @@
         }
         else   
         {
+            await AppData.SaveTags();
             Address = res.Item2;
             await AccountUnlocked.InvokeAsync(Address);
         }

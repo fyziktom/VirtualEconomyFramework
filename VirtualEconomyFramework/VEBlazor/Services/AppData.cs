@@ -8,6 +8,7 @@ using VEDriversLite.NFT.Imaging.Xray.Dto;
 using VEDriversLite.Bookmarks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
+using System.Collections.Concurrent;
 
 public enum TabType
 {
@@ -303,6 +304,50 @@ public class AppData
                 await localStorage.SetItemAsStringAsync("nftcache", "");
                 return (false, ex.Message);
             }
+        }
+        return (false, string.Empty);
+    }
+
+    public async Task<(bool, string)> LoadTags()
+    {
+        try
+        {
+            var tags = await localStorage.GetItemAsync<ConcurrentDictionary<string, VEDriversLite.NFT.Tags.Tag>>("tags");
+            if (tags == null)
+            {
+                Console.WriteLine("Cannot load data from cache.");
+                await localStorage.SetItemAsStringAsync("tags", "");
+            }
+            else
+            {
+                NFTDataContext.Tags = tags;
+                return (true, "Data loaded from cache.");
+            }                
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot load data from cache." + ex.Message);
+            await localStorage.SetItemAsStringAsync("tags", "");
+            return (false, ex.Message);
+        }
+        return (false, string.Empty);
+    }
+    public async Task<(bool, string)> SaveTags()
+    {
+        try
+        {
+            var tags = Newtonsoft.Json.JsonConvert.SerializeObject(NFTDataContext.Tags);
+            if (!string.IsNullOrEmpty(tags))
+            {
+                await localStorage.SetItemAsStringAsync("tags", tags);
+                return (true, "NFTs cached");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot save data to cache." + ex.Message);
+            await localStorage.SetItemAsStringAsync("tags", "");
+            return (false, ex.Message);
         }
         return (false, string.Empty);
     }
