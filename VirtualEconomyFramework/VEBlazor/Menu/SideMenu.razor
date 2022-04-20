@@ -36,6 +36,15 @@
                     </BarItem>
                 }
             }
+            @if (AppData.DisplayGettingStartedMenuItem)
+            {
+                <BarItem>
+                    <BarLink To="@AppData.GettingStartedPageName">
+                        <BarIcon IconName="IconName.QuestionCircle" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                        Guidelines
+                    </BarLink>
+                </BarItem>
+            }
         </BarStart>
         <BarEnd>
             <BarItem>

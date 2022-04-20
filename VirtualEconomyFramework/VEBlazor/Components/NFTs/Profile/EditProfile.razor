@@ -179,7 +179,19 @@
             await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
         StateHasChanged();
         await Task.Delay(1);
-
+        
+        if ( AppData.Account.TokensSupplies.TryGetValue( AppData.AppTokenId, out var supply ) )
+        {
+            if ( supply.Amount > 3 )
+                NFT.TokenId = AppData.AppTokenId;
+            else
+                NFT.TokenId = NFTHelpers.TokenId;
+        }
+        else
+        {
+            NFT.TokenId = NFTHelpers.TokenId;
+        }
+            
         var res = (false, string.Empty);
         if ( string.IsNullOrEmpty( NFT.Utxo ) )
             res = await AppData.Account.MintNFT( NFT );

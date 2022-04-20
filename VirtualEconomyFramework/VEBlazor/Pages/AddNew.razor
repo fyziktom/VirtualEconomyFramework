@@ -220,10 +220,10 @@
         }
         if ( selectedStep == "stepFinish" )
         {
-            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.BDPTokenId, out var supply ) )
+            if ( AppData.Account.TokensSupplies.TryGetValue( AppData.AppTokenId, out var supply ) )
             {
                 if ( supply.Amount > 3 )
-                    NFT.TokenId = NFTHelpers.BDPTokenId;
+                    NFT.TokenId = AppData.AppTokenId;
                 else
                     NFT.TokenId = NFTHelpers.TokenId;
             }

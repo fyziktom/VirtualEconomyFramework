@@ -32,7 +32,9 @@
         AppData.AllowWorkTabs = false;
         AppData.AllowSend = true;
         AppData.AllowDestroy = true;
-
+        AppData.DisplayGettingStartedMenuItem = true;
+        AppData.GettingStartedPageName = "gettingstarted";
+        
         if (AppData.MintingTabsData.TryGetValue("default", out var tab))
         {
             tab.MintingNFTType = NFTTypes.Ticket;

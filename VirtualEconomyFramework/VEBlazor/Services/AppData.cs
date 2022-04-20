@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using VEDriversLite;
@@ -71,6 +71,7 @@ public class AppData
 
     public string AppName { get; set; } = "VEBlazorApp";
     public string AppNick { get; set; } = "VEBA";
+    public string AppTokenId { get; set; } = NFTHelpers.BDPTokenId;
     public string AppHomeWebsiteUrl { get; set; } = "https://veframework.com/";
     private string _appshareNFTUrl = "https://veframework.com/";
     public string AppShareNFTUrl 
