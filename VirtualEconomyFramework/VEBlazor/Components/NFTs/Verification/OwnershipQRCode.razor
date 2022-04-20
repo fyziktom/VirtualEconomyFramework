@@ -1,0 +1,172 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+@inherits AccountRelatedComponentBase
+
+@if (DisplayButton)
+{
+    <Row>
+        <Column Flex="Flex.JustifyContent.Center">
+            <Button Color="Color.Primary" Clicked="showOwnershipQRCode" Block>Show QR Code</Button>
+        </Column>
+    </Row>
+}
+
+<Modal @ref="qrModal" Closed="OnOwnershipDialogQRCloseHandler">
+    <ModalContent Size="ModalSize.Default">
+        <ModalHeader>
+            <ModalTitle>Ownership QR Code</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+             <Row>
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Span>Code is valid for: @qrCodeRefreshCounter s</Span>
+                </Column>
+            </Row>
+            <Row>
+                <Column Flex="Flex.JustifyContent.Center">
+                    <small>Signature</small>
+                </Column>
+            </Row>
+            <Paragraph>@ownershipDialogCode</Paragraph>
+            <Row Margin="Margin.Is2.FromTop.Is2.FromBottom">
+                <Column>
+                    <QRCode Value="@ownershipCodeSerialized" Style="max-width:inherit;width:inherit;max-height:inherit;height:inherit;" />
+                </Column>
+            </Row>
+            <CopyButton TextToCopy="@ownershipCodeSerialized" />           
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+    Modal? qrModal;
+
+    [Parameter] public bool DisplayButton { get; set; } = false;
+
+    private INFT InputNFT { get; set; } = new ImageNFT("");
+    [Parameter]
+    public INFT NFT
+    {
+        get => InputNFT;
+        set
+        {
+            if (value != null && value.Utxo != InputNFT.Utxo)
+            {
+                InputNFT = value;
+            }
+        }
+    }
+
+    [Parameter] public EventCallback<bool> DialogClosed { get; set; }
+
+    private bool showOwnershipDialogVisible = false;
+    private bool showOwnershipDialogLoading = false;
+    private bool copyTextButtonCoppied = false;
+    private bool qrrefreshed = false;
+
+    private int qrCodeRefreshCounter = 30;
+
+    private string creatingOwnerQRCodeState = string.Empty;
+    private string ownershipDialogQRCodeImage = string.Empty;
+    private string ownershipDialogCode = string.Empty;
+    private string ownershipCodeSerialized = string.Empty;
+
+    private System.Threading.Timer qrCodeRefreshTimer;
+    private ElementReference qrCodeRef;
+
+    private async Task RefreshQRCode()
+    {
+        showOwnershipDialogLoading = true;
+        StateHasChanged();
+        await Task.Delay(100);
+
+        (OwnershipVerificationCodeDto, byte[]) res;
+        if (!IsSubAccount)
+            res = await AppData.Account.GetNFTVerifyQRCode(InputNFT.Utxo);
+        else
+            res = await AppData.Account.GetNFTVerifyQRCodeFromSubAccount(Address, InputNFT.Utxo);
+        ownershipDialogCode = res.Item1.Signature;
+
+        var dto = new OwnershipVerificationCodeDto()
+        {
+            TxId = InputNFT.Utxo,
+            Signature = ownershipDialogCode
+        };
+        ownershipCodeSerialized = JsonConvert.SerializeObject(dto);
+
+        //var sdto = JsonConvert.SerializeObject(res.Item1);
+        //await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { sdto, qrCodeRef });
+        creatingOwnerQRCodeState = "Refreshing Key...";
+        showOwnershipDialogLoading = false;
+        StateHasChanged();
+    }
+
+    Task showOwnershipQRCode()
+    {
+        return ShowOwnershipQRCode();
+    }
+    public async Task ShowOwnershipQRCode(bool loadParams = false, INFT nft = null, string address = null, bool issubaccount = false)
+    {
+        if (loadParams)
+        {        
+            InputNFT = nft;
+            Address = address;
+            IsSubAccount = issubaccount;
+        }
+        
+        creatingOwnerQRCodeState = "Initializing Verification Module...";
+        if (qrModal == null) return;
+        await qrModal.Show();
+        
+        StateHasChanged();
+        await Task.Delay(1);
+        await RefreshQRCode();
+
+        if (qrCodeRefreshTimer != null)
+        {
+            qrCodeRefreshTimer.Dispose();
+        }
+
+        qrCodeRefreshTimer = new System.Threading.Timer(async (object? stateInfo) =>
+        {
+            try
+            {
+                var utc = DateTime.UtcNow;
+                if ((utc.Second >= 0 && utc.Second < 50) && !qrrefreshed)
+                {
+                    await RefreshQRCode();
+                    qrCodeRefreshCounter = 60 - utc.Second;
+                    qrrefreshed = true;
+                }
+                else if (utc.Second > 50 && utc.Second < 55)
+                {
+                    qrrefreshed = false;
+                    qrCodeRefreshCounter--;
+                }
+                else
+                {
+                    qrCodeRefreshCounter--;
+                }
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot read tx details. " + ex.Message);
+            }
+        }, new System.Threading.AutoResetEvent(false), 1000, 1000);
+    }
+
+    private async Task OnOwnershipDialogQRCloseHandler()
+    {
+        if (qrCodeRefreshTimer != null)
+        {
+            qrCodeRefreshTimer.Dispose();
+        }
+        await DialogClosed.InvokeAsync(false);
+    }
+}

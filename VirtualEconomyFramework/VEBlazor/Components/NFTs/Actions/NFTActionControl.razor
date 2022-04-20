@@ -15,6 +15,9 @@
             </Column>
         </Row>
         }
+        
+        <OwnershipQRCode DisplayButton="true" Address="@Address" IsSubAccount="@IsSubAccount" NFT="@NFT" />
+        
         @if ( IsOwnNFT && AppData.IsAccountLoaded) 
         { 
             <Row Margin="Margin.Is3.FromTop"> 
