@@ -989,14 +989,15 @@ namespace VEDriversLite.Neblio
         {
             return inutxos.Where(u => !UsedUtxos.ContainsKey($"{u.Txid}:{u.Index}"));
         }
+        
         private CommonReturnTypeDto IsUtxoUsed(string utxo, int index)
         {
             try
             {
                 var txu256 = uint256.Parse(utxo);
-                return IsUtxoUsed(utxo, index);
+                return IsUtxoUsed(txu256, index);
             }
-            catch(Exception ex)
+            catch
             {
                 throw new Exception("This is not valid transaction hash.");
             }
