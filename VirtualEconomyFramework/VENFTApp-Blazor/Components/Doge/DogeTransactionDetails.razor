@@ -175,10 +175,10 @@
             }
 
             var msg = DogeTransactionHelpers.ParseDogeMessage(txinfo);
-            if (msg.Item1)
+            if (msg.Success)
             {
                 NFTTransaction = true;
-                NFTMessage = msg.Item2;
+                NFTMessage = msg.Value.ToString();
                 if (NFTMessage.Contains("ipfs"))
                 {
                     ImageLinkInTransaction = true;
