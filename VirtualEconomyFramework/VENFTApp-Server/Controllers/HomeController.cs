@@ -13,6 +13,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using VEDriversLite;
+using VEDriversLite.Dto;
 using VEDriversLite.NFT;
 using VEDriversLite.Admin.Dto;
 using VEDriversLite.Admin;
