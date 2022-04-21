@@ -113,7 +113,7 @@ namespace VEBlazor.Components.Base
         public string GetImageUrl(bool returnPreviewIfExists = false)
         {
             if (NFT == null)
-                return string.Empty;
+                return "_content/VEBlazor/images/empty.jpg";
 
             if (returnPreviewIfExists)
             {
@@ -125,17 +125,17 @@ namespace VEBlazor.Components.Base
             if (!string.IsNullOrEmpty(NFT.ImageLink))
                 return NFT.ImageLink;
             else
-                return string.Empty;
+                return "_content/VEBlazor/images/empty.jpg";
         }
         public string GetPreviewUrl()
         {
             if (NFT == null)
-                return string.Empty;
+                return "_content/VEBlazor/images/empty.jpg";
 
             if (!string.IsNullOrEmpty(NFT.Preview))
                 return NFT.Preview;
             else
-                return string.Empty;
+                return "_content/VEBlazor/images/empty.jpg";
         }
         internal virtual async Task OpenNFTInWorkTab()
         {
