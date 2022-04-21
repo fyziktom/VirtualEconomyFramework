@@ -28,7 +28,8 @@
                                         @bind-TicketClass="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).TicketClass)"
                                         @bind-TicketDuration="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).TicketDuration)"
                                         @bind-EventId="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).EventId)"
-                                        @bind-EventDate="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).EventDate)" />
+                                        @bind-EventDate="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).EventDate)"
+                                        OnLoadNFTTemplate="@onLoadNFTTemplateHandler"/>
             </Column>
         </Row>
     }
@@ -43,6 +44,17 @@
     {
         headerLabel = AppData.GetMintingNFTTab(formName).HeaderLabel;
         base.OnInitialized();
+    }
+
+    async Task onLoadNFTTemplateHandler(INFT nft)
+    {
+        if (AppData.GetMintingNFTTab(formName).NFT.Type == NFTTypes.Ticket && nft.Type == NFTTypes.Event)
+        {
+            var n = (AppData.GetMintingNFTTab(formName).NFT as TicketNFT);
+            if (n is not null)
+                await n.FillFromEvent(nft);
+        }
+        StateHasChanged();
     }
 
 }

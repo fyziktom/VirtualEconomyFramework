@@ -25,14 +25,15 @@
         <ModalBody>
             @if (!string.IsNullOrEmpty(NFT.Utxo))
             {
+                <Div Margin="Margin.Is2.FromTop">
+                    <Button Color="Color.Primary" Loading="@loadingImage" Clicked="@loadTemplateToFormHandler" Block>2. Load NFT to Minting Form</Button>
+                </Div>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column Flex="Flex.JustifyContent.Center">
                         <NFTCard @ref="nftCard" NFT="@NFT" OpenNFTDetailsRequest="@OpenNFTDetailsRequestHandler" />
                     </Column>
                 </Row>
-                <Div Margin="Margin.Is2.FromTop">
-                    <Button Color="Color.Primary" Clicked="@loadTemplateToFormHandler" Block>2. Load NFT to Minting Form</Button>
-                </Div>
+                
             }
         </ModalBody>
     </ModalContent>
@@ -56,7 +57,9 @@
     TextEdit? textRef;
     Modal? LoadNFTModal;
     OpenNFTDetailsFactory? openNFTDetailsFactory;
-
+    
+    bool loadingImage = false;
+    
     async Task OpenNFTDetailsRequestHandler(INFT nft)
     {
         if (nft != null && openNFTDetailsFactory != null)
@@ -94,11 +97,21 @@
 
     async Task loadTemplateToFormHandler()
     {
-        if (await MessageService.Confirm("Are you sure you want to load the NFT to Mintin Form? It will remove existing data in the form?", "Load NFT Template"))
+        if (MessageService is not null)
         {
-            await OnLoadNFTTemplate.InvokeAsync(NFT);
-            openNFTDetailsFactory?.HideNFTDetails();
-            Hide();
+            if (await MessageService.Confirm("Are you sure you want to load the NFT to Mintin Form? It will remove existing data in the form?", "Load NFT Template"))
+            {
+                loadingImage = true;
+                StateHasChanged();
+
+                if (!string.IsNullOrEmpty(NFT.ImageLink))
+                    NFT.ImageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
+                await OnLoadNFTTemplate.InvokeAsync(NFT);
+                loadingImage = false;
+                StateHasChanged();
+                openNFTDetailsFactory?.HideNFTDetails();
+                Hide();
+            }
         }
     }
 
