@@ -95,13 +95,9 @@
                             {
                                 if ( mintingResult.Item1 )
                                 {
-                                    <Alert Display="Display.None.OnMobile.Inline.OnTablet" Color="Color.Success" Visible>
-                                        <AlertMessage>Data Stored :)</AlertMessage>
-                                        <AlertDescription>Transaction Hash is: <a href="https://explorer.nebl.io/tx/@mintingResult.Item2" target="_blank">@mintingResult.Item2</a></AlertDescription>
-                                    </Alert>
-                                    <Alert Display="Display.Inline.OnMobile.None.OnTablet" Color="Color.Success" Visible>
-                                        <AlertMessage>Data Stored :)</AlertMessage>
-                                        <AlertDescription >Transaction Hash is: <a href="https://explorer.nebl.io/tx/@mintingResult.Item2" target="_blank">@(mintingResult.Item2.Substring(0,10))...</a></AlertDescription>
+                                    <Alert Color="Color.Success" Visible>
+                                        <AlertMessage>Data Stored</AlertMessage>
+                                        <AlertDescription >Your image was placed in your gallery.</AlertDescription>
                                     </Alert>
                                 }
                                 else
@@ -232,6 +228,9 @@
                 NFT.TokenId = NFTHelpers.TokenId;
             }
 
+             if (NotificationService != null)
+                    await NotificationService.Info( "Saving image...", "Saving" );
+                    
             var res = await AppData.Account.MintNFT( NFT );
             mintingResult = res;
             if ( res.Item1 )

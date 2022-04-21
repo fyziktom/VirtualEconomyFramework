@@ -43,6 +43,7 @@
 </Modal>
 }
 @code {
+    [Inject] INotificationService? NotificationService { get; set; }
 
     private Modal? NFTDestroyModal;
 
@@ -66,7 +67,10 @@
         if (NFT == null) return;
         Destroying = true;
         StateHasChanged();
-
+        
+        if (NotificationService != null)
+            await NotificationService.Info( "Destroying data...", "Destroying" );
+             
         if (!IsSubAccount)
             DestroyResult = await AppData.Account.DestroyNFTs(new List<INFT>() { NFT });
         else
@@ -75,8 +79,15 @@
         Console.WriteLine($"Destroy of the NFT result: {DestroyResult.Item1}, with message: {DestroyResult.Item2}");
 
         DestroyFinished = false;
-
         Destroying = false;
+        
+        if (NotificationService != null)
+        {
+            if (DestroyResult.Item1)
+                await NotificationService.Success( "Destroy Successfull.", "Destroy success" );
+            else
+                await NotificationService.Warning( DestroyResult.Item2, "Cannot destroy" );
+        }
         StateHasChanged();
 
         //close automatically after 2 seconds
