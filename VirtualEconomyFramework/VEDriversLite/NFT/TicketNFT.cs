@@ -95,6 +95,8 @@ namespace VEDriversLite.NFT
             AddUsedTags();
             Type = NFTTypes.Ticket;
             TypeText = "NFT Ticket";
+            Utxo = string.Empty;
+            UtxoIndex = 0;
         }
 
         public string MintAuthorAddress { get; set; } = string.Empty;
