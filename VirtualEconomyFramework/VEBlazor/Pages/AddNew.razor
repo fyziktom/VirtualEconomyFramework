@@ -242,7 +242,7 @@
             else
             {
                 if (NotificationService != null)
-                    await NotificationService.Success( "Cannot save the data. " + res.Item2, "Cannot Save" );     
+                    await NotificationService.Warning( "Cannot save the data. " + res.Item2, "Cannot Save" );     
                 Console.WriteLine("Cannot mint the NFT: " + res.Item2);
                 IsMinted = false;
             }
