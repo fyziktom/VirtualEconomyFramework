@@ -76,7 +76,7 @@ namespace VEDriversLite.NFT
             get => _tags;
             set
             {
-                if (!string.IsNullOrEmpty(value))
+                if (value != null)
                 {
                     _tags = value;
                     ParseTags();

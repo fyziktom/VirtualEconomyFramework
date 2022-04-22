@@ -14,7 +14,7 @@
         </CardText>
         <Row Margin="Margin.Is2.FromTop" Flex="Flex.AlignContent.Center">
             <Column>
-                <Tags NFTType="@NFT.Type" TagsList="@NFT.TagsList" />
+                <Tags NFTType="@NFT.Type" TagsList="@NFT.TagsList" TokenId="@NFT.TokenId" />
             </Column>
         </Row>
         @if (!string.IsNullOrEmpty(NFT.Utxo))

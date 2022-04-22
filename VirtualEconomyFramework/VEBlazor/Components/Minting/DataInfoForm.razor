@@ -78,11 +78,12 @@
     {
         _text = e;
         await TextChanged.InvokeAsync( _text );
+        await OnPropsChanged.InvokeAsync();
     }
 
     async Task OnTagsChanged( string tags )
     {
-        Tags = tags;
+        _tags = tags;
         await TagsChanged.InvokeAsync( Tags );
         await OnPropsChanged.InvokeAsync();
     }
