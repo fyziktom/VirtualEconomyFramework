@@ -11210,9 +11210,29 @@
             Command
             </summary>
         </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.Color">
+            <summary>
+            Color of badge
+            </summary>        
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.Image">
+            <summary>
+            Image Link
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.Tags.Tag.Count">
             <summary>
             Count of usage
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.UseAsFastButton">
+            <summary>
+            Display in UI as fast option
             </summary>
         </member>
         <member name="P:VEDriversLite.NFT.Tags.Tag.LastUse">

@@ -76,8 +76,11 @@
     async Task AddTag(string tag)
     {
         if (TagNames.Contains(tag)) return;
-            
-        Tags += $" {tag}";
+        
+        if (Tags == "")
+            Tags += $"{tag}";
+        else
+            Tags += $" {tag}";
         await TagsChanged.InvokeAsync( Tags );
         StateHasChanged();
     }
