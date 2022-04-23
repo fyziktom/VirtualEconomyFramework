@@ -6,7 +6,7 @@
 @if ( NFT != null )
 {
     <Card Margin="Margin.Is4.FromBottom" Style="min-width:200px; max-width:250px;">
-        <CardImage Source="@GetImageUrl()" Alt="No image found" Style="max-height:200px;" @onclick="() => NFTImageDetailModal.Show()">
+        <CardImage Source="@image" Alt="No image found" Style="max-height:200px;" @onclick="@(async () => await OpenImageDetailModal.InvokeAsync(image))">
         </CardImage>
         <CardBody>
             @*<Figure Size="FigureSize.Is16x16" Position="Position.Absolute.Top.Is0.Start.Is0">
@@ -25,32 +25,24 @@
             @ChildContent
         </CardBody>
         <CardFooter>
-            <Button Color="Color.Primary" Clicked=@OpenDetailsRequest Block>
+            <Button Color="Color.Primary" Clicked="@(async () => await OpenNFTDetailsRequest.InvokeAsync(NFT))" Block>
                 <Icon Name="IconName.Info" />
             </Button>
         </CardFooter>
     </Card>
 }
-
-<Modal @ref="NFTImageDetailModal">
-    <ModalContent Centered Size="ModalSize.Large">
-        <ModalHeader>
-            <ModalTitle>NFT Image Detail</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <PanzoomImage Source="@GetImageUrl()" />
-        </ModalBody>
-    </ModalContent>
-</Modal>
-                   
+      
 @code {
 
-    private Modal? NFTImageDetailModal;
+    [Parameter] public EventCallback<string> OpenImageDetailModal { get; set; }
 
-    async Task OpenDetailsRequest()
+    string image = string.Empty;
+    
+    protected override async Task OnInitializedAsync()
     {
-        await OpenNFTDetailsRequest.InvokeAsync(NFT);
+        image = GetImageUrl();
+        //image = await GetImage();
+        await base.OnInitializedAsync();
     }
 
     string GetTokenImage()

@@ -110,6 +110,25 @@ namespace VEBlazor.Components.Base
             StateHasChanged();
         }
         
+        public async Task<string> GetImage()
+        {
+            if (NFT == null)
+                return "_content/VEBlazor/images/empty.jpg";
+
+            if (NFT.ImageData != null && NFT.ImageData.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
+            else if (NFT.ImageData == null && !string.IsNullOrEmpty(NFT.ImageLink))
+            {
+                var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
+                if (imd != null)
+                {
+                    NFT.ImageData = imd;
+                    return "data:image;base64," + Convert.ToBase64String(imd);
+                }
+            }
+            
+            return "_content/VEBlazor/images/empty.jpg";
+        }
         public string GetImageUrl(bool returnPreviewIfExists = false)
         {
             if (NFT == null)
@@ -122,7 +141,9 @@ namespace VEBlazor.Components.Base
                     return preview;
             }
 
-            if (!string.IsNullOrEmpty(NFT.ImageLink))
+            if (NFT.ImageData != null && NFT.ImageData.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
+            else if (!string.IsNullOrEmpty(NFT.ImageLink))
                 return NFT.ImageLink;
             else
                 return "_content/VEBlazor/images/empty.jpg";

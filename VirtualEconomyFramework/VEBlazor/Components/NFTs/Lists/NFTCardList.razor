@@ -42,6 +42,7 @@
                                      Utxo="@NFT.Utxo"
                                      UtxoIndex="@NFT.UtxoIndex"
                                      OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler"
+                                     OpenImageDetailModal="OpenImageDetailModalHandler"
                                      NFTSent="@NFTSentHandler"
                                      OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" >
 
@@ -68,6 +69,20 @@
                        NFTSent="@NFTSentHandler"
                        OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
 
+                       
+<Modal @ref="NFTImageDetailModal">
+    <ModalContent Centered Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>NFT Image Detail</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <PanzoomImage Source="@imageInModalUrl" />
+        </ModalBody>
+    </ModalContent>
+</Modal>
+          
+                       
 @code {
     [Inject] INotificationService? NotificationService { get; set; }
 
@@ -88,8 +103,10 @@
         }
     }
 
+    Modal? NFTImageDetailModal;
     OpenNFTDetailsFactory? openNFTDetailsFactory;
     string searchNFTsString = string.Empty;
+    string imageInModalUrl = "_content/VEBlazor/images/empty.jpg";
     INFT nftInDetails = new ImageNFT("");
 
     protected override async Task OnAfterRenderAsync( bool firstRender )
@@ -105,6 +122,15 @@
     {
         StateHasChanged();
     }    
+
+    async Task OpenImageDetailModalHandler(string url)
+    {
+        imageInModalUrl = url ?? string.Empty;
+        StateHasChanged();
+        await Task.Delay(1);
+        if (NFTImageDetailModal is not null)
+            await NFTImageDetailModal.Show();
+    }
 
     async Task OpenNFTDetailsRequestHandler(INFT nft)
     {    
