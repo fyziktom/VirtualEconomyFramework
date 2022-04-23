@@ -85,9 +85,9 @@
                                            MintingPageName="@MintingPageName" 
                                            NFT="@NFT" 
                                            Addresses="@Addresses" 
-                                           AddressesChanged="async (e) => await AddressesChanged.InvokeAsync(e)"
+                                           AddressesChanged="@(async (e) => { Addresses = e; await AddressesChanged.InvokeAsync(e); })"
                                            ConsoleOutFromMinting="@ConsoleOutFromMinting"
-                                           ConsoleOutFromMintingChanged="async (e) => await ConsoleOutFromMintingChanged.InvokeAsync(e)" />
+                                           ConsoleOutFromMintingChanged="@(async (e) => { ConsoleOutFromMinting = e; await ConsoleOutFromMintingChanged.InvokeAsync(e);})" />
                         </Column>
                     </Row>
                     <Row Margin="Margin.Is3.FromTop">
