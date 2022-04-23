@@ -20,7 +20,7 @@
                             </Addon>*@
                         </Addons>
                     </FieldBody>
-                    <FieldHelp>You can use Name, Author or Tags. Search is not case sensitive.</FieldHelp>
+                    <FieldHelp>Search by Tags. Search is not case sensitive.</FieldHelp>
                 </Field>
             </Column>
         </Row>
@@ -147,11 +147,12 @@
         if ( !string.IsNullOrEmpty( searchNFTsString ) )
         {
             var ls = searchNFTsString.ToLower();
+            /*
             if ( nft.Author.ToLower().Contains( ls ) || nft.Name.ToLower().Contains( ls ) )
             {
                 return true;
             }
-
+            */
             if ( !string.IsNullOrEmpty( nft.Tags ) )
             {
                 if ( nft.Tags.ToLower().Contains( ls ) )

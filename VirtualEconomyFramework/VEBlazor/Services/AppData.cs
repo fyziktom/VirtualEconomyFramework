@@ -119,13 +119,14 @@ public class AppData
     public NeblioAccount Account { get; set; } = new NeblioAccount();
     public bool IsAccountLoaded { get; set; } = false;
     public List<GalleryTab> OpenedTabs { get; set; } = new List<GalleryTab>();
+    public Dictionary<string, VEDriversLite.NFT.Tags.Tag> DefaultTags { get; set; } = new Dictionary<string, VEDriversLite.NFT.Tags.Tag>();
     public Dictionary<string, MintingTabData> MintingTabsData { get; set; } = new Dictionary<string, MintingTabData>()
     {
         {"default", new MintingTabData() }
     };
 
     public event EventHandler<bool> LockUnlockAccount;
-
+    
     public async Task<(bool,string)> UnlockAccount(string password)
     {
         var ekey = await localStorage.GetItemAsync<string>("key");

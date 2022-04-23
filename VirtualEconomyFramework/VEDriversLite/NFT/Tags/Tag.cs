@@ -18,9 +18,25 @@ namespace VEDriversLite.NFT.Tags
         /// </summary>
         public string Command { get; set; } = string.Empty;
         /// <summary>
+        /// Color of badge
+        /// </summary>        
+        public string Color { get; set; } = string.Empty;
+        /// <summary>
+        /// Description
+        /// </summary>
+        public string Description { get; set; } = string.Empty;
+        /// <summary>
+        /// Image Link
+        /// </summary>
+        public string Image { get; set; } = string.Empty;
+        /// <summary>
         /// Count of usage
         /// </summary>
         public int Count { get; set; } = 0;
+        /// <summary>
+        /// Display in UI as fast option
+        /// </summary>
+        public bool UseAsFastButton { get; set; } = false;
         /// <summary>
         /// Last date of usage
         /// </summary>

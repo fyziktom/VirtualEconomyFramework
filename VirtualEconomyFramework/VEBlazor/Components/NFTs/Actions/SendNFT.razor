@@ -29,6 +29,14 @@
                    <NeblioAddressInput @bind-Receiver="@Receiver" />
                 </Column>
             </Row>
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>Edit Tags before Send</FieldLabel>
+                        <SpaceTags @bind-Tags="@NFT.Tags" />                        
+                    </Field>
+                </Column>
+            </Row>
             <Row Flex="Flex.JustifyContent.Center"> 
                 <Column>
                     <Button Color="Color.Primary" Clicked="@NFTAction" Loading="@Sending">Yes, I understand. Send @(SendCopy ? "Copy of" : "") the NFT now.</Button>
