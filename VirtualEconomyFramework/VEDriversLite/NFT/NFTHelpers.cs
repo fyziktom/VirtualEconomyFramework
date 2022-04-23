@@ -99,8 +99,9 @@ namespace VEDriversLite.NFT
         /// The hash is the Token hash of the NTP1 token created on the Neblio network
         /// </summary>
         public static List<string> AllowedTokens = new List<string>() {
-                "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
-                "LaAUG3WSAHWkrVtNYcd7CLdCYrA4phy1gjChvW",
+                "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8", //VENFT
+                "LaAUG3WSAHWkrVtNYcd7CLdCYrA4phy1gjChvW", //BDP
+                "La7DnXkx3YKeVy9QPRUKKdjCLo5wXanUu5XHsV", //WDOGE
                 Coruzant.CoruzantNFTHelpers.CoruzantTokenId,
                 HardwarioNFTHelpers.TokenId };
         /// <summary>
@@ -123,6 +124,10 @@ namespace VEDriversLite.NFT
         /// Main default Data storage tokens in VEFramework - BDP
         /// </summary>
         public static string BDPTokenId = "LaAUG3WSAHWkrVtNYcd7CLdCYrA4phy1gjChvW";
+        /// <summary>
+        /// WDOGE token
+        /// </summary>
+        public static string WDOGETokenId = "La7DnXkx3YKeVy9QPRUKKdjCLo5wXanUu5XHsV";
         /// <summary>
         /// Main default tokens symbol in VEFramework - VENFT
         /// </summary>

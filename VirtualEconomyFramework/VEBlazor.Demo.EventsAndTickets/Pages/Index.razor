@@ -1,8 +1,9 @@
-﻿@page "/"
+﻿
+@page "/"
 
-<PageTitle>Dogepalooza Main</PageTitle>
+<PageTitle>@AppData.AppNick Main</PageTitle>
 
-<VEBlazor.Components.PageHeader Title="Home" BreadcrumbItems="@(new string[] { "Dogepalooza", "Home" })" />
+<VEBlazor.Components.PageHeader Title="@AppData.AppName" BreadcrumbItems="@(new string[] { AppData.AppName, "Home" })" />
 
 
 <MyAccount />

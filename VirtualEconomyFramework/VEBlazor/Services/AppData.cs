@@ -69,11 +69,12 @@ public class AppData
     public const string DogecoinImageLink = "https://ipfs.infura.io/ipfs/QmRp3eyUeqctcgBFcRuBa7uRWiABTXmLBeYuhLp8xLX1sy";
     public const string VENFTImageLink = "https://ipfs.infura.io/ipfs/QmZSdjuLTihuPzVwUKaHLtivw1HYhsyCdQFnVLLCjWoVBk";
     public const string BDPImageLink = "https://ipfs.infura.io/ipfs/QmYMVuotTTpW24eJftpbUFgK7Ln8B4ox3ydbKCB6gaVwVB";
+    public const string WDOGEImageLink = "https://ipfs.infura.io/ipfs/Qmc9xS9a8TnWmU7AN4dtsbu4vU6hpEXpMNAeUdshFfg1wT";
 
-    public string AppName { get; set; } = "VEBlazorApp";
-    public string AppNick { get; set; } = "VEBA";
-    public string AppTokenId { get; set; } = NFTHelpers.BDPTokenId;
-    public string AppHomeWebsiteUrl { get; set; } = "https://veframework.com/";
+    public static string AppName { get; set; } = "VEBlazorApp";
+    public static string AppNick { get; set; } = "VEBA";
+    public static string AppTokenId { get; set; } = NFTHelpers.BDPTokenId;
+    public static string AppHomeWebsiteUrl { get; set; } = "https://veframework.com/";
     private string _appshareNFTUrl = "https://veframework.com/";
     public string AppShareNFTUrl 
     {

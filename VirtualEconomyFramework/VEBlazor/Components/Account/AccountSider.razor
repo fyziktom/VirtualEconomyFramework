@@ -18,6 +18,7 @@
         <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance"
                             TokensBalance="@TokenSupply"
                             BDPBalance="@BDPSupply"
+                            WDOGEBalance="@WDOGESupply"
                             NFTsCount="@AppData.Account.NFTs.Count" />
     </Column>
     <Column>
@@ -104,6 +105,16 @@
         get
         {
             if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.BDPTokenId, out var tokens ) )
+                return Convert.ToInt32( tokens.Amount );
+            else
+                return 0;
+        }
+    }
+    public int WDOGESupply
+    {
+        get
+        {
+            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.WDOGETokenId, out var tokens ) )
                 return Convert.ToInt32( tokens.Amount );
             else
                 return 0;

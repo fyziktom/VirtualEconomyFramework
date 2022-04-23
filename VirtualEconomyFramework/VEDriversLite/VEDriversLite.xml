@@ -10384,6 +10384,11 @@
             Main default Data storage tokens in VEFramework - BDP
             </summary>
         </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.WDOGETokenId">
+            <summary>
+            WDOGE token
+            </summary>
+        </member>
         <member name="F:VEDriversLite.NFT.NFTHelpers.TokenSymbol">
             <summary>
             Main default tokens symbol in VEFramework - VENFT

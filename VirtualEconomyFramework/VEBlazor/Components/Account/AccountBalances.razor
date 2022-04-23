@@ -20,12 +20,23 @@
                    Tokens: @TokensBalance VENFT <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.VENFTImageLink" /></Figure>
                </Column>
            </Row>
-           <Row>
-               <Column>
-                   Tokens: @BDPBalance BDP <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.BDPImageLink" /></Figure>
-               </Column>
-           </Row>
-           <Row>
+            @if (AppData.AppTokenId == VEDriversLite.NFT.NFTHelpers.BDPTokenId)
+            {
+                <Row>
+                    <Column>
+                       Tokens: @BDPBalance BDP <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.BDPImageLink" /></Figure>
+                   </Column>
+                </Row>
+            }
+            else if (AppData.AppTokenId == VEDriversLite.NFT.NFTHelpers.WDOGETokenId)
+            {
+                <Row>
+                    <Column>
+                       Tokens: @WDOGEBalance WDOGE <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.WDOGEImageLink" /></Figure>
+                   </Column>
+                </Row>
+            }
+            <Row>
                <Column>
                    NFTs: @NFTsCount
                </Column>
@@ -42,6 +53,8 @@
     public int TokensBalance { get; set; } = 0;
     [Parameter]
     public int BDPBalance { get; set; } = 0;
+    [Parameter]
+    public int WDOGEBalance { get; set; } = 0;
     [Parameter]
     public int NFTsCount { get; set; } = 0;    
 }

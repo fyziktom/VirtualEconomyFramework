@@ -24,16 +24,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        AppData.AppName = "Dogepalooza";
-        AppData.AppNick = "DOGE";
-        AppData.AppHomeWebsiteUrl = "https://dogepalooza.com/";
-        AppData.AppShareNFTUrl = "https://dogepalooza.ve-nft.com/";
+        AppData.AppName = "Dogeft";
+        AppData.AppNick = "DOGEFT";
+        AppData.AppHomeWebsiteUrl = "https://dogeft.com/";
+        AppData.AppShareNFTUrl = "https://dogeft.ve-nft.com/";
 
         AppData.AllowWorkTabs = false;
         AppData.AllowSend = true;
         AppData.AllowDestroy = true;
         AppData.DisplayGettingStartedMenuItem = true;
         AppData.GettingStartedPageName = "gettingstarted";
+        AppData.AppTokenId = NFTHelpers.WDOGETokenId;
 
         if ( AppData.MintingTabsData.TryGetValue( "default", out var tab ) )
         {
