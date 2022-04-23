@@ -40,15 +40,9 @@
             VEDriversLite.NFT.NFTTypes.XrayImage 
         };
 
-        AppData.DefaultTags.Add("OK", new VEDriversLite.NFT.Tags.Tag()
+        AppData.DefaultTags.Add("ASAP", new VEDriversLite.NFT.Tags.Tag()
         {
-            Name = "OK",
-            Color = "success",
-            UseAsFastButton = true
-        });
-        AppData.DefaultTags.Add("NG", new VEDriversLite.NFT.Tags.Tag()
-        {
-            Name = "NG",
+            Name = "ASAP",
             Color = "warning",
             UseAsFastButton = true
         });
@@ -58,18 +52,25 @@
             Color = "info",
             UseAsFastButton = true
         });
+        AppData.DefaultTags.Add("NG", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "NG",
+            Color = "warning",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("OK", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "OK",
+            Color = "success",
+            UseAsFastButton = true
+        });
         AppData.DefaultTags.Add("SOLVED", new VEDriversLite.NFT.Tags.Tag()
         {
             Name = "SOLVED",
             Color = "primary",
             UseAsFastButton = true
         });
-        AppData.DefaultTags.Add("ASAP", new VEDriversLite.NFT.Tags.Tag()
-        {
-            Name = "ASAP",
-            Color = "warning",
-            UseAsFastButton = true
-        });
+
                 
         await base.OnInitializedAsync();
     }
