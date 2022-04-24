@@ -24,7 +24,7 @@
                     Gallery
                 </BarLink>
             </BarItem>
-            @if ( AppData.IsAccountLoaded )
+            @if ( AppData.Development || AppData.IsAccountLoaded )
             {
                 @foreach (var tab in AppData.MintingTabsData)
                 {            
