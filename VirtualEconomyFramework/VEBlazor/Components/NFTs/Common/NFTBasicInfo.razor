@@ -9,16 +9,18 @@
          
         @if (NFT.DataItems != null && NFT.DataItems.Count > 0)
         {
-            <Row Margin="Margin.Is2.FromBottom" Border="Border.Is1.Primary">
-                <Column>
-                    <CardGroup>
-                        @foreach (var item in NFT.DataItems)
-                        {
-                            <Card Style="max-width:50px;" >
-                                <CardImage Border="@(item.IsDisplayed ? Border.Is2.Success : Border.Is0)" Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" @onclick="() => DisplayItem(item)" Style="max-width:40px;"/>
-                            </Card>                        }
-                    </CardGroup>
-                </Column>
+            <Row Margin="Margin.Is2.FromBottom" Border="Border.Is1.Primary" Flex="Flex.JustifyContent.Center">                               
+                @foreach (var item in NFT.DataItems)
+                {
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Card Style="max-width:50px; min-width:50px; width:50px;" Margin="Margin.Is1.FromEnd" >
+                            <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                        Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" 
+                                        @onclick="() => DisplayItem(item)" 
+                                        Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/>                                         
+                        </Card> 
+                    </Column>
+                }
             </Row>
         }
         <Row Border="Border.Is1.Primary">
@@ -55,7 +57,7 @@
             {
                 foreach (var item in NFT.DataItems)
                 {
-                    if (item.IsDisplayed)
+                    if (item.IsMain)
                         return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
                 }
             }
@@ -66,9 +68,10 @@
     void DisplayItem(NFTDataItem item)
     {
         foreach (var i in NFT.DataItems)
-            i.IsDisplayed = false;
+            i.IsMain = false;
 
-        item.IsDisplayed = true;
+        item.IsMain = true;
+        NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash);            
         StateHasChanged();
-    }
+    }  
 }                

@@ -17,6 +17,11 @@
            </Row>
            <Row>
                <Column>
+                   Unconfirmed: @(Math.Round(NeblioBalanceUnconfirmed, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+               </Column>
+           </Row>
+           <Row>
+               <Column>
                    Tokens: @TokensBalance VENFT <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.VENFTImageLink" /></Figure>
                </Column>
            </Row>
@@ -47,14 +52,25 @@
 
 
 @code {
-    [Parameter]
-    public double NeblioBalance { get; set; } = 0.0;
-    [Parameter]
-    public int TokensBalance { get; set; } = 0;
-    [Parameter]
-    public int BDPBalance { get; set; } = 0;
-    [Parameter]
-    public int WDOGEBalance { get; set; } = 0;
-    [Parameter]
-    public int NFTsCount { get; set; } = 0;    
+    [Parameter] public double NeblioBalance { get; set; } = 0.0;
+    [Parameter] public double NeblioBalanceUnconfirmed { get; set; } = 0.0;
+    [Parameter] public int TokensBalance { get; set; } = 0;
+    [Parameter] public int BDPBalance { get; set; } = 0;
+    [Parameter] public int WDOGEBalance { get; set; } = 0;
+    [Parameter] public int NFTsCount { get; set; } = 0;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
+            AppData.Account.Refreshed += RefreshedHandler;
+        }        
+        base.OnAfterRender(firstRender);
+    }
+
+    private void RefreshedHandler(object sender, EventArgs e)
+    {
+        this.StateHasChanged();
+    }
 }

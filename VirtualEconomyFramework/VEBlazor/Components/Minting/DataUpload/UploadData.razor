@@ -66,9 +66,12 @@
                                 {
                                     @foreach (var item in NFT.DataItems)
                                     {
-                                        <Card Style="max-width:350px; min-width:200px;">
+                                        <Card Style="max-width:300px; min-width:200px;">
                                             <CardHeader>@(item.Hash.Length > 20 ? string.Concat(item.Hash.Substring(0,20), "...") : item.Hash)</CardHeader>
                                             <CardImage Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))"></CardImage>
+                                            <CardBody>
+                                                <Check Checked="@item.IsMain" TValue="bool" CheckedChanged="@((e) => onCheckedChangedHandler(e, item))" >Set as Main</Check>
+                                            </CardBody>
                                             <CardFooter>
                                                 <Button Color="Color.Danger" Clicked="@(async () => await OnDeleteImageClicked(item))" Block>
                                                     <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />Delete Image
@@ -195,6 +198,19 @@
         {
             NFT.DataItems.Remove(item);
             await InvokeAsync( StateHasChanged );
+        }
+    }
+    public void onCheckedChangedHandler(bool e, NFTDataItem item)
+    {
+        if (NFT.DataItems is not null && NFT.DataItems.Count > 0)
+        {
+            foreach (var i in NFT.DataItems)
+                i.IsMain = false;
+
+            item.IsMain = e;
+            if (e) NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+            
+            StateHasChanged();
         }
     }
 }

@@ -5,7 +5,7 @@
 
 @if ( NFT != null )
 {
-    <Card Margin="Margin.Is4.FromBottom" Style="min-width:200px; max-width:250px;">
+    <Card Margin="Margin.Is4.FromBottom" Style="min-width:200px; max-width:300px;">
         <CardImage Source="@(GetImageUrl())" Alt="No image found" Style="max-height:200px;" @onclick="@(async () => await OpenImageDetailModal.InvokeAsync(GetImageUrl()))">
         </CardImage>
         <CardBody>

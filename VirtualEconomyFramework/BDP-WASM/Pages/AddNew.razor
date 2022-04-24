@@ -47,8 +47,8 @@
         if (nft != null)
         {
             await AppData.GetMintingNFTTab().NFT.Fill(nft);
-            if (AddnewRef != null)
-                await AddnewRef.RefreshImageInUploadComponent();
+            //if (AddnewRef != null)
+                //await AddnewRef.RefreshImageInUploadComponent();
             if (xrayParamsFormRef != null)
                 xrayParamsFormRef.SetValues((AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Voltage,
                                             (AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Current,

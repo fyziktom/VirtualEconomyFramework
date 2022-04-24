@@ -77,10 +77,8 @@
                             <MultimintForm @ref=multimintFormRef 
                                            MintingPageName="@MintingPageName" 
                                            NFT="@NFT" 
-                                           Addresses="@Addresses" 
-                                           AddressesChanged="@(async (e) => { Addresses = e; await AddressesChanged.InvokeAsync(e); })"
-                                           ConsoleOutFromMinting="@ConsoleOutFromMinting"
-                                           ConsoleOutFromMintingChanged="@(async (e) => { ConsoleOutFromMinting = e; await ConsoleOutFromMintingChanged.InvokeAsync(e);})" />
+                                           Addresses="@(Addresses)" 
+                                           ConsoleOutFromMinting="@ConsoleOutFromMinting" />
                         </Column>
                     </Row>
                     <Row Margin="Margin.Is3.FromTop">
@@ -134,7 +132,7 @@
     [Parameter]
     public EventCallback<INFT> OnLoadNFTTemplate { get; set; }
 
-    [Parameter] public Dictionary<string, ReceiversListItem> Addresses { get; set; } = new Dictionary<string, ReceiversListItem>();
+    [Parameter] public IDictionary<string, ReceiversListItem> Addresses { get; set; } = new Dictionary<string, ReceiversListItem>();
     [Parameter] public EventCallback<Dictionary<string, ReceiversListItem>> AddressesChanged { get; set; }
     [Parameter] public string ConsoleOutFromMinting { get; set; } = string.Empty;
     [Parameter] public EventCallback<string> ConsoleOutFromMintingChanged { get; set; }
@@ -148,13 +146,6 @@
     bool IsMinted = false;
     bool minting = false;
     (bool, string) mintingResult = (false, string.Empty);
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        //await RefreshImageInUploadComponent();
-        //multimintFormRef?.LoadAddresees(Addresses); 
-        await base.OnAfterRenderAsync(firstRender);
-    }
 
     public async Task RefreshImageInUploadComponent()
     {    

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace VEDriversLite.NFT.Dto
 {
@@ -48,7 +48,6 @@ namespace VEDriversLite.NFT.Dto
         /// <summary>
         /// Display flag for UI
         /// </summary>
-        [JsonIgnore]
-        public bool IsDisplayed { get; set; } = false;
+        public bool IsMain { get; set; } = false;
     }
 }

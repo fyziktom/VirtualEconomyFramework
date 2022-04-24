@@ -16,10 +16,11 @@
     </Column>
     <Column>
         <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance"
-                            TokensBalance="@TokenSupply"
-                            BDPBalance="@BDPSupply"
-                            WDOGEBalance="@WDOGESupply"
-                            NFTsCount="@AppData.Account.NFTs.Count" />
+                         NeblioBalanceUnconfirmed="@AppData.Account.TotalUnconfirmedBalance"
+                         TokensBalance="@TokenSupply"
+                         BDPBalance="@BDPSupply"
+                         WDOGEBalance="@WDOGESupply"
+                         NFTsCount="@AppData.Account.NFTs.Count" />
     </Column>
     <Column>
         <Card>
