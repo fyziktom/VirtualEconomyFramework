@@ -1,0 +1,113 @@
+﻿@inject AppData AppData
+
+<Bar Breakpoint="Breakpoint.Desktop" Background="Background.Light" ThemeContrast="ThemeContrast.Light">
+    <BarBrand>
+        <BarItem>
+            <BarLink To="@AppData.AppHomeWebsiteUrl">
+                @AppData.AppName
+            </BarLink>
+        </BarItem>
+    </BarBrand>
+    <BarToggler />
+    <BarMenu>
+        <BarStart>
+            <BarItem>
+                <BarLink To="">
+                    <BarIcon IconName="IconName.Home" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                    Home
+                </BarLink>
+            </BarItem>
+            <BarItem>
+                <BarLink To="gallery">
+                    <BarIcon IconName="IconName.Images" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                    Gallery
+                </BarLink>
+            </BarItem>
+            @if ( AppData.IsAccountLoaded )
+            {
+                @foreach (var tab in AppData.MintingTabsData)
+                {            
+                    <BarItem>
+                        <BarLink To="@tab.Value.TabPageLocationName">
+                            <BarIcon IconName="IconName.Add" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                            @tab.Value.MenuButonLabel
+                        </BarLink>
+                    </BarItem>
+                }
+            }
+            @if (AppData.DisplayGettingStartedMenuItem)
+            {
+                <BarItem>
+                    <BarLink To="@AppData.GettingStartedPageName">
+                        <BarIcon IconName="IconName.QuestionCircle" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                        Introduction
+                    </BarLink>
+                </BarItem>
+            }
+        </BarStart>
+        <BarEnd>
+           <BarItem>
+                <BarDropdown>
+                    <BarDropdownToggle Display="Blazorise.Display.InlineBlock.None.OnMobile">
+                        @if ( AppData.IsAccountLoaded )
+                        {
+                            @if (!string.IsNullOrEmpty(AppData.Account.Profile.ImageLink))
+                            {
+                                <Image Source="@AppData.Account.Profile.ImageLink" Text="Account" Style="width: 30px; height: 30px;" Margin="Margin.Is2.FromEnd" />
+                            }
+                        }
+                        else
+                        {
+                            <BarIcon IconName="IconName.User" />
+                        }
+                        <Span TextColor="TextColor.Dark">Account</Span>
+                    </BarDropdownToggle>
+                    <BarDropdownMenu>
+                        @if ( AppData.IsAccountLoaded )
+                        {
+                            <BarDropdownItem Clicked="@Lock">
+                                <Icon Name="IconName.Lock" TextColor="TextColor.Danger" />
+                                Logout
+                            </BarDropdownItem>
+                        }
+                        else
+                        {
+                            <BarDropdownItem Clicked="@Unlock">
+                                <Icon Name="IconName.Unlock" TextColor="TextColor.Success" />
+                                Login
+                            </BarDropdownItem>
+                        }
+                        <BarDropdownDivider />
+                        <BarDropdownItem To="@AppData.AppHomeWebsiteUrl" Target="Target.Blank">
+                            <Icon Name="IconName.QuestionCircle" TextColor="TextColor.Primary" />
+                            About
+                        </BarDropdownItem>
+                    </BarDropdownMenu>
+                </BarDropdown>
+            </BarItem>
+        </BarEnd>
+    </BarMenu>
+</Bar>
+
+<UnlockAccount @ref="UnlockAccountComponent" AccountUnlocked="@AccountUnlockedHandler" />
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    private UnlockAccount? UnlockAccountComponent;
+
+    void Unlock()
+    {
+        UnlockAccountComponent?.ShowUnlockAccountModal();
+    }
+    void Lock()
+    {
+        AppData.LockAccount();
+    }
+    async Task AccountUnlockedHandler( string e )
+    {
+        if (NotificationService != null)
+            await NotificationService.Success( "Account Unlocked :)", "Unlocked" );
+        StateHasChanged();
+    }
+}

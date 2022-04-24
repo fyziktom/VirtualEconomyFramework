@@ -1,0 +1,46 @@
+﻿@inject IJSRuntime JSRuntime
+
+@if (!copyTextButtonCoppied)
+{
+    <Icon Name="@InputIconName" IconSize="@InputIconSize" @onclick="copyCodeToClipboard" />
+}
+else
+{
+    <Icon Name="IconName.Check" IconSize="@InputIconSize" />
+}
+
+@code {
+
+    private string textToCopy = string.Empty;
+    [Parameter]
+    public string TextToCopy
+    {
+        get => textToCopy;
+        set => textToCopy = value;
+    }
+
+    [Parameter]
+    public IconName InputIconName { get; set; } = IconName.Share;
+    [Parameter]
+    public IconSize InputIconSize { get; set; } = IconSize.Default;
+
+    private bool copyTextButtonCoppied = false;
+
+    private async Task copyCodeToClipboard(MouseEventArgs e)
+    {
+        if (string.IsNullOrEmpty(textToCopy))
+            return;
+
+        await JSRuntime.InvokeVoidAsync("veblazor.copyToClipboard", textToCopy);
+        await copyCodeToClipboardButtonTextEfect();
+    }
+
+    private async Task copyCodeToClipboardButtonTextEfect()
+    {
+        copyTextButtonCoppied = true;
+        StateHasChanged();
+        await Task.Delay(1000);
+        copyTextButtonCoppied = false;
+        StateHasChanged();
+    }
+}

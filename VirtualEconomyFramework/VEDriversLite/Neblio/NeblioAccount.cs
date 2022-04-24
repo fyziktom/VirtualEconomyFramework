@@ -18,7 +18,6 @@ using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
-using VEDriversLite.WooCommerce;
 
 namespace VEDriversLite
 {
@@ -78,6 +77,10 @@ namespace VEDriversLite
         /// This event is called whenever some progress during multimint happens
         /// </summary>
         public event EventHandler<string> NewMintingProcessInfo;
+        /// <summary>
+        /// This event is fired whenever new lot of addresses was airdroped
+        /// </summary>
+        public event EventHandler<Dictionary<string, string>> AddressesAirdroped;
 
         /// <summary>
         /// This event is called whenever the list of NFTs on SubAccount is changed
@@ -131,6 +134,11 @@ namespace VEDriversLite
         {
             try
             {
+                base.NewMintingProcessInfo -= NeblioAccount_NewMintingProcessInfo;
+                base.NewMintingProcessInfo += NeblioAccount_NewMintingProcessInfo;
+                base.AddressesAirdroped -= NeblioAccount_AddressesAirdroped;
+                base.AddressesAirdroped += NeblioAccount_AddressesAirdroped;
+                base.FirsLoadingStatus -= NeblioAccount_FirsLoadingStatus;
                 base.FirsLoadingStatus += NeblioAccount_FirsLoadingStatus;
                 FirsLoadingStatus?.Invoke(this, "Loading of address data started.");
 
@@ -268,6 +276,16 @@ namespace VEDriversLite
             });
             IsRefreshingRunning = false;
             return await Task.FromResult("RUNNING");
+        }
+
+        private void NeblioAccount_AddressesAirdroped(object sender, Dictionary<string, string> e)
+        {
+            AddressesAirdroped?.Invoke(this, e);
+        }
+
+        private void NeblioAccount_NewMintingProcessInfo(object sender, string e)
+        {
+            NewMintingProcessInfo?.Invoke(this, e);
         }
 
         private void NeblioAccount_FirsLoadingStatus(object sender, string e)
@@ -694,11 +712,11 @@ namespace VEDriversLite
         /// <summary>
         /// Check if the address is already in the bookmarks and return this bookmark
         /// </summary>
-        /// <param name="address">Address which should be in the bookmarks</param>
+        /// <param name="address">Address or Name which should be in the bookmarks</param>
         /// <returns>true and bookmark class if exists</returns>
-        public async Task<(bool, Bookmark)> IsInTheBookmarks(string address)
+        public (bool, Bookmark) IsInTheBookmarks(string address)
         {
-            var bkm = Bookmarks.Find(b => b.Address == address);
+            var bkm = Bookmarks.Find(b => b.Address == address || b.Name == address);
             if (bkm == null || string.IsNullOrEmpty(bkm.Address) || string.IsNullOrEmpty(bkm.Name))
                 return (false, new Bookmark());
             //return (false, new Bookmark() { Address = NeblioTransactionHelpers.ShortenAddress(address) });
@@ -738,7 +756,7 @@ namespace VEDriversLite
                     var first = true;
                     foreach (var t in Tabs)
                     {
-                        var bkm = await IsInTheBookmarks(t.Address);
+                        var bkm = IsInTheBookmarks(t.Address);
                         t.LoadBookmark(bkm.Item2);
                         if (first)
                         {
@@ -771,14 +789,15 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="address"></param>
         /// <returns>true and string with serialized tabs list as json string</returns>
-        public async Task<(bool, string)> AddTab(string address)
+        public async Task<(bool, string)> AddTab(string address, int maxLoadItems = 40)
         {
             if (!Tabs.Any(t => t.Address == address))
             {
-                var bkm = await IsInTheBookmarks(address);
+                var bkm = IsInTheBookmarks(address);
                 var tab = new ActiveTab(address);
                 tab.BookmarkFromAccount = bkm.Item2;
                 tab.Selected = true;
+                tab.MaxLoadedNFTItems = maxLoadItems;
                 tab.NFTsChanged += T_NFTsChanged;
                 tab.NFTAddedToPayments += T_NFTAddedToPayments;
 
@@ -881,7 +900,7 @@ namespace VEDriversLite
                     foreach (var t in MessageTabs)
                     {
                         t.Selected = false;
-                        var bkm = await IsInTheBookmarks(t.Address);
+                        var bkm = IsInTheBookmarks(t.Address);
                         t.AccountSecret = Secret;
                         t.AccountAddress = Address;
                         t.LoadBookmark(bkm.Item2);
@@ -916,7 +935,7 @@ namespace VEDriversLite
         {
             if (!MessageTabs.Any(t => t.Address == address))
             {
-                var bkm = await IsInTheBookmarks(address);
+                var bkm = IsInTheBookmarks(address);
                 var tab = new MessageTab(address);
                 tab.BookmarkFromAccount = bkm.Item2;
                 tab.Selected = true;
@@ -1021,11 +1040,11 @@ namespace VEDriversLite
                             var res = await nsa.LoadFromBackupDto(Secret, a);
                             if (res.Item1)
                             {
-                                var bkm = await IsInTheBookmarks(a.Address);
+                                var bkm = IsInTheBookmarks(a.Address);
                                 if (!bkm.Item1)
                                 {
                                     await AddBookmark(a.Name, a.Address, "SubAccount");
-                                    bkm = await IsInTheBookmarks(a.Address);
+                                    bkm = IsInTheBookmarks(a.Address);
                                 }
                                 nsa.LoadBookmark(bkm.Item2);
                                 nsa.IsAutoRefreshActive = true;
@@ -1103,7 +1122,7 @@ namespace VEDriversLite
                     return (false, "Cannot create SubAccount Address." + r.Item2);
                 }
                 await AddBookmark(name, nsa.Address, "SubAccount");
-                var bkm = await IsInTheBookmarks(nsa.Address);
+                var bkm = IsInTheBookmarks(nsa.Address);
                 nsa.LoadBookmark(bkm.Item2);
                 nsa.IsAutoRefreshActive = true;
                 nsa.NewEventInfo += Nsa_NewEventInfo;
@@ -1360,7 +1379,7 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver of the NFT</param>
         /// <param name="coppies"></param>
         /// <returns>true and string with new TxId</returns>
-        public async Task<(bool, string)> MultimintNFTLargeOnSubAccount(string address, INFT NFT, int coppies, string receiver = "")
+        public async Task<(bool, Dictionary<string,string>)> MultimintNFTLargeOnSubAccount(string address, INFT NFT, int coppies, string receiver = "")
         {
             try
             {
@@ -1370,11 +1389,15 @@ namespace VEDriversLite
                     return res;
                 }
                 else
-                    return (false, "SubAccount is not in the list.");
+                {
+                    Console.WriteLine("SubAccount is not in the list.");
+                    return (false, null);
+                }
             }
             catch (Exception ex)
             {
-                return (false, ex.Message);
+                Console.WriteLine("Canont Multi Mint NFT on subaccount. " + ex.Message);
+                return (false, null);
             }
         }
 

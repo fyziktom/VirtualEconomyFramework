@@ -1,0 +1,30 @@
+﻿
+<Button Size="@Size" Color="@Color" Clicked=@ClickedHandler>
+     @if(WithIcon) {
+         <Icon Name="@Icon" />
+     }      
+     <Div Display="Display.None.InlineBlock.OnTablet">&nbsp;@(!string.IsNullOrEmpty(Label) ? Label : "")</Div>
+</Button>
+
+@code {
+    [Parameter]
+    public bool WithIcon { get; set; } = true;
+    [Parameter]
+    public IconName Icon { get; set; } = IconName.Check;
+    [Parameter]
+    public string Label { get; set; } = "OK";
+    [Parameter]
+    public MintingToolbarActionType ToolType { get; set; } = MintingToolbarActionType.Save;
+    [Parameter]
+    public Blazorise.Color Color { get; set; } = Blazorise.Color.Light;
+    [Parameter]
+    public Blazorise.Size Size { get; set; } = Size.Default;
+    [Parameter]
+    public EventCallback<MintingToolbarActionDto> ToolActionHandler { get; set; }
+    
+    async Task ClickedHandler()
+    {
+        await ToolActionHandler.InvokeAsync(new MintingToolbarActionDto { Type = ToolType });
+    }
+
+}

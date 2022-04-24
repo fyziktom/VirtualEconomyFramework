@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
     <PackageId>VEFramework.VEDriversLite</PackageId>
     <Version>0.2.0</Version>
     <Authors>fyziktom</Authors>
@@ -27,6 +27,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="WooCommerce\**" />
+    <EmbeddedResource Remove="WooCommerce\**" />
+    <None Remove="WooCommerce\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
   
@@ -36,16 +42,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="docfx.console" Version="2.57.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.23" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
     <PackageReference Include="NBitcoin" Version="7.0.6" />
     <PackageReference Include="NBitcoin.Altcoins" Version="3.0.8" />
-    <PackageReference Include="WordPressPCL" Version="1.9.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <!--<PackageReference Include="QRCoder" Version="1.4.1" />-->
     <!--<PackageReference Include="ZXing.Net" Version="0.16.6" />-->

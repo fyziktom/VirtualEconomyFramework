@@ -1,0 +1,134 @@
+﻿@using VEDriversLite.NFT
+@inherits NFTDetailsBase
+@inject IJSRuntime JS
+
+<Addons>
+@*    <Addon AddonType="AddonType.Start">
+        <Button Color="Color.Primary" Clicked="@pasteFromClipboard">Paste</Button>
+    </Addon>*@
+    <Addon AddonType="AddonType.Body">
+        <TextEdit @ref="textRef" Placeholder="Enter NFT tx ix" @bind-Text="Utxo" />
+    </Addon>
+    @if (!string.IsNullOrEmpty(Utxo))
+    {
+        <Addon AddonType="AddonType.End">
+            <Button Color="Color.Primary" Clicked="@ShowUtxo" Loading="@Loading" Block>Show</Button>
+        </Addon>
+    }
+</Addons>
+
+@if (NFT != null)
+{
+<Modal @ref="LoadNFTModal">
+    <ModalContent Centered Size="ModalSize.Default">
+        <ModalHeader>NFT</ModalHeader>
+        <ModalBody>
+            @if (!string.IsNullOrEmpty(NFT.Utxo))
+            {
+                <Div Margin="Margin.Is2.FromTop">
+                    <Button Color="Color.Primary" Loading="@loadingImage" Clicked="@loadTemplateToFormHandler" Block>2. Load NFT to Minting Form</Button>
+                </Div>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <NFTCard @ref="nftCard" NFT="@NFT" OpenNFTDetailsRequest="@OpenNFTDetailsRequestHandler" />
+                    </Column>
+                </Row>
+                
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                       Address="@Address"
+                       NFT="@NFT"                       
+                       IsSubAccount="false"
+                       IsOwnNFT="false"
+                       HideOpenInWorkTabButton="true"/>
+}
+
+@code {
+    [Inject]
+    public IMessageService? MessageService { get; set; }
+
+    [Parameter]
+    public EventCallback<INFT> OnLoadNFTTemplate { get; set; }
+
+    TextEdit? textRef;
+    Modal? LoadNFTModal;
+    OpenNFTDetailsFactory? openNFTDetailsFactory;
+    
+    bool loadingImage = false;
+    
+    async Task OpenNFTDetailsRequestHandler(INFT nft)
+    {
+        if (nft != null && openNFTDetailsFactory != null)
+        {
+            await openNFTDetailsFactory.OpenNFTDetails(nft);
+        }
+    }
+    private Task ShowUtxo()
+    {
+        return Show();
+    }
+    public async Task Show(string _utxo = "")
+    {
+        if (string.IsNullOrEmpty(_utxo))
+        {
+            if (string.IsNullOrEmpty(Utxo))
+                return;
+            await LoadNFTFromNetwork();
+        }
+        else
+        {
+            Utxo = _utxo;
+            await LoadNFTFromNetwork();
+        }
+
+        StateHasChanged();  
+        LoadNFTModal?.Show();
+        return;
+    }
+    public void Hide()
+    {
+        LoadNFTModal?.Hide();
+        return;
+    }        
+
+    async Task loadTemplateToFormHandler()
+    {
+        if (MessageService is not null)
+        {
+            if (await MessageService.Confirm("Are you sure you want to load the NFT to Mintin Form? It will remove existing data in the form?", "Load NFT Template"))
+            {
+                loadingImage = true;
+                StateHasChanged();
+
+                if (!string.IsNullOrEmpty(NFT.ImageLink))
+                    NFT.ImageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
+                await OnLoadNFTTemplate.InvokeAsync(NFT);
+                loadingImage = false;
+                StateHasChanged();
+                openNFTDetailsFactory?.HideNFTDetails();
+                Hide();
+            }
+        }
+    }
+
+    async Task pasteFromClipboard()
+    {
+        try
+        {
+            var u = await JS.InvokeAsync<string>("veblazor.readFromClipboard");
+            if (!string.IsNullOrEmpty(u))
+            {
+                Utxo = u;
+                StateHasChanged();
+            }
+        }
+        catch
+        {
+            Console.WriteLine("Cannot paste from clipboard.");
+        }
+    }
+}

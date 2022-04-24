@@ -6,23 +6,54 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Receipt NFT
+    /// Used for example for receipts for sold NFTs
+    /// </summary>
     public class ReceiptNFT : CommonNFT
     {
+        /// <summary>
+        /// Create empty NFT class
+        /// </summary>        
         public ReceiptNFT(string utxo)
         {
             Utxo = utxo;
             Type = NFTTypes.Receipt;
             TypeText = "NFT Receipt";
         }
-
+        /// <summary>
+        /// original NFT hash which was sold
+        /// </summary>
         public string NFTUtxoTxId { get; set; } = string.Empty;
+        /// <summary>
+        /// original NFT index which was sold
+        /// </summary>
         public int NFTUtxoIndex { get; set; } = 0;
+        /// <summary>
+        /// Sender of the NFT
+        /// </summary>
         public string Sender { get; set; } = string.Empty;
+        /// <summary>
+        /// Buyer of the NFT
+        /// </summary>
         public string Buyer { get; set; } = string.Empty;
+        /// <summary>
+        /// Original payment transaction hash
+        /// </summary>
         public string OriginalPaymentTxId { get; set; } = string.Empty;
+        /// <summary>
+        /// Receipt from the payment Utxo
+        /// </summary>
         public string ReceiptFromPaymentUtxo { get; set; } = string.Empty;
+        /// <summary>
+        /// Sold price for this NFT
+        /// </summary>
         public double SoldPrice { get; set; } = 0.0;
-
+        /// <summary>
+        /// Fill basic parameters
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT)
         {
             await FillCommon(NFT);
@@ -36,7 +67,10 @@ namespace VEDriversLite.NFT
             OriginalPaymentTxId = pnft.OriginalPaymentTxId;
             ReceiptFromPaymentUtxo = pnft.ReceiptFromPaymentUtxo;
         }
-
+        /// <summary>
+        /// Parse specific parameters
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             if (metadata.TryGetValue("NFTUtxoTxId", out var nfttxid))
@@ -65,12 +99,22 @@ namespace VEDriversLite.NFT
 
             Buyer = NeblioTransactionHelpers.GetTransactionReceiver(Utxo, TxDetails).GetAwaiter().GetResult();
         }
-
+        /// <summary>
+        /// Find and parse origin data
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
-
+        /// <summary>
+        /// Get the NFT data for the NFT
+        /// </summary>
+        /// <param name="address">Address of the sender</param>
+        /// <param name="key">Private key of the sender for encryption</param>
+        /// <param name="receiver">receiver of the NFT</param>
+        /// <returns></returns>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata

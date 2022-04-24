@@ -1,0 +1,8 @@
+﻿@inject AppData AppData
+@page "/"
+
+<PageTitle>@AppData.AppNick - Home</PageTitle>
+
+<VEBlazor.Components.PageHeader Title="Home" BreadcrumbItems="@(new string[] { AppData.AppNick, "Home" })" />
+
+<MyAccount />

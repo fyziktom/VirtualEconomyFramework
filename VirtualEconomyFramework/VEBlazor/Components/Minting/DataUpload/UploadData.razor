@@ -1,0 +1,179 @@
+﻿@using System.IO
+@using VEDriversLite.NFT
+
+<Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
+    <CardBody>
+       <CardTitle>
+           Upload the Image
+        </CardTitle>
+        <Alert Color="Color.Info" Visible>
+            <AlertDescription>
+                You can upload any image file such as <Strong>PNG, BMP, JPEG</Strong>, but we recommend you to use the PNG format.
+            </AlertDescription>
+        </Alert>
+        <Row Flex="Flex.AlignItems.Center">
+            <Column>
+                <Row>
+                    <Column>
+                        <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
+                            <Validation Validator="ImageValidator">
+                                <Field>
+                                    <FieldLabel>Please select the image.</FieldLabel>
+                                    <FieldBody>
+                                        <FileUpload Started="@OnImageUploadStarted" Uploaded="@OnImageUploadEnded" ValidationsRef="@validationsRef" />
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        </Validations>
+                    </Column>
+                </Row>
+                @if ( uploadingImage )
+                {
+                    <Row>
+                        <Column>
+                            <Span>Uploading the image...</Span>
+                        </Column>
+                    </Row>
+                }
+                @if ( !string.IsNullOrEmpty( ImageDataString ) )
+                {
+                    <Row>
+                        <Column>
+                            <Figure Size="FigureSize.Is256x256">
+                                <FigureImage Source="@ImageDataString" AlternateText="empty-256x256" />
+                                <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Image</FigureCaption>
+                            </Figure>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column>
+                            <Alert Color="Color.Success">Image loaded!</Alert>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column>
+                            <IPFSUpload @ref="@ipfsUploadRef" Started="@OnIPFSUploadStarted" Uploaded="@OnIPFSUploadEnded" ValidationsRef="@validationsRef" />
+                        </Column>
+                    </Row>
+                }
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+
+
+@code {
+    Validations? validationsRef;
+    IPFSUpload? ipfsUploadRef;
+
+    [Parameter] public string MainIPFSLink { get; set; } = string.Empty;
+
+    [Parameter] public EventCallback<string> MainIPFSLinkChanged { get; set; }
+
+    [Parameter] public string PreviewIPFSLink { get; set; } = string.Empty;
+
+    [Parameter] public EventCallback<string> PreviewIPFSLinkChanged { get; set; }
+
+    [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
+    //[Parameter] public EventCallback<byte[]> OnImageDataLoaded { get; set; }
+    [Parameter] public byte[] ImageData { get; set; } = new byte[0];
+
+    [Parameter] public EventCallback<byte[]> ImageDataChanged { get; set; }
+
+    public string ImageDataString
+    {
+        get
+        {
+            if (ImageData is not null && ImageData.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String( ImageData );
+            else
+                return "_content/VEBlazor/images/empty.jpg";
+        }
+    }
+    bool uploadingImage = false;
+    bool uploadingToIPFS = false;
+    bool uploadFinished = false;
+    string fileName = string.Empty;
+
+    Task OnImageUploadStarted()
+    {
+        uploadingImage = true;
+
+        return InvokeAsync( StateHasChanged );
+    }
+
+    public async Task LoadImage(string link, string previewlink = "", byte[] _imageData = null)
+    {
+        if (!string.IsNullOrEmpty(link) || _imageData?.Length > 0)
+        {
+            byte[] imd = null;          
+            if (_imageData == null || _imageData.Length == 0)
+                imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(link));
+            else if (_imageData.Length > 0)
+                imd = _imageData;
+                
+            if (imd != null)
+            {
+                //await OnImageDataLoaded.InvokeAsync(imd);
+                
+                this.ImageData = imd;
+                await ImageDataChanged.InvokeAsync(ImageData);
+                await OnPropsChanged.InvokeAsync();                
+                uploadFinished = true;
+                StateHasChanged();
+                await Task.Delay(1);
+                
+                if (ipfsUploadRef != null)
+                    await ipfsUploadRef.LoadIPFSLink(link);
+                await InvokeAsync( StateHasChanged );
+            }
+        }
+    }
+
+    async Task OnImageUploadEnded( string fileName, byte[] data )
+    {
+        uploadingImage = false;
+
+        this.fileName = fileName;
+        this.ImageData = data;
+        await ImageDataChanged.InvokeAsync(ImageData);
+        await OnPropsChanged.InvokeAsync();
+        
+        await InvokeAsync( StateHasChanged );
+
+        if ( ipfsUploadRef != null )
+            await ipfsUploadRef.UploadToIPFS( fileName, ImageData );
+    }
+
+    Task OnIPFSUploadStarted()
+    {
+        uploadingToIPFS = true;
+
+        return InvokeAsync( StateHasChanged );
+    }
+
+    async Task OnIPFSUploadEnded( string mainIPFSLink )
+    {
+        uploadingToIPFS = false;
+
+        MainIPFSLink = mainIPFSLink;
+        await MainIPFSLinkChanged.InvokeAsync( MainIPFSLink );
+        await OnPropsChanged.InvokeAsync();
+    }
+
+    void ImageValidator( ValidatorEventArgs e )
+    {
+        if ( !string.IsNullOrEmpty( ImageDataString ) )
+            e.Status = ValidationStatus.Success;
+        else
+            e.Status = ValidationStatus.Error;
+    }
+
+    public Task<bool> IsValidated()
+    {
+        if (validationsRef != null)
+            return validationsRef.ValidateAll();
+        else
+            return Task.FromResult(false);
+    }
+}
