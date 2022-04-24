@@ -18,7 +18,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if sendTransaction method is working as expected with correct parameters.
         /// </summary>
         [Fact]
-        public async void SendNeblioTransaction_Valid_Test()
+        public async void GetNeblioTransaction_Valid_Test()
         {
             NeblioTransactionHelpers.GetClient(Common.NeblioTestHelpers.Client.Object);
             NeblioTransactionHelpers.TurnOnCache = false;
@@ -73,27 +73,18 @@ namespace VEFrameworkUnitTest.Neblio
                 Password = ""
             };
 
-            string transactionId = "123";
-
-            var broadcastTxResponse = new BroadcastTxResponse()
-            {
-                Txid = transactionId
-            };
-
             Common.NeblioTestHelpers.Client.Setup(x => x.GetAddressInfoAsync(It.IsAny<string>())).ReturnsAsync(addressObject);
             Common.NeblioTestHelpers.Client.Setup(x => x.GetTransactionInfoAsync(It.IsAny<string>())).ReturnsAsync(transactionObject);
-            Common.NeblioTestHelpers.Client.Setup(x => x.BroadcastTxAsync(It.IsAny<BroadcastTxRequest>())).ReturnsAsync(broadcastTxResponse);
-
+            
             var AccountKey = new EncryptionKey(key);
-
-            var k = NeblioTransactionHelpers.GetAddressAndKey(AccountKey);
-            var key1 = k.Item2;
 
             var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos);
 
-            var neblioTransactionResult = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, key1);
+            var inputCount = transaction.Inputs.Count();
+            var outputCount = transaction.Outputs.Count();
 
-            Assert.Equal(transactionId, neblioTransactionResult);
+            Assert.Equal(10, inputCount);
+            Assert.Equal(3, outputCount);            
         }
 
         /// <summary>
@@ -137,7 +128,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning an error result if Utxos are null.
         /// </summary>
         [Fact]
-        public void SendNeblioTransaction_TransactionObject_Error_Test()
+        public void GetNeblioTransaction_TransactionObject_Error_Test()
         {
             var res = Common.FakeDataGenerator.GetKeyAndAddress();
 
@@ -194,7 +185,7 @@ namespace VEFrameworkUnitTest.Neblio
         /// Unit test method to verify if system is returning an error result when password is empty.
         /// </summary>
         [Fact]
-        public void SendNeblioTransaction_PasswordNotFilled_Error_Test()
+        public void GetNeblioTransaction_PasswordNotFilled_Error_Test()
         {
             //Arrange           
         
