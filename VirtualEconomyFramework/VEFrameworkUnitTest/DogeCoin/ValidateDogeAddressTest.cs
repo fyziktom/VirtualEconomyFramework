@@ -47,7 +47,7 @@ namespace VEFrameworkUnitTest.DogeCoin
         [Fact]
         public void ValidateDogeAddress_Valid_Test()
         {
-            string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";
+            string address = "DD9or9JWdMJBYhPKcYS2BNu4PAUkun6bnW";
 
             var result = DogeTransactionHelpers.ValidateDogeAddress(address);
             Assert.Equal(address, result.Value.ToString());

@@ -17,11 +17,13 @@ namespace VEFrameworkUnitTest.DogeCoin
         public void GetAddressFromPrivateKey_Valid_Test()
         {   
             var key = "QNoNA2w58ceiKr8Py6F5FE8ShFqkJr8TxQ5m5YEpUQDXmume8fN9";
+            var address = "DD9or9JWdMJBYhPKcYS2BNu4PAUkun6bnW";
 
             var result = DogeTransactionHelpers.GetAddressFromPrivateKey(key);
 
             Assert.True(result.Success);
             Assert.NotEmpty(result.Value.ToString());
+            Assert.Equal(address, result.Value.ToString());
         }
 
         /// <summary>
