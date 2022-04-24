@@ -32,6 +32,16 @@ class VEBlazorInterop {
 
         }
     }
+    MermaidInitialize() {
+        mermaid.initialize({
+            startOnLoad: true,
+            securityLevel: "loose",
+            // Other options.
+        });
+    }
+    MermaidRender() {
+        mermaid.init();
+    }
 }
 
 window.veblazor = new VEBlazorInterop()

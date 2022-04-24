@@ -6,7 +6,7 @@
         <CardTitle Size="5">Actions</CardTitle>
         @if (AppData.AllowWorkTabs && !HideOpenInWorkTabButton)
         {                                
-        <Row>
+        <Row Margin="Margin.Is2.FromBottom">
             <Column>
                 <Button Color="Color.Primary" Clicked=@OpenNFTInWorkTab Block>
                     <Icon Name="IconName.FolderOpen" />
@@ -15,6 +15,9 @@
             </Column>
         </Row>
         }
+        
+        <OwnershipQRCode DisplayButton="true" Address="@Address" IsSubAccount="@IsSubAccount" NFT="@NFT" />
+        
         @if ( IsOwnNFT && AppData.IsAccountLoaded) 
         { 
             <Row Margin="Margin.Is3.FromTop"> 

@@ -16,12 +16,25 @@
             <Container Fluid>
             <Row>
                 <Column Flex="Flex.AlignItems.Center">
+                    <Check TValue="bool" Checked="SendCopy" CheckedChanged="@SendCopyCheckedChanged" >Send just Copy</Check>
+                </Column>
+            </Row>
+            <Row>
+                <Column Flex="Flex.AlignItems.Center">
                     <Span>Do you really want to Send <b>@(SendCopy ? "Copy of" : "")</b> this NFT? You cannot take this action back.</Span>
                 </Column>
             </Row>
             <Row Width="Width.Is100"> 
                 <Column>
                    <NeblioAddressInput @bind-Receiver="@Receiver" />
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>Edit Tags before Send</FieldLabel>
+                        <SpaceTags @bind-Tags="@NFT.Tags" />                        
+                    </Field>
                 </Column>
             </Row>
             <Row Flex="Flex.JustifyContent.Center"> 
@@ -50,11 +63,11 @@
 </Modal>
 }
 @code {
+    [Inject] INotificationService? NotificationService { get; set; }
 
     private Modal? NFTSendModal;
 
-    [Parameter]
-    public string Receiver { get; set; } = string.Empty;
+    [Parameter] public string Receiver { get; set; } = string.Empty;
 
     bool Sending = false;
     bool SendFinished = false;
@@ -77,12 +90,21 @@
         NFTSendModal?.Hide();
     }
 
+    void SendCopyCheckedChanged(bool e)
+    {
+        SendCopy = e;
+        StateHasChanged();
+    }
+
     async Task NFTAction()
     {
         if (NFT == null) return;
         Sending = true;
         StateHasChanged();
-
+        
+        if (NotificationService != null)
+            await NotificationService.Info( "Sending data...", "Sending" );
+             
         if (!SendCopy)
         {
             if (!IsSubAccount)
@@ -105,6 +127,14 @@
 
         Sending = false;
         StateHasChanged();
+
+        if (NotificationService != null)
+        {
+            if (SendResult.Item1)
+                await NotificationService.Success( "Sent Successfull.", "Send success" );
+            else
+                await NotificationService.Warning( SendResult.Item2, "Cannot sent" );
+        }
 
         //close automatically after 2 seconds
         await Task.Delay(2000);

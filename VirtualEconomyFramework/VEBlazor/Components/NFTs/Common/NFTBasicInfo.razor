@@ -14,13 +14,16 @@
         </CardText>
         <Row Margin="Margin.Is2.FromTop" Flex="Flex.AlignContent.Center">
             <Column>
-                <Tags NFTType="@NFT.Type" TagsList="@NFT.TagsList" />
+                <Tags NFTType="@NFT.Type" TagsList="@NFT.TagsList" TokenId="@NFT.TokenId" />
             </Column>
         </Row>
-        <Row Margin="Margin.Is2.FromTop"> 
-            <Column> 
-                <CopyButton TextToCopy="@($"{AppData.AppShareNFTUrl}/gallery?utxo={NFT.Utxo}:{NFT.UtxoIndex}")" ButtonText="Copy Share Link" /> 
-            </Column> 
-        </Row>
+        @if (!string.IsNullOrEmpty(NFT.Utxo))
+        {
+            <Row Margin="Margin.Is2.FromTop"> 
+                <Column> 
+                    <CopyButton TextToCopy="@($"{AppData.AppShareNFTUrl}/gallery?utxo={NFT.Utxo}:{NFT.UtxoIndex}")" ButtonText="Copy Share Link" /> 
+                </Column> 
+            </Row>
+        }
     </CardBody>
 </Card>

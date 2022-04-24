@@ -65,7 +65,7 @@
 
 @code {
     [Inject] INotificationService? NotificationService { get; set; }
-    
+
     [Parameter]
     public EventCallback<string> AccountCreated { get; set; }
 
@@ -98,6 +98,7 @@
 
         if (await AppData.Account.CreateNewAccount(password))
         {
+            password = string.Empty;
             Address = AppData.Account.Address;
             var keytostore = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted:true);
             if (!string.IsNullOrEmpty(keytostore))

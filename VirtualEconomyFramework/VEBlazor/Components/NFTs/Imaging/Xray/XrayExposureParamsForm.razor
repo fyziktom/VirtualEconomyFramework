@@ -3,25 +3,37 @@
         <CardTitle>
             Information about the exposure / capture of the data
         </CardTitle>
-        <Field>
-            <FieldLabel>Please enter the Anode Voltage in kilo Volts.</FieldLabel>
-            <Slider TValue="double" Min="1" Max="450" Step="1" Value="@_voltage" ValueChanged="@voltageChanged" /> @_voltage kV
-            <FieldHelp>This is the Voltage in the Xray tube.</FieldHelp>
-        </Field>
-        <Field>
-            @*<Slider TValue="double" Min="0.01" Max="100" Step="0.01" Value="@_current" ValueChanged="@currentChanged" /> @_current mA*@
-            <PreciseSlider Value="@_current"
-                           ValueChanged="@currentChanged"
-                           DisplayMain="true"
-                           DisplayMili="true"
-                           DisplayMicro="true"
-                           Name="Anode Current"
-                           Unit="A" />
-            <FieldHelp>This is the Current in the Xray tube.</FieldHelp>
-        </Field>
+        <Row>
+            <Column>
+                <Field>
+                    <FieldLabel>Please enter the Anode Voltage</FieldLabel>
+                    <FastNumberInput DisplayMain="true" 
+                                     DisplayKilo="true" 
+                                     Name="Anode Voltage" 
+                                     InitSelectedUnit="FastNumberInput.Units.kilo" 
+                                     Unit="V" 
+                                     Value="@_voltage" 
+                                     ValueChanged="@voltageChanged" />           
+                    <FieldHelp>This is the Voltage in the Xray tube.</FieldHelp>
+                </Field>
+            </Column>   
+            <Column>
+                <Field>
+                    <FieldLabel>Please enter the Anode Current</FieldLabel>
+                    <FastNumberInput DisplayMicro="true" 
+                                     Name="Anode Current" 
+                                     DisplayMili="true" 
+                                     Unit="A" 
+                                     InitSelectedUnit="FastNumberInput.Units.micro" 
+                                     Value="@_current" 
+                                     ValueChanged="@currentChanged" />
+                    <FieldHelp>This is the Current in the Xray tube.</FieldHelp>
+                </Field>
+            </Column>
+        </Row>
         <Field>
             <FieldLabel>Please enter the Exposure time in miliseconds.</FieldLabel>
-            <Slider TValue="double" Min="1" Max="5000" Step="10" Value="@_time" ValueChanged="@timeChanged" /> @_time ms
+            <Slider TValue="double" Min="1" Max="1000" Step="10" Value="@_time" ValueChanged="@timeChanged" /> @_time ms
             <FieldHelp>Time of the exposure of one image</FieldHelp>
         </Field>
     </CardBody>

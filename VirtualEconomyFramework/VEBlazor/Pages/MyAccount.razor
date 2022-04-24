@@ -32,7 +32,21 @@
             </Row>
             @if ( !IsAccountStored )
             {
-                <CreateAccount AccountCreated="@AccountCreatedHandler" />
+                <Row Margin="Margin.Is3.FromBottom">
+                    <Column>
+                        <CreateAccount AccountCreated="@AccountCreatedHandler" />
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is5.FromTop.Is3.FromBottom">
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Heading Size="HeadingSize.Is5">Or import the existing account</Heading>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is3.FromBottom">
+                    <Column>
+                            <ImportAccount AccountImported="@AccountImportedHandler" />
+                    </Column>
+                </Row>
             }
             else 
             {
@@ -96,4 +110,12 @@
         NotificationService?.Success( "Account Created :)", "Created" );
         StateHasChanged();
     }
+    
+    void AccountImportedHandler( string e )
+    {
+        Address = e;
+        IsAccountStored = true;
+        NotificationService?.Success( "Account Imported :)", "Imported" );
+        StateHasChanged();
+    }    
 }

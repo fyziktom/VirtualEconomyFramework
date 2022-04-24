@@ -38,7 +38,7 @@
                 @if ( !string.IsNullOrEmpty( ImageDataString ) )
                 {
                     <Row>
-                        <Column Flex="Flex.JustifyContent.Center">
+                        <Column>
                             <Figure Size="FigureSize.Is256x256">
                                 <FigureImage Source="@ImageDataString" AlternateText="empty-256x256" />
                                 <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Image</FigureCaption>
@@ -76,13 +76,24 @@
 
     [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
     //[Parameter] public EventCallback<byte[]> OnImageDataLoaded { get; set; }
+    [Parameter] public byte[] ImageData { get; set; } = new byte[0];
 
-    string ImageDataString = string.Empty;
+    [Parameter] public EventCallback<byte[]> ImageDataChanged { get; set; }
+
+    public string ImageDataString
+    {
+        get
+        {
+            if (ImageData is not null && ImageData.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String( ImageData );
+            else
+                return "_content/VEBlazor/images/empty.jpg";
+        }
+    }
     bool uploadingImage = false;
     bool uploadingToIPFS = false;
     bool uploadFinished = false;
     string fileName = string.Empty;
-    byte[] imageData = new byte[0];
 
     Task OnImageUploadStarted()
     {
@@ -104,8 +115,10 @@
             if (imd != null)
             {
                 //await OnImageDataLoaded.InvokeAsync(imd);
-                ImageDataString = "data:image;base64," + Convert.ToBase64String( imd );
-                this.imageData = imd;
+                
+                this.ImageData = imd;
+                await ImageDataChanged.InvokeAsync(ImageData);
+                await OnPropsChanged.InvokeAsync();                
                 uploadFinished = true;
                 StateHasChanged();
                 await Task.Delay(1);
@@ -122,15 +135,14 @@
         uploadingImage = false;
 
         this.fileName = fileName;
-        this.imageData = data;
-        ImageDataString = "data:image;base64," + Convert.ToBase64String( imageData );
-
+        this.ImageData = data;
+        await ImageDataChanged.InvokeAsync(ImageData);
+        await OnPropsChanged.InvokeAsync();
+        
         await InvokeAsync( StateHasChanged );
 
         if ( ipfsUploadRef != null )
-            await ipfsUploadRef.UploadToIPFS( fileName, imageData );
-
-        await OnPropsChanged.InvokeAsync();
+            await ipfsUploadRef.UploadToIPFS( fileName, ImageData );
     }
 
     Task OnIPFSUploadStarted()
@@ -146,6 +158,7 @@
 
         MainIPFSLink = mainIPFSLink;
         await MainIPFSLinkChanged.InvokeAsync( MainIPFSLink );
+        await OnPropsChanged.InvokeAsync();
     }
 
     void ImageValidator( ValidatorEventArgs e )

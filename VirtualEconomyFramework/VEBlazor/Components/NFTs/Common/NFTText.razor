@@ -14,8 +14,22 @@
 }
 
 @code {
+    [Inject] protected IJSRuntime? JS { get; set; } = null;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(this.JS is not null)
+        {
+            if(firstRender)
+            {
+                await this.JS.InvokeVoidAsync("veblazor.MermaidInitialize");
+            }
+
+            await this.JS.InvokeVoidAsync("veblazor.MermaidRender");
+        }
+    }
+    
     [Parameter]
     public string Text { get; set; } = string.Empty;
     
-    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Text );
+    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
 }

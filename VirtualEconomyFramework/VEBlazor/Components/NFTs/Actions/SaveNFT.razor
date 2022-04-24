@@ -19,9 +19,17 @@
                     <Span>Do you really want to Save this NFT? You cannot take this action back.</Span>
                 </Column>
             </Row>
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>Edit Tags before Send</FieldLabel>
+                        <SpaceTags @bind-Tags="@NFT.Tags" />                        
+                    </Field>
+                </Column>
+            </Row>
             <Row Flex="Flex.JustifyContent.Center"> 
                 <Column>
-                    <Button Color="Color.Primary" Clicked="@NFTAction" Loading="@Saveing">Yes, I understand. Save the NFT now.</Button>
+                    <Button Color="Color.Primary" Clicked="@NFTAction" Loading="@Saving">Yes, I understand. Save the NFT now.</Button>
                 </Column>
             </Row>
             @if (SaveFinished)
@@ -45,13 +53,13 @@
 </Modal>
 }
 @code {
+    [Inject] INotificationService? NotificationService { get; set; }
 
     private Modal? NFTSaveModal;
 
-    [Parameter]
-    public string Receiver { get; set; } = string.Empty;
+    [Parameter] public string Receiver { get; set; } = string.Empty;
 
-    bool Saveing = false;
+    bool Saving = false;
     bool SaveFinished = false;
     (bool,string) SaveResult = (false,string.Empty);
 
@@ -71,9 +79,12 @@
     async Task NFTAction()
     {
         if (NFT == null) return;
-        Saveing = true;
+        Saving = true;
         StateHasChanged();
         //save means send to yourself
+        if (NotificationService != null)
+            await NotificationService.Info( "Saving data...", "Saving" );
+             
         Receiver = Address;
         if (!IsSubAccount)
             SaveResult = await AppData.Account.SendNFT(Receiver, NFT);
@@ -83,8 +94,16 @@
         Console.WriteLine($"Save of the NFT result: {SaveResult.Item1}, with message: {SaveResult.Item2}");
 
         SaveFinished = false;
-
-        Saveing = false;
+        Saving = false;
+        
+        if (NotificationService != null)
+        {
+            if (SaveResult.Item1)
+                await NotificationService.Success( "Sent Successfull.", "Save success" );
+            else
+                await NotificationService.Warning( SaveResult.Item2, "Cannot save" );
+        }
+        
         StateHasChanged();
 
         //close automatically after 2 seconds

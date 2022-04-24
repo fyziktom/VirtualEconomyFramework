@@ -7,33 +7,27 @@
             <Validation Validator="ValidationRule.IsNotEmpty">
                 <Field>
                     <FieldLabel>Please enter the name.</FieldLabel>
-                    <TextEdit Placeholder="Enter name" @bind-Text="Name" @onchange="nameChanged">
+                    <TextEdit Placeholder="Enter name" @bind-Text="Name" @onchange="OnNameChanged">
                         <Feedback>
                             <ValidationError>Missing name.</ValidationError>
                         </Feedback>
                     </TextEdit>
                 </Field>
             </Validation>
-            <Validation Validator="ValidationRule.IsNotEmpty">
-                <Field>
-                    <FieldLabel>Please enter the tags.</FieldLabel>
-                    <TextEdit Placeholder="Enter the tags" @bind-Text="Tags" @onchange="tagsChanged" >
-                        <Feedback>
-                            <ValidationError>Missing tags. Add at least one tag please.</ValidationError>
-                        </Feedback>                        
-                    </TextEdit>
-                    <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
-                </Field>
-            </Validation>
+            <Field>
+                <FieldLabel>Please enter the tags.</FieldLabel>
+                <SpaceTags Tags="@Tags" TagsChanged="@OnTagsChanged" />
+                <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
+            </Field>
 
             <Field>
                 <FieldLabel>Please enter the short description.</FieldLabel>
-                <TextEdit Placeholder="Enter short description" @bind-Text="Description" @onchange="descChanged" />
+                <TextEdit Placeholder="Enter short description" @bind-Text="Description" @onchange="OnDescChanged" />
                 <FieldHelp>If you need to write longer description please use the text field.</FieldHelp>
             </Field>
             <Field>
                 <FieldLabel>Here you can enter the longer description.</FieldLabel>
-                <Markdown @ref="markdownRef" Value="@Text" ValueChanged="textChanged" />
+                <Markdown @ref="markdownRef" Value="@Text" ValueChanged="OnTextChanged" />
                 <FieldHelp>You can use Markdown formating in this editor.</FieldHelp>
             </Field>
         </Validations>
@@ -62,43 +56,45 @@
 
     [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
 
-    async Task nameChanged( ChangeEventArgs e )
+    async Task OnNameChanged( ChangeEventArgs e )
     {
-        if (e != null && e.Value != null )        
+        if ( e != null && e.Value != null )
         {
             await NameChanged.InvokeAsync( (string)e.Value );
-            await OnPropsChanged.InvokeAsync();            
+            await OnPropsChanged.InvokeAsync();
         }
     }
-    async Task descChanged( ChangeEventArgs e )
+
+    async Task OnDescChanged( ChangeEventArgs e )
     {
-        if (e != null && e.Value != null )  
+        if ( e != null && e.Value != null )
         {
             await DescriptionChanged.InvokeAsync( (string)e.Value );
             await OnPropsChanged.InvokeAsync();
         }
     }
-    async Task textChanged( string e )
+
+    async Task OnTextChanged( string e )
     {
         _text = e;
         await TextChanged.InvokeAsync( _text );
+        await OnPropsChanged.InvokeAsync();
     }
-    async Task tagsChanged( ChangeEventArgs e )
+
+    async Task OnTagsChanged( string tags )
     {
-        if (e != null && e.Value != null )
-        {
-            await TagsChanged.InvokeAsync( (string)e.Value );
-            await OnPropsChanged.InvokeAsync();
-        }
+        _tags = tags;
+        await TagsChanged.InvokeAsync( Tags );
+        await OnPropsChanged.InvokeAsync();
     }
 
     public Task<bool> IsValidated()
     {
         return validationsRef.ValidateAll();
     }
-    
+
     public void Refresh()
     {
-        markdownRef.SetValueAsync(_text);
+        markdownRef.SetValueAsync( _text );
     }
 }

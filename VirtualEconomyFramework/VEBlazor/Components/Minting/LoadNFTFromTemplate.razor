@@ -119,19 +119,22 @@
 
     async Task loadTemplateToFormHandler()
     {
-        if (await MessageService.Confirm("Are you sure you want to load the NFT to Mintin Form? It will remove existing data in the form?", "Load NFT Template"))
+        if (MessageService is not null)
         {
-            loadingImage = true;
-            StateHasChanged();
+            if (await MessageService.Confirm("Are you sure you want to load the NFT to Mintin Form? It will remove existing data in the form?", "Load NFT Template"))
+            {
+                loadingImage = true;
+                StateHasChanged();
 
-            if (!string.IsNullOrEmpty(NFT.ImageLink))
-                NFT.ImageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
-            await OnLoadNFTTemplate.InvokeAsync(NFT);
-            openNFTDetailsFactory?.HideNFTDetails();
-            loadingImage = false;
-            StateHasChanged();
-            Hide();
-        }
+                if (!string.IsNullOrEmpty(NFT.ImageLink))
+                    NFT.ImageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
+                await OnLoadNFTTemplate.InvokeAsync(NFT);
+                openNFTDetailsFactory?.HideNFTDetails();
+                loadingImage = false;
+                StateHasChanged();
+                Hide();
+            }
+        }        
     }
 
     async Task pasteFromClipboard()

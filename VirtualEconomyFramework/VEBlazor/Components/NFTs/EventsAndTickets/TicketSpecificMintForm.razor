@@ -83,7 +83,7 @@
                                 <SelectItem TValue="ClassOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</SelectItem>
                             }
                         </Select>
-                        <RadioGroup Display="Display.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@TicketClass" CheckedValueChanged="@ticketClassChanged" TValue="ClassOfNFTTicket" Name="ticketclass" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
+                        <RadioGroup Display="Display.None.OnMobile.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@TicketClass" CheckedValueChanged="@ticketClassChanged" TValue="ClassOfNFTTicket" Name="ticketclass" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
                             @foreach ( var ctype in Enum.GetValues<ClassOfNFTTicket>() )
                             {
                                 <Radio TValue="ClassOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</Radio>
@@ -100,7 +100,7 @@
                                 <SelectItem TValue="DurationOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</SelectItem>
                             }
                         </Select>
-                        <RadioGroup Display="Display.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@TicketDuration" CheckedValueChanged="@ticketDurationChanged" TValue="DurationOfNFTTicket" Name="ticketduration" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
+                        <RadioGroup Display="Display.None.OnMobile.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@TicketDuration" CheckedValueChanged="@ticketDurationChanged" TValue="DurationOfNFTTicket" Name="ticketduration" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
                             @foreach ( var ctype in Enum.GetValues<DurationOfNFTTicket>() )
                             {
                                 <Radio TValue="DurationOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</Radio>

@@ -10212,6 +10212,16 @@
             <param name="receiver">receiver of the NFT</param>
             <returns></returns>
         </member>
+        <member name="T:VEDriversLite.NFT.NFTDataContext">
+            <summary>
+            NFT shared data context
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.NFTDataContext.Tags">
+            <summary>
+            All loaded apps in instance
+            </summary>     
+        </member>
         <member name="T:VEDriversLite.NFT.NFTFactory">
             <summary>
             Main factory for creating the NFTs from hash of the transaction
@@ -10372,6 +10382,11 @@
         <member name="F:VEDriversLite.NFT.NFTHelpers.BDPTokenId">
             <summary>
             Main default Data storage tokens in VEFramework - BDP
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.NFTHelpers.WDOGETokenId">
+            <summary>
+            WDOGE token
             </summary>
         </member>
         <member name="F:VEDriversLite.NFT.NFTHelpers.TokenSymbol">
@@ -11184,6 +11199,56 @@
             <param name="key">Private key of the sender for encryption</param>
             <param name="receiver">receiver of the NFT</param>
             <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.NFT.Tags.Tag">
+            <summary>
+            Tag with rememered info about usage, etc.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.Name">
+            <summary>
+            Tag name
+            </summary>        
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.Command">
+            <summary>
+            Command
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.Color">
+            <summary>
+            Color of badge
+            </summary>        
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.Image">
+            <summary>
+            Image Link
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.Count">
+            <summary>
+            Count of usage
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.UseAsFastButton">
+            <summary>
+            Display in UI as fast option
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.LastUse">
+            <summary>
+            Last date of usage
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.RelatedTags">
+            <summary>
+            Related tags hashes list
+            </summary>
         </member>
         <member name="T:VEDriversLite.NFT.TicketNFT">
             <summary>

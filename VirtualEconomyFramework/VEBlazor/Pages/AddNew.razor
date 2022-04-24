@@ -32,6 +32,7 @@
                         <Column>
                             <UploadData @ref="@uploadDataRef" 
                                         @bind-MainIPFSLink="@NFT.ImageLink" 
+                                        @bind-ImageData="@NFT.ImageData" 
                                         @bind-PreviewIPFSLink="@NFT.Preview" OnPropsChanged="@onPropsChangedHandler" />
                         </Column>
                     </Row>
@@ -84,9 +85,9 @@
                                            MintingPageName="@MintingPageName" 
                                            NFT="@NFT" 
                                            Addresses="@Addresses" 
-                                           AddressesChanged="async (e) => await AddressesChanged.InvokeAsync(e)"
+                                           AddressesChanged="@(async (e) => { Addresses = e; await AddressesChanged.InvokeAsync(e); })"
                                            ConsoleOutFromMinting="@ConsoleOutFromMinting"
-                                           ConsoleOutFromMintingChanged="async (e) => await ConsoleOutFromMintingChanged.InvokeAsync(e)" />
+                                           ConsoleOutFromMintingChanged="@(async (e) => { ConsoleOutFromMinting = e; await ConsoleOutFromMintingChanged.InvokeAsync(e);})" />
                         </Column>
                     </Row>
                     <Row Margin="Margin.Is3.FromTop">
@@ -95,13 +96,9 @@
                             {
                                 if ( mintingResult.Item1 )
                                 {
-                                    <Alert Display="Display.None.OnMobile.Inline.OnTablet" Color="Color.Success" Visible>
-                                        <AlertMessage>Data Stored :)</AlertMessage>
-                                        <AlertDescription>Transaction Hash is: <a href="https://explorer.nebl.io/tx/@mintingResult.Item2" target="_blank">@mintingResult.Item2</a></AlertDescription>
-                                    </Alert>
-                                    <Alert Display="Display.Inline.OnMobile.None.OnTablet" Color="Color.Success" Visible>
-                                        <AlertMessage>Data Stored :)</AlertMessage>
-                                        <AlertDescription >Transaction Hash is: <a href="https://explorer.nebl.io/tx/@mintingResult.Item2" target="_blank">@(mintingResult.Item2.Substring(0,10))...</a></AlertDescription>
+                                    <Alert Color="Color.Success" Visible>
+                                        <AlertMessage>Data Stored</AlertMessage>
+                                        <AlertDescription >Your image was placed in your gallery.</AlertDescription>
                                     </Alert>
                                 }
                                 else
@@ -161,7 +158,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await RefreshImageInUploadComponent();
+        //await RefreshImageInUploadComponent();
         //multimintFormRef?.LoadAddresees(Addresses); 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -220,10 +217,10 @@
         }
         if ( selectedStep == "stepFinish" )
         {
-            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.BDPTokenId, out var supply ) )
+            if ( AppData.Account.TokensSupplies.TryGetValue( AppData.AppTokenId, out var supply ) )
             {
                 if ( supply.Amount > 3 )
-                    NFT.TokenId = NFTHelpers.BDPTokenId;
+                    NFT.TokenId = AppData.AppTokenId;
                 else
                     NFT.TokenId = NFTHelpers.TokenId;
             }
@@ -232,6 +229,9 @@
                 NFT.TokenId = NFTHelpers.TokenId;
             }
 
+             if (NotificationService != null)
+                    await NotificationService.Info( "Saving image...", "Saving" );
+                    
             var res = await AppData.Account.MintNFT( NFT );
             mintingResult = res;
             if ( res.Item1 )
@@ -243,7 +243,7 @@
             else
             {
                 if (NotificationService != null)
-                    await NotificationService.Success( "Cannot save the data. " + res.Item2, "Cannot Save" );     
+                    await NotificationService.Warning( "Cannot save the data. " + res.Item2, "Cannot Save" );     
                 Console.WriteLine("Cannot mint the NFT: " + res.Item2);
                 IsMinted = false;
             }
@@ -346,7 +346,7 @@
         {
             await OnLoadNFTTemplate.InvokeAsync(nft);
         }
-        dataInfoFormRef.Refresh();
+        dataInfoFormRef?.Refresh();
         StateHasChanged();
     }
 }

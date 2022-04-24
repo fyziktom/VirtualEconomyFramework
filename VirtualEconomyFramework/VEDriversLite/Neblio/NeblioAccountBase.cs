@@ -154,7 +154,7 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// When some utxo is used, it is placed to this list to prevent second use. Key is Utxo and Value is TxId where it was used
         /// </summary>
-        public ConcurrentDictionary<uint256,uint256> UsedUtxos { get; set; } = new ConcurrentDictionary<uint256,uint256>();
+        public ConcurrentDictionary<string,uint256> UsedUtxos { get; set; } = new ConcurrentDictionary<string,uint256>();
             
         /// <summary>
         /// This event is fired whenever info about the address is reloaded. It is periodic event.
@@ -978,8 +978,8 @@ namespace VEDriversLite.Neblio
             var txidu256 = uint256.Parse(txid);
             tx.Inputs.ForEach(inp =>
             {
-                if (!UsedUtxos.ContainsKey(inp.PrevOut.Hash))
-                    UsedUtxos.TryAdd(inp.PrevOut.Hash, txidu256);
+                if (!UsedUtxos.ContainsKey($"{inp.PrevOut.Hash}:{inp.PrevOut.N}"))
+                    UsedUtxos.TryAdd($"{inp.PrevOut.Hash}:{inp.PrevOut.N}", txidu256);
             });
             await ReloadUtxos();
             await ReLoadNFTs();
@@ -987,23 +987,24 @@ namespace VEDriversLite.Neblio
 
         private IEnumerable<Utxos> GetUsableUtxos(IEnumerable<Utxos> inutxos)
         {
-            return inutxos.Where(u => !UsedUtxos.ContainsKey(uint256.Parse(u.Txid)));
+            return inutxos.Where(u => !UsedUtxos.ContainsKey($"{u.Txid}:{u.Index}"));
         }
-        private CommonReturnTypeDto IsUtxoUsed(string utxo)
+        
+        private CommonReturnTypeDto IsUtxoUsed(string utxo, int index)
         {
             try
             {
                 var txu256 = uint256.Parse(utxo);
-                return IsUtxoUsed(txu256);
+                return IsUtxoUsed(txu256, index);
             }
-            catch(Exception ex)
+            catch
             {
                 throw new Exception("This is not valid transaction hash.");
             }
         }
-        private CommonReturnTypeDto IsUtxoUsed(uint256 utxo)
+        private CommonReturnTypeDto IsUtxoUsed(uint256 utxo, int index)
         {
-            if (UsedUtxos.TryGetValue(utxo, out var txid))
+            if (UsedUtxos.TryGetValue($"{utxo}:{index}", out var txid))
                 return new CommonReturnTypeDto() { Success = true, Value = txid };
             else
                 return new CommonReturnTypeDto() { Success = false, Value = null };
