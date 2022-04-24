@@ -50,7 +50,7 @@
                     }
                     <Row Margin="Margin.Is3.FromTop">
                         <Column>
-                            <UploadData MainIPFSLink="@NFT.ImageLink" MainIPFSLinkChanged="ImageChangedHandler" />
+                            <UploadData NFT="@NFT" NFTChanged="@NFTChangedHandler"/>
                         </Column>
                     </Row>
 
@@ -163,13 +163,14 @@
         NFT.Description = (string)e.Value;
         await DescriptionChanged.InvokeAsync( (string)e.Value );
     }
-    void ImageChangedHandler( string e )
+    void NFTChangedHandler( INFT e )
     {
-        if ( string.IsNullOrEmpty( e ) )
+        if ( e is null )
             return;
 
-        NFT.ImageLink = e;
-        AppData.Account.Profile.ImageLink = e;
+        NFT = e;
+        if (e.Type == NFTTypes.Profile)
+            AppData.Account.Profile = (e as ProfileNFT);
     }
     async Task MintProfile()
     {

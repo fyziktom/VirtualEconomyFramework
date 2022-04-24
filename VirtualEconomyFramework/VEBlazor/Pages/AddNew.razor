@@ -30,10 +30,7 @@
                     <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     <Row>
                         <Column>
-                            <UploadData @ref="@uploadDataRef" 
-                                        @bind-MainIPFSLink="@NFT.ImageLink" 
-                                        @bind-ImageData="@NFT.ImageData" 
-                                        @bind-PreviewIPFSLink="@NFT.Preview" OnPropsChanged="@onPropsChangedHandler" />
+                            <UploadData @ref="@uploadDataRef" NFT="@NFT" NFTChanged="@onPropsChangedHandler"/>
                         </Column>
                     </Row>
                     <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
@@ -42,11 +39,7 @@
                     <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     <Row>
                         <Column>
-                            <DataInfoForm @ref="@dataInfoFormRef"
-                                          @bind-Name="@NFT.Name"
-                                          @bind-Description="@NFT.Description"
-                                          @bind-Text="@NFT.Text"
-                                          @bind-Tags="@NFT.Tags" OnPropsChanged="@onPropsChangedHandler" />
+                            <DataInfoForm @ref="@dataInfoFormRef" NFT="@NFT" NFTChanged="@onPropsChangedHandler" />
                         </Column>
                     </Row>
                     <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />

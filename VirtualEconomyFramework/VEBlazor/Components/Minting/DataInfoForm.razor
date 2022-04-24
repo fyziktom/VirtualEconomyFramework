@@ -1,4 +1,6 @@
-﻿<Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
+﻿@inherits NFTComponentBase
+
+<Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
     <CardBody>
         <CardTitle>
             Information about the data
@@ -7,7 +9,7 @@
             <Validation Validator="ValidationRule.IsNotEmpty">
                 <Field>
                     <FieldLabel>Please enter the name.</FieldLabel>
-                    <TextEdit Placeholder="Enter name" @bind-Text="Name" @onchange="OnNameChanged">
+                    <TextEdit Placeholder="Enter name" @bind-Text="@NFT.Name">
                         <Feedback>
                             <ValidationError>Missing name.</ValidationError>
                         </Feedback>
@@ -16,18 +18,18 @@
             </Validation>
             <Field>
                 <FieldLabel>Please enter the tags.</FieldLabel>
-                <SpaceTags Tags="@Tags" TagsChanged="@OnTagsChanged" />
+                <SpaceTags @bind-Tags="@NFT.Tags"/>
                 <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
             </Field>
 
             <Field>
                 <FieldLabel>Please enter the short description.</FieldLabel>
-                <TextEdit Placeholder="Enter short description" @bind-Text="Description" @onchange="OnDescChanged" />
+                <TextEdit Placeholder="Enter short description" @bind-Text="@NFT.Description"/>
                 <FieldHelp>If you need to write longer description please use the text field.</FieldHelp>
             </Field>
             <Field>
                 <FieldLabel>Here you can enter the longer description.</FieldLabel>
-                <Markdown @ref="markdownRef" Value="@Text" ValueChanged="OnTextChanged" />
+                <Markdown @ref="markdownRef" @bind-Value="@NFT.Text"/>
                 <FieldHelp>You can use Markdown formating in this editor.</FieldHelp>
             </Field>
         </Validations>
@@ -38,56 +40,6 @@
     Validations validationsRef;
     Markdown markdownRef;
 
-    string _name = string.Empty;
-    [Parameter] public string Name { get => _name; set => _name = value; }
-    [Parameter] public EventCallback<string> NameChanged { get; set; }
-
-    string _description = string.Empty;
-    [Parameter] public string Description { get => _description; set => _description = value; }
-    [Parameter] public EventCallback<string> DescriptionChanged { get; set; }
-
-    string _text = string.Empty;
-    [Parameter] public string Text { get => _text; set => _text = value; }
-    [Parameter] public EventCallback<string> TextChanged { get; set; }
-
-    string _tags = string.Empty;
-    [Parameter] public string Tags { get => _tags; set => _tags = value; }
-    [Parameter] public EventCallback<string> TagsChanged { get; set; }
-
-    [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
-
-    async Task OnNameChanged( ChangeEventArgs e )
-    {
-        if ( e != null && e.Value != null )
-        {
-            await NameChanged.InvokeAsync( (string)e.Value );
-            await OnPropsChanged.InvokeAsync();
-        }
-    }
-
-    async Task OnDescChanged( ChangeEventArgs e )
-    {
-        if ( e != null && e.Value != null )
-        {
-            await DescriptionChanged.InvokeAsync( (string)e.Value );
-            await OnPropsChanged.InvokeAsync();
-        }
-    }
-
-    async Task OnTextChanged( string e )
-    {
-        _text = e;
-        await TextChanged.InvokeAsync( _text );
-        await OnPropsChanged.InvokeAsync();
-    }
-
-    async Task OnTagsChanged( string tags )
-    {
-        _tags = tags;
-        await TagsChanged.InvokeAsync( Tags );
-        await OnPropsChanged.InvokeAsync();
-    }
-
     public Task<bool> IsValidated()
     {
         return validationsRef.ValidateAll();
@@ -95,6 +47,6 @@
 
     public void Refresh()
     {
-        markdownRef.SetValueAsync( _text );
+        markdownRef.SetValueAsync( NFT.Text );
     }
 }

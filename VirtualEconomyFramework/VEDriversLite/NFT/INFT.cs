@@ -187,6 +187,7 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// Data of the preview file
         /// </summary>
+        [JsonIgnore]
         byte[] PreviewData { get; set; }
         /// <summary>
         /// List of the tags separated by space
@@ -196,6 +197,11 @@ namespace VEDriversLite.NFT
         /// Parsed tag list. It is parsed in Common NFT class
         /// </summary>
         List<string> TagsList { get; set; }
+        /// <summary>
+        /// More items in the NFT, for example Image gallery with more images than one
+        /// Probably future replacement of the "ImageLink" property
+        /// </summary>
+        List<NFTDataItem> DataItems { get; set; }
         /// <summary>
         /// NFT Utxo hash
         /// </summary>

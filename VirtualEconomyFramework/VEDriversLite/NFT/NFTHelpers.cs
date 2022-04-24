@@ -208,6 +208,15 @@ namespace VEDriversLite.NFT
             return hash;
         }
         /// <summary>
+        /// Get full IPFS link from the hash
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <returns></returns>
+        public static string GetIPFSLinkFromHash(string hash)
+        {
+            return string.Concat("https://ipfs.infura.io/ipfs/", hash);
+        }
+        /// <summary>
         /// Obsolete function - just example how to redirect upload through different server
         /// </summary>
         /// <param name="stream"></param>

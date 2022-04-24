@@ -1,12 +1,29 @@
-﻿@inject AppData AppData
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@inject AppData AppData
 @inherits NFTComponentBase
 
 <Card Margin="Margin.Is4.FromBottom">
     <CardBody>
         <CardTitle Size="5">Basic Info</CardTitle>
-        <Row> 
+         
+        @if (NFT.DataItems != null && NFT.DataItems.Count > 0)
+        {
+            <Row Margin="Margin.Is2.FromBottom" Border="Border.Is1.Primary">
+                <Column>
+                    <CardGroup>
+                        @foreach (var item in NFT.DataItems)
+                        {
+                            <Card Style="max-width:50px;" >
+                                <CardImage Border="@(item.IsDisplayed ? Border.Is2.Success : Border.Is0)" Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" @onclick="() => DisplayItem(item)" Style="max-width:40px;"/>
+                            </Card>                        }
+                    </CardGroup>
+                </Column>
+            </Row>
+        }
+        <Row Border="Border.Is1.Primary">
             <Column> 
-                <PanzoomImage Source="@GetImageUrl()" /> 
+                <PanzoomImage Source="@actualImageLink" /> 
             </Column> 
         </Row> 
         <CardText Margin="Margin.Is2.FromTop">
@@ -27,3 +44,31 @@
         }
     </CardBody>
 </Card>
+              
+                
+@code {
+    public string actualImageLink 
+    {
+        get 
+        {
+            if (NFT.DataItems != null && NFT.DataItems.Count >= 0)
+            {
+                foreach (var item in NFT.DataItems)
+                {
+                    if (item.IsDisplayed)
+                        return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                }
+            }
+            return GetImageUrl();
+        }
+    }
+
+    void DisplayItem(NFTDataItem item)
+    {
+        foreach (var i in NFT.DataItems)
+            i.IsDisplayed = false;
+
+        item.IsDisplayed = true;
+        StateHasChanged();
+    }
+}                

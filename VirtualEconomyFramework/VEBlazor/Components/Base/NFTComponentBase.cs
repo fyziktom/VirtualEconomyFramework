@@ -129,6 +129,13 @@ namespace VEBlazor.Components.Base
             
             return "_content/VEBlazor/images/empty.jpg";
         }
+        public static string GetImageStringFromBytes(byte[] itemdata)
+        {
+            if (itemdata is not null && itemdata.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String(itemdata);
+            else
+                return "_content/VEBlazor/images/empty.jpg";
+        }
         public string GetImageUrl(bool returnPreviewIfExists = false)
         {
             if (NFT == null)
@@ -141,12 +148,42 @@ namespace VEBlazor.Components.Base
                     return preview;
             }
 
-            if (NFT.ImageData != null && NFT.ImageData.Length > 0)
-                return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
-            else if (!string.IsNullOrEmpty(NFT.ImageLink))
+            if (!string.IsNullOrEmpty(NFT.ImageLink))
                 return NFT.ImageLink;
+            else if (NFT.ImageData != null && NFT.ImageData.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
             else
                 return "_content/VEBlazor/images/empty.jpg";
+        }
+        public string GetImageGalleryUrl(VEDriversLite.NFT.Dto.NFTDataItem item)
+        {
+            if (NFT == null)
+                return "_content/VEBlazor/images/empty.jpg" ;
+            
+            if (item != null)
+            {
+                    if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.IPFS)
+                        return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                    else if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.Url)
+                        return item.Hash;
+            }
+
+            return  "_content/VEBlazor/images/empty.jpg" ;
+        }        
+        public List<string> GetImageGalleryUrls()
+        {
+            if (NFT == null)
+                return new List<string>() { "_content/VEBlazor/images/empty.jpg" };
+
+            if (NFT.DataItems != null && NFT.DataItems.Count > 0)
+            {
+                var urls = new List<string>();
+                foreach(var i in NFT.DataItems)
+                    urls.Add(GetImageGalleryUrl(i));
+                if (urls.Count > 0)
+                    return urls;
+            }   
+            return new List<string>() { "_content/VEBlazor/images/empty.jpg" };
         }
         public string GetPreviewUrl()
         {

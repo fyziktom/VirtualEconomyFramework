@@ -1,5 +1,8 @@
 ﻿@using System.IO
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@inherits NFTComponentBase
+@inject AppData AppData
 
 <Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
     <CardBody>
@@ -27,7 +30,7 @@
                         </Validations>
                     </Column>
                 </Row>
-                @if ( uploadingImage )
+                @if (uploadingImage)
                 {
                     <Row>
                         <Column>
@@ -35,7 +38,7 @@
                         </Column>
                     </Row>
                 }
-                @if ( !string.IsNullOrEmpty( ImageDataString ) )
+                @if (!string.IsNullOrEmpty(ImageDataString))
                 {
                     <Row>
                         <Column>
@@ -45,6 +48,7 @@
                             </Figure>
                         </Column>
                     </Row>
+
                     <Row>
                         <Column>
                             <Alert Color="Color.Success">Image loaded!</Alert>
@@ -55,45 +59,59 @@
                             <IPFSUpload @ref="@ipfsUploadRef" Started="@OnIPFSUploadStarted" Uploaded="@OnIPFSUploadEnded" ValidationsRef="@validationsRef" />
                         </Column>
                     </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <CardGroup>
+                                @if (NFT.DataItems != null && NFT.DataItems.Count > 0)
+                                {
+                                    @foreach (var item in NFT.DataItems)
+                                    {
+                                        <Card Style="max-width:350px; min-width:200px;">
+                                            <CardHeader>@(item.Hash.Length > 20 ? string.Concat(item.Hash.Substring(0,20), "...") : item.Hash)</CardHeader>
+                                            <CardImage Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))"></CardImage>
+                                            <CardFooter>
+                                                <Button Color="Color.Danger" Clicked="@(async () => await OnDeleteImageClicked(item))" Block>
+                                                    <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />Delete Image
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    }
+                                }
+                            </CardGroup>
+                        </Column>
+                    </Row>
                 }
             </Column>
         </Row>
     </CardBody>
 </Card>
 
-
 @code {
     Validations? validationsRef;
     IPFSUpload? ipfsUploadRef;
 
-    [Parameter] public string MainIPFSLink { get; set; } = string.Empty;
-
-    [Parameter] public EventCallback<string> MainIPFSLinkChanged { get; set; }
-
-    [Parameter] public string PreviewIPFSLink { get; set; } = string.Empty;
-
-    [Parameter] public EventCallback<string> PreviewIPFSLinkChanged { get; set; }
-
     [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
-    //[Parameter] public EventCallback<byte[]> OnImageDataLoaded { get; set; }
-    [Parameter] public byte[] ImageData { get; set; } = new byte[0];
-
-    [Parameter] public EventCallback<byte[]> ImageDataChanged { get; set; }
 
     public string ImageDataString
     {
         get
         {
-            if (ImageData is not null && ImageData.Length > 0)
-                return "data:image;base64," + Convert.ToBase64String( ImageData );
-            else
-                return "_content/VEBlazor/images/empty.jpg";
+            if (imageNeedsReload)
+            {
+                var i = NFTComponentBase.GetImageStringFromBytes(imageData);
+                imageString = i;
+                imageNeedsReload = false;
+            }
+            return imageString;
         }
     }
     bool uploadingImage = false;
     bool uploadingToIPFS = false;
     bool uploadFinished = false;
     string fileName = string.Empty;
+    string imageString = string.Empty;
+    bool imageNeedsReload = true;
+    byte[] imageData = new byte[0];
 
     Task OnImageUploadStarted()
     {
@@ -111,18 +129,14 @@
                 imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(link));
             else if (_imageData.Length > 0)
                 imd = _imageData;
-                
+
             if (imd != null)
             {
-                //await OnImageDataLoaded.InvokeAsync(imd);
-                
-                this.ImageData = imd;
-                await ImageDataChanged.InvokeAsync(ImageData);
-                await OnPropsChanged.InvokeAsync();                
+                this.imageData = imd;
+                imageNeedsReload = true;
                 uploadFinished = true;
-                StateHasChanged();
-                await Task.Delay(1);
-                
+                await InvokeAsync( StateHasChanged );
+
                 if (ipfsUploadRef != null)
                     await ipfsUploadRef.LoadIPFSLink(link);
                 await InvokeAsync( StateHasChanged );
@@ -133,16 +147,14 @@
     async Task OnImageUploadEnded( string fileName, byte[] data )
     {
         uploadingImage = false;
-
         this.fileName = fileName;
-        this.ImageData = data;
-        await ImageDataChanged.InvokeAsync(ImageData);
-        await OnPropsChanged.InvokeAsync();
-        
+        this.imageData = data;
+        imageNeedsReload = true;
+
         await InvokeAsync( StateHasChanged );
 
         if ( ipfsUploadRef != null )
-            await ipfsUploadRef.UploadToIPFS( fileName, ImageData );
+            await ipfsUploadRef.UploadToIPFS( fileName, data );
     }
 
     Task OnIPFSUploadStarted()
@@ -155,10 +167,10 @@
     async Task OnIPFSUploadEnded( string mainIPFSLink )
     {
         uploadingToIPFS = false;
-
-        MainIPFSLink = mainIPFSLink;
-        await MainIPFSLinkChanged.InvokeAsync( MainIPFSLink );
-        await OnPropsChanged.InvokeAsync();
+        NFT.ImageLink = mainIPFSLink;
+        NFT.DataItems.Add(new NFTDataItem() {
+            Hash = NFTHelpers.GetHashFromIPFSLink(mainIPFSLink)
+        });
     }
 
     void ImageValidator( ValidatorEventArgs e )
@@ -175,5 +187,14 @@
             return validationsRef.ValidateAll();
         else
             return Task.FromResult(false);
+    }
+
+    public async Task OnDeleteImageClicked(NFTDataItem item)
+    {
+        if (NFT.DataItems is not null && NFT.DataItems.Count > 0)
+        {
+            NFT.DataItems.Remove(item);
+            await InvokeAsync( StateHasChanged );
+        }
     }
 }

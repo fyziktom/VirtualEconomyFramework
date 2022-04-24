@@ -57,7 +57,6 @@ namespace VEDriversLite.NFT
         /// </summary>
         [JsonIgnore]
         public byte[] ImageData { get; set; } = null;
-
         /// <summary>
         /// Preview data of image or music
         /// </summary>
@@ -67,6 +66,11 @@ namespace VEDriversLite.NFT
         /// </summary>
         [JsonIgnore]
         public byte[] PreviewData { get; set; } = null;
+        /// <summary>
+        /// More items in the NFT, for example Image gallery with more images than one
+        /// Probably future replacement of the "ImageLink" property
+        /// </summary>
+        public List<NFTDataItem> DataItems { get; set; } = new List<NFTDataItem>();
         /// <summary>
         /// List of the tags separated by space
         /// </summary>
@@ -233,6 +237,7 @@ namespace VEDriversLite.NFT
             ImageData = nft.ImageData;
             Preview = nft.Preview;
             PreviewData = nft.PreviewData;
+            DataItems = nft.DataItems;
             Name = nft.Name;
             Link = nft.Link;
             Description = nft.Description;
@@ -443,6 +448,15 @@ namespace VEDriversLite.NFT
             if (UtxoIndex == 1 && meta.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
                 if (!string.IsNullOrEmpty(rfp))
                     TypeText = "NFT Receipt";
+
+            if (meta.TryGetValue("DataItems", out var dis))
+            {
+                try
+                {
+                    DataItems = JsonConvert.DeserializeObject<List<NFTDataItem>>(dis);
+                }
+                catch { Console.WriteLine("Cannot parse data items in the NFT"); }
+            }
         }
         /// <summary>
         /// Parse dogeft info from the metadata
@@ -484,6 +498,8 @@ namespace VEDriversLite.NFT
                 metadata.Add("Image", ImageLink);
             if (!string.IsNullOrEmpty(Preview))
                 metadata.Add("Preview", Preview);
+            if (DataItems != null && DataItems.Count > 0)
+                metadata.Add("DataItems", JsonConvert.SerializeObject(DataItems));
             Tags = Tags.Replace("#", string.Empty);
             Tags = Tags.Replace(",", string.Empty);
             Tags = Tags.Replace(";", string.Empty);
