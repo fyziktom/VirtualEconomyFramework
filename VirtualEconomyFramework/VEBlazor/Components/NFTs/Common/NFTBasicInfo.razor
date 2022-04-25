@@ -7,67 +7,8 @@
     <CardBody>
         <CardTitle Size="5">Basic Info</CardTitle>
          
-        @if (NFT.DataItems != null && NFT.DataItems.Count > 0)
-        {
-            <Row Margin="Margin.Is2.FromBottom" Border="Border.Is1.Primary" Flex="Flex.JustifyContent.Center">                               
-                @foreach (var item in NFT.DataItems)
-                {
-                    <Column Flex="Flex.JustifyContent.Center">
-                        <Card Style="max-width:50px; min-width:50px; width:50px;" Margin="Margin.Is1.FromEnd" >
-                            @if (item.Type == DataItemType.Image)
-                            {                            
-                            <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
-                                        Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" 
-                                        @onclick="() => DisplayItem(item)" 
-                                        Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
-                            }
-                            else if (item.Type == DataItemType.PDF)
-                            {
-                                <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
-                                        Source="_content/VEBlazor/images/pdf-image.png" 
-                                        @onclick="() => DisplayItem(item)" 
-                                        Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
-                            }
-                        </Card> 
-                    </Column>
-                }
-            </Row>
-        }
-        <Row Border="Border.Is1.Primary">
-            <Column> 
-                @if (actualFileType == DataItemType.Image)
-                {
-                    <PanzoomImage Source="@actualImageLink" /> 
-                }
-                else if (actualFileType == DataItemType.PDF)
-                {
-                    <Row>
-                        <Column>
-                            <Row>
-                                <Column Flex="Flex.JustifyContent.Center">
-                                    <Figure Size="FigureSize.Is256x256">
-                                        <FigureImage Source="_content/VEBlazor/images/pdf-image.png" />
-                                        <FigureCaption>This is the PDF file. Please display it in new browser tab</FigureCaption>
-                                    </Figure>
-                                </Column>
-                            </Row>
-                            <Row Margin="Margin.Is2.FromTop">
-                                <Column>
-                                        <Button Color="Color.Primary" 
-                                                Type="ButtonType.Link" 
-                                                To="@actualImageLink" 
-                                                Target="Target.Blank" 
-                                                Block>
-                                            Open PDF in new Tab
-                                        </Button>                      
-                                </Column>
-                            </Row>   
-                         </Column>
-                    </Row>
-                    @*<embed src="@actualImageLink" style="width=inherit; height=inherit;" />*@
-                }
-            </Column> 
-        </Row> 
+        <NFTDataItem NFT="@NFT" />
+        
         <CardText Margin="Margin.Is2.FromTop">
             @NFT.Description
         </CardText>
@@ -86,47 +27,3 @@
         }
     </CardBody>
 </Card>
-              
-                
-@code {
-    public string actualImageLink 
-    {
-        get 
-        {
-            if (NFT.DataItems != null && NFT.DataItems.Count >= 0)
-            {
-                foreach (var item in NFT.DataItems)
-                {
-                    if (item.IsMain)
-                        return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
-                }
-            }
-            return GetImageUrl();
-        }
-    }
-    public DataItemType actualFileType 
-    {
-        get 
-        {
-            if (NFT.DataItems != null && NFT.DataItems.Count >= 0)
-            {
-                foreach (var item in NFT.DataItems)
-                {
-                    if (item.IsMain)
-                        return item.Type;
-                }
-            }
-            return DataItemType.Image;
-        }
-    }
-
-    void DisplayItem(NFTDataItem item)
-    {
-        foreach (var i in NFT.DataItems)
-            i.IsMain = false;
-
-        item.IsMain = true;
-        NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash);            
-        StateHasChanged();
-    }  
-}                

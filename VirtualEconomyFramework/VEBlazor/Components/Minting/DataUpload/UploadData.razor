@@ -54,6 +54,23 @@
                                     <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New PDF Document: @fileName</FigureCaption>
                                  </Figure>
                             }
+                            else if (itemType == DataItemType.AVMedia)
+                            {
+                                @*<Row>
+                                    <Column>
+                                        <Video Source="@ImageDataString" Style="max-width:400px; min-width:250px;max-height:400px;min-height:200px;" />                                        
+                                    </Column>                                    
+                                </Row>
+                                <Row>
+                                    <Column>
+                                        <Span TextAlignment="TextAlignment.Center">Uploaded New Video: @fileName. Wait for the upload of video to see preview.
+                                    </Column>
+                                </Row> *@                               
+                                <Figure Size="@(SmallThumbnails ? FigureSize.Is64x64 : FigureSize.Is256x256)">
+                                    <FigureImage Source="_content/VEBlazor/images/blankvideo.png" AlternateText="empty-256x256" />
+                                    <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Video: @fileName. Wait for the upload of video to see preview.</FigureCaption>
+                                 </Figure>                                
+                            }
                         </Column>
                     </Row>
 
@@ -79,7 +96,7 @@
                                 {
                                     @foreach (var item in NFT.DataItems)
                                     {
-                                        <Card Style="@(SmallThumbnails ? "max-width:90px; min-width:90px; width:90px;" : "max-width:300px; min-width:200px;")" Margin="Margin.Is1.FromEnd">
+                                        <Card Style="@(SmallThumbnails ? "max-width:100px; min-width:100px; width:auto;" : "max-width:300px; min-width:200px;")" Margin="Margin.Is1.FromEnd">
                                             @if (!SmallThumbnails)
                                             {
                                                 <CardHeader>@(item.Hash.Length > 20 ? string.Concat(item.Hash.Substring(0,20), "...") : item.Hash)</CardHeader>
@@ -92,7 +109,16 @@
                                             {
                                                 <CardImage Source="_content/VEBlazor/images/pdf-image.png"></CardImage>
                                             }
-                                            <CardBody Height="Height.Is100">
+                                            <CardBody>
+                                                @if (item.Type == DataItemType.AVMedia)
+                                                {
+                                                    <Row>
+                                                        <Column>
+                                                            <Video Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Style="min-height:160px;" />
+                                                        </Column>
+                                                    </Row>
+                                                }
+                                                
                                                 @if (item.Type == DataItemType.PDF)
                                                 {
                                                     <Row>
@@ -100,11 +126,11 @@
                                                             <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open PDF in new Tab</Button>
                                                         </Column>
                                                     </Row>
-                                                }
+                                                }                                                
                                                 else 
                                                 {
-                                                    <Row Height="Height.Is100" Flex="Flex.AlignItems.Baseline" Margin="Margin.Is2.FromBottom">
-                                                        <Column Height="Height.Is100">
+                                                    <Row Flex="Flex.AlignItems.Baseline" Margin="Margin.Is2.FromBottom">
+                                                        <Column>
                                                             <Row>
                                                                 <Column Flex="Flex.JustifyContent.Center">
                                                                     <Check Checked="@item.IsMain" TValue="bool" CheckedChanged="@((e) => onCheckedChangedHandler(e, item))" >@(SmallThumbnails ? "" : "Set as Main")</Check>
@@ -145,7 +171,7 @@
 
     [Parameter] public bool Multiple { get; set; } = false;
     [Parameter] public bool SmallThumbnails { get; set; } = false;
-    [Parameter] public string Filter { get; set; } = ".jpeg, .png, .gif, .bmp, .jfif, .pdf";
+    [Parameter] public string Filter { get; set; } = ".jpeg, .jpg, .png, .gif, .bmp, .jfif, .pdf, .mp3, .wav, .ogg, .mp4, .avi, .mov";
     [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
 
     public string ImageDataString
@@ -154,7 +180,20 @@
         {
             if (imageNeedsReload)
             {
-                var i = NFTComponentBase.GetImageStringFromBytes(imageData);
+                var i = string.Empty;
+                if (itemType == DataItemType.Image)
+                {
+                    i = NFTComponentBase.GetImageStringFromBytes(imageData);
+                }
+                else if (itemType == DataItemType.PDF)
+                {
+                    i = "_content/VEBlazor/images/pdf-image.png";
+                }
+                else if (itemType == DataItemType.AVMedia)
+                {
+                    i = NFTComponentBase.GetVideoStringFromBytes(imageData);
+                }
+                
                 imageString = i;
                 imageNeedsReload = false;
             }
@@ -205,7 +244,7 @@
         this.imageData = data;
         imageNeedsReload = true;
         this.fileName = fileName;
-        itemType = NFTDataItem.GetItemType(fileName);
+        itemType = VEDriversLite.NFT.Dto.NFTDataItem.GetItemType(fileName);
 
         await InvokeAsync( StateHasChanged );
 
@@ -225,7 +264,7 @@
         uploadingToIPFS = false;
         NFT.ImageLink = mainIPFSLink;
         
-        NFT.DataItems.Add(new NFTDataItem() {
+        NFT.DataItems.Add(new VEDriversLite.NFT.Dto.NFTDataItem() {
             Type = itemType,
             Hash = NFTHelpers.GetHashFromIPFSLink(mainIPFSLink)
         });
@@ -247,7 +286,7 @@
             return Task.FromResult(false);
     }
 
-    public async Task OnDeleteImageClicked(NFTDataItem item)
+    public async Task OnDeleteImageClicked(VEDriversLite.NFT.Dto.NFTDataItem item)
     {
         if (NFT.DataItems is not null && NFT.DataItems.Count > 0)
         {
@@ -255,7 +294,7 @@
             await InvokeAsync( StateHasChanged );
         }
     }
-    public void onCheckedChangedHandler(bool e, NFTDataItem item)
+    public void onCheckedChangedHandler(bool e, VEDriversLite.NFT.Dto.NFTDataItem item)
     {
         if (NFT.DataItems is not null && NFT.DataItems.Count > 0)
         {
