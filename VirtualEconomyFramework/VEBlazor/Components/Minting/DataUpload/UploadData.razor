@@ -42,14 +42,14 @@
                         <Column>
                             @if (itemType == DataItemType.Image)
                             {
-                                <Figure Size="FigureSize.Is256x256">
+                                <Figure Size="@(SmallThumbnails ? FigureSize.Is64x64 : FigureSize.Is256x256)">
                                     <FigureImage Source="@ImageDataString" AlternateText="empty-256x256" />
-                                    <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Image</FigureCaption>
+                                    <FigureCaption TextAlignment="TextAlignment.Center">Last Uploaded Image</FigureCaption>
                                  </Figure>
                             }
                             else if (itemType == DataItemType.PDF)
                             {
-                                <Figure Size="FigureSize.Is256x256">
+                                <Figure Size="@(SmallThumbnails ? FigureSize.Is64x64 : FigureSize.Is256x256)">
                                     <FigureImage Source="_content/VEBlazor/images/pdf-image.png" AlternateText="empty-256x256" />
                                     <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New PDF Document: @fileName</FigureCaption>
                                  </Figure>
@@ -69,13 +69,21 @@
                     </Row>
                     <Row Margin="Margin.Is2.FromTop">
                         <Column>
+                            <Span>Loaded Images</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
                             <CardGroup>
                                 @if (NFT.DataItems != null && NFT.DataItems.Count > 0)
                                 {
                                     @foreach (var item in NFT.DataItems)
                                     {
-                                        <Card Style="max-width:300px; min-width:200px;">
-                                            <CardHeader>@(item.Hash.Length > 20 ? string.Concat(item.Hash.Substring(0,20), "...") : item.Hash)</CardHeader>
+                                        <Card Style="@(SmallThumbnails ? "max-width:90px; min-width:90px; width:90px;" : "max-width:300px; min-width:200px;")" Margin="Margin.Is1.FromEnd">
+                                            @if (!SmallThumbnails)
+                                            {
+                                                <CardHeader>@(item.Hash.Length > 20 ? string.Concat(item.Hash.Substring(0,20), "...") : item.Hash)</CardHeader>
+                                            }
                                             @if (item.Type == DataItemType.Image)
                                             {
                                                 <CardImage Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))"></CardImage>
@@ -84,7 +92,7 @@
                                             {
                                                 <CardImage Source="_content/VEBlazor/images/pdf-image.png"></CardImage>
                                             }
-                                            <CardBody>
+                                            <CardBody Height="Height.Is100">
                                                 @if (item.Type == DataItemType.PDF)
                                                 {
                                                     <Row>
@@ -95,16 +103,28 @@
                                                 }
                                                 else 
                                                 {
-                                                    <Row>
-                                                        <Column>
-                                                            <Check Checked="@item.IsMain" TValue="bool" CheckedChanged="@((e) => onCheckedChangedHandler(e, item))" >Set as Main</Check>
+                                                    <Row Height="Height.Is100" Flex="Flex.AlignItems.Baseline" Margin="Margin.Is2.FromBottom">
+                                                        <Column Height="Height.Is100">
+                                                            <Row>
+                                                                <Column Flex="Flex.JustifyContent.Center">
+                                                                    <Check Checked="@item.IsMain" TValue="bool" CheckedChanged="@((e) => onCheckedChangedHandler(e, item))" >@(SmallThumbnails ? "" : "Set as Main")</Check>
+                                                                </Column>
+                                                            </Row>
+                                                            @if (SmallThumbnails)
+                                                            {
+                                                                <Row>
+                                                                    <Column Flex="Flex.JustifyContent.Center">
+                                                                        <Span>Main</Span>
+                                                                    </Column>
+                                                                </Row>
+                                                            }
                                                         </Column>
                                                     </Row>
                                                 }
                                             </CardBody>
                                             <CardFooter>
                                                 <Button Color="Color.Danger" Clicked="@(async () => await OnDeleteImageClicked(item))" Block>
-                                                    <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />Delete Image
+                                                    <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />@(SmallThumbnails ? "" : "Delete Image")
                                                 </Button>
                                             </CardFooter>
                                         </Card>
@@ -124,6 +144,7 @@
     IPFSUpload? ipfsUploadRef;
 
     [Parameter] public bool Multiple { get; set; } = false;
+    [Parameter] public bool SmallThumbnails { get; set; } = false;
     [Parameter] public string Filter { get; set; } = ".jpeg, .png, .gif, .bmp, .jfif, .pdf";
     [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
 
