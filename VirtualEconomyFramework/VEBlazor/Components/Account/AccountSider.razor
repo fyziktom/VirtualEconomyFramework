@@ -79,6 +79,11 @@
                                 Transactions History
                             </Button>
                         </Column>
+                        <Column>
+                            <Button Color="Color.Light" Clicked="@addNewTransaction" Float="Float.End">
+                                <Icon Name="IconName.Add" /> Add
+                            </Button>
+                        </Column>
                     </Row>
                 </CollapseHeader>
                 <CollapseBody>
@@ -88,6 +93,8 @@
         </Accordion>
     </Column>
 </Row>
+
+<SendNeblioTransaction @ref="sendNeblioTxRef" Address="@Address" IsSubAccount="@IsSubAccount" />
 
 @code {
 
@@ -126,7 +133,12 @@
     bool collapse2Visible = true;
 
     private BookmarkIcon? bookmarkIcon;
+    private SendNeblioTransaction? sendNeblioTxRef;
 
+    private void addNewTransaction()
+    {
+        sendNeblioTxRef?.Show();
+    }  
     private async Task addNewBookmark()
     {
         if (bookmarkIcon != null)

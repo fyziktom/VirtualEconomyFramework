@@ -4379,6 +4379,27 @@
             <param name="coppies"></param>
             <returns>true and string with new TxId</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.SendNeblioOnSubAccount(System.String,System.String,System.Double,System.String)">
+            <summary>
+            Send Neblio Coin on SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="receiver">receiver Neblio address</param>
+            <param name="amount">amount of neblio</param>
+            <param name="message">optional message</param>
+            <returns>true and string with new TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.SendNeblioTokensOnSubAccount(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)">
+            <summary>
+            Send Neblio Tokens on SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="tokenId">Neblio NTP1 token Id</param>
+            <param name="meta">Metadata for transaction</param>
+            <param name="receiver">receiver Neblio address</param>
+            <param name="amount">amount of neblio</param>
+            <returns>true and string with new TxId</returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.SplitNeblioOnSubAccount(System.String,System.Collections.Generic.List{System.String},System.Int32,System.Double)">
             <summary>
             Split Neblio Coin on SubAccount

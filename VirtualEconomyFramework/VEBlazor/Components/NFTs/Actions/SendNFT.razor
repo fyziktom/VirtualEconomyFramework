@@ -39,7 +39,7 @@
             </Row>
             <Row Flex="Flex.JustifyContent.Center"> 
                 <Column>
-                    <Button Color="Color.Primary" Clicked="@NFTAction" Loading="@Sending">Yes, I understand. Send @(SendCopy ? "Copy of" : "") the NFT now.</Button>
+                    <Button Color="Color.Primary" Clicked="@NFTAction" Loading="@Sending" Block>Yes, I understand. Send @(SendCopy ? "Copy of" : "") the NFT now.</Button>
                 </Column>
             </Row>
             @if (SendFinished)

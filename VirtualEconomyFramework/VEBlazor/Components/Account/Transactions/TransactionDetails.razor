@@ -17,7 +17,7 @@
                 <Card>
                     <CardBody>
                         <CardTitle>
-                            <Span>Transaction ID: <Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></Span>
+                            <Span>Transaction ID: <a href="@(string.Concat("https://explorer.nebl.io/tx/",TxDetails.Info.Txid))" target="_blank" ><Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></a></Span>
                         </CardTitle>
                         <Row>
                             <Column>
@@ -264,11 +264,13 @@
     {
         var nft = await NFTFactory.GetNFT( "", TxDetails.Info.Txid,
                                               txinfo: TxDetails.Info,
+                                              wait:true,
                                               loadJustType: true,
                                               justType: NFTTypes.XrayImage );
         if ( nft != null  && openNFTDetailsFactory != null)
         {
             NFT = nft;
+            await InvokeAsync( StateHasChanged );
             await openNFTDetailsFactory?.OpenNFTDetails(nft);
         }
     }

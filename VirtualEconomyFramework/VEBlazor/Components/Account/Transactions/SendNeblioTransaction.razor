@@ -1,0 +1,222 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@inject AppData AppData
+@inherits NFTComponentBase
+
+<Modal @ref="SendModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Send Transaction</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Container Fluid>
+
+            <Row Width="Width.Is100" Margin="Margin.Is2.FromTop"> 
+                <Column>
+                   <NeblioAddressInput @bind-Receiver="@Receiver" />
+                </Column>
+            </Row>
+            <Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromTop">
+                <Column>
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <NumericPicker TValue="double" Min="0" Max="@selectedAssetAmount" @bind-Value="@Value" Decimals="@(Type == TxType.Neblio ? 6 : 0)" Size="Size.Small" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Dropdown Display="Display.Block">
+                                <DropdownToggle Color="Color.Light">
+                                    <Image Source="@selectedAssetImage" Style="max-width:16px;max-height:16px;" />
+                                </DropdownToggle>
+                                <DropdownMenu MaxMenuHeight="250px" >
+                                    @foreach (var ts in AppData.Account.TokensSupplies)
+                                    {
+                                        <DropdownItem Value="@(ts.Key)" Clicked="@((e) => SetTxType(TxType.Token, ts.Value.TokenId, ts.Value.ImageUrl, ts.Value.Amount, ts.Value.TokenSymbol))">
+                                            <Span>@ts.Value.TokenSymbol</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@(ts.Value.ImageUrl)" /></Figure>
+                                        </DropdownItem>
+                                    }
+                                    <DropdownItem Value="@("NEBL")" Clicked="@((e) => SetTxType(TxType.Neblio, "", AppData.NeblioImageLink, AppData.Account.TotalSpendableBalance, "NEBL"))">
+                                        <Span>NEBL</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        </Addon>
+                    </Addons>
+                </Column>
+            </Row>
+            @if (Type == TxType.Token)
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                   <Column>
+                       Actual Balance: @selectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                   </Column>
+               </Row>
+               <Row Margin="Margin.Is2.FromTop">
+                   <Column>
+                       Remain After Tx: @(selectedAssetAmount-Value) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                   </Column>
+               </Row>
+            }
+            else
+            {            
+                <Row Margin="Margin.Is2.FromTop">
+                   <Column>
+                       Actual Balance: @(Math.Round(selectedAssetAmount, 8)) @selectedAssetTokenSymbol <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                   </Column>
+               </Row>
+               <Row Margin="Margin.Is2.FromTop">
+                   <Column>
+                       Remain After Tx: @(Math.Round(selectedAssetAmount - Value, 8)) @selectedAssetTokenSymbol <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                   </Column>
+               </Row>
+            }
+            <Field Margin="Margin.Is2.FromTop">
+                <FieldLabel>Please enter the message</FieldLabel>
+                <TextEdit Placeholder="Enter the message" @bind-Text="@Message"/>
+                <FieldHelp>You can add some message for the receiver.</FieldHelp>
+            </Field>
+
+            <Row>
+                <Column Flex="Flex.AlignItems.Center">
+                    <Span>Do you really want to Send this transaction? You cannot take this action back.</Span>
+                </Column>
+            </Row>
+            
+            <Row Flex="Flex.JustifyContent.Center"> 
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@Action" Loading="@Sending" Block>Yes, I understand. Send transaction now.</Button>
+                </Column>
+            </Row>
+            @if (SendFinished)
+            {
+                <Row Flex="Flex.JustifyContent.Center">
+                    <Column>
+                        @if (SendResult.Item1)
+                        {
+                            <Alert Color="Color.Success">@SendResult.Item2</Alert>
+                        }
+                        else
+                        {
+                            <Alert Color="Color.Danger">@SendResult.Item2</Alert>
+                        }
+                    </Column>
+                </Row>
+            }
+            <NotificationAlert />
+            </Container>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    public enum TxType 
+    {
+        Neblio,
+        Token
+    }
+
+    private Modal? SendModal;
+
+    [Parameter] public string Receiver { get; set; } = string.Empty;
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public string TokenId { get; set; } = string.Empty;
+    [Parameter] public double Value { get; set; } = 0.0;
+    [Parameter] public TxType Type { get; set; } = TxType.Neblio;
+
+    bool Sending = false;
+    bool SendFinished = false;
+    bool SendCopy = false;
+    (bool,string) SendResult = (false,string.Empty);
+    string selectedAssetImage = AppData.NeblioImageLink;
+    string selectedAssetTokenSymbol = "NEBL";
+    double selectedAssetAmount = 0.0;
+
+    public void Show(string receiver = "", bool sendCopy = false)
+    {
+        if (NFT == null) return;
+        if (!string.IsNullOrEmpty(receiver))
+            Receiver = receiver;
+
+        StateHasChanged();
+        SendModal?.Show();
+    }
+    public void Hide()
+    {
+        SendModal?.Hide();
+    }
+
+    void SetTxType(TxType type, string tokenId, string imageUrl, double assetAmount, string tokenSymbol)
+    {
+        Type = type;
+        if (type == TxType.Token)
+            TokenId = tokenId;
+        selectedAssetImage = imageUrl;
+        selectedAssetTokenSymbol = tokenSymbol;
+        selectedAssetAmount = assetAmount;
+        Value = 0.0;
+        StateHasChanged();
+    }
+
+    async Task Action()
+    {
+        if (Value == 0.0)
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning( "Please fill the amount. Cannot send 0...", "Cannot send" );                    
+            return;
+        }        
+        if (Value < 0.0)
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning( "Cannot send negative value...", "Cannot send" );                    
+            return;
+        }
+        if (string.IsNullOrEmpty(Receiver))
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning( "Please fill the receiver...", "Cannot send" );                    
+            return;
+        }
+        Sending = true;
+        StateHasChanged();
+
+        if (NotificationService != null)
+            await NotificationService.Info( "Sending transaction...", "Sending" );
+
+        if (Type == TxType.Neblio)
+        {
+            if (!IsSubAccount)
+                SendResult = await AppData.Account.SendNeblioPayment(Receiver, Value, Message);
+            else
+                SendResult = await AppData.Account.SendNeblioOnSubAccount(Address, Receiver, Value, Message);
+        }
+        else
+        {
+            if (!IsSubAccount)
+                SendResult = await AppData.Account.SendNeblioTokenPayment(TokenId, new Dictionary<string,string> { { "Message", Message } }, Receiver, (int)Value);
+            else
+                SendResult = await AppData.Account.SendNeblioTokensOnSubAccount(Address, TokenId, new Dictionary<string,string> { { "Message", Message } }, Receiver, (int)Value);
+        }
+        Console.WriteLine($"Tx Send. of the result: {SendResult.Item1}, with message: {SendResult.Item2}");
+
+        SendFinished = false;
+
+        Sending = false;
+        StateHasChanged();
+
+        if (NotificationService != null)
+        {
+            if (SendResult.Item1)
+                await NotificationService.Success( "Sent Successfull.", "Send success" );
+            else
+                await NotificationService.Warning( SendResult.Item2, "Cannot sent" );
+        }
+
+        //close automatically after 2 seconds
+        await Task.Delay(2000);   
+    }
+}
