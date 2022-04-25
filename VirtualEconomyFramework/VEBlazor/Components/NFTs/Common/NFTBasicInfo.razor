@@ -14,10 +14,20 @@
                 {
                     <Column Flex="Flex.JustifyContent.Center">
                         <Card Style="max-width:50px; min-width:50px; width:50px;" Margin="Margin.Is1.FromEnd" >
+                            @if (item.Type == DataItemType.Image)
+                            {                            
                             <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
                                         Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" 
                                         @onclick="() => DisplayItem(item)" 
-                                        Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/>                                         
+                                        Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                            }
+                            else if (item.Type == DataItemType.PDF)
+                            {
+                                <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                        Source="_content/VEBlazor/images/pdf-image.png" 
+                                        @onclick="() => DisplayItem(item)" 
+                                        Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                            }
                         </Card> 
                     </Column>
                 }
@@ -25,7 +35,37 @@
         }
         <Row Border="Border.Is1.Primary">
             <Column> 
-                <PanzoomImage Source="@actualImageLink" /> 
+                @if (actualFileType == DataItemType.Image)
+                {
+                    <PanzoomImage Source="@actualImageLink" /> 
+                }
+                else if (actualFileType == DataItemType.PDF)
+                {
+                    <Row>
+                        <Column>
+                            <Row>
+                                <Column Flex="Flex.JustifyContent.Center">
+                                    <Figure Size="FigureSize.Is256x256">
+                                        <FigureImage Source="_content/VEBlazor/images/pdf-image.png" />
+                                        <FigureCaption>This is the PDF file. Please display it in new browser tab</FigureCaption>
+                                    </Figure>
+                                </Column>
+                            </Row>
+                            <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                        <Button Color="Color.Primary" 
+                                                Type="ButtonType.Link" 
+                                                To="@actualImageLink" 
+                                                Target="Target.Blank" 
+                                                Block>
+                                            Open PDF in new Tab
+                                        </Button>                      
+                                </Column>
+                            </Row>   
+                         </Column>
+                    </Row>
+                    @*<embed src="@actualImageLink" style="width=inherit; height=inherit;" />*@
+                }
             </Column> 
         </Row> 
         <CardText Margin="Margin.Is2.FromTop">
@@ -62,6 +102,21 @@
                 }
             }
             return GetImageUrl();
+        }
+    }
+    public DataItemType actualFileType 
+    {
+        get 
+        {
+            if (NFT.DataItems != null && NFT.DataItems.Count >= 0)
+            {
+                foreach (var item in NFT.DataItems)
+                {
+                    if (item.IsMain)
+                        return item.Type;
+                }
+            }
+            return DataItemType.Image;
         }
     }
 

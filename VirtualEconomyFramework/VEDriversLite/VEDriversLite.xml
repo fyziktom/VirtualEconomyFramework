@@ -8739,6 +8739,56 @@
             indicate when the NFT was saved in the cash first time
             </summary>
         </member>
+        <member name="T:VEDriversLite.NFT.Dto.DataItemType">
+            <summary>
+            Type of the content
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Image">
+            <summary>
+            Image file, file .bmp, .jpg, .jpeg, .gif, .png, jfif
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.AVMedia">
+            <summary>
+            Audio or Video file, file .wav, .ogg, .mp3, .mp4, .avi, .mov
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.PDF">
+            <summary>
+            PDF file, file .pdf
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Text">
+            <summary>
+            Simple text, file .txt
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Markdown">
+            <summary>
+            Text file with Markdown formating, file .md
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Mermaid">
+            <summary>
+            Mermaid graph, file .mmd
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.HTML">
+            <summary>
+            HTML file, file .html
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.JSON">
+            <summary>
+            Json file, file .json
+            </summary>       
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Model3dSTL">
+            <summary>
+            3d model in STL, file .stl
+            </summary>
+        </member>
         <member name="T:VEDriversLite.NFT.Dto.DataItemStorageType">
             <summary>
             Type of the storage where the data are stored. Usually it is IPFS.
@@ -8762,6 +8812,11 @@
         <member name="T:VEDriversLite.NFT.Dto.NFTDataItem">
             <summary>
             Item in the NFT gallery. It is usually some image with tags
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.NFTDataItem.Type">
+            <summary>
+            Type of the item
             </summary>
         </member>
         <member name="P:VEDriversLite.NFT.Dto.NFTDataItem.Hash">

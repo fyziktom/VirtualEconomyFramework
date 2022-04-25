@@ -23,7 +23,7 @@
                                 <Field>
                                     <FieldLabel>Please select the image.</FieldLabel>
                                     <FieldBody>
-                                        <FileUpload Started="@OnImageUploadStarted" Uploaded="@OnImageUploadEnded" ValidationsRef="@validationsRef" />
+                                        <FileUpload Started="@OnImageUploadStarted" Uploaded="@OnImageUploadEnded" ValidationsRef="@validationsRef" Multiple="@Multiple" Filter="@Filter" />
                                     </FieldBody>
                                 </Field>
                             </Validation>
@@ -38,20 +38,28 @@
                         </Column>
                     </Row>
                 }
-                @if (!string.IsNullOrEmpty(ImageDataString))
-                {
-                    <Row>
+                    <Row Margin="Margin.Is2.FromTop">
                         <Column>
-                            <Figure Size="FigureSize.Is256x256">
-                                <FigureImage Source="@ImageDataString" AlternateText="empty-256x256" />
-                                <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Image</FigureCaption>
-                            </Figure>
+                            @if (itemType == DataItemType.Image)
+                            {
+                                <Figure Size="FigureSize.Is256x256">
+                                    <FigureImage Source="@ImageDataString" AlternateText="empty-256x256" />
+                                    <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Image</FigureCaption>
+                                 </Figure>
+                            }
+                            else if (itemType == DataItemType.PDF)
+                            {
+                                <Figure Size="FigureSize.Is256x256">
+                                    <FigureImage Source="_content/VEBlazor/images/pdf-image.png" AlternateText="empty-256x256" />
+                                    <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New PDF Document: @fileName</FigureCaption>
+                                 </Figure>
+                            }
                         </Column>
                     </Row>
 
                     <Row>
                         <Column>
-                            <Alert Color="Color.Success">Image loaded!</Alert>
+                            <Alert Color="Color.Success">File loaded!</Alert>
                         </Column>
                     </Row>
                     <Row>
@@ -68,9 +76,31 @@
                                     {
                                         <Card Style="max-width:300px; min-width:200px;">
                                             <CardHeader>@(item.Hash.Length > 20 ? string.Concat(item.Hash.Substring(0,20), "...") : item.Hash)</CardHeader>
-                                            <CardImage Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))"></CardImage>
+                                            @if (item.Type == DataItemType.Image)
+                                            {
+                                                <CardImage Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))"></CardImage>
+                                            }
+                                            else if (item.Type == DataItemType.PDF)
+                                            {
+                                                <CardImage Source="_content/VEBlazor/images/pdf-image.png"></CardImage>
+                                            }
                                             <CardBody>
-                                                <Check Checked="@item.IsMain" TValue="bool" CheckedChanged="@((e) => onCheckedChangedHandler(e, item))" >Set as Main</Check>
+                                                @if (item.Type == DataItemType.PDF)
+                                                {
+                                                    <Row>
+                                                        <Column>
+                                                            <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open PDF in new Tab</Button>
+                                                        </Column>
+                                                    </Row>
+                                                }
+                                                else 
+                                                {
+                                                    <Row>
+                                                        <Column>
+                                                            <Check Checked="@item.IsMain" TValue="bool" CheckedChanged="@((e) => onCheckedChangedHandler(e, item))" >Set as Main</Check>
+                                                        </Column>
+                                                    </Row>
+                                                }
                                             </CardBody>
                                             <CardFooter>
                                                 <Button Color="Color.Danger" Clicked="@(async () => await OnDeleteImageClicked(item))" Block>
@@ -83,7 +113,7 @@
                             </CardGroup>
                         </Column>
                     </Row>
-                }
+                
             </Column>
         </Row>
     </CardBody>
@@ -93,6 +123,8 @@
     Validations? validationsRef;
     IPFSUpload? ipfsUploadRef;
 
+    [Parameter] public bool Multiple { get; set; } = false;
+    [Parameter] public string Filter { get; set; } = ".jpeg, .png, .gif, .bmp, .jfif, .pdf";
     [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
 
     public string ImageDataString
@@ -110,11 +142,11 @@
     }
     bool uploadingImage = false;
     bool uploadingToIPFS = false;
-    bool uploadFinished = false;
     string fileName = string.Empty;
     string imageString = string.Empty;
     bool imageNeedsReload = true;
     byte[] imageData = new byte[0];
+    DataItemType itemType = DataItemType.Image;
 
     Task OnImageUploadStarted()
     {
@@ -137,7 +169,6 @@
             {
                 this.imageData = imd;
                 imageNeedsReload = true;
-                uploadFinished = true;
                 await InvokeAsync( StateHasChanged );
 
                 if (ipfsUploadRef != null)
@@ -150,9 +181,10 @@
     async Task OnImageUploadEnded( string fileName, byte[] data )
     {
         uploadingImage = false;
-        this.fileName = fileName;
         this.imageData = data;
         imageNeedsReload = true;
+        this.fileName = fileName;
+        itemType = NFTDataItem.GetItemType(fileName);
 
         await InvokeAsync( StateHasChanged );
 
@@ -171,7 +203,9 @@
     {
         uploadingToIPFS = false;
         NFT.ImageLink = mainIPFSLink;
+        
         NFT.DataItems.Add(new NFTDataItem() {
+            Type = itemType,
             Hash = NFTHelpers.GetHashFromIPFSLink(mainIPFSLink)
         });
     }
