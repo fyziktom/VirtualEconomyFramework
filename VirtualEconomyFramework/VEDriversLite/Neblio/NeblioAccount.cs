@@ -359,7 +359,10 @@ namespace VEDriversLite
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
                     Address = kdto.Address;
-
+                    
+                    if (string.IsNullOrEmpty(Address))
+                        Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                    
                     LoadAccountKey(password, kdto.Key);
 
                     SignMessage("init");
@@ -406,7 +409,9 @@ namespace VEDriversLite
                 
                 Secret = privateKeyFromNetwork;
                 Address = address;//Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
-
+                if (string.IsNullOrEmpty(Address))
+                    Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                
                 SignMessage("init");
 
                 WithoutNFTs = withoutNFTs;
@@ -452,7 +457,10 @@ namespace VEDriversLite
 
                     if (Address != bdto.Address)
                         Address = bdto.Address;
-
+                    
+                    if (string.IsNullOrEmpty(Address))
+                        Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                    
                     if (!string.IsNullOrEmpty(bdto.DogeAddress))
                     {
                         var dogeacc = new DogeAccount();
@@ -518,7 +526,9 @@ namespace VEDriversLite
                         Address = address;
                     }
                 }
-
+                if (string.IsNullOrEmpty(Address) && Secret != null)
+                    Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                
                 WithoutNFTs = withoutNFTs;
                 if (!IsRefreshingRunning)
                     await StartRefreshingData();

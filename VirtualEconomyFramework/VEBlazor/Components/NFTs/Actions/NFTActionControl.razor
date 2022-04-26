@@ -40,6 +40,17 @@
                 </Column> 
                 }
             </Row> 
+            @if (AppData.AllowSend )
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column> 
+                        <Button Color="Color.Primary" Clicked=@SetNFTPriceAction Block> 
+                            <Icon Name="IconName.DollarSign" /> 
+                            Set Price 
+                        </Button> 
+                    </Column> 
+                </Row>
+            }            
         } 
     </CardBody>
 </Card>
@@ -55,18 +66,30 @@
          Address="@Address"
          IsSubAccount="@IsSubAccount"
          NFTSent="NFTSendHandler" />
-
+         
+<SetNFTPrice @ref=SetPriceNFTModalComponent
+         NFT="@NFT"
+         Address="@Address"
+         IsSubAccount="@IsSubAccount"
+         NFTSent="NFTSendHandler" />
          
 @code {
 
-    private DestroyNFT? DestroyNFTModalComponent;
-    private SendNFT? SendNFTModalComponent;
-
+    DestroyNFT? DestroyNFTModalComponent;
+    SendNFT? SendNFTModalComponent;
+    SetNFTPrice? SetPriceNFTModalComponent;
+    
     void SendNFT()
     {
         if ( NFT == null )
             return;
         SendNFTModalComponent?.ShowSendNFTModal();
+    }
+    void SetNFTPriceAction()
+    {
+        if ( NFT == null )
+            return;
+        SetPriceNFTModalComponent?.Show();
     }
 
     void DestroyNFT()

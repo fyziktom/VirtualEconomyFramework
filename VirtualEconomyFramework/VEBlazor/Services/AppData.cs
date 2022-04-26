@@ -119,6 +119,7 @@ public class AppData
     };
 
     public NeblioAccount Account { get; set; } = new NeblioAccount();
+    public DogeAccount DogeAccount { get; set; } = new DogeAccount();
     public bool IsAccountLoaded { get; set; } = false;
     public List<GalleryTab> OpenedTabs { get; set; } = new List<GalleryTab>();
     public Dictionary<string, VEDriversLite.NFT.Tags.Tag> DefaultTags { get; set; } = new Dictionary<string, VEDriversLite.NFT.Tags.Tag>();
@@ -129,7 +130,7 @@ public class AppData
 
     public event EventHandler<bool> LockUnlockAccount;
     
-    public async Task<(bool,string)> UnlockAccount(string password)
+    public async Task<(bool,string)> UnlockAccount(string password, bool withoutNFTs = false)
     {
         var ekey = await localStorage.GetItemAsync<string>("key");
         if (string.IsNullOrEmpty(ekey))
@@ -140,7 +141,7 @@ public class AppData
 
         await LoadChache();
         var address = string.Empty;
-        if (await Account.LoadAccount(password, ekey, "", false))
+        if (await Account.LoadAccount(password, ekey, "", withoutNFTs))
         {
             address = Account.Address;
             IsAccountLoaded = true;
