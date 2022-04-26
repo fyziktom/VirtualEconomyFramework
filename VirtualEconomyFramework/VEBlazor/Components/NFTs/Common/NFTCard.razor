@@ -30,7 +30,7 @@
                 <Small>@NFT.Description</Small>
             </CardText>
             <CardText>
-                <Tags NFTType="@NFT.Type" TagsList="@NFT.TagsList" TokenId="@NFT.TokenId" />
+                <Tags NFTType="@NFT.Type" TagsList="@NFT.TagsList" TokenId="@NFT.TokenId" IsGallery="@(NFT.DataItems.Count > 0 ? true : false)" />
             </CardText>
             @ChildContent
         </CardBody>
