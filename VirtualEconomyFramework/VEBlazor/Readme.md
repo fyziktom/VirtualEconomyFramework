@@ -6,7 +6,7 @@ It uses the [VEDriversLite library](https://www.nuget.org/packages/VEFramework.V
 
 The library is now as "preview". We are still working hard on the refactoring. Same as this readme.
 
-The library is based on the [great component library Blazorise](https://blazorise.com/). Thanks to [Mladen Macanovic](https://github.com/Megabit/Blazorise/commits?author=stsrki) for help with first steps with Blazorise library :)
+The library is based on the [great component library Blazorise](https://blazorise.com/). Thanks to [Mladen Macanovic](https://github.com/stsrki) for help with first steps with Blazorise library :)
 
 # Live Demo
 
