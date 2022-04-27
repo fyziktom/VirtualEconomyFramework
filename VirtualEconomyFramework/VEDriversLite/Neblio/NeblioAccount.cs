@@ -1332,6 +1332,32 @@ namespace VEDriversLite
             }
         }
 
+
+        /// <summary>
+        /// Return NFT Payment From SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="receiver">Receiver of the NFT</param>
+        /// <param name="NFT">NFT Payment on the SubAccount which should be return</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> ReturnNFTPaymentFromSubAccount(string address, string receiver, INFT NFT)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.ReturnNFTPayment(receiver, NFT as PaymentNFT);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
         /// <summary>
         /// Change NFT on SubAccount
         /// </summary>

@@ -49,6 +49,7 @@ namespace VEBlazor.Components.Base
 
     public abstract class NFTBase : AccountRelatedComponentBase
     {
+        public const string EmptyImage = "_content/VEBlazor/images/empty.jpg";
         [Parameter]
         public INFT NFT { get; set; } = new ImageNFT("");
         [Parameter]
@@ -66,7 +67,7 @@ namespace VEBlazor.Components.Base
         public string GetImageUrl(bool returnPreviewIfExists = false)
         {
             if (NFT == null)
-                return "_content/VEBlazor/images/empty.jpg";
+                return EmptyImage;
 
             if (returnPreviewIfExists)
             {
@@ -80,7 +81,7 @@ namespace VEBlazor.Components.Base
             else if (NFT.ImageData != null && NFT.ImageData.Length > 0)
                 return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
             else
-                return "_content/VEBlazor/images/empty.jpg";
+                return EmptyImage;
         }
         /// <summary>
         /// Get preview image from the NFT.
@@ -90,12 +91,12 @@ namespace VEBlazor.Components.Base
         public string GetPreviewUrl()
         {
             if (NFT == null)
-                return "_content/VEBlazor/images/empty.jpg";
+                return EmptyImage;
 
             if (!string.IsNullOrEmpty(NFT.Preview))
                 return NFT.Preview;
             else
-                return "_content/VEBlazor/images/empty.jpg";
+                return EmptyImage;
         }
 
         public string actualImageLink
@@ -127,6 +128,34 @@ namespace VEBlazor.Components.Base
                 }
                 return DataItemType.Image;
             }
+        }
+        public string ActualImageLinkFromNFT(INFT nft)
+        {
+            if (nft.DataItems != null && nft.DataItems.Count >= 0)
+            {
+                foreach (var item in nft.DataItems)
+                {
+                    if (item.IsMain)
+                        return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                    if (nft.DataItems.Count > 0 && !string.IsNullOrEmpty(nft.ImageLink))
+                        return NFTHelpers.GetIPFSLinkFromHash(nft.DataItems.FirstOrDefault()?.Hash) ?? GetImageUrl();
+                }
+            }
+            return GetImageUrl();
+        }
+        public DataItemType ActualFileTypeFromNFT(INFT nft)
+        {
+            if (nft.DataItems != null && nft.DataItems.Count >= 0)
+            {
+                foreach (var item in nft.DataItems)
+                {
+                    if (item.IsMain)
+                        return item.Type;
+                }
+                if (nft.DataItems.Count > 0 && !string.IsNullOrEmpty(nft.ImageLink))
+                    return nft.DataItems.FirstOrDefault()?.Type ?? DataItemType.Image;
+            }
+            return DataItemType.Image;
         }
     }
     public abstract class NFTComponentBase : NFTBase
@@ -194,7 +223,7 @@ namespace VEBlazor.Components.Base
         public async Task<string> GetImage()
         {
             if (NFT == null)
-                return "_content/VEBlazor/images/empty.jpg";
+                return EmptyImage;
 
             if (NFT.ImageData != null && NFT.ImageData.Length > 0)
                 return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
@@ -208,7 +237,7 @@ namespace VEBlazor.Components.Base
                 }
             }
             
-            return "_content/VEBlazor/images/empty.jpg";
+            return EmptyImage;
         }
         /// <summary>
         /// Get image as base64 string.
@@ -221,7 +250,7 @@ namespace VEBlazor.Components.Base
             if (itemdata is not null && itemdata.Length > 0)
                 return "data:video;base64," + Convert.ToBase64String(itemdata);
             else
-                return "_content/VEBlazor/images/empty.jpg";
+                return EmptyImage;
         }
         /// <summary>
         /// Get video as base64 string.
@@ -240,7 +269,7 @@ namespace VEBlazor.Components.Base
         public string GetImageGalleryUrl(VEDriversLite.NFT.Dto.NFTDataItem item)
         {
             if (NFT == null)
-                return "_content/VEBlazor/images/empty.jpg" ;
+                return EmptyImage;
             
             if (item != null)
             {
@@ -250,12 +279,12 @@ namespace VEBlazor.Components.Base
                         return item.Hash;
             }
 
-            return  "_content/VEBlazor/images/empty.jpg" ;
+            return EmptyImage;
         }        
         public List<string> GetImageGalleryUrls()
         {
             if (NFT == null)
-                return new List<string>() { "_content/VEBlazor/images/empty.jpg" };
+                return new List<string>() { EmptyImage };
 
             if (NFT.DataItems != null && NFT.DataItems.Count > 0)
             {
@@ -265,7 +294,7 @@ namespace VEBlazor.Components.Base
                 if (urls.Count > 0)
                     return urls;
             }   
-            return new List<string>() { "_content/VEBlazor/images/empty.jpg" };
+            return new List<string>() { EmptyImage };
         }
         
         internal virtual async Task OpenNFTInWorkTab()

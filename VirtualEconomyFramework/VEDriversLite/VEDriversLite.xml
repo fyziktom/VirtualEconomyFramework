@@ -4352,6 +4352,15 @@
             <param name="dogeprice"></param>
             <returns>true and string with new TxId</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.ReturnNFTPaymentFromSubAccount(System.String,System.String,VEDriversLite.NFT.INFT)">
+            <summary>
+            Return NFT Payment From SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="receiver">Receiver of the NFT</param>
+            <param name="NFT">NFT Payment on the SubAccount which should be return</param>
+            <returns>true and string with new TxId</returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.ChangeNFTOnSubAccount(System.String,VEDriversLite.NFT.INFT)">
             <summary>
             Change NFT on SubAccount

@@ -50,7 +50,6 @@
     </CardBody>
 </Card>
 
-
 @code {
     [Parameter] public double NeblioBalance { get; set; } = 0.0;
     [Parameter] public double NeblioBalanceUnconfirmed { get; set; } = 0.0;
@@ -58,18 +57,15 @@
     [Parameter] public int BDPBalance { get; set; } = 0;
     [Parameter] public int WDOGEBalance { get; set; } = 0;
     [Parameter] public int NFTsCount { get; set; } = 0;
-
+    
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
-        {
-            AppData.Account.Refreshed -= RefreshedHandler;
-            AppData.Account.Refreshed += RefreshedHandler;
-        }        
+        AppData.Account.Refreshed -= RefreshedHandler;
+        AppData.Account.Refreshed += RefreshedHandler;      
         base.OnAfterRender(firstRender);
     }
 
-    private void RefreshedHandler(object sender, EventArgs e)
+    private void RefreshedHandler(object? sender, EventArgs e)
     {
         this.StateHasChanged();
     }

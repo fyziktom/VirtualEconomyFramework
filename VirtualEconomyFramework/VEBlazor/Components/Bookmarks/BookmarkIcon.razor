@@ -129,7 +129,7 @@
         if (string.IsNullOrEmpty(_address))
             return;
         if ( MessageService != null )            
-            if (await MessageService.Confirm("Are you sure you want remove this bookmark?", "Finish") == true)
+            if (await MessageService.Confirm("Are you sure you want remove this bookmark?", "Remove Bookmark") == true)
             {
                 await AppData.RemoveBookmark(_address);
                 NewBookmark = new VEDriversLite.Bookmarks.Bookmark() { Address = _address };

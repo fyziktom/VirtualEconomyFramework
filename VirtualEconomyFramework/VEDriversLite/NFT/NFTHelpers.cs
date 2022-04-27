@@ -204,6 +204,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static string GetHashFromIPFSLink(string link)
         {
+            if (string.IsNullOrEmpty(link)) return string.Empty;
             var hash = link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty);
             return hash;
         }
@@ -212,9 +213,9 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="hash"></param>
         /// <returns></returns>
-        public static string GetIPFSLinkFromHash(string hash)
+        public static string GetIPFSLinkFromHash(string? hash)
         {
-            return string.Concat("https://ipfs.infura.io/ipfs/", hash);
+            return string.IsNullOrEmpty(hash) ? string.Concat("https://ipfs.infura.io/ipfs/", hash) : string.Empty;
         }
         /// <summary>
         /// Obsolete function - just example how to redirect upload through different server
