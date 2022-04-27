@@ -110,6 +110,11 @@ namespace VEBlazor.Components.Base
                         if (item.IsMain)
                             return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
                     }
+                    if (NFT.DataItems.Count > 0 && string.IsNullOrEmpty(NFT.ImageLink))
+                    {
+                        var il = NFTHelpers.GetIPFSLinkFromHash(NFT.DataItems.FirstOrDefault()?.Hash);
+                        return !string.IsNullOrEmpty(il) ? il : GetImageUrl();
+                    }
                 }
                 return GetImageUrl();
             }
@@ -125,6 +130,8 @@ namespace VEBlazor.Components.Base
                         if (item.IsMain)
                             return item.Type;
                     }
+                    if (NFT.DataItems.Count > 0 && string.IsNullOrEmpty(NFT.ImageLink))
+                        return NFT.DataItems.FirstOrDefault()?.Type ?? DataItemType.Image;                    
                 }
                 return DataItemType.Image;
             }
@@ -137,9 +144,12 @@ namespace VEBlazor.Components.Base
                 {
                     if (item.IsMain)
                         return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
-                    if (nft.DataItems.Count > 0 && !string.IsNullOrEmpty(nft.ImageLink))
-                        return NFTHelpers.GetIPFSLinkFromHash(nft.DataItems.FirstOrDefault()?.Hash) ?? GetImageUrl();
                 }
+                if (nft.DataItems.Count > 0 && string.IsNullOrEmpty(nft.ImageLink))
+                {
+                    var il = NFTHelpers.GetIPFSLinkFromHash(nft.DataItems.FirstOrDefault()?.Hash);
+                    return !string.IsNullOrEmpty(il) ? il : GetImageUrl();
+                }                    
             }
             return GetImageUrl();
         }
@@ -152,7 +162,7 @@ namespace VEBlazor.Components.Base
                     if (item.IsMain)
                         return item.Type;
                 }
-                if (nft.DataItems.Count > 0 && !string.IsNullOrEmpty(nft.ImageLink))
+                if (nft.DataItems.Count > 0 && string.IsNullOrEmpty(nft.ImageLink))
                     return nft.DataItems.FirstOrDefault()?.Type ?? DataItemType.Image;
             }
             return DataItemType.Image;

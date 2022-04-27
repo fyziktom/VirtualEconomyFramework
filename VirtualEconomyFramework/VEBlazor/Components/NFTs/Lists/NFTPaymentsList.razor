@@ -64,23 +64,24 @@ else
                     }
                 </Column>
             }
-            <Column ColumnSize="ColumnSize.Is2">
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is2.OnDesktop">
                 <Button Color="Color.Light" Size="Size.Small" Clicked="() => ShowNFTDetails(n)" Float="Float.End">
-                    <Icon Name="IconName.Info" Margin="Margin.Is1.FromEnd" /><Span Display="Display.None.OnMobile.InlineBlock.OnTablet">Details</Span>
+                    <Icon Name="IconName.Info" Margin="Margin.Is1.FromEnd" /><Span>Details</Span>
                 </Button>
                 @if (n.AlreadySoldItem)
                 {
                     <Button Color="Color.Danger" Size="Size.Small" Clicked=@(() => ReturnPayment(n)) Margin="Margin.Is2.FromStart" Float="Float.End"> 
                         <Icon Name="IconName.Backward" /> 
-                        Return
+                        <Span >Return</Span>
                     </Button> 
                 }       
                 <Button Color="Color.Danger" Size="Size.Small" Clicked=@(() => DestroyNFT(n)) Margin="Margin.Is2.FromStart" Float="Float.End"> 
                     <Icon Name="IconName.Delete" /> 
-                    Recycle
+                    <Span >Recycle</Span>
                 </Button> 
             </Column>
         </Row>
+        <Row Display="Display.Block.OnTablet.None.OnDesktop" Margin="Margin.Is2.FromBottom"><Column><Divider /></Column></Row>
         }
     }
     <Row>

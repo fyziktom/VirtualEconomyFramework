@@ -19,11 +19,11 @@
                 SpecificInfoHeading="Payment Details">
         <Field>
             <FieldLabel>Sender</FieldLabel>
-            <Button Color="Color.Primary" Type="ButtonType.Link" To="@(string.Concat("https://explorer.nebl.io/address/",nft.Sender))" Target="Target.Blank">@nft.Sender</Button>
+            <Button Color="Color.Primary" Type="ButtonType.Link" To="@(string.Concat("https://explorer.nebl.io/address/",nft.Sender))" Target="Target.Blank">Show Sender In Explorer</Button>
         </Field>
         <Field>
             <FieldLabel>NFT Utxo</FieldLabel>
-             <Button Color="Color.Primary" Type="ButtonType.Link" To="@(string.Concat("https://explorer.nebl.io/tx/", nft.NFTUtxoTxId))" Target="Target.Blank">@nft.NFTUtxoTxId</Button>
+             <Button Color="Color.Primary" Type="ButtonType.Link" To="@(string.Concat("https://explorer.nebl.io/tx/", nft.NFTUtxoTxId))" Target="Target.Blank">Show Tx In Explorer</Button>
         </Field>
         <Field>
             <FieldLabel>Sold Price</FieldLabel>

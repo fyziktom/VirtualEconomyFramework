@@ -215,7 +215,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static string GetIPFSLinkFromHash(string? hash)
         {
-            return string.IsNullOrEmpty(hash) ? string.Concat("https://ipfs.infura.io/ipfs/", hash) : string.Empty;
+            return !string.IsNullOrEmpty(hash) ? string.Concat("https://ipfs.infura.io/ipfs/", hash) : string.Empty;
         }
         /// <summary>
         /// Obsolete function - just example how to redirect upload through different server
