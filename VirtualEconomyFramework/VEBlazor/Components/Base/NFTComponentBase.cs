@@ -110,7 +110,7 @@ namespace VEBlazor.Components.Base
                         if (item.IsMain)
                             return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
                     }
-                    if (NFT.DataItems.Count > 0 && string.IsNullOrEmpty(NFT.ImageLink))
+                    if (NFT.DataItems.Count > 0)
                     {
                         var il = NFTHelpers.GetIPFSLinkFromHash(NFT.DataItems.FirstOrDefault()?.Hash);
                         return !string.IsNullOrEmpty(il) ? il : GetImageUrl();
@@ -130,7 +130,7 @@ namespace VEBlazor.Components.Base
                         if (item.IsMain)
                             return item.Type;
                     }
-                    if (NFT.DataItems.Count > 0 && string.IsNullOrEmpty(NFT.ImageLink))
+                    if (NFT.DataItems.Count > 0)
                         return NFT.DataItems.FirstOrDefault()?.Type ?? DataItemType.Image;                    
                 }
                 return DataItemType.Image;
@@ -145,7 +145,7 @@ namespace VEBlazor.Components.Base
                     if (item.IsMain)
                         return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
                 }
-                if (nft.DataItems.Count > 0 && string.IsNullOrEmpty(nft.ImageLink))
+                if (nft.DataItems.Count > 0)
                 {
                     var il = NFTHelpers.GetIPFSLinkFromHash(nft.DataItems.FirstOrDefault()?.Hash);
                     return !string.IsNullOrEmpty(il) ? il : GetImageUrl();
@@ -162,7 +162,7 @@ namespace VEBlazor.Components.Base
                     if (item.IsMain)
                         return item.Type;
                 }
-                if (nft.DataItems.Count > 0 && string.IsNullOrEmpty(nft.ImageLink))
+                if (nft.DataItems.Count > 0)
                     return nft.DataItems.FirstOrDefault()?.Type ?? DataItemType.Image;
             }
             return DataItemType.Image;

@@ -2,6 +2,8 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Dto
 @inherits NFTBase
+@inject HttpClient Http
+
 
 <Container Fluid>
     <Row>
@@ -31,6 +33,20 @@
                                 {
                                     <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
                                             Source="_content/VEBlazor/images/blankvideo.png" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
+                                else if (item.Type == DataItemType.JSON)
+                                {
+                                    <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="_content/VEBlazor/images/json-image.png" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
+                                else if (item.Type == DataItemType.HTML)
+                                {
+                                    <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="_content/VEBlazor/images/html-image.png" 
                                             @onclick="() => DisplayItem(item)" 
                                             Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
                                 }
@@ -84,6 +100,14 @@
                             <embed src="@actualImageLink" style="width:100%; height:100%; min-height:600px;" />
                         }
                     }
+                    else if (actualFileType == DataItemType.JSON)
+                    {
+                        <JsonViewer @ref="JsonViewerRef"></JsonViewer>
+                    }
+                    else if (actualFileType == DataItemType.HTML)
+                    {
+                        <iframe src="@NFT.ImageLink" frameborder="0" style="min-width:300px; min-height:500px; width:100%; height:100%;"></iframe>
+                    }
                 </Column> 
             </Row> 
         </Column>
@@ -93,15 +117,22 @@
 
 @code {
     [Parameter] public bool DisplayPDF { get; set; } = false;
+       
+    JsonViewer? JsonViewerRef;
 
-
-    void DisplayItem(VEDriversLite.NFT.Dto.NFTDataItem item)
+    async Task DisplayItem(VEDriversLite.NFT.Dto.NFTDataItem item)
     {
         foreach (var i in NFT.DataItems)
             i.IsMain = false;
 
         item.IsMain = true;
-        NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash);            
+        NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash); 
+        if (actualFileType == DataItemType.JSON)
+        {
+            var data = await Http.GetStringAsync(NFT.ImageLink);
+            if (JsonViewerRef != null)
+                await JsonViewerRef.Render(data);
+        }
         StateHasChanged();
     }  
 }

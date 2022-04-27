@@ -129,7 +129,7 @@ namespace VEDriversLite.NFT.Dto
                 else if (filename.ToLower().Contains(".txt"))
                     type = DataItemType.Text;
                 else if (filename.ToLower().Contains(".json"))
-                    type = DataItemType.Text;
+                    type = DataItemType.JSON;
             }
             return type;
         }        

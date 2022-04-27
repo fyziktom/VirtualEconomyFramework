@@ -24,6 +24,7 @@
     <PackageReference Include="BlazorPanzoom" Version="0.2.1" />
     <PackageReference Include="Markdig" Version="0.30.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.3" />
+    <PackageReference Include="Texnomic.Blazor.JsonViewer" Version="0.1.0" />
   </ItemGroup>
 
   <ItemGroup>

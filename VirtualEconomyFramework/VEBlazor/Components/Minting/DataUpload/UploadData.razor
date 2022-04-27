@@ -71,6 +71,14 @@
                                     <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Video: @fileName. Wait for the upload of video to see preview.</FigureCaption>
                                  </Figure>                                
                             }
+                            else if (itemType == DataItemType.JSON)
+                            {
+                                <JsonViewer @ref="JsonViewerRef"></JsonViewer>
+                            }
+                            else if (itemType == DataItemType.HTML)
+                            {
+                                <iframe src="@ImageDataString" frameborder="1" style="min-width:300px; min-height:500px; width:100%; height:100%;"></iframe>
+                            }
                         </Column>
                     </Row>
 
@@ -109,6 +117,14 @@
                                             {
                                                 <CardImage Source="_content/VEBlazor/images/pdf-image.png"></CardImage>
                                             }
+                                            else if (item.Type == DataItemType.JSON)
+                                            {
+                                                <CardImage Source="_content/VEBlazor/images/json-image.png"></CardImage>
+                                            }
+                                            else if (item.Type == DataItemType.HTML)
+                                            {
+                                                <CardImage Source="_content/VEBlazor/images/html-image.png"></CardImage>
+                                            }
                                             <CardBody>
                                                 @if (item.Type == DataItemType.AVMedia)
                                                 {
@@ -118,7 +134,7 @@
                                                         </Column>
                                                     </Row>
                                                 }
-                                                
+                                            
                                                 @if (item.Type == DataItemType.PDF)
                                                 {
                                                     <Row>
@@ -129,7 +145,23 @@
                                                 }                                                
                                                 else 
                                                 {
-                                                    <Row Flex="Flex.AlignItems.Baseline" Margin="Margin.Is2.FromBottom">
+                                                    @if (item.Type == DataItemType.JSON)
+                                                    {
+                                                        <Row Margin="Margin.Is2.FromTop">
+                                                            <Column>
+                                                                <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open JSON in new Tab</Button>
+                                                            </Column>
+                                                        </Row>
+                                                    } 
+                                                    if (item.Type == DataItemType.HTML)
+                                                    {
+                                                        <Row Margin="Margin.Is2.FromTop">
+                                                            <Column>
+                                                                <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open HTML in new Tab</Button>
+                                                            </Column>
+                                                        </Row>
+                                                    }                                                    
+                                                    <Row Flex="Flex.AlignItems.Baseline" Margin="Margin.Is2.FromBottom.Is2.FromTop">
                                                         <Column>
                                                             <Row>
                                                                 <Column Flex="Flex.JustifyContent.Center">
@@ -168,10 +200,11 @@
 @code {
     Validations? validationsRef;
     IPFSUpload? ipfsUploadRef;
+    JsonViewer? JsonViewerRef;
 
     [Parameter] public bool Multiple { get; set; } = false;
     [Parameter] public bool SmallThumbnails { get; set; } = false;
-    [Parameter] public string Filter { get; set; } = ".jpeg, .jpg, .png, .gif, .bmp, .jfif, .pdf, .mp3, .wav, .ogg, .mp4, .avi, .mov";
+    [Parameter] public string Filter { get; set; } = ".jpeg, .jpg, .png, .gif, .bmp, .jfif, .pdf, .mp3, .wav, .ogg, .mp4, .avi, .mov, .json, .html";
     [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
 
     public string ImageDataString
@@ -193,7 +226,15 @@
                 {
                     i = NFTComponentBase.GetVideoStringFromBytes(imageData);
                 }
-                
+                else if (itemType == DataItemType.JSON)
+                {
+                    i = "_content/VEBlazor/images/json-image.png";
+                }
+                else if (itemType == DataItemType.HTML)
+                {
+                    i = "data:text/html;base64," + Convert.ToBase64String(imageData);
+                }
+
                 imageString = i;
                 imageNeedsReload = false;
             }
@@ -248,6 +289,11 @@
 
         await InvokeAsync( StateHasChanged );
 
+        if (itemType == DataItemType.JSON)
+        {
+            if (JsonViewerRef != null)
+                await JsonViewerRef.Render(System.Text.Encoding.UTF8.GetString(data));
+        }
         if ( ipfsUploadRef != null )
             await ipfsUploadRef.UploadToIPFS( fileName, data );
     }
@@ -259,15 +305,18 @@
         return InvokeAsync( StateHasChanged );
     }
 
-    async Task OnIPFSUploadEnded( string mainIPFSLink )
+    Task OnIPFSUploadEnded( string mainIPFSLink )
     {
         uploadingToIPFS = false;
         NFT.ImageLink = mainIPFSLink;
-        
+
+        NFT.DataItems.ForEach(d => d.IsMain = false);
         NFT.DataItems.Add(new VEDriversLite.NFT.Dto.NFTDataItem() {
             Type = itemType,
-            Hash = NFTHelpers.GetHashFromIPFSLink(mainIPFSLink)
+            Hash = NFTHelpers.GetHashFromIPFSLink(mainIPFSLink),
+            IsMain = true
         });
+        return InvokeAsync( StateHasChanged );
     }
 
     void ImageValidator( ValidatorEventArgs e )
