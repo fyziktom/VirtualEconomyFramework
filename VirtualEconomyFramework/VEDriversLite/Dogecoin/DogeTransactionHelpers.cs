@@ -380,21 +380,28 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="txinfo"></param>
         /// <returns></returns>
-        public static (bool, double) ParseTotalSentValue(GetTransactionInfoResponse txinfo)
+        public static CommonReturnTypeDto ParseTotalSentValue(GetTransactionInfoResponse txinfo)
         {
+            var dto = new CommonReturnTypeDto();
             if (txinfo == null)
-            {
-                return (false, 0.0);
+            {                
+                dto.Success = false;
+                dto.Value = 0.0;
+                return dto;
             }
 
             if (txinfo.Success != "success")
             {
-                return (false, 0.0);
+                dto.Success = false;
+                dto.Value = 0.0;
+                return dto;
             }
 
             if (txinfo.Transaction.Vout == null || txinfo.Transaction.Vout.Count == 0)
             {
-                return (false, 0.0);
+                dto.Success = false;
+                dto.Value = 0.0;
+                return dto;
             }
 
             var value = 0.0;
@@ -408,7 +415,10 @@ namespace VEDriversLite
                     value += v;
                 }
             }
-            return (true, value);
+
+            dto.Success = true;
+            dto.Value = value;
+            return dto;            
         }
 
         /// <summary>
