@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Accounts.Dto;
-using VEDriversLite.Cryptocurrencies;
 using VEDriversLite.Events;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
@@ -45,11 +44,7 @@ namespace VEDriversLite.Accounts
         public double TotalUnconfirmedBalance { get; set; } = 0.0;
 
         public EncryptionKey AccountKey { get; set; } = null;
-        /// <summary>
-        /// Service which gets prices of cryptocurrencies
-        /// </summary>
-        [JsonIgnore]
-        public PriceService ExchangePriceService { get; set; } = new PriceService();
+
         public List<string> SubAccounts { get; set; } = new List<string>();
 
         /// <summary>
@@ -70,11 +65,6 @@ namespace VEDriversLite.Accounts
         /// This event is fired whenever some progress during multimint happens
         /// </summary>
         public abstract event EventHandler<string> NewMintingProcessInfo;
-
-        /// <summary>
-        /// This event is fired whenever price from exchanges is refreshed. It provides dictionary of the actual available rates.
-        /// </summary>
-        public abstract event EventHandler<IDictionary<CurrencyTypes, double>> PricesRefreshed;
 
         /// <summary>
         /// This event is fired whenever profile nft is updated or found

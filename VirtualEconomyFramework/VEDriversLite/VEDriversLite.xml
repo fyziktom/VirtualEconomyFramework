@@ -105,6 +105,764 @@
             <param name="verifyActive"></param>
             <returns></returns>
         </member>
+        <member name="P:VEDriversLite.Accounts.CommonAccount.ParentAddress">
+            <summary>
+            If this is SubAccount it is under this account
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.CommonAccount.IsSubAccount">
+            <summary>
+            The account is under another parent address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.CommonAccount.WithoutNFTs">
+            <summary>
+            If you want to run account without NFTs set this up. 
+            Whenever during run you can clear this flag and NFTs will start loading
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.CommonAccount.IsRefreshingRunning">
+            <summary>
+            When main refreshing loop is running this is set
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.CommonAccount.Refreshed">
+            <summary>
+            This event is fired whenever info about the address is reloaded. It is periodic event.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.CommonAccount.NewEventInfo">
+            <summary>
+            This event is fired whenever some important thing happen. You can obtain success, error and info messages.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.CommonAccount.NFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.CommonAccount.NewMintingProcessInfo">
+            <summary>
+            This event is fired whenever some progress during multimint happens
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.CommonAccount.ProfileUpdated">
+            <summary>
+            This event is fired whenever profile nft is updated or found
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.CommonAccount.NFTAddedToPayments">
+            <summary>
+            This event is fired whenever some NFT is in received payment too and it should be blocked for any further action.
+            It provides Utxo and UtxoIndex as touple.
+            Event is fired also for the SubAccounts when it is registred from Main Account
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "E:VEDriversLite.Accounts.CommonAccount.FirsLoadingStatus" -->
+        <member name="E:VEDriversLite.Accounts.CommonAccount.AccountFirsLoadFinished">
+            <summary>
+            This event is called when first loading of the account is finished
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Accounts.CommonAccount.IsLocked">
+            <summary>
+            This function will check if the account is locked or unlocked.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.CommonAccount.CreateNewAccount(VEDriversLite.Accounts.Dto.AccountLoadData)">
+            <summary>
+            This function will create new account - Neblio address and its Private key.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.CommonAccount.VerifyMessage(System.String,System.String,System.String)">
+            <summary>
+            Verify message which was signed by some address.
+            </summary>
+            <param name="message">Input message</param>
+            <param name="signature">Signature of this message created by owner of some address.</param>
+            <param name="address">Neblio address which should sign the message and should be verified.</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.CommonAccount.EncryptMessage(System.String)">
+            <summary>
+            Encrypt message with use of ECDSA
+            </summary>
+            <param name="message">Input message</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.CommonAccount.DecryptMessage(System.String)">
+            <summary>
+            Decrypt message with use of ECDSA
+            </summary>
+            <param name="message">Input message</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.CommonAccount.GetNFTVerifyCode(System.String)">
+            <summary>
+            Obtain verify code of some transaction. This will combine txid and UTC time (rounded to minutes) and sign with the private key.
+            It will create unique code, which can be verified and it is valid just one minute.
+            </summary>
+            <param name="txid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.CommonAccount.GetNFTVerifyQRCode(System.String)">
+            <summary>
+            Verification function for the NFT ownership code generated by GetNFTVerifyCode function.
+            </summary>
+            <param name="txid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.CommonAccount.SignMessage(System.String)">
+            <summary>
+            Sign custom message with use of account Private Key
+            </summary>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Accounts.Dto.AccountLoadData.SaveToFile">
+            <summary>
+            When creating new account do you want to save it to the file?
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.Type">
+            <summary>
+            Type of the account
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.Name">
+            <summary>
+            Name of the account
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.Address">
+            <summary>
+            Neblio Address hash
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.ParentAddress">
+            <summary>
+            If this is SubAccount it is under this account
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.IsSubAccount">
+            <summary>
+            The account is under another parent address
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.SubAccounts">
+            <summary>
+            List of the addresses of all subaccounts under this account
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.JustForObserve">
+            <summary>
+            Indicate if the account was loaded just for observation and it does not have correct private key
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.LoadJustForSignitures">
+            <summary>
+            Indicate if the account was loaded just to sign the transactions. It does not have running the refreshing or loaded any more complicated objects.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.WithoutNFTs">
+            <summary>
+            If you want to run account without NFTs set this up. 
+            Whenever during run you can clear this flag and NFTs will start loading
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.IsRefreshingRunning">
+            <summary>
+            When main refreshing loop is running this is set
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.Secret">
+            <summary>
+            Loaded Secret, NBitcoin Class which carry Public Key and Private Key
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.NumberOfTransaction">
+            <summary>
+            Number of the transactions on the address. not used now
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.NumberOfLoadedTransaction">
+            <summary>
+            Number of already loaded transaction on the address. not used now
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.TotalBalance">
+            <summary>
+            Total actual balance based on Utxos. This means sum of spendable and unconfirmed balances.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.TotalSpendableBalance">
+            <summary>
+            Total spendable balance based on Utxos.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.TotalUnconfirmedBalance">
+            <summary>
+            Total balance which is now unconfirmed based on Utxos.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.IAccount.Utxos">
+            <summary>
+            Carrier for encrypted private key from storage and its password.
+            </summary>
+            <summary>
+            Actual list of all Utxos on this address.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.IAccount.Refreshed">
+            <summary>
+            This event is fired whenever info about the address is reloaded. It is periodic event.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.IAccount.NewEventInfo">
+            <summary>
+            This event is fired whenever some important thing happen. You can obtain success, error and info messages.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.IAccount.NFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.IAccount.NewMintingProcessInfo">
+            <summary>
+            This event is fired whenever some progress during multimint happens
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.IAccount.ProfileUpdated">
+            <summary>
+            This event is fired whenever profile nft is updated or found
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.IAccount.NFTAddedToPayments">
+            <summary>
+            This event is fired whenever some NFT is in received payment too and it should be blocked for any further action.
+            It provides Utxo and UtxoIndex as touple.
+            Event is fired also for the SubAccounts when it is registred from Main Account
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "E:VEDriversLite.Accounts.IAccount.FirsLoadingStatus" -->
+        <member name="E:VEDriversLite.Accounts.IAccount.AccountFirsLoadFinished">
+            <summary>
+            This event is called when first loading of the account is finished
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.IsLocked">
+            <summary>
+            This function will check if the account is locked or unlocked.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.LoadAccount(VEDriversLite.Accounts.Dto.AccountLoadData)">
+            <summary>
+            Load account. If there is password it is used to decrypt the private key
+            This function will load Secret property with Key
+            </summary>
+            <param name="loaddata">Object with parameters to load the account</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.CreateNewAccount(VEDriversLite.Accounts.Dto.AccountLoadData)">
+            <summary>
+            This function will create new account - Neblio address and its Private key.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.ReloadUtxos">
+            <summary>
+            Reload address Utxos list. It will sort descending the utxos based on the utxos time stamps.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.ReloadAccountInfo">
+            <summary>
+            This function will load actual address info an adress utxos. It is used mainly for loading list of all transactions.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.CheckSpendableMainToken(System.Double)">
+            <summary>
+            This function will check if there is some spendable neblio of specific amount and returns list of the utxos for the transaction
+            </summary>
+            <param name="amount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.CheckSpendableTokens(System.String,System.Int32)">
+            <summary>
+            This function will check if there is some spendable tokens of specific Id and amount and returns list of the utxos for the transaction.
+            </summary>
+            <param name="id"></param>
+            <param name="amount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.AddTxToSendBuffer(VEDriversLite.Accounts.Dto.TxToSend)">
+            <summary>
+            Commmon command to accept transaction into the transaction buffer
+            </summary>
+            <param name="txtosend"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.StartRefreshingData(System.Int32)">
+            <summary>
+            This function will load the actual data and then run the task which periodically refresh this data.
+            It doesnt have cancellation now!
+            </summary>
+            <param name="interval">Default interval is 3000 = 3 seconds</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.SignMessage(System.String)">
+            <summary>
+            Sign custom message with use of account Private Key
+            </summary>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.VerifyMessage(System.String,System.String,System.String)">
+            <summary>
+            Verify message which was signed by some address.
+            </summary>
+            <param name="message">Input message</param>
+            <param name="signature">Signature of this message created by owner of some address.</param>
+            <param name="address">Neblio address which should sign the message and should be verified.</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.EncryptMessage(System.String)">
+            <summary>
+            Encrypt message with use of ECDSA
+            </summary>
+            <param name="message">Input message</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.DecryptMessage(System.String)">
+            <summary>
+            Decrypt message with use of ECDSA
+            </summary>
+            <param name="message">Input message</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.GetNFTVerifyCode(System.String)">
+            <summary>
+            Obtain verify code of some transaction. This will combine txid and UTC time (rounded to minutes) and sign with the private key.
+            It will create unique code, which can be verified and it is valid just one minute.
+            </summary>
+            <param name="txid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.IAccount.GetNFTVerifyQRCode(System.String)">
+            <summary>
+            Verification function for the NFT ownership code generated by GetNFTVerifyCode function.
+            </summary>
+            <param name="txid"></param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Accounts.INFTAccount.SourceTokensBalance">
+            <summary>
+            Total balance of VENFT tokens which can be used for minting purposes.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.INFTAccount.AddressNFTCount">
+            <summary>
+            Total number of NFT on the address. It counts also Profile NFT, etc.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.INFTAccount.MaximumOfLoadedNFTs">
+            <summary>
+            Limit the number of the loaded NFTs on the address
+            if it is 0 it will load all of them
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.INFTAccount.NFTs">
+            <summary>
+            List of actual address NFTs. Based on Utxos list
+            The list returns sorted NFTsDict based on blocktime
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.INFTAccount.NFTsDict">
+            <summary>
+            Dictionary of actual address NFTs. Based on Utxos list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.INFTAccount.NFTModules">
+            <summary>
+            NFT Modules
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.INFTAccount.TokensSupplies">
+            <summary>
+            Actual all token supplies. Consider also other tokens than VENFT.
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Accounts.INFTAccount.ReLoadNFTs(VEDriversLite.Accounts.Dto.ReloadNFTSetting)">
+            <summary>
+            This function will reload changes in the NFTs list based on provided list of already loaded utxos.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.INFTAccount.CacheNFTs">
+            <summary>
+            Serialize the NFTCache dictionary
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.INFTAccount.LoadCacheNFTsFromString(System.String)">
+            <summary>
+            Load the data from the stirng to the Dictionary of the NFTs cache
+            The input string must be serialized NFTCache dictionary from VEDriversLite with use of the function CacheNFTs from this class
+            </summary>
+            <param name="cacheString">Input serialized NFTCache dictionary as string</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.INFTAccount.LoadCacheNFTsFromString(System.Collections.Generic.IDictionary{System.String,VEDriversLite.NFT.Dto.NFTCacheDto})">
+            <summary>
+            Load the NFTCache data from the input dictionary to the Dictionary of the NFTs cache
+            The input must be dictionary which contains NFTCacheDto as value with cache data
+            </summary>
+            <param name="cacheString">Input NFTCache dictionary</param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NeblioAccount.SourceTokensBalance">
+            <summary>
+            Total balance of VENFT tokens which can be used for minting purposes.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NeblioAccount.AddressNFTCount">
+            <summary>
+            Total number of NFT on the address. It counts also Profile NFT, etc.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NeblioAccount.MaximumOfLoadedNFTs">
+            <summary>
+            Limit the number of the loaded NFTs on the address
+            if it is 0 it will load all of them
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NeblioAccount.NFTs">
+            <summary>
+            List of actual address NFTs. Based on Utxos list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NeblioAccount.NFTsDict">
+            <summary>
+            Dictionary of actual address NFTs. Based on Utxos list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NeblioAccount.Profile">
+            <summary>
+            If address has some profile NFT, it is founded in Utxo list and in this object.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NeblioAccount.TokensSupplies">
+            <summary>
+            Actual all token supplies. Consider also other tokens than VENFT.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NeblioAccount.AddressInfo">
+            <summary>
+            Actual loaded address info. It has inside list of all transactions.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NeblioAccount.NFTModules">
+            <summary>
+            NFT Modules
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NeblioAccount.Refreshed">
+            <summary>
+            This event is fired whenever info about the address is reloaded. It is periodic event.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NeblioAccount.NewEventInfo">
+            <summary>
+            This event is fired whenever some important thing happen. You can obtain success, error and info messages.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NeblioAccount.NFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NeblioAccount.NewMintingProcessInfo">
+            <summary>
+            This event is fired whenever some progress during multimint happens
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NeblioAccount.ProfileUpdated">
+            <summary>
+            This event is fired whenever profile nft is updated or found
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NeblioAccount.NFTAddedToPayments">
+            <summary>
+            This event is fired whenever some NFT is in received payment too and it should be blocked for any further action.
+            It provides Utxo and UtxoIndex as touple.
+            Event is fired also for the SubAccounts when it is registred from Main Account
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "E:VEDriversLite.Accounts.NeblioAccount.FirsLoadingStatus" -->
+        <member name="E:VEDriversLite.Accounts.NeblioAccount.AccountFirsLoadFinished">
+            <summary>
+            This event is called when first loading of the account is finished
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.CheckSpendableMainToken(System.Double)">
+            <summary>
+            This function will check if there is some spendable neblio of specific amount and returns list of the utxos for the transaction
+            </summary>
+            <param name="amount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.CheckSpendableTokens(System.String,System.Int32)">
+            <summary>
+            This function will check if there is some spendable tokens of specific Id and amount and returns list of the utxos for the transaction.
+            </summary>
+            <param name="id"></param>
+            <param name="amount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.GetUtxoListFromAPIRelated(System.Collections.Generic.List{VEDriversLite.NeblioAPI.Utxos})">
+            <summary>
+            Convert the Utxos list obtained from specified API of the blockchain to the common one
+            </summary>
+            <param name="neblioUtxos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.CreateNewAccount(VEDriversLite.Accounts.Dto.AccountLoadData)">
+            <summary>
+            This function will create new account - Neblio address and its Private key.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.LoadAccountKey(System.String,System.String)">
+            <summary>
+            Load account Key. If there is password it is used to decrypt the private key
+            This function will load Secret property with Key
+            </summary>
+            <param name="password">Passwotd to decrypt the loaded private key</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.ReloadAccountInfo">
+            <summary>
+            This function will load actual address info an adress utxos. It is used mainly for loading list of all transactions.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.ReloadUtxos">
+            <summary>
+            Reload address Utxos list. It will sort descending the utxos based on the utxos time stamps.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.ReLoadNFTs(VEDriversLite.Accounts.Dto.ReloadNFTSetting)">
+            <summary>
+            Load or reload the NFTs for this account.
+            It will add new to the NFTsDict and also remove old ones
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.CacheNFTs">
+            <summary>
+            Serialize the NFTCache dictionary
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.LoadCacheNFTsFromString(System.String)">
+            <summary>
+            Load the data from the stirng to the Dictionary of the NFTs cache
+            The input string must be serialized NFTCache dictionary from VEDriversLite with use of the function CacheNFTs from this class
+            </summary>
+            <param name="cacheString">Input serialized NFTCache dictionary as string</param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NeblioAccount.LoadCacheNFTsFromString(System.Collections.Generic.IDictionary{System.String,VEDriversLite.NFT.Dto.NFTCacheDto})">
+            <summary>
+            Load the NFTCache data from the input dictionary to the Dictionary of the NFTs cache
+            The input must be dictionary which contains NFTCacheDto as value with cache data
+            </summary>
+            <param name="nfts">Input NFTCache dictionary</param>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.CommonNFTModule.Address">
+            <summary>
+            Address which runs this Module
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.CommonNFTModule.Id">
+            <summary>
+            Unique Id of the module
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.CommonNFTModule.NFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.CommonNFTModule.FirstLoadNFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed during the first load when all NFTs are loaded
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "E:VEDriversLite.Accounts.NFTModules.CommonNFTModule.FirsLoadingStatus" -->
+        <member name="M:VEDriversLite.Accounts.NFTModules.CommonNFTModule.Init(System.String,System.String)">
+            <summary>
+            Init the NFT Module
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NFTModules.CommonNFTModule.ReLoadNFTs(VEDriversLite.Accounts.Dto.ReloadNFTSetting)">
+            <summary>
+            This function will reload changes in the NFTs list based on provided list of already loaded utxos.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.Address">
+            <summary>
+            Address which runs this Module
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.Id">
+            <summary>
+            Unique Id of the module
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.Type">
+            <summary>
+            Type of the NFT Module
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.TokenId">
+            <summary>
+            Token ID of the token used in this module
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.SourceTokensBalance">
+            <summary>
+            Total balance of tokens which can be used for minting purposes.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.NFTCount">
+            <summary>
+            Total number of NFT on the address. It counts also Profile NFT, etc.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.MaximumOfLoadedNFTs">
+            <summary>
+            Limit the number of the loaded NFTs on the address
+            if it is 0 it will load all of them
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.NFTs">
+            <summary>
+            List of actual address NFTs. Based on Utxos list
+            The list returns sorted NFTsDict based on blocktime
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.NFTsDict">
+            <summary>
+            Dictionary of actual address NFTs. Based on Utxos list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.INFTModule.TokensSupply">
+            <summary>
+            Actual supply of token.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.INFTModule.NFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.INFTModule.FirstLoadNFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed during the first load when all NFTs are loaded
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "E:VEDriversLite.Accounts.NFTModules.INFTModule.FirsLoadingStatus" -->
+        <member name="M:VEDriversLite.Accounts.NFTModules.INFTModule.Init(System.String,System.String)">
+            <summary>
+            Init the NFT Module
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Accounts.NFTModules.INFTModule.ReLoadNFTs(VEDriversLite.Accounts.Dto.ReloadNFTSetting)">
+            <summary>
+            This function will reload changes in the NFTs list based on provided list of already loaded utxos.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.MessageNFTModule.Profile">
+            <summary>
+            If address has some profile NFT, it is founded in Utxo list and in this object.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.MessageNFTModule.NFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.MessageNFTModule.ProfileUpdated">
+            <summary>
+            This event is fired whenever profile nft is updated or found
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.ShopNFTModule.ReceivedPayments">
+            <summary>
+            Received payments (means Payment NFT) of this address.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.ShopNFTModule.ReceivedPaymentsNFTs">
+            <summary>
+            Returns List of received payments NFTs sorted by Time from newest to oldests
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.ShopNFTModule.ReceivedReceipts">
+            <summary>
+            Received receipts (means Receipt NFT) of this address.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.ShopNFTModule.ReceivedReceiptsNFTs">
+            <summary>
+            Returns List of received payments NFTs sorted by Time from newest to oldests
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.ShopNFTModule.NFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.ShopNFTModule.NFTAddedToPayments">
+            <summary>
+            This event is fired whenever some NFT is in received payment too and it should be blocked for any further action.
+            It provides Utxo and UtxoIndex as touple.
+            Event is fired also for the SubAccounts when it is registred from Main Account
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.NFTModules.VENFTModule.Profile">
+            <summary>
+            If address has some profile NFT, it is founded in Utxo list and in this object.
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.VENFTModule.NFTsChanged">
+            <summary>
+            This event is fired whenever the list of NFTs is changed
+            </summary>
+        </member>
+        <member name="E:VEDriversLite.Accounts.NFTModules.VENFTModule.ProfileUpdated">
+            <summary>
+            This event is fired whenever profile nft is updated or found
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Accounts.UtxoAccountBase.Utxos">
+            <summary>
+            Actual list of all Utxos on this address.
+            </summary>
+        </member>
         <member name="T:VEDriversLite.Admin.AdminActionFactory">
             <summary>
             Factory for create Admin Action
@@ -477,6 +1235,47 @@
             <summary>
             If this is true, the bookmark is on some subaccount
             </summary>
+        </member>
+        <member name="P:VEDriversLite.Bookmarks.Bookmark.RelatedAddress">
+            <summary>
+            Related Address where this Bookmark is saved to, if any
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.BookmarksHandler.LoadBookmarks(System.String)">
+            <summary>
+            Load bookmarks from previous serialized list of bookmarks. 
+            </summary>
+            <param name="bookmarks"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.BookmarksHandler.AddBookmark(System.String,System.String,System.String)">
+            <summary>
+            Add new bookmark to bookmark list and return serialized list for save
+            </summary>
+            <param name="name">Name of the bookmark. It is important for most functions which work with the bookmarks</param>
+            <param name="address">Neblio Address</param>
+            <param name="note">optional note</param>
+            <returns>Serialized list in string for save</returns>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.BookmarksHandler.RemoveBookmark(System.String)">
+            <summary>
+            Remove bookmark by the neblio address. It must be found in the bookmark list
+            </summary>
+            <param name="address"></param>
+            <returns>Serialized list in string for save</returns>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.BookmarksHandler.SerializeBookmarks">
+            <summary>
+            Get serialized bookmarks list as string
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Bookmarks.BookmarksHandler.IsInTheBookmarks(System.String)">
+            <summary>
+            Check if the address is already in the bookmarks and return this bookmark
+            </summary>
+            <param name="address">Address which should be in the bookmarks</param>
+            <returns>true and bookmark class if exists</returns>
         </member>
         <member name="T:VEDriversLite.CommonReturnTypeDto">
             <summary>
@@ -3771,7 +4570,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.CheckSpendableMainToken(System.Double)">
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.HasSomeSpendableNeblio(System.Double)">
             <summary>
             This function will check if the address has some spendable neblio for transaction.
             </summary>
@@ -3792,7 +4591,7 @@
             <param name="index">index of the Utxo</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.CheckSpendableNeblio(System.Double)">
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.CheckSpendableMainToken(System.Double)">
             <summary>
             This function will check if there is some spendable neblio of specific amount and returns list of the utxos for the transaction
             </summary>
@@ -7447,7 +8246,7 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTFactory.GetNFT(System.String,System.String,System.Int32,System.Double,System.Boolean,System.Boolean,VEDriversLite.NFT.NFTTypes,System.Boolean,VEDriversLite.NFT.NFTTypes,System.String,VEDriversLite.NeblioAPI.GetTransactionInfoResponse)">
+        <member name="M:VEDriversLite.NFT.NFTFactory.GetNFT(System.String,System.String,System.Int32,System.Double,System.Boolean,System.Boolean,VEDriversLite.NFT.NFTTypes,System.Collections.Generic.List{VEDriversLite.NFT.NFTTypes},System.Boolean,VEDriversLite.NFT.NFTTypes,System.Collections.Generic.List{VEDriversLite.NFT.NFTTypes},System.String,VEDriversLite.NeblioAPI.GetTransactionInfoResponse)">
             <summary>
             Create and load the NFT from the transaction hash
             </summary>

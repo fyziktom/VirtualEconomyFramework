@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Accounts.Dto;
-using VEDriversLite.Cryptocurrencies;
 using VEDriversLite.Events;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
@@ -16,6 +15,7 @@ using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
 using Dasync.Collections;
 using VEDriversLite.Accounts.NFTModules;
+using VEDriversLite.Dto;
 
 namespace VEDriversLite.Accounts
 {
@@ -98,11 +98,6 @@ namespace VEDriversLite.Accounts
         /// This event is fired whenever some progress during multimint happens
         /// </summary>
         public override event EventHandler<string> NewMintingProcessInfo;
-
-        /// <summary>
-        /// This event is fired whenever price from exchanges is refreshed. It provides dictionary of the actual available rates.
-        /// </summary>
-        public override event EventHandler<IDictionary<CurrencyTypes, double>> PricesRefreshed;
 
         /// <summary>
         /// This event is fired whenever profile nft is updated or found
@@ -303,9 +298,6 @@ namespace VEDriversLite.Accounts
                 AddressInfo.Transactions = new List<string>();
 
                 await ReloadUtxos();
-                await ExchangePriceService.InitPriceService(Cryptocurrencies.ExchangeRatesAPITypes.Coingecko,
-                                                            Address,
-                                                            Cryptocurrencies.CurrencyTypes.NEBL);
 
                 FirsLoadingStatus?.Invoke(this, "Utxos loaded");
                 Refreshed?.Invoke(this, null);
@@ -338,8 +330,6 @@ namespace VEDriversLite.Accounts
                     {
                         Console.WriteLine("Cannot load the NFT Modules NFTs. " + ex.Message);
                     }
-
-                    RegisterPriceServiceEventHandler();
 
                     Refreshed?.Invoke(this, null);
                     FirsLoadingStatus?.Invoke(this, "Main Account NFTs Loaded.");
@@ -405,33 +395,6 @@ namespace VEDriversLite.Accounts
             return (true, "OK");
 
         }
-
-        /////////////////////////////////////
-        // Price Services
-        #region PriceServices
-
-        /// <summary>
-        /// Register event of the PriceService PriceRefreshed. Then the event is resend by NeblioAccountBase class
-        /// </summary>
-        public void RegisterPriceServiceEventHandler()
-        {
-            if (ExchangePriceService != null)
-            {
-                ExchangePriceService.PricesRefreshed -= ExchangePriceService_PricesRefreshed;
-                ExchangePriceService.PricesRefreshed += ExchangePriceService_PricesRefreshed;
-            }
-            else
-                Console.WriteLine("Cannot register Event Handler for PriceRefreshed because the ExchangePriceService is null.");
-        }
-
-        private void ExchangePriceService_PricesRefreshed(object sender, IDictionary<CurrencyTypes, double> e)
-        {
-            PricesRefreshed?.Invoke(sender, e);
-        }
-
-        #endregion
-        /////////////////////////////////////
-
 
         /////////////////////////////////////
         //Create or Load Account section
@@ -523,8 +486,6 @@ namespace VEDriversLite.Accounts
                 AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), data.Password);
                 AccountKey.PublicKey = Address;
                 Secret = privateKeyFromNetwork;
-                if (!string.IsNullOrEmpty(data.Password))
-                    AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(data.Password);
                 
                 if (data.SaveToFile)
                 {

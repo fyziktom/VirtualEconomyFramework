@@ -1655,7 +1655,7 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(nft.TokenId, 3);
+            var tres = await CheckSpendableTokens(nft.TokenId, 3);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs for minting. You need one input from minting supply. That one will be merged with destroyed free tokens.");
@@ -1823,7 +1823,7 @@ namespace VEDriversLite.Neblio
                 return (false, res.Item1);
             }
 
-            var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 3);
+            var tres = await CheckSpendableTokens(NFT.TokenId, 3);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs");

@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Accounts.Dto;
 using VEDriversLite.Accounts.NFTModules;
-using VEDriversLite.Cryptocurrencies;
 using VEDriversLite.Events;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
@@ -95,10 +94,7 @@ namespace VEDriversLite.Accounts
         List<Utxo> Utxos { get; set; }
 
         EncryptionKey AccountKey { get; set; }
-        /// <summary>
-        /// Service which gets prices of cryptocurrencies
-        /// </summary>
-        PriceService ExchangePriceService { get; set; }
+
 
 
         #region Events
@@ -120,11 +116,6 @@ namespace VEDriversLite.Accounts
         /// This event is fired whenever some progress during multimint happens
         /// </summary>
         event EventHandler<string> NewMintingProcessInfo;
-
-        /// <summary>
-        /// This event is fired whenever price from exchanges is refreshed. It provides dictionary of the actual available rates.
-        /// </summary>
-        event EventHandler<IDictionary<CurrencyTypes, double>> PricesRefreshed;
 
         /// <summary>
         /// This event is fired whenever profile nft is updated or found

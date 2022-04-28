@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Accounts.Dto;
+using VEDriversLite.Dto;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
 
