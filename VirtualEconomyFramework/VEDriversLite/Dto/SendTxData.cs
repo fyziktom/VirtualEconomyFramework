@@ -11,9 +11,6 @@ namespace VEDriversLite
     /// </summary>
     public class SendTxData
     {
-        public SendTxData()
-        {
-        }
         /// <summary>
         /// Address from where token will be send
         /// </summary>

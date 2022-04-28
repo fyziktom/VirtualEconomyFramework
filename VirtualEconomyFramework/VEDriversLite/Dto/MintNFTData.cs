@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Mint NFT Data Dto for NeblioTransactionHelpers MintNFT functions
+    /// </summary>
     public class MintNFTData
     {
+        /// <summary>
+        /// Init the metdata dictionary in constructor
+        /// </summary>
         public MintNFTData()
         {
             Metadata = new Dictionary<string, string>();
@@ -20,6 +26,11 @@ namespace VEDriversLite
         /// Address from where to send new NFT
         /// </summary>
         public string ReceiverAddress { get; set; }
+        /// <summary>
+        /// Fill when you have multiple receivers
+        /// Works now just for multimint of NFTs example in VEBlazor.Demo.TicketsAndEvents for minting tickets
+        /// </summary>
+        public List<string> MultipleReceivers { get; set; } = new List<string>();
         /// <summary>
         /// If the account is locked you can provide password directly in the send token api command
         /// if the account is unlocked or the QT wallet is connected fill empty string

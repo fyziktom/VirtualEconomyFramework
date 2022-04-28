@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -7,15 +8,25 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// NFT message allows to send encrypted messages between two peers
+    /// </summary>
     public class MessageNFT : CommonNFT
     {
+        /// <summary>
+        /// Create empty NFT class
+        /// </summary>
         public MessageNFT(string utxo)
         {
             Utxo = utxo;
             Type = NFTTypes.Message;
             TypeText = "NFT Message";
         }
-
+        /// <summary>
+        /// Fill basic parameters
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT) 
         {
             await FillCommon(NFT);
@@ -25,16 +36,33 @@ namespace VEDriversLite.NFT
             Decrypted = (NFT as MessageNFT).Decrypted;
             ImageData = (NFT as MessageNFT).ImageData;
         }
-
+        /// <summary>
+        /// Encrypt the message before the send
+        /// </summary>
         public bool Encrypt { get; set; } = true;
+        /// <summary>
+        /// Has been message already decrypted?
+        /// </summary>
         public bool Decrypted { get; set; } = false;
+        /// <summary>
+        /// Communication partner
+        /// </summary>
         public string Partner { get; set; } = string.Empty;
-        public byte[] ImageData { get; set; }
-
+        /// <summary>
+        /// If the shared key was calculated, take it from here
+        /// </summary>
+        [JsonIgnore]
+        public string SharedKey { get; set; } = string.Empty;
+        /// <summary>
+        /// Was this message received or sent
+        /// </summary>
         public bool IsReceivedMessage { get; set; } = false;
 
         private bool runningDecryption = false;
-
+        /// <summary>
+        /// Parse specific parameters
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             GetPartnerAsync().GetAwaiter().GetResult();
@@ -44,7 +72,11 @@ namespace VEDriversLite.NFT
         {
             await GetPartner();
         }
-
+        /// <summary>
+        /// Find and parse origin data
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             await GetPartner();
@@ -58,7 +90,10 @@ namespace VEDriversLite.NFT
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Get last data of this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             await GetPartner();
@@ -72,14 +107,20 @@ namespace VEDriversLite.NFT
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Load communication partner info
+        /// </summary>
+        /// <returns></returns>
         public async Task GetPartner()
         {
             var rec = await NeblioTransactionHelpers.GetTransactionSender(Utxo, TxDetails);
             if (!string.IsNullOrEmpty(rec))
                 Partner = rec;
         }
-
+        /// <summary>
+        /// Get receiver of this message
+        /// </summary>
+        /// <returns></returns>
         public async Task GetReceiver()
         {
             var rec = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo, TxDetails);
@@ -105,7 +146,7 @@ namespace VEDriversLite.NFT
             if (string.IsNullOrEmpty(Partner))
                 return false;//throw new Exception("Cannot decrypt without loaded Partner address.");
 
-            var add = secret.PubKey.GetAddress(NeblioTransactionHelpers.Network);
+            var add = secret.PubKey.GetAddress(NBitcoin.ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
 
             if (Partner == add.ToString() && !decryptEvenOnSameAddress)
             {
@@ -118,21 +159,49 @@ namespace VEDriversLite.NFT
             {
                 IsReceivedMessage = true;
             }
-
+            
             runningDecryption = true;
-
-            Description = await DecryptProperty(Description, secret, "", Partner);
-            Name = await DecryptProperty(Name, secret, "", Partner);
-            Text = await DecryptProperty(Text, secret, "", Partner);
-            ImageLink = await DecryptProperty(ImageLink, secret, "", Partner);
-            Link = await DecryptProperty(Link, secret, "", Partner);
-
+            if (await LoadSharedKeyForEncrypt(secret))
+            {
+                Description = await DecryptProperty(Description, secret, "", Partner, sharedkey: SharedKey);
+                Name = await DecryptProperty(Name, secret, "", Partner, sharedkey: SharedKey);
+                Text = await DecryptProperty(Text, secret, "", Partner, sharedkey: SharedKey);
+                ImageLink = await DecryptProperty(ImageLink, secret, "", Partner, sharedkey: SharedKey);
+                Link = await DecryptProperty(Link, secret, "", Partner, sharedkey: SharedKey);
+            }
+            else
+            {
+                Console.WriteLine("Cannot decrypt NFT. Shared key not found.");
+            }
             Decrypted = true;
             runningDecryption = false;
 
             return true;
         }
-        
+
+        private async Task<bool> LoadSharedKeyForEncrypt(NBitcoin.BitcoinSecret secret)
+        {
+            if (string.IsNullOrEmpty(SharedKey))
+            {
+                var sharedkey = await ECDSAProvider.GetSharedSecret(Partner, secret);
+                if (sharedkey.Item1)
+                {
+                    SharedKey = sharedkey.Item2;
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else
+                return true;
+        }
+        /// <summary>
+        /// Get the NFT data for the NFT
+        /// </summary>
+        /// <param name="address">Address of the sender</param>
+        /// <param name="key">Private key of the sender for encryption</param>
+        /// <param name="receiver">receiver of the NFT</param>
+        /// <returns></returns>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             var metadata = await GetCommonMetadata();
@@ -168,6 +237,7 @@ namespace VEDriversLite.NFT
                     res = await ECDSAProvider.EncryptStringWithSharedSecret(Link, receiver, key);
                     if (res.Item1)
                         elink = res.Item2;
+
                 }
                 else
                 {

@@ -10,10 +10,20 @@ using VEDriversLite.NFT;
 
 namespace VEDriversLite.Bookmarks
 {
+    /// <summary>
+    /// Active tab is able to load the Address and its NFTs
+    /// </summary>
     public class ActiveTab
     {
         private static object _lock = new object();
+        /// <summary>
+        /// Basic constructor
+        /// </summary>
         public ActiveTab() { }
+        /// <summary>
+        /// Basic constructor witch will load address and shortaddress
+        /// </summary>
+        /// <param name="address"></param>
         public ActiveTab(string address)
         {
             Address = address;
@@ -94,6 +104,9 @@ namespace VEDriversLite.Bookmarks
 
 
         private System.Timers.Timer refreshTimer = new System.Timers.Timer();
+        /// <summary>
+        /// Limit of the maximum loaded items in the Active Tab
+        /// </summary>
         public int MaxLoadedNFTItems { get; set; } = 40;
 
         /// <summary>
@@ -107,37 +120,58 @@ namespace VEDriversLite.Bookmarks
             //var nftutxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens, new GetAddressInfoResponse() { Utxos = Utxos });
 
             Console.WriteLine("Cash of the TxInfo preload started...");
-            
-            var utxos = UtxosList.ToArray();
-            if (utxos != null && utxos.Length > 1)
-            {
-                var ucount = utxos.Length;
-                if (ucount >= MaxLoadedNFTItems)
-                    ucount = MaxLoadedNFTItems;
 
-                var txinfotasks = new Task[ucount * 2];
-                var u = 0;
-                for (var i = 0; (i + 2) < txinfotasks.Length; i += 2)
+            var utxos = UtxosList.ToArray();
+            var utxos_segment = new ArraySegment<Utxos>(utxos, 0, utxos.Length > MaxLoadedNFTItems ? MaxLoadedNFTItems : utxos.Length);
+
+            if (utxos_segment != null && utxos_segment.Count > 1)
+            {
+                var txinfotasks = new ConcurrentQueue<Task>();
+                foreach (var utxo in utxos_segment)
                 {
-                    if (i < txinfotasks.Length)
-                        txinfotasks[i] = NeblioTransactionHelpers.GetTransactionInfo(utxos[u].Txid);
-                    if (i < txinfotasks.Length + 1)
+                    txinfotasks.Enqueue(NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid));
+                    var tok = utxo.Tokens?.FirstOrDefault();
+                    var tokid = tok?.TokenId;
+                    var tokamount = tok?.Amount;
+
+                    if (!string.IsNullOrEmpty(tokid) &&
+                        tokamount != null &&
+                        tokamount == 1 &&
+                        NFTHelpers.AllowedTokens.Contains(tokid))
                     {
-                        var tokid = utxos[u].Tokens?.FirstOrDefault()?.TokenId;
-                        if (!string.IsNullOrEmpty(tokid))
+                        if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
                         {
-                            if (!VEDLDataContext.NFTCache.ContainsKey(utxos[u].Txid))
-                                txinfotasks[i + 1] = NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxos[u].Txid);
+                            txinfotasks.Enqueue(NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
                         }
                     }
-                    u++;
-                }
-                for (var t = 0; t < txinfotasks.Length; t++)
-                {
-                    if (txinfotasks[t] == null) txinfotasks[t] = Task.Delay(1);
                 }
 
-                await Task.WhenAll(txinfotasks);
+                var tasks = new ConcurrentQueue<Task>();
+                var added = 0;
+                var paralelism = 5;
+                while (txinfotasks.Count > 0)
+                {
+                    if (txinfotasks.TryDequeue(out var tsk))
+                    {
+                        tasks.Enqueue(tsk);
+                        added++;
+                    }
+                    if (added >= paralelism || txinfotasks.Count == 0)
+                    {
+                        await Task.WhenAll(tasks);
+                        tasks.Clear();
+                        added = 0;
+                    }
+                }
+                /*
+                Parallel.ForEach(new ArraySegment<Utxos>(utxos, 0, utxos.Length > MaxLoadedNFTItems ? MaxLoadedNFTItems : utxos.Length), new ParallelOptions { MaxDegreeOfParallelism = 10 }, utxo =>
+                {
+                    NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid).Wait();//this cause the trouble
+                    var tokid = utxo.Tokens?.FirstOrDefault()?.TokenId;
+                    if (!string.IsNullOrEmpty(tokid) && !VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
+                        NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid).Wait(); //this cause the trouble
+                    System.Threading.Thread.Sleep(20);
+                });*/
             }
             Console.WriteLine("Cash of the TxInfo preload end...");
         }
@@ -145,7 +179,9 @@ namespace VEDriversLite.Bookmarks
         /// <summary>
         /// Start Automated refreshing
         /// </summary>
-        /// <param name="interval"></param>
+        /// <param name="interval">basic refresh interval</param>
+        /// <param name="withoutMessages">dont load the NFT Messages</param>
+        /// <param name="withCahePreload">Activate preload</param>
         /// <returns></returns>
         public async Task StartRefreshing(double interval = 5000, bool withoutMessages = true, bool withCahePreload = true)
         {
@@ -158,9 +194,9 @@ namespace VEDriversLite.Bookmarks
             {
                 await Reload(withoutMsgs);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine("Cannot Reload Active Tab after the start.");
+                Console.WriteLine("Cannot Reload Active Tab after the start. " + ex.Message);
             }
 
             refreshTimer.Interval = interval;
@@ -175,7 +211,7 @@ namespace VEDriversLite.Bookmarks
         /// Stop automated refreshing
         /// </summary>
         /// <returns></returns>
-        public async Task StopRefreshing()
+        public void StopRefreshing()
         {
             IsRefreshingRunning = false;
             Selected = false;
@@ -241,7 +277,7 @@ namespace VEDriversLite.Bookmarks
                 }
 
                 if (_NFTs.Count > 0)
-                    Profile = await NFTHelpers.FindProfileNFT(_NFTs);
+                    Profile = NFTHelpers.FindProfileNFT(_NFTs);
 
                 FirsLoadingStatus?.Invoke(this, "Searching for NFT Payments.");
                 await RefreshAddressReceivedPayments();
@@ -299,7 +335,7 @@ namespace VEDriversLite.Bookmarks
                             {
                                 ReceivedPayments.TryAdd(p.NFTOriginTxId, p);
                                 if (NFTs.Where(nft => NFTHelpers.IsBuyableNFT(nft.Type))
-                                        .FirstOrDefault(n => n.Utxo == (p as PaymentNFT).NFTUtxoTxId && 
+                                        .FirstOrDefault(n => n.Utxo == (p as PaymentNFT).NFTUtxoTxId &&
                                                              n.UtxoIndex == (p as PaymentNFT).NFTUtxoIndex) != null)
                                 {
                                     NFTAddedToPayments?.Invoke(Address, ((p as PaymentNFT).NFTUtxoTxId, (p as PaymentNFT).NFTUtxoIndex));

@@ -12,8 +12,21 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Basic account Handler class
+    /// It can load/add/remove/handle multiple account, use their actions, etc.
+    /// It can use the verification/protection of the calls with the system of the signatures of the messages
+    /// </summary>
     public static class AccountHandler
     {
+        /// <summary>
+        /// Function will check if the requested action exists and if the signature match
+        /// </summary>
+        /// <param name="admin"></param>
+        /// <param name="signature"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task<IAdminAction> VerifyAdminAction(string admin, string signature, string message)
         {
             if (string.IsNullOrEmpty(admin) || string.IsNullOrEmpty(signature))
@@ -22,11 +35,21 @@ namespace VEDriversLite
             if (VEDLDataContext.AdminAddresses.Contains(admin))
                 if (VEDLDataContext.Accounts.TryGetValue(admin, out var acc))
                     if (VEDLDataContext.AdminActionsRequests.TryRemove(message, out var areq))
-                        if (acc.Secret.PubKey.VerifyMessage(message, signature))
+                    {
+                        var res = await ECDSAProvider.VerifyMessage(message, signature, acc.Secret.PubKey);
+                        if (res.Item1)
                             return areq;
+                    }
             return null;
         }
 
+        /// <summary>
+        /// Function will add new Neblio Account to the VEDLDataContext.Accounts
+        /// </summary>
+        /// <param name="baseInfo"></param>
+        /// <param name="address"></param>
+        /// <param name="verifyActive"></param>
+        /// <returns></returns>
         public static async Task<bool> AddEmptyNeblioAccount(AdminActionBase baseInfo, string address, bool verifyActive = false)
         {
             if (verifyActive)
@@ -42,6 +65,14 @@ namespace VEDriversLite
                 return false;
         }
 
+        /// <summary>
+        /// Function will add new Neblio Account without Private Key to the VEDLDataContext.Accounts
+        /// Account can be used just for the observation.
+        /// </summary>
+        /// <param name="baseInfo"></param>
+        /// <param name="address"></param>
+        /// <param name="verifyActive"></param>
+        /// <returns></returns>
         public static async Task<bool> AddReadOnlyNeblioAccount(AdminActionBase baseInfo, string address, bool verifyActive = false)
         {
             if (verifyActive)
@@ -61,6 +92,13 @@ namespace VEDriversLite
                 return false;
         }
 
+        /// <summary>
+        /// Connect Doge account to the Neblio Account
+        /// </summary>
+        /// <param name="baseInfo"></param>
+        /// <param name="dto"></param>
+        /// <param name="verifyActive"></param>
+        /// <returns></returns>
         public static async Task<bool> ConnectDogeAccount(AdminActionBase baseInfo, ConnectDogeAccountDto dto, bool verifyActive = false)
         {
             if (verifyActive)
@@ -87,6 +125,13 @@ namespace VEDriversLite
             }
         }
 
+        /// <summary>
+        /// Disconnect Doge account from Neblio account
+        /// </summary>
+        /// <param name="baseInfo"></param>
+        /// <param name="dto"></param>
+        /// <param name="verifyActive"></param>
+        /// <returns></returns>
         public static async Task<bool> DisconnectDogeAccount(AdminActionBase baseInfo, ConnectDogeAccountDto dto, bool verifyActive = false)
         {
             if (verifyActive)
@@ -124,6 +169,7 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="baseInfo"></param>
         /// <param name="data"></param>
+        /// <param name="verifyActive"></param>
         /// <returns></returns>
         public static async Task<bool> LoadVENFTBackup(AdminActionBase baseInfo, EncryptedBackupDto data, bool verifyActive = false)
         {
@@ -172,7 +218,14 @@ namespace VEDriversLite
 
             return false;
         }
-        
+
+        /// <summary>
+        /// Remove Neblio Account from the VEDLDataContext.Accounts
+        /// </summary>
+        /// <param name="baseInfo"></param>
+        /// <param name="address"></param>
+        /// <param name="verifyActive"></param>
+        /// <returns></returns>
         public static async Task<bool> RemoveNeblioAccount(AdminActionBase baseInfo, string address, bool verifyActive = false)
         {
             if (verifyActive)
@@ -190,6 +243,11 @@ namespace VEDriversLite
 
         #region NFTs
 
+        /// <summary>
+        /// Reload all NFT Hashes. 
+        /// NFT Hash is shorten version of the NFT hash, just to save space if you have just smaller amount of the NFTs.
+        /// </summary>
+        /// <returns></returns>
         public static async Task<bool> ReloadNFTHashes()
         {
             try
@@ -243,7 +301,7 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Cannot refresh NFTHashes.");
+                Console.WriteLine("Cannot refresh NFTHashes." + ex.Message);
             }
             return false;
         }
@@ -251,6 +309,13 @@ namespace VEDriversLite
         #endregion
 
         #region Doge
+        /// <summary>
+        /// Add empty Doge Account to the VEDLDataContext.DogeAccounts
+        /// </summary>
+        /// <param name="baseInfo"></param>
+        /// <param name="address"></param>
+        /// <param name="verifyActive"></param>
+        /// <returns></returns>
         public static async Task<bool> AddEmptyDogeAccount(AdminActionBase baseInfo, string address, bool verifyActive = false)
         {
             if (verifyActive)
@@ -265,6 +330,13 @@ namespace VEDriversLite
             else
                 return false;
         }
+        /// <summary>
+        /// Remove Doge Account from the VEDLDataContext.DogeAccounts
+        /// </summary>
+        /// <param name="baseInfo"></param>
+        /// <param name="address"></param>
+        /// <param name="verifyActive"></param>
+        /// <returns></returns>
         public static async Task<bool> RemoveDogeAccount(AdminActionBase baseInfo, string address, bool verifyActive = false)
         {
             if (verifyActive)

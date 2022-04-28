@@ -9,6 +9,10 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Common NFT class. It implements lots of functions for the parsing the basic parameter of the NFT.
+    /// It contains also functions to decrypt or encrypt the property
+    /// </summary>
     public abstract class CommonNFT : INFT
     {
         /// <summary>
@@ -49,9 +53,37 @@ namespace VEDriversLite.NFT
         /// </summary>
         public string ImageLink { get; set; } = string.Empty;
         /// <summary>
+        /// Loaded Image data as byte array
+        /// </summary>
+        [JsonIgnore]
+        public byte[] ImageData { get; set; } = null;
+
+        /// <summary>
+        /// Preview data of image or music
+        /// </summary>
+        public string Preview { get; set; } = string.Empty;
+        /// <summary>
+        /// Loaded Image Preview data as byte array
+        /// </summary>
+        [JsonIgnore]
+        public byte[] PreviewData { get; set; } = null;
+        /// <summary>
         /// List of the tags separated by space
         /// </summary>
-        public string Tags { get; set; } = string.Empty;
+        private string _tags = string.Empty;
+        public string Tags 
+        {
+            get => _tags;
+            set
+            {
+                if (value != null)
+                {
+                    _tags = value;
+                    ParseTags();
+                }
+            }
+           
+        }
         /// <summary>
         /// Parsed tag list. It is parsed in Common NFT class
         /// </summary>
@@ -79,7 +111,7 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// Id of the token on what the NFT is created
         /// </summary>
-        public string TokenId { get; set; } = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8"; // VENFT tokens as default
+        public string TokenId { get; set; } = NFTHelpers.TokenId; // VENFT tokens as default
         /// <summary>
         /// Price of the NFT in the Neblio
         /// </summary>
@@ -198,6 +230,9 @@ namespace VEDriversLite.NFT
         {
             IconLink = nft.IconLink;
             ImageLink = nft.ImageLink;
+            ImageData = nft.ImageData;
+            Preview = nft.Preview;
+            PreviewData = nft.PreviewData;
             Name = nft.Name;
             Link = nft.Link;
             Description = nft.Description;
@@ -243,7 +278,10 @@ namespace VEDriversLite.NFT
             Price = 0.0;
             PriceActive = false;
         }
-        public void ParseTags()
+        /// <summary>
+        /// Function will parse tags to the list of the tags
+        /// </summary>
+        public virtual void ParseTags()
         {
             var split = Tags.Split(' ');
             TagsList.Clear();
@@ -251,6 +289,14 @@ namespace VEDriversLite.NFT
                 foreach (var s in split)
                     if (!string.IsNullOrEmpty(s))
                         TagsList.Add(s);
+
+            TagsList.ForEach(t =>
+            {
+                if (NFTDataContext.Tags.TryGetValue(t, out var tag))
+                    tag.Count++;
+                else
+                    NFTDataContext.Tags.TryAdd(t, new Tags.Tag() { Name = t, Count = 1 }); //todo add related tags
+            });
         }
         /// <summary>
         /// Load last data of the NFT.
@@ -328,7 +374,7 @@ namespace VEDriversLite.NFT
                 {
                     SoldInfo = JsonConvert.DeserializeObject<NFTSoldInfo>(sinf);
                 }
-                catch (Exception ex) { Console.WriteLine("Cannot parse sold info in the NFT"); }
+                catch { Console.WriteLine("Cannot parse sold info in the NFT"); }
             }
         }
         /// <summary>
@@ -354,6 +400,15 @@ namespace VEDriversLite.NFT
                         ImageLink = ImageLink.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
                 }
             }
+            if (meta.TryGetValue("Preview", out var preview))
+            {
+                if (!string.IsNullOrEmpty(preview))
+                {
+                    Preview = preview;
+                    if (Preview.Contains("https://gateway.ipfs.io"))
+                        Preview = Preview.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
+                }
+            }
             if (meta.TryGetValue("IconLink", out var iconlink))
                 IconLink = iconlink;
             if (meta.TryGetValue("Type", out var type))
@@ -369,7 +424,7 @@ namespace VEDriversLite.NFT
                 {
                     DogeftInfo = JsonConvert.DeserializeObject<DogeftInfo>(dfti);
                 }
-                catch (Exception ex) { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
+                catch { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
             }
             if (meta.TryGetValue("Tags", out var tags))
             {
@@ -404,7 +459,7 @@ namespace VEDriversLite.NFT
                 {
                     DogeftInfo = JsonConvert.DeserializeObject<DogeftInfo>(dfti);
                 }
-                catch (Exception ex) { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
+                catch { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
             }
         }
         /// <summary>
@@ -419,10 +474,16 @@ namespace VEDriversLite.NFT
             if (string.IsNullOrEmpty(TypeText))
                 throw new Exception("Cannot get NFT metadata without filled property TypeText!");
             metadata.Add("Type", TypeText);
-            metadata.Add("Name", Name);
-            metadata.Add("Author", Author);
-            metadata.Add("Description", Description);
-            metadata.Add("Image", ImageLink);
+            if (!string.IsNullOrEmpty(Name))
+                metadata.Add("Name", Name);
+            if (!string.IsNullOrEmpty(Author))
+                metadata.Add("Author", Author);
+            if (!string.IsNullOrEmpty(Description))
+                metadata.Add("Description", Description);
+            if (!string.IsNullOrEmpty(ImageLink))
+                metadata.Add("Image", ImageLink);
+            if (!string.IsNullOrEmpty(Preview))
+                metadata.Add("Preview", Preview);
             Tags = Tags.Replace("#", string.Empty);
             Tags = Tags.Replace(",", string.Empty);
             Tags = Tags.Replace(";", string.Empty);
@@ -430,7 +491,8 @@ namespace VEDriversLite.NFT
                 metadata.Add("Tags", Tags);
             if (!string.IsNullOrEmpty(Text))
                 metadata.Add("Text", Text);
-            metadata.Add("Link", Link);
+            if (!string.IsNullOrEmpty(Link))
+                metadata.Add("Link", Link);
             if (Price > 0)
                 metadata.Add("Price", Price.ToString("F6", CultureInfo.InvariantCulture));
             if (DogePrice > 0)
@@ -451,21 +513,74 @@ namespace VEDriversLite.NFT
         }
 
         /// <summary>
+        /// Download preview data if there are some
+        /// </summary>
+        /// <returns>true if success</returns>
+        public virtual async Task<bool> DownloadPreviewData()
+        {
+            if (!string.IsNullOrEmpty(Preview))
+            {
+                try
+                {
+                    var data = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(Preview));
+                    if (data != null)
+                    {
+                        PreviewData = data;
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot download the Image Preview data");
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Download Image data if there are some
+        /// </summary>
+        /// <returns>true if success</returns>
+        public virtual async Task<bool> DownloadImageData()
+        {
+            if (!string.IsNullOrEmpty(ImageLink))
+            {
+                try
+                {
+                    var data = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(ImageLink));
+                    if (data != null)
+                    {
+                        ImageData = data;
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot download the Image data");
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
         /// Then the image is saved in ImageData as bytes.
         /// </summary>
         /// <param name="secret">NFT Owner Private Key</param>
+        /// <param name="imageLink"></param>
+        /// <param name="partner"></param>
+        /// <param name="sharedkey"></param>
         /// <returns></returns>
-        public static async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner)
+        public virtual async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner, string sharedkey = "")
         {
-            if (!string.IsNullOrEmpty(imageLink) && imageLink.Contains("https://gateway.ipfs.io/ipfs/"))
+            if (!string.IsNullOrEmpty(imageLink) && (imageLink.Contains("https://gateway.ipfs.io/ipfs/") || imageLink.Contains("https://ipfs.infura.io/ipfs/")))
             {
                 byte[] ImageData;
-                var hash = imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty);
+                var hash = imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty);
                 try
                 {
                     var bytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
-                    var dbytesres = await ECDSAProvider.DecryptBytesWithSharedSecret(bytes, partner, secret);
+                    var dbytesres = await ECDSAProvider.DecryptBytesWithSharedSecret(bytes, partner, secret, sharedkey);
                     if (dbytesres.Item1)
                     {
                         ImageData = dbytesres.Item2;
@@ -488,19 +603,22 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="prop">Property content</param>
         /// <param name="secret">NFT Owner Private Key</param>
+        /// <param name="address"></param>
+        /// <param name="partner"></param>
+        /// <param name="sharedkey"></param>
         /// <returns></returns>
-        public static async Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "")
+        public virtual async Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "" , string sharedkey = "")
         {
             if (!string.IsNullOrEmpty(prop))
             {
-                if (IsBase64String(prop))
+                if (Security.SecurityUtils.IsBase64String(prop))
                 {
                     if (string.IsNullOrEmpty(partner) && !string.IsNullOrEmpty(address))
                         partner = address;
 
                     try
                     {
-                        var d = await ECDSAProvider.DecryptStringWithSharedSecret(prop, partner, secret);
+                        var d = await ECDSAProvider.DecryptStringWithSharedSecret(prop, partner, secret, sharedkey);
                         if (d.Item1)
                             return d.Item2;
                         else
@@ -516,12 +634,6 @@ namespace VEDriversLite.NFT
                     return prop;
             }
             return string.Empty;
-        }
-
-        public static bool IsBase64String(string base64)
-        {
-            Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
-            return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
         }
 
         /// <summary>
@@ -566,7 +678,7 @@ namespace VEDriversLite.NFT
                             var txi = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
                             TxDetails = txi;
                             TxDataRefreshed?.Invoke(this, TxDetails);
-                            if (TxDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations + 2))
+                            if (TxDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations))
                                 await StopRefreshingData();
                         }
                         catch (Exception ex)

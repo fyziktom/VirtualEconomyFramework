@@ -13,6 +13,9 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite
 {
+    /// <summary>
+    /// Main Dogecoin Account class
+    /// </summary>
     public class DogeAccount
     {
         private static object _lock = new object();
@@ -24,6 +27,10 @@ namespace VEDriversLite
         /// Loaded Secret, NBitcoin Class which carry Public Key and Private Key
         /// </summary>
         public BitcoinSecret Secret { get; set; }
+        /// <summary>
+        /// Address in form of BitcoinAddress object
+        /// </summary>
+        public BitcoinAddress BAddress { get; set; }
 
         /// <summary>
         /// Total actual balance based on Utxos. This means sum of spendable and unconfirmed balances.
@@ -167,6 +174,18 @@ namespace VEDriversLite
                                                     100));
         }
 
+        private async Task<(bool, string)> SignBroadcastAndInvokeSucessEvent(Transaction transaction, BitcoinSecret Secret, ICollection<Utxo> utxos, string message)
+        {
+            var rtxid = await DogeTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret, utxos);
+
+            if (rtxid != null)
+            {
+                await InvokeSendPaymentSuccessEvent(rtxid, message);
+                return (true, rtxid);
+            }
+            return (false, "");
+        }
+
         /// <summary>
         /// This function will create new account - Doge address and its Private key.
         /// </summary>
@@ -189,9 +208,8 @@ namespace VEDriversLite
                     AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
                     AccountKey.PublicKey = Address;
                     Secret = privateKeyFromNetwork;
-                    if (!string.IsNullOrEmpty(password))
-                        AccountKey.PasswordHash = await Security.SecurityUtils.HashPassword(password);
-                    SignMessage("init");
+                    BAddress = Secret.GetAddress(ScriptPubKeyType.Legacy);
+
                     if (saveToFile)
                     {
                         // save to file
@@ -221,6 +239,7 @@ namespace VEDriversLite
         /// Load account from "key.txt" file placed in the root exe directory. Doesnt work in WABS
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="filename">Filename with the key. Default name is dogekey.txt</param>
         /// <returns></returns>
         public async Task<bool> LoadAccount(string password, string filename = "dogekey.txt")
         {
@@ -237,18 +256,19 @@ namespace VEDriversLite
                     Address = kdto.Address;
 
                     Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
-                    //SignMessage("init");
+                    BAddress = Secret.GetAddress(ScriptPubKeyType.Legacy);
+
                     await StartRefreshingData();
                     return true;
                 }
-                catch (Exception ex)
+                catch
                 {
                     throw new Exception("Cannot deserialize key from file. Please check file key.txt or delete it for create new address!");
                 }
             }
             else
             {
-                CreateNewAccount(password);
+                await CreateNewAccount(password);
             }
 
             return false;
@@ -286,18 +306,18 @@ namespace VEDriversLite
                         AccountKey.IsEncrypted = true;
                     }
                     Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), DogeTransactionHelpers.Network);
+                    BAddress = Secret.GetAddress(ScriptPubKeyType.Legacy);
 
                     if (string.IsNullOrEmpty(address))
                     {
                         var add = DogeTransactionHelpers.GetAddressFromPrivateKey(Secret.ToString());
-                        if (add.Item1) Address = add.Item2;
+                        if (add.Success) Address = add.Value.ToString();
                     }
                     else
                     {
                         Address = address;
                     }
 
-                    //SignMessage("init");
                 });
 
                 await StartRefreshingData();
@@ -354,7 +374,7 @@ namespace VEDriversLite
             }
             catch (Exception ex)
             {
-                // todo
+                Console.WriteLine("Canont load dogecoin utxos. " + ex.Message);
             }
             var first = true;
             // todo cancelation token
@@ -373,7 +393,7 @@ namespace VEDriversLite
                         await GetListOfSentTransactions();
                         Refreshed?.Invoke(this, null);
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         //await InvokeErrorEvent(ex.Message, "Unknown Error During Refreshing Data");
                     }
@@ -448,7 +468,6 @@ namespace VEDriversLite
         /// <summary>
         /// This function will get list of spended transaction
         /// </summary>
-        /// <param name="amount"></param>
         /// <returns></returns>
         public async Task<ICollection<SpentTx>> GetListOfSentTransactions()
         {
@@ -474,7 +493,7 @@ namespace VEDriversLite
                 SentTransactions = txs;
                 return txs;
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Cannot load txs history");
             }
@@ -484,7 +503,6 @@ namespace VEDriversLite
         /// <summary>
         /// This function will get list of received transaction
         /// </summary>
-        /// <param name="amount"></param>
         /// <returns></returns>
         public async Task<ICollection<ReceivedTx>> GetListOfReceivedTransactions()
         {
@@ -509,7 +527,7 @@ namespace VEDriversLite
                 ReceivedTransactions = txs;
                 return txs;
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Cannot load txs history");
             }
@@ -542,6 +560,9 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
+        /// <param name="message">add message to OP_RETURN data. max 83 bytes</param>
+        /// <param name="utxo">from specific utxo</param>
+        /// <param name="N">with specific utxo index</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendPayment(string receiver, double amount, string message = "", string utxo = "", int N = 0)
         {
@@ -579,16 +600,18 @@ namespace VEDriversLite
             {
                 // send tx
                 var rtxid = string.Empty;
-                if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
-                else 
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                Transaction transaction;
 
-                if (rtxid != null)
+                if (string.IsNullOrEmpty(message))
+                    transaction = DogeTransactionHelpers.GetDogeTransactionAsync(dto, BAddress, res.Item2);
+                else
+                    transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, BAddress, res.Item2);
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
-                    return (true, rtxid);
-                }
+                    return (true, result.Item2);
+                }                
             }
             catch (Exception ex)
             {
@@ -605,6 +628,9 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="receiver">Receiver Doge Address</param>
         /// <param name="amount">Ammount in Doge</param>
+        /// <param name="utxos"></param>
+        /// <param name="message"></param>
+        /// <param name="fee"></param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMultipleInputPayment(string receiver, double amount, List<Utxo> utxos, string message = "", UInt64 fee = 100000000)
         {
@@ -638,16 +664,17 @@ namespace VEDriversLite
             {
                 // send tx
                 var rtxid = string.Empty;
+                Transaction transaction;
                 if (string.IsNullOrEmpty(message))
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionAsync(dto, AccountKey, res.Item2);
+                    transaction = DogeTransactionHelpers.GetDogeTransactionAsync(dto, BAddress, res.Item2);
                 else
-                    rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                    transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, BAddress, res.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
-                    return (true, rtxid);
-                }
+                    return (true, result.Item2);
+                }                
             }
             catch (Exception ex)
             {
@@ -665,7 +692,6 @@ namespace VEDriversLite
         /// <param name="receiverAmounts"></param>
         /// <param name="utxos"></param>
         /// <param name="message"></param>
-        /// <param name="fee"></param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMultipleOutputPayment(Dictionary<string,double> receiverAmounts, List<Utxo> utxos, string message = "")
         {
@@ -691,12 +717,12 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, AccountKey, res.Item2, message: message);
+                var transaction = DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(receiverAmounts, BAddress, res.Item2, message: message);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -709,7 +735,7 @@ namespace VEDriversLite
             return (false, "Unexpected error during send.");
         }
 
-
+        
         /// <summary>
         /// Buy the NFT based on the NFT and Neblio Address
         /// </summary>
@@ -750,13 +776,13 @@ namespace VEDriversLite
             try
             {
                 // send tx
-                var rtxid = await DogeTransactionHelpers.SendDogeTransactionWithMessageAsync(dto, AccountKey, res.Item2);
+                var transaction = DogeTransactionHelpers.GetDogeTransactionWithMessageAsync(dto, BAddress, res.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, Secret, res.Item2, "Doge Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Doge Payment Sent");
-                    return (true, rtxid);
-                }
+                    return (true, result.Item2);
+                }               
             }
             catch (Exception ex)
             {

@@ -1,0 +1,30 @@
+﻿@using VEDriversLite.NFT
+
+@if (Match(Text))
+{
+    <Badge Margin="@Margin" Color="Color.Primary">
+            <FigureImage Source="@AppData.NeblioImageLink" Style="width:11px; max-width:11px; height:11px; max-height:11px; margin-bottom:1px;"/>
+        &nbsp;#@Text
+    </Badge>
+}
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "Neblio";
+
+    [Parameter]
+    public IFluentSpacing Margin { get; set; }
+
+    public static bool Match(string tag)
+    {
+        var text = tag.ToLower();
+        if (text.Contains("nebl") ||
+            text.Contains("neblio") ||
+            text.Contains("nebliox") ||
+            text.Contains("neblioblockchain") ||
+            text.Contains("neblblockchain"))
+            return true;
+        else
+            return false;
+    }
+}

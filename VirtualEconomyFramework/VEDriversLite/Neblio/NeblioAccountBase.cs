@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
-using VEDriversLite.Cryptocurrencies;
 using VEDriversLite.Dto;
 using VEDriversLite.Events;
 using VEDriversLite.Messaging;
@@ -18,10 +17,12 @@ using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.Security;
-using VEDriversLite.WooCommerce;
 
 namespace VEDriversLite.Neblio
 {
+    /// <summary>
+    /// Basic function class for Neblio Account 
+    /// </summary>
     public abstract class NeblioAccountBase
     {
         private static object _lock { get; set; } = new object();
@@ -134,11 +135,6 @@ namespace VEDriversLite.Neblio
         [JsonIgnore]
         public List<Utxos> Utxos { get; set; } = new List<Utxos>();
         /// <summary>
-        /// Service which gets prices of cryptocurrencies
-        /// </summary>
-        [JsonIgnore]
-        public PriceService ExchangePriceService { get; set; } = new PriceService();
-        /// <summary>
         /// Actual loaded address info. It has inside list of all transactions.
         /// </summary>
         [JsonIgnore]
@@ -147,7 +143,13 @@ namespace VEDriversLite.Neblio
         /// Actual loaded address info with list of Utxos. When utxos are loaded first, this is just fill with it to prevent not necessary API request.
         /// </summary>
         [JsonIgnore]
-        public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse();
+        public GetAddressInfoResponse AddressInfoUtxos { get; set; } = new GetAddressInfoResponse() { Utxos = new List<Utxos>() };
+
+        /// <summary>
+        /// When some utxo is used, it is placed to this list to prevent second use. Key is Utxo and Value is TxId where it was used
+        /// </summary>
+        public ConcurrentDictionary<string,uint256> UsedUtxos { get; set; } = new ConcurrentDictionary<string,uint256>();
+            
         /// <summary>
         /// This event is fired whenever info about the address is reloaded. It is periodic event.
         /// </summary>
@@ -166,11 +168,10 @@ namespace VEDriversLite.Neblio
         /// This event is fired whenever some progress during multimint happens
         /// </summary>
         public event EventHandler<string> NewMintingProcessInfo;
-
         /// <summary>
-        /// This event is fired whenever price from exchanges is refreshed. It provides dictionary of the actual available rates.
+        /// This event is fired whenever new lot of addresses was airdroped
         /// </summary>
-        public event EventHandler<IDictionary<CurrencyTypes, double>> PricesRefreshed;
+        public event EventHandler<Dictionary<string,string>> AddressesAirdroped;
 
         /// <summary>
         /// This event is fired whenever profile nft is updated or found
@@ -222,7 +223,11 @@ namespace VEDriversLite.Neblio
         }
 
         #region InfoEvents
-
+        /// <summary>
+        /// Redirect Info Event from lower layer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void FireInfoEvent(object sender, IEventInfo e)
         {
             NewEventInfo?.Invoke(sender, e);
@@ -310,31 +315,47 @@ namespace VEDriversLite.Neblio
             //var nftutxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens, new GetAddressInfoResponse() { Utxos = Utxos });
 
             Console.WriteLine("Cash of the TxInfo preload started...");
+            
             if (Utxos != null && Utxos.Count > 1)
             {
-                var txinfotasks = new Task[Utxos.Count * 2];
-                var u = 0;
-                for (var i = 0; (i + 2) < txinfotasks.Length; i += 2)
+                var txinfotasks = new ConcurrentQueue<Task>();
+                foreach(var utxo in Utxos)
                 {
-                    if (i < txinfotasks.Length)
-                        txinfotasks[i] = NeblioTransactionHelpers.GetTransactionInfo(Utxos[u].Txid);
-                    if (i < txinfotasks.Length + 1)
+                    txinfotasks.Enqueue(NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid));
+                    var tok = utxo.Tokens?.FirstOrDefault();
+                    var tokid = tok?.TokenId;
+                    var tokamount = tok?.Amount;
+
+                    if (!string.IsNullOrEmpty(tokid) &&
+                        tokamount != null &&
+                        tokamount == 1 &&
+                        NFTHelpers.AllowedTokens.Contains(tokid))
                     {
-                        var tokid = Utxos[u].Tokens?.FirstOrDefault()?.TokenId;
-                        if (!string.IsNullOrEmpty(tokid))
+                        if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
                         {
-                            if (!VEDLDataContext.NFTCache.ContainsKey(Utxos[u].Txid))
-                                txinfotasks[i + 1] = NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, Utxos[u].Txid);
+                            txinfotasks.Enqueue(NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
                         }
                     }
-                    u++;
-                }
-                for (var t = 0; t < txinfotasks.Length; t++)
-                {
-                    if (txinfotasks[t] == null) txinfotasks[t] = Task.Delay(1);
                 }
 
-                await Task.WhenAll(txinfotasks);
+                var tasks = new ConcurrentQueue<Task>();
+                var added = 0;
+                var paralelism = 5;
+                while (txinfotasks.Count > 0)
+                {
+                    if (txinfotasks.TryDequeue(out var tsk))
+                    {
+                        tasks.Enqueue(tsk);
+                        added++;
+                    }
+                    if (added >= paralelism || txinfotasks.Count == 0)
+                    {
+                        await Task.WhenAll(tasks);
+                        tasks.Clear();
+                        added = 0;
+                    }
+                }
+
             }
             Console.WriteLine("Cash of the TxInfo preload end...");
         }
@@ -344,8 +365,9 @@ namespace VEDriversLite.Neblio
         /// This function will load Secret property with Key
         /// </summary>
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
+        /// <param name="key">Private Key</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountKey(string password, string key)
+        public bool LoadAccountKey(string password, string key)
         {
             try
             {
@@ -371,25 +393,6 @@ namespace VEDriversLite.Neblio
         #region AccountStatsLoad
 
         /// <summary>
-        /// Register event of the PriceService PriceRefreshed. Then the event is resend by NeblioAccountBase class
-        /// </summary>
-        public void RegisterPriceServiceEventHandler()
-        {
-            if (ExchangePriceService != null)
-            {
-                ExchangePriceService.PricesRefreshed -= ExchangePriceService_PricesRefreshed;
-                ExchangePriceService.PricesRefreshed += ExchangePriceService_PricesRefreshed;
-            }
-            else
-                Console.WriteLine("Cannot register Event Handler for PriceRefreshed because the ExchangePriceService is null.");
-        }
-
-        private void ExchangePriceService_PricesRefreshed(object sender, IDictionary<CurrencyTypes, double> e)
-        {
-            PricesRefreshed?.Invoke(sender, e);
-        }
-
-        /// <summary>
         /// Reload actual token supplies based on already loaded list of address utxos
         /// </summary>
         /// <returns></returns>
@@ -398,6 +401,7 @@ namespace VEDriversLite.Neblio
             var tos = await NeblioTransactionHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
             lock (_lock)
             {
+                TokensSupplies.Clear();
                 TokensSupplies = tos;
             }
             
@@ -465,8 +469,8 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReloadUtxos()
         {
-            var ux = await NeblioTransactionHelpers.GetAddressUtxosObjects(Address);
-            var ouxox = ux.OrderBy(u => u.Blocktime).Reverse().ToList();
+            var aux = await NeblioTransactionHelpers.AddressInfoUtxosAsync(Address);
+            var ouxox = aux.Utxos.OrderBy(u => u.Blocktime).Reverse().ToList();
 
             if (ouxox.Count > 0)
             {
@@ -490,12 +494,11 @@ namespace VEDriversLite.Neblio
 
                     AddressInfoUtxos = new GetAddressInfoResponse()
                     {
-                        Utxos = Utxos
+                        Utxos = GetUsableUtxos(Utxos).ToList()
                     };
                 }
             }
         }
-
 
         /// <summary>
         /// This function will load actual address info an adress utxos. It is used mainly for loading list of all transactions.
@@ -653,6 +656,12 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Redirect of the Event about added NFT to the payments
+        /// It can inform asap UI to block buy of the NFT if it is just original
+        /// </summary>
+        /// <param name="address">Address of the SubAccount</param>
+        /// <param name="e">Utxo hash and Utxo Index</param>
         public void FireNFTAddedToPayments(string address, (string,int) e)
         {
             NFTAddedToPayments?.Invoke(address, e);
@@ -698,6 +707,71 @@ namespace VEDriversLite.Neblio
         #region TransactionSourcesCheck
 
         /// <summary>
+        /// This function will check if the address has some spendable neblio for transaction.
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public async Task<(bool, double)> HasSomeSpendableNeblio(double amount = 0.0002)
+        {
+            var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0001, amount);
+            if (nutxos.Count == 0)
+            {
+                return (false, 0.0);
+            }
+            else
+            {
+                var a = 0.0;
+                foreach (var u in nutxos)
+                    a += ((double)u.Value / NeblioTransactionHelpers.FromSatToMainRatio);
+
+                if (a > amount)
+                    return (true, a);
+                else
+                    return (false, a);
+            }
+        }
+
+        /// <summary>
+        /// This function will check if the address has some spendable VENFT tokens for minting. 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<(bool, int)> HasSomeSourceForMinting()
+        {
+            var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, NFTHelpers.TokenId, 1);
+
+            if (tutxos.Count == 0)
+                return (false, 0);
+            else
+            {
+                var a = 0;
+                foreach (var u in tutxos)
+                {
+                    var t = u.Tokens.ToArray()[0];
+                    a += (int)t.Amount;
+                }
+                return (true, a);
+            }
+        }
+
+        /// <summary>
+        /// This function will validate if the NFT of this address is spendable
+        /// </summary>
+        /// <param name="utxo">Utxo hash</param>
+        /// <param name="index">index of the Utxo</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> ValidateNFTUtxo(string utxo, int index)
+        {
+            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo, index, addinfo: AddressInfoUtxos);
+            if (u >= 0)
+            {
+                var msg = $"Provided source tx transaction is not spendable. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmation.";
+                return (false, msg);
+            }
+            else
+                return (true, "OK");
+        }
+
+        /// <summary>
         /// This function will check if there is some spendable neblio of specific amount and returns list of the utxos for the transaction
         /// </summary>
         /// <param name="amount"></param>
@@ -706,7 +780,7 @@ namespace VEDriversLite.Neblio
         {
             try
             {
-                var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0002, amount);
+                var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0002, amount, addinfo: AddressInfoUtxos);
                 if (nutxos == null || nutxos.Count == 0)
                     return ($"You dont have Neblio on the address. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
@@ -728,7 +802,7 @@ namespace VEDriversLite.Neblio
         {
             try
             {
-                var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, id, amount);
+                var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, id, amount, addinfo: AddressInfoUtxos);
                 if (tutxos == null || tutxos.Count == 0)
                     return ($"You dont have Tokens on the address. You need at least 5 for minting. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
                 else
@@ -750,16 +824,20 @@ namespace VEDriversLite.Neblio
         /// <param name="message">Input message</param>
         /// <param name="signature">Signature of this message created by owner of some address.</param>
         /// <param name="address">Neblio address which should sign the message and should be verified.</param>
+        /// <param name="bobPubKey">You must fill address or PubKey. If you will fill the PubKey function is much faster</param>
         /// <returns></returns>
-        public async Task<(bool, string)> VerifyMessage(string message, string signature, string address)
+        public async Task<(bool, string)> VerifyMessage(string message, string signature, string address, PubKey bobPubKey = null)
         {
-            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || string.IsNullOrEmpty(address))
-                return (false, "You must fill all inputs.");
-            var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(address);
-            if (!ownerpubkey.Item1)
-                return (false, "Owner did not activate the function. He must have filled the profile.");
-            else
-                return await ECDSAProvider.VerifyMessage(message, signature, ownerpubkey.Item2);
+            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(signature) || (string.IsNullOrEmpty(address) && bobPubKey == null))
+                return (false, "You must fill all inputs. You can fill just one of these Address or PubKey.");
+            if (bobPubKey == null)
+            {
+                var ownerpubkey = await NFTHelpers.GetPubKeyFromProfileNFTTx(address);
+                if (!ownerpubkey.Item1)
+                    return (false, "Owner did not activate the function. He must have filled the profile.");
+                bobPubKey = ownerpubkey.Item2;
+            }
+            return await ECDSAProvider.VerifyMessage(message, signature, bobPubKey);
         }
 
         /// <summary>
@@ -779,7 +857,7 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Decrypt message with use of ECDSA
         /// </summary>
-        /// <param name="message">Input message</param>
+        /// <param name="emessage">Input message</param>
         /// <returns></returns>
         public async Task<(bool, string)> DecryptMessage(string emessage)
         {
@@ -849,11 +927,66 @@ namespace VEDriversLite.Neblio
 
         #region Transactions
 
+        private async Task<(bool, string)> SignBroadcastAndInvokeSucessEvent(Transaction transaction, string message)
+        {
+            var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
+            if (rtxid != null)
+            {
+                await InvokeSendPaymentSuccessEvent(rtxid, message);
+                return (true, rtxid);
+            }
+            return (false, "");
+        }
+
+        #region UtxoUsedStorageAndCheck
+
+        private async Task StoreUsedUtxos(Transaction tx, string txid)
+        {
+            if (tx == null || !string.IsNullOrEmpty(txid)) return;
+            var txidu256 = uint256.Parse(txid);
+            tx.Inputs.ForEach(inp =>
+            {
+                if (!UsedUtxos.ContainsKey($"{inp.PrevOut.Hash}:{inp.PrevOut.N}"))
+                    UsedUtxos.TryAdd($"{inp.PrevOut.Hash}:{inp.PrevOut.N}", txidu256);
+            });
+            await ReloadUtxos();
+            await ReLoadNFTs();
+        }
+
+        private IEnumerable<Utxos> GetUsableUtxos(IEnumerable<Utxos> inutxos)
+        {
+            return inutxos.Where(u => !UsedUtxos.ContainsKey($"{u.Txid}:{u.Index}"));
+        }
+        
+        private CommonReturnTypeDto IsUtxoUsed(string utxo, int index)
+        {
+            try
+            {
+                var txu256 = uint256.Parse(utxo);
+                return IsUtxoUsed(txu256, index);
+            }
+            catch
+            {
+                throw new Exception("This is not valid transaction hash.");
+            }
+        }
+        private CommonReturnTypeDto IsUtxoUsed(uint256 utxo, int index)
+        {
+            if (UsedUtxos.TryGetValue($"{utxo}:{index}", out var txid))
+                return new CommonReturnTypeDto() { Success = true, Value = txid };
+            else
+                return new CommonReturnTypeDto() { Success = false, Value = null };
+        }
+
+        #endregion
+
         /// <summary>
         /// Send classic neblio payment
         /// </summary>
         /// <param name="receiver">Receiver Neblio Address</param>
         /// <param name="amount">Ammount in Neblio</param>
+        /// <param name="message">Message in transaction data</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendNeblioPayment(string receiver, double amount, string message = "")
         {
@@ -880,12 +1013,14 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, res.Item2);
-                if (rtxid != null)
+                // send tx                                              
+                var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(dto, AccountKey, res.Item2);
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Payment Sent");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -904,6 +1039,7 @@ namespace VEDriversLite.Neblio
         /// <param name="receiver">Receiver Neblio Address</param>
         /// <param name="amount">Ammount in Neblio</param>
         /// <param name="utxos">Input utxos</param>
+        /// <param name="message">Message in transaction data</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMultipleInputNeblioPayment(string receiver, double amount, List<Utxos> utxos, string message = "")
         {
@@ -930,12 +1066,14 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                // send tx
-                var rtxid = await NeblioTransactionHelpers.SendNeblioTransactionAPIAsync(dto, AccountKey, utxos, 20000);
-                if (rtxid != null)
+                // send tx                
+                var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(dto, AccountKey, utxos);
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Payment Sent");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -951,9 +1089,9 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Split neblio coin to smaller coins
         /// </summary>
-        /// <param name="receiver">Receiver Neblio Address</param>
-        /// <param name="splittedAmount">Ammount of new splitted coin in Neblio</param>
-        /// <param name="count">Count of new splited couns</param>
+        /// <param name="receivers">Receivers list of Neblio Address</param>
+        /// <param name="lots">Number of the lots</param>
+        /// <param name="amount">Amount of new splited couns</param>
         /// <returns></returns>
         public async Task<(bool, string)> SplitNeblioCoin(List<string> receivers, int lots, double amount)
         {
@@ -984,13 +1122,15 @@ namespace VEDriversLite.Neblio
             }
 
             try
-            {
+            {                
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(Address, receivers, lots, amount, AccountKey, res.Item2, 20000);
-                if (rtxid != null)
+                var transaction = await NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(receivers, lots, amount, AccountKey, res.Item2);
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Split Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Split Sent");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1042,13 +1182,15 @@ namespace VEDriversLite.Neblio
             };
 
             try
-            {
+            {                
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AccountKey, res.Item2, tres.Item2);
-                if (rtxid != null)
+                var transaction = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AccountKey, res.Item2, tres.Item2);
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Token Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Token Payment Sent");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1106,13 +1248,16 @@ namespace VEDriversLite.Neblio
 
             metadata.Add("VENFT App", "https://about.ve-nft.com/");
             try
-            {
+            {              
+
                 // send tx
-                var rtxid = await NeblioTransactionHelpers.SplitNTP1TokensAsync(receivers, lots, amount, tokenId, metadata, AccountKey, res.Item2, tres.Item2);
-                if (rtxid != null)
+                var transaction = await NeblioTransactionHelpers.SplitNTP1TokensAsync(receivers, lots, amount, tokenId, metadata, AccountKey, res.Item2, tres.Item2);
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Split Token Payment Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio Split Token Payment Sent");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1134,8 +1279,8 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Mint new NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input
         /// </summary>
-        /// <param name="tokenId"></param>
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
         public async Task<(bool, string)> MintNFT(INFT NFT, string receiver = "")
         {
@@ -1161,15 +1306,18 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.MintNFT(Address, AccountKey, nft, res.Item2, tres.Item2, receiver);
+                var mintNFTData = await NFTHelpers.GetMintNFTData(Address, AccountKey, nft, receiver);
+                                
+                // send tx
+                var transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(mintNFTData, AccountKey, res.Item2, tres.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio NFT Minted");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio NFT Minted");
+                    await StoreUsedUtxos(transaction, result.Item2);
                     if (NFT.Type == NFTTypes.Profile)
                         Profile = NFT as ProfileNFT;
-
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1185,9 +1333,9 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
         /// </summary>
-        /// <param name="tokenId"></param>
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
         /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
         public async Task<(bool, string)> MintMultiNFT(INFT NFT, int coppies, string receiver = "")
         {
@@ -1213,15 +1361,17 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.MintMultiNFT(Address, coppies, AccountKey, nft, res.Item2, tres.Item2, receiver);
+                var mintNFTData = await NFTHelpers.GetMintMultiNFTData(Address, nft, receiver);
 
-                if (rtxid != null)
+                var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, coppies, AccountKey, res.Item2, res.Item2);
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio NFT Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Neblio NFT Sent");
+                    await StoreUsedUtxos(transaction, result.Item2);
                     if (NFT.Type == NFTTypes.Profile)
                         Profile = NFT as ProfileNFT;
-
-                    return (true, rtxid);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1256,29 +1406,33 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Mint new multi NFT. It is automatic function which will decide what NFT to mint based on provided type in the NFT input.
         /// </summary>
-        /// <param name="tokenId"></param>
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
         /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
-        public async Task<(bool, string)> MintMultiNFTLargeAmount(INFT NFT, int coppies, string receiver = "")
+        public async Task<(bool, Dictionary<string, string>)> MintMultiNFTLargeAmount(INFT NFT, int coppies, string receiver = "", List<string> multipleReceivers = null, int maxInLot = 0)
         {
+            Dictionary<string, string> sentResults = new Dictionary<string, string>();
+
             var nft = await NFTFactory.CloneNFT(NFT);
             try
             {
                 if (IsLocked())
                 {
                     await InvokeAccountLockedEvent();
-                    return (false, "Account is locked.");
+                    return (false, null);
                 }
-
+                
                 int cps = coppies;
+                
+                if (maxInLot <= 0 && NeblioTransactionHelpers.MaximumTokensOutpus >= 2)
+                    maxInLot = NeblioTransactionHelpers.MaximumTokensOutpus - 1;
 
                 Console.WriteLine("Start of minting.");
                 int lots = 0;
                 int rest = 0;
-                rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
-                lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
-                (bool, string) res = (false, string.Empty);
+                rest += cps % (maxInLot);
+                lots += (int)((cps - rest) / maxInLot);
                 string txres = string.Empty;
                 NewMintingProcessInfo?.Invoke(this, $"Minting of {lots} lots started...");
 
@@ -1295,33 +1449,62 @@ namespace VEDriversLite.Neblio
                         {
                             while (!done)
                             {
-                                var sres = await MultimintSourceCheck(NFT.TokenId, NeblioTransactionHelpers.MaximumTokensOutpus);
+                                var sres = await MultimintSourceCheck(NFT.TokenId, maxInLot + 2);
                                 if (sres.Item1)
                                 {
                                     try
                                     {
-                                        txres = await NFTHelpers.MintMultiNFT(Address, NeblioTransactionHelpers.MaximumTokensOutpus - 1, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                                        var multipleReceiversPart = multipleReceivers != null ? multipleReceivers.GetRange(i * (maxInLot), maxInLot) : null;
+
+                                        var mintNFTData = await NFTHelpers.GetMintMultiNFTData(Address, nft, receiver, multipleReceiversPart);
+
+                                        var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, maxInLot, AccountKey, sres.Item2.Item1, sres.Item2.Item2);
+
+                                        txres = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
                                         if (string.IsNullOrEmpty(txres))
                                         {
                                             Console.WriteLine("Waiting for spendable utxo...");
                                             await Task.Delay(5000);
+                                            await ReloadUtxos();
+                                            await ReloadMintingSupply();
                                         }
                                         else
                                         {
+                                            await StoreUsedUtxos(transaction, txres);
                                             done = true;
                                             txsidsres += txres + "-";
+                                            if (multipleReceiversPart != null)
+                                                foreach( var a in multipleReceiversPart)
+                                                    sentResults.Add(a, txres);
+                                            
                                             NewMintingProcessInfo?.Invoke(this, $"New Lot Minted: {txres}, Waiting for processing next {i + 1} of {lots} lots.");
+                                            var airdroped = new Dictionary<string, string>();
+                                            if (multipleReceiversPart != null)
+                                                foreach (var a in multipleReceiversPart)
+                                                    airdroped.Add(a, txres);
+                                            AddressesAirdroped?.Invoke(this, airdroped);
+                                            
+                                            await Task.Delay(1500);
+                                            await ReloadUtxos();
+                                            await ReloadMintingSupply();                                            
                                         }
                                     }
                                     catch (Exception ex)
                                     {
+                                        Console.WriteLine("Cannot send Mint. Probably need to wait for the confirmation. Error: " + ex.Message);
                                         await Task.Delay(5000);
+                                        await ReloadUtxos();
+                                        await ReloadMintingSupply();                                        
                                         done = false;
                                     }
                                 }
                                 else
                                 {
+                                    Console.WriteLine("Cannot send Mint. Probably need to wait for the confirmation...");
                                     await Task.Delay(5000);
+                                    await ReloadUtxos();
+                                    await ReloadMintingSupply();
                                     done = false;
                                 }
                             }
@@ -1338,7 +1521,14 @@ namespace VEDriversLite.Neblio
                                 var sres = await MultimintSourceCheck(NFT.TokenId, rest);
                                 if (sres.Item1)
                                 {
-                                    txres = await NFTHelpers.MintMultiNFT(Address, rest, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                                    var multipleReceiversPart = multipleReceivers != null ? multipleReceivers.GetRange(multipleReceivers.Count - rest, rest) : null;
+
+                                    var mintNFTData = await NFTHelpers.GetMintMultiNFTData(Address, nft, receiver, multipleReceiversPart);
+
+                                    var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, rest, AccountKey, sres.Item2.Item1, sres.Item2.Item2);
+
+                                    txres = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+
                                     if (string.IsNullOrEmpty(txres))
                                     {
                                         Console.WriteLine("Waiting for spendable utxo...");
@@ -1346,15 +1536,32 @@ namespace VEDriversLite.Neblio
                                     }
                                     else
                                     {
+                                        await StoreUsedUtxos(transaction, txres);
                                         done = true;
                                         txsidsres += txres + "-";
+                                        if (multipleReceiversPart != null)
+                                            foreach (var a in multipleReceiversPart)
+                                                sentResults.Add(a, txres);
+
                                         NewMintingProcessInfo?.Invoke(this, $"Rest of {rest} NFTs of total {coppies} NFTs was Minted: {txres}");
+                                        
+                                        var airdroped = new Dictionary<string, string>();
+                                        if (multipleReceiversPart != null)
+                                            foreach (var a in multipleReceiversPart)
+                                                airdroped.Add(a, txres);
+                                        AddressesAirdroped?.Invoke(this, airdroped);
+                                        
+                                        await Task.Delay(1500);
+                                        await ReloadUtxos();
+                                        await ReloadMintingSupply();
                                     }
                                 }
                                 else
                                 {
                                     Console.WriteLine("Waiting for spendable utxo...");
                                     await Task.Delay(5000);
+                                    await ReloadUtxos();
+                                    await ReloadMintingSupply();                                    
                                 }
                             }
                         });
@@ -1362,22 +1569,41 @@ namespace VEDriversLite.Neblio
                 }
                 else
                 {
-                    var sres = await MultimintSourceCheck(NFT.TokenId, NeblioTransactionHelpers.MaximumTokensOutpus);
+                    var sres = await MultimintSourceCheck(NFT.TokenId, maxInLot + 2);
                     if (sres.Item1)
-                        txres = await NFTHelpers.MintMultiNFT(Address, cps, AccountKey, nft, sres.Item2.Item1, sres.Item2.Item2, receiver);
+                    {
+                        var mintNFTData = await NFTHelpers.GetMintMultiNFTData(Address, nft, receiver, multipleReceivers);
+
+                        var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, cps, AccountKey, sres.Item2.Item1, sres.Item2.Item2);
+
+                        var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
+                        if (!string.IsNullOrEmpty(rtxid))
+                            await StoreUsedUtxos(transaction, rtxid);
+                    }
                     else
                     {
                         await InvokeErrorDuringSendEvent("Cannot Mint NFTs", "Not enough spendable source.");
-                        return (false, "Not enough spendable source.");
+                        Console.WriteLine("Cannot Mint NFTs", "Not enough spendable source.");
+                        return (false, null);
                     }
-                    if (!string.IsNullOrEmpty(txres)) txsidsres += txres;
+                    if (!string.IsNullOrEmpty(txres))
+                    {
+                        txsidsres += txres;
+                        if (multipleReceivers != null && multipleReceivers.Count > 0)
+                        {
+                            var airdroped = new Dictionary<string, string>();
+                            foreach (var a in multipleReceivers)
+                                airdroped.Add(a, txres);
+                            AddressesAirdroped?.Invoke(this, airdroped);
+                        }
+                    }
                     txsidsres = txsidsres.Trim('-');
                 }
 
                 if (txres != null)
                 {
                     await InvokeSendPaymentSuccessEvent(txsidsres, "Neblio NFT Sent");
-                    return (true, txsidsres);
+                    return (true, sentResults);
                 }
                 else
                 {
@@ -1387,11 +1613,12 @@ namespace VEDriversLite.Neblio
             catch (Exception ex)
             {
                 await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
-                return (false, ex.Message);
+                Console.WriteLine("Error during minting: " + ex.Message);
+                return (false, null);
             }
-
+            
             await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
-            return (false, "Unexpected error during send.");
+            return (false, null);
         }
 
 
@@ -1400,11 +1627,23 @@ namespace VEDriversLite.Neblio
         /// Now it is possible to destroy just same kind of tokens. The first provided NFT will define TokenId. Different tokensIds will be skipped.
         /// Maximum to destroy in one transaction is 10 of NFTs
         /// </summary>
-        /// <param name="tokenId">Token Id hash</param>
         /// <param name="nfts">List of NFTs</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
         public async Task<(bool, string)> DestroyNFTs(ICollection<INFT> nfts, string receiver = "")
         {
+            if (nfts == null || nfts.Count == 0)
+            {
+                await InvokeErrorDuringSendEvent("Cannot Destroy NFTs", "No NFTs provided.");
+                return (false, "No NFTs provided.");
+            }
+            var nft = nfts.First();
+            if (nfts.Count != nfts.Where(n => nft.TokenId == n.TokenId).Count())
+            {
+                await InvokeErrorDuringSendEvent("Cannot Destroy NFTs", "Different NFTs provided. You can destroy just same kind of NFTs in one request.");
+                return (false, "Different NFTs provided.");
+            }
+            
             if (IsLocked())
             {
                 await InvokeAccountLockedEvent();
@@ -1416,20 +1655,30 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
+            var tres = await CheckSpendableNeblioTokens(nft.TokenId, 3);
+            if (tres.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs for minting. You need one input from minting supply. That one will be merged with destroyed free tokens.");
+                return (false, tres.Item1);
+            }
 
             try
             {
                 // send tx
-                var rtxid = await NFTHelpers.DestroyNFTs(Address, AccountKey, nfts, res.Item2, receiver);
-                if (rtxid != null)
+                var sendTokenTxData = await NFTHelpers.GetTxDataForDestroyNFTs(Address, nfts, receiver);                                             
+
+                var transaction = await NeblioTransactionHelpers.DestroyNFTAsync(sendTokenTxData, AccountKey, res.Item2, mintingUtxo:tres.Item2.FirstOrDefault());
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFTs Destroyed.");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFTs Destroyed.");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
             {
-                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                await InvokeErrorDuringSendEvent(ex.Message, "Cannot Destroy NFT");
                 return (false, ex.Message);
             }
 
@@ -1445,6 +1694,8 @@ namespace VEDriversLite.Neblio
         /// <param name="NFT"></param>
         /// <param name="priceWrite">Set this if you need to just write the price to the NFT</param>
         /// <param name="price">Price must be bigger than 0.0002 NEBL</param>
+        /// <param name="withDogePrice">Set this if you need to just write the Doge price to the NFT</param>
+        /// <param name="dogeprice">Price must be bigger than 0.1 Doge</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendNFT(string receiver, INFT NFT, bool priceWrite = false, double price = 0.0002, bool withDogePrice = false, double dogeprice = 1)
         {
@@ -1472,10 +1723,15 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendNFT(Address, receiver, AccountKey, nft, priceWrite, res.Item2, price, withDogePrice, dogeprice);
+                var sendTokenTxData = await NFTHelpers.GetNFTTxData(Address, receiver, AccountKey, nft, priceWrite, price, withDogePrice, dogeprice);
+                              
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                              
 
                 if (rtxid != null)
                 {
+                    await StoreUsedUtxos(transaction, rtxid);
                     if (!priceWrite)
                         await InvokeSendPaymentSuccessEvent(rtxid, "NFT Sent");
                     else
@@ -1522,12 +1778,15 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.ChangeNFT(Address, AccountKey, nft, res.Item2);
+                var sendTokenTxData = await NFTHelpers.GetChangeNFTTxData(Address, nft);
+                                
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Changed");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Changed");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1543,9 +1802,11 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Send NFT.
         /// </summary>
-        /// <param name="NFT"></param>
+        /// <param name="NFT">NFT to sent</param>
+        /// <param name="sender">Sender of the NFT</param>
+        /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendIoTMessageNFT(INFT nft, string sender, string receiver = "")
+        public async Task<(bool, string)> SendIoTMessageNFT(INFT NFT, string sender, string receiver = "")
         {
             if (string.IsNullOrEmpty(receiver))
                 receiver = sender;
@@ -1562,7 +1823,7 @@ namespace VEDriversLite.Neblio
                 return (false, res.Item1);
             }
 
-            var tres = await CheckSpendableTokens(nft.TokenId, 3);
+            var tres = await CheckSpendableNeblioTokens(NFT.TokenId, 3);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable Token inputs");
@@ -1571,12 +1832,13 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendIoTMessageNFT(Address, receiver, AccountKey, nft, res.Item2, tres.Item2);
+                var transaction = await NFTHelpers.GetIoTMessageNFTTransaction(Address, receiver, AccountKey, NFT, res.Item2, tres.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Message sent.");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Message sent.");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1590,9 +1852,17 @@ namespace VEDriversLite.Neblio
         }
 
         /// <summary>
-        /// Send NFT.
+        /// Send NFT Message.
         /// </summary>
-        /// <param name="NFT"></param>
+        /// <param name="name">Name of the Message</param>
+        /// <param name="message">Content of the Message</param>
+        /// <param name="receiver">Receiver of the Message</param>
+        /// <param name="utxo">original NFT Utxo - reply for the existing message</param>
+        /// <param name="text">Longer text in the message</param>
+        /// <param name="imagelink">Image link in the message</param>
+        /// <param name="link">Link in the message</param>
+        /// <param name="rewriteAuthor">Rewrite author of the message. Common is the sender (you can use txid of some NFT Profil, etc.)</param>
+        /// <param name="encrypt">Encrypt the message with the shared secret</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendMessageNFT(string name, string message, string receiver, string utxo = "", bool encrypt = true, string imagelink = "", string link = "", string text = "", string rewriteAuthor = "")
         {
@@ -1628,12 +1898,13 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendMessageNFT(Address, receiver, AccountKey, nft, res.Item2, tres.Item2, rewriteAuthor:rewriteAuthor);
+                var transaction = await NFTHelpers.GetMessageNFTTransaction(Address, receiver, AccountKey, nft, res.Item2, tres.Item2, Secret, rewriteAuthor:rewriteAuthor);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Message sent.");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Message sent.");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1678,12 +1949,15 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.UseNFTTicket(Address, AccountKey, nft, res.Item2);
+                var sendTokenTxData = await NFTHelpers.GetTxDataForNFTTicket(Address, nft);
+                                
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Ticket used.");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "NFT Ticket used.");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1725,12 +1999,15 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await NFTHelpers.SendNFTPayment(Address, AccountKey, receiver, nft, res.Item2);
+                var sendTokenTxData = await NFTHelpers.GetNFTPaymentData(Address, receiver, nft, res.Item2);
+                
+                var transaction = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(sendTokenTxData, AccountKey, nft.Price, res.Item2, null, 0);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Payment for NFT Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Payment for NFT Sent");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1748,6 +2025,7 @@ namespace VEDriversLite.Neblio
         /// The receiver is taken from the Minting transaction of the PaymentNFT
         /// </summary>
         /// <param name="NFT">NFT Payment to return</param>
+        /// <param name="receiver">Receiver of the returned NFT Payment</param>
         /// <returns></returns>
         public async Task<(bool, string)> ReturnNFTPayment(string receiver, PaymentNFT NFT)
         {
@@ -1769,10 +2047,16 @@ namespace VEDriversLite.Neblio
             try
             {
                 NFT.Returned = true;
-                var rtxid = await NFTHelpers.ReturnNFTPayment(Address, AccountKey, NFT, res.Item2);
+                var sendTokenTxData = await NFTHelpers.GetTxDataForReturnNFTPayment(Address, NFT);
 
-                if (rtxid != null)
+                // send tx              
+                var transaction = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(sendTokenTxData, AccountKey, NFT.Price, res.Item2, NFT.Utxo, (int)NFT.UtxoIndex);
+
+                var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                                             
+
+                if (!string.IsNullOrEmpty(rtxid))
                 {
+                    await StoreUsedUtxos(transaction, rtxid);
                     await ReLoadNFTs();
                     await RefreshAddressReceivedPayments();
                     await InvokeSendPaymentSuccessEvent(rtxid, "Payment returned to the original sender");
@@ -1793,7 +2077,9 @@ namespace VEDriversLite.Neblio
         /// This function will send airdrop.
         /// </summary>
         /// <param name="receiver">Receiver - owner of the NFT</param>
-        /// <param name="NFT">NFT what you want to buy</param>
+        /// <param name="tokenId">TokenId of the NTP1 token on Neblio network</param>
+        /// <param name="tokenAmount">Number of the tokens in the airdrop</param>
+        /// <param name="neblioAmount">Neblio amount in the airdrop</param>
         /// <returns></returns>
         public async Task<(bool, string)> SendAirdrop(string receiver, string tokenId, double tokenAmount, double neblioAmount)
         {
@@ -1830,13 +2116,15 @@ namespace VEDriversLite.Neblio
             };
 
             try
-            {
-                var rtxid = await NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(dto, AccountKey, neblioAmount, res.Item2, tres.Item2);
+            {           
+                // send tx
+                var transaction = await NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(dto, AccountKey, neblioAmount, res.Item2, tres.Item2);
 
-                if (rtxid != null)
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Airdrop Sent");
+                if (result.Item1)
                 {
-                    await InvokeSendPaymentSuccessEvent(rtxid, "Airdrop Sent");
-                    return (true, rtxid);
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
                 }
             }
             catch (Exception ex)
@@ -1883,9 +2171,9 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var rtxid = await CoruzantNFTHelpers.ChangeCoruzantPostNFT(Address, AccountKey, nft, res.Item2, receiver);
+                var rtxid = await CoruzantNFTHelpers.ChangeCoruzantPostNFT(Address, AccountKey, nft, res.Item2, Secret, receiver);
 
-                if (rtxid != null)
+                if (!string.IsNullOrEmpty(rtxid))
                 {
                     if (!commentWrite)
                         await InvokeSendPaymentSuccessEvent(rtxid, "NFT Sent");
@@ -1907,6 +2195,10 @@ namespace VEDriversLite.Neblio
         #endregion
 
         #region NFTIoTDevicesProcessing
+        /// <summary>
+        /// Init NFT IoT Devices automatically if they have allowed this function
+        /// </summary>
+        /// <returns></returns>
         public async Task<(bool, string)> InitAllAutoIoTDeviceNFT()
         {
             try
@@ -1924,6 +2216,12 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Init IoT Device manually
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <param name="utxoindex"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> InitIoTDeviceNFT(string utxo, int utxoindex = 0)
         {
             try
@@ -1943,6 +2241,12 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Deactivate the IoT Device
+        /// </summary>
+        /// <param name="utxo"></param>
+        /// <param name="utxoindex"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> DeInitIoTDeviceNFT(string utxo, int utxoindex = 0)
         {
             try
@@ -1962,11 +2266,11 @@ namespace VEDriversLite.Neblio
             }
         }
 
-        private void NeblioAccountBase_NewMessage(object sender, (string, INFT) e)
+        private async void NeblioAccountBase_NewMessage(object sender, (string, INFT) e)
         {
             var n = e.Item2;
             Console.WriteLine("New Message received from the IoTDevice to main.");
-            MintNFTMessageForIoTDeviceEvent((sender as IoTDeviceNFT).Utxo, n.Name, n.Description, n, e.Item1, (sender as IoTDeviceNFT));
+            await MintNFTMessageForIoTDeviceEvent((sender as IoTDeviceNFT).Utxo, n.Name, n.Description, n, e.Item1, (sender as IoTDeviceNFT));
         }
 
         private async Task MintNFTMessageForIoTDeviceEvent(string senderUtxo, string name, string message, INFT nft, string messagekey, IoTDeviceNFT sender)
@@ -2035,13 +2339,21 @@ namespace VEDriversLite.Neblio
                                             {
                                                 var rtxid = string.Empty;
                                                 var pntosend = await NFTFactory.CloneNFT(pn);
+
+                                                SendTokenTxData tokenTxData;
+
                                                 if (!pn.SellJustCopy)
-                                                    rtxid = await NFTHelpers.SendOrderedNFT(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
+                                                    tokenTxData = await NFTHelpers.GetTxDataForOrderedNFT(Address, (PaymentNFT)p, pntosend);
                                                 else
-                                                    rtxid = await NFTHelpers.SendOrderedNFTCopy(Address, AccountKey, (PaymentNFT)p, pntosend, res.Item2);
-                                                
+                                                    tokenTxData = await NFTHelpers.GetTokenTxDataCopy(Address, (PaymentNFT)p, pntosend);
+                                               
+                                                    var transaction = await NeblioTransactionHelpers.SendMultiTokenAPIAsync(tokenTxData, AccountKey, res.Item2, isMintingOfCopy: true);
+
+                                                    rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                                                    
+
                                                 if (!string.IsNullOrEmpty(rtxid))
                                                 {
+                                                    await StoreUsedUtxos(transaction, rtxid);
                                                     Console.WriteLine($"NFT sent to the buyer {((PaymentNFT)p).Sender} with txid: {rtxid}");
                                                     lock (_lock)
                                                     {
@@ -2108,7 +2420,7 @@ namespace VEDriversLite.Neblio
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine($"Cannot mark the NFT Payment {p.Name} with txid: {p.Utxo} with index: {p.UtxoIndex} as already sold.");
+                                        Console.WriteLine($"Cannot mark the NFT Payment {p.Name} with txid: {p.Utxo} with index: {p.UtxoIndex} as already sold. Error: " + ex.Message);
                                     }
                                 }
                             }

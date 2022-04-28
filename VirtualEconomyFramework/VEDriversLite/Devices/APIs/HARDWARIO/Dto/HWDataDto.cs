@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VEDriversLite.Devices.APIs.HARDWARIO.Dto
 {
+    /// <summary>
+    /// Dto for HARDWARIO CHESTER data
+    /// </summary>
     public class HWDataDto
     {
         /// <summary>

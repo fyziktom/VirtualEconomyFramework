@@ -140,9 +140,18 @@ namespace VEFrameworkUnitTest.NFT.NFTDtos
             {
                 nft.Tags = "venft nfts neblio";
                 nft.ParseTags();
-                Assert.Equal(nft.TagsList.Count, 3);
-                Assert.Equal(nft.TagsList[0], "venft");
-                Assert.Equal(nft.TagsList[2], "neblio");
+                if (nft.Type == NFTTypes.Ticket)
+                {
+                    Assert.Equal(nft.TagsList.Count, 4);
+                    Assert.Equal(nft.TagsList[1], "venft");
+                    Assert.Equal(nft.TagsList[3], "neblio");
+                }
+                else
+                {
+                    Assert.Equal(nft.TagsList.Count, 3);
+                    Assert.Equal(nft.TagsList[0], "venft");
+                    Assert.Equal(nft.TagsList[2], "neblio");
+                }
             }
         }
 

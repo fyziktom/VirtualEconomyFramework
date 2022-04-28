@@ -1,0 +1,47 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray.Dto
+
+
+<Row>
+    <Column>
+        <LabeledProgressBar ParameterName="Voltage" ParameterUnit="kV" Max="450" Value="@XrayParams.Voltage" Color="Color.Info" />
+    </Column>
+    <Column>
+        <LabeledProgressBar ParameterName="Current" ParameterUnit="@currentUnit" Max="500" Value="@CurrentInUnits" Color="Color.Primary" />
+    </Column>
+    <Column>
+        <LabeledProgressBar ParameterName="Time" ParameterUnit="ms" Max="5000" Value="@XrayParams.ExposureTime" Color="Color.Link" />
+    </Column>
+</Row>
+
+@code {
+    [Parameter]
+    public XrayExposureParameters XrayParams { get; set; } = new XrayExposureParameters();
+
+    private string currentUnit = "mA";
+
+    public double CurrentInUnits
+    {
+        get
+        {
+            // we store xray tube current in mA
+            var cur = XrayParams.Current;
+            if ( cur < 1 )
+            {
+                currentUnit = "uA";
+                return cur * 1000;
+            }
+            else if ( cur >= 1 && cur < 1000 )
+            {
+                currentUnit = "mA";
+                return cur;
+            }
+            else if ( cur >= 1000 && cur < 10000000 )
+            {
+                currentUnit = "A";
+                return cur / 1000;
+            }
+            return 0;
+        }
+    }
+}

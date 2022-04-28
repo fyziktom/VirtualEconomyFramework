@@ -4,13 +4,31 @@ using System.Text;
 
 namespace VEDriversLite.Devices.Dto
 {
+    /// <summary>
+    /// Security of the API
+    /// </summary>
     public enum CommunitacionSecurityType
     {
+        /// <summary>
+        /// Without credentials
+        /// </summary>
         None,
+        /// <summary>
+        /// SSL classic user and pass
+        /// </summary>
         SSL,
+        /// <summary>
+        /// common Bearer token
+        /// </summary>
         Bearer,
+        /// <summary>
+        /// JWT Token
+        /// </summary>
         JWT
     }
+    /// <summary>
+    /// Main connection parameters for the IoT data driver to access the API
+    /// </summary>
     public class CommonConnectionParams
     {
         /// <summary>

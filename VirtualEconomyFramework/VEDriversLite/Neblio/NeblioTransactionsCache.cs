@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Caching;
-using System.Timers;
-using VEDriversLite.NeblioAPI;
+using Microsoft.Extensions.Caching.Memory;
 using System.Threading.Tasks;
 
 namespace VEDriversLite.Neblio
@@ -14,30 +10,61 @@ namespace VEDriversLite.Neblio
     /// </summary>
     public static class NeblioTransactionsCache
     {
-        private static readonly object _lockObject = new object();
-        private static double latestblock = 0.0;
-        private static DateTime time = DateTime.MinValue;
-        private static TimeSpan timeSpanToRefresh = new TimeSpan(0,0,5);
+        static readonly MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
         /// <summary>
         /// Method will check if the data for current address is available in cache and returns the blockheight, IF not avaialble then retrievs from API.
         /// </summary>
         /// <param name="address">The address for which we need the latest block height</param>
+        /// <param name="utxo"></param>
         /// <returns></returns>
-        public static async Task<double> LatestBlockHeight(string utxo)
+        public async static Task<double> LatestBlockHeight(string utxo, string address)
         {
-            var newtime = DateTime.UtcNow;
-            if ((newtime - time) >= timeSpanToRefresh)
+            double blockHeightValue = 0;
+
+            object value = GetCacheValue(address);
+
+            if (value != default)
+            {
+                blockHeightValue = (double)value;
+            }
+            else
             {
                 var data = await NeblioTransactionHelpers.GetClient().GetTransactionInfoAsync(utxo);
-                time = newtime;
+
                 if (data != null && data.Blockheight != null && data.Confirmations != null)
                 {
-                    latestblock = data.Blockheight.Value + data.Confirmations.Value;
-                }                
+                    blockHeightValue = data.Blockheight.Value + data.Confirmations.Value;
+                }
+                SetChacheValue(address, blockHeightValue);
             }
+            return blockHeightValue;
+        }
 
-            return latestblock;
-
+        private static object GetCacheValue(string key)
+        {
+            if (key != null && cache.TryGetValue(key, out object val))
+            {
+                return val;
+            }
+            else
+            {
+                return default;
+            }
+        }
+        /// <summary>
+        /// Set value in the cache
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public static void SetChacheValue(string key, object value)
+        {
+            if (key != null)
+            {
+                cache.Set(key, value, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromSeconds(10)
+                });
+            }
         }
     }
 }

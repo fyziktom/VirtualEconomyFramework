@@ -49,7 +49,7 @@ public class TransactionsService
 
         string rec = await NeblioTransactionHelpers.GetTransactionReceiver(txid, tinfo);
         string receiver = string.Empty;
-        var recbkm = await account.IsInTheBookmarks(rec);
+        var recbkm = account.IsInTheBookmarks(rec);
 
         if (rec == account.Address)
             receiver = "Main Account";

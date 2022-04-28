@@ -8,29 +8,79 @@ using VEDriversLite.NFT;
 
 namespace VEDriversLite.Devices
 {
+    /// <summary>
+    /// Type of the IoT Data Drivers
+    /// </summary>
     public enum IoTDataDriverType
     {
+        /// <summary>
+        /// Not specified
+        /// </summary>
         Common,
+        /// <summary>
+        /// Hardwario IoT platform
+        /// </summary>
         HARDWARIO,
+        /// <summary>
+        /// PLFramework platform
+        /// </summary>
         PLFramework,
+        /// <summary>
+        /// M5Stack IoT platform
+        /// </summary>
         M5Stack
     }
+    /// <summary>
+    /// Scheme of the communication
+    /// </summary>
     public enum CommunicationSchemeType
     {
+        /// <summary>
+        /// Request to API
+        /// </summary>
         Requests,
+        /// <summary>
+        /// Publisher Subscriber model - for example MQTT
+        /// </summary>
         PubSub
     }
+    /// <summary>
+    /// Communication type
+    /// </summary>
     public enum IoTCommunicationType
     {
+        /// <summary>
+        /// API access
+        /// </summary>
         API,
+        /// <summary>
+        /// File storage
+        /// </summary>
         File,
+        /// <summary>
+        /// Database Microsoft SQL
+        /// </summary>
         DbMSSQL,
+        /// <summary>
+        /// Database PostgreSQL
+        /// </summary>
         DbPostgreSQL,
+        /// <summary>
+        /// Database SQLite
+        /// </summary>
         DbSQLite,
+        /// <summary>
+        /// MQTT protocol
+        /// </summary>
         MQTT = 100,
+        /// <summary>
+        /// OPC UA protocol
+        /// </summary>
         OPCUA = 101
     }
-
+    /// <summary>
+    /// Basic interface for IoT Data Driver
+    /// </summary>
     public interface IIoTDataDriver
     {
         /// <summary>

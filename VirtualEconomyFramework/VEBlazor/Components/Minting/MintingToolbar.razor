@@ -1,0 +1,152 @@
+﻿<Row Margin="Margin.Is2.FromBottom">
+    @if ( ShowPrevButton )
+    {
+        <Column>
+            <ToolbarButton ToolType="MintingToolbarActionType.PreviousStep"
+                       Icon="IconName.ArrowLeft"
+                       Label="Back"
+                       Size="@MainButtonsSize"
+                       Color="@SecondaryButtonsColor"
+                       ToolActionHandler="@PreviousStep" />
+        </Column>
+    }
+    @if ( ShowLoadFromTemplateButton )
+    {
+        @if (!ShowPrevButton)
+        {
+            <Column></Column>
+        }
+        <Column TextAlignment="TextAlignment.Center">
+            <ToolbarButton ToolType="MintingToolbarActionType.LoadFromTemplate"
+                       Icon="IconName.FolderOpen"
+                       Label="Load Template"
+                       Size="@MainButtonsSize"
+                       Color="@MainButtonsColor"
+                       ToolActionHandler="@LoadFromTemplateStep" />
+        </Column>
+    } 
+    @if ( ShowNextButton )
+    {
+        <Column TextAlignment="TextAlignment.End">
+            <ToolbarButton ToolType="MintingToolbarActionType.NextStep"
+                       Icon="IconName.ArrowRight"
+                       Label="Next"
+                       Size="@MainButtonsSize"
+                       Color="@MainButtonsColor"
+                       ToolActionHandler="@NextStep" />
+        </Column>
+    }   
+    @if ( ShowMintButton )
+    {
+        <Column TextAlignment="TextAlignment.End">
+            <ToolbarButton ToolType="MintingToolbarActionType.Mint"
+                       Icon="IconName.CloudUploadAlt"
+                       Label="Mint"
+                       Size="@MainButtonsSize"
+                       Color="@MainButtonsColor"
+                       ToolActionHandler="@MintStep" />
+        </Column>
+    }
+    @if ( ShowFinishButton )
+    {
+        <Column TextAlignment="TextAlignment.End">
+            <ToolbarButton ToolType="MintingToolbarActionType.Finish"
+                       Icon="IconName.CloudUploadAlt"
+                       Label="Finish"
+                       Size="@MainButtonsSize"
+                       Color="@MainButtonsColor"
+                       ToolActionHandler="@FinishStep" />
+        </Column>
+    }
+    @if ( ShowSaveButton )
+    {
+        <Column>
+            <ToolbarButton ToolType="MintingToolbarActionType.Save"
+                       Icon="IconName.Save"
+                       Label="Save"
+                       Size="@MainButtonsSize"
+                       Color="@MainButtonsColor"
+                       ToolActionHandler="@SaveStep" />
+        </Column>
+    }
+</Row>
+
+@code {
+    [Parameter]
+    public bool ShowPrevButton { get; set; } = false;
+
+    [Parameter]
+    public bool ShowNextButton { get; set; } = false;
+
+    [Parameter]
+    public bool ShowMintButton { get; set; } = false;
+
+    [Parameter]
+    public bool ShowFinishButton { get; set; } = false;
+
+    [Parameter]
+    public bool ShowSaveButton { get; set; } = false;
+    [Parameter]
+    public bool ShowLoadFromTemplateButton { get; set; } = false;
+
+    [Parameter]
+    public Blazorise.Color MainButtonsColor { get; set; } = Blazorise.Color.Primary;
+
+    [Parameter]
+    public Blazorise.Color SecondaryButtonsColor { get; set; } = Blazorise.Color.Light;
+
+    [Parameter]
+    public Blazorise.Size MainButtonsSize { get; set; } = Size.Default;
+
+    [Parameter]
+    public EventCallback<MintingToolbarActionDto> ToolActionHandler { get; set; }
+
+    [Parameter]
+    public Func<Task<bool>> CanProceed { get; set; }
+
+    [Inject]
+    public IMessageService? MessageService { get; set; }
+
+    async Task PreviousStep()
+    {
+        await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.PreviousStep } );
+    }
+
+    async Task NextStep()
+    {
+        if ( CanProceed != null )
+        {
+            var result = await CanProceed.Invoke();
+
+            if ( !result )
+                return;
+        }
+
+        await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.NextStep } );
+    }
+
+    async Task LoadFromTemplateStep()
+    {
+        await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.LoadFromTemplate } );
+    }
+
+    async Task MintStep()
+    {
+        await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Mint } );
+    }
+
+    async Task FinishStep()
+    {
+        if (MessageService != null )
+            if ( await MessageService.Confirm( "Are you sure you want to save the minting data? Please be aware that it could take a few seconds until it is visible in the gallery.", "Finish" ) == true )
+            {
+                await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Finish } );
+            }
+    }
+
+    async Task SaveStep()
+    {
+        await ToolActionHandler.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Save } );
+    }
+
+}

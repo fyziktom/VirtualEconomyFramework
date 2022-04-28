@@ -1,0 +1,111 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@inject AppData AppData
+
+<Blazorise.ThemeProvider Theme="@theme">
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+
+    <VEBlazor.Components.VEBlazorServicesComponents />
+</Blazorise.ThemeProvider>
+
+@code {
+    Theme theme = VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppData.AppName = "Dogeft";
+        AppData.AppNick = "DOGEFT";
+        AppData.AppHomeWebsiteUrl = "https://dogeft.com/";
+        AppData.AppShareNFTUrl = "https://dogeft.ve-nft.com/";
+
+        AppData.AllowWorkTabs = false;
+        AppData.AllowSend = true;
+        AppData.AllowDestroy = true;
+        AppData.DisplayGettingStartedMenuItem = true;
+        AppData.GettingStartedPageName = "gettingstarted";
+        AppData.AppTokenId = NFTHelpers.WDOGETokenId;
+
+        if ( AppData.MintingTabsData.TryGetValue( "default", out var tab ) )
+        {
+            tab.MintingNFTType = NFTTypes.Ticket;
+            tab.HeaderLabel = "Add New Ticket";
+            tab.MenuButonLabel = "New Ticket";
+            tab.TabPageLocationName = "addnew";
+            tab.NFT = new TicketNFT( "" );
+        }
+        AppData.MintingTabsData.TryAdd( "eventminting", new MintingTabData()
+            {
+                MintingNFTType = NFTTypes.Event,
+                HeaderLabel = "Add New Event",
+                MenuButonLabel = "New Event",
+                TabPageLocationName = "addnewevent",
+                NFT = new EventNFT( "" ),
+            } );
+        AppData.MintingTabsData.TryAdd( "postminting", new MintingTabData()
+            {
+                MintingNFTType = NFTTypes.Post,
+                HeaderLabel = "Add New Post",
+                MenuButonLabel = "New Post",
+                TabPageLocationName = "addnewpost",
+                NFT = new PostNFT( "" ),
+            } );
+
+        AppData.AllowedNFTTypes = new List<NFTTypes>()
+        {
+            VEDriversLite.NFT.NFTTypes.Profile,
+            VEDriversLite.NFT.NFTTypes.Image,
+            VEDriversLite.NFT.NFTTypes.Post,
+            VEDriversLite.NFT.NFTTypes.Event,
+            VEDriversLite.NFT.NFTTypes.Ticket
+        };
+
+        
+        AppData.DefaultTags.Add("Dogecoin", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "Dogecoin",
+            Color = "success",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("Dogepalooza", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "Dogepalooza",
+            Color = "info",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("Dogeft", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "Dogeft",
+            Color = "success",
+            UseAsFastButton = true
+        });        
+        AppData.DefaultTags.Add("ElonMusk", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "ElonMusk",
+            Color = "success",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("Doge", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "Doge",
+            Color = "primary",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("DogeArmy", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "DogeArmy",
+            Color = "warning",
+            UseAsFastButton = true
+        });
+    }
+}

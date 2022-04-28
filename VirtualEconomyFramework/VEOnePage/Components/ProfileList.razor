@@ -3,30 +3,27 @@
 @inject IJSRuntime JsRuntime
 <div class="row profiles">
     
-    @foreach (var profile in AppData.NFTs.Skip(3).Take(8))
+    @foreach (var profile in AppData.ProfilesNFTs.Take(5))
     {
-        if (profile.Type == VEDriversLite.NFT.NFTTypes.CoruzantProfile)
-        {
-            var prof = profile as CoruzantProfileNFT;
-            <div class="col-xs-6 col-sm-4 col-md-3  profiles-container">
-                <div class="profile">
-                   <div class="profile-img">
-                    <img class="media-img" src="@prof.ImageLink" alt="@profile.Description">
-                    </div>        
-                    <div class="profile-details" @onclick="()=>ModalShow(prof)">
-                        <span class="profile-name">@prof.Name @prof.Surname</span> <br>
-                        <span class="position">@prof.WorkingPosition</span> <br>
-                        <span class="desc">@prof.Description</span>
+        var prof = profile as CoruzantProfileNFT;
+        <div class="col-xs-6 col-sm-4 col-md-3  profiles-container">
+            <div class="profile">
+                <div class="profile-img">
+                <img class="media-img" src="@prof.ImageLink" alt="@profile.Description">
+                </div>        
+                <div class="profile-details" @onclick="()=>ModalShow(prof)">
+                    <span class="profile-name">@prof.Name @prof.Surname</span> <br>
+                    <span class="position">@prof.WorkingPosition</span> <br>
+                    <span class="desc">@prof.Description</span>
 
-                    </div>
                 </div>
-          </div>
-
-    }
- 
-      }
+            </div>
+        </div> 
+     }
 
 </div>
+
+
 
 
   @if (Prof != null)

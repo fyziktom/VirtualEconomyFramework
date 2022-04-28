@@ -778,9 +778,11 @@ namespace VENFTApp_Server.Controllers
                 }
                 else
                 {
+                    var rs = (false, new Dictionary<string, string>());
                     foreach (var a in VEDLDataContext.Accounts.Values)
                         if (a.SubAccounts.TryGetValue(data.address, out var sacc))
-                            res = await sacc.MintMultiNFTLargeAmount(nft, data.coppies);
+                            rs = await sacc.MintMultiNFTLargeAmount(nft, data.coppies);
+                    res = (rs.Item1, Newtonsoft.Json.JsonConvert.SerializeObject(rs.Item2, Newtonsoft.Json.Formatting.Indented));
                 }
                 return res;
             }
@@ -818,9 +820,11 @@ namespace VENFTApp_Server.Controllers
                 }
                 else
                 {
+                    var rs = (false, new Dictionary<string, string>());
                     foreach (var a in VEDLDataContext.Accounts.Values)
                         if (a.SubAccounts.TryGetValue(data.address, out var sacc))
-                            res = await sacc.MintMultiNFTLargeAmount(nft, data.coppies);
+                            rs = await sacc.MintMultiNFTLargeAmount(nft, data.coppies);
+                    res = (rs.Item1, Newtonsoft.Json.JsonConvert.SerializeObject(rs.Item2, Newtonsoft.Json.Formatting.Indented));
                 }
                 return res;
             }
@@ -863,17 +867,19 @@ namespace VENFTApp_Server.Controllers
                 nft.TicketDuration = data.ticketDuration;
 
                 (bool, string) res = (false, string.Empty);
-
+                var rs = (false, new Dictionary<string, string>());
                 if (VEDLDataContext.Accounts.TryGetValue(data.address, out var account))
                 {
-                    res = await account.MintMultiNFTLargeAmount(nft, data.coppies);
+                    rs = await account.MintMultiNFTLargeAmount(nft, data.coppies);
                 }
                 else
                 {
                     foreach (var a in VEDLDataContext.Accounts.Values)
                         if (a.SubAccounts.TryGetValue(data.address, out var sacc))
-                            res = await account.MintMultiNFTLargeAmount(nft, data.coppies);
+                            rs = await account.MintMultiNFTLargeAmount(nft, data.coppies);
                 }
+
+                res = (rs.Item1, Newtonsoft.Json.JsonConvert.SerializeObject(rs.Item2, Newtonsoft.Json.Formatting.Indented));
                 return res;
             }
             catch (Exception ex)

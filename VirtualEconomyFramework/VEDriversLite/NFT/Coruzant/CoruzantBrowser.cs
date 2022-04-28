@@ -9,9 +9,19 @@ using VEDriversLite.NFT.Coruzant.Dto;
 
 namespace VEDriversLite.NFT.Coruzant
 {
+    /// <summary>
+    /// Class which loads just Coruzant NFTs on specific address
+    /// It can handle multiple addresses like browser
+    /// </summary>
     public class CoruzantBrowser
     {
+        /// <summary>
+        /// List of loaded tabs with NFTs
+        /// </summary>
         public List<CoruzantTab> Tabs { get; set; } = new List<CoruzantTab>();
+        /// <summary>
+        /// Addresses to load NFTs from
+        /// </summary>
         public List<CoruzantContentAddressDto> CoruzantContentAddresses { get; set; } = new List<CoruzantContentAddressDto>();
 
         /// <summary>
@@ -48,7 +58,7 @@ namespace VEDriversLite.NFT.Coruzant
             }
             catch (Exception ex)
             {
-                throw new Exception("Cannot deserialize the coruzant tabs.");
+                throw new Exception("Cannot deserialize the coruzant tabs. " + ex.Message);
             }
         }
 
@@ -99,6 +109,11 @@ namespace VEDriversLite.NFT.Coruzant
 
             return (true, JsonConvert.SerializeObject(Tabs));
         }
+        /// <summary>
+        /// Select the tab - it will set one selected tab to the Selected=true and others will set false
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public async Task SelectTab(string address)
         {
             foreach (var t in Tabs)
@@ -134,7 +149,7 @@ namespace VEDriversLite.NFT.Coruzant
             }
             catch(Exception ex)
             {
-                Console.WriteLine("Cannot load Coruzant data from the server");
+                Console.WriteLine("Cannot load Coruzant data from the server. " + ex.Message);
             }
         }
     }

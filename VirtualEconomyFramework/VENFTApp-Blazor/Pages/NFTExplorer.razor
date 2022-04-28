@@ -3,8 +3,8 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.Neblio
 @using VEDriversLite.NeblioAPI
-@using VEDriversLite.WooCommerce
-@using VEDriversLite.WooCommerce.Dto
+@using VEDriversLite.Extensions.WooCommerce
+@using VEDriversLite.Extensions.WooCommerce.Dto
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 @inject HttpClient _client
@@ -170,7 +170,7 @@
             }
             else
             {
-                InitWooCom();
+                //InitWooCom();
                 if (AppData.Account != null)
                     AppData.Account.Refreshed += RefreshedHandler;
                 if (AppData.Account.WithoutNFTs)

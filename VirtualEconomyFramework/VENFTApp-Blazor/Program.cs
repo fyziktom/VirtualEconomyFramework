@@ -1,35 +1,28 @@
+using VENFTApp_Blazor;
+using System;
+using System.Net.Http;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using Tewr.Blazor.FileReader;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace VENFTApp_Blazor
-{
-    public class Program
-    {
-        public static async Task Main(string[] args)
-        {
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.Services.AddAntDesign();
-            builder.RootComponents.Add<App>("app");
-            builder.Services.AddBlazoredLocalStorage();
-            builder.Services.AddBlazoredSessionStorage();
-            builder.Services.AddFileReaderService(options => options.UseWasmSharedBuffer = true);
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            builder.Services.AddScoped<ClipboardService>();
-            builder.Services.AddSingleton<AppData>();
-            builder.Services.AddSingleton<TransactionsService>();
+builder.Services.AddAntDesign();
 
-            await builder.Build().RunAsync();
-        }
-    }
-}
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazoredSessionStorage();
+builder.Services.AddFileReaderService(options => options.UseWasmSharedBuffer = true);
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+builder.Services.AddScoped<ClipboardService>();
+builder.Services.AddSingleton<AppData>();
+builder.Services.AddSingleton<TransactionsService>();
+
+await builder.Build().RunAsync();
+

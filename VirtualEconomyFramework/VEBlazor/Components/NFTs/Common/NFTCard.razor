@@ -1,0 +1,55 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if ( NFT != null )
+{
+    <Card Margin="Margin.Is4.FromBottom" Style="min-width:200px; max-width:250px;">
+        <CardImage Source="@image" Alt="No image found" Style="max-height:200px;" @onclick="@(async () => await OpenImageDetailModal.InvokeAsync(image))">
+        </CardImage>
+        <CardBody>
+            @*<Figure Size="FigureSize.Is16x16" Position="Position.Absolute.Top.Is0.Start.Is0">
+                <FigureImage Source="@(GetTokenImage())" />
+            </Figure>*@
+            <CardTitle Size="5" TextOverflow="TextOverflow.Truncate">
+                @NFT.Name
+            </CardTitle>
+            <CardText>
+                <Small>@NFT.Description</Small>
+            </CardText>
+            <CardText>
+                <Tags NFTType="@NFT.Type" TagsList="@NFT.TagsList" TokenId="@NFT.TokenId" />
+            </CardText>
+            
+            @ChildContent
+        </CardBody>
+        <CardFooter>
+            <Button Color="Color.Primary" Clicked="@(async () => await OpenNFTDetailsRequest.InvokeAsync(NFT))" Block>
+                <Icon Name="IconName.Info" />
+            </Button>
+        </CardFooter>
+    </Card>
+}
+      
+@code {
+
+    [Parameter] public EventCallback<string> OpenImageDetailModal { get; set; }
+
+    string image = string.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        image = GetImageUrl();
+        //image = await GetImage();
+        await base.OnInitializedAsync();
+    }
+
+    string GetTokenImage()
+    {
+        if (AppData.Account.TokensSupplies.TryGetValue(NFT.TokenId, out var tokenSupply))
+            return tokenSupply.ImageUrl;
+        else
+            return string.Empty;
+    }
+}

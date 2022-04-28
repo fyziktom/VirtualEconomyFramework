@@ -1,0 +1,172 @@
+﻿<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>Precise Setting of @Name</CardTitle>
+    </CardHeader>
+    <CardBody>
+        @if ( DisplayMicro )
+        {
+            <Field>
+                <FieldLabel>Enter Micro units</FieldLabel>
+                <FieldBody>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is11" Display="Display.Flex">
+                            <Slider TValue="int" Min="0" Max="1000" Step="1" Value="@microValue" ValueChanged="@microChanged" />
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1">
+                            <NumericPicker TValue="int" Min="0" Max="1000" Decimals="0" Value="@microValue" ValueChanged="@microChanged" Size="Size.Small" />
+                        </Column>
+                    </Row>
+                </FieldBody>
+                <FieldHelp>
+                    micro = @microValue * 0.000001
+                </FieldHelp>
+            </Field>
+        }
+        @if ( DisplayMili )
+        {
+            <Field>
+                <FieldLabel>Enter Mili units</FieldLabel>
+                <FieldBody>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is11" Display="Display.Flex">
+                            <Slider TValue="int" Min="0" Max="1000" Step="1" Value="@miliValue" ValueChanged="@miliChanged" />
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1">
+                            <NumericPicker TValue="int" Min="0" Max="1000" Decimals="0" Value="@miliValue" ValueChanged="@miliChanged" Size="Size.Small" />
+                        </Column>
+                    </Row>
+                </FieldBody>
+                <FieldHelp>
+                    mili = @miliValue * 0.001
+                </FieldHelp>
+            </Field>
+        }
+        @if ( DisplayMain )
+        {
+            <Field>
+                <FieldLabel>Enter Main units</FieldLabel>
+                <FieldBody>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is11" Display="Display.Flex">
+                            <Slider TValue="int" Min="0" Max="1000" Step="1" Value="@mainValue" ValueChanged="@mainChanged" />
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1">
+                            <NumericPicker TValue="int" Min="0" Max="1000" Decimals="0" Value="@mainValue" ValueChanged="@mainChanged" Size="Size.Small" />
+                        </Column>
+                    </Row>
+                </FieldBody>
+                <FieldHelp>
+                    main = @mainValue * 1
+                </FieldHelp>
+            </Field>
+        }
+        @if ( DisplayKilo )
+        {
+            <Field>
+                <FieldLabel>Enter Kilo units</FieldLabel>
+                <Slider TValue="int" Min="0" Max="1000" Step="1" Value="@kiloValue" ValueChanged="@kiloChanged" /> kilo = @kiloValue * 1000
+            </Field>
+        }
+        @if ( DisplayMega )
+        {
+            <Field>
+                <FieldLabel>Enter Mega units</FieldLabel>
+                <Slider TValue="int" Min="0" Max="1000" Step="1" Value="@megaValue" ValueChanged="@megaChanged" /> mega = @megaValue * 1000000
+            </Field>
+        }
+        <Row Margin="Margin.Is3.FromTop">
+            <Column>
+                @if ( _value < 0.001 )
+                {
+                    <Span>Value: @(Math.Round(InMicroValue,3)) micro @Unit</Span>
+                }
+                else if ( _value >= 0.001 && _value < 1 )
+                {
+                    <Span>Value: @(Math.Round(InMiliValue,6)) mili @Unit</Span>
+                }
+                else if ( _value >= 1 && _value < 1000 )
+                {
+                    <Span>Value: @(Math.Round(InMainValue,9)) @Unit</Span>
+                }
+                else if ( _value >= 1000 && _value < 1000000 )
+                {
+                    <Span>Value: @(Math.Round(InKiloValue,12)) kilo @Unit</Span>
+                }
+                else if ( _value >= 1000000 )
+                {
+                    <Span>Value: @(Math.Round(InMegaValue,15)) mega @Unit</Span>
+                }
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+
+@code {
+    double _value = 0.0;
+    [Parameter]
+    public double Value { get => Calc(); set => _value = value; }
+    [Parameter]
+    public EventCallback<double> ValueChanged { get; set; }
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+    [Parameter]
+    public string Unit { get; set; } = string.Empty;
+
+    public double InMicroValue { get => _value * 1000000; }
+    public double InMiliValue { get => _value * 1000; }
+    public double InMainValue { get => _value * 1; }
+    public double InKiloValue { get => _value / 1000; }
+    public double InMegaValue { get => _value / 1000000; }
+
+    int microValue = 0;
+    int miliValue = 0;
+    int mainValue = 0;
+    int kiloValue = 0;
+    int megaValue = 0;
+
+    [Parameter]
+    public bool DisplayMicro { get; set; } = false;
+    [Parameter]
+    public bool DisplayMili { get; set; } = false;
+    [Parameter]
+    public bool DisplayMain { get; set; } = false;
+    [Parameter]
+    public bool DisplayKilo { get; set; } = false;
+    [Parameter]
+    public bool DisplayMega { get; set; } = false;
+
+    double Calc()
+    {
+        return 1000000 * (double)megaValue + 1000 * (double)kiloValue + (double)mainValue + 0.001 * (double)miliValue + 0.000001 * (double)microValue;
+    }
+    async Task microChanged( int value )
+    {
+        microValue = value;
+        await valuesChanged();
+    }
+    async Task miliChanged( int value )
+    {
+        miliValue = value;
+        await valuesChanged();
+    }
+    async Task mainChanged( int value )
+    {
+        mainValue = value;
+        await valuesChanged();
+    }
+    async Task kiloChanged( int value )
+    {
+        kiloValue = value;
+        await valuesChanged();
+    }
+    async Task megaChanged( int value )
+    {
+        megaValue = value;
+        await valuesChanged();
+    }
+    async Task valuesChanged()
+    {
+        var v = Calc();
+        await ValueChanged.InvokeAsync( v );
+    }
+}
