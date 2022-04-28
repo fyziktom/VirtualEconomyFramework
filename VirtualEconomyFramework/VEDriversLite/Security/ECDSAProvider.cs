@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
 using NBitcoin.DataEncoders;
-using VEDriversLite.Builder;
 using VEDriversLite.NFT;
 
 namespace VEDriversLite.Security
@@ -299,7 +298,7 @@ namespace VEDriversLite.Security
                 return (false, "Input parameters cannot be empty or null.");
             try
             {
-               var secret =  new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+               var secret =  new BitcoinSecret(key, NeblioTransactionHelpers.Network);
                 return await GetSharedSecret(bobAddress, secret, bobPublicKey);
             }
             catch(Exception ex)
@@ -357,7 +356,7 @@ namespace VEDriversLite.Security
         {
             try
             {
-                var secret = new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+                var secret = new BitcoinSecret(key, NeblioTransactionHelpers.Network);
                 return await EncryptStringWithSharedSecret(message, bobAddress, secret, sharedkey);
             }
             catch (Exception ex)
@@ -482,7 +481,7 @@ namespace VEDriversLite.Security
         {
             try
             {
-                var secret = new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+                var secret = new BitcoinSecret(key, NeblioTransactionHelpers.Network);
                 return await DecryptStringWithSharedSecret(emessage, bobAddress, secret);
             }
             catch (Exception ex)
