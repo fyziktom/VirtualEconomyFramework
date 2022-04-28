@@ -188,11 +188,11 @@
             priceCalculator.PriceEdited -= PriceEditedHandler;
             priceCalculator.PriceEdited += PriceEditedHandler;
         }
-        if (AppData.Account.ExchangePriceService != null && AppData.Account.ExchangePriceService.IsActive)
+        if (AppData.ExchangePriceService != null && AppData.ExchangePriceService.IsActive)
         {
-            AppData.Account.ExchangePriceService.PricesRefreshed -= PriceRefreshedHandler;
-            AppData.Account.ExchangePriceService.PricesRefreshed += PriceRefreshedHandler;
-            SetNewPrices(AppData.Account.ExchangePriceService.ActualCurrenciesRates, true, CurrencyTypes.USD);
+            AppData.ExchangePriceService.PricesRefreshed -= PriceRefreshedHandler;
+            AppData.ExchangePriceService.PricesRefreshed += PriceRefreshedHandler;
+            SetNewPrices(AppData.ExchangePriceService.ActualCurrenciesRates, true, CurrencyTypes.USD);
         }
 
         base.OnInitialized();
