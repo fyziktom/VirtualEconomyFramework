@@ -8,7 +8,7 @@ using NBitcoin.Altcoins;
 using Newtonsoft.Json.Linq;
 using VEDriversLite.NeblioAPI;
 
-namespace VEDriversLite.Builder
+namespace VEDriversLite.Builders.Neblio
 {
     /// <summary>
     /// Main class of the transaction builder.

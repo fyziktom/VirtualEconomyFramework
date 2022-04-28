@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
 
-namespace VEDriversLite.Builder
+namespace VEDriversLite.Builders.Neblio
 {
     /// <summary>
     /// Neblio Builder Output - representation of the output in the transaction

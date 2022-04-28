@@ -2475,7 +2475,7 @@ namespace VEDriversLite
             var founded = 0.0;
             var resp = new List<Utxos>();
 
-            if (addinfo == null)
+            if (addinfo.Utxos.Count == 0)
             {
                 try
                 {

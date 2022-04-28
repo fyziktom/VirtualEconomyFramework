@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.NeblioAPI;
 
-namespace VEDriversLite.Builder
+namespace VEDriversLite.Builders.Neblio
 {
     /// <summary>
     /// Neblio Builder Utxo object

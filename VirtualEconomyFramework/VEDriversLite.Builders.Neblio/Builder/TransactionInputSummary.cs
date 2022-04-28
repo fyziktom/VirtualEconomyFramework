@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using VEDriversLite.NeblioAPI;
 
-namespace VEDriversLite.Builder
+namespace VEDriversLite.Builders.Neblio
 {
     /// <summary>
     /// Summary of the all inputs

@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VEDriversLite.Builders.Neblio\VEDriversLite.Builders.Neblio.csproj" />
+    <ProjectReference Include="..\VEDriversLite.Cryptocurrencies\VEDriversLite.Cryptocurrencies.csproj" />
     <ProjectReference Include="..\VEDriversLite.Extensions.WooCommerce\VEDriversLite.Extensions.WooCommerce.csproj" />
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
   </ItemGroup>

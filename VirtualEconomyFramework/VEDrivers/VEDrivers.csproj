@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Version>0.1.2</Version>
     <Company>VEFramework</Company>
     <Description>VE Drivers is set of drivers for Virtual Economy Applications connected to blockchains.</Description>
