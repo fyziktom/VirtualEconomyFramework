@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.Security;
 
-namespace VEDriversLite.Builder
+namespace VEDriversLite.Builders.Neblio
 {
     /// <summary>
     /// Token receiver dto

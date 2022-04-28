@@ -16,7 +16,7 @@ namespace VEFrameworkUnitTest.DogeCoin
         {
             var key = DogeTransactionHelpers.ValidateDogeAddress("");
             Assert.False(key.Success);
-            Assert.Empty(key.Value.ToString());
+            Assert.Equal(default(string), key.Value);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace VEFrameworkUnitTest.DogeCoin
         {
             var key1 = DogeTransactionHelpers.ValidateDogeAddress("Test");
             Assert.False(key1.Success);
-            Assert.Empty(key1.Value.ToString());
+            Assert.Equal(default(string), key1.Value);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace VEFrameworkUnitTest.DogeCoin
         {
             var key1 = DogeTransactionHelpers.ValidateDogeAddress("TestTestTestTestTestTestTestTestTestTest");
             Assert.False(key1.Success);
-            Assert.Empty(key1.Value.ToString());
+            Assert.Equal(default(string), key1.Value);
         }
 
         /// <summary>

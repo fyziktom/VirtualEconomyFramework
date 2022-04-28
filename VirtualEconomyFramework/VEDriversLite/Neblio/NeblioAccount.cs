@@ -146,10 +146,9 @@ namespace VEDriversLite
                 AddressInfo.Transactions = new List<string>();
 
                 await ReloadUtxos();
-                await Task.WhenAll(new Task[3] {
+                await Task.WhenAll(new Task[2] {
                                 ReloadMintingSupply(),
-                                ReloadTokenSupply(),
-                                ExchangePriceService.InitPriceService(Cryptocurrencies.ExchangeRatesAPITypes.Coingecko, Address, Cryptocurrencies.CurrencyTypes.NEBL)
+                                ReloadTokenSupply()
                 });
 
                 FirsLoadingStatus?.Invoke(this, "Utxos loaded");
@@ -177,9 +176,7 @@ namespace VEDriversLite
                     tasks[3] = RefreshAddressReceivedPayments();
                     tasks[4] = RefreshAddressReceivedReceipts();
                     await Task.WhenAll(tasks);
-
-                    RegisterPriceServiceEventHandler();
-                    
+                                        
                     Refreshed?.Invoke(this, null);
                     FirsLoadingStatus?.Invoke(this, "Main Account NFTs Loaded.");
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
 
-namespace VEDriversLite.Builder
+namespace VEDriversLite.Builders.Neblio
 {
     /// <summary>
     /// Create Builder Neblio Address and load all necessary parameters 

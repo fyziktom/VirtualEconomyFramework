@@ -4,7 +4,7 @@ using System.Text;
 using NBitcoin;
 using VEDriversLite.NeblioAPI;
 
-namespace VEDriversLite.Builder
+namespace VEDriversLite.Builders.Neblio
 {
     /// <summary>
     /// Info about the outpus in the transaction
