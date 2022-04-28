@@ -1,0 +1,135 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@inject HttpClient Http
+
+
+<Div>
+    <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@TabChanged">
+        <Items>
+            <Tab Name="preview">Preview</Tab>                  
+            <Tab Name="editor">Editor</Tab>                  
+            <Tab Name="save">Save</Tab>                  
+        </Items>
+        <Content>
+            <TabPanel Name="preview">
+                <PanzoomMermaid @ref="mermaidViewRef" />
+            </TabPanel>
+            <TabPanel Name="editor">
+                <Markdown @ref="markdownRef" Value="@mermeidText" ValueChanged="@onValueChanged" AutoRefresh="@(new MarkdownAutoRefresh() {Delay = 300 })"/>
+            </TabPanel>
+            <TabPanel Name="save">
+                <Row>
+                    <Column Style="min-height:50px;" Flex="Flex.JustifyContent.Center.AlignItems.Center">
+                        <Span>Please remember that this will save just updated Mermaid. You have to save whole NFT also!</Span>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column Flex="Flex.JustifyContent.Center.AlignItems.Center" Style="min-height:200px;">
+                        <Button Color="Color.Primary" Margin="Margin.Is1.FromStart" Clicked="@Save" Size="Size.Small">Save</Button>
+                    </Column>
+                </Row>
+            </TabPanel>
+        </Content>
+    </Tabs>
+</Div>
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter] public EventCallback<string> OnDataSaved { get; set; }
+
+    PanzoomMermaid? mermaidViewRef;
+    Markdown markdownRef;
+
+    string selectedTab = "preview";
+    string originalText = string.Empty;
+    string mermeidText = string.Empty;
+
+    public async Task LoadText(string text)
+    {
+        originalText = cleanText(text);
+        mermeidText = mermaidWrappedText(originalText);
+
+        if (markdownRef != null)
+            await markdownRef.SetValueAsync( mermeidText );
+
+        if (mermaidViewRef != null)
+            await mermaidViewRef.LoadText(mermeidText);
+        await InvokeAsync( StateHasChanged );
+    }
+    public async Task LoadText(byte[] data)
+    {  
+        await LoadText(System.Text.Encoding.UTF8.GetString(data));
+    }
+    public async Task LoadFromIPFS(string hash)
+    {
+        var data = await getMermaidData(hash);
+        if (data != null && data.Length > 0)
+            await LoadText(data);
+    }
+
+    async Task<string> getMermaidData(string hash)
+    {
+        if (!string.IsNullOrEmpty(hash))
+        {
+            var fileLink = NFTHelpers.GetIPFSLinkFromHash(hash);
+            var data = await Http.GetStringAsync(fileLink);
+            if (data != null)
+                return data;
+        }
+        return string.Empty;
+    }
+    string cleanText(string i)
+    {
+        return i.Replace("```mermaid\n\n", string.Empty).Replace("```", string.Empty);
+    }
+    string mermaidWrappedText(string i)
+    {
+        if (!i.Contains("```mermaid"))
+            return string.Concat("```mermaid\n\n", i, "\n```");
+        return i;
+    }
+
+    async Task onValueChanged(string value)
+    {
+        mermeidText = value;
+        if (mermaidViewRef != null)
+            await mermaidViewRef.LoadText(mermeidText);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    void TabChanged(string tab)
+    {    
+        selectedTab = tab;
+        StateHasChanged();
+    }
+
+    public async Task Save()
+    {
+        if (NotificationService != null)
+            await NotificationService.Info( "Saving data...", "Saving" );
+
+        var t = cleanText(mermeidText);
+        var data = System.Text.Encoding.UTF8.GetBytes(t);
+        using (Stream ms = new MemoryStream(data))
+        {
+            ms.Seek( 0, SeekOrigin.Begin );
+            var link = await NFTHelpers.UploadInfura(ms, "mermaid.mmd");           
+            if (!string.IsNullOrEmpty(link))
+            {
+                var hash = NFTHelpers.GetHashFromIPFSLink(link);
+
+                if (NotificationService != null)
+                    await NotificationService.Success( "Data saved.", "Saved" );
+
+                await OnDataSaved.InvokeAsync(hash);
+            }
+            else
+            {
+                if (NotificationService != null)
+                    await NotificationService.Warning( "Cannot save.", "Error" );
+
+            }
+        }
+    }
+}

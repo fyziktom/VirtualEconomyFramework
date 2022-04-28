@@ -29,7 +29,7 @@
             </Field>
             <Field>
                 <FieldLabel>Here you can enter the longer description.</FieldLabel>
-                <Markdown @ref="markdownRef" @bind-Value="@NFT.Text"/>
+                <Markdown @ref="markdownRef" @bind-Value="@NFT.Text" AutoRefresh="@(new MarkdownAutoRefresh() {Delay = 300 })"/>
                 <FieldHelp>You can use Markdown formating in this editor.</FieldHelp>
             </Field>
         </Validations>

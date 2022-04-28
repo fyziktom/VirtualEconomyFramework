@@ -1,0 +1,74 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using Markdig
+@inject HttpClient Http
+
+<Div Class="panzoom-parent">
+    <Panzoom @ref="_panzoom" WheelMode="@(WheelMode.Custom)" OnWheel="@OnWheel">
+        <div @ref="@context.ElementReference" class="panzoom" style="width: auto; min-width:@(InitWidth)px; height: @(InitHeight)px; margin: 0 auto;">
+            @((MarkupString)NFTTextMarkuptext)
+        </div>
+    </Panzoom>
+</Div>
+@code {
+    [Inject] protected IJSRuntime? JS { get; set; } = null;
+
+    [Parameter] public string Source { get; set; } = string.Empty;
+    [Parameter] public string Text { get; set; } = string.Empty;
+    [Parameter] public int InitWidth { get; set; } = 800;
+    [Parameter] public int InitHeight { get; set; } = 400;
+    
+    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+
+    Panzoom? _panzoom;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(this.JS is not null)
+        {
+            if(firstRender)
+                await this.JS.InvokeVoidAsync("veblazor.MermaidInitialize");
+            await this.JS.InvokeVoidAsync("veblazor.MermaidRender");
+        }
+    }
+
+    public async Task LoadText(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return;
+
+        Text = text;
+        await InvokeAsync( StateHasChanged );
+    }
+    public async Task LoadFromSource(string source)
+    { 
+        if (string.IsNullOrEmpty(source)) return;
+        Source = source;
+        await getMermaidLink(Source);
+        await InvokeAsync( StateHasChanged );
+    }
+
+    async Task OnResetClick( MouseEventArgs args )
+    {
+        if ( _panzoom != null )
+            await _panzoom.ResetAsync();
+    }
+
+    async Task OnWheel( CustomWheelEventArgs args )
+    {
+        if ( !args.ShiftKey )
+            return;
+        if ( _panzoom != null )
+            await _panzoom.ZoomWithWheelAsync( args );
+    }
+
+    async Task getMermaidLink(string hash)
+    {
+        if (!string.IsNullOrEmpty(hash))
+        {
+            var fileLink = NFTHelpers.GetIPFSLinkFromHash(hash);
+            var data = await Http.GetStringAsync(fileLink);
+            if (data != null)
+                Text = string.Concat("```mermaid\n\n", data, "\n```");
+        }
+    }    
+}

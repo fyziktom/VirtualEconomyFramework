@@ -50,6 +50,13 @@
                                             @onclick="() => DisplayItem(item)" 
                                             Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
                                 }
+                                else if (item.Type == DataItemType.Mermaid)
+                                {
+                                    <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="_content/VEBlazor/images/mermaid-image.png" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
                             </Card> 
                         </Column>
                     }
@@ -108,6 +115,10 @@
                     {
                         <iframe src="@NFT.ImageLink" frameborder="0" style="min-width:300px; min-height:500px; width:100%; height:100%;"></iframe>
                     }
+                    else if (actualFileType == DataItemType.Mermaid)
+                    {   
+                        <MermaidEditor @ref="mermaidTextRef" OnDataSaved="OnDataSavedHandler"  />
+                    }
                 </Column> 
             </Row> 
         </Column>
@@ -117,8 +128,25 @@
 
 @code {
     [Parameter] public bool DisplayPDF { get; set; } = false;
-       
+
     JsonViewer? JsonViewerRef;
+    MermaidEditor? mermaidTextRef;
+
+    VEDriversLite.NFT.Dto.NFTDataItem displayedItem = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (NFT != null && NFT.DataItems != null && NFT.DataItems.Count > 0)
+            {
+                var item = NFT.DataItems.FirstOrDefault();
+                if (item != null)
+                    await DisplayItem(item);
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     async Task DisplayItem(VEDriversLite.NFT.Dto.NFTDataItem item)
     {
@@ -126,6 +154,9 @@
             i.IsMain = false;
 
         item.IsMain = true;
+        displayedItem = item;
+        await InvokeAsync( StateHasChanged );
+        
         NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash); 
         if (actualFileType == DataItemType.JSON)
         {
@@ -133,6 +164,18 @@
             if (JsonViewerRef != null)
                 await JsonViewerRef.Render(data);
         }
-        StateHasChanged();
+        if (item.Type == DataItemType.Mermaid)
+        {
+            if (mermaidTextRef != null)
+                await mermaidTextRef.LoadFromIPFS(item.Hash);
+        }
+        await InvokeAsync( StateHasChanged );
     }  
+
+    void OnDataSavedHandler(string hash)
+    {
+        if (displayedItem != null)
+            displayedItem.Hash = hash;
+        StateHasChanged();
+    }
 }
