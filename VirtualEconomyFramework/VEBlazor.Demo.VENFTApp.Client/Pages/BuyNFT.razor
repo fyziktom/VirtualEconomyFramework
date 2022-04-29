@@ -1,0 +1,49 @@
+﻿@page "/buynft"
+
+<PageTitle>@AppData.AppName - Buy NFT</PageTitle>
+
+<VEBlazor.Components.PageHeader Title="Buy NFT" BreadcrumbItems="@(new string[] { AppData.AppName, "Buy NFT" })" />
+
+<VEBlazor.Pages.BuyNFT @ref="buyNFTRef" />
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery( Name = "utxo" )]
+    public string? Utxo { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "index")]
+    public int Index { get; set; } = 0;
+
+    [Parameter]
+    [SupplyParameterFromQuery( Name = "rdc" )]
+    public string? Redirect { get; set; }
+    
+    [Parameter]
+    [SupplyParameterFromQuery( Name = "curr" )]
+    public string? Currency { get; set; }
+    
+    VEBlazor.Pages.BuyNFT.Currency currency = VEBlazor.Pages.BuyNFT.Currency.NBL;
+    VEBlazor.Pages.BuyNFT? buyNFTRef;
+
+    protected override async Task OnAfterRenderAsync( bool firstRender )
+    {
+        await base.OnAfterRenderAsync( firstRender );
+
+        if (Currency != null)
+        {
+            if (Currency == "DGC") currency = VEBlazor.Pages.BuyNFT.Currency.DGC;
+            if (Currency == "DOGE") currency = VEBlazor.Pages.BuyNFT.Currency.DGC;
+            if (Currency == "NEBL") currency = VEBlazor.Pages.BuyNFT.Currency.NBL;
+            if (Currency == "NBL") currency = VEBlazor.Pages.BuyNFT.Currency.NBL;
+        }
+        else
+        {
+            currency = VEBlazor.Pages.BuyNFT.Currency.NBL;
+        }
+        
+        if (!string.IsNullOrEmpty(Utxo) && buyNFTRef != null)
+            await buyNFTRef.Show(Utxo, Index, currency, Redirect ?? "");
+    }
+}

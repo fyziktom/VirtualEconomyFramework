@@ -49,9 +49,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.Extensions.Wo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.NeblioAPI", "VEDriversLite.NeblioAPI\VEDriversLite.NeblioAPI.csproj", "{06A56B0B-7663-44E3-B0B4-B37F7670244D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEDriversLite.Builders.Neblio", "VEDriversLite.Builders.Neblio\VEDriversLite.Builders.Neblio.csproj", "{E9CB308F-B659-4670-9E52-DA38204B94E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.Builders.Neblio", "VEDriversLite.Builders.Neblio\VEDriversLite.Builders.Neblio.csproj", "{E9CB308F-B659-4670-9E52-DA38204B94E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEDriversLite.Cryptocurrencies", "VEDriversLite.Cryptocurrencies\VEDriversLite.Cryptocurrencies.csproj", "{D7FABF21-4514-44D0-A351-04D79200A5E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.Cryptocurrencies", "VEDriversLite.Cryptocurrencies\VEDriversLite.Cryptocurrencies.csproj", "{D7FABF21-4514-44D0-A351-04D79200A5E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEBlazor.Demo.VENFTApp.Client", "VEBlazor.Demo.VENFTApp.Client\VEBlazor.Demo.VENFTApp.Client.csproj", "{DACD7397-84A7-4BD6-9B30-852B3CA95718}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -351,12 +353,25 @@ Global
 		{D7FABF21-4514-44D0-A351-04D79200A5E4}.Release|x64.Build.0 = Release|Any CPU
 		{D7FABF21-4514-44D0-A351-04D79200A5E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{D7FABF21-4514-44D0-A351-04D79200A5E4}.Release|x86.Build.0 = Release|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Debug|x64.Build.0 = Debug|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Debug|x86.Build.0 = Debug|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Release|x64.ActiveCfg = Release|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Release|x64.Build.0 = Release|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Release|x86.ActiveCfg = Release|Any CPU
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{161470AE-0F8F-4BAF-846C-E4CCB9FC019B} = {DCD69FD2-C35F-433E-BC8A-BE9E4D5EC8D6}
+		{DACD7397-84A7-4BD6-9B30-852B3CA95718} = {DCD69FD2-C35F-433E-BC8A-BE9E4D5EC8D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5CBC4B1A-B2F2-465F-9BC6-8E8E7475316A}

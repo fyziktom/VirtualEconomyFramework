@@ -1,0 +1,27 @@
+﻿@using Markdig
+@inject HttpClient httpClient
+@inject AppData AppData
+
+@page "/gettingstarted"
+
+<PageTitle>@AppData.AppName - @headerLabel</PageTitle>
+
+<VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
+
+<VEBlazor.Pages.Readme Text="@Text" />
+
+@code {
+    string headerLabel = "Readme";
+
+    public string Text { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        var s = await httpClient.GetStringAsync("readme.md");
+        if (s != null)
+        {
+            var markdown = Markdig.Markdown.ToHtml(s);
+            Text = markdown ?? string.Empty;
+        }        
+        await base.OnInitializedAsync();
+    }
+}
